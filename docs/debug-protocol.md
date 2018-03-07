@@ -799,7 +799,8 @@ features will point that out in their response.
 
 Contains the results of introspecting the metadata of an object.
 
-Every object has `reprname`, `size`, and `unmanaged_size` fields.
+Every object has `reprname`. All concrete objects have `size` and
+`unmanaged_size` fields.
 
 Objects also include `positional_elems` and `associative_elems`
 for objects that have positional and/or associative features.
