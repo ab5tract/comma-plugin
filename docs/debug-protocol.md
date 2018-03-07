@@ -780,7 +780,7 @@ a request.
         "id": $id
     }
 
-### Metadata Request (40)
+### Object Metadata Request (40)
 
 Used by the client to get additional information about an object that goes
 beyond its actual attributes. Usually contains at least the repr name and
@@ -796,7 +796,7 @@ features will point that out in their response.
         "handle": 1234
     }
 
-### Metadata Response (41)
+### Object Metadata Response (41)
 
 Contains the results of introspecting the metadata of an object.
 
@@ -804,8 +804,9 @@ Common metadata includes `positional_elems` and `associative_elems`
 for objects that have positional and/or associative features.
 
 `pos_features`, `ass_features`, and `attr_features` inform the client
-which of the requests 42 ("Positionals Request"), 44 ("Associatives Request"),
-or 32 ("Object Attributes Request") will give useful results.
+which of the requests 42 ("Object Positionals Request"), 44
+("Object Associatives Request"), or 32 ("Object Attributes Request")
+will give useful results.
 
     {
         "type": 41,
@@ -823,7 +824,7 @@ or 32 ("Object Attributes Request") will give useful results.
         "attr_features": false,
     }
 
-### Positionals Request (42)
+### Object Positionals Request (42)
 
 Used by the client to get the contents of an object that has
 positional features, like an array.
@@ -833,7 +834,7 @@ positional features, like an array.
         "id": $id
     }
 
-### Positionals Response (43)
+### Object Positionals Response (43)
 
 The `kind` field can be "int", "num", "str" for native arrays,
 or "obj" for object arrays.
