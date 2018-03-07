@@ -787,8 +787,8 @@ beyond its actual attributes. Usually contains at least the repr name and
 unmanaged size as seen by the heap profiler, but can also include other
 details from the REPRData and the object's internal state.
 
-For an array or hash you'd get the number of allocated vs used slots.
-Native arrays will also output their slot type and size.
+Additionally, all objects that have positional, associative, or attribute
+features will point that out in their response.
 
     {
         "type": 40,
@@ -798,7 +798,14 @@ Native arrays will also output their slot type and size.
 
 ### Metadata Response (41)
 
-Contains the results of introspecting the metadata of an object. 
+Contains the results of introspecting the metadata of an object.
+
+Common metadata includes `positional_elems` and `associative_elems`
+for objects that have positional and/or associative features.
+
+`pos_features`, `ass_features`, and `attr_features` inform the client
+which of the requests 42 ("Positionals Request"), 44 ("Associatives Request"),
+or 32 ("Object Attributes Request") will give useful results.
 
     {
         "type": 41,
@@ -808,7 +815,100 @@ Contains the results of introspecting the metadata of an object.
             "vmarray_slot_type": "num32",
             "vmarray_elem_size": 4,
             "vmarray_allocated": 128,
-            "vmarray_used": 12,
+            "positional_elems": 12,
             "vmarray_offset": 40
+        },
+        "pos_features": true,
+        "ass_features": false,
+        "attr_features": false,
+    }
+
+### Positionals Request (42)
+
+Used by the client to get the contents of an object that has
+positional features, like an array.
+
+    {
+        "type": 42,
+        "id": $id
+    }
+
+### Positionals Response (43)
+
+The `kind` field can be "int", "num", "str" for native arrays,
+or "obj" for object arrays.
+
+In the case of an object array, every entry in the `contents`
+field will be a map with keys `type`, `handle`, `concrete`,
+and `container`.
+
+For native arrays, the array contents are sent as their
+corresponding messagepack types.
+
+Native contents:
+
+    {
+        "type": 43,
+        "id": $id,
+        "kind": "int",
+        "start": 0,
+        "contents": [
+            1, 2, 3, 4, 5, 6
+        ]
+    }
+
+Object contents:
+
+    {
+        "type": 43,
+        "id": $id,
+        "kind": "obj",
+        "start": 0,
+        "contents": [
+            {
+                "type": "Potato",
+                "handle": 9999,
+                "concrete": true,
+                "container": false
+            },
+            {
+                "type": "Noodles",
+                "handle": 10000,
+                "concrete": false,
+                "container": false
+             }
+         ]
+     }
+
+### Associatives Request (44)
+
+Used by the client to get the contents of an object that has
+associative features, like a hash.
+
+    {
+        "type": 44,
+        "id": $id,
+        "handle": 12345
+    }
+
+### Associative Response (45)
+
+    {
+        "type": 45,
+        "id": $id,
+        "kind": "obj"
+        "contents": {
+            "Hello": {
+                "type": "Poodle",
+                "handle": 4242,
+                "concrete": true,
+                "container": false
+            },
+            "Goodbye": {
+                "type": "Poodle",
+                "handle": 4242,
+                "concrete": true,
+                "container": false
+            }
         }
     }
