@@ -779,3 +779,36 @@ a request.
         "type": 39,
         "id": $id
     }
+
+### Metadata Request (40)
+
+Used by the client to get additional information about an object that goes
+beyond its actual attributes. Usually contains at least the repr name and
+unmanaged size as seen by the heap profiler, but can also include other
+details from the REPRData and the object's internal state.
+
+For an array or hash you'd get the number of allocated vs used slots.
+Native arrays will also output their slot type and size.
+
+    {
+        "type": 40,
+        "id": $id,
+        "handle": 1234
+    }
+
+### Metadata Response (41)
+
+Contains the results of introspecting the metadata of an object. 
+
+    {
+        "type": 33,
+        "id": $id,
+        "metadata": {
+            "reprname": "VMArray",
+            "vmarray_slot_type": "num32",
+            "vmarray_elem_size": 4,
+            "vmarray_allocated": 128,
+            "vmarray_used": 12,
+            "vmarray_offset": 40
+        }
+    }
