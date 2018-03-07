@@ -801,7 +801,7 @@ Native arrays will also output their slot type and size.
 Contains the results of introspecting the metadata of an object. 
 
     {
-        "type": 33,
+        "type": 41,
         "id": $id,
         "metadata": {
             "reprname": "VMArray",
