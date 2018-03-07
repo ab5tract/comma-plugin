@@ -783,9 +783,8 @@ a request.
 ### Object Metadata Request (40)
 
 Used by the client to get additional information about an object that goes
-beyond its actual attributes. Usually contains at least the repr name and
-unmanaged size as seen by the heap profiler, but can also include other
-details from the REPRData and the object's internal state.
+beyond its actual attributes. Can include miscellaneous details from the
+REPRData and the object's internal state if it's concrete.
 
 Additionally, all objects that have positional, associative, or attribute
 features will point that out in their response.
@@ -800,7 +799,9 @@ features will point that out in their response.
 
 Contains the results of introspecting the metadata of an object.
 
-Common metadata includes `positional_elems` and `associative_elems`
+Every object has `reprname`, `size`, and `unmanaged_size` fields.
+
+Objects also include `positional_elems` and `associative_elems`
 for objects that have positional and/or associative features.
 
 `pos_features`, `ass_features`, and `attr_features` inform the client
@@ -813,15 +814,20 @@ will give useful results.
         "id": $id,
         "metadata": {
             "reprname": "VMArray",
+            "size": 128,
+            "unmanaged_size": 1024,
+
             "vmarray_slot_type": "num32",
             "vmarray_elem_size": 4,
             "vmarray_allocated": 128,
+            "vmarray_offset": 40,
+
             "positional_elems": 12,
-            "vmarray_offset": 40
+
+            "pos_features": true,
+            "ass_features": false,
+            "attr_features": false,
         },
-        "pos_features": true,
-        "ass_features": false,
-        "attr_features": false,
     }
 
 ### Object Positionals Request (42)
