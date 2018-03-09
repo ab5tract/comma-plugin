@@ -20,6 +20,6 @@ public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Sig
         if (type.equals(""))
             return "(" + paramsSummary + ")";
         else
-            return "(" + paramsSummary + " --> " + type + ")";
+            return "(" + paramsSummary + (paramsSummary.trim().length() == 0 ? "--> " : " -->") + type + ")";
     }
 }
