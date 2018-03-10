@@ -2053,6 +2053,7 @@ grammar MAIN {
         <.trait>*
         { $*IN_DECL = '' }
         [
+            <.start-element('BLOCK')>
             <.start-token('BLOCK_CURLY_BRACKET')>
             '{'
             <.end-token('BLOCK_CURLY_BRACKET')>
@@ -2068,8 +2069,9 @@ grammar MAIN {
                 '}'
                 <.end-token('BLOCK_CURLY_BRACKET')>
                 <?ENDSTMT>
-                <.ws>?
             ]?
+            <.end-element('BLOCK')>
+            <.ws>?
         ]?
     }
 

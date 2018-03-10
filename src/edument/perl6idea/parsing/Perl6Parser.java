@@ -9316,13 +9316,6 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean regex_def_104_quant_9(PsiBuilder builder, OPP opp) {
-        if (!(this.ws_236(builder))) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean regex_def_104_quant_10(PsiBuilder builder, OPP opp) {
         String tt4;
         tt4 = builder.getTokenText();
         if (((builder.getTokenType()) == Perl6TokenTypes.BLOCK_CURLY_BRACKET) && (tt4.equals("}"))) {
@@ -9330,17 +9323,19 @@ public class Perl6Parser implements PsiParser {
         } else {
             return false;
         }
-        PsiBuilder.Marker quantMarker10;
-        quantMarker10 = builder.mark();
-        if (this.regex_def_104_quant_9(builder, opp)) {
-            quantMarker10.drop();
-        } else {
-            quantMarker10.rollbackTo();
+        return true;
+    }
+
+    private boolean regex_def_104_quant_10(PsiBuilder builder, OPP opp) {
+        if (!(this.ws_236(builder))) {
+            return false;
         }
         return true;
     }
 
     private boolean regex_def_104_quant_11(PsiBuilder builder, OPP opp) {
+        PsiBuilder.Marker marker7;
+        marker7 = builder.mark();
         String tt3;
         tt3 = builder.getTokenText();
         if (((builder.getTokenType()) == Perl6TokenTypes.BLOCK_CURLY_BRACKET) && (tt3.equals("{"))) {
@@ -9351,24 +9346,24 @@ public class Perl6Parser implements PsiParser {
         if (!(this.ws_236(builder))) {
             return false;
         }
-        PsiBuilder.Marker altMarker9;
-        altMarker9 = builder.mark();
+        PsiBuilder.Marker altMarker10;
+        altMarker10 = builder.mark();
         if (this.regex_def_104_alt_8(builder, opp)) {
-            altMarker9.drop();
+            altMarker10.drop();
         } else {
-            altMarker9.rollbackTo();
-            PsiBuilder.Marker altMarker8;;
-            altMarker8 = builder.mark();
+            altMarker10.rollbackTo();
+            PsiBuilder.Marker altMarker9;;
+            altMarker9 = builder.mark();
             if (this.regex_def_104_alt_7(builder, opp)) {
-                altMarker8.drop();
+                altMarker9.drop();
             } else {
-                altMarker8.rollbackTo();
-                PsiBuilder.Marker altMarker7;;
-                altMarker7 = builder.mark();
+                altMarker9.rollbackTo();
+                PsiBuilder.Marker altMarker8;;
+                altMarker8 = builder.mark();
                 if (this.regex_def_104_alt_6(builder, opp)) {
-                    altMarker7.drop();
+                    altMarker8.drop();
                 } else {
-                    altMarker7.rollbackTo();
+                    altMarker8.rollbackTo();
                     return false;
                 }
             }
@@ -9378,10 +9373,18 @@ public class Perl6Parser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker11;
         quantMarker11 = builder.mark();
-        if (this.regex_def_104_quant_10(builder, opp)) {
+        if (this.regex_def_104_quant_9(builder, opp)) {
             quantMarker11.drop();
         } else {
             quantMarker11.rollbackTo();
+        }
+        marker7.done(Perl6ElementTypes.BLOCK);
+        PsiBuilder.Marker quantMarker12;
+        quantMarker12 = builder.mark();
+        if (this.regex_def_104_quant_10(builder, opp)) {
+            quantMarker12.drop();
+        } else {
+            quantMarker12.rollbackTo();
         }
         return true;
     }
@@ -9426,12 +9429,12 @@ public class Perl6Parser implements PsiParser {
                 break;
             }
         }
-        PsiBuilder.Marker quantMarker12;
-        quantMarker12 = builder.mark();
+        PsiBuilder.Marker quantMarker13;
+        quantMarker13 = builder.mark();
         if (this.regex_def_104_quant_11(builder, opp)) {
-            quantMarker12.drop();
+            quantMarker13.drop();
         } else {
-            quantMarker12.rollbackTo();
+            quantMarker13.rollbackTo();
         }
         return true;
     }
