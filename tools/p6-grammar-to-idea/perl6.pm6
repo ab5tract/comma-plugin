@@ -3030,6 +3030,9 @@ grammar MAIN {
     }
 
     token quote_interpolation_postfix {
+        :my $*PREC = '';
+        :my $*SUB_PREC = '';
+        :my $*ASSOC = '';
         <?before [<.interpolation_opener> || <.postfixish> <?bracket-ending>]>
         <.start-token('POSTFIX_INTERPOLATIN')> <?> <.end-token('POSTFIX_INTERPOLATIN')>
         <.postfixish>

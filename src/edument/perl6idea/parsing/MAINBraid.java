@@ -26746,6 +26746,9 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
+                this.declareDynamicVariable("$*PREC", "");
+                this.declareDynamicVariable("$*SUB_PREC", "");
+                this.declareDynamicVariable("$*ASSOC", "");
                 if (!(this.lookahead(451))) {
                     if (this.backtrack()) {
                         continue;
