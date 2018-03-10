@@ -2612,15 +2612,18 @@ grammar MAIN {
     }
 
     token quote_Q($*STARTER, $*STOPPER, $*ALT_STOPPER) {
+        :my $*DELIM = '';
         <.quote_nibbler>
     }
 
     token quote_q($*STARTER, $*STOPPER, $*ALT_STOPPER) {
+        :my $*DELIM = '';
         { $*Q_QBACKSLASH = 1 }
         <.quote_nibbler>
     }
 
     token quote_qq($*STARTER, $*STOPPER, $*ALT_STOPPER) {
+        :my $*DELIM = '';
         { $*Q_BACKSLASH = 1 }
         { $*Q_QQBACKSLASH = 1 }
         { $*Q_CLOSURES = 1 }
@@ -2642,6 +2645,7 @@ grammar MAIN {
         :my $*STARTER = '';
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
+        :my $*DELIM = '';
         [
         || [ <.quotepair_Q> <.ws> ]+
            [
@@ -2675,6 +2679,7 @@ grammar MAIN {
         :my $*STARTER = '';
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
+        :my $*DELIM = '';
         [
         || [ <.quotepair_rx> <.ws> ]+
            [
@@ -2706,6 +2711,7 @@ grammar MAIN {
         :my $*STARTER = '';
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
+        :my $*DELIM = '';
         :my $*Q_Q = 0;
         :my $*Q_QQ = 1;
         :my $*Q_BACKSLASH = 1;
@@ -2761,6 +2767,7 @@ grammar MAIN {
         :my $*STARTER = '';
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
+        :my $*DELIM = '';
         <.peek-delimiters>
         <.start-token('QUOTE_REGEX')>
         $*STARTER
@@ -3786,6 +3793,7 @@ grammar MAIN {
     }
 
     token enter_regex_nibbler($*STARTER, $*STOPPER) {
+        :my $*DELIM = '';
         <.start-element('REGEX')>
         <.regex_nibbler>
         <.end-element('REGEX')>

@@ -23427,6 +23427,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*STARTER", this.getArg(0));
                 this.declareDynamicVariable("$*STOPPER", this.getArg(1));
                 this.declareDynamicVariable("$*ALT_STOPPER", this.getArg(2));
+                this.declareDynamicVariable("$*DELIM", "");
                 this.setArgs();
                 this.state = 1;
                 return 180;
@@ -23455,6 +23456,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*STARTER", this.getArg(0));
                 this.declareDynamicVariable("$*STOPPER", this.getArg(1));
                 this.declareDynamicVariable("$*ALT_STOPPER", this.getArg(2));
+                this.declareDynamicVariable("$*DELIM", "");
                 this.assignDynamicVariable("$*Q_QBACKSLASH", 1);
                 this.setArgs();
                 this.state = 1;
@@ -23484,6 +23486,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*STARTER", this.getArg(0));
                 this.declareDynamicVariable("$*STOPPER", this.getArg(1));
                 this.declareDynamicVariable("$*ALT_STOPPER", this.getArg(2));
+                this.declareDynamicVariable("$*DELIM", "");
                 this.assignDynamicVariable("$*Q_BACKSLASH", 1);
                 this.assignDynamicVariable("$*Q_QQBACKSLASH", 1);
                 this.assignDynamicVariable("$*Q_CLOSURES", 1);
@@ -23541,6 +23544,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*STARTER", "");
                 this.declareDynamicVariable("$*STOPPER", "");
                 this.declareDynamicVariable("$*ALT_STOPPER", "");
+                this.declareDynamicVariable("$*DELIM", "");
                 this.bsFailMark(23);
                 this.bsMark(17);
                 this.bsFailMark(4);
@@ -23765,6 +23769,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*STARTER", "");
                 this.declareDynamicVariable("$*STOPPER", "");
                 this.declareDynamicVariable("$*ALT_STOPPER", "");
+                this.declareDynamicVariable("$*DELIM", "");
                 this.bsFailMark(18);
                 this.bsMark(12);
                 this.bsFailMark(4);
@@ -23947,6 +23952,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*STARTER", "");
                 this.declareDynamicVariable("$*STOPPER", "");
                 this.declareDynamicVariable("$*ALT_STOPPER", "");
+                this.declareDynamicVariable("$*DELIM", "");
                 this.declareDynamicVariable("$*Q_Q", 0);
                 this.declareDynamicVariable("$*Q_QQ", 1);
                 this.declareDynamicVariable("$*Q_BACKSLASH", 1);
@@ -24222,6 +24228,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*STARTER", "");
                 this.declareDynamicVariable("$*STOPPER", "");
                 this.declareDynamicVariable("$*ALT_STOPPER", "");
+                this.declareDynamicVariable("$*DELIM", "");
                 if (!(this.peekDelimiters())) {
                     if (this.backtrack()) {
                         continue;
@@ -33135,6 +33142,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.checkArgs(2);
                 this.declareDynamicVariable("$*STARTER", this.getArg(0));
                 this.declareDynamicVariable("$*STOPPER", this.getArg(1));
+                this.declareDynamicVariable("$*DELIM", "");
                 this.setArgs();
                 this.state = 1;
                 return 209;
