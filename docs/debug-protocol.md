@@ -431,15 +431,20 @@ that point.
 
 ### Step Out (22)
 
-Runs until the program returns into the calling frame. The thread this is
+Runs until the program returns into the specified frame. The thread this is
 invoked on must be suspended, and will be returned to suspended state after
 the step has taken place. A Step Completed message will be sent by MoarVM at
 that point.
 
+The client has to specify the frame to return to, because whether a calling
+frame should be skipped or not depends on whether it is a Block or Routine
+or similar. The client has to have this knowledge.
+
     {
         "type": 22,
         "id": $id,
-        "thread": 1
+        "thread": 1,
+        "frame": 4321
     }
 
 ### Step Completed (23)
