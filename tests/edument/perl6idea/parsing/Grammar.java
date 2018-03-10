@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class HeredocInterpolation extends ParsingTestCase {
-    public HeredocInterpolation() {
+public class Grammar extends ParsingTestCase {
+    public Grammar() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class HeredocInterpolation extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/heredoc-interpolation";
+        return "testData/parsing/grammar";
     }
 
     @Override
@@ -26,3 +26,4 @@ public class HeredocInterpolation extends ParsingTestCase {
         return true;
     }
 }
+
