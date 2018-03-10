@@ -30,6 +30,7 @@ public interface Perl6ElementTypes {
     IElementType GATHER = new Perl6ElementType("GATHER");
     IElementType GIVEN_STATEMENT = new Perl6ElementType("GIVEN_STATEMENT");
     IElementType HASH_INDEX = new Perl6ElementType("HASH_INDEX");
+    IElementType HEREDOC = new Perl6ElementType("HEREDOC");
     IElementType HYPER = new Perl6ElementType("HYPER");
     IElementType HYPER_METAOP = new Perl6ElementType("HYPER_METAOP");
     IElementType HYPER_WHATEVER = new Perl6ElementType("HYPER_WHATEVER");

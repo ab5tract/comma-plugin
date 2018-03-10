@@ -4246,6 +4246,8 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean heredoc_55_quant_2(PsiBuilder builder, OPP opp) {
+        PsiBuilder.Marker marker1;
+        marker1 = builder.mark();
         if ((builder.getTokenType()) == Perl6TokenTypes.HEREDOC) {
             builder.advanceLexer();
         } else {
@@ -4254,13 +4256,14 @@ public class Perl6Parser implements PsiParser {
         if (!(this.quote_nibbler_197(builder))) {
             return false;
         }
-        PsiBuilder.Marker quantMarker1;
-        quantMarker1 = builder.mark();
+        PsiBuilder.Marker quantMarker2;
+        quantMarker2 = builder.mark();
         if (this.heredoc_55_quant_1(builder, opp)) {
-            quantMarker1.drop();
+            quantMarker2.drop();
         } else {
-            quantMarker1.rollbackTo();
+            quantMarker2.rollbackTo();
         }
+        marker1.done(Perl6ElementTypes.HEREDOC);
         return true;
     }
 
@@ -4268,12 +4271,12 @@ public class Perl6Parser implements PsiParser {
         OPP opp;
         opp = null;
         while (true) {
-            PsiBuilder.Marker quantMarker2;;
-            quantMarker2 = builder.mark();
+            PsiBuilder.Marker quantMarker3;;
+            quantMarker3 = builder.mark();
             if (this.heredoc_55_quant_2(builder, opp)) {
-                quantMarker2.drop();
+                quantMarker3.drop();
             } else {
-                quantMarker2.rollbackTo();
+                quantMarker3.rollbackTo();
                 break;
             }
         }

@@ -199,6 +199,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new Perl6RadixNumberImpl(astNode);
         if (type == Perl6ElementTypes.STRING_LITERAL)
             return new Perl6StrLiteralImpl(astNode);
+        if (type == Perl6ElementTypes.HEREDOC)
+            return new Perl6HeredocImpl(astNode);
         if (type == Perl6ElementTypes.QUOTE_REGEX)
             return new Perl6QuoteRegexImpl(astNode);
         if (type == Perl6ElementTypes.QUOTE_PAIR)

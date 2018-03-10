@@ -152,6 +152,7 @@ grammar MAIN {
         :my $*DELIM = '';
         [
             <.dequeue-heredoc>
+            <.start-element('HEREDOC')>
             <.start-token('HEREDOC')> <?> <.end-token('HEREDOC')>
             <.quote_nibbler>
             [
@@ -159,6 +160,7 @@ grammar MAIN {
                 <.stopper>
                 <.end-token('STRING_LITERAL_QUOTE')>
             ]?
+            <.end-element('HEREDOC')>
         ]*
     }
 
