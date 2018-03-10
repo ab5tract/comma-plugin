@@ -28,7 +28,6 @@ public class Perl6FoldingBuilder extends FoldingBuilderEx {
     private void getLevelFolding(@NotNull PsiElement root, int recursionLevel, List<FoldingDescriptor> descriptors) {
         Collection<Perl6Block> blocks = PsiTreeUtil.findChildrenOfType(root, Perl6Block.class);
         for (final Perl6Block block : blocks) {
-            System.out.println(recursionLevel);
             descriptors.add(new FoldingDescriptor(block.getNode(),
                     block.getTextRange(), FoldingGroup.newGroup("perl6-" + recursionLevel)));
             getLevelFolding(block, recursionLevel + 1, descriptors);
