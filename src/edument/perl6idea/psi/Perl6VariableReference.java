@@ -24,8 +24,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
             List<Perl6PsiElement> decls = scope.getDeclarations();
             for (Perl6PsiElement decl : decls) {
                 if (decl instanceof PsiNameIdentifierOwner) {
-                    PsiNameIdentifierOwner ident = (PsiNameIdentifierOwner)decl;
-                    if (ident.getNameIdentifier().getText().equals(var.getText()))
+                    PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
+                    if (ident != null && ident.getText().equals(var.getText()))
                         return ident;
                 }
             }
