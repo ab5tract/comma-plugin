@@ -10,6 +10,7 @@ public interface Perl6ElementTypes {
     IElementType ARRAY_SHAPE = new Perl6ElementType("ARRAY_SHAPE");
     IElementType ASSIGN_METAOP = new Perl6ElementType("ASSIGN_METAOP");
     IElementType BLOCK = new Perl6ElementType("BLOCK");
+    IElementType BLOCKOID = new Perl6ElementType("BLOCKOID");
     IElementType BLOCK_OR_HASH = new Perl6ElementType("BLOCK_OR_HASH");
     IElementType BRACKETED_INFIX = new Perl6ElementType("BRACKETED_INFIX");
     IElementType CALL = new Perl6ElementType("CALL");

@@ -312,14 +312,19 @@ grammar MAIN {
            <.end-element('SIGNATURE')>
            <.blockoid>?
            <.end-element('POINTY_BLOCK')>
-        || <?[{]> <.blockoid>
+        || <?[{]>
+           <.start-element('BLOCK')>
+           <.blockoid>
+           <.end-element('BLOCK')>
         || <.start-token('MISSING_BLOCK')> <?> <.end-token('MISSING_BLOCK')>
     }
 
     token lambda { '->' || '<->' }
 
     token block {
+        <.start-element('BLOCK')>
         <.blockoid>
+        <.end-element('BLOCK')>
     }
 
     token terminator {
@@ -331,7 +336,7 @@ grammar MAIN {
     }
 
     token blockoid {
-        <.start-element('BLOCK')>
+        <.start-element('BLOCKOID')>
         <.start-token('BLOCK_CURLY_BRACKET')>
         '{'
         <.end-token('BLOCK_CURLY_BRACKET')>
@@ -349,7 +354,7 @@ grammar MAIN {
         <.end-token('BLOCK_CURLY_BRACKET')>
         <?ENDSTMT>
         ]?
-        <.end-element('BLOCK')>
+        <.end-element('BLOCKOID')>
     }
 
     token stdstopper {
@@ -2055,7 +2060,7 @@ grammar MAIN {
         <.trait>*
         { $*IN_DECL = '' }
         [
-            <.start-element('BLOCK')>
+            <.start-element('BLOCKOID')>
             <.start-token('BLOCK_CURLY_BRACKET')>
             '{'
             <.end-token('BLOCK_CURLY_BRACKET')>
@@ -2072,7 +2077,7 @@ grammar MAIN {
                 <.end-token('BLOCK_CURLY_BRACKET')>
                 <?ENDSTMT>
             ]?
-            <.end-element('BLOCK')>
+            <.end-element('BLOCKOID')>
             <.ws>?
         ]?
     }
@@ -3077,7 +3082,8 @@ grammar MAIN {
            [ <.start-token('ARRAY_COMPOSER')> ']' <.end-token('ARRAY_COMPOSER')> ]?
            <.end-element('ARRAY_COMPOSER')>
         || <?[{]>
-           <.start-element('BLOCK_OR_HASH')> <.pblock> <.end-element('BLOCK_OR_HASH')>
+           <.start-token('BARE_BLOCK')> <?> <.end-token('BARE_BLOCK')>
+           <.start-element('BLOCK_OR_HASH')> <.blockoid> <.end-element('BLOCK_OR_HASH')>
         || <.start-element('STRING_LITERAL')>
            <.start-token('STRING_LITERAL_QUOTE')>
            '<<'

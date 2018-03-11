@@ -11,6 +11,7 @@ public interface Perl6TokenTypes {
     IElementType ASSIGN_METAOP = new Perl6ElementType("ASSIGN_METAOP");
     IElementType BAD_CHARACTER = TokenType.BAD_CHARACTER;
     IElementType BAD_ESCAPE = new Perl6ElementType("BAD_ESCAPE");
+    IElementType BARE_BLOCK = new Perl6ElementType("BARE_BLOCK");
     IElementType BLOCK_CURLY_BRACKET = new Perl6ElementType("BLOCK_CURLY_BRACKET");
     IElementType BRACKETED_INFIX_INCOMPLETE = new Perl6ElementType("BRACKETED_INFIX_INCOMPLETE");
     IElementType CAPTURE_INVALID = new Perl6ElementType("CAPTURE_INVALID");
