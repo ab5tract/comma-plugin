@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
-
     public Perl6FileImpl(FileViewProvider viewProvider) {
         super(viewProvider, Perl6Language.INSTANCE);
     }
@@ -23,13 +22,5 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     @Override
     public FileType getFileType() {
         return Perl6ModuleFileType.INSTANCE;
-    }
-
-    @Override
-    public List<Perl6PsiElement> getDeclarations() {
-        Perl6StatementList statementList = findChildByClass(Perl6StatementList.class);
-        return statementList != null
-                ? statementList.getDeclarations()
-                : new ArrayList<>();
     }
 }

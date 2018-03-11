@@ -19,18 +19,6 @@ public class Perl6PackageDeclImpl extends ASTWrapperPsiElement implements Perl6P
     }
 
     @Override
-    public List<Perl6PsiElement> getDeclarations() {
-        Perl6Block block = findChildByClass(Perl6Block.class);
-        Perl6StatementList list = null;
-        if (block == null)
-            list = findChildByClass(Perl6StatementList.class);
-        return block != null
-                ? block.getDeclarations()
-                : list != null ? list.getDeclarations()
-                : new ArrayList<>();
-    }
-
-    @Override
     public String getPackageKind() {
         PsiElement declarator = findChildByType(Perl6TokenTypes.PACKAGE_DECLARATOR);
         return declarator == null ? "package" : declarator.getText();

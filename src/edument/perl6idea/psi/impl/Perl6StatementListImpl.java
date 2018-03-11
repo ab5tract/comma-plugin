@@ -14,12 +14,4 @@ public class Perl6StatementListImpl extends ASTWrapperPsiElement implements Perl
     public Perl6StatementListImpl(@NotNull ASTNode node) {
         super(node);
     }
-
-    @Override
-    public List<Perl6PsiElement> getDeclarations() {
-        ArrayList<Perl6PsiElement> decls = new ArrayList<>();
-        for (Perl6Statement statement : findChildrenByClass(Perl6Statement.class))
-            decls.addAll(statement.getDeclarations());
-        return decls;
-    }
 }

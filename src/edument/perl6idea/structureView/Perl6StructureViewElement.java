@@ -24,10 +24,18 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
     @Override
     public TreeElement[] getChildren() {
         List<StructureViewTreeElement> structureElements = new ArrayList<>();
-        if (element instanceof Perl6PsiDeclarationHolder)
-            for (Perl6PsiElement child : ((Perl6PsiDeclarationHolder)element).getDeclarations())
-                structureElements.add(new Perl6StructureViewElement(child));
+        if (element instanceof Perl6PsiScope)
+            for (Perl6PsiElement child : ((Perl6PsiScope)element).getDeclarations())
+                if (applicable(child))
+                    structureElements.add(new Perl6StructureViewElement(child));
         return structureElements.toArray(StructureViewTreeElement.EMPTY_ARRAY);
+    }
+
+    private boolean applicable(Perl6PsiElement child) {
+        return child instanceof Perl6File ||
+                child instanceof Perl6PackageDecl ||
+                child instanceof Perl6RoutineDecl ||
+                child instanceof Perl6RegexDecl;
     }
 
     @NotNull
@@ -109,26 +117,6 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                 @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
-                    return PlatformIcons.METHOD_ICON;
-                }
-            };
-        if (element instanceof Perl6LongName)
-            return new ItemPresentation() {
-                @Nullable
-                @Override
-                public String getPresentableText() {
-                    return element.getText();
-                }
-
-                @Nullable
-                @Override
-                public String getLocationString() {
-                    return null;
-                }
-
-                @Nullable
-                @Override
-                public Icon getIcon(boolean unused) {
                     return PlatformIcons.METHOD_ICON;
                 }
             };

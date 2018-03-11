@@ -12,23 +12,4 @@ public class Perl6StatementImpl extends ASTWrapperPsiElement implements Perl6Sta
     public Perl6StatementImpl(@NotNull ASTNode node) {
         super(node);
     }
-
-    @Override
-    public List<Perl6PsiElement> getDeclarations() {
-        ArrayList<Perl6PsiElement> decls = new ArrayList<>();
-        Perl6PsiElement consider = findChildByClass(Perl6PsiElement.class);
-        if (consider != null) {
-            if (consider instanceof Perl6PackageDecl)
-                decls.add(consider);
-            else if (consider instanceof Perl6RegexDecl)
-                decls.add(consider);
-            else if (consider instanceof Perl6RoutineDecl)
-                decls.add(consider);
-            else if (consider instanceof Perl6ScopedDecl)
-                decls.addAll(((Perl6ScopedDecl)consider).getDeclarations());
-            else if (consider instanceof Perl6MultiDecl)
-                decls.addAll(((Perl6MultiDecl)consider).getDeclarations());
-        }
-        return decls;
-    }
 }

@@ -14,12 +14,4 @@ public class Perl6BlockImpl extends ASTWrapperPsiElement implements Perl6Block {
     public Perl6BlockImpl(@NotNull ASTNode node) {
         super(node);
     }
-
-    @Override
-    public List<Perl6PsiElement> getDeclarations() {
-        Perl6StatementList statementList = findChildByClass(Perl6StatementList.class);
-        return statementList != null
-                ? statementList.getDeclarations()
-                : new ArrayList<>();
-    }
 }
