@@ -3313,6 +3313,11 @@ grammar MAIN {
     }
 
     token dotty {
+        # We try to highlight . as a method call operator when there's not
+        # something after it that could not possibly result in parsing a
+        # method call. If this causes too many issues, we can switch to a
+        # further lookahead and not trying to do that.
+        <!before ['.' [ '.' || \s || \d ]]>
         <.start-element('METHOD_CALL')>
         <.start-token('METHOD_CALL_OPERATOR')>
         '.' [ <[+*?=]> || '^' ]?
