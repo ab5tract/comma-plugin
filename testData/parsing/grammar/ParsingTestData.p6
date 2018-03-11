@@ -9,6 +9,9 @@ grammar Foo {
     }
 
     method panic($message) {
+        sub foo () {
+
+        }
         die $message;
     }
 
