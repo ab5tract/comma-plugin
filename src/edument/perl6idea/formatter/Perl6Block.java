@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCK;
+import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCKOID;
 import static edument.perl6idea.parsing.Perl6ElementTypes.STATEMENT_LIST;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
@@ -37,10 +37,9 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             return EMPTY;
         final ArrayList<Block> children = new ArrayList<>();
         for (ASTNode child = getNode().getFirstChildNode(); child != null; child = child.getTreeNext()) {
-            if (FormatterUtil.containsWhiteSpacesOnly(child) ||
-                    WHITESPACES.contains(child.getElementType())) continue;
-            final Perl6Block childBlock = new Perl6Block(child, null,
-                    null, mySettings);
+            if (WHITESPACES.contains(child.getElementType()))
+                continue;
+            final Perl6Block childBlock = new Perl6Block(child, null, null, mySettings);
             childBlock.setParent(this);
             children.add(childBlock);
         }
@@ -60,9 +59,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     @Override
     public Indent getIndent() {
-        if (myNode.getElementType() == STATEMENT_LIST &&
-                myNode.getTreeParent().getElementType() == BLOCK) {
-            return Indent.getNormalIndent();
+        if (myNode.getElementType() == STATEMENT_LIST && myNode.getTreeParent().getElementType() == BLOCKOID) {
+            return Indent.getSmartIndent(Indent.Type.NORMAL);
         }
         return Indent.getNoneIndent();
     }
@@ -70,11 +68,11 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     @NotNull
     @Override
     public ChildAttributes getChildAttributes(final int newIndex) {
-        Block block = getSubBlocks().get(newIndex - 1);
-        if (((Perl6Block) block).getNode().getText().equals("{")) {
-            return new ChildAttributes(Indent.getNormalIndent(), null);
-        }
-        return new ChildAttributes(Indent.getNoneIndent(), null);
+        return new ChildAttributes(
+                myNode.getElementType() == BLOCKOID
+                    ? Indent.getNormalIndent()
+                    : Indent.getNoneIndent(),
+                null);
     }
 
     @Override

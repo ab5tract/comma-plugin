@@ -11049,23 +11049,23 @@ public class Perl6Parser implements PsiParser {
     private boolean statementlist_125(PsiBuilder builder) {
         OPP opp;
         opp = null;
-        PsiBuilder.Marker marker1;
-        marker1 = builder.mark();
-        PsiBuilder.Marker altMarker3;
-        altMarker3 = builder.mark();
+        PsiBuilder.Marker altMarker2;
+        altMarker2 = builder.mark();
         if (this.statementlist_125_alt_2(builder, opp)) {
-            altMarker3.drop();
+            altMarker2.drop();
         } else {
-            altMarker3.rollbackTo();
-            PsiBuilder.Marker altMarker2;;
-            altMarker2 = builder.mark();
+            altMarker2.rollbackTo();
+            PsiBuilder.Marker altMarker1;;
+            altMarker1 = builder.mark();
             if (this.statementlist_125_alt_1(builder, opp)) {
-                altMarker2.drop();
+                altMarker1.drop();
             } else {
-                altMarker2.rollbackTo();
+                altMarker1.rollbackTo();
                 return false;
             }
         }
+        PsiBuilder.Marker marker3;
+        marker3 = builder.mark();
         while (true) {
             PsiBuilder.Marker quantMarker7;;
             quantMarker7 = builder.mark();
@@ -11076,7 +11076,7 @@ public class Perl6Parser implements PsiParser {
                 break;
             }
         }
-        marker1.done(Perl6ElementTypes.STATEMENT_LIST);
+        marker3.done(Perl6ElementTypes.STATEMENT_LIST);
         return true;
     }
 

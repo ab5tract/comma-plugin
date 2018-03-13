@@ -211,8 +211,8 @@ grammar MAIN {
     ## Top-level structure
 
     token statementlist {
-        <.start-element('STATEMENT_LIST')>
         [<.ws> || $]
+        <.start-element('STATEMENT_LIST')>
         [
             <!before $ || <[\)\]\}]> >
             <.start-element('STATEMENT')>
