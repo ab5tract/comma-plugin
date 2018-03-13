@@ -35,6 +35,7 @@
     <lang.psiStructureViewFactory language="Perl6" implementationClass="edument.perl6idea.structureView.Perl6StructureViewFactory"/>
     <lang.commenter language="Perl6" implementationClass="edument.perl6idea.editor.Perl6Commenter"/>
     <lang.foldingBuilder language="Perl6" implementationClass="edument.perl6idea.editor.Perl6FoldingBuilder"/>
+    <typedHandler implementation="edument.perl6idea.editor.SigilCompletionAutoPopupHandler"/>
   </extensions>
 
   <actions>

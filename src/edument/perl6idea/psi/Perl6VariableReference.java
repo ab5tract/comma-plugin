@@ -8,7 +8,10 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
     public Perl6VariableReference(Perl6Variable var) {
@@ -37,6 +40,26 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        return new Object[0];
+        Perl6Variable var = (Perl6Variable)getElement();
+        Perl6PsiScope scope = PsiTreeUtil.getParentOfType(var, Perl6PsiScope.class);
+        Set<String> seen = new HashSet<>();
+        List<PsiElement> results = new ArrayList<>();
+        while (scope != null) {
+            List<Perl6PsiElement> decls = scope.getDeclarations();
+            for (Perl6PsiElement decl : decls) {
+                if (decl instanceof Perl6VariableDecl || decl instanceof Perl6ParameterVariable) {
+                    PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
+                    if (ident != null) {
+                        String name = ident.getText();
+                        if (!seen.contains(name)) {
+                            results.add(decl);
+                            seen.add(name);
+                        }
+                    }
+                }
+            }
+            scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
+        }
+        return results.toArray();
     }
 }
