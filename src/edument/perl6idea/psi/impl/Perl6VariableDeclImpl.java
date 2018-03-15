@@ -4,7 +4,6 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6Variable;
 import edument.perl6idea.psi.Perl6VariableDecl;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +21,6 @@ public class Perl6VariableDeclImpl extends ASTWrapperPsiElement implements Perl6
         return varNode != null ? varNode.getVariableToken() : null;
     }
 
-    @NotNull
     @Override
     public String getName() {
         PsiElement nameIdent = getNameIdentifier();
