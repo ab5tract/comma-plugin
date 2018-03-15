@@ -7,7 +7,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.FoldingGroup;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.Perl6Block;
+import edument.perl6idea.psi.Perl6Blockoid;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,8 +26,8 @@ public class Perl6FoldingBuilder extends FoldingBuilderEx {
     }
 
     private void getLevelFolding(@NotNull PsiElement root, int recursionLevel, List<FoldingDescriptor> descriptors) {
-        Collection<Perl6Block> blocks = PsiTreeUtil.findChildrenOfType(root, Perl6Block.class);
-        for (final Perl6Block block : blocks) {
+        Collection<Perl6Blockoid> blocks = PsiTreeUtil.findChildrenOfType(root, Perl6Blockoid.class);
+        for (final Perl6Blockoid block : blocks) {
             descriptors.add(new FoldingDescriptor(block.getNode(),
                     block.getTextRange(), FoldingGroup.newGroup("perl6-" + recursionLevel)));
             getLevelFolding(block, recursionLevel + 1, descriptors);
