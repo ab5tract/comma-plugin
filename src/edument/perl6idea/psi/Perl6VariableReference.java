@@ -28,8 +28,14 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
             for (Perl6PsiElement decl : decls) {
                 if (decl instanceof PsiNameIdentifierOwner) {
                     PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
-                    if (ident != null && ident.getText().equals(var.getText()))
-                        return ident;
+                    if (ident != null) {
+                        if (ident.getText().equals(var.getText()))
+                            return ident;
+                        Perl6ScopedDecl scopeDecl = PsiTreeUtil.getParentOfType(ident, Perl6ScopedDecl.class);
+                        if (scopeDecl != null && scopeDecl.getText().startsWith("has"))
+                            if (ident.getText().replace(".", "!").equals(var.getText()))
+                                return ident;
+                    }
                 }
             }
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
