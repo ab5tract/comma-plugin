@@ -13,8 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCKOID;
-import static edument.perl6idea.parsing.Perl6ElementTypes.STATEMENT_LIST;
+import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 class Perl6Block extends AbstractBlock implements BlockWithParent {
@@ -59,10 +58,24 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     @Override
     public Indent getIndent() {
-        if (myNode.getElementType() == STATEMENT_LIST && myNode.getTreeParent().getElementType() == BLOCKOID) {
-            return Indent.getSmartIndent(Indent.Type.NORMAL);
-        }
+        if (myNode.getElementType() == STATEMENT_LIST && myNode.getTreeParent().getElementType() == BLOCKOID)
+            return Indent.getNormalIndent();
+        if (inStatementContinuation())
+            return Indent.getContinuationWithoutFirstIndent();
         return Indent.getNoneIndent();
+    }
+
+    private boolean inStatementContinuation() {
+        ASTNode curNode = myNode;
+        while (curNode != null && curNode.getElementType() != BLOCKOID) {
+            if (curNode.getElementType() == STATEMENT) {
+                int nodeOffset = myNode.getStartOffset() - curNode.getStartOffset();
+                String statementPrefix = curNode.getText().substring(0, nodeOffset);
+                return statementPrefix.contains("\n");
+            }
+            curNode = curNode.getTreeParent();
+        }
+        return false;
     }
 
     @NotNull
@@ -71,7 +84,9 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         return new ChildAttributes(
                 myNode.getElementType() == BLOCKOID
                     ? Indent.getNormalIndent()
-                    : Indent.getNoneIndent(),
+                    : myNode.getElementType() == FILE || myNode.getElementType() == STATEMENT_LIST
+                        ? Indent.getNoneIndent()
+                        : Indent.getContinuationWithoutFirstIndent(),
                 null);
     }
 
