@@ -3077,9 +3077,9 @@ grammar MAIN {
            [ <.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')> ]?
            <.end-element('PARENTHESIZED_EXPRESSION')>
         || <.start-element('ARRAY_COMPOSER')>
-           <.start-token('ARRAY_COMPOSER')> '[' <.end-token('ARRAY_COMPOSER')>
+           <.start-token('ARRAY_COMPOSER_OPEN')> '[' <.end-token('ARRAY_COMPOSER_OPEN')>
            <.semilist>
-           [ <.start-token('ARRAY_COMPOSER')> ']' <.end-token('ARRAY_COMPOSER')> ]?
+           [ <.start-token('ARRAY_COMPOSER_CLOSE')> ']' <.end-token('ARRAY_COMPOSER_CLOSE')> ]?
            <.end-element('ARRAY_COMPOSER')>
         || <?[{]>
            <.start-token('BARE_BLOCK')> <?> <.end-token('BARE_BLOCK')>
@@ -3387,67 +3387,67 @@ grammar MAIN {
         :my $*Q_FUNCTIONS = 0;
         [
         || <.start-element('ARRAY_INDEX')>
-           <.start-token('ARRAY_INDEX_BRACKET')>
+           <.start-token('ARRAY_INDEX_BRACKET_OPEN')>
            '['
-           <.end-token('ARRAY_INDEX_BRACKET')>
+           <.end-token('ARRAY_INDEX_BRACKET_OPEN')>
            [
                <.semilist>
                [
-                   <.start-token('ARRAY_INDEX_BRACKET')>
+                   <.start-token('ARRAY_INDEX_BRACKET_CLOSE')>
                    ']'
-                   <.end-token('ARRAY_INDEX_BRACKET')>
+                   <.end-token('ARRAY_INDEX_BRACKET_CLOSE')>
                ]?
            ]?
            <.end-element('ARRAY_INDEX')>
         || <.start-element('HASH_INDEX')>
-           <.start-token('HASH_INDEX_BRACKET')>
+           <.start-token('HASH_INDEX_BRACKET_OPEN')>
            '{'
-           <.end-token('HASH_INDEX_BRACKET')>
+           <.end-token('HASH_INDEX_BRACKET_OPEN')>
            [
                <.semilist>
                [
-                   <.start-token('HASH_INDEX_BRACKET')>
+                   <.start-token('HASH_INDEX_BRACKET_CLOSE')>
                    '}'
-                   <.end-token('HASH_INDEX_BRACKET')>
+                   <.end-token('HASH_INDEX_BRACKET_CLOSE')>
                ]?
            ]?
            <.end-element('HASH_INDEX')>
         || <.start-element('HASH_INDEX')>
-           <.start-token('HASH_INDEX_BRACKET')>
+           <.start-token('HASH_INDEX_BRACKET_OPEN')>
            '<<'
-           <.end-token('HASH_INDEX_BRACKET')>
+           <.end-token('HASH_INDEX_BRACKET_OPEN')>
            [
                <.quote_qq('<<', '>>', '>>')>
                [
-                   <.start-token('HASH_INDEX_BRACKET')>
+                   <.start-token('HASH_INDEX_BRACKET_CLOSE')>
                    '>>'
-                   <.end-token('HASH_INDEX_BRACKET')>
+                   <.end-token('HASH_INDEX_BRACKET_CLOSE')>
                ]?
            ]?
            <.end-element('HASH_INDEX')>
         || <.start-element('HASH_INDEX')>
-           <.start-token('HASH_INDEX_BRACKET')>
+           <.start-token('HASH_INDEX_BRACKET_OPEN')>
            '«'
-           <.end-token('HASH_INDEX_BRACKET')>
+           <.end-token('HASH_INDEX_BRACKET_OPEN')>
            [
                <.quote_qq('«', '»', '»')>
                [
-                   <.start-token('HASH_INDEX_BRACKET')>
+                   <.start-token('HASH_INDEX_BRACKET_CLOSE')>
                    '»'
-                   <.end-token('HASH_INDEX_BRACKET')>
+                   <.end-token('HASH_INDEX_BRACKET_CLOSE')>
                ]?
            ]?
            <.end-element('HASH_INDEX')>
         || <.start-element('HASH_INDEX')>
-           <.start-token('HASH_INDEX_BRACKET')>
+           <.start-token('HASH_INDEX_BRACKET_OPEN')>
            '<'
-           <.end-token('HASH_INDEX_BRACKET')>
+           <.end-token('HASH_INDEX_BRACKET_OPEN')>
            [
                <.quote_q('<', '>', '>')>
                [
-                   <.start-token('HASH_INDEX_BRACKET')>
+                   <.start-token('HASH_INDEX_BRACKET_CLOSE')>
                    '>'
-                   <.end-token('HASH_INDEX_BRACKET')>
+                   <.end-token('HASH_INDEX_BRACKET_CLOSE')>
                ]?
            ]?
            <.end-element('HASH_INDEX')>
@@ -4034,14 +4034,14 @@ grammar MAIN {
            <.end-token('REGEX_BUILTIN_CCLASS')>
            <.end-element('REGEX_BUILTIN_CCLASS')>
         || <.start-element('REGEX_GROUP')>
-           <.start-token('REGEX_GROUP_BRACKET')>
+           <.start-token('REGEX_GROUP_BRACKET_OPEN')>
            '['
-           <.end-token('REGEX_GROUP_BRACKET')>
+           <.end-token('REGEX_GROUP_BRACKET_OPEN')>
            <.regex_nibbler_fresh_rx($*RX_S)>?
            [
-               <.start-token('REGEX_GROUP_BRACKET')>
+               <.start-token('REGEX_GROUP_BRACKET_CLOSE')>
                ']'
-               <.end-token('REGEX_GROUP_BRACKET')>
+               <.end-token('REGEX_GROUP_BRACKET_CLOSE')>
            ]?
            <.end-element('REGEX_GROUP')>
         || <.start-element('REGEX_CAPTURE_POSITIONAL')>
@@ -4058,14 +4058,14 @@ grammar MAIN {
         || <?before '\\' .> <.backslash> <.SIGOK>
         || <?before '<' \s > <.rxqw> <.SIGOK>
         || <.start-element('REGEX_ASSERTION')>
-           <.start-token('REGEX_ASSERTION_ANGLE')>
+           <.start-token('REGEX_ASSERTION_ANGLE_OPEN')>
            '<'
-           <.end-token('REGEX_ASSERTION_ANGLE')>
+           <.end-token('REGEX_ASSERTION_ANGLE_OPEN')>
            <.assertion(0)>
            [
-           <.start-token('REGEX_ASSERTION_ANGLE')>
+           <.start-token('REGEX_ASSERTION_ANGLE_CLOSE')>
            '>'
-           <.end-token('REGEX_ASSERTION_ANGLE')>
+           <.end-token('REGEX_ASSERTION_ANGLE_CLOSE')>
            <.SIGOK>
            ]?
            <.end-element('REGEX_ASSERTION')>

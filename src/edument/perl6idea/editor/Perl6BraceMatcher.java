@@ -18,7 +18,12 @@ public class Perl6BraceMatcher implements PairedBraceMatcher {
                 new BracePair(Perl6TokenTypes.PARENTHESES_OPEN, Perl6TokenTypes.PARENTHESES_CLOSE, false),
                 new BracePair(Perl6TokenTypes.SIGNATURE_BRACKET_OPEN, Perl6TokenTypes.SIGNATURE_BRACKET_CLOSE, false),
                 new BracePair(Perl6TokenTypes.TYPE_COERCION_PARENTHESES_OPEN, Perl6TokenTypes.TYPE_COERCION_PARENTHESES_CLOSE, false),
-                new BracePair(Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_OPEN, Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_CLOSE, false)
+                new BracePair(Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_OPEN, Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_CLOSE, false),
+                new BracePair(Perl6TokenTypes.ARRAY_INDEX_BRACKET_OPEN, Perl6TokenTypes.ARRAY_INDEX_BRACKET_CLOSE, false),
+                new BracePair(Perl6TokenTypes.HASH_INDEX_BRACKET_OPEN, Perl6TokenTypes.HASH_INDEX_BRACKET_CLOSE, false),
+                new BracePair(Perl6TokenTypes.ARRAY_COMPOSER_OPEN, Perl6TokenTypes.ARRAY_COMPOSER_CLOSE, false),
+                new BracePair(Perl6TokenTypes.REGEX_GROUP_BRACKET_OPEN, Perl6TokenTypes.REGEX_GROUP_BRACKET_CLOSE, false),
+                new BracePair(Perl6TokenTypes.REGEX_ASSERTION_ANGLE_OPEN, Perl6TokenTypes.REGEX_ASSERTION_ANGLE_CLOSE, false)
         };
     }
 

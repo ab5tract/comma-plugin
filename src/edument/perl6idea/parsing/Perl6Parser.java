@@ -15180,7 +15180,7 @@ public class Perl6Parser implements PsiParser {
     private boolean postcircumfix_180_quant_3(PsiBuilder builder, OPP opp) {
         String tt4;
         tt4 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET) && (tt4.equals(">"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET_CLOSE) && (tt4.equals(">"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -15207,7 +15207,7 @@ public class Perl6Parser implements PsiParser {
         marker4 = builder.mark();
         String tt3;
         tt3 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET) && (tt3.equals("<"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET_OPEN) && (tt3.equals("<"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -15226,7 +15226,7 @@ public class Perl6Parser implements PsiParser {
     private boolean postcircumfix_180_quant_6(PsiBuilder builder, OPP opp) {
         String tt6;
         tt6 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET) && (tt6.equals("\u00BB"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET_CLOSE) && (tt6.equals("\u00BB"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -15253,7 +15253,7 @@ public class Perl6Parser implements PsiParser {
         marker8 = builder.mark();
         String tt5;
         tt5 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET) && (tt5.equals("\u00AB"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET_OPEN) && (tt5.equals("\u00AB"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -15272,7 +15272,7 @@ public class Perl6Parser implements PsiParser {
     private boolean postcircumfix_180_quant_9(PsiBuilder builder, OPP opp) {
         String tt8;
         tt8 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET) && (tt8.equals(">>"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET_CLOSE) && (tt8.equals(">>"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -15299,7 +15299,7 @@ public class Perl6Parser implements PsiParser {
         marker12 = builder.mark();
         String tt7;
         tt7 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET) && (tt7.equals("<<"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET_OPEN) && (tt7.equals("<<"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -15318,7 +15318,7 @@ public class Perl6Parser implements PsiParser {
     private boolean postcircumfix_180_quant_12(PsiBuilder builder, OPP opp) {
         String tt10;
         tt10 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET) && (tt10.equals("}"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET_CLOSE) && (tt10.equals("}"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -15345,7 +15345,7 @@ public class Perl6Parser implements PsiParser {
         marker16 = builder.mark();
         String tt9;
         tt9 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET) && (tt9.equals("{"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.HASH_INDEX_BRACKET_OPEN) && (tt9.equals("{"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -15364,7 +15364,7 @@ public class Perl6Parser implements PsiParser {
     private boolean postcircumfix_180_quant_15(PsiBuilder builder, OPP opp) {
         String tt12;
         tt12 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.ARRAY_INDEX_BRACKET) && (tt12.equals("]"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.ARRAY_INDEX_BRACKET_CLOSE) && (tt12.equals("]"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -15391,7 +15391,7 @@ public class Perl6Parser implements PsiParser {
         marker20 = builder.mark();
         String tt11;
         tt11 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.ARRAY_INDEX_BRACKET) && (tt11.equals("["))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.ARRAY_INDEX_BRACKET_OPEN) && (tt11.equals("["))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -17588,7 +17588,7 @@ public class Perl6Parser implements PsiParser {
     private boolean metachar_204_quant_9(PsiBuilder builder, OPP opp) {
         String tt4;
         tt4 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.REGEX_ASSERTION_ANGLE) && (tt4.equals(">"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.REGEX_ASSERTION_ANGLE_CLOSE) && (tt4.equals(">"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -17604,7 +17604,7 @@ public class Perl6Parser implements PsiParser {
         marker10 = builder.mark();
         String tt3;
         tt3 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.REGEX_ASSERTION_ANGLE) && (tt3.equals("<"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.REGEX_ASSERTION_ANGLE_OPEN) && (tt3.equals("<"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -17699,7 +17699,7 @@ public class Perl6Parser implements PsiParser {
     private boolean metachar_204_quant_17(PsiBuilder builder, OPP opp) {
         String tt8;
         tt8 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.REGEX_GROUP_BRACKET) && (tt8.equals("]"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.REGEX_GROUP_BRACKET_CLOSE) && (tt8.equals("]"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -17712,7 +17712,7 @@ public class Perl6Parser implements PsiParser {
         marker19 = builder.mark();
         String tt7;
         tt7 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.REGEX_GROUP_BRACKET) && (tt7.equals("["))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.REGEX_GROUP_BRACKET_OPEN) && (tt7.equals("["))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -19198,7 +19198,7 @@ public class Perl6Parser implements PsiParser {
     private boolean circumfix_215_quant_11(PsiBuilder builder, OPP opp) {
         String tt8;
         tt8 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.ARRAY_COMPOSER) && (tt8.equals("]"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.ARRAY_COMPOSER_CLOSE) && (tt8.equals("]"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -19211,7 +19211,7 @@ public class Perl6Parser implements PsiParser {
         marker15 = builder.mark();
         String tt7;
         tt7 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.ARRAY_COMPOSER) && (tt7.equals("["))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.ARRAY_COMPOSER_OPEN) && (tt7.equals("["))) {
             builder.advanceLexer();
         } else {
             return false;

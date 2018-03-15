@@ -6,8 +6,10 @@ public interface Perl6TokenTypes {
     IElementType ARGLIST_EMPTY = new Perl6ElementType("ARGLIST_EMPTY");
     IElementType ARGLIST_END = new Perl6ElementType("ARGLIST_END");
     IElementType ARGLIST_START = new Perl6ElementType("ARGLIST_START");
-    IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
-    IElementType ARRAY_INDEX_BRACKET = new Perl6ElementType("ARRAY_INDEX_BRACKET");
+    IElementType ARRAY_COMPOSER_CLOSE = new Perl6ElementType("ARRAY_COMPOSER_CLOSE");
+    IElementType ARRAY_COMPOSER_OPEN = new Perl6ElementType("ARRAY_COMPOSER_OPEN");
+    IElementType ARRAY_INDEX_BRACKET_CLOSE = new Perl6ElementType("ARRAY_INDEX_BRACKET_CLOSE");
+    IElementType ARRAY_INDEX_BRACKET_OPEN = new Perl6ElementType("ARRAY_INDEX_BRACKET_OPEN");
     IElementType ASSIGN_METAOP = new Perl6ElementType("ASSIGN_METAOP");
     IElementType BAD_CHARACTER = TokenType.BAD_CHARACTER;
     IElementType BAD_ESCAPE = new Perl6ElementType("BAD_ESCAPE");
@@ -37,7 +39,8 @@ public interface Perl6TokenTypes {
     IElementType ESCAPE_HASH = new Perl6ElementType("ESCAPE_HASH");
     IElementType ESCAPE_SCALAR = new Perl6ElementType("ESCAPE_SCALAR");
     IElementType FAKE_INFIX = new Perl6ElementType("FAKE_INFIX");
-    IElementType HASH_INDEX_BRACKET = new Perl6ElementType("HASH_INDEX_BRACKET");
+    IElementType HASH_INDEX_BRACKET_CLOSE = new Perl6ElementType("HASH_INDEX_BRACKET_CLOSE");
+    IElementType HASH_INDEX_BRACKET_OPEN = new Perl6ElementType("HASH_INDEX_BRACKET_OPEN");
     IElementType HEREDOC = new Perl6ElementType("HEREDOC");
     IElementType HYPER_METAOP_MISSING = new Perl6ElementType("HYPER_METAOP_MISSING");
     IElementType HYPER_WHATEVER = new Perl6ElementType("HYPER_WHATEVER");
@@ -84,7 +87,8 @@ public interface Perl6TokenTypes {
     IElementType RADIX_NUMBER = new Perl6ElementType("RADIX_NUMBER");
     IElementType RAT_LITERAL = new Perl6ElementType("RAT_LITERAL");
     IElementType REGEX_ANCHOR = new Perl6ElementType("REGEX_ANCHOR");
-    IElementType REGEX_ASSERTION_ANGLE = new Perl6ElementType("REGEX_ASSERTION_ANGLE");
+    IElementType REGEX_ASSERTION_ANGLE_CLOSE = new Perl6ElementType("REGEX_ASSERTION_ANGLE_CLOSE");
+    IElementType REGEX_ASSERTION_ANGLE_OPEN = new Perl6ElementType("REGEX_ASSERTION_ANGLE_OPEN");
     IElementType REGEX_ASSERTION_END = new Perl6ElementType("REGEX_ASSERTION_END");
     IElementType REGEX_BACKSLASH_BAD = new Perl6ElementType("REGEX_BACKSLASH_BAD");
     IElementType REGEX_BUILTIN_CCLASS = new Perl6ElementType("REGEX_BUILTIN_CCLASS");
@@ -95,7 +99,8 @@ public interface Perl6TokenTypes {
     IElementType REGEX_CCLASS_INCOMPLETE = new Perl6ElementType("REGEX_CCLASS_INCOMPLETE");
     IElementType REGEX_CCLASS_SYNTAX = new Perl6ElementType("REGEX_CCLASS_SYNTAX");
     IElementType REGEX_DECLARATOR = new Perl6ElementType("REGEX_DECLARATOR");
-    IElementType REGEX_GROUP_BRACKET = new Perl6ElementType("REGEX_GROUP_BRACKET");
+    IElementType REGEX_GROUP_BRACKET_CLOSE = new Perl6ElementType("REGEX_GROUP_BRACKET_CLOSE");
+    IElementType REGEX_GROUP_BRACKET_OPEN = new Perl6ElementType("REGEX_GROUP_BRACKET_OPEN");
     IElementType REGEX_INFIX = new Perl6ElementType("REGEX_INFIX");
     IElementType REGEX_LOOKAROUND = new Perl6ElementType("REGEX_LOOKAROUND");
     IElementType REGEX_MISSING_ASSERTION = new Perl6ElementType("REGEX_MISSING_ASSERTION");
