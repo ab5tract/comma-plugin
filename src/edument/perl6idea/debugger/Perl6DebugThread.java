@@ -50,7 +50,8 @@ public class Perl6DebugThread extends Thread {
             ready = true;
             sendBreakpoints();
             setEventHandler();
-            client.resume().get(2, TimeUnit.SECONDS);
+            if (!runConfiguration.isStartSuspended())
+                client.resume().get(2, TimeUnit.SECONDS);
         } catch (CancellationException | InterruptedException | TimeoutException | ExecutionException e) {
             LOG.error(e);
         }
