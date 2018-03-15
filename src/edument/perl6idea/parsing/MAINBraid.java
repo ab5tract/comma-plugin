@@ -2765,7 +2765,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 4;
                 break;
             case 4:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 this.setArgs();
                 this.state = 5;
                 return 182;
@@ -4371,7 +4371,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
-                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET);
+                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET_OPEN);
                 if (!(this.literal("{"))) {
                     if (this.backtrack()) {
                         continue;
@@ -4477,7 +4477,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 11;
                 break;
             case 11:
-                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET);
+                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE);
                 if (!(this.literal("}"))) {
                     if (this.backtrack()) {
                         continue;
@@ -6324,7 +6324,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 4;
                 break;
             case 4:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -6557,7 +6557,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 32;
                 break;
             case 32:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -11265,7 +11265,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*GOAL", "");
                 this.bsFailMark(18);
                 this.bsMark(6);
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -11295,7 +11295,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 3;
                 break;
             case 3:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -11332,7 +11332,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -11362,7 +11362,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 10;
                 break;
             case 10:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -13314,7 +13314,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 17:
                 this.bsMark(33);
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -13344,7 +13344,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 20;
                 break;
             case 20:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -14144,7 +14144,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 6;
                 break;
             case 6:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -14174,7 +14174,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 9;
                 break;
             case 9:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -14396,7 +14396,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 6;
                 break;
             case 6:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -14426,7 +14426,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 9;
                 break;
             case 9:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -14598,7 +14598,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET);
+                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET_OPEN);
                 if (!(this.literal("{"))) {
                     if (this.backtrack()) {
                         continue;
@@ -14650,7 +14650,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET);
+                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE);
                 if (!(this.literal("}"))) {
                     if (this.backtrack()) {
                         continue;
@@ -15746,7 +15746,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.checkArgs(0);
                 this.bsFailMark(26);
                 this.bsMark(6);
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.SIGNATURE_BRACKET_OPEN);
                 if (!(this.literal("["))) {
                     if (this.backtrack()) {
                         continue;
@@ -15776,7 +15776,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 3;
                 break;
             case 3:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.SIGNATURE_BRACKET_CLOSE);
                 if (!(this.literal("]"))) {
                     if (this.backtrack()) {
                         continue;
@@ -15799,7 +15799,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 6:
                 this.bsMark(12);
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -15829,7 +15829,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 9;
                 break;
             case 9:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -16479,7 +16479,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*IN_DECL", "");
                 this.bsFailMark(18);
                 this.bsMark(6);
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.SIGNATURE_BRACKET_OPEN);
                 if (!(this.literal("["))) {
                     if (this.backtrack()) {
                         continue;
@@ -16509,7 +16509,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 3;
                 break;
             case 3:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.SIGNATURE_BRACKET_CLOSE);
                 if (!(this.literal("]"))) {
                     if (this.backtrack()) {
                         continue;
@@ -16532,7 +16532,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 6:
                 this.bsMark(12);
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -16562,7 +16562,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 9;
                 break;
             case 9:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -17706,7 +17706,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 6;
                 break;
             case 6:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -17736,7 +17736,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 9;
                 break;
             case 9:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -17812,7 +17812,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 19;
                 break;
             case 19:
-                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET);
+                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET_OPEN);
                 if (!(this.literal("{"))) {
                     if (this.backtrack()) {
                         continue;
@@ -17935,7 +17935,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 32;
                 break;
             case 32:
-                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET);
+                this.startToken(Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE);
                 if (!(this.literal("}"))) {
                     if (this.backtrack()) {
                         continue;
@@ -21720,7 +21720,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 22;
                 break;
             case 22:
-                this.startToken(Perl6TokenTypes.TYPE_COERCION_PARENTHESES);
+                this.startToken(Perl6TokenTypes.TYPE_COERCION_PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -21785,7 +21785,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 }
                 this.bsFailMark(32);
                 this.bsMark(30);
-                this.startToken(Perl6TokenTypes.TYPE_COERCION_PARENTHESES);
+                this.startToken(Perl6TokenTypes.TYPE_COERCION_PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22003,7 +22003,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_SYNTAX);
                 if (!(this.literal("Q"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22065,7 +22065,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_SYNTAX);
                 if (!(this.literal("qq"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22135,7 +22135,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_SYNTAX);
                 if (!(this.literal("q"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22192,7 +22192,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 18:
                 this.bsMark(24);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("'"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22222,7 +22222,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 21;
                 break;
             case 21:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal("'"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22245,7 +22245,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 24:
                 this.bsMark(30);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u2018"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22275,7 +22275,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 27;
                 break;
             case 27:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal("\u2019"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22298,7 +22298,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 30:
                 this.bsMark(36);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u201A"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22328,7 +22328,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 33;
                 break;
             case 33:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.inCharList("\u2019\u2018"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22351,7 +22351,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 36:
                 this.bsMark(42);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u2019"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22381,7 +22381,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 39;
                 break;
             case 39:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.inCharList("\u2019\u2018"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22404,7 +22404,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 42:
                 this.bsMark(48);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\""))) {
                     if (this.backtrack()) {
                         continue;
@@ -22434,7 +22434,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 45;
                 break;
             case 45:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal("\""))) {
                     if (this.backtrack()) {
                         continue;
@@ -22457,7 +22457,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 48:
                 this.bsMark(54);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u201C"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22487,7 +22487,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 51;
                 break;
             case 51:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal("\u201D"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22510,7 +22510,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 54:
                 this.bsMark(60);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u201E"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22540,7 +22540,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 57;
                 break;
             case 57:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.inCharList("\u201D\u201C"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22563,7 +22563,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 60:
                 this.bsMark(66);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u201D"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22593,7 +22593,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 63;
                 break;
             case 63:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.inCharList("\u201D\u201C"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22615,7 +22615,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 66:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\uFF62"))) {
                     if (this.backtrack()) {
                         continue;
@@ -22645,7 +22645,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 69;
                 break;
             case 69:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal("\uFF63"))) {
                     if (this.backtrack()) {
                         continue;
@@ -23601,7 +23601,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.interpolate("$*STARTER"))) {
                     if (this.backtrack()) {
                         continue;
@@ -23665,7 +23665,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 12;
                 break;
             case 12:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 this.setArgs();
                 this.state = 13;
                 return 182;
@@ -23706,7 +23706,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.interpolate("$*STARTER"))) {
                     if (this.backtrack()) {
                         continue;
@@ -23736,7 +23736,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 20;
                 break;
             case 20:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.interpolate("$*STOPPER"))) {
                     if (this.backtrack()) {
                         continue;
@@ -25625,7 +25625,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 }
                 this.bsFailMark(11);
                 this.bsMark(7);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 this.setArgs();
                 this.state = 2;
                 return 181;
@@ -25658,7 +25658,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 this.setArgs();
                 this.state = 5;
                 return 182;
@@ -26925,7 +26925,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*Q_FUNCTIONS", 0);
                 this.bsFailMark(39);
                 this.bsMark(6);
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -26955,7 +26955,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 3;
                 break;
             case 3:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -27063,7 +27063,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 15:
                 this.bsMark(23);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("<<"))) {
                     if (this.backtrack()) {
                         continue;
@@ -27097,7 +27097,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 19;
                 break;
             case 19:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal(">>"))) {
                     if (this.backtrack()) {
                         continue;
@@ -27125,7 +27125,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 23:
                 this.bsMark(31);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u00AB"))) {
                     if (this.backtrack()) {
                         continue;
@@ -27159,7 +27159,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 27;
                 break;
             case 27:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal("\u00BB"))) {
                     if (this.backtrack()) {
                         continue;
@@ -27186,7 +27186,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 31:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("<"))) {
                     if (this.backtrack()) {
                         continue;
@@ -27220,7 +27220,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 35;
                 break;
             case 35:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal(">"))) {
                     if (this.backtrack()) {
                         continue;
@@ -29572,7 +29572,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 40:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -29602,7 +29602,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 43;
                 break;
             case 43:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -35378,7 +35378,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 58:
                 this.bsMark(66);
-                this.startToken(Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES);
+                this.startToken(Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -35417,7 +35417,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 63;
                 break;
             case 63:
-                this.startToken(Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES);
+                this.startToken(Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -35881,7 +35881,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*Q_FUNCTIONS", 0);
                 this.bsFailMark(24);
                 this.bsMark(6);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("'"))) {
                     if (this.backtrack()) {
                         continue;
@@ -35911,7 +35911,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 3;
                 break;
             case 3:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal("'"))) {
                     if (this.backtrack()) {
                         continue;
@@ -35934,7 +35934,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 6:
                 this.bsMark(12);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u2018"))) {
                     if (this.backtrack()) {
                         continue;
@@ -35964,7 +35964,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 9;
                 break;
             case 9:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal("\u2019"))) {
                     if (this.backtrack()) {
                         continue;
@@ -35987,7 +35987,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 12:
                 this.bsMark(18);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u201A"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36017,7 +36017,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 15;
                 break;
             case 15:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.inCharList("\u2019\u2018"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36039,7 +36039,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 18:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u2019"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36069,7 +36069,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 21;
                 break;
             case 21:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.inCharList("\u2019\u2018"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36111,7 +36111,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*Q_FUNCTIONS", 0);
                 this.bsFailMark(24);
                 this.bsMark(6);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\""))) {
                     if (this.backtrack()) {
                         continue;
@@ -36141,7 +36141,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 3;
                 break;
             case 3:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal("\""))) {
                     if (this.backtrack()) {
                         continue;
@@ -36164,7 +36164,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 6:
                 this.bsMark(12);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u201C"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36194,7 +36194,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 9;
                 break;
             case 9:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal("\u201D"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36217,7 +36217,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 12:
                 this.bsMark(18);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u201E"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36247,7 +36247,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 15;
                 break;
             case 15:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.inCharList("\u201D\u201C"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36269,7 +36269,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 18:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u201D"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36299,7 +36299,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 21;
                 break;
             case 21:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.inCharList("\u201D\u201C"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36339,7 +36339,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*Q_ARRAYS", 0);
                 this.declareDynamicVariable("$*Q_HASHES", 0);
                 this.declareDynamicVariable("$*Q_FUNCTIONS", 0);
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("<"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36369,7 +36369,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 3;
                 break;
             case 3:
-                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE);
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 if (!(this.literal(">"))) {
                     if (this.backtrack()) {
                         continue;
@@ -36935,7 +36935,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 28:
                 this.bsMark(34);
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -36965,7 +36965,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 31;
                 break;
             case 31:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
@@ -37147,7 +37147,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 49:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -37177,7 +37177,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 52;
                 break;
             case 52:
-                this.startToken(Perl6TokenTypes.PARENTHESES);
+                this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;

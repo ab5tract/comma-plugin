@@ -12,7 +12,8 @@ public interface Perl6TokenTypes {
     IElementType BAD_CHARACTER = TokenType.BAD_CHARACTER;
     IElementType BAD_ESCAPE = new Perl6ElementType("BAD_ESCAPE");
     IElementType BARE_BLOCK = new Perl6ElementType("BARE_BLOCK");
-    IElementType BLOCK_CURLY_BRACKET = new Perl6ElementType("BLOCK_CURLY_BRACKET");
+    IElementType BLOCK_CURLY_BRACKET_CLOSE = new Perl6ElementType("BLOCK_CURLY_BRACKET_CLOSE");
+    IElementType BLOCK_CURLY_BRACKET_OPEN = new Perl6ElementType("BLOCK_CURLY_BRACKET_OPEN");
     IElementType BRACKETED_INFIX_INCOMPLETE = new Perl6ElementType("BRACKETED_INFIX_INCOMPLETE");
     IElementType CAPTURE_INVALID = new Perl6ElementType("CAPTURE_INVALID");
     IElementType CAPTURE_TERM = new Perl6ElementType("CAPTURE_TERM");
@@ -71,7 +72,8 @@ public interface Perl6TokenTypes {
     IElementType PARAMETER_INCOMPLETE = new Perl6ElementType("PARAMETER_INCOMPLETE");
     IElementType PARAMETER_QUANTIFIER = new Perl6ElementType("PARAMETER_QUANTIFIER");
     IElementType PARAMETER_SEPARATOR = new Perl6ElementType("PARAMETER_SEPARATOR");
-    IElementType PARENTHESES = new Perl6ElementType("PARENTHESES");
+    IElementType PARENTHESES_CLOSE = new Perl6ElementType("PARENTHESES_CLOSE");
+    IElementType PARENTHESES_OPEN = new Perl6ElementType("PARENTHESES_OPEN");
     IElementType PHASER = new Perl6ElementType("PHASER");
     IElementType POSTFIX = new Perl6ElementType("POSTFIX");
     IElementType POSTFIX_INTERPOLATIN = new Perl6ElementType("POSTFIX_INTERPOLATIN");
@@ -87,7 +89,8 @@ public interface Perl6TokenTypes {
     IElementType REGEX_BACKSLASH_BAD = new Perl6ElementType("REGEX_BACKSLASH_BAD");
     IElementType REGEX_BUILTIN_CCLASS = new Perl6ElementType("REGEX_BUILTIN_CCLASS");
     IElementType REGEX_CAPTURE_NAME = new Perl6ElementType("REGEX_CAPTURE_NAME");
-    IElementType REGEX_CAPTURE_PARENTHESES = new Perl6ElementType("REGEX_CAPTURE_PARENTHESES");
+    IElementType REGEX_CAPTURE_PARENTHESES_CLOSE = new Perl6ElementType("REGEX_CAPTURE_PARENTHESES_CLOSE");
+    IElementType REGEX_CAPTURE_PARENTHESES_OPEN = new Perl6ElementType("REGEX_CAPTURE_PARENTHESES_OPEN");
     IElementType REGEX_CCLASS_ATOM = new Perl6ElementType("REGEX_CCLASS_ATOM");
     IElementType REGEX_CCLASS_INCOMPLETE = new Perl6ElementType("REGEX_CCLASS_INCOMPLETE");
     IElementType REGEX_CCLASS_SYNTAX = new Perl6ElementType("REGEX_CCLASS_SYNTAX");
@@ -112,6 +115,8 @@ public interface Perl6TokenTypes {
     IElementType SELF = new Perl6ElementType("SELF");
     IElementType SEMI_LIST_END = new Perl6ElementType("SEMI_LIST_END");
     IElementType SHAPE_DECLARATION = new Perl6ElementType("SHAPE_DECLARATION");
+    IElementType SIGNATURE_BRACKET_CLOSE = new Perl6ElementType("SIGNATURE_BRACKET_CLOSE");
+    IElementType SIGNATURE_BRACKET_OPEN = new Perl6ElementType("SIGNATURE_BRACKET_OPEN");
     IElementType SIMPLE_CONTEXTUALIZER = new Perl6ElementType("SIMPLE_CONTEXTUALIZER");
     IElementType STATEMENT_CONTROL = new Perl6ElementType("STATEMENT_CONTROL");
     IElementType STATEMENT_MOD_COND = new Perl6ElementType("STATEMENT_MOD_COND");
@@ -120,7 +125,9 @@ public interface Perl6TokenTypes {
     IElementType STATEMENT_TERMINATOR = new Perl6ElementType("STATEMENT_TERMINATOR");
     IElementType STRING_LITERAL_CHAR = new Perl6ElementType("STRING_LITERAL_CHAR");
     IElementType STRING_LITERAL_ESCAPE = new Perl6ElementType("STRING_LITERAL_ESCAPE");
-    IElementType STRING_LITERAL_QUOTE = new Perl6ElementType("STRING_LITERAL_QUOTE");
+    IElementType STRING_LITERAL_QUOTE_CLOSE = new Perl6ElementType("STRING_LITERAL_QUOTE_CLOSE");
+    IElementType STRING_LITERAL_QUOTE_OPEN = new Perl6ElementType("STRING_LITERAL_QUOTE_OPEN");
+    IElementType STRING_LITERAL_QUOTE_SYNTAX = new Perl6ElementType("STRING_LITERAL_QUOTE_SYNTAX");
     IElementType STUB_CODE = new Perl6ElementType("STUB_CODE");
     IElementType SUBSET_ANON = new Perl6ElementType("SUBSET_ANON");
     IElementType SUBSET_INCOMPLETE = new Perl6ElementType("SUBSET_INCOMPLETE");
@@ -136,7 +143,8 @@ public interface Perl6TokenTypes {
     IElementType TRANS_ESCAPE = new Perl6ElementType("TRANS_ESCAPE");
     IElementType TRANS_RANGE = new Perl6ElementType("TRANS_RANGE");
     IElementType TR_DISTINCT_START_STOP = new Perl6ElementType("TR_DISTINCT_START_STOP");
-    IElementType TYPE_COERCION_PARENTHESES = new Perl6ElementType("TYPE_COERCION_PARENTHESES");
+    IElementType TYPE_COERCION_PARENTHESES_CLOSE = new Perl6ElementType("TYPE_COERCION_PARENTHESES_CLOSE");
+    IElementType TYPE_COERCION_PARENTHESES_OPEN = new Perl6ElementType("TYPE_COERCION_PARENTHESES_OPEN");
     IElementType TYPE_DECLARATOR = new Perl6ElementType("TYPE_DECLARATOR");
     IElementType TYPE_PARAMETER_BRACKET = new Perl6ElementType("TYPE_PARAMETER_BRACKET");
     IElementType UNSP_WHITE_SPACE = new Perl6ElementType("UNSP_WHITE_SPACE");

@@ -13,9 +13,12 @@ public class Perl6BraceMatcher implements PairedBraceMatcher {
     @Override
     public BracePair[] getPairs() {
         return new BracePair[]{
-                new BracePair(Perl6TokenTypes.BLOCK_CURLY_BRACKET, Perl6TokenTypes.BLOCK_CURLY_BRACKET, false),
-                new BracePair(Perl6TokenTypes.STRING_LITERAL_QUOTE, Perl6TokenTypes.STRING_LITERAL_QUOTE, false),
-                new BracePair(Perl6TokenTypes.PARENTHESES, Perl6TokenTypes.PARENTHESES, false)
+                new BracePair(Perl6TokenTypes.BLOCK_CURLY_BRACKET_OPEN, Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE, false),
+                new BracePair(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN, Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE, false),
+                new BracePair(Perl6TokenTypes.PARENTHESES_OPEN, Perl6TokenTypes.PARENTHESES_CLOSE, false),
+                new BracePair(Perl6TokenTypes.SIGNATURE_BRACKET_OPEN, Perl6TokenTypes.SIGNATURE_BRACKET_CLOSE, false),
+                new BracePair(Perl6TokenTypes.TYPE_COERCION_PARENTHESES_OPEN, Perl6TokenTypes.TYPE_COERCION_PARENTHESES_CLOSE, false),
+                new BracePair(Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_OPEN, Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_CLOSE, false)
         };
     }
 

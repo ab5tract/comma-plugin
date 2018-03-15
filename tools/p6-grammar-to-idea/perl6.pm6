@@ -156,9 +156,9 @@ grammar MAIN {
             <.start-token('HEREDOC')> <?> <.end-token('HEREDOC')>
             <.quote_nibbler>
             [
-                <.start-token('STRING_LITERAL_QUOTE')>
+                <.start-token('STRING_LITERAL_QUOTE_CLOSE')>
                 <.stopper>
-                <.end-token('STRING_LITERAL_QUOTE')>
+                <.end-token('STRING_LITERAL_QUOTE_CLOSE')>
             ]?
             <.end-element('HEREDOC')>
         ]*
@@ -337,9 +337,9 @@ grammar MAIN {
 
     token blockoid {
         <.start-element('BLOCKOID')>
-        <.start-token('BLOCK_CURLY_BRACKET')>
+        <.start-token('BLOCK_CURLY_BRACKET_OPEN')>
         '{'
-        <.end-token('BLOCK_CURLY_BRACKET')>
+        <.end-token('BLOCK_CURLY_BRACKET_OPEN')>
         [
             <?before [ <.unv>? [\r\n || \v] ]>
             <.unv>?
@@ -349,9 +349,9 @@ grammar MAIN {
         ]?
         <.statementlist>
         [
-        <.start-token('BLOCK_CURLY_BRACKET')>
+        <.start-token('BLOCK_CURLY_BRACKET_CLOSE')>
         '}'
-        <.end-token('BLOCK_CURLY_BRACKET')>
+        <.end-token('BLOCK_CURLY_BRACKET_CLOSE')>
         <?ENDSTMT>
         ]?
         <.end-element('BLOCKOID')>
@@ -553,7 +553,7 @@ grammar MAIN {
         <.kok>
         <.ws>
         [
-            <.start-token('PARENTHESES')> '(' <.end-token('PARENTHESES')>
+            <.start-token('PARENTHESES_OPEN')> '(' <.end-token('PARENTHESES_OPEN')>
             <.ws>
             <.EXPR('')>?
             [
@@ -576,7 +576,7 @@ grammar MAIN {
                         ]?
                     ]?
                 ]?
-                [<.start-token('PARENTHESES')> ')' <.end-token('PARENTHESES')>]?
+                [<.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')>]?
                 <.ws>
             ]?
         ]?
@@ -1192,13 +1192,13 @@ grammar MAIN {
     token args {
         :my $*GOAL = '';
         [
-        || <.start-token('PARENTHESES')> '(' <.end-token('PARENTHESES')>
+        || <.start-token('PARENTHESES_OPEN')> '(' <.end-token('PARENTHESES_OPEN')>
            <.semiarglist>
-           [ <.start-token('PARENTHESES')> ')' <.end-token('PARENTHESES')> ]?
+           [ <.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')> ]?
         || <.unsp>
-           <.start-token('PARENTHESES')> '(' <.end-token('PARENTHESES')>
+           <.start-token('PARENTHESES_OPEN')> '(' <.end-token('PARENTHESES_OPEN')>
            <.semiarglist>
-           [ <.start-token('PARENTHESES')> ')' <.end-token('PARENTHESES')> ]?
+           [ <.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')> ]?
         || <.start-token('WHITE_SPACE')> \s <.end-token('WHITE_SPACE')> <.arglist>
         || <.start-token('NO_ARGS')> <?> <.end-token('NO_ARGS')>
         ]
@@ -1466,16 +1466,16 @@ grammar MAIN {
            [ <.ws> <.initializer>? ]?
            <.end-element('VARIABLE_DECLARATION')>
         || <.start-element('VARIABLE_DECLARATION')>
-           <.start-token('PARENTHESES')>
+           <.start-token('PARENTHESES_OPEN')>
            '('
-           <.end-token('PARENTHESES')>
+           <.end-token('PARENTHESES_OPEN')>
            <.start-element('SIGNATURE')>
            <.signature>
            <.end-element('SIGNATURE')>
            [
-               <.start-token('PARENTHESES')>
+               <.start-token('PARENTHESES_CLOSE')>
                ')'
-               <.end-token('PARENTHESES')>
+               <.end-token('PARENTHESES_CLOSE')>
                <.ws> <.trait>*
                [ <.ws> <.initializer>? ]?
            ]?
@@ -1563,14 +1563,14 @@ grammar MAIN {
         <.ws>
         [
             <.start-element('SIGNATURE')>
-            <.start-token('PARENTHESES')>
+            <.start-token('PARENTHESES_OPEN')>
             '('
-            <.end-token('PARENTHESES')>
+            <.end-token('PARENTHESES_OPEN')>
             <.signature>
             [
-            <.start-token('PARENTHESES')>
+            <.start-token('PARENTHESES_CLOSE')>
             ')'
-            <.end-token('PARENTHESES')>
+            <.end-token('PARENTHESES_CLOSE')>
             ]?
             <.end-element('SIGNATURE')>
         ]?
@@ -1592,14 +1592,14 @@ grammar MAIN {
         <.ws>
         [
             <.start-element('SIGNATURE')>
-            <.start-token('PARENTHESES')>
+            <.start-token('PARENTHESES_OPEN')>
             '('
-            <.end-token('PARENTHESES')>
+            <.end-token('PARENTHESES_OPEN')>
             <.signature>
             [
-            <.start-token('PARENTHESES')>
+            <.start-token('PARENTHESES_CLOSE')>
             ')'
-            <.end-token('PARENTHESES')>
+            <.end-token('PARENTHESES_CLOSE')>
             ]?
             <.end-element('SIGNATURE')>
         ]?
@@ -1616,17 +1616,17 @@ grammar MAIN {
 
     token onlystar {
         <?before '{' <.ws> '*' <.ws> '}'>
-        <.start-token('BLOCK_CURLY_BRACKET')>
+        <.start-token('BLOCK_CURLY_BRACKET_OPEN')>
         '{'
-        <.end-token('BLOCK_CURLY_BRACKET')>
+        <.end-token('BLOCK_CURLY_BRACKET_OPEN')>
         <.ws>
         <.start-token('ONLY_STAR')>
         '*'
         <.end-token('ONLY_STAR')>
         <.ws>
-        <.start-token('BLOCK_CURLY_BRACKET')>
+        <.start-token('BLOCK_CURLY_BRACKET_CLOSE')>
         '}'
-        <.end-token('BLOCK_CURLY_BRACKET')>
+        <.end-token('BLOCK_CURLY_BRACKET_CLOSE')>
         <?ENDSTMT>
     }
 
@@ -1750,25 +1750,25 @@ grammar MAIN {
     token param_var {
         [
         || <.start-element('SIGNATURE')>
-           <.start-token('PARENTHESES')>
+           <.start-token('SIGNATURE_BRACKET_OPEN')>
            '['
-           <.end-token('PARENTHESES')>
+           <.end-token('SIGNATURE_BRACKET_OPEN')>
            <.signature>
            [
-           <.start-token('PARENTHESES')>
+           <.start-token('SIGNATURE_BRACKET_CLOSE')>
            ']'
-           <.end-token('PARENTHESES')>
+           <.end-token('SIGNATURE_BRACKET_CLOSE')>
            ]?
            <.end-element('SIGNATURE')>
         || <.start-element('SIGNATURE')>
-           <.start-token('PARENTHESES')>
+           <.start-token('PARENTHESES_OPEN')>
            '('
-           <.end-token('PARENTHESES')>
+           <.end-token('PARENTHESES_OPEN')>
            <.signature>
            [
-           <.start-token('PARENTHESES')>
+           <.start-token('PARENTHESES_CLOSE')>
            ')'
-           <.end-token('PARENTHESES')>
+           <.end-token('PARENTHESES_CLOSE')>
            ]?
            <.end-element('SIGNATURE')>
         || <.start-element('PARAMETER_VARIABLE')>
@@ -1864,25 +1864,25 @@ grammar MAIN {
         :my $*IN_DECL = '';
         [
         || <.start-element('SIGNATURE')>
-           <.start-token('PARENTHESES')>
+           <.start-token('SIGNATURE_BRACKET_OPEN')>
            '['
-           <.end-token('PARENTHESES')>
+           <.end-token('SIGNATURE_BRACKET_OPEN')>
            <.signature>
            [
-           <.start-token('PARENTHESES')>
+           <.start-token('SIGNATURE_BRACKET_CLOSE')>
            ']'
-           <.end-token('PARENTHESES')>
+           <.end-token('SIGNATURE_BRACKET_CLOSE')>
            ]?
            <.end-element('SIGNATURE')>
         || <.start-element('SIGNATURE')>
-           <.start-token('PARENTHESES')>
+           <.start-token('PARENTHESES_OPEN')>
            '('
-           <.end-token('PARENTHESES')>
+           <.end-token('PARENTHESES_OPEN')>
            <.signature>
            [
-           <.start-token('PARENTHESES')>
+           <.start-token('PARENTHESES_CLOSE')>
            ')'
-           <.end-token('PARENTHESES')>
+           <.end-token('PARENTHESES_CLOSE')>
            ]?
            <.end-element('SIGNATURE')>
         || <?before 'where' <.ws>>
@@ -2045,14 +2045,14 @@ grammar MAIN {
         <.ws>
         [
             <.start-element('SIGNATURE')>
-            <.start-token('PARENTHESES')>
+            <.start-token('PARENTHESES_OPEN')>
             '('
-            <.end-token('PARENTHESES')>
+            <.end-token('PARENTHESES_OPEN')>
             <.signature>
             [
-            <.start-token('PARENTHESES')>
+            <.start-token('PARENTHESES_CLOSE')>
             ')'
-            <.end-token('PARENTHESES')>
+            <.end-token('PARENTHESES_CLOSE')>
             ]?
             <.end-element('SIGNATURE')>
         ]?
@@ -2061,9 +2061,9 @@ grammar MAIN {
         { $*IN_DECL = '' }
         [
             <.start-element('BLOCKOID')>
-            <.start-token('BLOCK_CURLY_BRACKET')>
+            <.start-token('BLOCK_CURLY_BRACKET_OPEN')>
             '{'
-            <.end-token('BLOCK_CURLY_BRACKET')>
+            <.end-token('BLOCK_CURLY_BRACKET_OPEN')>
             <.ws>
             [
             || <.start-token('ONLY_STAR')> ['*'||'<...>'||'<*>'] <.end-token('ONLY_STAR')>
@@ -2072,9 +2072,9 @@ grammar MAIN {
             ]
             <.ws>
             [
-                <.start-token('BLOCK_CURLY_BRACKET')>
+                <.start-token('BLOCK_CURLY_BRACKET_CLOSE')>
                 '}'
-                <.end-token('BLOCK_CURLY_BRACKET')>
+                <.end-token('BLOCK_CURLY_BRACKET_CLOSE')>
                 <?ENDSTMT>
             ]?
             <.end-element('BLOCKOID')>
@@ -2455,16 +2455,16 @@ grammar MAIN {
         ]?
         <.unsp>?
         [
-            <.start-token('TYPE_COERCION_PARENTHESES')>
+            <.start-token('TYPE_COERCION_PARENTHESES_OPEN')>
             '('
-            <.end-token('TYPE_COERCION_PARENTHESES')>
+            <.end-token('TYPE_COERCION_PARENTHESES_OPEN')>
             <.ws>
             <.typename>?
             <.ws>
             [
-                || <.start-token('TYPE_COERCION_PARENTHESES')>
+                || <.start-token('TYPE_COERCION_PARENTHESES_CLOSE')>
                    ')'
-                   <.end-token('TYPE_COERCION_PARENTHESES')>
+                   <.end-token('TYPE_COERCION_PARENTHESES_CLOSE')>
                 || <.start-token('INCOMPLETE_TYPE_NAME')> <?> <.end-token('INCOMPLETE_TYPE_NAME')>
             ]
         ]?
@@ -2502,11 +2502,11 @@ grammar MAIN {
         <.start-element('STRING_LITERAL')>
         [
         || <?before ['Q' <.quote_mod>? [<.has-delimiter> || <.quotepair>]]>
-           <.start-token('STRING_LITERAL_QUOTE')> 'Q' <.end-token('STRING_LITERAL_QUOTE')>
+           <.start-token('STRING_LITERAL_QUOTE_SYNTAX')> 'Q' <.end-token('STRING_LITERAL_QUOTE_SYNTAX')>
            <.quote_mod_Q>?
            <.quibble>
         || <?before ['qq' <.quote_mod>? [<.has-delimiter> || <.quotepair>]]>
-           <.start-token('STRING_LITERAL_QUOTE')> 'qq' <.end-token('STRING_LITERAL_QUOTE')>
+           <.start-token('STRING_LITERAL_QUOTE_SYNTAX')> 'qq' <.end-token('STRING_LITERAL_QUOTE_SYNTAX')>
            { $*Q_QQ = 1 }
            { $*Q_BACKSLASH = 1 }
            { $*Q_QQBACKSLASH = 1 }
@@ -2518,38 +2518,38 @@ grammar MAIN {
            <.quote_mod_Q>?
            <.quibble>
         || <?before ['q' <.quote_mod>? [<.has-delimiter> || <.quotepair>]]>
-           <.start-token('STRING_LITERAL_QUOTE')> 'q' <.end-token('STRING_LITERAL_QUOTE')>
+           <.start-token('STRING_LITERAL_QUOTE_SYNTAX')> 'q' <.end-token('STRING_LITERAL_QUOTE_SYNTAX')>
            { $*Q_Q = 1 }
            { $*Q_QBACKSLASH = 1 }
            <.quote_mod_Q>?
            <.quibble>
-        || <.start-token('STRING_LITERAL_QUOTE')> '\'' <.end-token('STRING_LITERAL_QUOTE')>
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '\'' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('\'', '\'', '\'')>
-           [<.start-token('STRING_LITERAL_QUOTE')> '\'' <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '‘' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '\'' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '‘' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('‘', '’', '’')>
-           [<.start-token('STRING_LITERAL_QUOTE')> '’' <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '‚' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '’' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '‚' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('‚', '’', '‘')>
-           [<.start-token('STRING_LITERAL_QUOTE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '’' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '’' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('’', '’', '‘')>
-           [<.start-token('STRING_LITERAL_QUOTE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '"' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '"' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_qq('"', '"', '"')>
-           [<.start-token('STRING_LITERAL_QUOTE')> '"' <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '“' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '"' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '“' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_qq('“', '”', '”')>
-           [<.start-token('STRING_LITERAL_QUOTE')> '”' <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '„' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '”' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '„' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_qq('„', '”', '“')>
-           [<.start-token('STRING_LITERAL_QUOTE')> <[”“]> <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '”' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[”“]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '”' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_qq('”', '”', '“')>
-           [<.start-token('STRING_LITERAL_QUOTE')> <[”“]> <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '｢' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[”“]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '｢' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_Q('｢', '｣', '｣')>
-           [<.start-token('STRING_LITERAL_QUOTE')> '｣' <.end-token('STRING_LITERAL_QUOTE')>]?
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '｣' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
         ]
         <.end-element('STRING_LITERAL')>
     }
@@ -2657,27 +2657,27 @@ grammar MAIN {
         || [ <.quotepair_Q> <.ws> ]+
            [
                <.peek-delimiters>
-               <.start-token('STRING_LITERAL_QUOTE')>
+               <.start-token('STRING_LITERAL_QUOTE_OPEN')>
                $*STARTER
-               <.end-token('STRING_LITERAL_QUOTE')>
+               <.end-token('STRING_LITERAL_QUOTE_OPEN')>
                [ <?{ $*Q_TO }> <.start-queue-heredoc> ]?
                <.quote_nibbler>
                [ <?{ $*Q_TO }> <.end-queue-heredoc> ]?
                [
-                   <.start-token('STRING_LITERAL_QUOTE')>
+                   <.start-token('STRING_LITERAL_QUOTE_CLOSE')>
                    <.stopper>
-                   <.end-token('STRING_LITERAL_QUOTE')>
+                   <.end-token('STRING_LITERAL_QUOTE_CLOSE')>
                ]?
            ]?
         || <.peek-delimiters>
-           <.start-token('STRING_LITERAL_QUOTE')>
+           <.start-token('STRING_LITERAL_QUOTE_OPEN')>
            $*STARTER
-           <.end-token('STRING_LITERAL_QUOTE')>
+           <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_nibbler>
            [
-               <.start-token('STRING_LITERAL_QUOTE')>
+               <.start-token('STRING_LITERAL_QUOTE_CLOSE')>
                $*STOPPER
-               <.end-token('STRING_LITERAL_QUOTE')>
+               <.end-token('STRING_LITERAL_QUOTE_CLOSE')>
            ]?
         ]
     }
@@ -2959,9 +2959,9 @@ grammar MAIN {
         [
             <!stopper>
             [
-            || <.start-token('STRING_LITERAL_QUOTE')> <.starter> <.end-token('STRING_LITERAL_QUOTE')>
+            || <.start-token('STRING_LITERAL_QUOTE_OPEN')> <.starter> <.end-token('STRING_LITERAL_QUOTE_OPEN')>
                <.quote_nibbler>
-               <.start-token('STRING_LITERAL_QUOTE')> <.stopper> <.end-token('STRING_LITERAL_QUOTE')>
+               <.start-token('STRING_LITERAL_QUOTE_CLOSE')> <.stopper> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>
             || <.quote_escape>
             || <.start-token('STRING_LITERAL_CHAR')> . <.end-token('STRING_LITERAL_CHAR')>
             ]
@@ -3072,9 +3072,9 @@ grammar MAIN {
         :my $*Q_FUNCTIONS = 0;
         [
         || <.start-element('PARENTHESIZED_EXPRESSION')>
-           <.start-token('PARENTHESES')> '(' <.end-token('PARENTHESES')>
+           <.start-token('PARENTHESES_OPEN')> '(' <.end-token('PARENTHESES_OPEN')>
            <.semilist>
-           [ <.start-token('PARENTHESES')> ')' <.end-token('PARENTHESES')> ]?
+           [ <.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')> ]?
            <.end-element('PARENTHESIZED_EXPRESSION')>
         || <.start-element('ARRAY_COMPOSER')>
            <.start-token('ARRAY_COMPOSER')> '[' <.end-token('ARRAY_COMPOSER')>
@@ -3085,41 +3085,41 @@ grammar MAIN {
            <.start-token('BARE_BLOCK')> <?> <.end-token('BARE_BLOCK')>
            <.start-element('BLOCK_OR_HASH')> <.blockoid> <.end-element('BLOCK_OR_HASH')>
         || <.start-element('STRING_LITERAL')>
-           <.start-token('STRING_LITERAL_QUOTE')>
+           <.start-token('STRING_LITERAL_QUOTE_OPEN')>
            '<<'
-           <.end-token('STRING_LITERAL_QUOTE')>
+           <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            [
                <.quote_qq('<<', '>>', '>>')>
                [
-                   <.start-token('STRING_LITERAL_QUOTE')>
+                   <.start-token('STRING_LITERAL_QUOTE_CLOSE')>
                    '>>'
-                   <.end-token('STRING_LITERAL_QUOTE')>
+                   <.end-token('STRING_LITERAL_QUOTE_CLOSE')>
                ]?
            ]?
            <.end-element('STRING_LITERAL')>
         || <.start-element('STRING_LITERAL')>
-           <.start-token('STRING_LITERAL_QUOTE')>
+           <.start-token('STRING_LITERAL_QUOTE_OPEN')>
            '«'
-           <.end-token('STRING_LITERAL_QUOTE')>
+           <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            [
                <.quote_qq('«', '»', '»')>
                [
-                   <.start-token('STRING_LITERAL_QUOTE')>
+                   <.start-token('STRING_LITERAL_QUOTE_CLOSE')>
                    '»'
-                   <.end-token('STRING_LITERAL_QUOTE')>
+                   <.end-token('STRING_LITERAL_QUOTE_CLOSE')>
                ]?
            ]?
            <.end-element('STRING_LITERAL')>
         || <.start-element('STRING_LITERAL')>
-           <.start-token('STRING_LITERAL_QUOTE')>
+           <.start-token('STRING_LITERAL_QUOTE_OPEN')>
            '<'
-           <.end-token('STRING_LITERAL_QUOTE')>
+           <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            [
                <.quote_q('<', '>', '>')>
                [
-                   <.start-token('STRING_LITERAL_QUOTE')>
+                   <.start-token('STRING_LITERAL_QUOTE_CLOSE')>
                    '>'
-                   <.end-token('STRING_LITERAL_QUOTE')>
+                   <.end-token('STRING_LITERAL_QUOTE_CLOSE')>
                ]?
            ]?
            <.end-element('STRING_LITERAL')>
@@ -3452,9 +3452,9 @@ grammar MAIN {
            ]?
            <.end-element('HASH_INDEX')>
         || <.start-element('CALL')>
-           <.start-token('PARENTHESES')> '(' <.end-token('PARENTHESES')>
+           <.start-token('PARENTHESES_OPEN')> '(' <.end-token('PARENTHESES_OPEN')>
            <.arglist>
-           [ <.start-token('PARENTHESES')> ')' <.end-token('PARENTHESES')> ]?
+           [ <.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')> ]?
            <.end-element('CALL')>
        ]
     }
@@ -4045,14 +4045,14 @@ grammar MAIN {
            ]?
            <.end-element('REGEX_GROUP')>
         || <.start-element('REGEX_CAPTURE_POSITIONAL')>
-           <.start-token('REGEX_CAPTURE_PARENTHESES')>
+           <.start-token('REGEX_CAPTURE_PARENTHESES_OPEN')>
            '('
-           <.end-token('REGEX_CAPTURE_PARENTHESES')>
+           <.end-token('REGEX_CAPTURE_PARENTHESES_OPEN')>
            <.regex_nibbler_fresh_rx($*RX_S)>?
            [
-               <.start-token('REGEX_CAPTURE_PARENTHESES')>
+               <.start-token('REGEX_CAPTURE_PARENTHESES_CLOSE')>
                ')'
-               <.end-token('REGEX_CAPTURE_PARENTHESES')>
+               <.end-token('REGEX_CAPTURE_PARENTHESES_CLOSE')>
            ]?
            <.end-element('REGEX_CAPTURE_POSITIONAL')>
         || <?before '\\' .> <.backslash> <.SIGOK>
@@ -4101,18 +4101,18 @@ grammar MAIN {
         :my $*Q_FUNCTIONS = 0;
         <.start-element('STRING_LITERAL')>
         [
-        || <.start-token('STRING_LITERAL_QUOTE')> '\'' <.end-token('STRING_LITERAL_QUOTE')>
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '\'' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('\'', '\'', '\'')>
-           [<.start-token('STRING_LITERAL_QUOTE')> '\'' <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '‘' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '\'' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '‘' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('‘', '’', '’')>
-           [<.start-token('STRING_LITERAL_QUOTE')> '’' <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '‚' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '’' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '‚' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('‚', '’', '‘')>
-           [<.start-token('STRING_LITERAL_QUOTE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '’' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '’' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('’', '’', '‘')>
-           [<.start-token('STRING_LITERAL_QUOTE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE')>]?
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
         ]
         <.end-element('STRING_LITERAL')>
     }
@@ -4128,18 +4128,18 @@ grammar MAIN {
         :my $*Q_FUNCTIONS = 0;
         <.start-element('STRING_LITERAL')>
         [
-        || <.start-token('STRING_LITERAL_QUOTE')> '"' <.end-token('STRING_LITERAL_QUOTE')>
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '"' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_qq('"', '"', '"')>
-           [<.start-token('STRING_LITERAL_QUOTE')> '"' <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '“' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '"' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '“' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_qq('“', '”', '”')>
-           [<.start-token('STRING_LITERAL_QUOTE')> '”' <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '„' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '”' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '„' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_qq('„', '”', '“')>
-           [<.start-token('STRING_LITERAL_QUOTE')> <[”“]> <.end-token('STRING_LITERAL_QUOTE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE')> '”' <.end-token('STRING_LITERAL_QUOTE')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[”“]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '”' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_qq('”', '”', '“')>
-           [<.start-token('STRING_LITERAL_QUOTE')> <[”“]> <.end-token('STRING_LITERAL_QUOTE')>]?
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[”“]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
         ]
         <.end-element('STRING_LITERAL')>
     }
@@ -4154,9 +4154,9 @@ grammar MAIN {
         :my $*Q_HASHES = 0;
         :my $*Q_FUNCTIONS = 0;
         <.start-element('STRING_LITERAL')>
-        <.start-token('STRING_LITERAL_QUOTE')> '<' <.end-token('STRING_LITERAL_QUOTE')>
+        <.start-token('STRING_LITERAL_QUOTE_OPEN')> '<' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
         <.quote_q('<', '>', '>')>
-        [<.start-token('STRING_LITERAL_QUOTE')> '>' <.end-token('STRING_LITERAL_QUOTE')>]?
+        [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '>' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
         <.end-element('STRING_LITERAL')>
     }
 
@@ -4217,9 +4217,9 @@ grammar MAIN {
               ':'
               <.end-token('INVOCANT_MARKER')>
               <.rxarglist>
-           || <.start-token('PARENTHESES')> '(' <.end-token('PARENTHESES')>
+           || <.start-token('PARENTHESES_OPEN')> '(' <.end-token('PARENTHESES_OPEN')>
               <.rxarglist>
-              [ <.start-token('PARENTHESES')> ')' <.end-token('PARENTHESES')> ]?
+              [ <.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')> ]?
            || <.normspace> <.regex_nibbler>
            ]?
         || <.start-token('REGEX_ANCHOR')>
@@ -4232,9 +4232,9 @@ grammar MAIN {
               ':'
               <.end-token('INVOCANT_MARKER')>
               <.rxarglist>
-           || <.start-token('PARENTHESES')> '(' <.end-token('PARENTHESES')>
+           || <.start-token('PARENTHESES_OPEN')> '(' <.end-token('PARENTHESES_OPEN')>
               <.rxarglist>
-              [ <.start-token('PARENTHESES')> ')' <.end-token('PARENTHESES')> ]?
+              [ <.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')> ]?
            ]?
         || <?sigil> <.variable>
         || <.start-token('REGEX_INFIX')>
