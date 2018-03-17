@@ -9,7 +9,23 @@ import com.intellij.openapi.editor.EditorModificationUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
+    static final Set<Character> sigilsAndTwigils;
+
+    static {
+        sigilsAndTwigils = new HashSet<>();
+        sigilsAndTwigils.add('$');
+        sigilsAndTwigils.add('@');
+        sigilsAndTwigils.add('%');
+        sigilsAndTwigils.add('&');
+        sigilsAndTwigils.add('!');
+        sigilsAndTwigils.add('.');
+        sigilsAndTwigils.add('*');
+    }
+
     @Override
     public Result checkAutoPopup(char charTyped, Project project, Editor editor, PsiFile file) {
         LookupImpl lookup = (LookupImpl) LookupManager.getActiveLookup(editor);
@@ -21,7 +37,7 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
             }
             return Result.STOP;
         }
-        else if (charTyped == '$' || charTyped == '@' || charTyped == '%' || charTyped == '&') {
+        else if (sigilsAndTwigils.contains(charTyped)) {
             AutoPopupController.getInstance(project).scheduleAutoPopup(editor);
             return Result.STOP;
         }
