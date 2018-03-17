@@ -1,5 +1,7 @@
 package edument.perl6idea.psi;
 
+import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
@@ -8,10 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
     public Perl6VariableReference(Perl6Variable var) {
@@ -48,8 +47,9 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
     public Object[] getVariants() {
         Perl6Variable var = (Perl6Variable)getElement();
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(var, Perl6PsiScope.class);
-        Set<String> seen = new HashSet<>();
-        List<PsiElement> results = new ArrayList<>();
+        HashMap<String, Perl6PsiElement> outer = new HashMap<>();
+        HashSet<String> seen = new HashSet<>();
+        List<Object> results = new ArrayList<>();
         while (scope != null) {
             List<Perl6PsiElement> decls = scope.getDeclarations();
             for (Perl6PsiElement decl : decls) {
@@ -57,14 +57,22 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
                     PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
                     if (ident != null) {
                         String name = ident.getText();
-                        if (!seen.contains(name)) {
-                            results.add(decl);
+                        if (ident.getNode().getStartOffset() < var.getNode().getStartOffset())
+                            outer.put(name, decl);
+                        else
                             seen.add(name);
-                        }
                     }
                 }
             }
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
+        }
+        for (Map.Entry<String, Perl6PsiElement> entry : outer.entrySet()) {
+            if (!seen.contains(entry.getKey())) {
+                results.add(entry.getValue());
+            } else {
+                LookupElement element = (LookupElement) LookupElementBuilder.create(entry.getValue()).strikeout().getObject();
+                results.add(element);
+            }
         }
         return results.toArray();
     }
