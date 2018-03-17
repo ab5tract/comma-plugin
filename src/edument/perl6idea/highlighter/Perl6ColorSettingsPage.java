@@ -101,12 +101,18 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDemoText() {
-        return "use Foo::Bar;\n" +
-               "# Infinite list of primes:\n" +
-               "my @primes = ^∞ .grep: *.is-prime;\n" +
-               "say \"1001ˢᵗ prime is @primes[1000]\";\n\n" +
-               "# Lazily read words from a file\n" +
-               ".say for '50TB.file.txt'.IO.words;";
+        return "use JSON::Tiny;\n\n" +
+               "grammar IPv4 {\n" +
+               "    token TOP { <seg> ** 4 % '.' }\n" +
+               "    token seg { \\d+ { 0 <= $/ <= 255 } }\n" +
+               "}\n\n" +
+               "# Find all IPv4 data sources and show them.\n" +
+               "my @data = from-json(slurp 'input.json');\n" +
+               "for @data.map(*<from>) -> $from {\n" +
+               "    if IPv4.parse($from) {\n" +
+               "        say \"Address: $from\";\n" +
+               "    }\n" +
+               "}\n";
     }
 
     @Nullable
