@@ -1,6 +1,5 @@
 package edument.perl6idea.psi;
 
-import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -57,6 +56,12 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
                     PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
                     if (ident != null) {
                         String name = ident.getText();
+                        Perl6ScopedDecl scopeDecl = PsiTreeUtil.getParentOfType(ident, Perl6ScopedDecl.class);
+                        if (scopeDecl != null && scopeDecl.getText().startsWith("has")) {
+                            outer.put(name.replace('.', '!'), decl);
+                            outer.put(name, decl);
+                            continue;
+                        }
                         if (ident.getNode().getStartOffset() < var.getNode().getStartOffset())
                             outer.put(name, decl);
                         else
@@ -68,10 +73,9 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
         }
         for (Map.Entry<String, Perl6PsiElement> entry : outer.entrySet()) {
             if (!seen.contains(entry.getKey())) {
-                results.add(entry.getValue());
+                    results.add(LookupElementBuilder.create(entry.getValue(), entry.getKey()));
             } else {
-                LookupElement element = (LookupElement) LookupElementBuilder.create(entry.getValue()).strikeout().getObject();
-                results.add(element);
+                results.add(LookupElementBuilder.create(entry.getValue(), entry.getKey()).strikeout());
             }
         }
         return results.toArray();
