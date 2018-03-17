@@ -15,6 +15,7 @@ public class Perl6SyntaxHighlighter extends SyntaxHighlighterBase {
     private static final Map<IElementType, TextAttributesKey> ATTRIBUTES = new HashMap<>();
 
     static {
+        ATTRIBUTES.put(Perl6TokenTypes.BAD_CHARACTER, Perl6Highlighter.BAD_CHARACTER);
         ATTRIBUTES.put(Perl6TokenTypes.COMMENT, Perl6Highlighter.COMMENT);
         ATTRIBUTES.put(Perl6TokenTypes.STATEMENT_CONTROL, Perl6Highlighter.STATEMENT_CONTROL);
         ATTRIBUTES.put(Perl6TokenTypes.PHASER, Perl6Highlighter.PHASER);

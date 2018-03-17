@@ -1,9 +1,16 @@
 package edument.perl6idea.highlighter;
 
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
+import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 
 public final class Perl6Highlighter {
+    static final String BAD_CHARACTER_ID = "PERL6_BAD_CHARACTER";
+    public static final TextAttributesKey BAD_CHARACTER = TextAttributesKey.createTextAttributesKey(
+            BAD_CHARACTER_ID,
+            HighlighterColors.BAD_CHARACTER
+    );
+
     static final String COMMENT_ID = "PERL6_COMMENT";
     public static final TextAttributesKey COMMENT = TextAttributesKey.createTextAttributesKey(
             COMMENT_ID,
