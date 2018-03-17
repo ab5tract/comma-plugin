@@ -1,0 +1,126 @@
+<list>
+  <option name="PERL6_CONTEXTUALIZER">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_INFIX">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_METAOP">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_METHOD_CALL_NAME">
+    <value>
+      <option name="FOREGROUND" value="ffc66d" />
+    </value>
+  </option>
+  <option name="PERL6_NAMED_PARAMETER_NAME_ALIAS">
+    <value>
+      <option name="FOREGROUND" value="9876aa" />
+    </value>
+  </option>
+  <option name="PERL6_PARAMETER_QUANTIFIER">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_PARAMETER_SEPARATOR">
+    <value />
+  </option>
+  <option name="PERL6_POSTFIX">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_PREFIX">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_REGEX_ANCHOR">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_REGEX_CAPTURE">
+    <value>
+      <option name="FOREGROUND" value="9876aa" />
+    </value>
+  </option>
+  <option name="PERL6_REGEX_INFIX">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_REGEX_LOOKAROUND">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_REGEX_MOD">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_REGEX_QUANTIFIER">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_RETURN_ARROW">
+    <value />
+  </option>
+  <option name="PERL6_SELF">
+    <value>
+      <option name="FOREGROUND" value="9876aa" />
+    </value>
+  </option>
+  <option name="PERL6_SHAPE_DECLARATION">
+    <value>
+      <option name="FOREGROUND" value="9876aa" />
+    </value>
+  </option>
+  <option name="PERL6_SUB_CALL_NAME">
+    <value>
+      <option name="FOREGROUND" value="ffc66d" />
+    </value>
+  </option>
+  <option name="PERL6_TERM">
+    <value>
+      <option name="FOREGROUND" value="c4448e" />
+    </value>
+  </option>
+  <option name="PERL6_TERM_DECLARATION_BACKSLASH">
+    <value />
+  </option>
+  <option name="PERL6_TRANS_RANGE">
+    <value>
+      <option name="FOREGROUND" value="bbb529" />
+    </value>
+  </option>
+  <option name="PERL6_TYPE_NAME">
+    <value>
+      <option name="FOREGROUND" value="c4448e" />
+    </value>
+  </option>
+  <option name="PERL6_TYPE_PARAMETER_BRACKET">
+    <value>
+      <option name="FOREGROUND" value="c4448e" />
+    </value>
+  </option>
+  <option name="PERL6_VARIABLE">
+    <value>
+      <option name="FOREGROUND" value="9876aa" />
+    </value>
+  </option>
+  <option name="PERL6_WHATEVER">
+    <value>
+      <option name="FOREGROUND" value="c4448e" />
+    </value>
+  </option>
+</list>
