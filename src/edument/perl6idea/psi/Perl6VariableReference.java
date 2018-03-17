@@ -59,7 +59,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
                     if (ident != null) {
                         String name = ident.getText();
                         Perl6ScopedDecl scopeDecl = PsiTreeUtil.getParentOfType(ident, Perl6ScopedDecl.class);
-                        if (scopeDecl != null && scopeDecl.getText().startsWith("has")) continue;
+                        if (scopeDecl != null && scopeDecl.getScope().equals("has")) continue;
                         if (ident.getNode().getStartOffset() < var.getNode().getStartOffset())
                             outer.put(name, decl);
                         else
@@ -74,7 +74,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
             for (Perl6PsiElement element : outerPackage.getDeclarations()) {
                 if (!(element instanceof Perl6VariableDecl)) continue;
                 Perl6ScopedDecl scopeDecl = PsiTreeUtil.getParentOfType(element, Perl6ScopedDecl.class);
-                if (scopeDecl != null && scopeDecl.getText().startsWith("has")) {
+                if (scopeDecl != null && scopeDecl.getScope().equals("has")) {
                     outer.put(element.getText().replace('.', '!'), element);
                     outer.put(element.getText(), element);
                 }
