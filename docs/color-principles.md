@@ -14,6 +14,7 @@
 * Comments have a distinct color
 * Literals have a distinct color
 * Literal escapes have a distinct color
+* Numeric literals have a distinct color
 * Sigspace has a differnet background color
 * Bad escapes have a different background color
 
@@ -80,7 +81,6 @@ This gives us these colors for the elements:
     * Comment
     * Stub code
 * Literal
-    * Numeric literal
     * Pair (colon pair or key before =>)
     * Quote modifer
     * Quote pair
@@ -89,6 +89,8 @@ This gives us these colors for the elements:
     * String literal value
     * Transliteration invalid syntax (plus background)
     * Transliteration literal character
+* Numeric literal
+    * Numeric literal
     * Version literal
 * String literal escape
     * Regex built-in character class
