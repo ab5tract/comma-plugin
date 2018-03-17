@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,18 +27,19 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
             for (Perl6PsiElement decl : decls) {
                 if (decl instanceof PsiNameIdentifierOwner) {
                     PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
-                    if (ident != null) {
-                        if (ident.getText().equals(var.getText()))
-                            return ident;
-                        Perl6ScopedDecl scopeDecl = PsiTreeUtil.getParentOfType(ident, Perl6ScopedDecl.class);
-                        if (scopeDecl != null && scopeDecl.getText().startsWith("has"))
-                            if (ident.getText().replace(".", "!").equals(var.getText()))
-                                return ident;
-                    }
+                    if (ident != null && ident.getText().equals(var.getText()))
+                        return ident;
                 }
             }
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
+        Perl6PackageDeclImpl outerPackage = PsiTreeUtil.getParentOfType(var, Perl6PackageDeclImpl.class);
+        if (outerPackage != null)
+            for (Perl6PsiElement element : outerPackage.getDeclarations()) {
+                if (!(element instanceof Perl6VariableDecl)) continue;
+                if (element.getText().replace(".", "!").equals(var.getText()))
+                    return element;
+            }
         return null;
     }
 
@@ -57,11 +59,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
                     if (ident != null) {
                         String name = ident.getText();
                         Perl6ScopedDecl scopeDecl = PsiTreeUtil.getParentOfType(ident, Perl6ScopedDecl.class);
-                        if (scopeDecl != null && scopeDecl.getText().startsWith("has")) {
-                            outer.put(name.replace('.', '!'), decl);
-                            outer.put(name, decl);
-                            continue;
-                        }
+                        if (scopeDecl != null && scopeDecl.getText().startsWith("has")) continue;
                         if (ident.getNode().getStartOffset() < var.getNode().getStartOffset())
                             outer.put(name, decl);
                         else
@@ -71,6 +69,16 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
             }
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
+        Perl6PackageDeclImpl outerPackage = PsiTreeUtil.getParentOfType(var, Perl6PackageDeclImpl.class);
+        if (outerPackage != null)
+            for (Perl6PsiElement element : outerPackage.getDeclarations()) {
+                if (!(element instanceof Perl6VariableDecl)) continue;
+                Perl6ScopedDecl scopeDecl = PsiTreeUtil.getParentOfType(element, Perl6ScopedDecl.class);
+                if (scopeDecl != null && scopeDecl.getText().startsWith("has")) {
+                    outer.put(element.getText().replace('.', '!'), element);
+                    outer.put(element.getText(), element);
+                }
+            }
         for (Map.Entry<String, Perl6PsiElement> entry : outer.entrySet()) {
             if (!seen.contains(entry.getKey())) {
                     results.add(LookupElementBuilder.create(entry.getValue(), entry.getKey()));
