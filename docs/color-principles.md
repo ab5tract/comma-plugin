@@ -20,9 +20,9 @@
 
 This gives us these colors for the elements:
 
-* Neutrel
+* Neutrel (ENSURE NEUTRAL IN DRACULA)
     * Argument capture
-    * Araray composer
+    * Array composer
     * Array indexer
     * Block clurly brackets
     * Hash indexer
@@ -50,22 +50,22 @@ This gives us these colors for the elements:
     * Statement prefix
     * Trait keyword
     * Type declarator
-* Variable
+* Variable (SET IN COLOR SCHEMES)
     * Current object
     * Named parameter name alias
     * Regex capture
     * Variable
     * Variable shape declaration
-* Callable
+* Callable (SET IN COLOR SCHEMES)
     * Method call name
     * Routine name
     * Sub call name
-* Types and terms
-    * Other terms
+* Types and terms (SET IN COLOR SCHEMES)
+    * Other term
     * Type name
     * Type parameter brackets
     * Whatever
-* Operator
+* Operator (SET IN COLOR SCHEMES)
     * Contextualizer
     * Infix operator
     * Metaoperator
@@ -73,6 +73,7 @@ This gives us these colors for the elements:
     * Postix operator
     * Prefix operator
     * Regex anchor
+    * Regex modifier
     * Regex infix
     * Regex lookaround
     * Regex quantifier
@@ -80,14 +81,13 @@ This gives us these colors for the elements:
 * Comment
     * Comment
     * Stub code
-* Literal
+* String Literal
     * Pair (colon pair or key before =>)
     * Quote modifer
     * Quote pair
     * Regex literal quote
     * String literal quote
     * String literal value
-    * Transliteration invalid syntax (plus background)
     * Transliteration literal character
 * Numeric literal
     * Numeric literal
@@ -98,3 +98,4 @@ This gives us these colors for the elements:
     * String literal escape
     * String literal invalid escape (plus background)
     * Transliteration escape
+    * Transliteration invalid syntax (plus background)
