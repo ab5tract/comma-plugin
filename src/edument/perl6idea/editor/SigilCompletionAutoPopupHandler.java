@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
-    static final Set<Character> sigilsAndTwigils;
+    private static final Set<Character> sigilsAndTwigils;
 
     static {
         sigilsAndTwigils = new HashSet<>();
@@ -37,7 +37,7 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
             }
             return Result.STOP;
         }
-        else if (sigilsAndTwigils.contains(charTyped)) {
+        else if (sigilsAndTwigils.contains(charTyped) || Character.isLetter(charTyped) || charTyped == '_') {
             AutoPopupController.getInstance(project).scheduleAutoPopup(editor);
             return Result.STOP;
         }
