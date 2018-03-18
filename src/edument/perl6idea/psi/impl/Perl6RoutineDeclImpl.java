@@ -78,7 +78,13 @@ public class Perl6RoutineDeclImpl extends ASTWrapperPsiElement implements Perl6R
     @Nullable
     @Override
     public PsiElement getNameIdentifier() {
-        return null;
+        return findChildByType(Perl6ElementTypes.LONG_NAME);
+    }
+
+    @Override
+    public String getName() {
+        PsiElement nameIdent = getNameIdentifier();
+        return nameIdent != null ? nameIdent.getText() : null;
     }
 
     @Override
