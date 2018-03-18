@@ -31,12 +31,12 @@ public class Perl6PackageDeclImpl extends ASTWrapperPsiElement implements Perl6P
     }
 
     @Override
-    public Perl6PsiElement[] privateMethods() {
+    public Perl6RoutineDecl[] privateMethods() {
         List<Perl6PsiElement> result = new ArrayList<>();
         Perl6Blockoid blockoid = findChildByType(BLOCKOID);
-        if (blockoid == null) return new Perl6PsiElement[]{};
+        if (blockoid == null) return new Perl6RoutineDecl[0];
         ASTNode list = blockoid.getNode().findChildByType(STATEMENT_LIST);
-        if (list == null) return new Perl6PsiElement[]{};
+        if (list == null) return new Perl6RoutineDecl[0];
         ASTNode[] statements = list.getChildren(TokenSet.create(STATEMENT));
         for (ASTNode node : statements) {
             PsiElement child = node.getFirstChildNode().getPsi();;
@@ -46,6 +46,6 @@ public class Perl6PackageDeclImpl extends ASTWrapperPsiElement implements Perl6P
                     result.add(routine);
             }
         }
-        return result.toArray(new Perl6PsiElement[result.size()]);
+        return result.toArray(new Perl6RoutineDecl[result.size()]);
     }
 }

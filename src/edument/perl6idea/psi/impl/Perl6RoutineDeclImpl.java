@@ -26,7 +26,12 @@ public class Perl6RoutineDeclImpl extends ASTWrapperPsiElement implements Perl6R
     @Override
     public String getRoutineName() {
         PsiElement name = findChildByType(Perl6ElementTypes.LONG_NAME);
-        return (name == null ? "<anon>" : name.getText()) + summarySignature();
+        return name == null ? "<anon>" : name.getText();
+    }
+
+    @Override
+    public String getSignature() {
+        return getRoutineName() + summarySignature();
     }
 
     @Override

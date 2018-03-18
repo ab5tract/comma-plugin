@@ -105,7 +105,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                 @Override
                 public String getPresentableText() {
                     Perl6RoutineDecl r = (Perl6RoutineDecl)element;
-                    return r.getRoutineName() + " (" + r.getRoutineKind() + ")";
+                    return r.getSignature() + " (" + r.getRoutineKind() + ")";
                 }
 
                 @Nullable
