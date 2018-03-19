@@ -3538,7 +3538,8 @@ grammar MAIN {
            [
            || <.EXPR('i=')>
               [
-              || <.ws> <.start-token('INFIX')> '!!' <.end-token('INFIX')>
+              || <?before <.ws> '!!'>
+                 <.ws> <.start-token('INFIX')> '!!' <.end-token('INFIX')>
               || <.start-token('COND_OP_INCOMPLETE')> <?> <.end-token('COND_OP_INCOMPLETE')>
               ]
            || <.start-token('COND_OP_INCOMPLETE')> <?> <.end-token('COND_OP_INCOMPLETE')>
