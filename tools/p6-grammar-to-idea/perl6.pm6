@@ -2185,7 +2185,7 @@ grammar MAIN {
     }
 
     token package_kind {
-        'package' || 'module' || 'class' || 'grammar' || 'role' || 'knowhow' || 'native' || 'slang'
+        'package' || 'module' || 'class' || 'grammar' || 'role' || 'knowhow' || 'native' || 'slang' || 'monitor' || 'actor'
     }
 
     token package_def {

@@ -10574,58 +10574,80 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
+    private boolean package_kind_121_alt_9(PsiBuilder builder, OPP opp) {
+        return true;
+    }
+
+    private boolean package_kind_121_alt_10(PsiBuilder builder, OPP opp) {
+        return true;
+    }
+
     private boolean package_kind_121(PsiBuilder builder) {
         OPP opp;
         opp = null;
-        PsiBuilder.Marker altMarker8;
-        altMarker8 = builder.mark();
-        if (this.package_kind_121_alt_8(builder, opp)) {
-            altMarker8.drop();
+        PsiBuilder.Marker altMarker10;
+        altMarker10 = builder.mark();
+        if (this.package_kind_121_alt_10(builder, opp)) {
+            altMarker10.drop();
         } else {
-            altMarker8.rollbackTo();
-            PsiBuilder.Marker altMarker7;;
-            altMarker7 = builder.mark();
-            if (this.package_kind_121_alt_7(builder, opp)) {
-                altMarker7.drop();
+            altMarker10.rollbackTo();
+            PsiBuilder.Marker altMarker9;;
+            altMarker9 = builder.mark();
+            if (this.package_kind_121_alt_9(builder, opp)) {
+                altMarker9.drop();
             } else {
-                altMarker7.rollbackTo();
-                PsiBuilder.Marker altMarker6;;
-                altMarker6 = builder.mark();
-                if (this.package_kind_121_alt_6(builder, opp)) {
-                    altMarker6.drop();
+                altMarker9.rollbackTo();
+                PsiBuilder.Marker altMarker8;;
+                altMarker8 = builder.mark();
+                if (this.package_kind_121_alt_8(builder, opp)) {
+                    altMarker8.drop();
                 } else {
-                    altMarker6.rollbackTo();
-                    PsiBuilder.Marker altMarker5;;
-                    altMarker5 = builder.mark();
-                    if (this.package_kind_121_alt_5(builder, opp)) {
-                        altMarker5.drop();
+                    altMarker8.rollbackTo();
+                    PsiBuilder.Marker altMarker7;;
+                    altMarker7 = builder.mark();
+                    if (this.package_kind_121_alt_7(builder, opp)) {
+                        altMarker7.drop();
                     } else {
-                        altMarker5.rollbackTo();
-                        PsiBuilder.Marker altMarker4;;
-                        altMarker4 = builder.mark();
-                        if (this.package_kind_121_alt_4(builder, opp)) {
-                            altMarker4.drop();
+                        altMarker7.rollbackTo();
+                        PsiBuilder.Marker altMarker6;;
+                        altMarker6 = builder.mark();
+                        if (this.package_kind_121_alt_6(builder, opp)) {
+                            altMarker6.drop();
                         } else {
-                            altMarker4.rollbackTo();
-                            PsiBuilder.Marker altMarker3;;
-                            altMarker3 = builder.mark();
-                            if (this.package_kind_121_alt_3(builder, opp)) {
-                                altMarker3.drop();
+                            altMarker6.rollbackTo();
+                            PsiBuilder.Marker altMarker5;;
+                            altMarker5 = builder.mark();
+                            if (this.package_kind_121_alt_5(builder, opp)) {
+                                altMarker5.drop();
                             } else {
-                                altMarker3.rollbackTo();
-                                PsiBuilder.Marker altMarker2;;
-                                altMarker2 = builder.mark();
-                                if (this.package_kind_121_alt_2(builder, opp)) {
-                                    altMarker2.drop();
+                                altMarker5.rollbackTo();
+                                PsiBuilder.Marker altMarker4;;
+                                altMarker4 = builder.mark();
+                                if (this.package_kind_121_alt_4(builder, opp)) {
+                                    altMarker4.drop();
                                 } else {
-                                    altMarker2.rollbackTo();
-                                    PsiBuilder.Marker altMarker1;;
-                                    altMarker1 = builder.mark();
-                                    if (this.package_kind_121_alt_1(builder, opp)) {
-                                        altMarker1.drop();
+                                    altMarker4.rollbackTo();
+                                    PsiBuilder.Marker altMarker3;;
+                                    altMarker3 = builder.mark();
+                                    if (this.package_kind_121_alt_3(builder, opp)) {
+                                        altMarker3.drop();
                                     } else {
-                                        altMarker1.rollbackTo();
-                                        return false;
+                                        altMarker3.rollbackTo();
+                                        PsiBuilder.Marker altMarker2;;
+                                        altMarker2 = builder.mark();
+                                        if (this.package_kind_121_alt_2(builder, opp)) {
+                                            altMarker2.drop();
+                                        } else {
+                                            altMarker2.rollbackTo();
+                                            PsiBuilder.Marker altMarker1;;
+                                            altMarker1 = builder.mark();
+                                            if (this.package_kind_121_alt_1(builder, opp)) {
+                                                altMarker1.drop();
+                                            } else {
+                                                altMarker1.rollbackTo();
+                                                return false;
+                                            }
+                                        }
                                     }
                                 }
                             }
