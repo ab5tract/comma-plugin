@@ -1673,7 +1673,7 @@ grammar MAIN {
            ]*
         || <?>
         ]
-        <.ws>
+        <.ws>?
         { $*IN_DECL = '' }
         [
             <.start-element('RETURN_CONSTRAINT')>
