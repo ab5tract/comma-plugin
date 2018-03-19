@@ -24942,8 +24942,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
-                this.bsFailMark(6);
-                this.bsMark(1);
+                this.bsMark(8);
+                this.state = 1;
+                break;
+            case 1:
+                this.bsFailMark(7);
+                this.bsMark(2);
                 if (!(this.lookahead(409))) {
                     if (this.backtrack()) {
                         continue;
@@ -24952,12 +24956,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.assignDynamicVariable("$*Q_SCALARS", 1);
-                this.bsCommit(6);
-                this.state = 6;
+                this.bsCommit(7);
+                this.state = 7;
                 continue;
 
-            case 1:
-                this.bsMark(2);
+            case 2:
+                this.bsMark(3);
                 if (!(this.lookahead(410))) {
                     if (this.backtrack()) {
                         continue;
@@ -24966,12 +24970,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.assignDynamicVariable("$*Q_ARRAYS", 1);
-                this.bsCommit(6);
-                this.state = 6;
+                this.bsCommit(7);
+                this.state = 7;
                 continue;
 
-            case 2:
-                this.bsMark(3);
+            case 3:
+                this.bsMark(4);
                 if (!(this.lookahead(411))) {
                     if (this.backtrack()) {
                         continue;
@@ -24980,12 +24984,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.assignDynamicVariable("$*Q_HASHES", 1);
-                this.bsCommit(6);
-                this.state = 6;
+                this.bsCommit(7);
+                this.state = 7;
                 continue;
 
-            case 3:
-                this.bsMark(4);
+            case 4:
+                this.bsMark(5);
                 if (!(this.lookahead(412))) {
                     if (this.backtrack()) {
                         continue;
@@ -24994,12 +24998,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.assignDynamicVariable("$*Q_FUNCTIONS", 1);
-                this.bsCommit(6);
-                this.state = 6;
+                this.bsCommit(7);
+                this.state = 7;
                 continue;
 
-            case 4:
-                this.bsMark(5);
+            case 5:
+                this.bsMark(6);
                 if (!(this.lookahead(413))) {
                     if (this.backtrack()) {
                         continue;
@@ -25008,11 +25012,11 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.assignDynamicVariable("$*Q_CLOSURES", 1);
-                this.bsCommit(6);
-                this.state = 6;
+                this.bsCommit(7);
+                this.state = 7;
                 continue;
 
-            case 5:
+            case 6:
                 if (!(this.lookahead(414))) {
                     if (this.backtrack()) {
                         continue;
@@ -25021,15 +25025,20 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.assignDynamicVariable("$*Q_BACKSLASHES", 1);
-                this.state = 6;
+                this.state = 7;
                 continue;
 
-            case 6:
+            case 7:
+                this.bsCommit(8);
+                this.state = 8;
+                continue;
+
+            case 8:
                 this.setArgs();
-                this.state = 7;
+                this.state = 9;
                 return 176;
 
-            case 7:
+            case 9:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;

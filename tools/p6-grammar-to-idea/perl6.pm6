@@ -2860,7 +2860,7 @@ grammar MAIN {
         || <?before 'f'> { $*Q_FUNCTIONS = 1 }
         || <?before 'c'> { $*Q_CLOSURES = 1 }
         || <?before 'b'> { $*Q_BACKSLASHES = 1 }
-        ]
+        ]?
         <.quote_mod>
     }
 

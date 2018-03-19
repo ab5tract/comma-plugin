@@ -543,9 +543,7 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean quote_mod_Q_8(PsiBuilder builder) {
-        OPP opp;
-        opp = null;
+    private boolean quote_mod_Q_8_quant_7(PsiBuilder builder, OPP opp) {
         PsiBuilder.Marker altMarker6;
         altMarker6 = builder.mark();
         if (this.quote_mod_Q_8_alt_6(builder, opp)) {
@@ -588,6 +586,19 @@ public class Perl6Parser implements PsiParser {
                     }
                 }
             }
+        }
+        return true;
+    }
+
+    private boolean quote_mod_Q_8(PsiBuilder builder) {
+        OPP opp;
+        opp = null;
+        PsiBuilder.Marker quantMarker7;
+        quantMarker7 = builder.mark();
+        if (this.quote_mod_Q_8_quant_7(builder, opp)) {
+            quantMarker7.drop();
+        } else {
+            quantMarker7.rollbackTo();
         }
         if (!(this.quote_mod_73(builder))) {
             return false;
