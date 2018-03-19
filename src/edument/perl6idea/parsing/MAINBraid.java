@@ -4307,7 +4307,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 9:
                 this.bsMark(10);
-                if (!(this.literal("with"))) {
+                if (!(this.literal("without"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {
@@ -4319,7 +4319,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 10:
-                if (!(this.literal("without"))) {
+                if (!(this.literal("with"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {
@@ -9645,7 +9645,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 3:
                 this.bsMark(4);
-                if (!(this.literal("with"))) {
+                if (!(this.literal("without"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {
@@ -9657,7 +9657,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 4:
-                if (!(this.literal("without"))) {
+                if (!(this.literal("with"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {

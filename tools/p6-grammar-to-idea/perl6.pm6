@@ -330,7 +330,7 @@ grammar MAIN {
     token terminator {
         || <?[;)\]}]>
         || <?[>]> <?{ $*IN_REGEX_ASSERTION }>
-        || [ 'if' || 'unless' || 'while' || 'until' || 'for' || 'given' || 'when' || 'with' || 'without' ]
+        || [ 'if' || 'unless' || 'while' || 'until' || 'for' || 'given' || 'when' || 'without' || 'with' ]
            <.kok>
         || '-->'
     }
@@ -972,7 +972,7 @@ grammar MAIN {
     ## Statement modifiers
 
     token statement_mod_cond_keyword {
-        'if' || 'unless' || 'when' || 'with' || 'without'
+        'if' || 'unless' || 'when' || 'without' || 'with'
     }
 
     token statement_mod_cond {
