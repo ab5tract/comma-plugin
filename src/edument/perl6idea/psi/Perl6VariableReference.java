@@ -75,8 +75,9 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
                 if (!(element instanceof Perl6VariableDecl)) continue;
                 Perl6ScopedDecl scopeDecl = PsiTreeUtil.getParentOfType(element, Perl6ScopedDecl.class);
                 if (scopeDecl != null && scopeDecl.getScope().equals("has")) {
-                    outer.put(element.getText().replace('.', '!'), element);
-                    outer.put(element.getText(), element);
+                    // No null is possible here as implementation returns empty string in worst case
+                    outer.put(element.getName().replace('.', '!'), element);
+                    outer.put(element.getName(), element);
                 }
             }
         for (Map.Entry<String, Perl6PsiElement> entry : outer.entrySet()) {

@@ -24,7 +24,7 @@ public class Perl6VariableDeclImpl extends ASTWrapperPsiElement implements Perl6
     @Override
     public String getName() {
         PsiElement nameIdent = getNameIdentifier();
-        return nameIdent != null ? nameIdent.getText() : null;
+        return nameIdent != null ? nameIdent.getText() : "";
     }
 
     @Override
