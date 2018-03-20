@@ -35,7 +35,7 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
             }
             return Result.STOP;
         }
-        else if (sigilsAndTwigils.contains(charTyped) || Character.isLetter(charTyped) || charTyped == '_') {
+        else if (sigilsAndTwigils.contains(charTyped) || Character.isLetter(charTyped) || charTyped == '_' || charTyped == '-') {
             AutoPopupController.getInstance(project).scheduleAutoPopup(editor);
             return Result.STOP;
         }
