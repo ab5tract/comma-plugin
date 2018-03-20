@@ -15,6 +15,8 @@ import com.intellij.psi.PsiFile;
 import edument.perl6idea.module.Perl6ModuleBuilder;
 import edument.perl6idea.utils.Patterns;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static java.io.File.separator;
@@ -67,12 +69,15 @@ public class NewModuleAction extends AnAction {
                 "New Module Name",
                 Messages.getQuestionIcon(), modulePrefix, validator);
         // If user cancelled action.
-        if (moduleName == null)
-            return;
+        if (moduleName == null) return;
+        Path meta = Perl6ModuleBuilder.getMETAFilePath(project);
+        boolean metaExists = true;
+        if (meta != null)
+            metaExists = !Files.exists(meta);
 
-        String modulePath = Perl6ModuleBuilder.stubModule(project, Paths.get(baseDir).toString(),
+        String modulePath = Perl6ModuleBuilder.stubModule(project, baseDir,
                 moduleName, null,
-                !Perl6ModuleBuilder.getMETAFilePath(project).toFile().exists());
+                metaExists);
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(modulePath).toFile());
         assert moduleFile != null;
         FileEditorManager.getInstance(project).openFile(moduleFile, true);

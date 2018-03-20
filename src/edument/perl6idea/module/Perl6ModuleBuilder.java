@@ -2,6 +2,8 @@ package edument.perl6idea.module;
 
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
@@ -153,13 +155,15 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     }
 
     private static void writeCodeToPath(Path codePath, List<String> lines) {
-        try {
-            if (Files.notExists(codePath.getParent()))
-                Files.createDirectories(codePath.getParent());
-            Files.write(codePath, lines, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ApplicationManager.getApplication().runWriteAction(() -> {
+            try {
+                if (Files.notExists(codePath.getParent()))
+                    Files.createDirectories(codePath.getParent());
+                Files.write(codePath, lines, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                Logger.getInstance(Perl6ModuleBuilder.class).error(e);
+            }
+        });
     }
 
     public static String stubTest(String testPath, String fileName, List<String> imports) {
