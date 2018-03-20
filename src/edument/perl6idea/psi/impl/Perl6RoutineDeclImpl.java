@@ -84,7 +84,7 @@ public class Perl6RoutineDeclImpl extends ASTWrapperPsiElement implements Perl6R
     @Override
     public String getName() {
         PsiElement nameIdent = getNameIdentifier();
-        return nameIdent != null ? nameIdent.getText() : null;
+        return nameIdent != null ? nameIdent.getText() : "";
     }
 
     @Override
