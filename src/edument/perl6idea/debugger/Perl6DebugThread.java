@@ -17,8 +17,10 @@ import org.edument.moarvm.DebugEvent;
 import org.edument.moarvm.EventType;
 import org.edument.moarvm.RemoteInstance;
 import org.edument.moarvm.types.ExecutionStack;
-import org.edument.moarvm.types.Kind;
-import org.edument.moarvm.types.Lexical.*;
+import org.edument.moarvm.types.Lexical.IntValue;
+import org.edument.moarvm.types.Lexical.Lexical;
+import org.edument.moarvm.types.Lexical.NumValue;
+import org.edument.moarvm.types.Lexical.StrValue;
 import org.edument.moarvm.types.StackFrame;
 import org.edument.moarvm.types.event.BreakpointNotification;
 
@@ -124,18 +126,23 @@ public class Perl6DebugThread extends Thread {
         lex.forEach((k, v) -> {
             String value;
             String type;
-            if (v.getKind() == Kind.INT) {
-                type = "int";
-                value = String.valueOf(((IntValue)v).getValue());
-            } else if (v.getKind() == Kind.NUM) {
-                type = "num";
-                value = String.valueOf(((NumValue)v).getValue());
-            } else if (v.getKind() == Kind.STR) {
-                type = "str";
-                value = String.valueOf(((StrValue)v).getValue());
-            } else {
-                type = "obj";
-                value = "OBJECT";
+            switch (v.getKind()) {
+                case INT:
+                    type = "int";
+                    value = String.valueOf(((IntValue) v).getValue());
+                    break;
+                case NUM:
+                    type = "num";
+                    value = String.valueOf(((NumValue) v).getValue());
+                    break;
+                case STR:
+                    type = "str";
+                    value = String.valueOf(((StrValue) v).getValue());
+                    break;
+                default:
+                    type = "obj";
+                    value = "OBJECT";
+                    break;
             }
             result[i.get()] = new Perl6ValueDescriptor(k, type, value);
             i.getAndIncrement();

@@ -66,24 +66,28 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
             VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemDependentName(moduleLibraryPath));
             if (sourceRoot != null)
                 contentEntry.addSourceFolder(sourceRoot, false, sourcePath.second);
-            if (type == Perl6ProjectType.PERL6_SCRIPT) {
-                stubScript(moduleLibraryPath, this.scriptName);
-            } else if (type == Perl6ProjectType.PERL6_MODULE) {
-                if (moduleLibraryPath.endsWith("lib"))
-                    stubModule(project, moduleLibraryPath, this.moduleName, null, true);
-                if (moduleLibraryPath.endsWith("t"))
-                    stubTest(moduleLibraryPath,
-                            "00-sanity.t",
-                            Collections.singletonList(moduleName));
-            } else if (type == Perl6ProjectType.PERL6_APPLICATION) {
-                if (moduleLibraryPath.endsWith("lib"))
-                    stubModule(project, moduleLibraryPath, this.moduleName, this.entryPointName, true);
-                if (moduleLibraryPath.endsWith("bin"))
-                    stubEntryPoint(moduleLibraryPath);
-                if (moduleLibraryPath.endsWith("t"))
-                    stubTest(moduleLibraryPath,
-                            "00-sanity.t",
-                            Collections.singletonList(moduleName));
+            switch (type) {
+                case PERL6_SCRIPT:
+                    stubScript(moduleLibraryPath, this.scriptName);
+                    break;
+                case PERL6_MODULE:
+                    if (moduleLibraryPath.endsWith("lib"))
+                        stubModule(project, moduleLibraryPath, this.moduleName, null, true);
+                    if (moduleLibraryPath.endsWith("t"))
+                        stubTest(moduleLibraryPath,
+                                "00-sanity.t",
+                                Collections.singletonList(moduleName));
+                    break;
+                case PERL6_APPLICATION:
+                    if (moduleLibraryPath.endsWith("lib"))
+                        stubModule(project, moduleLibraryPath, this.moduleName, this.entryPointName, true);
+                    if (moduleLibraryPath.endsWith("bin"))
+                        stubEntryPoint(moduleLibraryPath);
+                    if (moduleLibraryPath.endsWith("t"))
+                        stubTest(moduleLibraryPath,
+                                "00-sanity.t",
+                                Collections.singletonList(moduleName));
+                    break;
             }
         }
     }
@@ -143,7 +147,9 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     }
 
     public static Path getMETAFilePath(Project project) {
-        return Paths.get(project.getBasePath(), "META6.json");
+        if (project.getBasePath() != null)
+            return Paths.get(project.getBasePath(), "META6.json");
+        return null;
     }
 
     private static void writeCodeToPath(Path codePath, List<String> lines) {

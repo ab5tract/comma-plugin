@@ -13,7 +13,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import java.awt.*;
-import java.util.Objects;
 
 class Perl6ModuleWizardStep extends ModuleWizardStep {
     private final Perl6ModuleBuilder builder;
@@ -40,24 +39,30 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
         layout.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
         layout.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
         myMainPanel.setLayout(layout);
-        if (Objects.equals(builder.getType(), Perl6ProjectType.PERL6_SCRIPT)) {
-            myScriptName = new JBTextField(40);
-            LabeledComponent<JTextField> scriptName = LabeledComponent.create(myScriptName, "Script name", BorderLayout.WEST);
-            myMainPanel.add(scriptName);
-        } else if (Objects.equals(builder.getType(), Perl6ProjectType.PERL6_MODULE)) {
-            myModuleName = new JBTextField(40);
-            LabeledComponent<JTextField> moduleName = LabeledComponent.create(myModuleName, "Module name", BorderLayout.WEST);
-            myMainPanel.add(moduleName);
-        } else {
-            GridBagConstraints fieldConstraints = new GridBagConstraints();
-            fieldConstraints.gridy = 0;
-            myModuleName = new JBTextField(40);
-            LabeledComponent<JTextField> moduleName = LabeledComponent.create(myModuleName, "Module name", BorderLayout.WEST);
-            myMainPanel.add(moduleName, fieldConstraints);
-            fieldConstraints.gridy = 1;
-            myEntryName = new JBTextField(40);
-            LabeledComponent<JTextField> entryPointName = LabeledComponent.create(myEntryName, "Entry point name", BorderLayout.WEST);
-            myMainPanel.add(entryPointName, fieldConstraints);
+        switch (builder.getType()) {
+            case PERL6_SCRIPT:
+                myScriptName = new JBTextField(40);
+                LabeledComponent<JTextField> scriptName = LabeledComponent.create(myScriptName, "Script name", BorderLayout.WEST);
+                myMainPanel.add(scriptName);
+                break;
+            case PERL6_MODULE: {
+                myModuleName = new JBTextField(40);
+                LabeledComponent<JTextField> moduleName = LabeledComponent.create(myModuleName, "Module name", BorderLayout.WEST);
+                myMainPanel.add(moduleName);
+                break;
+            }
+            default: {
+                GridBagConstraints fieldConstraints = new GridBagConstraints();
+                fieldConstraints.gridy = 0;
+                myModuleName = new JBTextField(40);
+                LabeledComponent<JTextField> moduleName = LabeledComponent.create(myModuleName, "Module name", BorderLayout.WEST);
+                myMainPanel.add(moduleName, fieldConstraints);
+                fieldConstraints.gridy = 1;
+                myEntryName = new JBTextField(40);
+                LabeledComponent<JTextField> entryPointName = LabeledComponent.create(myEntryName, "Entry point name", BorderLayout.WEST);
+                myMainPanel.add(entryPointName, fieldConstraints);
+                break;
+            }
         }
     }
 
