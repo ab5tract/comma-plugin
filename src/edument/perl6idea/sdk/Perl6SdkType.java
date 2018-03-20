@@ -58,6 +58,7 @@ public class Perl6SdkType extends SdkType {
         return null;
     }
 
+    @Override
     public boolean isValidSdkHome(@NotNull String path) {
         return Paths.get(path, "perl6") != null;
     }
