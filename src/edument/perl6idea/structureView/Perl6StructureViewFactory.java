@@ -3,7 +3,6 @@ package edument.perl6idea.structureView;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.lang.PsiStructureViewFactory;
 import com.intellij.psi.PsiFile;
-import edument.perl6idea.psi.Perl6File;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

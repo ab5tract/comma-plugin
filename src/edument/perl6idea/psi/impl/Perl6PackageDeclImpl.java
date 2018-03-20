@@ -39,7 +39,7 @@ public class Perl6PackageDeclImpl extends ASTWrapperPsiElement implements Perl6P
         if (list == null) return new Perl6RoutineDecl[0];
         ASTNode[] statements = list.getChildren(TokenSet.create(STATEMENT));
         for (ASTNode node : statements) {
-            PsiElement child = node.getFirstChildNode().getPsi();;
+            PsiElement child = node.getFirstChildNode().getPsi();
             if (child instanceof Perl6RoutineDeclImpl) {
                 Perl6RoutineDecl routine = (Perl6RoutineDecl)child;
                 if (routine.isPrivateMethod())

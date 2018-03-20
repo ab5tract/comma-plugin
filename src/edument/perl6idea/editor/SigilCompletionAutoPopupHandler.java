@@ -31,9 +31,7 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
         LookupImpl lookup = (LookupImpl) LookupManager.getActiveLookup(editor);
         if (lookup != null) {
             if (editor.getSelectionModel().hasSelection()) {
-                lookup.performGuardedChange(() -> {
-                    EditorModificationUtil.deleteSelectedText(editor);
-                });
+                lookup.performGuardedChange(() -> EditorModificationUtil.deleteSelectedText(editor));
             }
             return Result.STOP;
         }

@@ -83,7 +83,6 @@ public class ModuleMetaChangeListener implements ApplicationComponent, BulkFileL
             String oldName = metaAndModule.get(1);
             String newName = calculateModuleName(evt.getPath()).get(1);
             updateMeta(metaPath, oldName, newName);
-
         }
     }
 
