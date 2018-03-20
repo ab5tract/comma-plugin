@@ -16699,8 +16699,13 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsFailMark(10);
-                this.bsMark(4);
+                this.startToken(Perl6TokenTypes.PARSING_INITIALIZER);
+                this.state = 1;
+                return -3;
+
+            case 1:
+                this.bsFailMark(11);
+                this.bsMark(5);
                 this.startToken(Perl6TokenTypes.INFIX);
                 if (!(this.literal("="))) {
                     if (this.backtrack()) {
@@ -16709,14 +16714,14 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.state = 1;
+                this.state = 2;
                 return -3;
 
-            case 1:
-                this.bsMark(3);
-                this.state = 2;
-                break;
             case 2:
+                this.bsMark(4);
+                this.state = 3;
+                break;
+            case 3:
                 if (!(this.isValueTruthy(this.testStrEQ(this.findDynamicVariable("$*LEFTSIGIL"), "$")))) {
                     if (this.backtrack()) {
                         continue;
@@ -16725,17 +16730,17 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.assignDynamicVariable("$*EXPR_PREC", "i<=");
-                this.bsCommit(3);
-                this.state = 3;
-                continue;
-
-            case 3:
-                this.bsCommit(10);
-                this.state = 10;
+                this.bsCommit(4);
+                this.state = 4;
                 continue;
 
             case 4:
-                this.bsMark(6);
+                this.bsCommit(11);
+                this.state = 11;
+                continue;
+
+            case 5:
+                this.bsMark(7);
                 this.startToken(Perl6TokenTypes.INFIX);
                 if (!(this.literal(":="))) {
                     if (this.backtrack()) {
@@ -16744,16 +16749,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.state = 5;
+                this.state = 6;
                 return -3;
 
-            case 5:
-                this.bsCommit(10);
-                this.state = 10;
+            case 6:
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
-            case 6:
-                this.bsMark(8);
+            case 7:
+                this.bsMark(9);
                 this.startToken(Perl6TokenTypes.INFIX);
                 if (!(this.literal("::="))) {
                     if (this.backtrack()) {
@@ -16762,15 +16767,15 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.state = 7;
+                this.state = 8;
                 return -3;
 
-            case 7:
-                this.bsCommit(10);
-                this.state = 10;
+            case 8:
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
-            case 8:
+            case 9:
                 this.startToken(Perl6TokenTypes.INFIX);
                 if (!(this.literal(".="))) {
                     if (this.backtrack()) {
@@ -16779,20 +16784,20 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.state = 9;
+                this.state = 10;
                 return -3;
 
-            case 9:
+            case 10:
                 this.assignDynamicVariable("$*DOTTY", 1);
-                this.state = 10;
+                this.state = 11;
                 continue;
 
-            case 10:
+            case 11:
                 this.setArgs();
-                this.state = 11;
+                this.state = 12;
                 return 18;
 
-            case 11:
+            case 12:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -16802,8 +16807,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsFailMark(19);
-                this.bsMark(14);
+                this.bsFailMark(24);
+                this.bsMark(18);
                 if (!(this.isValueTruthy(this.findDynamicVariable("$*DOTTY")))) {
                     if (this.backtrack()) {
                         continue;
@@ -16812,15 +16817,17 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.startToken(Perl6TokenTypes.IS_DOTTY);
-                this.state = 12;
+                this.state = 13;
                 return -3;
 
-            case 12:
+            case 13:
+                this.bsFailMark(17);
+                this.bsMark(15);
                 this.setArgs();
-                this.state = 13;
+                this.state = 14;
                 return 195;
 
-            case 13:
+            case 14:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -16830,12 +16837,25 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(19);
-                this.state = 19;
+                this.bsCommit(17);
+                this.state = 17;
                 continue;
 
-            case 14:
-                this.bsMark(17);
+            case 15:
+                this.startToken(Perl6TokenTypes.INITIALIZER_MISSING);
+                this.state = 16;
+                return -3;
+
+            case 16:
+                this.state = 17;
+                continue;
+
+            case 17:
+                this.bsCommit(24);
+                this.state = 24;
+                continue;
+
+            case 18:
                 if (this.isValueTruthy(this.findDynamicVariable("$*DOTTY"))) {
                     if (this.backtrack()) {
                         continue;
@@ -16844,15 +16864,17 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.startToken(Perl6TokenTypes.NOT_DOTTY);
-                this.state = 15;
+                this.state = 19;
                 return -3;
 
-            case 15:
+            case 19:
+                this.bsFailMark(23);
+                this.bsMark(21);
                 this.setArgs(this.findDynamicVariable("$*EXPR_PREC"));
-                this.state = 16;
+                this.state = 20;
                 return 187;
 
-            case 16:
+            case 20:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -16862,20 +16884,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(19);
-                this.state = 19;
+                this.bsCommit(23);
+                this.state = 23;
                 continue;
 
-            case 17:
+            case 21:
                 this.startToken(Perl6TokenTypes.INITIALIZER_MISSING);
-                this.state = 18;
+                this.state = 22;
                 return -3;
 
-            case 18:
-                this.state = 19;
+            case 22:
+                this.state = 23;
                 continue;
 
-            case 19:
+            case 23:
+                this.state = 24;
+                continue;
+
+            case 24:
                 return -1;
 
             }

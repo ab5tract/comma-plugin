@@ -1901,6 +1901,7 @@ grammar MAIN {
         :my $*EXPR_PREC = 'e=';
         :my $*DOTTY = 0;
         <?before ['=' || ':=' || '::=' || '.='] <.ws>>
+        <.start-token('PARSING_INITIALIZER')> <?> <.end-token('PARSING_INITIALIZER')>
         <.start-element('INFIX')>
         [
         || <.start-token('INFIX')> '=' <.end-token('INFIX')>
@@ -1914,11 +1915,16 @@ grammar MAIN {
         [
         || <?{ $*DOTTY }>
            <.start-token('IS_DOTTY')> <?> <.end-token('IS_DOTTY')>
-           <.dottyop>
+           [
+           || <.dottyop>
+           || <.start-token('INITIALIZER_MISSING')> <?> <.end-token('INITIALIZER_MISSING')>
+           ]
         || <!{ $*DOTTY }>
            <.start-token('NOT_DOTTY')> <?> <.end-token('NOT_DOTTY')>
-           <.EXPR($*EXPR_PREC)>
-        || <.start-token('INITIALIZER_MISSING')> <?> <.end-token('INITIALIZER_MISSING')>
+           [
+           || <.EXPR($*EXPR_PREC)>
+           || <.start-token('INITIALIZER_MISSING')> <?> <.end-token('INITIALIZER_MISSING')>
+           ]
         ]
     }
 

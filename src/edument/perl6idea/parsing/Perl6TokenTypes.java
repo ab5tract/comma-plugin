@@ -77,6 +77,7 @@ public interface Perl6TokenTypes {
     IElementType PARAMETER_SEPARATOR = new Perl6ElementType("PARAMETER_SEPARATOR");
     IElementType PARENTHESES_CLOSE = new Perl6ElementType("PARENTHESES_CLOSE");
     IElementType PARENTHESES_OPEN = new Perl6ElementType("PARENTHESES_OPEN");
+    IElementType PARSING_INITIALIZER = new Perl6ElementType("PARSING_INITIALIZER");
     IElementType PHASER = new Perl6ElementType("PHASER");
     IElementType POSTFIX = new Perl6ElementType("POSTFIX");
     IElementType POSTFIX_INTERPOLATIN = new Perl6ElementType("POSTFIX_INTERPOLATIN");
