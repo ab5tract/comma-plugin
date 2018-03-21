@@ -36,7 +36,7 @@ import java.util.*;
 import static java.io.File.separator;
 
 public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuilder {
-    private Perl6ProjectType type;
+    private Perl6ProjectType type = Perl6ProjectType.PERL6_SCRIPT;
     private List<Pair<String, String>> mySourcePaths;
     private String scriptName;
     private String moduleName;
