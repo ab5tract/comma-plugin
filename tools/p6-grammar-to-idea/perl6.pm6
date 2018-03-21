@@ -1574,7 +1574,7 @@ grammar MAIN {
             ]?
             <.end-element('SIGNATURE')>
         ]?
-        <.ws>
+        <.ws>?
         <.trait>*
         { $*IN_DECL = '' }
         [
@@ -1603,7 +1603,7 @@ grammar MAIN {
             ]?
             <.end-element('SIGNATURE')>
         ]?
-        <.ws>
+        <.ws>?
         <.trait>*
         { $*IN_DECL = '' }
         [
