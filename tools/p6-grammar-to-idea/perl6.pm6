@@ -2155,10 +2155,12 @@ grammar MAIN {
            <.kok>
            :my $*IN_DECL = 'constant';
            [
-           || <?before '\\' <.defterm>>
-              <.start-token('TERM_DECLARATION_BACKSLASH')>
-              '\\'
-              <.end-token('TERM_DECLARATION_BACKSLASH')>
+           || <?before '\\'? <.defterm>>
+              [
+                  <.start-token('TERM_DECLARATION_BACKSLASH')>
+                  '\\'
+                  <.end-token('TERM_DECLARATION_BACKSLASH')>
+              ]?
               <.defterm>
            || <.variable>
            || <.start-token('CONSTANT_ANON')> <?> <.end-token('CONSTANT_ANON')>
