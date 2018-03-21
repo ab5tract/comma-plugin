@@ -3361,7 +3361,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsFailMark(9);
+                this.bsFailMark(14);
                 this.bsMark(3);
                 if (!(this.lookahead(251))) {
                     if (this.backtrack()) {
@@ -3375,12 +3375,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 return -3;
 
             case 2:
-                this.bsCommit(9);
-                this.state = 9;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 3:
-                this.bsMark(8);
+                this.bsMark(13);
                 this.state = 4;
                 break;
             case 4:
@@ -3405,20 +3405,10 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.setArgs();
+                this.bsMark(8);
                 this.state = 6;
-                return 30;
-
+                break;
             case 6:
-                if (this.lastResult.isFailed()) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                } else {
-                    this.pos = this.lastResult.getPos();
-                }
                 this.setArgs();
                 this.state = 7;
                 return 18;
@@ -3433,18 +3423,60 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                rep = this.peekRep(8);
-                ++rep;
                 this.bsCommit(8);
-                this.bsMark(8, rep);
-                this.state = 4;
+                this.state = 8;
                 continue;
 
             case 8:
+                this.setArgs();
                 this.state = 9;
-                continue;
+                return 30;
 
             case 9:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsMark(12);
+                this.state = 10;
+                break;
+            case 10:
+                this.setArgs();
+                this.state = 11;
+                return 18;
+
+            case 11:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(12);
+                this.state = 12;
+                continue;
+
+            case 12:
+                rep = this.peekRep(13);
+                ++rep;
+                this.bsCommit(13);
+                this.bsMark(13, rep);
+                this.state = 4;
+                continue;
+
+            case 13:
+                this.state = 14;
+                continue;
+
+            case 14:
                 return -1;
 
             }

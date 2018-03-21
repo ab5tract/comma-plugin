@@ -234,8 +234,9 @@ grammar MAIN {
                <!before $ || <[\)\]\}]> >
                <.start-element('STATEMENT')>
                <.statement>
+               <.ws>?
                <.eat_terminator>
-               <.ws>
+               <.ws>?
                <.end-element('STATEMENT')>
            ]*
         ]
