@@ -451,10 +451,16 @@ my class GrammarCompiler {
 }
 
 sub generate-lexer(Grammar $grammar) is export {
+    my $class-name = "$grammar.name()Braid";
     my $compiler = GrammarCompiler.new(:$grammar);
     my @rule-methods = $compiler.compile-rules;
-    my @methods = flat $compiler.compile-run-rule, @rule-methods;
-    my $class = Class.new: :access<public>, :name("$grammar.name()Braid"),
+    my @methods = flat $compiler.compile-run-rule, @rule-methods,
+        ClassMethod.new:
+            :access<public>, :name<createInstance>, :signature(JavaSignature.new),
+            :return-type($class-name), :statements[
+                ret(new($class-name))
+            ];
+    my $class = Class.new: :access<public>, :name($class-name),
         :super(Class.new(:name("Cursor<$grammar.name()Braid>"))), :@methods;
     my $comp-unit = CompUnit.new:
         package => 'edument.perl6idea.parsing',

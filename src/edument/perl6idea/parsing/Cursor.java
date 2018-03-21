@@ -48,7 +48,7 @@ public abstract class Cursor<TCursor extends Cursor> {
     public TCursor initialize(CursorStack stack) {
         TCursor cursor = null;
         try {
-            cursor = (TCursor)this.getClass().getConstructors()[0].newInstance();
+            cursor = createInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -62,7 +62,7 @@ public abstract class Cursor<TCursor extends Cursor> {
     public TCursor start(int ruleNumber) {
         TCursor cursor = null;
         try {
-            cursor = (TCursor)this.getClass().getConstructors()[0].newInstance();
+            cursor = createInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -82,7 +82,7 @@ public abstract class Cursor<TCursor extends Cursor> {
             return this;
         TCursor copy = null;
         try {
-            copy = (TCursor)this.getClass().getConstructors()[0].newInstance();
+            copy = createInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -633,4 +633,6 @@ public abstract class Cursor<TCursor extends Cursor> {
     }
 
     public abstract int runRule();
+
+    public abstract TCursor createInstance();
 }

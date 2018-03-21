@@ -49506,4 +49506,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
         }
     }
 
+    public MAINBraid createInstance() {
+        return new MAINBraid();
+    }
+
 }
