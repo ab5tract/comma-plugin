@@ -1,7 +1,10 @@
 package edument.perl6idea.sdk;
 
+import com.intellij.execution.ExecutionException;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.projectRoots.*;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.utils.Perl6CommandLine;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,12 +14,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Perl6SdkType extends SdkType {
     private static final String NAME = "Perl 6 SDK";
+    private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
+    private List<String> setting;
 
     private Perl6SdkType() {
         super(NAME);
@@ -88,8 +97,7 @@ public class Perl6SdkType extends SdkType {
                 }
             }
         } catch (IOException e) {
-            // TODO: send a proper log warning here?
-            e.printStackTrace();
+            LOG.error(e);
             return null;
         }
         return null;
@@ -109,5 +117,62 @@ public class Perl6SdkType extends SdkType {
     @Override
     public String getPresentableName() {
         return "Perl 6 SDK";
+    }
+
+    public List<String> getSymbols() {
+        if (setting != null) return setting;
+        File coreSymbols = Perl6CommandLine.getResourceAsFile(this, "/symbols/perl6-core-symbols.p6");
+        List<String> subs = new ArrayList<>();
+        String perl6path = findPerl6InPath();
+        if (perl6path == null) {
+            LOG.error("getSymbols is called without Perl 6 SDK set, using fallback");
+            return getFallback();
+        }
+        if (coreSymbols == null) {
+            LOG.error("getSymbols is called with corrupted resources bundle, using fallback");
+            return getFallback();
+        }
+
+        try {
+            final Process p = Perl6CommandLine.getPerl6CommandLine(
+                    System.getProperty("java.io.tmpdir"),
+                    perl6path, coreSymbols).createProcess();
+            AtomicBoolean died = new AtomicBoolean(false);
+            final Thread read = new Thread(() -> {
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    String result;
+                    while ((result = reader.readLine()) != null)
+                        subs.add(result);
+                    reader.close();
+                } catch (IOException e) {
+                    died.set(true);
+                    LOG.error(e);
+                }
+            });
+            read.start();
+            p.waitFor();
+            if (died.get()) return getFallback();
+            setting = subs;
+            return subs;
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.error(e);
+            return getFallback();
+        }
+    }
+
+    private List<String> getFallback() {
+        File fallback = Perl6CommandLine.getResourceAsFile(this, "/symbols/CORE.fallback");
+        if (fallback == null) LOG.error("getSymbols is called with corrupted resources bundle");
+
+        try {
+            if (fallback != null) {
+                setting = Files.readAllLines(fallback.toPath(), StandardCharsets.UTF_8);
+                return setting;
+            }
+        } catch (IOException e) {
+            LOG.error(e);
+        }
+        return new ArrayList<>();
     }
 }
