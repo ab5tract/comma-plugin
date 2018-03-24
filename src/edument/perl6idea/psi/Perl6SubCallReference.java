@@ -44,9 +44,13 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6PsiElement> {
         List<Object> results = new ArrayList<>(Perl6SdkType.getInstance().getSymbols());
         while (scope != null) {
             List<Perl6PsiElement> decls = scope.getDeclarations();
+            List<Perl6ExternalElement> extern = scope.getImports();
             for (Perl6PsiElement decl : decls) {
                 if (decl instanceof Perl6RoutineDecl)
                     results.add(decl.getName());
+            }
+            for (Perl6ExternalElement ex : extern) {
+                results.addAll(ex.getDeclarations(getElement().getProject()));
             }
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }

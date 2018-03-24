@@ -69,7 +69,9 @@ public class Perl6TestRunningState extends CommandLineState {
         if (homePath == null) throw new ExecutionException("SDK is not set");
         File script = Perl6CommandLine.getResourceAsFile(this, "/testing/perl6-test-harness.p6");
         if (script == null) throw new ExecutionException("Bundled resources are corrupted");
-        return Perl6CommandLine.getPerl6CommandLine(project.getBasePath(), homePath, script);
+        return Perl6CommandLine.pushFile(
+                Perl6CommandLine.getPerl6CommandLine(project.getBasePath(), homePath),
+                script);
     }
 
     static class Perl6TestConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {

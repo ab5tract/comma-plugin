@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Queue;
 
 public interface Perl6PsiScope extends Perl6PsiElement {
-    default List<Perl6PsiElement> getDeclarations() {
-        List<Perl6PsiElement> declarations = new ArrayList<>();
+    default List<Object> walkTree(Class<?> type) {
+        List<Object> elements = new ArrayList<>();
         Queue<Perl6PsiElement> visit = new LinkedList<>();
         visit.add(this);
         while (!visit.isEmpty()) {
@@ -18,9 +18,8 @@ public interface Perl6PsiScope extends Perl6PsiElement {
             if (current == this) {
                 addChildren = true;
             } else {
-                if (current instanceof Perl6PsiDeclaration) {
-                    declarations.add(current);
-                }
+                if (type.isAssignableFrom(current.getClass()))
+                    elements.add(current);
                 if (!(current instanceof Perl6PsiScope))
                     addChildren = true;
             }
@@ -29,6 +28,20 @@ public interface Perl6PsiScope extends Perl6PsiElement {
                     if (e instanceof Perl6PsiElement)
                         visit.add((Perl6PsiElement) e);
         }
-        return declarations;
+        return elements;
+    }
+
+    default List<Perl6PsiElement> getDeclarations() {
+        List<Object> tree = walkTree(Perl6PsiDeclaration.class);
+        List<Perl6PsiElement> result = new ArrayList<>();
+        for (Object o : tree) { result.add((Perl6PsiElement) o); }
+        return result;
+    }
+
+    default List<Perl6ExternalElement> getImports() {
+        List<Object> tree = walkTree(Perl6ExternalElement.class);
+        List<Perl6ExternalElement> result = new ArrayList<>();
+        for (Object o : tree) { result.add((Perl6ExternalElement) o); }
+        return result;
     }
 }

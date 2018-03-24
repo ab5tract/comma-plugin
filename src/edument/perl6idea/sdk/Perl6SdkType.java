@@ -1,6 +1,7 @@
 package edument.perl6idea.sdk;
 
 import com.intellij.execution.ExecutionException;
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.projectRoots.*;
 import edument.perl6idea.Perl6Icons;
@@ -20,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Perl6SdkType extends SdkType {
     private static final String NAME = "Perl 6 SDK";
@@ -122,7 +122,6 @@ public class Perl6SdkType extends SdkType {
     public List<String> getSymbols() {
         if (setting != null) return setting;
         File coreSymbols = Perl6CommandLine.getResourceAsFile(this, "/symbols/perl6-core-symbols.p6");
-        List<String> subs = new ArrayList<>();
         String perl6path = findPerl6InPath();
         if (perl6path == null) {
             LOG.error("getSymbols is called without Perl 6 SDK set, using fallback");
@@ -134,28 +133,16 @@ public class Perl6SdkType extends SdkType {
         }
 
         try {
-            final Process p = Perl6CommandLine.getPerl6CommandLine(
-                    System.getProperty("java.io.tmpdir"),
-                    perl6path, coreSymbols).createProcess();
-            AtomicBoolean died = new AtomicBoolean(false);
-            final Thread read = new Thread(() -> {
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    String result;
-                    while ((result = reader.readLine()) != null)
-                        subs.add(result);
-                    reader.close();
-                } catch (IOException e) {
-                    died.set(true);
-                    LOG.error(e);
-                }
-            });
-            read.start();
-            p.waitFor();
-            if (died.get()) return getFallback();
+            GeneralCommandLine cmd = Perl6CommandLine.pushFile(
+                    Perl6CommandLine.getPerl6CommandLine(
+                            System.getProperty("java.io.tmpdir"),
+                            perl6path),
+                    coreSymbols);
+            List<String> subs = Perl6CommandLine.execute(cmd);
+            if (subs == null) return getFallback();
             setting = subs;
             return subs;
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (ExecutionException e) {
             LOG.error(e);
             return getFallback();
         }

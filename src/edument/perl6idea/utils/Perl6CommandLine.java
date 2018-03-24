@@ -6,29 +6,38 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Perl6CommandLine {
     private static Logger LOG = Logger.getInstance(Perl6CommandLine.class);
 
     @NotNull
-    public static GeneralCommandLine getPerl6CommandLine(String workingPath, String homePath, File script) throws ExecutionException {
-        GeneralCommandLine commandLine = new GeneralCommandLine()
+    public static GeneralCommandLine getPerl6CommandLine(String workingPath, String homePath) {
+        return new GeneralCommandLine()
                 .withWorkDirectory(workingPath)
                 .withExePath(Paths.get(homePath, "perl6").toString())
                 .withCharset(CharsetToolkit.UTF8_CHARSET);
+    }
+
+    public static GeneralCommandLine pushFile(GeneralCommandLine cmd, File script) throws ExecutionException {
         try {
-            commandLine.addParameter(script.getCanonicalPath());
-            commandLine.addParameter("-Ilib");
+            cmd.addParameter("-Ilib");
+            cmd.addParameter(script.getCanonicalPath());
+            return cmd;
         } catch (IOException e) {
             LOG.error(e);
-            throw new ExecutionException("Could not create execution script");
+            throw new ExecutionException("Could not get execution script");
         }
-        return commandLine;
+    }
+
+    public static GeneralCommandLine pushLine(GeneralCommandLine cmd, String line) {
+        cmd.addParameter("-e");
+        cmd.addParameter(line);
+        return cmd;
     }
 
     public static File getResourceAsFile(Object object, String resourcePath) {
@@ -53,5 +62,32 @@ public class Perl6CommandLine {
             LOG.error(e);
             return null;
         }
+    }
+
+    public static List<String> execute(GeneralCommandLine cmd) {
+        List<String> results = new ArrayList<>();
+        AtomicBoolean died = new AtomicBoolean(false);
+        try {
+            Process p = cmd.createProcess();
+            final Thread read = new Thread(() -> {
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    String result;
+                    while ((result = reader.readLine()) != null)
+                        results.add(result);
+                    reader.close();
+                } catch (IOException e) {
+                    died.set(true);
+                    LOG.error(e);
+                }
+            });
+            read.start();
+            p.waitFor();
+            if (died.get()) return null;
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error(e);
+            return null;
+        }
+        return results;
     }
 }
