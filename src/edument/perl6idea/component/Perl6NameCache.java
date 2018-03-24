@@ -8,9 +8,10 @@ import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Perl6NameCache implements ProjectComponent {
-    private Map<String, Set<String>> nameCache = new HashMap<>();
+    private Map<String, Set<String>> nameCache = new ConcurrentHashMap<>();
     private static Logger LOG = Logger.getInstance(Perl6NameCache.class);
 
     public Set<String> getNames(String name) {
