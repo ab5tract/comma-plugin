@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
+    private static final String[] ALWAYS_PRESENT_VARS = new String[]{"$?FILE", "$?LINE", "$?LANG", "%?RESOURCES", "$?PACKAGE", "$=pod", "$=finish"};
+
     public Perl6VariableReference(Perl6Variable var) {
         super(var, new TextRange(0, var.getTextLength()));
     }
@@ -47,10 +49,11 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
     @Override
     public Object[] getVariants() {
         Perl6Variable var = (Perl6Variable)getElement();
-        Perl6PsiScope scope = PsiTreeUtil.getParentOfType(var, Perl6PsiScope.class);
+
         HashMap<String, Perl6PsiElement> outer = new HashMap<>();
         HashSet<String> seen = new HashSet<>();
-        List<Object> results = new ArrayList<>();
+        List<Object> results = new ArrayList<>(Arrays.asList(ALWAYS_PRESENT_VARS));
+        Perl6PsiScope scope = PsiTreeUtil.getParentOfType(var, Perl6PsiScope.class);
         while (scope != null) {
             List<Perl6PsiElement> decls = scope.getDeclarations();
             for (Perl6PsiElement decl : decls) {
@@ -87,6 +90,14 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
                 results.add(LookupElementBuilder.create(entry.getValue(), entry.getKey()).strikeout());
             }
         }
+
+        Perl6PackageDecl packageDecl = PsiTreeUtil.getParentOfType(var, Perl6PackageDecl.class);
+        if (packageDecl != null)
+            switch (packageDecl.getPackageKind()) {
+                case "class": results.add("$?CLASS");
+                case "role":  results.add("$?ROLE");
+            }
+
         return results.toArray();
     }
 }
