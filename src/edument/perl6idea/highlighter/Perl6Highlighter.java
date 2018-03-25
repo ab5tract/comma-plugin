@@ -471,6 +471,12 @@ public final class Perl6Highlighter {
             DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE
     );
 
+    static final String REGEX_SIG_SPACE_ID = "PERL6_REGEX_SIG_SPACE";
+    public static final TextAttributesKey REGEX_SIG_SPACE = TextAttributesKey.createTextAttributesKey(
+            REGEX_SIG_SPACE_ID,
+            DefaultLanguageHighlighterColors.FUNCTION_CALL
+    );
+
     static final String STRING_LITERAL_BAD_ESCAPE_ID = "PERL6_STRING_LITERAL_BAD_ESCAPE";
     public static final TextAttributesKey STRING_LITERAL_BAD_ESCAPE = TextAttributesKey.createTextAttributesKey(
             STRING_LITERAL_BAD_ESCAPE_ID,

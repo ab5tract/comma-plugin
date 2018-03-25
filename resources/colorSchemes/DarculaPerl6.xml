@@ -72,6 +72,12 @@
       <option name="FOREGROUND" value="bbb529" />
     </value>
   </option>
+  <option name="PERL6_REGEX_SIG_SPACE">
+    <value>
+      <option name="EFFECT_COLOR" value="898989" />
+      <option name="EFFECT_TYPE" value="5" />
+    </value>
+  </option>
   <option name="PERL6_RETURN_ARROW">
     <value />
   </option>

@@ -80,6 +80,7 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Regex Lookaround (? and !)", Perl6Highlighter.REGEX_LOOKAROUND),
             new AttributesDescriptor("Regex Character Class Syntax", Perl6Highlighter.REGEX_CCLASS_SYNTAX),
             new AttributesDescriptor("Regex Modifier", Perl6Highlighter.REGEX_MOD),
+            new AttributesDescriptor("Rule Sigspace (implicit <.ws> call)", Perl6Highlighter.REGEX_SIG_SPACE),
             new AttributesDescriptor("Transliteration Literal Character", Perl6Highlighter.TRANS_CHAR),
             new AttributesDescriptor("Transliteration Escape", Perl6Highlighter.TRANS_ESCAPE),
             new AttributesDescriptor("Transliteration Range Operator", Perl6Highlighter.TRANS_RANGE),
