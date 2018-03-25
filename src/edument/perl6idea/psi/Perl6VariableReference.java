@@ -37,7 +37,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
         if (outerPackage != null)
             for (Perl6PsiElement element : outerPackage.getDeclarations()) {
                 if (!(element instanceof Perl6VariableDecl)) continue;
-                if (element.getText().replace(".", "!").equals(var.getText()))
+                if (element.getName().replace(".", "!").equals(var.getVariableName()))
                     return element;
             }
         return null;
