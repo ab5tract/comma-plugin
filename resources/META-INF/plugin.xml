@@ -40,6 +40,7 @@
     <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultPerl6.xml"/>
     <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaPerl6.xml"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.editor.SigSpaceAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.LeadingZeroAnnotation"/>
   </extensions>
 
   <actions>
