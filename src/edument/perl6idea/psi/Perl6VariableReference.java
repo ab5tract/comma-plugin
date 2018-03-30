@@ -12,8 +12,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static edument.perl6idea.parsing.Perl6TokenTypes.STATEMENT_CONTROL;
+
 public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
-    private static final String[] ALWAYS_PRESENT_VARS = new String[]{"$?FILE", "$?LINE", "$?LANG", "%?RESOURCES", "$?PACKAGE", "$=pod", "$=finish"};
+    private static final String[] ALWAYS_PRESENT_VARS = new String[]{"$_", "$/", "$!", "$?FILE", "$?LINE", "$?LANG", "%?RESOURCES", "$?PACKAGE", "$=pod", "$=finish"};
+    private static final Set<String> TOPICALIZERS = new HashSet<>(Arrays.asList("with", "without", "given", "for"));
+    private static final Set<String> ALWAYS_DECLARED_VARS = new HashSet<>(Arrays.asList("$_", "$/", "$!"));
 
     public Perl6VariableReference(Perl6Variable var) {
         super(var, new TextRange(0, var.getTextLength()));
@@ -24,17 +28,45 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
     public PsiElement resolve() {
         Perl6Variable var = (Perl6Variable)getElement();
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(var, Perl6PsiScope.class);
+
+        // Check declarations of innermost block
+        if (scope != null) {
+            for (Perl6PsiElement decl : scope.getDeclarations())
+                if (decl instanceof Perl6VariableDecl || decl instanceof Perl6Constant)
+                    if (checkDeclaration(var, decl)) return ((PsiNameIdentifierOwner)decl).getNameIdentifier();
+        }
+
+        // Without explicit definition, search for simple topicalizers for always declared variables
+        if (scope != null && ALWAYS_DECLARED_VARS.contains(var.getVariableName()))
+            for (PsiElement e = scope.getPrevSibling(); e != null; e = e.getPrevSibling())
+                if (e.getNode().getElementType().equals(STATEMENT_CONTROL) && TOPICALIZERS.contains(e.getText()))
+                    if (!(scope instanceof Perl6PointyBlock))
+                        return e;
+                    else
+                        for (Perl6Parameter param : ((Perl6PointyBlock) scope).getParams())
+                            if (param.getVariableName().equals(var.getVariableName()))
+                                return param;
+
+        // If topic variable is not resolved yet, return outer routine or one of its parameters
+        if (ALWAYS_DECLARED_VARS.contains(var.getVariableName()) && scope != null) {
+            for (Perl6PsiElement decl : scope.getDeclarations())
+                if (decl instanceof Perl6ParameterVariable && checkDeclaration(var, decl))
+                    return ((PsiNameIdentifierOwner)decl).getNameIdentifier();
+            // If it is routine already, return it
+            if (scope instanceof Perl6RoutineDecl) return scope;
+            // If it is just a Block, find nearest routine parent
+            return PsiTreeUtil.getParentOfType(scope, Perl6RoutineDecl.class);
+        }
+
+        // Check declarations of outer scopes for normal variables
         while (scope != null) {
-            List<Perl6PsiElement> decls = scope.getDeclarations();
-            for (Perl6PsiElement decl : decls) {
-                if (decl instanceof Perl6VariableDecl || decl instanceof Perl6ParameterVariable || decl instanceof Perl6Constant) {
-                    PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
-                    if (ident != null && ident.getText().equals(var.getText()))
-                        return ident;
-                }
-            }
+            for (Perl6PsiElement decl : scope.getDeclarations())
+                if (decl instanceof Perl6VariableDecl || decl instanceof Perl6Constant || decl instanceof Perl6ParameterVariable)
+                    if (checkDeclaration(var, decl)) return ((PsiNameIdentifierOwner)decl).getNameIdentifier();
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
+
+        // Check attributes
         Perl6PackageDeclImpl outerPackage = PsiTreeUtil.getParentOfType(var, Perl6PackageDeclImpl.class);
         if (outerPackage != null)
             for (Perl6PsiElement element : outerPackage.getDeclarations()) {
@@ -42,7 +74,13 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
                 if (element.getName().replace(".", "!").equals(var.getVariableName()))
                     return element;
             }
+
         return null;
+    }
+
+    private boolean checkDeclaration(Perl6Variable var, Perl6PsiElement decl) {
+        PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
+        return ident != null && ident.getText().equals(var.getText());
     }
 
     @NotNull
