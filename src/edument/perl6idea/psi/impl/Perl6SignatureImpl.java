@@ -4,10 +4,10 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6Signature;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Signature {
     public Perl6SignatureImpl(@NotNull ASTNode node) {
@@ -16,7 +16,11 @@ public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Sig
 
     public String summary(String type) {
         Perl6Parameter[] params = findChildrenByClass(Perl6Parameter.class);
-        String paramsSummary = StringUtils.join(Arrays.stream(params).map(Perl6Parameter::summary).toArray(), ", ");
+        List<String> sums = new ArrayList<>();
+        for (Perl6Parameter param : params) {
+            sums.add(param.summary());
+        }
+        String paramsSummary = String.join(", ", sums.toArray(new String[sums.size()]));
         if (type.equals(""))
             return "(" + paramsSummary + ")";
         else
