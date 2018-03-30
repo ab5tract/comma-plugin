@@ -14,8 +14,9 @@ public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Sig
         super(node);
     }
 
+    @Override
     public String summary(String type) {
-        Perl6Parameter[] params = findChildrenByClass(Perl6Parameter.class);
+        Perl6Parameter[] params = getParameters();
         List<String> sums = new ArrayList<>();
         for (Perl6Parameter param : params) {
             sums.add(param.summary());
@@ -25,5 +26,11 @@ public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Sig
             return "(" + paramsSummary + ")";
         else
             return "(" + paramsSummary + (paramsSummary.trim().length() == 0 ? "--> " : " -->") + type + ")";
+    }
+
+    @Override
+    @NotNull
+    public Perl6Parameter[] getParameters() {
+        return findChildrenByClass(Perl6Parameter.class);
     }
 }

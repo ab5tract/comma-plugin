@@ -4,6 +4,7 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Parameter;
+import edument.perl6idea.psi.Perl6ParameterVariable;
 import org.jetbrains.annotations.NotNull;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.PARAMETER_QUANTIFIER;
@@ -46,5 +47,11 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
             summary.append(maybeQuant.getText());
 
         return summary.toString();
+    }
+
+    @Override
+    public String getVariableName() {
+        Perl6ParameterVariable var = findChildByClass(Perl6ParameterVariable.class);
+        return var != null ? var.getText() : "";
     }
 }
