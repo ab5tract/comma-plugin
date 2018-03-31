@@ -8,6 +8,7 @@ public class Perl6FileTypeFactory extends FileTypeFactory {
     @Override
     public void createFileTypes(@NotNull FileTypeConsumer consumer) {
         consumer.consume(Perl6ScriptFileType.INSTANCE);
+        consumer.consume(Perl6OldStyleScriptFileType.INSTANCE);
         consumer.consume(Perl6ModuleFileType.INSTANCE);
         consumer.consume(Perl6TestFileType.INSTANCE);
     }
