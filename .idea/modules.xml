@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/comma.iml" filepath="$PROJECT_DIR$/comma.iml" />
       <module fileurl="file://$PROJECT_DIR$/comma-foundation/comma-foundation.iml" filepath="$PROJECT_DIR$/comma-foundation/comma-foundation.iml" />
       <module fileurl="file://$PROJECT_DIR$/perl6-idea-plugin.iml" filepath="$PROJECT_DIR$/perl6-idea-plugin.iml" />
     </modules>

@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <id>edument.perl6-idea-plugin</id>
   <name>Perl 6 Language Support</name>
   <version>0.1</version>
@@ -19,54 +19,5 @@
        on how to target different products -->
   <depends>com.intellij.modules.lang</depends>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <fileTypeFactory implementation="edument.perl6idea.filetypes.Perl6FileTypeFactory"/>
-    <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
-    <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>
-    <configurationType implementation="edument.perl6idea.run.Perl6RunConfigurationType"/>
-    <configurationType implementation="edument.perl6idea.testing.Perl6TestConfigurationType"/>
-    <programRunner implementation="edument.perl6idea.debugger.Perl6DebugRunner"/>
-    <xdebugger.breakpointType implementation="edument.perl6idea.debugger.Perl6LineBreakpointType"/>
-    <lang.syntaxHighlighterFactory language="Perl6" implementationClass="edument.perl6idea.highlighter.Perl6SyntaxHighlighterFactory"/>
-    <lang.parserDefinition language="Perl6" implementationClass="edument.perl6idea.parsing.Perl6ParserDefinition"/>
-    <colorSettingsPage implementation="edument.perl6idea.highlighter.Perl6ColorSettingsPage"/>
-    <lang.formatter language="Perl6" implementationClass="edument.perl6idea.formatter.Perl6FormattingModelBuilder"/>
-    <lang.braceMatcher language="Perl6" implementationClass="edument.perl6idea.editor.Perl6BraceMatcher"/>
-    <lang.psiStructureViewFactory language="Perl6" implementationClass="edument.perl6idea.structureView.Perl6StructureViewFactory"/>
-    <lang.commenter language="Perl6" implementationClass="edument.perl6idea.editor.Perl6Commenter"/>
-    <lang.foldingBuilder language="Perl6" implementationClass="edument.perl6idea.editor.Perl6FoldingBuilder"/>
-    <typedHandler implementation="edument.perl6idea.editor.SigilCompletionAutoPopupHandler"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredVariableAnnotator"/>
-    <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultPerl6.xml"/>
-    <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaPerl6.xml"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.editor.SigSpaceAnnotator"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.LeadingZeroAnnotation"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MethodNotOnRangeAnnotator"/>
-  </extensions>
-
-  <actions>
-    <action id="Perl6Plugin.NewScriptAction" class="edument.perl6idea.actions.NewScriptAction" text="Perl 6 Script"
-            description="Create new Perl 6 script in current project" icon="/icons/camelia.png">
-      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
-    </action>
-    <action id="Perl6Plugin.NewModuleAction" class="edument.perl6idea.actions.NewModuleAction" text="Perl 6 Module"
-            description="Create new Perl 6 module in current project" icon="/icons/camelia.png">
-      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewScriptAction"/>
-    </action>
-    <action id="Perl6Plugin.NewTestAction" class="edument.perl6idea.actions.NewTestAction" text="Perl 6 Test"
-            description="Create new Perl 6 test in current project" icon="/icons/camelia.png">
-      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewModuleAction"/>
-    </action>
-
-  </actions>
-  <application-components>
-    <component>
-      <implementation-class>edument.perl6idea.event.ModuleMetaChangeListener</implementation-class>
-    </component>
-  </application-components>
-  <project-components>
-    <component>
-      <implementation-class>edument.perl6idea.component.Perl6NameCache</implementation-class>
-    </component>
-  </project-components>
+  <xi:include href="common-meta.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>

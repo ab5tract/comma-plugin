@@ -1,0 +1,16 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+    <xi:include href="/META-INF/PlatformLangPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <version>0.1</version>
+    <vendor email="jonathan@edument.se" url="http://www.edument.se/">Edument Central Europe sro.</vendor>
+
+    <description><![CDATA[
+      Comma, IntelliJ IDEA-based Perl 6 IDE.
+    ]]></description>
+
+    <change-notes><![CDATA[
+    ]]>
+    </change-notes>
+
+    <xi:include href="common-meta.xml" xpointer="xpointer(/idea-plugin/*"/>
+
+</idea-plugin>
