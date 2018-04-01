@@ -21,11 +21,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Perl6SdkType extends SdkType {
     private static final String NAME = "Perl 6 SDK";
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
     private List<String> setting;
+    private Map<String, String> moarBuildConfig;
 
     private Perl6SdkType() {
         super(NAME);
@@ -117,6 +120,33 @@ public class Perl6SdkType extends SdkType {
     @Override
     public String getPresentableName() {
         return "Perl 6 SDK";
+    }
+
+    @Nullable
+    public Map<String, String> getMoarBuildConfiguration() {
+        if (moarBuildConfig != null) return moarBuildConfig;
+        String perl6path = findPerl6InPath();
+        if (perl6path == null) {
+            LOG.error("getMoarBuildConfiguration is called without Perl 6 SDK set, cannot use debug features");
+            return null;
+        }
+
+        Map<String, String> buildConfig = new TreeMap<>();
+
+        GeneralCommandLine cmd = Perl6CommandLine.getPerl6CommandLine(
+                System.getProperty("java.io.tmpdir"),
+                perl6path);
+        cmd.addParameter("--show-config");
+        List<String> subs = Perl6CommandLine.execute(cmd);
+        if (subs == null) return null;
+        for (String line : subs) {
+            int equalsPosition = line.indexOf('=');
+            String key = line.substring(0, equalsPosition);
+            String value = line.substring(equalsPosition + 1);
+            buildConfig.put(key, value);
+        }
+        moarBuildConfig = buildConfig;
+        return moarBuildConfig;
     }
 
     public List<String> getSymbols() {
