@@ -13,7 +13,7 @@ public class Perl6LoadedFileDescriptor {
 
     Perl6LoadedFileDescriptor(String path, String name) {
         if (path.contains(new CharSequenceBackedByChars(MODULE_NAME_AFTER_PATH_STARTS_WITH))) {
-            int startOfParens = path.indexOf(" (");
+            int startOfParens = path.lastIndexOf(" (");
             moduleName = path.substring(startOfParens + 2, path.length() - 1);
             this.path = path.substring(0, startOfParens);
         }
