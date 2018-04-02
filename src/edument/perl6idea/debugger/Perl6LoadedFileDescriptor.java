@@ -1,14 +1,25 @@
 package edument.perl6idea.debugger;
 
+import com.intellij.util.io.CharSequenceBackedByChars;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Perl6LoadedFileDescriptor {
     private String path;
     private String name;
+    private String moduleName;
+
+    private final static char[] MODULE_NAME_AFTER_PATH_STARTS_WITH = {' ', '('};
 
     Perl6LoadedFileDescriptor(String path, String name) {
-        this.path = path;
+        if (path.contains(new CharSequenceBackedByChars(MODULE_NAME_AFTER_PATH_STARTS_WITH))) {
+            int startOfParens = path.indexOf(" (");
+            moduleName = path.substring(startOfParens + 2, path.length() - 1);
+            this.path = path.substring(0, startOfParens);
+        }
+        else {
+            this.path = path;
+        }
         this.name = name;
     }
 
