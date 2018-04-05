@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="PLUGIN_MODULE" version="4">
-  <component name="DevKit.ModuleBuildProperties" url="file://$MODULE_DIR$/resources/META-INF/plugin.xml" />
+<module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <orderEntry type="jdk" jdkName="IntelliJ IDEA Community Edition IC-172.4343.14" jdkType="IDEA JDK" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="perl6.community.plugin" />
+    <orderEntry type="module" module-name="perl6.community.plugin.impl" />
+    <orderEntry type="module" module-name="perl6.community.plugin.resources" />
     <orderEntry type="library" name="org.json:json:20171018" level="project" />
     <orderEntry type="library" name="org.tap4j:tap4j:4.2.1" level="project" />
     <orderEntry type="module-library">

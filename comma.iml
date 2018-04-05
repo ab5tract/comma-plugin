@@ -15,6 +15,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="comma-foundation" />
+    <orderEntry type="module" module-name="perl6.community.plugin.impl" />
   </component>
 </module>

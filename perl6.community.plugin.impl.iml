@@ -9,6 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="library" name="tcServiceMessages" level="project" />
+
     <orderEntry type="module" module-name="intellij.java" />
     <orderEntry type="module" module-name="intellij.java.resources" />
     <orderEntry type="module" module-name="intellij.java.ui" />
@@ -19,6 +20,8 @@
     <orderEntry type="module" module-name="intellij.platform.editor" />
     <orderEntry type="module" module-name="intellij.platform.ide" />
     <orderEntry type="module" module-name="intellij.platform.lang.impl" />
+    <orderEntry type="module" module-name="intellij.platform.externalSystem.impl" />
+    <orderEntry type="module" module-name="intellij.platform.resources" />
     <orderEntry type="module" module-name="intellij.platform.main" />
     <orderEntry type="module" module-name="intellij.platform.smRunner" />
     <orderEntry type="module" module-name="intellij.platform.testRunner" />
