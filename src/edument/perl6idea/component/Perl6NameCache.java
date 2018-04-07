@@ -28,7 +28,7 @@ public class Perl6NameCache implements ProjectComponent {
         GeneralCommandLine cmd = Perl6CommandLine.getPerl6CommandLine(
                 System.getProperty("java.io.tmpdir"),
                 homePath);
-        String exec = String.format("use %s; for UNIT::.keys { when /^[\"&\"]<:Ll>/ { .split(\"&\")[1].say } }", name);
+        String exec = String.format("use %s; for UNIT::.keys { when /^[<[$@%%&]>]<:Ll>/ { .subst('&', '').say } }", name);
         List<String> names = Perl6CommandLine.execute(Perl6CommandLine.pushLine(cmd, exec));
         if (names != null) {
             result = new HashSet<>(names);

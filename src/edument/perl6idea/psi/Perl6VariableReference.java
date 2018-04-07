@@ -94,6 +94,9 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(var, Perl6PsiScope.class);
         while (scope != null) {
             List<Perl6PsiElement> decls = scope.getDeclarations();
+            List<Perl6ExternalElement> extern = scope.getImports();
+            for (Perl6ExternalElement ex : extern)
+                results.addAll(ex.getDeclarations(getElement().getProject()));
             for (Perl6PsiElement decl : decls) {
                 if (decl instanceof Perl6VariableDecl || decl instanceof Perl6ParameterVariable || decl instanceof Perl6Constant) {
                     PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
