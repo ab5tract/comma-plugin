@@ -42,6 +42,7 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.editor.SigSpaceAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.LeadingZeroAnnotation"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MethodNotOnRangeAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingUnitKeywordAnnotator"/>
   </extensions>
 
   <actions>
