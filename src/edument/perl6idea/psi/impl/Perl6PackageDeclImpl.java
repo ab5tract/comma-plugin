@@ -1,6 +1,5 @@
 package edument.perl6idea.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.TokenSet;
@@ -13,7 +12,7 @@ import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 
-public class Perl6PackageDeclImpl extends ASTWrapperPsiElement implements Perl6PackageDecl {
+public class Perl6PackageDeclImpl extends Perl6TypeLike implements Perl6PackageDecl {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -26,8 +25,7 @@ public class Perl6PackageDeclImpl extends ASTWrapperPsiElement implements Perl6P
 
     @Override
     public String getPackageName() {
-        PsiElement name = findChildByType(Perl6TokenTypes.NAME);
-        return name == null ? "<anon>" : name.getText();
+        return getTypeLikeName();
     }
 
     @Override
