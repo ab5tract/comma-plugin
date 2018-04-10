@@ -1,6 +1,7 @@
 package edument.perl6idea.contribution;
 
 import com.intellij.navigation.ChooseByNameContributor;
+import com.intellij.navigation.GotoClassContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -13,11 +14,12 @@ import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6TypeLike;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
 
-public class Perl6ClassNameContributor implements ChooseByNameContributor {
+public class Perl6ClassNameContributor implements ChooseByNameContributor, GotoClassContributor {
     @NotNull
     @Override
     public String[] getNames(Project project, boolean includeNonProjectItems) {
@@ -29,7 +31,8 @@ public class Perl6ClassNameContributor implements ChooseByNameContributor {
     @Override
     public NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
         Map<String, PsiElement> types = getTypeMap(project);
-        return new NavigationItem[]{(Perl6TypeLike) types.get(name)};
+        Perl6TypeLike typeLike = (Perl6TypeLike) types.get(name);
+        return new NavigationItem[]{typeLike};
     }
 
     private Map<String, PsiElement> getTypeMap(Project project) {
@@ -50,5 +53,17 @@ public class Perl6ClassNameContributor implements ChooseByNameContributor {
                                 .replace(".pm6", ""))); // Module file types
         }
         return typeMap;
+    }
+
+    @Nullable
+    @Override
+    public String getQualifiedName(NavigationItem navigationItem) {
+        return navigationItem.getName();
+    }
+
+    @Nullable
+    @Override
+    public String getQualifiedNameSeparator() {
+        return "::";
     }
 }
