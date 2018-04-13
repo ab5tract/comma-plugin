@@ -12,7 +12,7 @@ import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 
-public class Perl6PackageDeclImpl extends Perl6TypeLike implements Perl6PackageDecl {
+public class Perl6PackageDeclImpl extends Perl6SymbolLike implements Perl6PackageDecl {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
         super(node);
     }

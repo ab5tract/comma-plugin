@@ -11,7 +11,7 @@ import com.intellij.util.indexing.FileBasedIndex;
 import com.intellij.util.indexing.ID;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.Perl6File;
-import edument.perl6idea.psi.Perl6TypeLike;
+import edument.perl6idea.psi.Perl6SymbolLike;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,15 +22,15 @@ abstract class Perl6NameContributor implements GotoClassContributor {
     @NotNull
     @Override
     public String[] getNames(Project project, boolean includeNonProjectItems) {
-        Set<String> types = collectNamePool(project).keySet();
-        return types.toArray(new String[types.size()]);
+        Set<String> names = collectNamePool(project).keySet();
+        return names.toArray(new String[names.size()]);
     }
 
     @NotNull
     @Override
     public NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
         Map<String, PsiElement> types = collectNamePool(project);
-        Perl6TypeLike typeLike = (Perl6TypeLike) types.get(name);
+        Perl6SymbolLike typeLike = (Perl6SymbolLike) types.get(name);
         return new NavigationItem[]{typeLike};
     }
 

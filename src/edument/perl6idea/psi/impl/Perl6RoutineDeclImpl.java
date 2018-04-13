@@ -7,12 +7,13 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6RoutineDecl;
+import edument.perl6idea.psi.Perl6SymbolLike;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 
-public class Perl6RoutineDeclImpl extends ASTWrapperPsiElement implements Perl6RoutineDecl {
+public class Perl6RoutineDeclImpl extends Perl6SymbolLike implements Perl6RoutineDecl {
     public Perl6RoutineDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -27,6 +28,11 @@ public class Perl6RoutineDeclImpl extends ASTWrapperPsiElement implements Perl6R
     public String getRoutineName() {
         PsiElement name = findChildByType(Perl6ElementTypes.LONG_NAME);
         return name == null ? "<anon>" : name.getText();
+    }
+
+    @Override
+    public String getTypeLikeName() {
+        return getSignature();
     }
 
     @Override

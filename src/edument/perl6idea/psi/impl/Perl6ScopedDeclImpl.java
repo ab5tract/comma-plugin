@@ -6,7 +6,7 @@ import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
-public class Perl6ScopedDeclImpl extends Perl6TypeLike implements Perl6ScopedDecl {
+public class Perl6ScopedDeclImpl extends Perl6SymbolLike implements Perl6ScopedDecl {
     public Perl6ScopedDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -28,6 +28,8 @@ public class Perl6ScopedDeclImpl extends Perl6TypeLike implements Perl6ScopedDec
         if (enumElement != null) return ((Perl6EnumImpl)enumElement).getTypeLikeName();
         PsiElement subset = findChildByType(Perl6ElementTypes.SUBSET);
         if (subset != null) return ((Perl6SubsetImpl)subset).getTypeLikeName();
+        PsiElement variable = findChildByType(Perl6ElementTypes.VARIABLE_DECLARATION);
+        if (variable != null) return ((Perl6VariableDeclImpl)variable).getName();
         return "<anon>";
     }
 }

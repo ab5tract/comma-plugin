@@ -50,14 +50,14 @@ public interface Perl6PsiScope extends Perl6PsiElement {
     default Map<String, PsiElement> gatherTypes(String prefix, Map<String, PsiElement> elements, PsiElement scope) {
         for (PsiElement element : scope.getChildren()) {
             if (element instanceof Perl6Subset || element instanceof Perl6Enum || element instanceof Perl6PackageDecl) {
-                String name = ((Perl6TypeLike)element).getTypeLikeName();
+                String name = ((Perl6SymbolLike)element).getTypeLikeName();
                 if (name.toUpperCase().equals(name)) continue;
                 elements.put(prefix + "::" + name, element);
                 if (element instanceof Perl6PackageDecl)
                     gatherTypes(prefix + "::" + name, elements, element);
             } else if (element instanceof Perl6ScopedDecl) {
-                if (!(element.getLastChild() instanceof Perl6TypeLike)) continue;
-                String name = ((Perl6TypeLike)element).getTypeLikeName();
+                if (!(element.getLastChild() instanceof Perl6SymbolLike)) continue;
+                String name = ((Perl6SymbolLike)element).getTypeLikeName();
                 if (name.toUpperCase().equals(name)) continue;
                 String ident = "";
                 switch (((Perl6ScopedDecl) element).getScope()) {
@@ -77,11 +77,38 @@ public interface Perl6PsiScope extends Perl6PsiElement {
         return elements;
     }
 
-    default Map<String,PsiElement> getSymbolLike(String prefix) {
-        return gatherSymbols(prefix, new HashMap<>(), this);
+    default Map<String, PsiElement> getSymbolLike(String prefix) {
+        Map<String, PsiElement> result = gatherTypes(prefix, new HashMap<>(), this);
+        result.putAll(gatherSymbols(prefix, result, this));
+        return result;
     }
 
-    default Map<String,PsiElement> gatherSymbols(String prefix, HashMap<String, PsiElement> elements, Perl6PsiScope scope) {
-        return new HashMap<>();
+    default Map<String,PsiElement> gatherSymbols(String prefix, Map<String, PsiElement> elements, PsiElement scope) {
+        for (PsiElement element : scope.getChildren()) {
+            if (element instanceof Perl6RoutineDecl || element instanceof Perl6RegexDecl || element instanceof Perl6Constant) {
+                String name = ((Perl6SymbolLike)element).getTypeLikeName();
+                if (name.toUpperCase().equals(name)) continue;
+                elements.put(prefix + "::" + name, element);
+                if (element instanceof Perl6RoutineDecl)
+                    gatherSymbols(prefix + "::" + name, elements, element);
+            } else if (element instanceof Perl6ScopedDecl) {
+                if (!(element.getLastChild() instanceof Perl6SymbolLike)) continue;
+                String name = ((Perl6SymbolLike)element).getTypeLikeName();
+                if (name.toUpperCase().equals(name)) continue;
+                String ident = "";
+                switch (((Perl6ScopedDecl) element).getScope()) {
+                    case "has": {
+                        ident = prefix + "::" + name; break;
+                    }
+                    default: continue;
+                }
+                elements.put(ident, element);
+                Perl6PackageDecl decl = PsiTreeUtil.findChildOfType(element, Perl6PackageDecl.class);
+                if (decl != null) gatherSymbols(ident, elements, decl);
+            } else {
+                gatherSymbols(prefix, elements, element);
+            }
+        }
+        return elements;
     }
 }
