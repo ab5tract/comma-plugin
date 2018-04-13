@@ -43,16 +43,16 @@ public interface Perl6PsiScope extends Perl6PsiElement {
         return result;
     }
 
-    default Map<String, Perl6TypeLike> getTypeLike(String prefix) {
+    default Map<String, PsiElement> getTypeLike(String prefix) {
         return gatherTypes(prefix, new HashMap<>(), this);
     }
 
-    default Map<String, Perl6TypeLike> gatherTypes(String prefix, Map<String, Perl6TypeLike> elements, PsiElement scope) {
+    default Map<String, PsiElement> gatherTypes(String prefix, Map<String, PsiElement> elements, PsiElement scope) {
         for (PsiElement element : scope.getChildren()) {
             if (element instanceof Perl6Subset || element instanceof Perl6Enum || element instanceof Perl6PackageDecl) {
                 String name = ((Perl6TypeLike)element).getTypeLikeName();
                 if (name.toUpperCase().equals(name)) continue;
-                elements.put(prefix + "::" + name, (Perl6TypeLike)element);
+                elements.put(prefix + "::" + name, element);
                 if (element instanceof Perl6PackageDecl)
                     gatherTypes(prefix + "::" + name, elements, element);
             } else if (element instanceof Perl6ScopedDecl) {
@@ -65,15 +65,9 @@ public interface Perl6PsiScope extends Perl6PsiElement {
                         ident = prefix + "::" + name; break;
                     case "my":
                         ident = String.format("%s (lexical in %s)", name, prefix); break;
-                    case "augment":
-                    case "state":
-                    case "anon":
-                    case "has":
-                    case "temp":
-                    case "let":
-                        continue;
+                    default: continue;
                 }
-                elements.put(ident, (Perl6TypeLike)element);
+                elements.put(ident, element);
                 Perl6PackageDecl decl = PsiTreeUtil.findChildOfType(element, Perl6PackageDecl.class);
                 if (decl != null) gatherTypes(ident, elements, decl);
             } else {
@@ -81,5 +75,13 @@ public interface Perl6PsiScope extends Perl6PsiElement {
             }
         }
         return elements;
+    }
+
+    default Map<String,PsiElement> getSymbolLike(String prefix) {
+        return gatherSymbols(prefix, new HashMap<>(), this);
+    }
+
+    default Map<String,PsiElement> gatherSymbols(String prefix, HashMap<String, PsiElement> elements, Perl6PsiScope scope) {
+        return new HashMap<>();
     }
 }
