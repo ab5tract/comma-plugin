@@ -29,9 +29,6 @@ public class Perl6PackageDeclImpl extends Perl6TypeLike implements Perl6PackageD
     }
 
     @Override
-    public String getName() { return getTypeLikeName(); }
-
-    @Override
     public Perl6RoutineDecl[] privateMethods() {
         List<Perl6PsiElement> result = new ArrayList<>();
         Perl6Blockoid blockoid = findChildByType(BLOCKOID);

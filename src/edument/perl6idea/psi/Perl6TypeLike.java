@@ -22,8 +22,10 @@ public class Perl6TypeLike extends ASTWrapperPsiElement {
     }
 
     @Override
+    public String getName() { return getTypeLikeName(); }
+
+    @Override
     public ItemPresentation getPresentation() {
-        System.out.println("Get presentation is called!");
         return new ItemPresentation() {
             @Nullable
             @Override

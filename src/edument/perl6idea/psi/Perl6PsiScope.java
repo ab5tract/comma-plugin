@@ -56,6 +56,7 @@ public interface Perl6PsiScope extends Perl6PsiElement {
                 if (element instanceof Perl6PackageDecl)
                     gatherTypes(prefix + "::" + name, elements, element);
             } else if (element instanceof Perl6ScopedDecl) {
+                if (!(element.getLastChild() instanceof Perl6TypeLike)) continue;
                 String name = ((Perl6TypeLike)element).getTypeLikeName();
                 if (name.toUpperCase().equals(name)) continue;
                 String ident = "";
