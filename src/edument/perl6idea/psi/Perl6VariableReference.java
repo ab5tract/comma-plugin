@@ -138,7 +138,6 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
                 case "class": results.add("$?CLASS");
                 case "role":  results.add("$?ROLE");
             }
-
         return results.toArray();
     }
 }

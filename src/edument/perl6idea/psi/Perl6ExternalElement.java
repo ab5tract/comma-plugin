@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Perl6ExternalElement extends ASTWrapperPsiElement {
+public class Perl6ExternalElement extends ASTWrapperPsiElement implements Perl6PsiElement {
     public Perl6ExternalElement(@NotNull ASTNode node) {
         super(node);
     }
