@@ -8,8 +8,12 @@ import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6SymbolLike;
+import edument.perl6idea.psi.Perl6Trait;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 
@@ -38,6 +42,14 @@ public class Perl6RoutineDeclImpl extends Perl6SymbolLike implements Perl6Routin
     @Override
     public String getSignature() {
         return getRoutineName() + summarySignature();
+    }
+
+    @Override
+    public List<String> getTraits() {
+        Perl6Trait[] traits = findChildrenByClass(Perl6Trait.class);
+        List<String> traitText = new ArrayList<>();
+        for (Perl6Trait trait : traits) traitText.add(trait.getText());
+        return traitText;
     }
 
     @Override

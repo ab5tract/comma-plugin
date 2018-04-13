@@ -25,6 +25,16 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6PsiElement> {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(call, Perl6PsiScope.class);
         while (scope != null) {
             List<Perl6PsiElement> decls = scope.getDeclarations();
+            List<Perl6ExternalElement> extern = scope.getImports();
+            for (Perl6ExternalElement ex : extern) {
+                List<Perl6PsiElement> localDecls = ex.getLocalDeclarations(getElement().getProject());
+                for (Perl6PsiElement decl : localDecls) {
+                    if (!(decl instanceof Perl6RoutineDecl)) continue;
+                    if (((Perl6RoutineDecl) decl).getRoutineName().equals(call.getCallName()) &&
+                            ((Perl6RoutineDecl) decl).getTraits().contains("is export"))
+                        return ((Perl6RoutineDecl) decl).getNameIdentifier();
+                }
+            }
             for (Perl6PsiElement decl : decls) {
                 if (decl instanceof Perl6RoutineDecl) {
                     PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
@@ -50,7 +60,7 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6PsiElement> {
                     results.add(decl.getName());
             }
             for (Perl6ExternalElement ex : extern) {
-                results.addAll(ex.getDeclarations(getElement().getProject()));
+                results.addAll(ex.getExternallyDeclaredNames(getElement().getProject()));
             }
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
