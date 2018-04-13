@@ -83,6 +83,7 @@ public interface Perl6PsiScope extends Perl6PsiElement {
         return result;
     }
 
+    // XXX Basically a copy-paste, not sure if can be prettier without high-order functions
     default Map<String,PsiElement> gatherSymbols(String prefix, Map<String, PsiElement> elements, PsiElement scope) {
         for (PsiElement element : scope.getChildren()) {
             if (element instanceof Perl6RoutineDecl || element instanceof Perl6RegexDecl || element instanceof Perl6Constant) {
