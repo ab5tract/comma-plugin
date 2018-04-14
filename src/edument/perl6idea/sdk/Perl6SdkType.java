@@ -151,7 +151,7 @@ public class Perl6SdkType extends SdkType {
 
     public List<String> getSymbols() {
         if (setting != null) return setting;
-        File coreSymbols = Perl6CommandLine.getResourceAsFile(this, "/symbols/perl6-core-symbols.p6");
+        File coreSymbols = Perl6CommandLine.getResourceAsFile("symbols/perl6-core-symbols.p6");
         String perl6path = findPerl6InPath();
         if (perl6path == null) {
             LOG.error("getSymbols is called without Perl 6 SDK set, using fallback");
@@ -179,7 +179,7 @@ public class Perl6SdkType extends SdkType {
     }
 
     private List<String> getFallback() {
-        File fallback = Perl6CommandLine.getResourceAsFile(this, "/symbols/CORE.fallback");
+        File fallback = Perl6CommandLine.getResourceAsFile("symbols/CORE.fallback");
         if (fallback == null) LOG.error("getSymbols is called with corrupted resources bundle");
 
         try {

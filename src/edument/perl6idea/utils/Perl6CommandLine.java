@@ -41,12 +41,10 @@ public class Perl6CommandLine {
         return cmd;
     }
 
-    public static File getResourceAsFile(Object object, String resourcePath) {
+    public static File getResourceAsFile(String resourcePath) {
         try {
-            InputStream in = object.getClass().getClassLoader().getResourceAsStream(resourcePath);
-            if (in == null)
-                return null;
-
+            InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+            if (in == null) return null;
             File tempFile = File.createTempFile(String.valueOf(in.hashCode()), ".tmp");
             tempFile.deleteOnExit();
 
