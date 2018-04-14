@@ -13,7 +13,7 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testCompletion() {
-        myFixture.configureByFile("DefaultTestData.pm6");
+        myFixture.configureByFile("DefaultTestDataSigil1.pm6");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
