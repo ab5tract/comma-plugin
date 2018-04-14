@@ -12,6 +12,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6Variable)) return;
         final Perl6Variable ref = (Perl6Variable) element;
+        if (ref.getVariableName() == null) return;
         if ((ref.getTwigil() == ' ' || ref.getTwigil() == '!') && !(ref.getVariableName().contains("::"))
                 && !(ref.getVariableName().contains(":[")))
             if (new Perl6VariableReference(ref).resolve() == null)
