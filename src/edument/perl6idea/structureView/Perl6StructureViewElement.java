@@ -25,9 +25,9 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
     public TreeElement[] getChildren() {
         List<StructureViewTreeElement> structureElements = new ArrayList<>();
         if (element instanceof Perl6PsiScope)
-            for (Perl6PsiElement child : ((Perl6PsiScope)element).getDeclarations())
-                if (applicable(child))
-                    structureElements.add(new Perl6StructureViewElement(child));
+            for (Perl6PsiElement decl : ((Perl6PsiScope)element).getDeclarations())
+                if (applicable(decl))
+                    structureElements.add(new Perl6StructureViewElement(decl));
         return structureElements.toArray(StructureViewTreeElement.EMPTY_ARRAY);
     }
 
