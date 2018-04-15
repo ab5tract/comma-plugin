@@ -67,7 +67,7 @@ public class Perl6TestRunningState extends CommandLineState {
         if (projectSdk == null) throw new ExecutionException("SDK is not set");
         String homePath = projectSdk.getHomePath();
         if (homePath == null) throw new ExecutionException("SDK is not set");
-        File script = Perl6CommandLine.getResourceAsFile("testing/perl6-test-harness.p6");
+        File script = Perl6CommandLine.getResourceAsFile(this,"testing/perl6-test-harness.p6");
         if (script == null) throw new ExecutionException("Bundled resources are corrupted");
         return Perl6CommandLine.pushFile(
                 Perl6CommandLine.getPerl6CommandLine(project.getBasePath(), homePath),

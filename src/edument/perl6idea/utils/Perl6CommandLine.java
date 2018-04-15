@@ -41,9 +41,9 @@ public class Perl6CommandLine {
         return cmd;
     }
 
-    public static File getResourceAsFile(String resourcePath) {
+    public static File getResourceAsFile(Object object, String resourcePath) {
         try {
-            InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+            InputStream in = object.getClass().getClassLoader().getResourceAsStream(resourcePath);
             if (in == null) return null;
             File tempFile = File.createTempFile(String.valueOf(in.hashCode()), ".tmp");
             tempFile.deleteOnExit();
