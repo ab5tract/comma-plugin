@@ -130,11 +130,9 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
         Stream<String> nonLexical = exported.filter(s -> !s.contains("lexical"));
-        System.out.println(moduleNames);
         nonLexical = nonLexical.filter(
                 s -> {
                     boolean used = false;
-                    System.out.println(s);
                     for (String name : moduleNames) if (s.startsWith(name)) used = true;
                     return used;
                 });
