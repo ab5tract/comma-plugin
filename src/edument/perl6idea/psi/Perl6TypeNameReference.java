@@ -1,10 +1,12 @@
 package edument.perl6idea.psi;
 
+import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.Stack;
+import edument.perl6idea.contribution.Perl6ClassNameContributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +42,16 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
             }
         }
         if (local) return localMultipleResolution(parts, root, inner);
-        return null;
+        return externalResolution();
+    }
+
+    private PsiElement externalResolution() {
+        Perl6ClassNameContributor contributor = new Perl6ClassNameContributor();
+        PsiElement element = getElement();
+        NavigationItem result = contributor.getItemsByName(element.getText(),
+                element.getText(),
+                element.getProject(), false)[0];
+        return result == null ? null : (PsiElement)result;
     }
 
     @Nullable
@@ -100,9 +111,7 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
             }
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
-        // External resolution
-        // TODO
-        return null;
+        return externalResolution();
     }
 
     @NotNull
