@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
     public Perl6TypeNameReference(@NotNull Perl6PsiElement element) {
@@ -117,6 +118,26 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        return new Object[0];
+        // External names.
+        Perl6ClassNameContributor contributor = new Perl6ClassNameContributor();
+        String[] names = contributor.getNames(getElement().getProject(), false);
+        Stream<String> exported = Stream.of(names);
+        Perl6PsiScope scope = PsiTreeUtil.getParentOfType(getElement(), Perl6PsiScope.class);
+        List<String> moduleNames = new ArrayList<>();
+        while (scope != null) {
+            for (Perl6ExternalElement importModule : scope.getImports())
+                moduleNames.add(importModule.getModuleName());
+            scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
+        }
+        Stream<String> nonLexical = exported.filter(s -> !s.contains("lexical"));
+        System.out.println(moduleNames);
+        nonLexical = nonLexical.filter(
+                s -> {
+                    boolean used = false;
+                    System.out.println(s);
+                    for (String name : moduleNames) if (s.startsWith(name)) used = true;
+                    return used;
+                });
+        return nonLexical.toArray();
     }
 }
