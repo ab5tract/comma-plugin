@@ -15,7 +15,7 @@
   - Type: Application.
   - Name: `Comma`.
   - Main class: com.intellij.idea.Main (type `Main` in Search by Name and select needed)
-  - VM options: -ea  -Xmx192m -Didea.is.internal=true -Didea.platform.prefix=CommaCore
+  - VM options: -ea  -Xmx192m -Didea.is.internal=true -Didea.platform.prefix=CommaCore -Didea.paths.selector=Comma
   - Working directory: `intellij-community/bin`
   - Classpath of module: `comma.community`
   - JRE: `IDEA jdk`
