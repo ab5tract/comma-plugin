@@ -22,19 +22,24 @@ abstract class Perl6NameContributor implements GotoClassContributor {
     @NotNull
     @Override
     public String[] getNames(Project project, boolean includeNonProjectItems) {
-        Set<String> names = collectNamePool(project).keySet();
+        Set<String> names = collectNamePool(project, null).keySet();
         return names.toArray(new String[names.size()]);
+    }
+
+    @Nullable
+    public PsiElement getItemByName(String name, Project project, Set<String> includes) {
+        return collectNamePool(project, includes).getOrDefault(name, null);
     }
 
     @NotNull
     @Override
     public NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
-        Map<String, PsiElement> types = collectNamePool(project);
+        Map<String, PsiElement> types = collectNamePool(project, null);
         Perl6SymbolLike typeLike = (Perl6SymbolLike) types.get(name);
         return new NavigationItem[]{typeLike};
     }
 
-    private Map<String, PsiElement> collectNamePool(Project project) {
+    private Map<String, PsiElement> collectNamePool(Project project, Set<String> includes) {
         Map<String, PsiElement> typeMap = new HashMap<>();
         Collection<VirtualFile> virtualFiles = new ArrayList<>(
                 FileBasedIndex.getInstance().getContainingFiles(
@@ -49,6 +54,7 @@ abstract class Perl6NameContributor implements GotoClassContributor {
                 String modulePrefix = parts[parts.length - 1]
                         .replaceAll(File.separator, "::") // Module file types
                         .replace(".pm6", "");
+                if (includes != null && !includes.contains(modulePrefix)) continue;
                 typeMap.putAll(getNamesFromFile(file, modulePrefix));
             }
         }

@@ -50,12 +50,16 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
     }
 
     private PsiElement externalResolution() {
-        Perl6ClassNameContributor contributor = new Perl6ClassNameContributor();
         PsiElement element = getElement();
-        NavigationItem result = contributor.getItemsByName(element.getText(),
-                element.getText(),
-                element.getProject(), false)[0];
-        return result == null ? null : (PsiElement)result;
+        Perl6PsiScope scope = PsiTreeUtil.getParentOfType(element, Perl6PsiScope.class);
+        Set<String> includes = new HashSet<>();
+        while (scope != null) {
+            for (Perl6ExternalElement i : scope.getImports())
+                includes.add(i.getModuleName());
+            scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
+        }
+        return new Perl6ClassNameContributor().getItemByName(element.getText(),
+                element.getProject(), includes);
     }
 
     @Nullable
