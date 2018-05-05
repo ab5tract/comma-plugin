@@ -22,6 +22,8 @@ public class Perl6ScopedDeclImpl extends Perl6SymbolLike implements Perl6ScopedD
     }
 
     public String getTypeLikeName() {
+        PsiElement subDeclarator = findChildByType(Perl6ElementTypes.ROUTINE_DECLARATION);
+        if (subDeclarator != null) return ((Perl6RoutineDecl)subDeclarator).getRoutineName();
         PsiElement declarator = findChildByType(Perl6ElementTypes.PACKAGE_DECLARATION);
         if (declarator != null) return ((Perl6PackageDecl)declarator).getPackageName();
         PsiElement enumElement = findChildByType(Perl6ElementTypes.ENUM);
