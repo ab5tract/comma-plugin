@@ -23,6 +23,7 @@ import org.edument.moarvm.types.Lexical.NumValue;
 import org.edument.moarvm.types.Lexical.StrValue;
 import org.edument.moarvm.types.StackFrame;
 import org.edument.moarvm.types.event.BreakpointNotification;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
