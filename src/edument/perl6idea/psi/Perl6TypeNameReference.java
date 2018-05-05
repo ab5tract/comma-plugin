@@ -23,15 +23,18 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
     public PsiElement resolve() {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(getElement(), Perl6PsiScope.class);
         if (scope == null) return null;
-        String[] parts = getElement().getText().split("::");
-        if (parts.length == 1) return singleResolution(scope);
-        else return multipleResolution(parts, scope);
+        // Try out single resolution, works out for Foo and Foo::Bar cases
+        PsiElement result = singleResolution(scope);
+        if (result != null) return result;
+        // Try to resolve name where each part is another node
+        return multipleResolution(getElement().getText().split("::"), scope);
     }
 
     private PsiElement multipleResolution(String[] parts, Perl6PsiScope scope) {
         Perl6PsiElement root = null;
         // local check if type is defined in current file
-        // inner sets if we're resolving Foo->Bar or Bar<-Foo.
+        // inner sets if we're resolving Foo->Bar (referring to inner class inside of another)
+        // or Bar<-Foo (referring to outer class)
         boolean local = false, inner = false;
         for (Perl6PsiElement decl : scope.getDeclarations()) {
             if (!(decl instanceof Perl6PackageDecl)) continue;
