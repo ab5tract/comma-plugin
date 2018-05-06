@@ -1,5 +1,6 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
-    <xi:include href="/META-INF/PlatformLangPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/PlatformLangPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <version>0.1</version>
     <vendor email="jonathan@edument.se" url="http://www.edument.se/">Edument Central Europe sro.</vendor>
 
@@ -12,4 +13,38 @@
     </change-notes>
 
     <xi:include href="common-meta.xml" xpointer="xpointer(/idea-plugin/*)"/>
+    <!-- Components of standalone Comma -->
+    <extensionPoints>
+      <extensionPoint name="projectWizard.projectCategory" interface="com.intellij.ide.projectWizard.ProjectCategory"/>
+      <extensionPoint name="projectImportProvider" interface="com.intellij.projectImport.ProjectImportProvider"/>
+    </extensionPoints>
+
+    <extensions defaultExtensionNs="com.intellij">
+      <projectImportProvider implementation="com.intellij.ide.util.projectWizard.ModuleImportProvider"/>
+      <applicationService serviceInterface="com.intellij.openapi.module.ModuleTypeManager"
+                          serviceImplementation="edument.perl6idea.module.Perl6ModuleTypeManager"/>
+      <applicationService serviceImplementation="com.intellij.ide.util.newProjectWizard.SelectTemplateSettings"/>
+      <applicationService serviceInterface="com.intellij.openapi.roots.ui.OrderEntryAppearanceService"
+                          serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
+      <applicationService serviceImplementation="com.intellij.ide.projectWizard.ProjectCategoryUsagesCollector"/>
+      <projectWizard.projectCategory implementation="com.intellij.ide.projectWizard.ModuleTypeCategory"/>
+    </extensions>
+
+    <application-components>
+      <component>
+        <interface-class>com.intellij.openapi.projectRoots.JavaSdk</interface-class>
+        <implementation-class>com.intellij.openapi.projectRoots.impl.JavaSdkImpl</implementation-class>
+      </component>
+    </application-components>
+
+    <!-- Actions for standalone Comma -->
+    <!-- Actions for Welcome Screen -->
+    <actions>
+    <group id="WelcomeScreen.QuickStart.IDEA">
+      <action id="WelcomeScreen.CreateNewProject" class="com.intellij.ide.actions.NewProjectAction" icon="AllIcons.General.CreateNewProject"/>
+      <action id="WelcomeScreen.ImportProject" class="com.intellij.ide.actions.ImportProjectAction" icon="AllIcons.General.ImportProject"/>
+      <action id="WelcomeScreen.OpenProject" class="com.intellij.ide.actions.OpenFileAction" icon="AllIcons.General.OpenProject"/>
+      <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
+    </group>
+    </actions>
 </idea-plugin>
