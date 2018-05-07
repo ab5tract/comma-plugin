@@ -24,8 +24,16 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6PsiElement> {
         Perl6SubCall call = (Perl6SubCall)getElement();
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(call, Perl6PsiScope.class);
         while (scope != null) {
-            List<Perl6PsiElement> decls = scope.getDeclarations();
-            for (Perl6PsiElement decl : decls) {
+            for (Perl6ExternalElement ex : scope.getImports()) {
+                List<Perl6PsiElement> localDecls = ex.getLocalDeclarations(getElement().getProject());
+                for (Perl6PsiElement decl : localDecls) {
+                    if (!(decl instanceof Perl6RoutineDecl)) continue;
+                    if (((Perl6RoutineDecl) decl).getRoutineName().equals(call.getCallName()) &&
+                            ((Perl6RoutineDecl) decl).getTraits().contains("is export"))
+                        return ((Perl6RoutineDecl) decl).getNameIdentifier();
+                }
+            }
+            for (Perl6PsiElement decl : scope.getDeclarations()) {
                 if (decl instanceof Perl6RoutineDecl) {
                     PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
                     if (ident != null && ident.getText().equals(call.getCallName()))
@@ -43,14 +51,13 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6PsiElement> {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(getElement(), Perl6PsiScope.class);
         List<Object> results = new ArrayList<>(Perl6SdkType.getInstance().getSymbols());
         while (scope != null) {
-            List<Perl6PsiElement> decls = scope.getDeclarations();
             List<Perl6ExternalElement> extern = scope.getImports();
-            for (Perl6PsiElement decl : decls) {
+            for (Perl6PsiElement decl : scope.getDeclarations()) {
                 if (decl instanceof Perl6RoutineDecl)
                     results.add(decl.getName());
             }
             for (Perl6ExternalElement ex : extern) {
-                results.addAll(ex.getDeclarations(getElement().getProject()));
+                results.addAll(ex.getExternallyDeclaredNames(getElement().getProject()));
             }
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }

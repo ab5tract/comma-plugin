@@ -6,9 +6,10 @@ import com.intellij.psi.PsiElement;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6RegexDecl;
+import edument.perl6idea.psi.Perl6SymbolLike;
 import org.jetbrains.annotations.NotNull;
 
-public class Perl6RegexDeclImpl extends ASTWrapperPsiElement implements Perl6RegexDecl {
+public class Perl6RegexDeclImpl extends Perl6SymbolLike implements Perl6RegexDecl {
     public Perl6RegexDeclImpl(@NotNull ASTNode node) {
         super(node);
     }

@@ -93,8 +93,10 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
         List<Object> results = new ArrayList<>(Arrays.asList(ALWAYS_PRESENT_VARS));
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(var, Perl6PsiScope.class);
         while (scope != null) {
-            List<Perl6PsiElement> decls = scope.getDeclarations();
-            for (Perl6PsiElement decl : decls) {
+            List<Perl6ExternalElement> extern = scope.getImports();
+            for (Perl6ExternalElement ex : extern)
+                results.addAll(ex.getExternallyDeclaredNames(getElement().getProject()));
+            for (Perl6PsiElement decl : scope.getDeclarations()) {
                 if (decl instanceof Perl6VariableDecl || decl instanceof Perl6ParameterVariable || decl instanceof Perl6Constant) {
                     PsiElement ident = ((PsiNameIdentifierOwner)decl).getNameIdentifier();
                     if (ident != null) {
@@ -135,7 +137,6 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
                 case "class": results.add("$?CLASS");
                 case "role":  results.add("$?ROLE");
             }
-
         return results.toArray();
     }
 }

@@ -19,6 +19,5 @@
        on how to target different products -->
   <depends>com.intellij.modules.lang</depends>
 
-
   <xi:include href="common-meta.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>

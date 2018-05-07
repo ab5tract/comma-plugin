@@ -50,19 +50,13 @@ public class Perl6StackFrame extends XStackFrame {
     @Override
     public void computeChildren(@NotNull XCompositeNode node) {
         Perl6ValueDescriptor[] lexicals = myFrameDescriptor.getLexicals();
-        boolean fallback = true;
         XValueChildrenList list = new XValueChildrenList();
 
         if (lexicals != null && lexicals.length > 0) {
             list.addTopGroup(new Perl6XValueGroup("Lexical variables", lexicals, this));
-            fallback = false;
-        }
-
-        if (fallback) {
-            super.computeChildren(node);
-        }
-        else {
             node.addChildren(list, true);
+        } else {
+            super.computeChildren(node);
         }
     }
 }
