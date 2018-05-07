@@ -15,7 +15,7 @@ public class Perl6DebugCommandLineState extends Perl6RunCommandLineState {
         populateRunCommand();
     }
 
-    private void populateRunCommand() throws ExecutionException {
+    private void populateRunCommand() {
         Perl6SdkType projectSdk = Perl6SdkType.getInstance();
         Map<String, String> moarBuildConfiguration = projectSdk.getMoarBuildConfiguration();
         String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", "");
