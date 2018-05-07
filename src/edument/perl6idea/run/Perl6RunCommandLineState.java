@@ -9,7 +9,6 @@ import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Paths;
@@ -36,8 +35,9 @@ public class Perl6RunCommandLineState extends CommandLineState {
         if (path == null)
             throw new ExecutionException("Perl 6 SDK path is likely to be corrupt");
         this.command.add(Paths.get(path, "perl6").toAbsolutePath().toString());
-        if (StringUtils.isNotBlank(runConfiguration.getInterpreterParameters()))
-            this.command.add(runConfiguration.getInterpreterParameters());
+        String params = runConfiguration.getInterpreterParameters();
+        if (params != null && !params.trim().isEmpty())
+            this.command.add(params);
     }
 
     @NotNull
@@ -54,8 +54,9 @@ public class Perl6RunCommandLineState extends CommandLineState {
 
     private void setScript() {
         this.command.add(runConfiguration.getScriptPath());
+        String params = runConfiguration.getInterpreterParameters();
         // To avoid a call like `perl6 script.p6 ""`
-        if (StringUtils.isNotBlank(runConfiguration.getProgramParameters()))
-            this.command.addAll(Arrays.asList(runConfiguration.getProgramParameters().split(" ")));
+        if (params != null && !params.trim().isEmpty())
+            this.command.addAll(Arrays.asList(params.split(" ")));
     }
 }

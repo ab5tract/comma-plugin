@@ -1,0 +1,5 @@
+<idea-plugin>
+  <extensions defaultExtensionNs="com.intellij">
+    <tipAndTrick file="Welcome.html"/>
+  </extensions>
+</idea-plugin>
