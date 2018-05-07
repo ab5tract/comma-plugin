@@ -1,0 +1,18 @@
+language: java
+
+env:
+  global:
+    - export PATH="/opt/rakudo-pkg/bin:/opt/rakudo-pkg/share/perl6/site/bin:$PATH"
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'deb https://dl.bintray.com/nxadm/rakudo-pkg-debs $(lsb_release -cs) main'
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?search=0x379CE192D401AB61&op=get'
+    packages:
+      - rakudo-pkg
+
+script:
+  # Test p6-grammer-to-idea/
+  - cd tools/p6-grammar-to-idea/
+  - prove --jobs=1 -e "perl6-m -Ilib"
