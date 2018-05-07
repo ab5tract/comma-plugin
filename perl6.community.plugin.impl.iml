@@ -38,5 +38,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="org.json:json:20171018" level="project" />
+    <orderEntry type="module" module-name="intellij.java.testFramework" scope="TEST" />
   </component>
 </module>
