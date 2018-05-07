@@ -1,5 +1,8 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <xi:include href="/META-INF/PlatformLangPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/XmlPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/JsonPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/ImagesPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <version>0.1</version>
     <vendor email="jonathan@edument.se" url="http://www.edument.se/">Edument Central Europe sro.</vendor>
