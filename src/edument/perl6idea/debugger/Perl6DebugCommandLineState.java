@@ -2,7 +2,6 @@ package edument.perl6idea.debugger;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import org.apache.commons.lang.StringUtils;
 import edument.perl6idea.run.Perl6RunCommandLineState;
 import edument.perl6idea.sdk.Perl6SdkType;
 
@@ -27,7 +26,8 @@ public class Perl6DebugCommandLineState extends Perl6RunCommandLineState {
         this.command.add("--libpath=" + prefix + "/share/perl6/lib");
         this.command.add("--libpath=" + prefix + "/share/perl6/runtime");
         this.command.add(prefix + "/share/perl6/runtime/perl6.moarvm");
-        if (StringUtils.isNotBlank(runConfiguration.getInterpreterParameters()))
+        String params = runConfiguration.getInterpreterParameters();
+        if (params != null && !params.trim().isEmpty())
             this.command.add(runConfiguration.getInterpreterParameters());
     }
 }
