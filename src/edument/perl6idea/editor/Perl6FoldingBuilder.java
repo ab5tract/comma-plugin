@@ -5,6 +5,7 @@ import com.intellij.lang.folding.FoldingBuilderEx;
 import com.intellij.lang.folding.FoldingDescriptor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.FoldingGroup;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6Blockoid;
@@ -15,14 +16,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class Perl6FoldingBuilder extends FoldingBuilderEx {
+public class Perl6FoldingBuilder extends FoldingBuilderEx implements DumbAware {
     @NotNull
     @Override
     public FoldingDescriptor[] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
         int recursionLevel = 0;
         List<FoldingDescriptor> descriptors = new ArrayList<>();
         getLevelFolding(root, recursionLevel, descriptors);
-        return descriptors.toArray(new FoldingDescriptor[descriptors.size()]);
+        return descriptors.toArray(FoldingDescriptor.EMPTY);
     }
 
     private void getLevelFolding(@NotNull PsiElement root, int recursionLevel, List<FoldingDescriptor> descriptors) {
