@@ -19,3 +19,6 @@ script:
   - (cd tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
   # Run unit tests
   - ./gradlew test
+
+after_success:
+  - ./gradlew buildPlugin
