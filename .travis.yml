@@ -11,8 +11,11 @@ addons:
         key_url: 'http://keyserver.ubuntu.com/pks/lookup?search=0x379CE192D401AB61&op=get'
     packages:
       - rakudo-pkg
+before_script:
+  - ./gradlew assemble
 
 script:
   # Test p6-grammer-to-idea/
-  - cd tools/p6-grammar-to-idea/
-  - prove --jobs=1 -e "perl6-m -Ilib"
+  - (cd tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
+  # Run unit tests
+  - ./gradlew test
