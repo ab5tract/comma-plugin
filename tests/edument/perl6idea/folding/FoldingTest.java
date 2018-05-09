@@ -5,7 +5,6 @@ import org.junit.Ignore;
 
 import java.nio.file.Paths;
 
-@Ignore("Ignored to get build working see: P6I-206")
 public class FoldingTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {

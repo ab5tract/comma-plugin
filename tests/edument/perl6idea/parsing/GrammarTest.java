@@ -1,9 +1,10 @@
 package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
+import org.junit.Ignore;
 
-public class Transliteration extends ParsingTestCase {
-    public Transliteration() {
+public class GrammarTest extends ParsingTestCase {
+    public GrammarTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +14,7 @@ public class Transliteration extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/transliteration";
+        return "testData/parsing/grammar";
     }
 
     @Override

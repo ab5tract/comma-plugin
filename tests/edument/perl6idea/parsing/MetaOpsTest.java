@@ -3,9 +3,8 @@ package edument.perl6idea.parsing;
 import com.intellij.testFramework.ParsingTestCase;
 import org.junit.Ignore;
 
-@Ignore("Ignored to get build working see: P6I-206")
-public class Operators extends ParsingTestCase {
-    public Operators() {
+public class MetaOpsTest extends ParsingTestCase {
+    public MetaOpsTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -15,7 +14,7 @@ public class Operators extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/operators";
+        return "testData/parsing/metaops";
     }
 
     @Override

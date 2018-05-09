@@ -1,6 +1,7 @@
 package edument.perl6idea.actions;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import edument.perl6idea.module.Perl6ModuleBuilder;
 
@@ -12,7 +13,7 @@ import java.util.Collections;
 
 import static java.io.File.separator;
 
-public class NewActionsTestCase extends LightPlatformCodeInsightFixtureTestCase {
+public class NewActionsTest extends LightPlatformCodeInsightFixtureTestCase {
     public void testNewScriptAction() {
         Perl6ModuleBuilder.stubScript(getProject().getBasePath(), "test.p6");
         File path = Paths.get(getProject().getBasePath(), "test.p6").toFile();
@@ -43,9 +44,10 @@ public class NewActionsTestCase extends LightPlatformCodeInsightFixtureTestCase 
         assertExists(Paths.get(basePath, "t", "20-sanity.t").toFile());
     }
 
-    private void checkMETA(String basePath, String name, String path) {
+    private static void checkMETA(String basePath, String name, String path) {
         try {
-            String metaInfo = new String(Files.readAllBytes(Paths.get(basePath, "META6.json")));
+            String metaInfo =
+              new String(Files.readAllBytes(Paths.get(basePath, "META6.json")), CharsetToolkit.UTF8_CHARSET);
             assertTrue(metaInfo.contains(name));
             assertTrue(metaInfo.contains(path));
         } catch (IOException e) {

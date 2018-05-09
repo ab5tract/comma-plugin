@@ -1,11 +1,9 @@
 package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
-import org.junit.Ignore;
 
-@Ignore("Ignored to get build working see: P6I-206")
-public class BlockStructure extends ParsingTestCase {
-    public BlockStructure() {
+public class TransliterationTest extends ParsingTestCase {
+    public TransliterationTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -15,7 +13,7 @@ public class BlockStructure extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/block-structure";
+        return "testData/parsing/transliteration";
     }
 
     @Override

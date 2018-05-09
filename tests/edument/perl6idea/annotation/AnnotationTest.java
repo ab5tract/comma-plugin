@@ -20,8 +20,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(true, false, false);
     }
 
-//Fixme: @Ignore("Ignored to get build working see: P6I-206")
-    public void IgnoretestUnitKeywordAnnotator() {
+    public void testUnitKeywordAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo<error descr=\"Semicolon form of 'class' without 'unit' is illegal.\">;</error>");
         myFixture.checkHighlighting(false, false, true, true);
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot use 'unit' with block form of declaration\">unit</error> class Foo{}");
