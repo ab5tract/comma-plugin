@@ -4,6 +4,15 @@ env:
   global:
     - export PATH="/opt/rakudo-pkg/bin:/opt/rakudo-pkg/share/perl6/site/bin:$PATH"
 
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
 addons:
   apt:
     sources:
@@ -12,7 +21,26 @@ addons:
     packages:
       - rakudo-pkg
 
+before_script:
+  - ./gradlew assemble
+
 script:
   # Test p6-grammer-to-idea/
-  - cd tools/p6-grammar-to-idea/
-  - prove --jobs=1 -e "perl6-m -Ilib"
+  - (cd tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
+  # Run unit tests
+  - ./gradlew test
+
+after_success:
+  - ./gradlew buildPlugin
+
+deploy:
+  provider: s3
+  access_key_id: AKIAJV46PZNKKRZTY3EQ
+  secret_access_key:
+    secure: dgHgQvaflj/BCM1aDum6uPNQu4niXxLJTO3E/kT+NAWe4ra4c2DbdVm9ZwkCyJxoovWwvOxJpvRTzkTvZyeA7f2NEl4BHsbQ3zGsgYk3K7CqVnEmzqGv79syzuEcdmbMepQcLEqHscb2KCxnJgZ6Bb7MAMBEPLPJx/hlVqhci2aHZwUNjupTvMdZykFYXvmKMBprRaDfhsjkTnWURyO0raID/8wPOTGFJ/TxIVLBpXWxxndv/NsV4jg/PU/73WxyhLmtlpyJn4ozeHCAL55wgmACCpPzwlsyxfFHgNXMqMLJ58f6oAKXjgTLfr7GkTsWCqKEMhWR0H4CTGBPD2S2oadzw0l1lLkWhpK1YfvoBepQdpqad4HOKM/sWwX1aHZm2SVeGiExpckBkhGDuen2+JY1DouY97ixcWIK/3SqXAmrsNLiavvNca1L4J+2PgADdeAXnM5lsfgqafpivGDIvUurx6FRv53mnQel9P1mh8vxK2OO2HF2ZAv/IoyGqZNW4jZFKnMfgXeOkboTD3Jkd46uxEv/3UrOWH/QZpD3DGFjMK3/RNjy0ikTiK3MmgwjaINdXA7/F4Yo0kBc55l0cTbVQshZkclbkcz3b5cBc9r9gMYtoCGgGTyWNZoa/D9WCr1F4SJU26goAP2Nw0SKZdbozbMMULPFRmpmVazvK2c=
+  bucket: comma-plugin
+  skip_cleanup: true
+  local-dir: build/distributions
+  on:
+    repo: edumentab/perl6-idea-plugin
+    branch: master
