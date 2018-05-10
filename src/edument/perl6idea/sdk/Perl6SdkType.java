@@ -58,8 +58,9 @@ public class Perl6SdkType extends SdkType {
 
     @Nullable
     private static String findPerl6InPath() {
-        // TODO: Windows/Mac support
-        final String command = "perl6";
+        final String command = SystemInfo.isWindows
+            ? "perl6.bat"
+            : "perl6";
         final String path = System.getenv("PATH");
         for (String root : path.split(File.pathSeparator)) {
             final File file = new File(root, command);
