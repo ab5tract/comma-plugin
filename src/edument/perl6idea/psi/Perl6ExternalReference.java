@@ -23,13 +23,17 @@ public class Perl6ExternalReference extends PsiReferenceBase<Perl6ExternalElemen
     @Override
     public PsiElement resolve() {
         String name = getElement().getModuleName();
+        if (name == null)
+            return null;
         Project project = getElement().getProject();
         Path path = Paths.get(project.getBaseDir().getPath(),
                 "lib", name.replaceAll("::", File.separator));
         path = path.resolveSibling(path.getFileName() + ".pm6");
-        if (path == null) return null;
+        if (path == null)
+            return null;
         VirtualFile vfile = LocalFileSystem.getInstance().findFileByPath(path.toString());
-        if (vfile == null) return null;
+        if (vfile == null)
+            return null;
         return PsiManager.getInstance(project).findFile(vfile);
     }
 
