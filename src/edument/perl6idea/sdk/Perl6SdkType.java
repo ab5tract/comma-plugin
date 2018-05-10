@@ -188,7 +188,6 @@ public class Perl6SdkType extends SdkType {
             return setting;
         File coreSymbols = Perl6CommandLine.getResourceAsFile(this,"symbols/perl6-core-symbols.p6");
         String perl6path = getSdkHomeByElement(element);
-        System.out.println("Got path as " + perl6path);
         if (perl6path == null) {
             LOG.error("getCoreSettingSymbols is called without Perl 6 SDK set, using fallback");
             return getFallback();
