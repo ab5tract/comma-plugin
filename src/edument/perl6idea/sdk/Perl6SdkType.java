@@ -189,11 +189,11 @@ public class Perl6SdkType extends SdkType {
         File coreSymbols = Perl6CommandLine.getResourceAsFile(this,"symbols/perl6-core-symbols.p6");
         String perl6path = getSdkHomeByElement(element);
         if (perl6path == null) {
-            LOG.error("getCoreSettingSymbols is called without Perl 6 SDK set, using fallback");
+            LOG.warn("getCoreSettingSymbols is called without Perl 6 SDK set, using fallback");
             return getFallback();
         }
         if (coreSymbols == null) {
-            LOG.error("getCoreSettingSymbols is called with corrupted resources bundle, using fallback");
+            LOG.warn("getCoreSettingSymbols is called with corrupted resources bundle, using fallback");
             return getFallback();
         }
 
