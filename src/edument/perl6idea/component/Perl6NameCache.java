@@ -4,6 +4,7 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
 
@@ -14,13 +15,12 @@ public class Perl6NameCache implements ProjectComponent {
     private Map<String, Set<String>> nameCache = new ConcurrentHashMap<>();
     private static Logger LOG = Logger.getInstance(Perl6NameCache.class);
 
-    public Set<String> getNames(String name) {
+    public Set<String> getNames(Project project, String name) {
         Set<String> result = new HashSet<>();
         Set<String> cached = nameCache.get(name);
         if (cached != null) return cached;
 
-        Perl6SdkType projectSdk = Perl6SdkType.getInstance();
-        String homePath = projectSdk.suggestHomePath();
+        String homePath = Perl6SdkType.getSdkHomeByProject(project);
         if (homePath == null) {
             LOG.error(new ExecutionException("SDK path is not set"));
             return result;

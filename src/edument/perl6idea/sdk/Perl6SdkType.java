@@ -80,12 +80,12 @@ public class Perl6SdkType extends SdkType {
     }
 
     @Nullable
-    private static String getSdkHomeByElement(PsiElement element) {
+    public static String getSdkHomeByElement(PsiElement element) {
         return getSdkHomeByModule(ModuleUtilCore.findModuleForPsiElement(element));
     }
 
     @Nullable
-    private static String getSdkHomeByModule(Module module) {
+    public static String getSdkHomeByModule(Module module) {
         if (module == null)
             return null;
         Sdk sdk = ModuleRootManager.getInstance(module).getSdk();
@@ -95,7 +95,7 @@ public class Perl6SdkType extends SdkType {
     }
 
     @Nullable
-    private static String getSdkHomeByProject(Project project) {
+    public static String getSdkHomeByProject(Project project) {
         if (project == null)
             return null;
         Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();

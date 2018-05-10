@@ -34,7 +34,7 @@ public class Perl6ExternalElement extends ASTWrapperPsiElement implements Perl6P
     List<String> getExternallyDeclaredNames(Project project) {
         String name = getModuleName();
         if (name == null) return new ArrayList<>();
-        return new ArrayList<>(project.getComponent(Perl6NameCache.class).getNames(name));
+        return new ArrayList<>(project.getComponent(Perl6NameCache.class).getNames(project, name));
     }
 
     String getModuleName() {
