@@ -5,6 +5,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -80,16 +81,24 @@ public class Perl6SdkType extends SdkType {
 
     @Nullable
     private static String getSdkHomeByElement(PsiElement element) {
-        return getSekHomeByModule(ModuleUtilCore.findModuleForPsiElement(element));
+        return getSdkHomeByModule(ModuleUtilCore.findModuleForPsiElement(element));
     }
 
     @Nullable
-    private static String getSekHomeByModule(Module module) {
+    private static String getSdkHomeByModule(Module module) {
         if (module == null)
             return null;
         Sdk sdk = ModuleRootManager.getInstance(module).getSdk();
-        if (sdk == null || !(sdk.getSdkType() instanceof Perl6SdkType))
-            sdk = ProjectRootManager.getInstance(module.getProject()).getProjectSdk();
+        return sdk != null && sdk.getSdkType() instanceof Perl6SdkType
+               ? sdk.getHomePath()
+               : getSdkHomeByProject(module.getProject());
+    }
+
+    @Nullable
+    private static String getSdkHomeByProject(Project project) {
+        if (project == null)
+            return null;
+        Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
         return sdk != null && sdk.getSdkType() instanceof Perl6SdkType
                ? sdk.getHomePath()
                : null;
@@ -148,9 +157,9 @@ public class Perl6SdkType extends SdkType {
     }
 
     @Nullable
-    public Map<String, String> getMoarBuildConfiguration() {
+    public Map<String, String> getMoarBuildConfiguration(Project project) {
         if (moarBuildConfig != null) return moarBuildConfig;
-        String perl6path = findPerl6InPath();
+        String perl6path = getSdkHomeByProject(project);
         if (perl6path == null) {
             LOG.error("getMoarBuildConfiguration is called without Perl 6 SDK set, cannot use debug features");
             return null;

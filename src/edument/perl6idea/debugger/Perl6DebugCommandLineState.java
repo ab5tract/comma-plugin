@@ -17,7 +17,8 @@ public class Perl6DebugCommandLineState extends Perl6RunCommandLineState {
 
     private void populateRunCommand() {
         Perl6SdkType projectSdk = Perl6SdkType.getInstance();
-        Map<String, String> moarBuildConfiguration = projectSdk.getMoarBuildConfiguration();
+        Map<String, String> moarBuildConfiguration = projectSdk.
+            getMoarBuildConfiguration(getEnvironment().getProject());
         String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", "");
         this.command.add(prefix + "/bin/moar");
         this.command.add("--debug-port=" + runConfiguration.getDebugPort());
