@@ -8,7 +8,8 @@ public interface Perl6Variable extends Perl6PsiElement {
     PsiElement getVariableToken();
 
     default String getVariableName() {
-        return getVariableToken().getText();
+        PsiElement varToken = getVariableToken();
+        return varToken != null ? varToken.getText() : null;
     }
 
     default String getSigilAndTwigil() {
