@@ -49,7 +49,7 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6PsiElement> {
     @Override
     public Object[] getVariants() {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(getElement(), Perl6PsiScope.class);
-        List<Object> results = new ArrayList<>(Perl6SdkType.getInstance().getSymbols());
+        List<Object> results = new ArrayList<>(Perl6SdkType.getInstance().getCoreSettingSymbols(getElement()));
         while (scope != null) {
             List<Perl6ExternalElement> extern = scope.getImports();
             for (Perl6PsiElement decl : scope.getDeclarations()) {
