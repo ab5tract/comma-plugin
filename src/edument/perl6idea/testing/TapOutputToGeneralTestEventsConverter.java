@@ -79,26 +79,31 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
     private void processSingleTest(TestResult testResult) throws ParseException {
         String testName = String.format("%d %s", testResult.getTestNumber(), testResult.getDescription());
         Directive directive = testResult.getDirective();
-        handleMessageSend(ServiceMessageBuilder.testStarted(testName).toString());
-        if (testResult.getSubtest() != null) {
-            for (TestResult sub : testResult.getSubtest().getTestResults()) {
+        boolean hasSubtests = testResult.getSubtest() != null;
+        if (hasSubtests) {
+            handleMessageSend(ServiceMessageBuilder.testSuiteStarted(testName).toString());
+            for (TestResult sub : testResult.getSubtest().getTestResults())
                 processSingleTest(sub);
-            }
-        }
-        if (testResult.getStatus() == StatusValues.OK &&
+        } else
+            handleMessageSend(ServiceMessageBuilder.testStarted(testName).toString());
+
+        if (!hasSubtests && testResult.getStatus() == StatusValues.OK &&
             testResult.getDirective() == null) {
-        } else if ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP) ||
-                   (directive != null && directive.getDirectiveValue() == DirectiveValues.TODO)) {
+        } else if (!hasSubtests && ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP) ||
+                   (directive != null && directive.getDirectiveValue() == DirectiveValues.TODO))) {
             String message = ServiceMessageBuilder.testIgnored(testName)
                     .addAttribute("message", String.format("%s %s", testName, testResult.getDirective().getReason())).toString();
             handleMessageSend(message);
-        } else if (testResult.getStatus() == StatusValues.NOT_OK) {
+        } else if (!hasSubtests && testResult.getStatus() == StatusValues.NOT_OK) {
             String message = ServiceMessageBuilder.testFailed(testName)
                     .addAttribute("error", "true")
                     .addAttribute("message", testResult.getDescription()).toString();
             handleMessageSend(message);
         }
-        handleMessageSend(ServiceMessageBuilder.testFinished(testName).toString());
+        if (hasSubtests)
+            handleMessageSend(ServiceMessageBuilder.testSuiteFinished(testName).toString());
+        else
+            handleMessageSend(ServiceMessageBuilder.testFinished(testName).toString());
     }
 
     private void handleMessageSend(String message) throws ParseException {
