@@ -27,7 +27,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
     public TapOutputToGeneralTestEventsConverter(@NotNull String testFrameworkName, @NotNull TestConsoleProperties consoleProperties) {
         super(testFrameworkName, consoleProperties);
-        myConsumer = TapConsumerFactory.makeTap13Consumer();
+        myConsumer = TapConsumerFactory.makeTap13YamlConsumer();
     }
 
     @Override
@@ -41,7 +41,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         if (outputType == ProcessOutputTypes.STDOUT) {
             if (text.startsWith("===")) {
                 currentFile = text.substring(3);
-                if (!currentTap.equals(""))
+                if (!currentTap.isEmpty())
                     processTapOutput();
             } else {
                 currentTap += text;
@@ -54,11 +54,12 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
     }
 
     private void processTapOutput() throws ParseException {
-        TestSet set = myConsumer.load(currentTap);
-        currentTap = "";
-        List<TestResult> results = set.getTestResults();
-        processTestsCount(set);
-        processSingleSuite(results);
+        if (!currentTap.isEmpty()) {
+            TestSet set = myConsumer.load(currentTap);
+            currentTap = "";
+            processTestsCount(set);
+            processSingleSuite(set.getTestResults());
+        }
     }
 
     private void processSingleSuite(List<TestResult> results) throws ParseException {
@@ -79,6 +80,11 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         String testName = String.format("%d %s", testResult.getTestNumber(), testResult.getDescription());
         Directive directive = testResult.getDirective();
         handleMessageSend(ServiceMessageBuilder.testStarted(testName).toString());
+        if (testResult.getSubtest() != null) {
+            for (TestResult sub : testResult.getSubtest().getTestResults()) {
+                processSingleTest(sub);
+            }
+        }
         if (testResult.getStatus() == StatusValues.OK &&
             testResult.getDirective() == null) {
         } else if ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP) ||
