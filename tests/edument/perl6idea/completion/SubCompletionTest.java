@@ -1,17 +1,41 @@
 package edument.perl6idea.completion;
 
 import com.intellij.codeInsight.completion.CompletionType;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import edument.perl6idea.sdk.Perl6SdkType;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class SubCompletionTest extends LightCodeInsightFixtureTestCase {
+    private Sdk testSdk;
+
     @Override
     protected String getTestDataPath() {
         return "testData/codeInsight/localVariables";
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        ApplicationManager.getApplication().runWriteAction(() -> {
+            String homePath = Perl6SdkType.getInstance().suggestHomePath();
+            assertNotNull("Found a perl6 in path to use in tests", homePath);
+            testSdk = SdkConfigurationUtil.createAndAddSDK(homePath, Perl6SdkType.getInstance());
+            ProjectRootManager.getInstance(myModule.getProject()).setProjectSdk(testSdk);
+        });
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        SdkConfigurationUtil.removeSdk(testSdk);
+        super.tearDown();
     }
 
     public void testCompletionFromLocal() {
