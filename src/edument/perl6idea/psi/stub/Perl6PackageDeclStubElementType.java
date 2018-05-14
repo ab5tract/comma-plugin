@@ -1,7 +1,5 @@
 package edument.perl6idea.psi.stub;
 
-import com.intellij.lang.LighterAST;
-import com.intellij.lang.LighterASTNode;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
