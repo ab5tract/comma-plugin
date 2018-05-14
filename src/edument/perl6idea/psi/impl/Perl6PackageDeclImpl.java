@@ -69,6 +69,10 @@ public class Perl6PackageDeclImpl extends StubBasedPsiElementBase<Perl6PackageDe
         return result.toArray(new Perl6RoutineDecl[result.size()]);
     }
 
+    public String toString() {
+        return getClass().getSimpleName() + "(" + getNode().getElementType().toString() + ")";
+    }
+
     // TODO REFACTOR
     // Everything below copied when making this a stub-based node
 
