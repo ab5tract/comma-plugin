@@ -1,10 +1,13 @@
 package edument.perl6idea.parsing;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.IFileElementType;
+import com.intellij.psi.tree.IStubFileElementType;
+import com.intellij.psi.stubs.IStubElementType;
 import edument.perl6idea.Perl6Language;
+import edument.perl6idea.psi.stub.*;
 
 public interface Perl6ElementTypes {
-    IFileElementType FILE = new IFileElementType(Perl6Language.INSTANCE);
+    IStubFileElementType FILE = new IStubFileElementType(Perl6Language.INSTANCE);
+    IStubElementType PACKAGE_DECLARATION = new Perl6PackageDeclStubElementType();
     IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
     IElementType ARRAY_INDEX = new Perl6ElementType("ARRAY_INDEX");
     IElementType ARRAY_SHAPE = new Perl6ElementType("ARRAY_SHAPE");
@@ -53,7 +56,6 @@ public interface Perl6ElementTypes {
     IElementType ONCE = new Perl6ElementType("ONCE");
     IElementType ONLY_STAR = new Perl6ElementType("ONLY_STAR");
     IElementType OPERATOR_ADVERB = new Perl6ElementType("OPERATOR_ADVERB");
-    IElementType PACKAGE_DECLARATION = new Perl6ElementType("PACKAGE_DECLARATION");
     IElementType PARAMETER = new Perl6ElementType("PARAMETER");
     IElementType PARAMETER_DEFAULT = new Perl6ElementType("PARAMETER_DEFAULT");
     IElementType PARAMETER_VARIABLE = new Perl6ElementType("PARAMETER_VARIABLE");

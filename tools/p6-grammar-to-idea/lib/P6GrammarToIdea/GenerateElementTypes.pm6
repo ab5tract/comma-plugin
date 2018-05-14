@@ -6,10 +6,16 @@ use Java::Generate::Variable;
 
 sub generate-perl6-element-types(@element-names) is export {
     my @fields;
-    push @fields, InterfaceField.new: :type<IFileElementType>, :name<FILE>, :default(
-        ConstructorCall.new(:name<IFileElementType>, :arguments(
+    push @fields, InterfaceField.new: :type<IStubFileElementType>, :name<FILE>, :default(
+        ConstructorCall.new(:name<IStubFileElementType>, :arguments(
             StaticVariable.new(:name<INSTANCE>, :class<Perl6Language>))));
+
+    my %custom := set 'PACKAGE_DECLARATION';
+    push @fields, InterfaceField.new: :type<IStubElementType>, :name<PACKAGE_DECLARATION>,
+        :default(ConstructorCall.new(:name<Perl6PackageDeclStubElementType>));
+
     for @element-names.sort -> $name {
+        next if %custom{$name};
         push @fields, InterfaceField.new: :type<IElementType>, :$name, :default(
             ConstructorCall.new(:name<Perl6ElementType>, :arguments(
                 StringLiteral.new(:value($name)))));
@@ -19,8 +25,10 @@ sub generate-perl6-element-types(@element-names) is export {
         package => 'edument.perl6idea.parsing',
         imports => <
             com.intellij.psi.tree.IElementType
-            com.intellij.psi.tree.IFileElementType
+            com.intellij.psi.tree.IStubFileElementType
+            com.intellij.psi.stubs.IStubElementType
             edument.perl6idea.Perl6Language
+            edument.perl6idea.psi.stub.*
         >,
         type => $interface;
     return $comp-unit.generate;
