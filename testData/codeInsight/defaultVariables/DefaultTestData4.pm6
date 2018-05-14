@@ -1,0 +1,3 @@
+role R {
+    $<caret>
+}

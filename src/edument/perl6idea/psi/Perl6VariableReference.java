@@ -134,8 +134,16 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
         Perl6PackageDecl packageDecl = PsiTreeUtil.getParentOfType(var, Perl6PackageDecl.class);
         if (packageDecl != null)
             switch (packageDecl.getPackageKind()) {
-                case "class": results.add("$?CLASS");
-                case "role":  results.add("$?ROLE");
+                case "class":
+                    results.add("$?CLASS");
+                    break;
+                case "role":
+                    results.add("$?ROLE");
+                    results.add("$?CLASS");
+                    break;
+                case "grammar":
+                    results.add("$?CLASS");
+                    break;
             }
         return results.toArray();
     }

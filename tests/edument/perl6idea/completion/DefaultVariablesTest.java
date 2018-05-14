@@ -30,4 +30,30 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
         assertTrue(vars.containsAll(Arrays.asList("%?RESOURCES", "%hash")));
         assertEquals(2, vars.size());
     }
+
+    public void testCompletionInClass() {
+        myFixture.configureByFile("DefaultTestData3.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("$?CLASS", "$?PACKAGE")));
+        assertFalse(vars.contains("$?ROLE"));
+    }
+
+    public void testCompletionInRole() {
+        myFixture.configureByFile("DefaultTestData4.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("$?CLASS", "$?PACKAGE", "$?ROLE")));
+    }
+
+    public void testCompletionInGrammar() {
+        myFixture.configureByFile("DefaultTestData5.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("$?CLASS", "$?PACKAGE")));
+        assertFalse(vars.contains("$?ROLE"));
+    }
 }
