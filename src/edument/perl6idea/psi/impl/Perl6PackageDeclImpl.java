@@ -70,7 +70,7 @@ public class Perl6PackageDeclImpl extends StubBasedPsiElementBase<Perl6PackageDe
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "(" + getNode().getElementType().toString() + ")";
+        return getClass().getSimpleName() + "(Perl6:PACKAGE_DECLARATION)";
     }
 
     // TODO REFACTOR
