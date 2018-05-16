@@ -24,6 +24,7 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MethodNotOnRangeAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingUnitKeywordAnnotator"/>
     <stubElementTypeHolder class="edument.perl6idea.parsing.Perl6ElementTypes" />
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.ProjectModulesStubIndex"/>
   </extensions>
 
   <actions>

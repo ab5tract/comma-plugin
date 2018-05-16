@@ -4,7 +4,9 @@ import com.intellij.psi.StubBuilder;
 import com.intellij.psi.stubs.*;
 import com.intellij.psi.tree.IStubFileElementType;
 import edument.perl6idea.Perl6Language;
+import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.stub.impl.Perl6FileStubImpl;
+import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -46,6 +48,7 @@ public class Perl6FileElementType extends IStubFileElementType<Perl6FileStub> {
 
     @Override
     public void indexStub(@NotNull final PsiFileStub stub, @NotNull final IndexSink sink) {
-
+        if (stub instanceof Perl6FileStub)
+            sink.occurrence(Perl6StubIndexKeys.PROJECT_MODULES, ((Perl6FileStub)stub).getCompilationUnitName());
     }
 }
