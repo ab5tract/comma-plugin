@@ -27,9 +27,9 @@ public class Perl6ScopedDeclImpl extends Perl6SymbolLike implements Perl6ScopedD
         PsiElement declarator = findChildByType(Perl6ElementTypes.PACKAGE_DECLARATION);
         if (declarator != null) return ((Perl6PackageDecl)declarator).getPackageName();
         PsiElement enumElement = findChildByType(Perl6ElementTypes.ENUM);
-        if (enumElement != null) return ((Perl6EnumImpl)enumElement).getTypeLikeName();
+        if (enumElement != null) return ((Perl6EnumImpl)enumElement).getEnumName();
         PsiElement subset = findChildByType(Perl6ElementTypes.SUBSET);
-        if (subset != null) return ((Perl6SubsetImpl)subset).getTypeLikeName();
+        if (subset != null) return ((Perl6SubsetImpl)subset).getSubsetName();
         PsiElement variable = findChildByType(Perl6ElementTypes.VARIABLE_DECLARATION);
         if (variable != null) return ((Perl6VariableDeclImpl)variable).getName();
         return "<anon>";

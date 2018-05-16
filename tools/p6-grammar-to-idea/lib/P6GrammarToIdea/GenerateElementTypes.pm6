@@ -9,9 +9,15 @@ sub generate-perl6-element-types(@element-names) is export {
     push @fields, InterfaceField.new: :type<IStubFileElementType>, :name<FILE>, :default(
         ConstructorCall.new(:name<Perl6FileElementType>, :arguments()));
 
-    my %custom := set 'PACKAGE_DECLARATION';
+    my %custom := set 'PACKAGE_DECLARATION', 'ROUTINE_DECLARATION', 'SUBSET', 'ENUM';
     push @fields, InterfaceField.new: :type<IStubElementType>, :name<PACKAGE_DECLARATION>,
         :default(ConstructorCall.new(:name<Perl6PackageDeclStubElementType>));
+    push @fields, InterfaceField.new: :type<IStubElementType>, :name<ROUTINE_DECLARATION>,
+        :default(ConstructorCall.new(:name<Perl6RoutineDeclStubElementType>));
+    push @fields, InterfaceField.new: :type<IStubElementType>, :name<ENUM>,
+        :default(ConstructorCall.new(:name<Perl6EnumStubElementType>));
+    push @fields, InterfaceField.new: :type<IStubElementType>, :name<SUBSET>,
+        :default(ConstructorCall.new(:name<Perl6SubsetStubElementType>));
 
     for @element-names.sort -> $name {
         next if %custom{$name};

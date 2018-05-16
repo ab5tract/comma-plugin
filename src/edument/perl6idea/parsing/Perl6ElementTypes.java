@@ -7,6 +7,9 @@ import edument.perl6idea.psi.stub.*;
 public interface Perl6ElementTypes {
     IStubFileElementType FILE = new Perl6FileElementType();
     IStubElementType PACKAGE_DECLARATION = new Perl6PackageDeclStubElementType();
+    IStubElementType ROUTINE_DECLARATION = new Perl6RoutineDeclStubElementType();
+    IStubElementType SUBSET = new Perl6SubsetStubElementType();
+    IStubElementType ENUM = new Perl6EnumStubElementType();
     IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
     IElementType ARRAY_INDEX = new Perl6ElementType("ARRAY_INDEX");
     IElementType ARRAY_SHAPE = new Perl6ElementType("ARRAY_SHAPE");
@@ -27,7 +30,6 @@ public interface Perl6ElementTypes {
     IElementType DEFAULT_STATEMENT = new Perl6ElementType("DEFAULT_STATEMENT");
     IElementType DO = new Perl6ElementType("DO");
     IElementType EAGER = new Perl6ElementType("EAGER");
-    IElementType ENUM = new Perl6ElementType("ENUM");
     IElementType FATARROW = new Perl6ElementType("FATARROW");
     IElementType FOR_STATEMENT = new Perl6ElementType("FOR_STATEMENT");
     IElementType GATHER = new Perl6ElementType("GATHER");
@@ -93,7 +95,6 @@ public interface Perl6ElementTypes {
     IElementType REQUIRE_STATEMENT = new Perl6ElementType("REQUIRE_STATEMENT");
     IElementType RETURN_CONSTRAINT = new Perl6ElementType("RETURN_CONSTRAINT");
     IElementType REVERSE_METAOP = new Perl6ElementType("REVERSE_METAOP");
-    IElementType ROUTINE_DECLARATION = new Perl6ElementType("ROUTINE_DECLARATION");
     IElementType SCOPED_DECLARATION = new Perl6ElementType("SCOPED_DECLARATION");
     IElementType SELF = new Perl6ElementType("SELF");
     IElementType SEMI_LIST = new Perl6ElementType("SEMI_LIST");
@@ -107,7 +108,6 @@ public interface Perl6ElementTypes {
     IElementType STATEMENT_MOD_LOOP = new Perl6ElementType("STATEMENT_MOD_LOOP");
     IElementType STRING_LITERAL = new Perl6ElementType("STRING_LITERAL");
     IElementType STUB_CODE = new Perl6ElementType("STUB_CODE");
-    IElementType SUBSET = new Perl6ElementType("SUBSET");
     IElementType SUB_CALL = new Perl6ElementType("SUB_CALL");
     IElementType SUPPLY = new Perl6ElementType("SUPPLY");
     IElementType TERM = new Perl6ElementType("TERM");

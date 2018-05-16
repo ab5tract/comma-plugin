@@ -1,14 +1,14 @@
 package edument.perl6idea.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
+import edument.perl6idea.psi.Perl6PresentableStub;
 import edument.perl6idea.psi.Perl6RoutineDecl;
-import edument.perl6idea.psi.Perl6SymbolLike;
 import edument.perl6idea.psi.Perl6Trait;
+import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,9 +17,13 @@ import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 
-public class Perl6RoutineDeclImpl extends Perl6SymbolLike implements Perl6RoutineDecl {
+public class Perl6RoutineDeclImpl extends Perl6PresentableStub<Perl6RoutineDeclStub> implements Perl6RoutineDecl {
     public Perl6RoutineDeclImpl(@NotNull ASTNode node) {
         super(node);
+    }
+
+    public Perl6RoutineDeclImpl(final Perl6RoutineDeclStub stub, final IStubElementType nodeType) {
+        super(stub, nodeType);
     }
 
     @Override
@@ -30,12 +34,16 @@ public class Perl6RoutineDeclImpl extends Perl6SymbolLike implements Perl6Routin
 
     @Override
     public String getRoutineName() {
-        PsiElement name = findChildByType(Perl6ElementTypes.LONG_NAME);
+        Perl6RoutineDeclStub stub = getStub();
+        if (stub != null)
+            return stub.getRoutineName();
+        PsiElement name = findChildByType(LONG_NAME);
+
         return name == null ? "<anon>" : name.getText();
     }
 
     @Override
-    public String getTypeLikeName() {
+    public String getSymbolName() {
         return getSignature();
     }
 
@@ -84,7 +92,7 @@ public class Perl6RoutineDeclImpl extends Perl6SymbolLike implements Perl6Routin
     }
 
     @Nullable
-    private String getReturnsTrait(ASTNode child) {
+    private static String getReturnsTrait(ASTNode child) {
         ASTNode trait = child.findChildByType(TRAIT);
         if (trait != null && trait.getFirstChildNode().getText().equals("returns")) {
             ASTNode type = trait.findChildByType(TYPE_NAME);
@@ -96,7 +104,7 @@ public class Perl6RoutineDeclImpl extends Perl6SymbolLike implements Perl6Routin
     @Nullable
     @Override
     public PsiElement getNameIdentifier() {
-        return findChildByType(Perl6ElementTypes.LONG_NAME);
+        return findChildByType(LONG_NAME);
     }
 
     @Override
