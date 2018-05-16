@@ -29,4 +29,8 @@ public class Perl6EnumImpl extends StubBasedPsiElementBase<Perl6EnumStub> implem
         PsiElement longName = findChildByType(Perl6ElementTypes.LONG_NAME);
         return name == null ? longName == null ? "<anon>" : longName.getText() : name.getText();
     }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(Perl6:ENUM)";
+    }
 }

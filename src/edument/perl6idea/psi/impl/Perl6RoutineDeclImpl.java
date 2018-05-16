@@ -116,4 +116,8 @@ public class Perl6RoutineDeclImpl extends Perl6PresentableStub<Perl6RoutineDeclS
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         return null;
     }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(Perl6:ROUTINE_DECLARATION)";
+    }
 }
