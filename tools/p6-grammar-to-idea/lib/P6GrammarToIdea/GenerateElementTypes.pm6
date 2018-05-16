@@ -7,8 +7,7 @@ use Java::Generate::Variable;
 sub generate-perl6-element-types(@element-names) is export {
     my @fields;
     push @fields, InterfaceField.new: :type<IStubFileElementType>, :name<FILE>, :default(
-        ConstructorCall.new(:name<IStubFileElementType>, :arguments(
-            StaticVariable.new(:name<INSTANCE>, :class<Perl6Language>))));
+        ConstructorCall.new(:name<Perl6FileElementType>, :arguments()));
 
     my %custom := set 'PACKAGE_DECLARATION';
     push @fields, InterfaceField.new: :type<IStubElementType>, :name<PACKAGE_DECLARATION>,
@@ -27,7 +26,6 @@ sub generate-perl6-element-types(@element-names) is export {
             com.intellij.psi.tree.IElementType
             com.intellij.psi.tree.IStubFileElementType
             com.intellij.psi.stubs.IStubElementType
-            edument.perl6idea.Perl6Language
             edument.perl6idea.psi.stub.*
         >,
         type => $interface;

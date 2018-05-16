@@ -2,11 +2,10 @@ package edument.perl6idea.parsing;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IStubFileElementType;
 import com.intellij.psi.stubs.IStubElementType;
-import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.stub.*;
 
 public interface Perl6ElementTypes {
-    IStubFileElementType FILE = new IStubFileElementType(Perl6Language.INSTANCE);
+    IStubFileElementType FILE = new Perl6FileElementType();
     IStubElementType PACKAGE_DECLARATION = new Perl6PackageDeclStubElementType();
     IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
     IElementType ARRAY_INDEX = new Perl6ElementType("ARRAY_INDEX");
