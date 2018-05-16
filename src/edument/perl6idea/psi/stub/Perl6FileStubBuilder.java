@@ -33,7 +33,6 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
                     int lastDot = parts[parts.length - 1].lastIndexOf('.');
                     if (lastDot > 0)
                         parts[parts.length - 1] = parts[parts.length - 1].substring(0, lastDot);
-                    System.out.println("Mangled to " + String.join("::", parts));
                     return String.join("::", parts);
                 }
             }
