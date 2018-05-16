@@ -40,7 +40,7 @@ public class Perl6FileElementType extends IStubFileElementType<Perl6FileStub> {
     @NotNull
     @Override
     public Perl6FileStub deserialize(@NotNull final StubInputStream dataStream, final StubElement parentStub) throws IOException {
-        String compilationUnitName = dataStream.readNameString();
+        String compilationUnitName = dataStream.readName().getString();
         return new Perl6FileStubImpl(null, compilationUnitName);
     }
 
