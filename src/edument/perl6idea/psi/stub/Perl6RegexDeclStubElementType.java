@@ -1,5 +1,6 @@
 package edument.perl6idea.psi.stub;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
@@ -47,5 +48,10 @@ public class Perl6RegexDeclStubElementType extends IStubElementType<Perl6RegexDe
     @Override
     public void indexStub(@NotNull Perl6RegexDeclStub stub, @NotNull IndexSink sink) {
 
+    }
+
+    @Override
+    public boolean shouldCreateStub(ASTNode node) {
+        return !((Perl6RegexDecl)node.getPsi()).getRegexName().equals("<anon>");
     }
 }
