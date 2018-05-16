@@ -10,6 +10,7 @@ public interface Perl6ElementTypes {
     IStubElementType ROUTINE_DECLARATION = new Perl6RoutineDeclStubElementType();
     IStubElementType SUBSET = new Perl6SubsetStubElementType();
     IStubElementType ENUM = new Perl6EnumStubElementType();
+    IStubElementType CONSTANT = new Perl6ConstantStubElementType();
     IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
     IElementType ARRAY_INDEX = new Perl6ElementType("ARRAY_INDEX");
     IElementType ARRAY_SHAPE = new Perl6ElementType("ARRAY_SHAPE");
@@ -23,7 +24,6 @@ public interface Perl6ElementTypes {
     IElementType CATCH_STATEMENT = new Perl6ElementType("CATCH_STATEMENT");
     IElementType COLON_PAIR = new Perl6ElementType("COLON_PAIR");
     IElementType COMPLEX_LITERAL = new Perl6ElementType("COMPLEX_LITERAL");
-    IElementType CONSTANT = new Perl6ElementType("CONSTANT");
     IElementType CONTEXTUALIZER = new Perl6ElementType("CONTEXTUALIZER");
     IElementType CONTROL_STATEMENT = new Perl6ElementType("CONTROL_STATEMENT");
     IElementType CROSS_METAOP = new Perl6ElementType("CROSS_METAOP");
