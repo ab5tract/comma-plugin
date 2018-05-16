@@ -11,6 +11,7 @@ public interface Perl6ElementTypes {
     IStubElementType SUBSET = new Perl6SubsetStubElementType();
     IStubElementType ENUM = new Perl6EnumStubElementType();
     IStubElementType CONSTANT = new Perl6ConstantStubElementType();
+    IStubElementType REGEX_DECLARATION = new Perl6RegexDeclStubElementType();
     IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
     IElementType ARRAY_INDEX = new Perl6ElementType("ARRAY_INDEX");
     IElementType ARRAY_SHAPE = new Perl6ElementType("ARRAY_SHAPE");
@@ -82,7 +83,6 @@ public interface Perl6ElementTypes {
     IElementType REGEX_CAPTURE_POSITIONAL = new Perl6ElementType("REGEX_CAPTURE_POSITIONAL");
     IElementType REGEX_CCLASS = new Perl6ElementType("REGEX_CCLASS");
     IElementType REGEX_CCLASS_ELEM = new Perl6ElementType("REGEX_CCLASS_ELEM");
-    IElementType REGEX_DECLARATION = new Perl6ElementType("REGEX_DECLARATION");
     IElementType REGEX_GOAL = new Perl6ElementType("REGEX_GOAL");
     IElementType REGEX_GROUP = new Perl6ElementType("REGEX_GROUP");
     IElementType REGEX_LITERAL = new Perl6ElementType("REGEX_LITERAL");
