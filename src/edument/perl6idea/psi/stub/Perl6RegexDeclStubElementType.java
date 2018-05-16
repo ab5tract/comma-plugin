@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class Perl6RegexDeclStubElementType extends IStubElementType<Perl6RegexDeclStub, Perl6RegexDecl> {
     public Perl6RegexDeclStubElementType() {
-        super("REGEX_DECLARATIOn", Perl6Language.INSTANCE);
+        super("REGEX_DECLARATION", Perl6Language.INSTANCE);
     }
 
     @Override
