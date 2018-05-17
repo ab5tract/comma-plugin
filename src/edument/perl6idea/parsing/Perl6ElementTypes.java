@@ -12,6 +12,7 @@ public interface Perl6ElementTypes {
     IStubElementType ENUM = new Perl6EnumStubElementType();
     IStubElementType CONSTANT = new Perl6ConstantStubElementType();
     IStubElementType REGEX_DECLARATION = new Perl6RegexDeclStubElementType();
+    IStubElementType VARIABLE_DECLARATION = new Perl6VariableDeclStubElementType();
     IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
     IElementType ARRAY_INDEX = new Perl6ElementType("ARRAY_INDEX");
     IElementType ARRAY_SHAPE = new Perl6ElementType("ARRAY_SHAPE");
@@ -121,7 +122,6 @@ public interface Perl6ElementTypes {
     IElementType USE_STATEMENT = new Perl6ElementType("USE_STATEMENT");
     IElementType VALUE_CONSTRAINT = new Perl6ElementType("VALUE_CONSTRAINT");
     IElementType VARIABLE = new Perl6ElementType("VARIABLE");
-    IElementType VARIABLE_DECLARATION = new Perl6ElementType("VARIABLE_DECLARATION");
     IElementType VERSION = new Perl6ElementType("VERSION");
     IElementType WHATEVER = new Perl6ElementType("WHATEVER");
     IElementType WHENEVER_STATEMENT = new Perl6ElementType("WHENEVER_STATEMENT");
