@@ -50,7 +50,13 @@ public class Perl6PackageDeclStubElementType extends IStubElementType<Perl6Packa
     @Override
     public void indexStub(@NotNull Perl6PackageDeclStub stub, @NotNull IndexSink sink) {
         String globalName = stub.getGlobalName();
-        if (globalName != null)
+        if (globalName != null) {
             sink.occurrence(Perl6StubIndexKeys.GLOBAL_TYPES, globalName);
+        }
+        else {
+            String lexicalName = stub.getLexicalName();
+            if (lexicalName != null)
+                sink.occurrence(Perl6StubIndexKeys.LEXICAL_TYPES, lexicalName);
+        }
     }
 }

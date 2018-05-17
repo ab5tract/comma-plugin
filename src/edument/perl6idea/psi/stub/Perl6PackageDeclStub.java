@@ -8,4 +8,5 @@ public interface Perl6PackageDeclStub extends StubElement<Perl6PackageDecl> {
     String getPackageName();
     String getScope();
     String getGlobalName();
+    String getLexicalName();
 }

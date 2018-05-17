@@ -9,4 +9,6 @@ public class Perl6StubIndexKeys {
         = StubIndexKey.createIndexKey("perl6.projectModules");
     public static final StubIndexKey<String, Perl6PackageDecl> GLOBAL_TYPES
         = StubIndexKey.createIndexKey("perl6.globalTypes");
+    public static final StubIndexKey<String, Perl6PackageDecl> LEXICAL_TYPES
+        = StubIndexKey.createIndexKey("perl6.lexicalTypes");
 }

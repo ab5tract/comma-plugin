@@ -42,15 +42,29 @@ public class Perl6PackageDeclStubImpl extends StubBase<Perl6PackageDecl> impleme
         Stub current = getParentStub();
         while (current != null) {
             if (current instanceof Perl6ScopedDeclStub)
-                if (((Perl6ScopedDeclStub)current).getScope().equals("my")) {
-                    System.out.println("Skipping lexical " + packageName);
+                if (((Perl6ScopedDeclStub)current).getScope().equals("my"))
                     return null;
-                }
             if (current instanceof Perl6PackageDeclStub)
                 globalName = ((Perl6PackageDeclStub)current).getPackageName() + "::" + globalName;
             current = current.getParentStub();
         }
-        System.out.println(globalName);
         return globalName;
+    }
+
+    @Override
+    public String getLexicalName() {
+        String lexicalName = packageName;
+        Stub current = getParentStub();
+        while (current != null) {
+            if (current instanceof Perl6ScopedDeclStub) {
+                if (((Perl6ScopedDeclStub)current).getScope().equals("my"))
+                    return lexicalName;
+                return null;
+            }
+            if (current instanceof Perl6PackageDeclStub)
+                lexicalName = ((Perl6PackageDeclStub)current).getPackageName() + "::" + lexicalName;
+            current = current.getParentStub();
+        }
+        return null;
     }
 }
