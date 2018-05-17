@@ -8,21 +8,14 @@ import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 
 public class Perl6VariableDeclStubImpl extends StubBase<Perl6VariableDecl> implements Perl6VariableDeclStub {
     private String variableName;
-    private String variableKind;
 
-    public Perl6VariableDeclStubImpl(StubElement stub, String name, String kind) {
+    public Perl6VariableDeclStubImpl(StubElement stub, String name) {
         super(stub, Perl6ElementTypes.VARIABLE_DECLARATION);
         this.variableName = name;
-        this.variableKind = kind;
     }
 
     @Override
     public String getVariableName() {
         return variableName;
-    }
-
-    @Override
-    public String getVariableKind() {
-        return variableKind;
     }
 }

@@ -1,15 +1,21 @@
 package edument.perl6idea.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.stubs.IStubElementType;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 import org.jetbrains.annotations.NotNull;
 
-public class Perl6ScopedDeclImpl extends ASTWrapperPsiElement implements Perl6ScopedDecl {
+public class Perl6ScopedDeclImpl extends StubBasedPsiElementBase<Perl6ScopedDeclStub> implements Perl6ScopedDecl {
     public Perl6ScopedDeclImpl(@NotNull ASTNode node) {
         super(node);
+    }
+
+    public Perl6ScopedDeclImpl(final Perl6ScopedDeclStub stub, final IStubElementType nodeType) {
+        super(stub, nodeType);
     }
 
     @Override
@@ -34,5 +40,9 @@ public class Perl6ScopedDeclImpl extends ASTWrapperPsiElement implements Perl6Sc
         PsiElement variable = findChildByType(Perl6ElementTypes.VARIABLE_DECLARATION);
         if (variable != null) return ((Perl6VariableDeclImpl)variable).getName();
         return "<anon>";
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(Perl6:SCOPED_DECLARATION)";
     }
 }

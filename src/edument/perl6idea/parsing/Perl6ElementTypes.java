@@ -13,6 +13,7 @@ public interface Perl6ElementTypes {
     IStubElementType CONSTANT = new Perl6ConstantStubElementType();
     IStubElementType REGEX_DECLARATION = new Perl6RegexDeclStubElementType();
     IStubElementType VARIABLE_DECLARATION = new Perl6VariableDeclStubElementType();
+    IStubElementType SCOPED_DECLARATION = new Perl6ScopedDeclStubElementType();
     IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
     IElementType ARRAY_INDEX = new Perl6ElementType("ARRAY_INDEX");
     IElementType ARRAY_SHAPE = new Perl6ElementType("ARRAY_SHAPE");
@@ -97,7 +98,6 @@ public interface Perl6ElementTypes {
     IElementType REQUIRE_STATEMENT = new Perl6ElementType("REQUIRE_STATEMENT");
     IElementType RETURN_CONSTRAINT = new Perl6ElementType("RETURN_CONSTRAINT");
     IElementType REVERSE_METAOP = new Perl6ElementType("REVERSE_METAOP");
-    IElementType SCOPED_DECLARATION = new Perl6ElementType("SCOPED_DECLARATION");
     IElementType SELF = new Perl6ElementType("SELF");
     IElementType SEMI_LIST = new Perl6ElementType("SEMI_LIST");
     IElementType SEQUENTIAL_METAOP = new Perl6ElementType("SEQUENTIAL_METAOP");

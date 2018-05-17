@@ -24,7 +24,7 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
     @NotNull
     @Override
     public Perl6VariableDeclStub createStub(@NotNull Perl6VariableDecl psi, StubElement parentStub) {
-        return new Perl6VariableDeclStubImpl(parentStub, psi.getVariableName(), psi.getVariableScope());
+        return new Perl6VariableDeclStubImpl(parentStub, psi.getVariableName());
     }
 
     @NotNull
@@ -36,16 +36,13 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
     @Override
     public void serialize(@NotNull Perl6VariableDeclStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getVariableName());
-        dataStream.writeName(stub.getVariableKind());
     }
 
     @NotNull
     @Override
     public Perl6VariableDeclStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef variableNameRef = dataStream.readName();
-        StringRef variableKindRef = dataStream.readName();
-        return new Perl6VariableDeclStubImpl(parentStub, variableNameRef.getString(),
-                                             variableKindRef.getString());
+        return new Perl6VariableDeclStubImpl(parentStub, variableNameRef.getString());
     }
 
     @Override

@@ -10,7 +10,7 @@ sub generate-perl6-element-types(@element-names) is export {
         ConstructorCall.new(:name<Perl6FileElementType>, :arguments()));
 
     my %custom := set 'PACKAGE_DECLARATION', 'ROUTINE_DECLARATION', 'SUBSET', 'ENUM',
-        'CONSTANT', 'REGEX_DECLARATION', 'VARIABLE_DECLARATION';
+        'CONSTANT', 'REGEX_DECLARATION', 'VARIABLE_DECLARATION', 'SCOPED_DECLARATION';
     push @fields, InterfaceField.new: :type<IStubElementType>, :name<PACKAGE_DECLARATION>,
         :default(ConstructorCall.new(:name<Perl6PackageDeclStubElementType>));
     push @fields, InterfaceField.new: :type<IStubElementType>, :name<ROUTINE_DECLARATION>,
@@ -25,6 +25,8 @@ sub generate-perl6-element-types(@element-names) is export {
         :default(ConstructorCall.new(:name<Perl6RegexDeclStubElementType>));
     push @fields, InterfaceField.new: :type<IStubElementType>, :name<VARIABLE_DECLARATION>,
         :default(ConstructorCall.new(:name<Perl6VariableDeclStubElementType>));
+    push @fields, InterfaceField.new: :type<IStubElementType>, :name<SCOPED_DECLARATION>,
+        :default(ConstructorCall.new(:name<Perl6ScopedDeclStubElementType>));
 
     for @element-names.sort -> $name {
         next if %custom{$name};
