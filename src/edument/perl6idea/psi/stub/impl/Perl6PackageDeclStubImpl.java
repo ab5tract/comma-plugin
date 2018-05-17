@@ -38,6 +38,8 @@ public class Perl6PackageDeclStubImpl extends StubBase<Perl6PackageDecl> impleme
 
     @Override
     public String getGlobalName() {
+        if (packageName == null)
+            return null;
         String globalName = packageName;
         Stub current = getParentStub();
         while (current != null) {
@@ -53,6 +55,8 @@ public class Perl6PackageDeclStubImpl extends StubBase<Perl6PackageDecl> impleme
 
     @Override
     public String getLexicalName() {
+        if (packageName == null)
+            return null;
         String lexicalName = packageName;
         Stub current = getParentStub();
         while (current != null) {

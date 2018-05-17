@@ -5,8 +5,8 @@ import com.intellij.psi.stubs.StubIndexKey;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import org.jetbrains.annotations.NotNull;
 
-public class Perl6GlobalTypeStubIndex extends StringStubIndexExtension<Perl6PackageDecl> {
-    private static final int INDEX_VERSION = 3;
+public class Perl6GlobalTypeStubIndex extends StringStubIndexExtension<Perl6IndexableType> {
+    private static final int INDEX_VERSION = 4;
     private static final Perl6GlobalTypeStubIndex instance = new Perl6GlobalTypeStubIndex();
 
     public static Perl6GlobalTypeStubIndex getInstance() {
@@ -20,7 +20,7 @@ public class Perl6GlobalTypeStubIndex extends StringStubIndexExtension<Perl6Pack
 
     @NotNull
     @Override
-    public StubIndexKey<String, Perl6PackageDecl> getKey() {
+    public StubIndexKey<String, Perl6IndexableType> getKey() {
         return Perl6StubIndexKeys.GLOBAL_TYPES;
     }
 }

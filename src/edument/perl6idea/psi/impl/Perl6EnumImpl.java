@@ -22,6 +22,11 @@ public class Perl6EnumImpl extends Perl6PresentableStub<Perl6EnumStub> implement
         return stub != null ? stub.getEnumName() : getSymbolName();
     }
 
+    @Override
+    public String getName() {
+        return getEnumName();
+    }
+
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:ENUM)";
     }

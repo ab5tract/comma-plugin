@@ -6,4 +6,6 @@ import edument.perl6idea.psi.Perl6Enum;
 public interface Perl6EnumStub extends StubElement<Perl6Enum> {
     String getEnumName();
     String getScope();
+    String getGlobalName();
+    String getLexicalName();
 }

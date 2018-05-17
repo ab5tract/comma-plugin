@@ -6,9 +6,9 @@ import edument.perl6idea.psi.*;
 public class Perl6StubIndexKeys {
     public static final StubIndexKey<String, Perl6File> PROJECT_MODULES
         = StubIndexKey.createIndexKey("perl6.projectModules");
-    public static final StubIndexKey<String, Perl6PackageDecl> GLOBAL_TYPES
+    public static final StubIndexKey<String, Perl6IndexableType> GLOBAL_TYPES
         = StubIndexKey.createIndexKey("perl6.globalTypes");
-    public static final StubIndexKey<String, Perl6PackageDecl> LEXICAL_TYPES
+    public static final StubIndexKey<String, Perl6IndexableType> LEXICAL_TYPES
         = StubIndexKey.createIndexKey("perl6.lexicalTypes");
     public static final StubIndexKey<String, Perl6Constant> ALL_CONSTANTS
         = StubIndexKey.createIndexKey("perl6.allConstants");

@@ -6,6 +6,7 @@ import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.Perl6Enum;
 import edument.perl6idea.psi.impl.Perl6EnumImpl;
 import edument.perl6idea.psi.stub.impl.Perl6EnumStubImpl;
+import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -46,6 +47,14 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
 
     @Override
     public void indexStub(@NotNull Perl6EnumStub stub, @NotNull IndexSink sink) {
-
+        String globalName = stub.getGlobalName();
+        if (globalName != null) {
+            sink.occurrence(Perl6StubIndexKeys.GLOBAL_TYPES, globalName);
+        }
+        else {
+            String lexicalName = stub.getLexicalName();
+            if (lexicalName != null)
+                sink.occurrence(Perl6StubIndexKeys.LEXICAL_TYPES, lexicalName);
+        }
     }
 }

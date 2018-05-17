@@ -6,4 +6,6 @@ import edument.perl6idea.psi.Perl6Subset;
 public interface Perl6SubsetStub extends StubElement<Perl6Subset> {
     String getSubsetName();
     String getScope();
+    String getGlobalName();
+    String getLexicalName();
 }

@@ -22,6 +22,11 @@ public class Perl6SubsetImpl extends Perl6PresentableStub<Perl6SubsetStub> imple
         return stub != null ? stub.getSubsetName() : getSymbolName();
     }
 
+    @Override
+    public String getName() {
+        return getSubsetName();
+    }
+
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:SUBSET)";
     }
