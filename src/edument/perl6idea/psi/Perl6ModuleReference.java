@@ -1,8 +1,10 @@
 package edument.perl6idea.psi;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.search.GlobalSearchScope;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +19,10 @@ public class Perl6ModuleReference extends PsiReferenceBase<Perl6PsiElement> {
     @Nullable
     @Override
     public PsiElement resolve() {
-        return null;
+        Project project = this.getElement().getProject();
+        Collection<Perl6File> matching = ProjectModulesStubIndex.getInstance()
+            .get(this.getValue(), project, GlobalSearchScope.projectScope(project));
+        return matching.isEmpty() ? null : matching.iterator().next();
     }
 
     @NotNull
