@@ -45,7 +45,7 @@ public class Perl6VariableDeclImpl extends Perl6PresentableStub<Perl6VariableDec
 
     @Override
     public String getVariableName() {
-        return getSymbolName();
+        return getName();
     }
 
     @Override
