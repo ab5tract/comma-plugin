@@ -90,12 +90,14 @@ grammar MAIN {
     }
 
     token module_name {
+        <.start-element('MODULE_NAME')>
         <.start-element('LONG_NAME')>
         <.start-token('NAME')>
         <.name>
         <.end-token('NAME')>
         <.longname_colonpairs>
         <.end-element('LONG_NAME')>
+        <.end-element('MODULE_NAME')>
     }
 
     token end_keyword {

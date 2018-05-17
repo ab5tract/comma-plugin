@@ -40,7 +40,7 @@ public class Perl6ExternalElement extends ASTWrapperPsiElement implements Perl6P
     String getModuleName() {
         PsiElement[] children = getChildren();
         for (PsiElement el : children) {
-            if (el instanceof Perl6LongName)
+            if (el instanceof Perl6ModuleName)
                 return el.getText();
         }
         return null;

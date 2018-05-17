@@ -49,6 +49,7 @@ public interface Perl6ElementTypes {
     IElementType LONG_NAME = new Perl6ElementType("LONG_NAME");
     IElementType LOOP_STATEMENT = new Perl6ElementType("LOOP_STATEMENT");
     IElementType METHOD_CALL = new Perl6ElementType("METHOD_CALL");
+    IElementType MODULE_NAME = new Perl6ElementType("MODULE_NAME");
     IElementType MULTI_DECLARATION = new Perl6ElementType("MULTI_DECLARATION");
     IElementType NAMED_PARAMETER = new Perl6ElementType("NAMED_PARAMETER");
     IElementType NEED_STATEMENT = new Perl6ElementType("NEED_STATEMENT");

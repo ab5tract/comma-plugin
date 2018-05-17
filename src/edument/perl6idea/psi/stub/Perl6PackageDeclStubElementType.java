@@ -48,6 +48,5 @@ public class Perl6PackageDeclStubElementType extends IStubElementType<Perl6Packa
 
     @Override
     public void indexStub(@NotNull Perl6PackageDeclStub stub, @NotNull IndexSink sink) {
-
     }
 }
