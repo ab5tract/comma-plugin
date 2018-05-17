@@ -5,4 +5,5 @@ import edument.perl6idea.psi.Perl6Constant;
 
 public interface Perl6ConstantStub extends StubElement<Perl6Constant> {
     String getConstantName();
+    String getScope();
 }

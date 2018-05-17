@@ -4,7 +4,9 @@ import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.psi.Perl6PackageDecl;
+import edument.perl6idea.psi.Perl6ScopedDecl;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
+import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
 public class Perl6PackageDeclStubImpl extends StubBase<Perl6PackageDecl> implements Perl6PackageDeclStub {
     private String packageKind;
@@ -24,5 +26,12 @@ public class Perl6PackageDeclStubImpl extends StubBase<Perl6PackageDecl> impleme
     @Override
     public String getPackageName() {
         return packageName;
+    }
+
+    @Override
+    public String getScope() {
+        return getParentStub() instanceof Perl6ScopedDeclStub
+               ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
+               : "our";
     }
 }

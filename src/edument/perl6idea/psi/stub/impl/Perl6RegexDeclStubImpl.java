@@ -5,6 +5,7 @@ import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.psi.Perl6RegexDecl;
 import edument.perl6idea.psi.stub.Perl6RegexDeclStub;
+import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
 public class Perl6RegexDeclStubImpl extends StubBase<Perl6RegexDecl> implements Perl6RegexDeclStub {
     private String regexName;
@@ -17,5 +18,12 @@ public class Perl6RegexDeclStubImpl extends StubBase<Perl6RegexDecl> implements 
     @Override
     public String getRegexName() {
         return regexName;
+    }
+
+    @Override
+    public String getScope() {
+        return getParentStub() instanceof Perl6ScopedDeclStub
+               ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
+               : "has";
     }
 }

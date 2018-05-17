@@ -6,4 +6,5 @@ import edument.perl6idea.psi.Perl6PackageDecl;
 public interface Perl6PackageDeclStub extends StubElement<Perl6PackageDecl> {
     String getPackageKind();
     String getPackageName();
+    String getScope();
 }

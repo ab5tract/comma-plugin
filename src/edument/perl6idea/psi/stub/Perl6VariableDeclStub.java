@@ -5,4 +5,5 @@ import edument.perl6idea.psi.Perl6VariableDecl;
 
 public interface Perl6VariableDeclStub extends StubElement<Perl6VariableDecl> {
     String getVariableName();
+    String getScope();
 }

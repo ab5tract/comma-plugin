@@ -5,6 +5,7 @@ import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.psi.Perl6Enum;
 import edument.perl6idea.psi.stub.Perl6EnumStub;
+import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
 public class Perl6EnumStubImpl extends StubBase<Perl6Enum> implements Perl6EnumStub {
     private final String enumName;
@@ -17,5 +18,12 @@ public class Perl6EnumStubImpl extends StubBase<Perl6Enum> implements Perl6EnumS
     @Override
     public String getEnumName() {
         return enumName;
+    }
+
+    @Override
+    public String getScope() {
+        return getParentStub() instanceof Perl6ScopedDeclStub
+               ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
+               : "our";
     }
 }
