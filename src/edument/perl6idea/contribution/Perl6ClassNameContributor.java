@@ -27,11 +27,11 @@ public class Perl6ClassNameContributor implements ChooseByNameContributor {
         List<NavigationItem> results = new ArrayList<>();
 
         Perl6GlobalTypeStubIndex globalIndex = Perl6GlobalTypeStubIndex.getInstance();
-        for (String globalType : globalIndex.getAllKeys(project))
+        for (String globalType : Filtering.typeMatch(globalIndex.getAllKeys(project), pattern))
             results.addAll(globalIndex.get(globalType, project, GlobalSearchScope.projectScope(project)));
 
         Perl6LexicalTypeStubIndex lexicalIndex = Perl6LexicalTypeStubIndex.getInstance();
-        for (String lexicalType : lexicalIndex.getAllKeys(project))
+        for (String lexicalType : Filtering.typeMatch(lexicalIndex.getAllKeys(project), pattern))
             results.addAll(lexicalIndex.get(lexicalType, project, GlobalSearchScope.projectScope(project)));
 
         return results.toArray(new NavigationItem[0]);

@@ -30,27 +30,27 @@ public class Perl6SymbolNameContributor implements ChooseByNameContributor {
         List<NavigationItem> results = new ArrayList<>();
 
         Perl6GlobalTypeStubIndex globalIndex = Perl6GlobalTypeStubIndex.getInstance();
-        for (String globalType : globalIndex.getAllKeys(project))
+        for (String globalType : Filtering.typeMatch(globalIndex.getAllKeys(project), pattern))
             results.addAll(globalIndex.get(globalType, project, GlobalSearchScope.projectScope(project)));
 
         Perl6LexicalTypeStubIndex lexicalIndex = Perl6LexicalTypeStubIndex.getInstance();
-        for (String lexicalType : lexicalIndex.getAllKeys(project))
+        for (String lexicalType : Filtering.typeMatch(lexicalIndex.getAllKeys(project), pattern))
             results.addAll(lexicalIndex.get(lexicalType, project, GlobalSearchScope.projectScope(project)));
 
         Perl6AllRoutinesStubIndex routinesIndex = Perl6AllRoutinesStubIndex.getInstance();
-        for (String routine : routinesIndex.getAllKeys(project))
+        for (String routine : Filtering.simpleMatch(routinesIndex.getAllKeys(project), pattern))
             results.addAll(routinesIndex.get(routine, project, GlobalSearchScope.projectScope(project)));
 
         Perl6AllRegexesStubIndex regexesIndex = Perl6AllRegexesStubIndex.getInstance();
-        for (String regex : regexesIndex.getAllKeys(project))
+        for (String regex : Filtering.simpleMatch(regexesIndex.getAllKeys(project), pattern))
             results.addAll(regexesIndex.get(regex, project, GlobalSearchScope.projectScope(project)));
 
         Perl6AllAttributesStubIndex attrIndex = Perl6AllAttributesStubIndex.getInstance();
-        for (String attr : attrIndex.getAllKeys(project))
+        for (String attr : Filtering.simpleMatch(attrIndex.getAllKeys(project), pattern))
             results.addAll(attrIndex.get(attr, project, GlobalSearchScope.projectScope(project)));
 
         Perl6AllConstantsStubIndex constantIndex = Perl6AllConstantsStubIndex.getInstance();
-        for (String constant : constantIndex.getAllKeys(project))
+        for (String constant : Filtering.simpleMatch(constantIndex.getAllKeys(project), pattern))
             results.addAll(constantIndex.get(constant, project, GlobalSearchScope.projectScope(project)));
 
         return results.toArray(new NavigationItem[0]);
