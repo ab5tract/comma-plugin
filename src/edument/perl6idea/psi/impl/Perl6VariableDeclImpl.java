@@ -49,6 +49,11 @@ public class Perl6VariableDeclImpl extends Perl6PresentableStub<Perl6VariableDec
     }
 
     @Override
+    public String getSymbolName() {
+        return getName();
+    }
+
+    @Override
     public String getVariableScope() {
         PsiElement parent = getNode().getPsi().getParent();
         return parent instanceof Perl6ScopedDecl ? ((Perl6ScopedDecl)parent).getScope() : "";
