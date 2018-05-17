@@ -46,4 +46,6 @@ deploy:
     branch: master
 notifications:
   slack:
+    on_success: change
+    on_failure: always
     secure: FWTmN59qyqPcxE+efPdP4uqr93E1XjEd5+QbZA2H8Gj2r+4vk04wW+A9HOXYqBb1Sh3ct+LDCNtBTYn6P5wRJDsPaZmA3vX9W36KP/AQ81cuJAgE1PUg7+/IRckyyybZDxMocuB9cV4Q2ZxhQPSd0HW0fhdzaGJfoDeduMKEM+mZHXasiFti7dLt7nvIgf1AoLuKKOuzrZIrv228+nJn63ZJZzS7ULehC6SE0LrncwQNLWkiSJj9D5egosdMipbEnprlCMZWQG844MpZ1xwEycZPGNrpScQ2hlZcvfSgotEAj+amiL3xaCUAXUtro+nABqvGGsuKsCcWzrx/rril3tiL/l3m9tUII7HgMZHIQcJMhbtW+437gs66TU7AIwJCdBerUe7qcNwzD7GOUfZP/ZeGH4jff7hHM+qDtuenn9tGFL50E//KdcARtSajawIsXWY/vBN5Nrzqp0pl7xC3s0+dCmz+Fx/7EdslVFf/I1Ivl7rDECOioKDi7ShvTNvg8N5186c874pgI3vo6jUHOU9cxwm1+avJnpwQNKyJuR1pruqf1xSG+DdoDmmnB+sNFcPCpsuq3u9zJaa4GYOFUMO4TW5tNKXARYyyiVf4WoMQKVsQ1K3Skk3BNVhIY0fQFXVnVoFtjcNMQzBYXYImH2oTucTmToCusz7aMHoSA0c=
