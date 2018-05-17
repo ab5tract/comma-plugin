@@ -8,8 +8,8 @@ public interface Perl6ElementTypes {
     IStubFileElementType FILE = new Perl6FileElementType();
     IStubElementType PACKAGE_DECLARATION = new Perl6PackageDeclStubElementType();
     IStubElementType ROUTINE_DECLARATION = new Perl6RoutineDeclStubElementType();
-    IStubElementType SUBSET = new Perl6SubsetStubElementType();
     IStubElementType ENUM = new Perl6EnumStubElementType();
+    IStubElementType SUBSET = new Perl6SubsetStubElementType();
     IStubElementType CONSTANT = new Perl6ConstantStubElementType();
     IStubElementType REGEX_DECLARATION = new Perl6RegexDeclStubElementType();
     IStubElementType VARIABLE_DECLARATION = new Perl6VariableDeclStubElementType();
