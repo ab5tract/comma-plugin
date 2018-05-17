@@ -20,6 +20,10 @@ public class Perl6ScopedDeclImpl extends StubBasedPsiElementBase<Perl6ScopedDecl
 
     @Override
     public String getScope() {
+        Perl6ScopedDeclStub stub = this.getStub();
+        if (stub != null)
+            return stub.getScope();
+
         String text = getText();
         if (text.startsWith("my")) return "my";
         if (text.startsWith("has")) return "has";
