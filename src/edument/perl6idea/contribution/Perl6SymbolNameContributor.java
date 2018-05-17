@@ -46,7 +46,7 @@ public class Perl6SymbolNameContributor implements ChooseByNameContributor {
             results.addAll(regexesIndex.get(regex, project, GlobalSearchScope.projectScope(project)));
 
         Perl6AllAttributesStubIndex attrIndex = Perl6AllAttributesStubIndex.getInstance();
-        for (String attr : Filtering.simpleMatch(attrIndex.getAllKeys(project), pattern))
+        for (String attr : Filtering.variableMatch(attrIndex.getAllKeys(project), pattern))
             results.addAll(attrIndex.get(attr, project, GlobalSearchScope.projectScope(project)));
 
         Perl6AllConstantsStubIndex constantIndex = Perl6AllConstantsStubIndex.getInstance();

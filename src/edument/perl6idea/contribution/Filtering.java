@@ -26,4 +26,12 @@ class Filtering {
                 result.add(test);
         return result;
     }
+
+    public static Collection<String> variableMatch(Collection<String> in, String pattern) {
+        Collection<String> result = new ArrayList<>();
+        for (String test : in)
+            if (test.indexOf(pattern) >= 0 || test.replace('.', '!').indexOf(pattern) >= 0)
+                result.add(test);
+        return result;
+    }
 }
