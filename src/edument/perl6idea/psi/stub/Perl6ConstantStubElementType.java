@@ -6,6 +6,7 @@ import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.Perl6Constant;
 import edument.perl6idea.psi.impl.Perl6ConstantImpl;
 import edument.perl6idea.psi.stub.impl.Perl6ConstantStubImpl;
+import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -46,6 +47,6 @@ public class Perl6ConstantStubElementType extends IStubElementType<Perl6Constant
 
     @Override
     public void indexStub(@NotNull Perl6ConstantStub stub, @NotNull IndexSink sink) {
-
+        sink.occurrence(Perl6StubIndexKeys.ALL_CONSTANTS, stub.getConstantName());
     }
 }

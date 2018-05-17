@@ -58,8 +58,7 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
                 includes.add(i.getModuleName());
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
-        return new Perl6SymbolNameContributor().getItemByName(element.getText(),
-                                                              element.getProject(), includes);
+        return null; // XXX Rewrite later
     }
 
     @Nullable

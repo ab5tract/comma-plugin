@@ -7,6 +7,7 @@ import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.psi.impl.Perl6VariableDeclImpl;
 import edument.perl6idea.psi.stub.impl.Perl6VariableDeclStubImpl;
+import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
 
     @Override
     public void indexStub(@NotNull Perl6VariableDeclStub stub, @NotNull IndexSink sink) {
-
+        sink.occurrence(Perl6StubIndexKeys.ALL_ATTRIBUTES, stub.getVariableName());
     }
 
     @Override

@@ -6,6 +6,7 @@ import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.impl.Perl6RoutineDeclImpl;
 import edument.perl6idea.psi.stub.impl.Perl6RoutineDeclStubImpl;
+import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -48,6 +49,6 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
 
     @Override
     public void indexStub(@NotNull Perl6RoutineDeclStub stub, @NotNull IndexSink sink) {
-
+        sink.occurrence(Perl6StubIndexKeys.ALL_ROUTINES, stub.getRoutineName());
     }
 }

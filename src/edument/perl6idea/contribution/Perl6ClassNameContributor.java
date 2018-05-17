@@ -15,7 +15,10 @@ public class Perl6ClassNameContributor implements ChooseByNameContributor {
     @NotNull
     @Override
     public String[] getNames(Project project, boolean includeNonProjectItems) {
-        return Perl6GlobalTypeStubIndex.getInstance().getAllKeys(project).toArray(new String[0]);
+        List<String> result = new ArrayList<>();
+        result.addAll(Perl6GlobalTypeStubIndex.getInstance().getAllKeys(project));
+        result.addAll(Perl6LexicalTypeStubIndex.getInstance().getAllKeys(project));
+        return result.toArray(new String[0]);
     }
 
     @NotNull

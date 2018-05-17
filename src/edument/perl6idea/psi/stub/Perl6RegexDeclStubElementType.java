@@ -7,6 +7,7 @@ import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.Perl6RegexDecl;
 import edument.perl6idea.psi.impl.Perl6RegexDeclImpl;
 import edument.perl6idea.psi.stub.impl.Perl6RegexDeclStubImpl;
+import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class Perl6RegexDeclStubElementType extends IStubElementType<Perl6RegexDe
 
     @Override
     public void indexStub(@NotNull Perl6RegexDeclStub stub, @NotNull IndexSink sink) {
-
+        sink.occurrence(Perl6StubIndexKeys.ALL_REGEXES, stub.getRegexName());
     }
 
     @Override
