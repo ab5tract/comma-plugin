@@ -1,5 +1,6 @@
 package edument.perl6idea.psi.stub.impl;
 
+import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.parsing.Perl6ElementTypes;
@@ -33,5 +34,23 @@ public class Perl6PackageDeclStubImpl extends StubBase<Perl6PackageDecl> impleme
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
                : "our";
+    }
+
+    @Override
+    public String getGlobalName() {
+        String globalName = packageName;
+        Stub current = getParentStub();
+        while (current != null) {
+            if (current instanceof Perl6ScopedDeclStub)
+                if (((Perl6ScopedDeclStub)current).getScope().equals("my")) {
+                    System.out.println("Skipping lexical " + packageName);
+                    return null;
+                }
+            if (current instanceof Perl6PackageDeclStub)
+                globalName = ((Perl6PackageDeclStub)current).getPackageName() + "::" + globalName;
+            current = current.getParentStub();
+        }
+        System.out.println(globalName);
+        return globalName;
     }
 }

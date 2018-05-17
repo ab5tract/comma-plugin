@@ -6,6 +6,7 @@ import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.stub.impl.Perl6PackageDeclStubImpl;
+import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -48,5 +49,8 @@ public class Perl6PackageDeclStubElementType extends IStubElementType<Perl6Packa
 
     @Override
     public void indexStub(@NotNull Perl6PackageDeclStub stub, @NotNull IndexSink sink) {
+        String globalName = stub.getGlobalName();
+        if (globalName != null)
+            sink.occurrence(Perl6StubIndexKeys.GLOBAL_TYPES, globalName);
     }
 }
