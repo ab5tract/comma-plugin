@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +43,25 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
             @Nullable
             @Override
             public String getLocationString() {
-                return getEnclosingPerl6ModuleName();
+                switch (getScope()) {
+                    case "my":
+                        return "lexical in " + enclosingPackage();
+                    case "our":
+                        return "global in " + enclosingPackage();
+                    case "has":
+                        return "in " + enclosingPackage();
+                    default:
+                        return getEnclosingPerl6ModuleName();
+                }
+            }
+
+            private String enclosingPackage() {
+                Perl6PackageDecl pkg = getStubOrPsiParentOfType(Perl6PackageDecl.class);
+                if (pkg == null)
+                    return getEnclosingPerl6ModuleName();
+                Perl6PackageDeclStub stub = pkg.getStub();
+                String globalName = stub != null ? stub.getGlobalName() : pkg.getGlobalName();
+                return globalName == null ? pkg.getName() : globalName;
             }
 
             @Nullable
