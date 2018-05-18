@@ -114,6 +114,11 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
+    public String presentableName() {
+        return getName() + summarySignature();
+    }
+
+    @Override
     public String defaultScope() {
         return getRoutineKind().equals("sub") ? "my" : "has";
     }

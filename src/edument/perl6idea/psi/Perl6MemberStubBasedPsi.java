@@ -32,12 +32,16 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
 
     public abstract String defaultScope();
 
+    public String presentableName() {
+        return getName();
+    }
+
     public ItemPresentation getPresentation() {
         return new ItemPresentation() {
             @Nullable
             @Override
             public String getPresentableText() {
-                return getName();
+                return presentableName();
             }
 
             @Nullable
