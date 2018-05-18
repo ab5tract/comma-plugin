@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.Perl6Icons;
-import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
+import edument.perl6idea.psi.stub.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,6 +71,20 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
             @Nullable
             @Override
             public Icon getIcon(boolean b) {
+                T stub = getStub();
+                if (stub == null) return Perl6Icons.CAMELIA;
+                IStubElementType type = stub.getStubType();
+                if (type instanceof Perl6RoutineDeclStubElementType) {
+                    if (getScope().equals("has"))
+                        return Perl6Icons.METHOD;
+                    return Perl6Icons.SUB;
+                }
+                else if (type instanceof Perl6RegexDeclStubElementType)
+                    return Perl6Icons.REGEX;
+                else if (type instanceof Perl6ConstantStubElementType)
+                    return Perl6Icons.CONSTANT;
+                else if (type instanceof Perl6VariableDeclStubElementType)
+                    return Perl6Icons.ATTRIBUTE;
                 return Perl6Icons.CAMELIA;
             }
         };

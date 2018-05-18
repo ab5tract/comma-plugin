@@ -8,7 +8,11 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.psi.stub.Perl6EnumStubElementType;
+import edument.perl6idea.psi.stub.Perl6PackageDeclStubElementType;
+import edument.perl6idea.psi.stub.Perl6SubsetStubElementType;
 import edument.perl6idea.psi.stub.Perl6TypeStub;
+import edument.perl6idea.psi.stub.impl.Perl6PackageDeclStubImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,6 +84,28 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
             @Nullable
             @Override
             public Icon getIcon(boolean b) {
+                T stub = getStub();
+                if (stub == null) return Perl6Icons.CAMELIA;
+                IStubElementType type = stub.getStubType();
+                if (type instanceof Perl6PackageDeclStubElementType) {
+                    String kind = ((Perl6PackageDeclStubImpl)stub).getPackageKind();
+                    switch (kind) {
+                        case "module":
+                            return Perl6Icons.MODULE;
+                        case "class":
+                            return Perl6Icons.CLASS;
+                        case "role":
+                            return Perl6Icons.ROLE;
+                        case "grammar":
+                            return Perl6Icons.GRAMMAR;
+                        default:
+                            return Perl6Icons.PACKAGE;
+                    }
+                }
+                else if (type instanceof Perl6SubsetStubElementType)
+                    return Perl6Icons.SUBSET;
+                else if (type instanceof Perl6EnumStubElementType)
+                    return Perl6Icons.ENUM;
                 return Perl6Icons.CAMELIA;
             }
         };
