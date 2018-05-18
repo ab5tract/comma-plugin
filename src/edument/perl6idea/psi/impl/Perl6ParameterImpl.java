@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6ParameterVariable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.PARAMETER_QUANTIFIER;
 
@@ -16,29 +17,25 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
 
     @Override
     public String summary() {
-        Perl6SignatureImpl maybeSig = findChildByClass(Perl6SignatureImpl.class);
-        if (maybeSig != null) {
-            if (maybeSig.getText().charAt(0) == '(')
-                return "$";
-            if  (maybeSig.getText().charAt(0) == '[')
-                return "@";
-        }
-        Perl6NamedParameterImpl maybeNamed = findChildByClass(Perl6NamedParameterImpl.class);
-        if (maybeNamed != null)
-            return maybeNamed.summary();
+        String maybeSignature = yieldSignature();
+        if (maybeSignature != null)
+            return maybeSignature;
 
         StringBuilder summary = new StringBuilder();
-        Perl6TypeNameImpl type = findChildByClass(Perl6TypeNameImpl.class);
-        if (type != null)
-            summary.append(type.getText()).append(" ");
+        Perl6TypeNameImpl maybeType = findChildByClass(Perl6TypeNameImpl.class);
+        if (maybeType != null)
+            summary.append(maybeType.getText()).append(" ");
         PsiElement maybeSlurpy = getFirstChild();
         if (maybeSlurpy.getNode().getElementType() == PARAMETER_QUANTIFIER)
             summary.append(maybeSlurpy.getText());
-        Perl6ParameterVariableImpl parameter = findChildByClass(Perl6ParameterVariableImpl.class);
-        if (parameter != null)
-            summary.append(parameter.getText().charAt(0));
-        Perl6TermDefinitionImpl term = findChildByClass(Perl6TermDefinitionImpl.class);
 
+        Perl6NamedParameterImpl maybeNamed = findChildByClass(Perl6NamedParameterImpl.class);
+        if (maybeNamed != null) summary.append(maybeNamed.summary());
+
+        Perl6ParameterVariableImpl maybeNormal = findChildByClass(Perl6ParameterVariableImpl.class);
+        if (maybeNormal != null) summary.append(maybeNormal.summary());
+
+        Perl6TermDefinitionImpl term = findChildByClass(Perl6TermDefinitionImpl.class);
         if (term != null && term.getPrevSibling().getText().equals("\\"))
             summary.append(term.getText());
 
@@ -47,6 +44,18 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
             summary.append(maybeQuant.getText());
 
         return summary.toString();
+    }
+
+    @Nullable
+    private String yieldSignature() {
+        Perl6SignatureImpl maybeSig = findChildByClass(Perl6SignatureImpl.class);
+        if (maybeSig != null) {
+            if (maybeSig.getText().charAt(0) == '(')
+                return "$";
+            if  (maybeSig.getText().charAt(0) == '[')
+                return "@";
+        }
+        return null;
     }
 
     @Override

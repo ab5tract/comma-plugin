@@ -9,6 +9,7 @@ import edument.perl6idea.psi.Perl6ParameterVariable;
 import edument.perl6idea.psi.Perl6Variable;
 import org.jetbrains.annotations.NotNull;
 
+import static edument.perl6idea.parsing.Perl6ElementTypes.NAMED_PARAMETER;
 import static edument.perl6idea.parsing.Perl6ElementTypes.PARAMETER_VARIABLE;
 import static edument.perl6idea.parsing.Perl6TokenTypes.NAMED_PARAMETER_NAME_ALIAS;
 import static edument.perl6idea.parsing.Perl6TokenTypes.VARIABLE;
@@ -23,11 +24,16 @@ public class Perl6NamedParameterImpl extends ASTWrapperPsiElement implements Per
         PsiElement alias = findChildByType(NAMED_PARAMETER_NAME_ALIAS);
         Perl6ParameterVariable var = PsiTreeUtil.findChildOfType(this, Perl6ParameterVariableImpl.class);
         String base = ":";
-        if (alias != null)
-            return base + "$" + alias.getText();
+        if (alias != null) {
+            Perl6NamedParameter internal = PsiTreeUtil.findChildOfType(this, Perl6NamedParameterImpl.class);
+            if (internal == null)
+                return base + "$" + alias.getText();
+            else
+                return base + alias.getText() + "(" + internal.summary() + ")";
+        }
         else if (var != null)
             return base + var.getText();
         else
-            return base;
+            return base; // should not happen
     }
 }

@@ -37,4 +37,9 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
         // TODO See https://github.com/JetBrains/intellij-community/blob/db9200fcdb58eccfeb065524bd211b3aa6d6b83c/java/java-psi-impl/src/com/intellij/psi/impl/PsiImplUtil.java
         return null;
     }
+
+    @Override
+    public String summary() {
+        return String.valueOf(this.getName().charAt(0));
+    }
 }
