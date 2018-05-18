@@ -2,6 +2,7 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6Signature;
 import org.jetbrains.annotations.NotNull;
@@ -21,8 +22,8 @@ public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Sig
         for (Perl6Parameter param : params) {
             sums.add(param.summary());
         }
-        String paramsSummary = String.join(", ", sums.toArray(new String[sums.size()]));
-        if (type.equals(""))
+        String paramsSummary = String.join(", ", ArrayUtil.toStringArray(sums));
+        if (type.isEmpty())
             return "(" + paramsSummary + ")";
         else
             return "(" + paramsSummary + (paramsSummary.trim().length() == 0 ? "--> " : " -->") + type + ")";
