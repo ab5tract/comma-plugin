@@ -18,7 +18,7 @@ public class Perl6EnumStubImpl extends StubBase<Perl6Enum> implements Perl6EnumS
     }
 
     @Override
-    public String getEnumName() {
+    public String getTypeName() {
         return enumName;
     }
 
@@ -27,41 +27,5 @@ public class Perl6EnumStubImpl extends StubBase<Perl6Enum> implements Perl6EnumS
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
                : "our";
-    }
-
-    @Override
-    public String getGlobalName() {
-        if (enumName == null)
-            return null;
-        String globalName = enumName;
-        Stub current = getParentStub();
-        while (current != null) {
-            if (current instanceof Perl6ScopedDeclStub)
-                if (((Perl6ScopedDeclStub)current).getScope().equals("my"))
-                    return null;
-            if (current instanceof Perl6PackageDeclStub)
-                globalName = ((Perl6PackageDeclStub)current).getPackageName() + "::" + globalName;
-            current = current.getParentStub();
-        }
-        return globalName;
-    }
-
-    @Override
-    public String getLexicalName() {
-        if (enumName == null)
-            return null;
-        String lexicalName = enumName;
-        Stub current = getParentStub();
-        while (current != null) {
-            if (current instanceof Perl6ScopedDeclStub) {
-                if (((Perl6ScopedDeclStub)current).getScope().equals("my"))
-                    return lexicalName;
-                return null;
-            }
-            if (current instanceof Perl6PackageDeclStub)
-                lexicalName = ((Perl6PackageDeclStub)current).getPackageName() + "::" + lexicalName;
-            current = current.getParentStub();
-        }
-        return null;
     }
 }

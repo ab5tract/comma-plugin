@@ -14,7 +14,7 @@ import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 
-public class Perl6PackageDeclImpl extends Perl6PresentableStub<Perl6PackageDeclStub> implements Perl6PackageDecl {
+public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub> implements Perl6PackageDecl {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -35,10 +35,6 @@ public class Perl6PackageDeclImpl extends Perl6PresentableStub<Perl6PackageDeclS
 
     @Override
     public String getPackageName() {
-        Perl6PackageDeclStub stub = getStub();
-        if (stub != null)
-            return stub.getPackageName();
-
         return getName();
     }
 
@@ -64,7 +60,4 @@ public class Perl6PackageDeclImpl extends Perl6PresentableStub<Perl6PackageDeclS
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:PACKAGE_DECLARATION)";
     }
-
-    @Override
-    public String getName() { return getSymbolName(); }
 }

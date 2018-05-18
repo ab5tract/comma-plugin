@@ -1,11 +1,7 @@
 package edument.perl6idea.psi.stub;
 
-import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.psi.Perl6Enum;
 
-public interface Perl6EnumStub extends StubElement<Perl6Enum> {
-    String getEnumName();
+public interface Perl6EnumStub extends Perl6TypeStub<Perl6Enum> {
     String getScope();
-    String getGlobalName();
-    String getLexicalName();
 }

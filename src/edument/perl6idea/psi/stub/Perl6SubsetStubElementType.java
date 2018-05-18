@@ -35,7 +35,7 @@ public class Perl6SubsetStubElementType extends IStubElementType<Perl6SubsetStub
 
     @Override
     public void serialize(@NotNull Perl6SubsetStub stub, @NotNull StubOutputStream dataStream) throws IOException {
-        dataStream.writeName(stub.getSubsetName());
+        dataStream.writeName(stub.getTypeName());
     }
 
     @NotNull

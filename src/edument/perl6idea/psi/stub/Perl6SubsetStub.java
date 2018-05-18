@@ -1,11 +1,7 @@
 package edument.perl6idea.psi.stub;
 
-import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.psi.Perl6Subset;
 
-public interface Perl6SubsetStub extends StubElement<Perl6Subset> {
-    String getSubsetName();
+public interface Perl6SubsetStub extends Perl6TypeStub<Perl6Subset> {
     String getScope();
-    String getGlobalName();
-    String getLexicalName();
 }

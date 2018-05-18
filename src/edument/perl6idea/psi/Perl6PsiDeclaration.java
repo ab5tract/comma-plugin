@@ -1,4 +1,6 @@
 package edument.perl6idea.psi;
 
-public interface Perl6PsiDeclaration {
+import com.intellij.psi.PsiNameIdentifierOwner;
+
+public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierOwner {
 }

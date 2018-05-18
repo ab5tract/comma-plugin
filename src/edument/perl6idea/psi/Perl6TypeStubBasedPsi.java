@@ -3,34 +3,46 @@ package edument.perl6idea.psi;
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.StubElement;
+import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.psi.stub.Perl6TypeStub;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.NAME;
 
-public class Perl6PresentableStub<T extends StubElement> extends StubBasedPsiElementBase<T> {
-    public Perl6PresentableStub(@NotNull T stub,
-                                @NotNull IStubElementType nodeType) {
+public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStub> extends StubBasedPsiElementBase<T>
+        implements Perl6PsiDeclaration {
+    public Perl6TypeStubBasedPsi(@NotNull T stub,
+                                 @NotNull IStubElementType nodeType) {
         super(stub, nodeType);
     }
 
-    public Perl6PresentableStub(@NotNull ASTNode node) {
+    public Perl6TypeStubBasedPsi(@NotNull ASTNode node) {
         super(node);
     }
 
-    public String getSymbolName() {
-        PsiElement name = findChildByType(NAME);
-        PsiElement longName = findChildByType(LONG_NAME);
-        return name == null ? longName == null ? "<anon>" : longName.getText() : name.getText();
+    @Override
+    public PsiElement getNameIdentifier() {
+        return findChildByType(NAME);
+    }
+
+    @Override
+    public String getName() {
+        T stub = getStub();
+        if (stub != null)
+            return stub.getTypeName();
+        return getNameIdentifier().getText();
+    }
+
+    @Override
+    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        return null;
     }
 
     @Nullable
@@ -50,21 +62,13 @@ public class Perl6PresentableStub<T extends StubElement> extends StubBasedPsiEle
             @Nullable
             @Override
             public String getPresentableText() {
-                return getSymbolName();
+                return getName();
             }
 
             @Nullable
             @Override
             public String getLocationString() {
-                PsiFile baseFile = getContainingFile();
-                PsiDirectory dir = baseFile.getParent();
-                String path = getContainingFile().getName().replace(".pm6", "");
-                if (getOuterElementName() != null) path = String.format("%s::%s", path, getOuterElementName());
-                while (dir != null && !dir.getName().equals("lib")) {
-                    path = String.format("%s::%s", dir.getName(), path);
-                    dir = dir.getParent();
-                }
-                return String.format("(in %s)", path);
+                return getEnclosingPerl6ModuleName();
             }
 
             @Nullable

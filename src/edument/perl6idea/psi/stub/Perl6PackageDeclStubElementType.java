@@ -36,7 +36,7 @@ public class Perl6PackageDeclStubElementType extends IStubElementType<Perl6Packa
     @Override
     public void serialize(@NotNull Perl6PackageDeclStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getPackageKind());
-        dataStream.writeName(stub.getPackageName());
+        dataStream.writeName(stub.getTypeName());
     }
 
     @NotNull

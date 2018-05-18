@@ -35,7 +35,7 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
 
     @Override
     public void serialize(@NotNull Perl6EnumStub stub, @NotNull StubOutputStream dataStream) throws IOException {
-        dataStream.writeName(stub.getEnumName());
+        dataStream.writeName(stub.getTypeName());
     }
 
     @NotNull

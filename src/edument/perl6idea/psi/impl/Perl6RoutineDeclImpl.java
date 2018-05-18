@@ -5,7 +5,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
-import edument.perl6idea.psi.Perl6PresentableStub;
+import edument.perl6idea.psi.Perl6MemberStubBasedPsi;
+import edument.perl6idea.psi.Perl6TypeStubBasedPsi;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6Trait;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
@@ -17,7 +18,7 @@ import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 
-public class Perl6RoutineDeclImpl extends Perl6PresentableStub<Perl6RoutineDeclStub> implements Perl6RoutineDecl {
+public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDeclStub> implements Perl6RoutineDecl {
     public Perl6RoutineDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -38,13 +39,7 @@ public class Perl6RoutineDeclImpl extends Perl6PresentableStub<Perl6RoutineDeclS
         if (stub != null)
             return stub.getRoutineName();
         PsiElement name = findChildByType(LONG_NAME);
-
         return name == null ? "<anon>" : name.getText();
-    }
-
-    @Override
-    public String getSymbolName() {
-        return getSignature();
     }
 
     @Override

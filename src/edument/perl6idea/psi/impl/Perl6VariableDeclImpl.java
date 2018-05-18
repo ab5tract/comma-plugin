@@ -3,16 +3,13 @@ package edument.perl6idea.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.Perl6PresentableStub;
-import edument.perl6idea.psi.Perl6ScopedDecl;
-import edument.perl6idea.psi.Perl6Variable;
-import edument.perl6idea.psi.Perl6VariableDecl;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Perl6VariableDeclImpl extends Perl6PresentableStub<Perl6VariableDeclStub> implements Perl6VariableDecl {
+public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub> implements Perl6VariableDecl {
     public Perl6VariableDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -45,11 +42,6 @@ public class Perl6VariableDeclImpl extends Perl6PresentableStub<Perl6VariableDec
 
     @Override
     public String getVariableName() {
-        return getName();
-    }
-
-    @Override
-    public String getSymbolName() {
         return getName();
     }
 
