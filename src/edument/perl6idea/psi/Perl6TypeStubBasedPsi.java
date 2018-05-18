@@ -48,19 +48,7 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
     @Override
     public String getScope() {
         PsiElement parent = getNode().getPsi().getParent();
-        return parent instanceof Perl6ScopedDecl ? ((Perl6ScopedDecl)parent).getScope() : "";
-    }
-
-    @Nullable
-    private String getOuterElementName() {
-        StringBuilder name = new StringBuilder();
-        PsiElement outer = getParent();
-        while (outer != null && !(outer instanceof Perl6File)) {
-            if (outer instanceof Perl6PackageDecl)
-                name.insert(0, ((Perl6PackageDecl) outer).getPackageName());
-            outer = outer.getParent();
-        }
-        return name.toString().isEmpty() ? null : name.toString();
+        return parent instanceof Perl6ScopedDecl ? ((Perl6ScopedDecl)parent).getScope() : "our";
     }
 
     public ItemPresentation getPresentation() {
@@ -74,7 +62,19 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
             @Nullable
             @Override
             public String getLocationString() {
-                return getEnclosingPerl6ModuleName();
+                // Mangle file name into module name.
+                String moduleName = getEnclosingPerl6ModuleName();
+                if (moduleName == null)
+                    return "";
+
+                // See if it's global.
+                T stub = getStub();
+                String globalName = stub == null ? getGlobalName() : stub.getGlobalName();
+                if (globalName != null)
+                    return "global in " + moduleName;
+
+                // Otherwise, presumed lexical.
+                return "lexical in " + moduleName;
             }
 
             @Nullable

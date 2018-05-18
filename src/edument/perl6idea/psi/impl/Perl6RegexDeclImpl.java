@@ -54,6 +54,11 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
         return null;
     }
 
+    @Override
+    public String defaultScope() {
+        return "has";
+    }
+
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:REGEX_DECLARATION)";
     }

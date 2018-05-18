@@ -46,6 +46,11 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
+    public String defaultScope() {
+        return "my";
+    }
+
+    @Override
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:VARIABLE_DECLARATION)";
     }

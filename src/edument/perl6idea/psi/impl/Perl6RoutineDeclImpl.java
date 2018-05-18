@@ -113,6 +113,11 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         return name == null ? "<anon>" : name;
     }
 
+    @Override
+    public String defaultScope() {
+        return getRoutineKind().equals("sub") ? "my" : "has";
+    }
+
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:ROUTINE_DECLARATION)";
     }

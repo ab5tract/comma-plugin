@@ -26,8 +26,10 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
     @Override
     public String getScope() {
         PsiElement parent = getParent();
-        return parent instanceof Perl6ScopedDecl ? ((Perl6ScopedDecl)parent).getScope() : "";
+        return parent instanceof Perl6ScopedDecl ? ((Perl6ScopedDecl)parent).getScope() : defaultScope();
     }
+
+    public abstract String defaultScope();
 
     public ItemPresentation getPresentation() {
         return new ItemPresentation() {

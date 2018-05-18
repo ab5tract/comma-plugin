@@ -45,6 +45,11 @@ public class Perl6ConstantImpl extends Perl6MemberStubBasedPsi<Perl6ConstantStub
         return getName();
     }
 
+    @Override
+    public String defaultScope() {
+        return "our";
+    }
+
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:CONSTANT)";
     }
