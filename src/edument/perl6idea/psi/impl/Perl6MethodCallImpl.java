@@ -35,20 +35,4 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
         ASTNode op = findChildByType(METHOD_CALL_OPERATOR);
         return op == null ? "" : op.getText();
     }
-
-    @Override
-    public int getNameStartOffset() {
-        if (name == null)
-            name = findChildByType(LONG_NAME);
-        System.out.println("Offset " + (name == null ? 0 : name.getNode().getStartOffset()));
-        return name == null ? 0 : name.getNode().getStartOffset();
-    }
-
-    @Override
-    public int getNameEndOffset() {
-        if (name == null)
-            name = findChildByType(LONG_NAME);
-        System.out.println("Offset end " + (name == null ? 0 : name.getNode().getStartOffset() + name.getNode().getTextLength()));
-        return name == null ? 0 : name.getNode().getStartOffset() + name.getNode().getTextLength();
-    }
 }
