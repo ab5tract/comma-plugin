@@ -1,8 +1,6 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6Enum;
 import edument.perl6idea.psi.Perl6TypeStubBasedPsi;
 import edument.perl6idea.psi.stub.Perl6EnumStub;

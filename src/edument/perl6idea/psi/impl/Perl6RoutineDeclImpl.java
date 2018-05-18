@@ -6,7 +6,6 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6MemberStubBasedPsi;
-import edument.perl6idea.psi.Perl6TypeStubBasedPsi;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6Trait;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
