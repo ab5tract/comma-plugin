@@ -36,14 +36,17 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
 
     @Override
     public String getName() {
+        Perl6RegexDeclStub stub = getStub();
+        if (stub != null)
+            return stub.getRegexName();
         PsiElement name = getNameIdentifier();
         return name == null ? null : name.getText();
     }
 
     @Override
     public String getRegexName() {
-        PsiElement name = getNameIdentifier();
-        return name == null ? "<anon>" : name.getText();
+        String name = getName();
+        return name == null ? "<anon>" : name;
     }
 
     @Override

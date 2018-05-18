@@ -3,6 +3,7 @@ package edument.perl6idea.psi;
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.Perl6Icons;
@@ -20,6 +21,12 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
 
     public Perl6MemberStubBasedPsi(@NotNull ASTNode node) {
         super(node);
+    }
+
+    @Override
+    public String getScope() {
+        PsiElement parent = getParent();
+        return parent instanceof Perl6ScopedDecl ? ((Perl6ScopedDecl)parent).getScope() : "";
     }
 
     public ItemPresentation getPresentation() {

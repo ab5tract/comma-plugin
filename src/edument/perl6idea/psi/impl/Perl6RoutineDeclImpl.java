@@ -34,15 +34,6 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
-    public String getRoutineName() {
-        Perl6RoutineDeclStub stub = getStub();
-        if (stub != null)
-            return stub.getRoutineName();
-        PsiElement name = findChildByType(LONG_NAME);
-        return name == null ? "<anon>" : name.getText();
-    }
-
-    @Override
     public String getSignature() {
         return getRoutineName() + summarySignature();
     }
@@ -104,12 +95,22 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
     @Override
     public String getName() {
-        return getRoutineName();
+        Perl6RoutineDeclStub stub = getStub();
+        if (stub != null)
+            return stub.getRoutineName();
+        PsiElement nameIdentifier = getNameIdentifier();
+        return nameIdentifier == null ? null : nameIdentifier.getText();
     }
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         return null;
+    }
+
+    @Override
+    public String getRoutineName() {
+        String name = getName();
+        return name == null ? "<anon>" : name;
     }
 
     public String toString() {
