@@ -42,6 +42,8 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
             @Override
             public String getPresentableText() {
                 String displayName = presentableName();
+                if (displayName == null)
+                    return "<anon>";
                 if (getScope().equals("our")) {
                     Perl6PackageDecl pkg = getStubOrPsiParentOfType(Perl6PackageDecl.class);
                     if (pkg != null) {
