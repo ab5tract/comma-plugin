@@ -36,14 +36,6 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
-    public List<String> getTraits() {
-        Perl6Trait[] traits = findChildrenByClass(Perl6Trait.class);
-        List<String> traitText = new ArrayList<>();
-        for (Perl6Trait trait : traits) traitText.add(trait.getText());
-        return traitText;
-    }
-
-    @Override
     public boolean isPrivateMethod() {
         return getRoutineName().startsWith("!");
     }

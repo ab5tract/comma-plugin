@@ -1,10 +1,38 @@
 package edument.perl6idea.psi;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.tree.TokenSet;
+import edument.perl6idea.parsing.Perl6TokenTypes;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierOwner {
     String getScope();
+
+    default List<Perl6Trait> getTraits() {
+        List<Perl6Trait> traits = new ArrayList<>();
+        ASTNode[] traitNodes = getNode().getChildren(TokenSet.create(Perl6TokenTypes.TRAIT));
+        for (ASTNode trait : traitNodes)
+            traits.add((Perl6Trait)trait);
+        return traits;
+    }
+
+    @Nullable
+    default Perl6Trait findTrait(String mod, String name) {
+        for (Perl6Trait trait : getTraits())
+            if (mod.equals(trait.getTraitModifier()) &&
+                name.equals(trait.getTraitName()))
+                return trait;
+        return null;
+    }
+
+    default boolean isExported() {
+        return findTrait("is", "export") != null;
+    }
 
     default String getGlobalName() {
         // If it's not an our-scoped thing, no global name.

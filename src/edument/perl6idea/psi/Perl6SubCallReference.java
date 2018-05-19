@@ -29,7 +29,7 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6PsiElement> {
                 for (Perl6PsiElement decl : localDecls) {
                     if (!(decl instanceof Perl6RoutineDecl)) continue;
                     if (((Perl6RoutineDecl) decl).getRoutineName().equals(call.getCallName()) &&
-                            ((Perl6RoutineDecl) decl).getTraits().contains("is export"))
+                            ((Perl6RoutineDecl) decl).isExported())
                         return ((Perl6RoutineDecl) decl).getNameIdentifier();
                 }
             }
