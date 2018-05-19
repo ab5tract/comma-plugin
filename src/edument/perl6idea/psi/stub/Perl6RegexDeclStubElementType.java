@@ -25,7 +25,7 @@ public class Perl6RegexDeclStubElementType extends IStubElementType<Perl6RegexDe
     @NotNull
     @Override
     public Perl6RegexDeclStub createStub(@NotNull Perl6RegexDecl psi, StubElement parentStub) {
-        return new Perl6RegexDeclStubImpl(parentStub, psi.getRegexName());
+        return new Perl6RegexDeclStubImpl(parentStub, psi.getRegexName(), psi.isExported());
     }
 
     @NotNull
@@ -37,13 +37,15 @@ public class Perl6RegexDeclStubElementType extends IStubElementType<Perl6RegexDe
     @Override
     public void serialize(@NotNull Perl6RegexDeclStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getRegexName());
+        dataStream.writeBoolean(stub.isExported());
     }
 
     @NotNull
     @Override
     public Perl6RegexDeclStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef regexNameRef = dataStream.readName();
-        return new Perl6RegexDeclStubImpl(parentStub, regexNameRef.getString());
+        boolean exported = dataStream.readBoolean();
+        return new Perl6RegexDeclStubImpl(parentStub, regexNameRef.getString(), exported);
     }
 
     @Override

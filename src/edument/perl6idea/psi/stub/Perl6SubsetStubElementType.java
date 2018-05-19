@@ -24,7 +24,7 @@ public class Perl6SubsetStubElementType extends IStubElementType<Perl6SubsetStub
     @NotNull
     @Override
     public Perl6SubsetStub createStub(@NotNull Perl6Subset psi, StubElement parentStub) {
-        return new Perl6SubsetStubImpl(parentStub, psi.getSubsetName());
+        return new Perl6SubsetStubImpl(parentStub, psi.getSubsetName(), psi.isExported());
     }
 
     @NotNull
@@ -36,13 +36,15 @@ public class Perl6SubsetStubElementType extends IStubElementType<Perl6SubsetStub
     @Override
     public void serialize(@NotNull Perl6SubsetStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getTypeName());
+        dataStream.writeBoolean(stub.isExported());
     }
 
     @NotNull
     @Override
     public Perl6SubsetStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef subsetNameRef = dataStream.readName();
-        return new Perl6SubsetStubImpl(parentStub, subsetNameRef.getString());
+        boolean exported = dataStream.readBoolean();
+        return new Perl6SubsetStubImpl(parentStub, subsetNameRef.getString(), exported);
     }
 
     @Override

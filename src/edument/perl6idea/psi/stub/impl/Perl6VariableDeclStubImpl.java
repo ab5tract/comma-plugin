@@ -11,9 +11,10 @@ public class Perl6VariableDeclStubImpl extends StubBase<Perl6VariableDecl> imple
     private String variableName;
     private boolean isExported;
 
-    public Perl6VariableDeclStubImpl(StubElement stub, String name) {
+    public Perl6VariableDeclStubImpl(StubElement stub, String name, boolean exported) {
         super(stub, Perl6ElementTypes.VARIABLE_DECLARATION);
         this.variableName = name;
+        isExported = exported;
     }
 
     @Override

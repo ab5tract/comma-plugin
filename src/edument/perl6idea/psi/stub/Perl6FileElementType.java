@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 public class Perl6FileElementType extends IStubFileElementType<Perl6FileStub> {
-    public static final int STUB_VERSION = 14;
+    public static final int STUB_VERSION = 15;
 
     public Perl6FileElementType() {
         super(Perl6Language.INSTANCE);

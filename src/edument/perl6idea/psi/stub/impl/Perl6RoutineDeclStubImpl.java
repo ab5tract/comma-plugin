@@ -12,10 +12,11 @@ public class Perl6RoutineDeclStubImpl extends StubBase<Perl6RoutineDecl> impleme
     private String routineKind;
     private boolean isExported;
 
-    public Perl6RoutineDeclStubImpl(StubElement stub, String name, String kind) {
+    public Perl6RoutineDeclStubImpl(StubElement stub, String name, String kind, boolean exported) {
         super(stub, Perl6ElementTypes.ROUTINE_DECLARATION);
         this.routineName = name;
         this.routineKind = kind;
+        isExported = exported;
     }
 
     @Override
@@ -30,7 +31,7 @@ public class Perl6RoutineDeclStubImpl extends StubBase<Perl6RoutineDecl> impleme
     public String getScope() {
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
-               : (routineKind.equals("sub") || routineKind.equals("") ? "my" : "has");
+               : (routineKind.equals("sub") || routineKind.isEmpty() ? "my" : "has");
     }
 
     @Override

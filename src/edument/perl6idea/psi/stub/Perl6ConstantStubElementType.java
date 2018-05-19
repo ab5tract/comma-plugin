@@ -24,7 +24,7 @@ public class Perl6ConstantStubElementType extends IStubElementType<Perl6Constant
     @NotNull
     @Override
     public Perl6ConstantStub createStub(@NotNull Perl6Constant psi, StubElement parentStub) {
-        return new Perl6ConstantStubImpl(parentStub, psi.getConstantName());
+        return new Perl6ConstantStubImpl(parentStub, psi.getConstantName(), psi.isExported());
     }
 
     @NotNull
@@ -36,13 +36,15 @@ public class Perl6ConstantStubElementType extends IStubElementType<Perl6Constant
     @Override
     public void serialize(@NotNull Perl6ConstantStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getConstantName());
+        dataStream.writeBoolean(stub.isExported());
     }
 
     @NotNull
     @Override
     public Perl6ConstantStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef constantNameRef = dataStream.readName();
-        return new Perl6ConstantStubImpl(parentStub, constantNameRef.getString());
+        boolean isExport = dataStream.readBoolean();
+        return new Perl6ConstantStubImpl(parentStub, constantNameRef.getString(), isExport);
     }
 
     @Override

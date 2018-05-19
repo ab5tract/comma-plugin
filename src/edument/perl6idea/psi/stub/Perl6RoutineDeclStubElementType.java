@@ -24,7 +24,7 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
     @NotNull
     @Override
     public Perl6RoutineDeclStub createStub(@NotNull Perl6RoutineDecl psi, StubElement parentStub) {
-        return new Perl6RoutineDeclStubImpl(parentStub, psi.getRoutineName(), psi.getRoutineKind());
+        return new Perl6RoutineDeclStubImpl(parentStub, psi.getRoutineName(), psi.getRoutineKind(), psi.isExported());
     }
 
     @NotNull
@@ -37,6 +37,7 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
     public void serialize(@NotNull Perl6RoutineDeclStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getRoutineName());
         dataStream.writeName(stub.getRoutineKind());
+        dataStream.writeBoolean(stub.isExported());
     }
 
     @NotNull
@@ -44,7 +45,8 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
     public Perl6RoutineDeclStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef routineNameRef = dataStream.readName();
         StringRef routineKindRef = dataStream.readName();
-        return new Perl6RoutineDeclStubImpl(parentStub, routineNameRef.getString(), routineKindRef.getString());
+        boolean exported = dataStream.readBoolean();
+        return new Perl6RoutineDeclStubImpl(parentStub, routineNameRef.getString(), routineKindRef.getString(), exported);
     }
 
     @Override

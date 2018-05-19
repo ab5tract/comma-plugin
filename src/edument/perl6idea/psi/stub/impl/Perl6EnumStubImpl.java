@@ -11,9 +11,10 @@ public class Perl6EnumStubImpl extends StubBase<Perl6Enum> implements Perl6EnumS
     private final String enumName;
     private boolean isExported;
 
-    public Perl6EnumStubImpl(StubElement stub, String name) {
+    public Perl6EnumStubImpl(StubElement stub, String name, boolean exported) {
         super(stub, Perl6ElementTypes.ENUM);
         this.enumName = name;
+        isExported = exported;
     }
 
     @Override

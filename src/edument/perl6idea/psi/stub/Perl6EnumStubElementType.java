@@ -24,7 +24,7 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
     @NotNull
     @Override
     public Perl6EnumStub createStub(@NotNull Perl6Enum psi, StubElement parentStub) {
-        return new Perl6EnumStubImpl(parentStub, psi.getEnumName());
+        return new Perl6EnumStubImpl(parentStub, psi.getEnumName(), psi.isExported());
     }
 
     @NotNull
@@ -36,13 +36,15 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
     @Override
     public void serialize(@NotNull Perl6EnumStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getTypeName());
+        dataStream.writeBoolean(stub.isExported());
     }
 
     @NotNull
     @Override
     public Perl6EnumStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef enumNameRef = dataStream.readName();
-        return new Perl6EnumStubImpl(parentStub, enumNameRef.getString());
+        boolean exported = dataStream.readBoolean();
+        return new Perl6EnumStubImpl(parentStub, enumNameRef.getString(), exported);
     }
 
     @Override

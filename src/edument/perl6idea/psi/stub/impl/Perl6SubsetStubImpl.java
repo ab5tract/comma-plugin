@@ -11,9 +11,10 @@ public class Perl6SubsetStubImpl extends StubBase<Perl6Subset> implements Perl6S
     private String subsetName;
     private boolean isExported;
 
-    public Perl6SubsetStubImpl(StubElement stub, String name) {
+    public Perl6SubsetStubImpl(StubElement stub, String name, boolean exported) {
         super(stub, Perl6ElementTypes.SUBSET);
         this.subsetName = name;
+        isExported = exported;
     }
 
     @Override

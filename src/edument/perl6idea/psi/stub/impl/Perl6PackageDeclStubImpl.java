@@ -4,7 +4,6 @@ import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.psi.Perl6PackageDecl;
-import edument.perl6idea.psi.stub.Perl6DeclStub;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
 import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
@@ -13,10 +12,11 @@ public class Perl6PackageDeclStubImpl extends StubBase<Perl6PackageDecl> impleme
     private String packageName;
     private boolean isExported;
 
-    public Perl6PackageDeclStubImpl(StubElement parent, String packageKind, String packageName) {
+    public Perl6PackageDeclStubImpl(StubElement parent, String packageKind, String packageName, boolean exported) {
         super(parent, Perl6ElementTypes.PACKAGE_DECLARATION);
         this.packageKind = packageKind;
         this.packageName = packageName;
+        isExported = exported;
     }
 
     @Override

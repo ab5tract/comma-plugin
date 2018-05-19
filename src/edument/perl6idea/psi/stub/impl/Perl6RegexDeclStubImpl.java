@@ -11,9 +11,10 @@ public class Perl6RegexDeclStubImpl extends StubBase<Perl6RegexDecl> implements 
     private String regexName;
     private boolean isExported;
 
-    public Perl6RegexDeclStubImpl(StubElement stub, String name) {
+    public Perl6RegexDeclStubImpl(StubElement stub, String name, boolean exported) {
         super(stub, Perl6ElementTypes.REGEX_DECLARATION);
         this.regexName = name;
+        isExported = exported;
     }
 
     @Override

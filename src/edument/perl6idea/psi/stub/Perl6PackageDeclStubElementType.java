@@ -24,7 +24,7 @@ public class Perl6PackageDeclStubElementType extends IStubElementType<Perl6Packa
     @NotNull
     @Override
     public Perl6PackageDeclStub createStub(@NotNull Perl6PackageDecl psi, StubElement parentStub) {
-        return new Perl6PackageDeclStubImpl(parentStub, psi.getPackageKind(), psi.getPackageName());
+        return new Perl6PackageDeclStubImpl(parentStub, psi.getPackageKind(), psi.getPackageName(), psi.isExported());
     }
 
     @NotNull
@@ -37,6 +37,7 @@ public class Perl6PackageDeclStubElementType extends IStubElementType<Perl6Packa
     public void serialize(@NotNull Perl6PackageDeclStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getPackageKind());
         dataStream.writeName(stub.getTypeName());
+        dataStream.writeBoolean(stub.isExported());
     }
 
     @NotNull
@@ -44,7 +45,8 @@ public class Perl6PackageDeclStubElementType extends IStubElementType<Perl6Packa
     public Perl6PackageDeclStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef packageKindRef = dataStream.readName();
         StringRef packageNameRef = dataStream.readName();
-        return new Perl6PackageDeclStubImpl(parentStub, packageKindRef.getString(), packageNameRef.getString());
+        boolean exported = dataStream.readBoolean();
+        return new Perl6PackageDeclStubImpl(parentStub, packageKindRef.getString(), packageNameRef.getString(), exported);
     }
 
     @Override

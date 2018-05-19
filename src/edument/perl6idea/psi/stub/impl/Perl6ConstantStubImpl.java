@@ -11,9 +11,10 @@ public class Perl6ConstantStubImpl extends StubBase<Perl6Constant> implements Pe
     private final String constantName;
     private boolean isExported;
 
-    public Perl6ConstantStubImpl(StubElement stub, String name) {
+    public Perl6ConstantStubImpl(StubElement stub, String name, boolean isExported) {
         super(stub, Perl6ElementTypes.CONSTANT);
         this.constantName = name;
+        this.isExported = isExported;
     }
 
     @Override
