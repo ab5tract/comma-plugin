@@ -4,7 +4,7 @@
   <version major="2018" minor="2" eap="true"/>
   <company name="Edument Central Europe s.r.o." url="https://www.edument.se" copyrightStart="2010"/>
   <build number="__BUILD_NUMBER__" date="__BUILD_DATE__"/>
-  <logo url="/comma_core_logo.png" textcolor="e5e5e5" progressColor="21d688" progressX="114" progressY="278" progressHeight="3"/>
+  <logo url="/comma_core_logo.png" textcolor="000000" progressColor="000000" progressX="114" progressY="278" progressHeight="3"/>
   <about url="/comma_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="cccccc"
          copyrightForeground="cccccc" linkColor="ffffff"/>
   <icon size32="/CommaCore32.png" size16="/CommaCore16.png" ico="CommaCore.ico"/>
