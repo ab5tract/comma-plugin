@@ -60,7 +60,9 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
             @Nullable
             @Override
             public String getPresentableText() {
-                return getName();
+                T stub = getStub();
+                String globalName = stub == null ? getGlobalName() : stub.getGlobalName();
+                return globalName == null ? getName() : globalName;
             }
 
             @Nullable
