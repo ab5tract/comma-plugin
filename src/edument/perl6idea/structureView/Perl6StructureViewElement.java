@@ -33,13 +33,14 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
 
     private static boolean applicable(Perl6PsiElement child) {
         return child instanceof Perl6File ||
-               child instanceof Perl6PackageDecl ||
-               child instanceof Perl6RoutineDecl ||
-               child instanceof Perl6RegexDecl ||
-               child instanceof Perl6Constant ||
-               (child instanceof Perl6VariableDecl && ((Perl6VariableDecl)child).getScope().equals("has")) ||
-               child instanceof Perl6Subset ||
-               child instanceof Perl6Enum;
+               child instanceof Perl6PackageDecl && child.getName() != null ||
+               child instanceof Perl6RoutineDecl && child.getName() != null ||
+               child instanceof Perl6RegexDecl && child.getName() != null ||
+               child instanceof Perl6Constant && child.getName() != null ||
+               (child instanceof Perl6VariableDecl && ((Perl6VariableDecl)child).getScope().equals("has")
+                    && child.getName() != null) ||
+               child instanceof Perl6Subset && child.getName() != null ||
+               child instanceof Perl6Enum && child.getName() != null;
     }
 
     @NotNull
