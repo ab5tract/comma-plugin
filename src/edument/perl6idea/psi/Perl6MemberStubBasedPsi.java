@@ -72,7 +72,7 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
             @Override
             public Icon getIcon(boolean b) {
                 T stub = getStub();
-                if (stub == null) return Perl6Icons.CAMELIA;
+                if (stub == null) return getOriginElementIcon();
                 IStubElementType type = stub.getStubType();
                 if (type instanceof Perl6RoutineDeclStubElementType) {
                     if (getScope().equals("has"))
@@ -84,6 +84,22 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
                 else if (type instanceof Perl6ConstantStubElementType)
                     return Perl6Icons.CONSTANT;
                 else if (type instanceof Perl6VariableDeclStubElementType)
+                    return Perl6Icons.ATTRIBUTE;
+                return Perl6Icons.CAMELIA;
+            }
+
+            private Icon getOriginElementIcon() {
+                PsiElement origin = getOriginalElement();
+                if (origin instanceof Perl6RoutineDecl &&
+                    ((Perl6RoutineDecl)origin).getRoutineKind().equals("method"))
+                    return Perl6Icons.METHOD;
+                else if (origin instanceof Perl6RoutineDecl)
+                    return Perl6Icons.SUB;
+                else if (origin instanceof Perl6RegexDecl)
+                    return Perl6Icons.REGEX;
+                else if (origin instanceof Perl6Constant)
+                    return Perl6Icons.CONSTANT;
+                else if (origin instanceof Perl6VariableDecl)
                     return Perl6Icons.ATTRIBUTE;
                 return Perl6Icons.CAMELIA;
             }
