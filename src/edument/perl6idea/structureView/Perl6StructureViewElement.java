@@ -77,19 +77,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                 @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
-                    String kind = (((Perl6PackageDecl)element).getPackageKind());
-                    switch (kind) {
-                        case "module":
-                            return Perl6Icons.MODULE;
-                        case "class":
-                            return Perl6Icons.CLASS;
-                        case "role":
-                            return Perl6Icons.ROLE;
-                        case "grammar":
-                            return Perl6Icons.GRAMMAR;
-                        default:
-                            return Perl6Icons.PACKAGE;
-                    }
+                    return Perl6Icons.iconForPackageDeclarator(((Perl6PackageDecl)element).getPackageKind());
                 }
             };
         if (element instanceof Perl6RegexDecl)

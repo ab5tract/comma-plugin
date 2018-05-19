@@ -88,7 +88,7 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
                 if (stub == null) return getOriginElementIcon();
                 IStubElementType type = stub.getStubType();
                 if (type instanceof Perl6PackageDeclStubElementType)
-                    return getPackageIconByKind(((Perl6PackageDeclStubImpl)stub).getPackageKind());
+                    return Perl6Icons.iconForPackageDeclarator(((Perl6PackageDeclStubImpl)stub).getPackageKind());
                 else if (type instanceof Perl6SubsetStubElementType)
                     return Perl6Icons.SUBSET;
                 else if (type instanceof Perl6EnumStubElementType)
@@ -99,28 +99,12 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
             private Icon getOriginElementIcon() {
                 PsiElement origin = getOriginalElement();
                 if (origin instanceof Perl6PackageDecl)
-                    return getPackageIconByKind(((Perl6PackageDecl)origin).getPackageKind());
+                    return Perl6Icons.iconForPackageDeclarator(((Perl6PackageDecl)origin).getPackageKind());
                 else if (origin instanceof Perl6Subset)
                     return Perl6Icons.SUBSET;
                 else if (origin instanceof Perl6Enum)
                     return Perl6Icons.ENUM;
                 return Perl6Icons.CAMELIA;
-            }
-
-            @NotNull
-            private Icon getPackageIconByKind(String kind) {
-                switch (kind) {
-                    case "module":
-                        return Perl6Icons.MODULE;
-                    case "class":
-                        return Perl6Icons.CLASS;
-                    case "role":
-                        return Perl6Icons.ROLE;
-                    case "grammar":
-                        return Perl6Icons.GRAMMAR;
-                    default:
-                        return Perl6Icons.PACKAGE;
-                }
             }
         };
     }
