@@ -13,6 +13,7 @@ import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PsiDeclaration;
 import edument.perl6idea.psi.Perl6RoutineDecl;
+import edument.perl6idea.psi.stub.Perl6FileStub;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
 import edument.perl6idea.psi.stub.index.Perl6AllRoutinesStubIndex;
@@ -22,7 +23,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public Perl6FileImpl(FileViewProvider viewProvider) {
@@ -43,25 +46,15 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     @Override
     public List<Perl6PsiDeclaration> getExports() {
+        // If possible, get the result from the stub, to avoid having to
+        // build and walk the full PSI tree.
         Stub stub = getStub();
-        if (stub != null) {
-            List<Perl6PsiDeclaration> result = new ArrayList<>();
-            List<Stub> toTry = new ArrayList<>();
-            toTry.add(stub);
-            while (!toTry.isEmpty()) {
-                Stub current = toTry.remove(0);
-                List<? extends Stub> stubs = current.getChildrenStubs();
-                for (Stub child : stubs) {
-                    if (child instanceof Perl6RoutineDeclStub &&
-                        ((Perl6RoutineDeclStub)child).isExported() &&
-                        ((Perl6RoutineDeclStub)child).getRoutineKind().equals("method"))
-                        result.add(((Perl6RoutineDeclStub)child).getPsi());
-                    else if (child instanceof Perl6PackageDeclStub)
-                        toTry.add(child);
-                }
-            }
-            return result;
-        }
-        return new ArrayList<>();
+        if (stub instanceof Perl6FileStub)
+            return ((Perl6FileStub)stub).getExports();
+
+        // Otherwise, we need to walk the PSI tree.
+        return Arrays.stream(findChildrenByClass(Perl6PsiDeclaration.class))
+              .filter(decl -> decl.isExported())
+              .collect(Collectors.toList());
     }
 }

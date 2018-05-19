@@ -2,9 +2,9 @@ package edument.perl6idea.psi.stub;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.Stub;
-import com.intellij.psi.stubs.StubElement;
+import edument.perl6idea.psi.Perl6PsiDeclaration;
 
-public interface Perl6TypeStub<T extends PsiElement> extends StubElement<T>, Perl6DeclStub {
+public interface Perl6TypeStub<T extends PsiElement & Perl6PsiDeclaration> extends Perl6DeclStub<T> {
     String getTypeName();
 
     default String getGlobalName() {

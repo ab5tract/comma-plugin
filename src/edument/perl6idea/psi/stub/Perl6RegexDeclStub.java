@@ -1,8 +1,7 @@
 package edument.perl6idea.psi.stub;
 
-import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.psi.Perl6RegexDecl;
 
-public interface Perl6RegexDeclStub extends StubElement<Perl6RegexDecl>, Perl6DeclStub {
+public interface Perl6RegexDeclStub extends Perl6DeclStub<Perl6RegexDecl> {
     String getRegexName();
 }
