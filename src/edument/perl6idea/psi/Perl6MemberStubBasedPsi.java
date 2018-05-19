@@ -41,7 +41,17 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
             @Nullable
             @Override
             public String getPresentableText() {
-                return presentableName();
+                String displayName = presentableName();
+                if (getScope().equals("our")) {
+                    Perl6PackageDecl pkg = getStubOrPsiParentOfType(Perl6PackageDecl.class);
+                    if (pkg != null) {
+                        Perl6PackageDeclStub stub = pkg.getStub();
+                        String globalName = stub != null ? stub.getGlobalName() : pkg.getGlobalName();
+                        if (globalName != null)
+                            displayName = globalName + "::" + displayName;
+                    }
+                }
+                return displayName;
             }
 
             @Nullable
@@ -51,7 +61,7 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
                     case "my":
                         return "lexical in " + enclosingPackage();
                     case "our":
-                        return "global in " + enclosingPackage();
+                        return "global in " + getEnclosingPerl6ModuleName();
                     case "has":
                         return "in " + enclosingPackage();
                     default:
