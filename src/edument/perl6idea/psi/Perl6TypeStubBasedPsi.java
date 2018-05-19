@@ -41,7 +41,8 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
         T stub = getStub();
         if (stub != null)
             return stub.getTypeName();
-        return getNameIdentifier().getText();
+        PsiElement nameIdentifier = getNameIdentifier();
+        return nameIdentifier == null ? null : nameIdentifier.getText();
     }
 
     @Override
