@@ -31,11 +31,11 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
         return structureElements.toArray(StructureViewTreeElement.EMPTY_ARRAY);
     }
 
-    private boolean applicable(Perl6PsiElement child) {
+    private static boolean applicable(Perl6PsiElement child) {
         return child instanceof Perl6File ||
-                child instanceof Perl6PackageDecl ||
-                child instanceof Perl6RoutineDecl ||
-                child instanceof Perl6RegexDecl;
+               child instanceof Perl6PackageDecl ||
+               child instanceof Perl6RoutineDecl ||
+               child instanceof Perl6RegexDecl;
     }
 
     @NotNull
@@ -77,7 +77,19 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                 @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
-                    return PlatformIcons.CLASS_ICON;
+                    String kind = (((Perl6PackageDecl)element).getPackageKind());
+                    switch (kind) {
+                        case "module":
+                            return Perl6Icons.MODULE;
+                        case "class":
+                            return Perl6Icons.CLASS;
+                        case "role":
+                            return Perl6Icons.ROLE;
+                        case "grammar":
+                            return Perl6Icons.GRAMMAR;
+                        default:
+                            return Perl6Icons.PACKAGE;
+                    }
                 }
             };
         if (element instanceof Perl6RegexDecl)
@@ -97,7 +109,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                 @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
-                    return PlatformIcons.METHOD_ICON;
+                    return Perl6Icons.REGEX;
                 }
             };
         if (element instanceof Perl6RoutineDecl)
@@ -117,7 +129,9 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                 @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
-                    return PlatformIcons.METHOD_ICON;
+                    if (((Perl6RoutineDecl)element).getRoutineKind().equals("method"))
+                        return Perl6Icons.METHOD;
+                    return Perl6Icons.SUB;
                 }
             };
         return null;
