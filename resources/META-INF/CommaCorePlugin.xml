@@ -31,7 +31,6 @@
                           serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
       <applicationService serviceImplementation="com.intellij.ide.projectWizard.ProjectCategoryUsagesCollector"/>
       <projectWizard.projectCategory implementation="com.intellij.ide.projectWizard.ModuleTypeCategory"/>
-      <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable"/>
     </extensions>
 
     <application-components>
@@ -63,11 +62,5 @@
       <action id="ImportModule" class="com.intellij.ide.actions.ImportModuleAction" text="Module from Existing Sources..."/>
       <separator/>
     </group>
-      <action id="ShowProjectStructureSettings" class="com.intellij.ide.actions.ShowStructureSettingsAction"
-              icon="AllIcons.General.ProjectStructure">
-        <add-to-group group-id="FileMainSettingsGroup" anchor="after" relative-to-action="ShowSettings"/>
-        <add-to-group group-id="MainToolBarSettings" anchor="after" relative-to-action="ShowSettings"/>
-        <add-to-group group-id="NavBarToolBar" anchor="last"/>
-      </action>
     </actions>
 </idea-plugin>
