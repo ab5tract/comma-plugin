@@ -1,11 +1,9 @@
 package edument.perl6idea.psi.stub.impl;
 
-import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.psi.Perl6Subset;
-import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
 import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 import edument.perl6idea.psi.stub.Perl6SubsetStub;
 

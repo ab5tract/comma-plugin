@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.stubs.StubElement;
 
-public interface Perl6TypeStub<T extends PsiElement> extends StubElement<T> {
+public interface Perl6TypeStub<T extends PsiElement> extends StubElement<T>, Perl6DeclStub {
     String getTypeName();
 
     default String getGlobalName() {
