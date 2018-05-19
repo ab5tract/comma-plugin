@@ -35,7 +35,11 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
         return child instanceof Perl6File ||
                child instanceof Perl6PackageDecl ||
                child instanceof Perl6RoutineDecl ||
-               child instanceof Perl6RegexDecl;
+               child instanceof Perl6RegexDecl ||
+               child instanceof Perl6Constant ||
+               (child instanceof Perl6VariableDecl && ((Perl6VariableDecl)child).getScope().equals("has")) ||
+               child instanceof Perl6Subset ||
+               child instanceof Perl6Enum;
     }
 
     @NotNull
@@ -65,7 +69,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                 @Override
                 public String getPresentableText() {
                     Perl6PackageDecl pkg = (Perl6PackageDecl)element;
-                    return pkg.getPackageName() + " (" + pkg.getPackageKind() + ")";
+                    return pkg.getPackageName();
                 }
 
                 @Nullable
@@ -84,8 +88,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
             return new ItemPresentation() {
                 @Override
                 public String getPresentableText() {
-                    Perl6RegexDecl rx = (Perl6RegexDecl)element;
-                    return rx.getSignature() + " (" + rx.getRegexKind() + ")";
+                    return ((Perl6RegexDecl)element).getSignature();
                 }
 
                 @Nullable
@@ -104,8 +107,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
             return new ItemPresentation() {
                 @Override
                 public String getPresentableText() {
-                    Perl6RoutineDecl r = (Perl6RoutineDecl)element;
-                    return r.getSignature() + " (" + r.getRoutineKind() + ")";
+                    return ((Perl6RoutineDecl)element).getSignature();
                 }
 
                 @Nullable
@@ -120,6 +122,82 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                     if (((Perl6RoutineDecl)element).getRoutineKind().equals("method"))
                         return Perl6Icons.METHOD;
                     return Perl6Icons.SUB;
+                }
+            };
+        if (element instanceof Perl6Constant)
+            return new ItemPresentation() {
+                @Override
+                public String getPresentableText() {
+                    return ((Perl6Constant)element).getConstantName();
+                }
+
+                @Nullable
+                @Override
+                public String getLocationString() {
+                    return null;
+                }
+
+                @Nullable
+                @Override
+                public Icon getIcon(boolean b) {
+                    return Perl6Icons.CONSTANT;
+                }
+            };
+        if (element instanceof Perl6VariableDecl)
+            return new ItemPresentation() {
+                @Override
+                public String getPresentableText() {
+                    return ((Perl6VariableDecl)element).getVariableName();
+                }
+
+                @Nullable
+                @Override
+                public String getLocationString() {
+                    return null;
+                }
+
+                @Nullable
+                @Override
+                public Icon getIcon(boolean b) {
+                    return Perl6Icons.ATTRIBUTE;
+                }
+            };
+        if (element instanceof Perl6Subset)
+            return new ItemPresentation() {
+                @Override
+                public String getPresentableText() {
+                    return ((Perl6Subset)element).getSubsetName();
+                }
+
+                @Nullable
+                @Override
+                public String getLocationString() {
+                    return null;
+                }
+
+                @Nullable
+                @Override
+                public Icon getIcon(boolean b) {
+                    return Perl6Icons.SUBSET;
+                }
+            };
+        if (element instanceof Perl6Enum)
+            return new ItemPresentation() {
+                @Override
+                public String getPresentableText() {
+                    return ((Perl6Enum)element).getEnumName();
+                }
+
+                @Nullable
+                @Override
+                public String getLocationString() {
+                    return null;
+                }
+
+                @Nullable
+                @Override
+                public Icon getIcon(boolean b) {
+                    return Perl6Icons.ENUM;
                 }
             };
         return null;
