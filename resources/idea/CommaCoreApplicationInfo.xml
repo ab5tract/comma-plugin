@@ -9,7 +9,7 @@
          copyrightForeground="000000" linkColor="000000"/>
   <icon size32="/CommaCore32.png" size16="/CommaCore16.png" ico="CommaCore.ico"/>
   <package code="__PACKAGE_CODE__"/>
-  <names product="Comma" edition="Community Edition" script="charm"/>
+  <names product="Comma" edition="Supporter Edition" script="comma"/>
 
   <welcome-screen logo-url="/CommaCoreWelcomeScreen.png"/>
 
