@@ -4,6 +4,7 @@ import com.intellij.psi.stubs.StubBase;
 import com.intellij.psi.stubs.StubElement;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.psi.Perl6PackageDecl;
+import edument.perl6idea.psi.stub.Perl6DeclStub;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
 import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
