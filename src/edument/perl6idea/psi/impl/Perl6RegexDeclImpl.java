@@ -71,6 +71,11 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
     }
 
     @Override
+    public String presentableName() {
+        return getName() + summarySignature();
+    }
+
+    @Override
     public String defaultScope() {
         return "has";
     }
