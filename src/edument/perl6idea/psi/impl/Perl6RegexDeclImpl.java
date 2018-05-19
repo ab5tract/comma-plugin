@@ -6,6 +6,7 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6MemberStubBasedPsi;
+import edument.perl6idea.psi.Perl6Signature;
 import edument.perl6idea.psi.Perl6TypeStubBasedPsi;
 import edument.perl6idea.psi.Perl6RegexDecl;
 import edument.perl6idea.psi.stub.Perl6RegexDeclStub;
@@ -47,6 +48,21 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
     public String getRegexName() {
         String name = getName();
         return name == null ? "<anon>" : name;
+    }
+
+    @Override
+    public String getSignature() {
+        return getRegexName() + summarySignature();
+    }
+
+    @Override
+    public Perl6Signature getSignatureNode() {
+        return findChildByClass(Perl6SignatureImpl.class);
+    }
+
+    @Override
+    public String getReturnsTrait() {
+        return null;
     }
 
     @Override

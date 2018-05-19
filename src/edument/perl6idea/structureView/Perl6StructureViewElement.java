@@ -97,7 +97,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                 @Override
                 public String getPresentableText() {
                     Perl6RegexDecl rx = (Perl6RegexDecl)element;
-                    return rx.getRegexName() + " (" + rx.getRegexKind() + ")";
+                    return rx.getSignature() + " (" + rx.getRegexKind() + ")";
                 }
 
                 @Nullable
