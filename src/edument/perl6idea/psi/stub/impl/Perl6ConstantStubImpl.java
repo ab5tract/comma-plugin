@@ -9,6 +9,7 @@ import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
 public class Perl6ConstantStubImpl extends StubBase<Perl6Constant> implements Perl6ConstantStub {
     private final String constantName;
+    private boolean isExported;
 
     public Perl6ConstantStubImpl(StubElement stub, String name) {
         super(stub, Perl6ElementTypes.CONSTANT);
@@ -25,5 +26,10 @@ public class Perl6ConstantStubImpl extends StubBase<Perl6Constant> implements Pe
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
                : "our";
+    }
+
+    @Override
+    public boolean isExported() {
+        return isExported;
     }
 }

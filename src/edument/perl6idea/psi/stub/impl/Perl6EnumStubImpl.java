@@ -9,6 +9,7 @@ import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
 public class Perl6EnumStubImpl extends StubBase<Perl6Enum> implements Perl6EnumStub {
     private final String enumName;
+    private boolean isExported;
 
     public Perl6EnumStubImpl(StubElement stub, String name) {
         super(stub, Perl6ElementTypes.ENUM);
@@ -25,5 +26,10 @@ public class Perl6EnumStubImpl extends StubBase<Perl6Enum> implements Perl6EnumS
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
                : "our";
+    }
+
+    @Override
+    public boolean isExported() {
+        return isExported;
     }
 }

@@ -9,6 +9,7 @@ import edument.perl6idea.psi.stub.Perl6SubsetStub;
 
 public class Perl6SubsetStubImpl extends StubBase<Perl6Subset> implements Perl6SubsetStub {
     private String subsetName;
+    private boolean isExported;
 
     public Perl6SubsetStubImpl(StubElement stub, String name) {
         super(stub, Perl6ElementTypes.SUBSET);
@@ -25,5 +26,10 @@ public class Perl6SubsetStubImpl extends StubBase<Perl6Subset> implements Perl6S
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
                : "our";
+    }
+
+    @Override
+    public boolean isExported() {
+        return isExported;
     }
 }

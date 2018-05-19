@@ -9,6 +9,7 @@ import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
 public class Perl6RegexDeclStubImpl extends StubBase<Perl6RegexDecl> implements Perl6RegexDeclStub {
     private String regexName;
+    private boolean isExported;
 
     public Perl6RegexDeclStubImpl(StubElement stub, String name) {
         super(stub, Perl6ElementTypes.REGEX_DECLARATION);
@@ -25,5 +26,10 @@ public class Perl6RegexDeclStubImpl extends StubBase<Perl6RegexDecl> implements 
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
                : "has";
+    }
+
+    @Override
+    public boolean isExported() {
+        return isExported;
     }
 }

@@ -9,6 +9,7 @@ import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 
 public class Perl6VariableDeclStubImpl extends StubBase<Perl6VariableDecl> implements Perl6VariableDeclStub {
     private String variableName;
+    private boolean isExported;
 
     public Perl6VariableDeclStubImpl(StubElement stub, String name) {
         super(stub, Perl6ElementTypes.VARIABLE_DECLARATION);
@@ -25,5 +26,10 @@ public class Perl6VariableDeclStubImpl extends StubBase<Perl6VariableDecl> imple
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
                : ""; /* Shouldn't ever happen */
+    }
+
+    @Override
+    public boolean isExported() {
+        return isExported;
     }
 }

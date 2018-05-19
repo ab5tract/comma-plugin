@@ -11,6 +11,7 @@ import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 public class Perl6PackageDeclStubImpl extends StubBase<Perl6PackageDecl> implements Perl6PackageDeclStub {
     private String packageKind;
     private String packageName;
+    private boolean isExported;
 
     public Perl6PackageDeclStubImpl(StubElement parent, String packageKind, String packageName) {
         super(parent, Perl6ElementTypes.PACKAGE_DECLARATION);
@@ -33,5 +34,10 @@ public class Perl6PackageDeclStubImpl extends StubBase<Perl6PackageDecl> impleme
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
                : "our";
+    }
+
+    @Override
+    public boolean isExported() {
+        return isExported;
     }
 }

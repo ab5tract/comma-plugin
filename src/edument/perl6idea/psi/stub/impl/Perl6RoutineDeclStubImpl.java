@@ -10,6 +10,7 @@ import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 public class Perl6RoutineDeclStubImpl extends StubBase<Perl6RoutineDecl> implements Perl6RoutineDeclStub {
     private String routineName;
     private String routineKind;
+    private boolean isExported;
 
     public Perl6RoutineDeclStubImpl(StubElement stub, String name, String kind) {
         super(stub, Perl6ElementTypes.ROUTINE_DECLARATION);
@@ -30,5 +31,10 @@ public class Perl6RoutineDeclStubImpl extends StubBase<Perl6RoutineDecl> impleme
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
                : (routineKind.equals("sub") || routineKind.equals("") ? "my" : "has");
+    }
+
+    @Override
+    public boolean isExported() {
+        return isExported;
     }
 }
