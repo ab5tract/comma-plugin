@@ -20,12 +20,14 @@
     <extensionPoints>
       <extensionPoint name="projectWizard.projectCategory" interface="com.intellij.ide.projectWizard.ProjectCategory"/>
       <extensionPoint name="projectImportProvider" interface="com.intellij.projectImport.ProjectImportProvider"/>
+      <extensionPoint name="projectStructureDetector" interface="com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector"/>
     </extensionPoints>
 
     <extensions defaultExtensionNs="com.intellij">
       <projectImportProvider implementation="com.intellij.ide.util.projectWizard.ModuleImportProvider"/>
       <applicationService serviceInterface="com.intellij.openapi.module.ModuleTypeManager"
                           serviceImplementation="edument.perl6idea.module.Perl6ModuleTypeManager"/>
+      <projectImportProvider implementation="edument.perl6idea.module.Perl6ProjectImportProvider"/>
       <applicationService serviceImplementation="com.intellij.ide.util.newProjectWizard.SelectTemplateSettings"/>
       <applicationService serviceInterface="com.intellij.openapi.roots.ui.OrderEntryAppearanceService"
                           serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
