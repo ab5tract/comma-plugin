@@ -7,7 +7,7 @@
 * Start IDEA, open project from `intellij-community` directory.
 * `Unregistered VCS root detected` for `perl6-idea-plugin` - add this root.
 * Open File -> Project Settings -> Modules. Import new module, select `comma.community.iml`, next-next. Apply. Import modules `perl6.community.plugin.impl.iml` and `perl6.community.plugin.main.iml` the same way.
-* On this stage, `json` and `tap4j` dependencies are missing. Open Project Settings, go to Libraries and add them manually using `From Maven`. Maven coodrinates are: `org.tap4j:tap4j:4.2.1` and `org.json:json:20171018`.
+* On this stage, `json` and `tap4j` dependencies are missing. Open Project Settings, go to Libraries and add them manually using `From Maven`. Maven coodrinates are: `org.tap4j:tap4j:4.3` and `org.json:json:20171018`.
 
 #### How to run Comma Product
 
