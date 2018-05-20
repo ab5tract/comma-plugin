@@ -1,11 +1,5 @@
 package edument.perl6idea.module;
 
-import com.intellij.ide.util.importProject.ModuleDescriptor;
-import com.intellij.ide.util.importProject.ProjectDescriptor;
-import com.intellij.ide.util.projectWizard.ExistingModuleLoader;
-import com.intellij.ide.util.projectWizard.ModuleBuilder;
-import com.intellij.ide.util.projectWizard.importSources.DetectedSourceRoot;
-import com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.ModifiableModuleModel;
@@ -13,8 +7,9 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.ContentEntry;
+import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -27,9 +22,10 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import static java.io.File.separator;
+import static com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor;
 
 public class Perl6ProjectBuilder extends ProjectImportBuilder {
     private final Logger LOG = Logger.getInstance(getClass());
@@ -83,13 +79,31 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
                 if (contentRoot == null) return;
                 ModifiableModuleModel manager = ModuleManager.getInstance(project).getModifiableModel();
                 Module module = manager.newModule(getFileToImport(), Perl6ModuleType.getInstance().getId());
-                manager.commit();
+
+                ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
+                File directory = new File(contentRoot.findChild("lib").getPath());
+                if (!directory.exists())
+                    directory.mkdirs();
+                VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(directory);
+                ContentEntry e = getContentRootFor(virtualFile, rootModel);
+                if (virtualFile == null) return;
+                if (e == null) return;
+                e.addSourceFolder(virtualFile, false);
+                rootModel.commit();
                 result.add(module);
+                manager.commit();
             });
         }
         catch (Exception e) {
             LOG.info(e);
         }
         return result;
+    }
+
+    private static ContentEntry getContentRootFor(VirtualFile file, ModifiableRootModel model) {
+        for (ContentEntry e : model.getContentEntries()) {
+            if (isEqualOrAncestor(file.getUrl(), e.getUrl())) return e;
+        }
+        return null;
     }
 }
