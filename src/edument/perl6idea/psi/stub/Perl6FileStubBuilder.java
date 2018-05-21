@@ -22,18 +22,21 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
     private String generateCompilationUnitName(PsiFile file) {
         VirtualFile vf = file.getViewProvider().getVirtualFile();
         if (vf instanceof LightVirtualFile) {
-            String filePath = ((LightVirtualFile)vf).getOriginalFile().getPath();
-            if (filePath.endsWith(".pm6")) {
-                String basePath = file.getProject().getBaseDir().getPath();
-                if (filePath.startsWith(basePath)) {
-                    String relPath = filePath.substring(basePath.length() + 1);
-                    if (relPath.startsWith("lib/") || relPath.startsWith("lib\\"))
-                        relPath = relPath.substring(4);
-                    String[] parts = relPath.split("/|\\\\");
-                    int lastDot = parts[parts.length - 1].lastIndexOf('.');
-                    if (lastDot > 0)
-                        parts[parts.length - 1] = parts[parts.length - 1].substring(0, lastDot);
-                    return String.join("::", parts);
+            VirtualFile originalFile = ((LightVirtualFile)vf).getOriginalFile();
+            if (originalFile != null) {
+                String filePath = originalFile.getPath();
+                if (filePath.endsWith(".pm6")) {
+                    String basePath = file.getProject().getBaseDir().getPath();
+                    if (filePath.startsWith(basePath)) {
+                        String relPath = filePath.substring(basePath.length() + 1);
+                        if (relPath.startsWith("lib/") || relPath.startsWith("lib\\"))
+                            relPath = relPath.substring(4);
+                        String[] parts = relPath.split("/|\\\\");
+                        int lastDot = parts[parts.length - 1].lastIndexOf('.');
+                        if (lastDot > 0)
+                            parts[parts.length - 1] = parts[parts.length - 1].substring(0, lastDot);
+                        return String.join("::", parts);
+                    }
                 }
             }
         }
