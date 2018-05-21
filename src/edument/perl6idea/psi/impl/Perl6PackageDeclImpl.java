@@ -7,6 +7,10 @@ import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
+import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
+import edument.perl6idea.psi.symbols.Perl6ImplicitSymbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -59,5 +63,20 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:PACKAGE_DECLARATION)";
+    }
+
+    @Override
+    public void contributeExtraSymbols(Perl6SymbolCollector collector) {
+        collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?PACKAGE"));
+        switch (getPackageKind()) {
+            case "class":
+            case "grammar":
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?CLASS"));
+                break;
+            case "role":
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?ROLE"));
+                collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$?CLASS", this));
+                break;
+        }
     }
 }

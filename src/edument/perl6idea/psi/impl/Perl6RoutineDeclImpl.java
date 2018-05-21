@@ -7,16 +7,15 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
-import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
-import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 
 public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDeclStub> implements Perl6RoutineDecl, Perl6SignatureHolder {
+    private static final String[] ROUTINE_SYMBOLS = { "$/", "$!", "$_", "&?ROUTINE", "&?BLOCK" };
+
     public Perl6RoutineDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -105,5 +104,11 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
                     this, "&" + name));
         }
+    }
+
+    @Override
+    public void contributeExtraSymbols(Perl6SymbolCollector collector) {
+        for (String sym : ROUTINE_SYMBOLS)
+            collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, sym, this));
     }
 }
