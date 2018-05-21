@@ -21,9 +21,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor;
 import static java.io.File.separator;
 
 public class Perl6ProjectBuilder extends ProjectImportBuilder {
@@ -79,7 +81,7 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
                 String name = contentRoot.getPath() + separator + project.getName() + ".iml";
                 Module module = manager.newModule(name, Perl6ModuleType.getInstance().getId());
                 ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
-                ContentEntry entry = rootModel.addContentEntry(getFileToImport());
+                ContentEntry entry = rootModel.addContentEntry(contentRoot);
                 addSourceDirectory("lib", contentRoot, entry);
                 addSourceDirectory("t", contentRoot, entry);
                 manager.commit();
@@ -93,8 +95,8 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
     }
 
     private static void addSourceDirectory(String name, VirtualFile contentRoot, ContentEntry entry) {
-        VirtualFile lib = contentRoot.findChild(name);
-        if (lib != null && lib.exists() && lib.isDirectory())
-            entry.addSourceFolder(lib, false);
+        VirtualFile child = contentRoot.findChild(name);
+        if (child != null && isEqualOrAncestor(entry.getUrl(), child.getUrl()))
+            entry.addSourceFolder(child, false);
     }
 }
