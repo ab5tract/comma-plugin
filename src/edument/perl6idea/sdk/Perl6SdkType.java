@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Perl6SdkType extends SdkType {
     private static final String NAME = "Perl 6 SDK";
@@ -208,8 +209,10 @@ public class Perl6SdkType extends SdkType {
                             perl6path),
                     coreSymbols);
             List<String> subs = Perl6CommandLine.execute(cmd);
-            if (subs == null)
+            if (subs == null) {
+                LOG.warn("getCoreSettingSymbols got no symbols from Perl 6, using fallback");
                 return getFallback();
+            }
             setting = makeSettingSymbols(subs);
             return setting;
         } catch (ExecutionException e) {
@@ -234,7 +237,23 @@ public class Perl6SdkType extends SdkType {
 
     private List<Perl6Symbol> makeSettingSymbols(List<String> names) {
         return names.stream()
-            .map(name -> new Perl6SettingSymbol(Perl6SymbolKind.Routine, name))
+            .flatMap(this::nameToSymbols)
             .collect(Collectors.toList());
+    }
+
+    private Stream<Perl6Symbol> nameToSymbols(String name) {
+        if (name.startsWith("&")) {
+            return Stream.of(
+                new Perl6SettingSymbol(Perl6SymbolKind.Variable, name),
+                new Perl6SettingSymbol(Perl6SymbolKind.Routine, name.substring(1))
+            );
+        }
+        else {
+            return Stream.of(new Perl6SettingSymbol(
+                Character.isLetter(name.charAt(0))
+                    ? Perl6SymbolKind.TypeOrConstant
+                    : Perl6SymbolKind.Variable,
+                name));
+        }
     }
 }
