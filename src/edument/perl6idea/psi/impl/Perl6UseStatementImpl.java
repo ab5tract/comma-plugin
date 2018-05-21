@@ -3,10 +3,13 @@ package edument.perl6idea.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
+import edument.perl6idea.component.Perl6NameCache;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
+import edument.perl6idea.psi.symbols.Perl6ExternalSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -30,6 +33,13 @@ public class Perl6UseStatementImpl extends Perl6ExternalElement implements Perl6
                     export.contributeSymbols(collector);
                     if (collector.isSatisfied())
                         return;
+                }
+            }
+            else {
+                for (String sym : project.getComponent(Perl6NameCache.class).getNames(project, name)) {
+                    collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Variable, sym));
+                    if (sym.startsWith("&"))
+                        collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Routine, sym.substring(1)));
                 }
             }
         }
