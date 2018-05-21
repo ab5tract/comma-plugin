@@ -47,8 +47,8 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
     default void applySymbolCollector(Perl6SymbolCollector collector) {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(this, Perl6PsiScope.class);
         while (scope != null) {
-            for (Perl6PsiDeclaration declaration : scope.getDeclarations()) {
-                declaration.contributeSymbols(collector);
+            for (Perl6SymbolContributor cont : scope.getSymbolContributors()) {
+                cont.contributeSymbols(collector);
                 if (collector.isSatisfied())
                     return;
             }
