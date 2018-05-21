@@ -64,6 +64,9 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         String name = getName();
         if (name != null && name.length() > 1) {
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+            if (!collector.isSatisfied() && name.substring(1, 2).equals("."))
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
+                        this, name.substring(0, 1) + "!" + name.substring(2)));
             if (!collector.isSatisfied() && name.startsWith("&") && getScope().equals("my"))
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
                          this, name.substring(1)));
