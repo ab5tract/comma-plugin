@@ -61,13 +61,6 @@ public interface Perl6PsiScope extends Perl6PsiElement {
         return result;
     }
 
-    default List<Perl6ExternalElement> getImports() {
-        List<Object> tree = walkTree(Perl6ExternalElement.class);
-        List<Perl6ExternalElement> result = new ArrayList<>();
-        for (Object o : tree) { result.add((Perl6ExternalElement) o); }
-        return result;
-    }
-
     default void contributeExtraSymbols(Perl6SymbolCollector collector) {
     }
 }
