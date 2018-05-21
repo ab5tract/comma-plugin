@@ -21,6 +21,7 @@
       <extensionPoint name="projectWizard.projectCategory" interface="com.intellij.ide.projectWizard.ProjectCategory"/>
       <extensionPoint name="projectImportProvider" interface="com.intellij.projectImport.ProjectImportProvider"/>
       <extensionPoint name="projectStructureDetector" interface="com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector"/>
+      <extensionPoint name="configuration.ModuleStructureExtension" interface="com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleStructureExtension"/>
     </extensionPoints>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -33,6 +34,12 @@
                           serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
       <applicationService serviceImplementation="com.intellij.ide.projectWizard.ProjectCategoryUsagesCollector"/>
       <projectWizard.projectCategory implementation="com.intellij.ide.projectWizard.ModuleTypeCategory"/>
+      <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable"/>
+      <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectLibrariesConfigurable"/>
+      <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleStructureConfigurable"/>
+      <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.GlobalLibrariesConfigurable"/>
+      <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.FacetStructureConfigurable"/>
+      <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.artifacts.ArtifactsStructureConfigurable"/>
     </extensions>
 
     <application-components>
