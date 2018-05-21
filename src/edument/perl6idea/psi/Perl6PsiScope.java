@@ -2,6 +2,7 @@ package edument.perl6idea.psi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 
 import java.util.*;
 
@@ -41,5 +42,8 @@ public interface Perl6PsiScope extends Perl6PsiElement {
         List<Perl6ExternalElement> result = new ArrayList<>();
         for (Object o : tree) { result.add((Perl6ExternalElement) o); }
         return result;
+    }
+
+    default void contributeExtraSymbols(Perl6SymbolCollector collector) {
     }
 }

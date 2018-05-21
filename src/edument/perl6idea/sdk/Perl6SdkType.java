@@ -13,6 +13,9 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.psi.Perl6PsiElement;
+import edument.perl6idea.psi.symbols.Perl6SettingSymbol;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.utils.Perl6CommandLine;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -31,11 +34,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class Perl6SdkType extends SdkType {
     private static final String NAME = "Perl 6 SDK";
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
-    private List<String> setting;
+    private List<Perl6Symbol> setting;
     private Map<String, String> moarBuildConfig;
 
     private Perl6SdkType() {
@@ -183,7 +187,7 @@ public class Perl6SdkType extends SdkType {
         return moarBuildConfig;
     }
 
-    public List<String> getCoreSettingSymbols(Perl6PsiElement element) {
+    public List<Perl6Symbol> getCoreSettingSymbols(Perl6PsiElement element) {
         if (setting != null)
             return setting;
         File coreSymbols = Perl6CommandLine.getResourceAsFile(this,"symbols/perl6-core-symbols.p6");
@@ -204,27 +208,33 @@ public class Perl6SdkType extends SdkType {
                             perl6path),
                     coreSymbols);
             List<String> subs = Perl6CommandLine.execute(cmd);
-            if (subs == null) return getFallback();
-            setting = subs;
-            return subs;
+            if (subs == null)
+                return getFallback();
+            setting = makeSettingSymbols(subs);
+            return setting;
         } catch (ExecutionException e) {
             LOG.error(e);
             return getFallback();
         }
     }
 
-    private List<String> getFallback() {
+    private List<Perl6Symbol> getFallback() {
         File fallback = Perl6CommandLine.getResourceAsFile(this,"symbols/CORE.fallback");
         if (fallback == null) LOG.error("getCoreSettingSymbols is called with corrupted resources bundle");
 
         try {
             if (fallback != null) {
-                setting = Files.readAllLines(fallback.toPath(), StandardCharsets.UTF_8);
-                return setting;
+                return makeSettingSymbols(Files.readAllLines(fallback.toPath(), StandardCharsets.UTF_8));
             }
         } catch (IOException e) {
             LOG.error(e);
         }
         return new ArrayList<>();
+    }
+
+    private List<Perl6Symbol> makeSettingSymbols(List<String> names) {
+        return names.stream()
+            .map(name -> new Perl6SettingSymbol(Perl6SymbolKind.Routine, name))
+            .collect(Collectors.toList());
     }
 }

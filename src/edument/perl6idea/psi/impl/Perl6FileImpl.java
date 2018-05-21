@@ -19,6 +19,9 @@ import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
 import edument.perl6idea.psi.stub.index.Perl6AllRoutinesStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,5 +59,14 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         return Arrays.stream(findChildrenByClass(Perl6PsiDeclaration.class))
               .filter(decl -> decl.isExported())
               .collect(Collectors.toList());
+    }
+
+    @Override
+    public void contributeExtraSymbols(Perl6SymbolCollector collector) {
+        for (Perl6Symbol symbol : Perl6SdkType.getInstance().getCoreSettingSymbols(this)) {
+            collector.offerSymbol(symbol);
+            if (collector.isSatisfied())
+                return;
+        }
     }
 }
