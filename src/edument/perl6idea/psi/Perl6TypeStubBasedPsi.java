@@ -13,6 +13,10 @@ import edument.perl6idea.psi.stub.Perl6PackageDeclStubElementType;
 import edument.perl6idea.psi.stub.Perl6SubsetStubElementType;
 import edument.perl6idea.psi.stub.Perl6TypeStub;
 import edument.perl6idea.psi.stub.impl.Perl6PackageDeclStubImpl;
+import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
+import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,6 +60,7 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
         return parent instanceof Perl6ScopedDecl ? ((Perl6ScopedDecl)parent).getScope() : "our";
     }
 
+    @Override
     public ItemPresentation getPresentation() {
         return new ItemPresentation() {
             @Nullable
@@ -110,5 +115,17 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
                 return Perl6Icons.CAMELIA;
             }
         };
+    }
+
+    @Override
+    public void contributeSymbols(Perl6SymbolCollector collector) {
+        collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, this));
+        if (!collector.isSatisfied()) {
+            T stub = getStub();
+            String globalName = stub == null ? getGlobalName() : stub.getGlobalName();
+            if (globalName != null)
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
+                        this, globalName));
+        }
     }
 }

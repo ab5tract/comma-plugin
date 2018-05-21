@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.parsing.Perl6TokenTypes;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierOwner {
     String getScope();
+    void contributeSymbols(Perl6SymbolCollector collector);
 
     default List<Perl6Trait> getTraits() {
         List<Perl6Trait> traits = new ArrayList<>();

@@ -6,6 +6,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6ParameterVariable;
+import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
+import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,5 +45,16 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     @Override
     public String summary() {
         return String.valueOf(this.getName().charAt(0));
+    }
+
+    @Override
+    public void contributeSymbols(Perl6SymbolCollector collector) {
+        String name = getName();
+        if (name != null && name.length() > 1) {
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+            if (!collector.isSatisfied() && name.startsWith("&") && getScope().equals("my"))
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
+                    this, name.substring(1)));
+        }
     }
 }

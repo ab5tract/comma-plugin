@@ -6,6 +6,10 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6ConstantStub;
 import edument.perl6idea.psi.stub.Perl6ConstantStubElementType;
+import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
+import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,5 +56,16 @@ public class Perl6ConstantImpl extends Perl6MemberStubBasedPsi<Perl6ConstantStub
 
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:CONSTANT)";
+    }
+
+    @Override
+    public void contributeSymbols(Perl6SymbolCollector collector) {
+        collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, this));
+        if (!collector.isSatisfied()) {
+            String globalName = getGlobalName();
+            if (globalName != null)
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
+                    this, globalName));
+        }
     }
 }

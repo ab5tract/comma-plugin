@@ -6,6 +6,10 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
+import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
+import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,5 +57,16 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:VARIABLE_DECLARATION)";
+    }
+
+    @Override
+    public void contributeSymbols(Perl6SymbolCollector collector) {
+        String name = getName();
+        if (name != null && name.length() > 1) {
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+            if (!collector.isSatisfied() && name.startsWith("&") && getScope().equals("my"))
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
+                         this, name.substring(1)));
+        }
     }
 }

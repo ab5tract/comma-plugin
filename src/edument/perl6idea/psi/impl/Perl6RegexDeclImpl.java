@@ -11,6 +11,10 @@ import edument.perl6idea.psi.Perl6TypeStubBasedPsi;
 import edument.perl6idea.psi.Perl6RegexDecl;
 import edument.perl6idea.psi.stub.Perl6RegexDeclStub;
 import edument.perl6idea.psi.stub.Perl6RegexDeclStubElementType;
+import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
+import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,5 +86,18 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
 
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:REGEX_DECLARATION)";
+    }
+
+    @Override
+    public void contributeSymbols(Perl6SymbolCollector collector) {
+        String scope = getScope();
+        if (scope.equals("my") || scope.equals("our")) {
+            String name = getName();
+            if (name != null) {
+                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
+                    this, "&" + name));
+            }
+        }
     }
 }
