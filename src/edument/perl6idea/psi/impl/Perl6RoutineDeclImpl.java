@@ -100,7 +100,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
         String name = getName();
-        if (name != null) {
+        if (name != null && getScope().equals("my")) {
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
                     this, "&" + name));
