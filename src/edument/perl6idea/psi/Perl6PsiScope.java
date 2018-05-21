@@ -29,10 +29,10 @@ public interface Perl6PsiScope extends Perl6PsiElement {
         return elements;
     }
 
-    default List<Perl6PsiElement> getDeclarations() {
+    default List<Perl6PsiDeclaration> getDeclarations() {
         List<Object> tree = walkTree(Perl6PsiDeclaration.class);
-        List<Perl6PsiElement> result = new ArrayList<>();
-        for (Object o : tree) { result.add((Perl6PsiElement) o); }
+        List<Perl6PsiDeclaration> result = new ArrayList<>();
+        for (Object o : tree) { result.add((Perl6PsiDeclaration) o); }
         return result;
     }
 

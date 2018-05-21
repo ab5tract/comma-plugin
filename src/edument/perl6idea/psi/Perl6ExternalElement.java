@@ -19,7 +19,7 @@ public class Perl6ExternalElement extends ASTWrapperPsiElement implements Perl6P
         super(node);
     }
 
-    List<Perl6PsiElement> getLocalDeclarations(Project project) {
+    List<Perl6PsiDeclaration> getLocalDeclarations(Project project) {
         if (getModuleName() == null) return new ArrayList<>();
         VirtualFile basePath = project.getBaseDir().findChild("lib");
         if (basePath == null) return new ArrayList<>();

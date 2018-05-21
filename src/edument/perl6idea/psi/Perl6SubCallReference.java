@@ -25,7 +25,7 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6PsiElement> {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(call, Perl6PsiScope.class);
         while (scope != null) {
             for (Perl6ExternalElement ex : scope.getImports()) {
-                List<Perl6PsiElement> localDecls = ex.getLocalDeclarations(getElement().getProject());
+                List<Perl6PsiDeclaration> localDecls = ex.getLocalDeclarations(getElement().getProject());
                 for (Perl6PsiElement decl : localDecls) {
                     if (!(decl instanceof Perl6RoutineDecl)) continue;
                     if (((Perl6RoutineDecl) decl).getRoutineName().equals(call.getCallName()) &&
