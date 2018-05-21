@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.tree.TokenSet;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolContributor;
@@ -16,11 +17,7 @@ public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierO
     String getScope();
 
     default List<Perl6Trait> getTraits() {
-        List<Perl6Trait> traits = new ArrayList<>();
-        ASTNode[] traitNodes = getNode().getChildren(TokenSet.create(Perl6TokenTypes.TRAIT));
-        for (ASTNode trait : traitNodes)
-            traits.add((Perl6Trait)trait);
-        return traits;
+        return PsiTreeUtil.getChildrenOfTypeAsList(this, Perl6Trait.class);
     }
 
     @Nullable

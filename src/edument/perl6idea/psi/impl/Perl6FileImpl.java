@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.stubs.StubElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Processor;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
@@ -56,7 +57,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             return ((Perl6FileStub)stub).getExports();
 
         // Otherwise, we need to walk the PSI tree.
-        return Arrays.stream(findChildrenByClass(Perl6PsiDeclaration.class))
+        return PsiTreeUtil.findChildrenOfType(this, Perl6PsiDeclaration.class).stream()
               .filter(decl -> decl.isExported())
               .collect(Collectors.toList());
     }
