@@ -12,7 +12,7 @@ public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollecto
 
     @Override
     public void offerSymbol(Perl6Symbol symbol) {
-        if (result == null && symbol.getKind() == wantedKind && symbol.getName() == wantedName)
+        if (result == null && symbol.getKind() == wantedKind && symbol.getName().equals(wantedName))
             result = symbol;
     }
 

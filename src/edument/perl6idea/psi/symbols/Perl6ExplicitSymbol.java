@@ -8,6 +8,7 @@ public class Perl6ExplicitSymbol implements Perl6Symbol {
     private PsiNamedElement psi;
 
     public Perl6ExplicitSymbol(Perl6SymbolKind kind, PsiNamedElement psi) {
+        this.kind = kind;
         this.psi = psi;
     }
 
