@@ -45,9 +45,4 @@ public class Perl6ExternalElement extends ASTWrapperPsiElement implements Perl6P
         }
         return null;
     }
-
-    @Override
-    public PsiReference getReference() {
-        return new Perl6ExternalReference(this);
-    }
 }
