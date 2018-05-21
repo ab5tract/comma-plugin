@@ -224,7 +224,7 @@ public class Perl6SdkType extends SdkType {
 
         try {
             if (fallback != null) {
-                return makeSettingSymbols(Files.readAllLines(fallback.toPath(), StandardCharsets.UTF_8));
+                return setting = makeSettingSymbols(Files.readAllLines(fallback.toPath(), StandardCharsets.UTF_8));
             }
         } catch (IOException e) {
             LOG.error(e);
