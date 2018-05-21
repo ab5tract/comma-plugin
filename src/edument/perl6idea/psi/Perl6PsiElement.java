@@ -2,6 +2,10 @@ package edument.perl6idea.psi;
 
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.NavigatablePsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.psi.symbols.*;
+
+import java.util.Collection;
 
 public interface Perl6PsiElement extends NavigatablePsiElement {
     /* Name-manages the enclosing file name into a module name, if possible.
@@ -26,5 +30,32 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         // for libraries.
         String libraryName = path.replaceAll("[/\\\\]", "::");
         return StringUtil.trimStart(libraryName, "lib::");
+    }
+
+    default Perl6Symbol resolveSymbol(Perl6SymbolKind kind, String name) {
+        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, kind);
+        applySymbolCollector(collector);
+        return collector.getResult();
+    }
+
+    default Collection<Perl6Symbol> getSymbolVariants(Perl6SymbolKind kind) {
+        Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(kind);
+        applySymbolCollector(collector);
+        return collector.getVariants();
+    }
+
+    default void applySymbolCollector(Perl6SymbolCollector collector) {
+        Perl6PsiScope scope = PsiTreeUtil.getParentOfType(this, Perl6PsiScope.class);
+        while (scope != null) {
+            for (Perl6PsiDeclaration declaration : scope.getDeclarations()) {
+                declaration.contributeSymbols(collector);
+                if (collector.isSatisfied())
+                    return;
+            }
+            scope.contributeExtraSymbols(collector);
+            if (collector.isSatisfied())
+                return;
+            scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
+        }
     }
 }
