@@ -4,19 +4,46 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Variable;
-import edument.perl6idea.psi.Perl6VariableReference;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 
 public class UndeclaredVariableAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6Variable)) return;
+        // Make sure we've got a sensible looking variable to check.
+        if (!(element instanceof Perl6Variable))
+            return;
         final Perl6Variable ref = (Perl6Variable) element;
-        if (ref.getVariableName() == null) return;
-        if ((ref.getTwigil() == ' ' || ref.getTwigil() == '!') && !(ref.getVariableName().contains("::"))
-                && !(ref.getVariableName().contains(":[")))
-            if (new Perl6VariableReference(ref).resolve() == null)
-                holder.createErrorAnnotation(element,
-                        String.format("Variable %s is not declared", ref.getVariableName()));
+        String variableName = ref.getVariableName();
+        if (variableName == null)
+            return;
+
+        // We only check twigilless variables for now (can't yet do attributes
+        // because they may come from a role).
+        if (ref.getTwigil() != ' ')
+            return;
+
+        // Make sure it's not a long or late-boiund name.
+        if (ref.getTwigil() == '!' || variableName.contains("::") || variableName.contains(":["))
+            return;
+
+        // Otherwise, try to resolve it.
+        Perl6Symbol resolved = ref.resolveSymbol(Perl6SymbolKind.Variable, variableName);
+        if (resolved == null) {
+            // Straight resolution failure.
+            holder.createErrorAnnotation(element,
+                String.format("Variable %s is not declared", variableName));
+        }
+        else {
+            // May not be available yet.
+            if (ref.getTwigil() == ' ' && ref.getSigil() != '&') {
+                PsiElement psi = resolved.getPsi();
+                if (psi != null && psi.getContainingFile() == ref.getContainingFile() &&
+                        psi.getTextOffset() > ref.getTextOffset())
+                    holder.createErrorAnnotation(element,
+                        String.format("Variable %s is not declared in this scope yet", variableName));
+            }
+        }
     }
 }
