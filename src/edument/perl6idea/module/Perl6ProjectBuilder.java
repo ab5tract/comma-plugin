@@ -21,11 +21,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor;
+import static java.io.File.separator;
 
 public class Perl6ProjectBuilder extends ProjectImportBuilder {
     private final Logger LOG = Logger.getInstance(getClass());
@@ -35,7 +34,7 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
     @NotNull
     @Override
     public String getName() {
-        return "Perl 6 Module";
+        return "Perl 6 sources";
     }
 
     @Override
@@ -55,7 +54,6 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
 
     @Override
     public void setList(List list) throws ConfigurationException {
-
     }
 
     @Override
@@ -65,10 +63,10 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
 
     @Nullable
     @Override
-    public List<Module> commit(Project project, // Project
-                               ModifiableModuleModel model, // null
-                               ModulesProvider modulesProvider, // ModulesProvider
-                               ModifiableArtifactModel artifactModel) { // null
+    public List<Module> commit(Project project,
+                               ModifiableModuleModel model,
+                               ModulesProvider modulesProvider,
+                               ModifiableArtifactModel artifactModel) {
         // XXX This builder could be used when importing project from Project Structure,
         // in this case `model` parameter is not null
         final List<Module> result = new ArrayList<>();
@@ -78,20 +76,14 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
                 VirtualFile contentRoot = lfs.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(getFileToImport()));
                 if (contentRoot == null) return;
                 ModifiableModuleModel manager = ModuleManager.getInstance(project).getModifiableModel();
-                Module module = manager.newModule(getFileToImport(), Perl6ModuleType.getInstance().getId());
-
+                String name = contentRoot.getPath() + separator + project.getName() + ".iml";
+                Module module = manager.newModule(name, Perl6ModuleType.getInstance().getId());
                 ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
-                File directory = new File(contentRoot.findChild("lib").getPath());
-                if (!directory.exists())
-                    directory.mkdirs();
-                VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(directory);
-                ContentEntry e = getContentRootFor(virtualFile, rootModel);
-                if (virtualFile == null) return;
-                if (e == null) return;
-                e.addSourceFolder(virtualFile, false);
-                rootModel.commit();
-                result.add(module);
+                ContentEntry entry = rootModel.addContentEntry(getFileToImport());
+                addSourceDirectory("lib", contentRoot, entry);
+                addSourceDirectory("t", contentRoot, entry);
                 manager.commit();
+                rootModel.commit();
             });
         }
         catch (Exception e) {
@@ -100,10 +92,9 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
         return result;
     }
 
-    private static ContentEntry getContentRootFor(VirtualFile file, ModifiableRootModel model) {
-        for (ContentEntry e : model.getContentEntries()) {
-            if (isEqualOrAncestor(file.getUrl(), e.getUrl())) return e;
-        }
-        return null;
+    private static void addSourceDirectory(String name, VirtualFile contentRoot, ContentEntry entry) {
+        VirtualFile lib = contentRoot.findChild(name);
+        if (lib != null && lib.exists() && lib.isDirectory())
+            entry.addSourceFolder(lib, false);
     }
 }
