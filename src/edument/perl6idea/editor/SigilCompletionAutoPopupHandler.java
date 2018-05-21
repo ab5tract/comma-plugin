@@ -26,6 +26,7 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
         sigilsAndTwigils.add('*');
         sigilsAndTwigils.add('?');
         sigilsAndTwigils.add('=');
+        sigilsAndTwigils.add(':');
     }
 
     @Override
