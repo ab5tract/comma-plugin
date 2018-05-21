@@ -19,7 +19,7 @@ public class Perl6BlockImpl extends ASTWrapperPsiElement implements Perl6Block {
     }
 
     @Override
-    public void contributeExtraSymbols(Perl6SymbolCollector collector) {
+    public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         PsiElement parent = getParent();
         boolean isTopicalizer = false;
 

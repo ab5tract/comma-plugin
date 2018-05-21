@@ -78,7 +78,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     }
 
     @Override
-    public void contributeExtraSymbols(Perl6SymbolCollector collector) {
+    public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         for (Perl6Symbol symbol : UNIT_SYMBOLS) {
             collector.offerSymbol(symbol);
             if (collector.isSatisfied())

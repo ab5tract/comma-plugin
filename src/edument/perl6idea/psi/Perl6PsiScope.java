@@ -54,6 +54,6 @@ public interface Perl6PsiScope extends Perl6PsiElement {
         return decls;
     }
 
-    default void contributeExtraSymbols(Perl6SymbolCollector collector) {
+    default void contributeScopeSymbols(Perl6SymbolCollector collector) {
     }
 }

@@ -107,7 +107,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
-    public void contributeExtraSymbols(Perl6SymbolCollector collector) {
+    public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         for (String sym : ROUTINE_SYMBOLS)
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, sym, this));
     }

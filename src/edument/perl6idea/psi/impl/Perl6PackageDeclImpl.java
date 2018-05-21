@@ -66,7 +66,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     }
 
     @Override
-    public void contributeExtraSymbols(Perl6SymbolCollector collector) {
+    public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?PACKAGE"));
         switch (getPackageKind()) {
             case "class":
