@@ -221,8 +221,8 @@ grammar MAIN {
             <.statement>
             <.ws>?
             <.eat_terminator>
-            <.ws>?
             <.end-element('STATEMENT')>
+            <.ws>?
         ]*
         <.end-element('STATEMENT_LIST')>
     }
