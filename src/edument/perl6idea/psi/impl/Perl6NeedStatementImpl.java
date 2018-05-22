@@ -22,21 +22,22 @@ public class Perl6NeedStatementImpl extends ASTWrapperPsiElement implements Perl
 
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
-        Perl6ModuleName moduleName = findChildByClass(Perl6ModuleName.class);
-        if (moduleName != null) {
-            String name = moduleName.getText();
-            Project project = getProject();
-            Collection<Perl6File> found = ProjectModulesStubIndex.getInstance()
-                    .get(name, project, GlobalSearchScope.projectScope(project));
-            if (found.size() > 0) {
-                Perl6File file = found.iterator().next();
-                file.contributeGlobals(collector);
-            }
-            else {
-                for (Perl6Symbol sym : Perl6SdkType.getInstance().getNamesForNeed(project, name)) {
-                    collector.offerSymbol(sym);
-                    if (collector.isSatisfied())
-                        return;
+        for (Perl6ModuleName moduleName : findChildrenByClass(Perl6ModuleName.class)) {
+            if (moduleName != null) {
+                String name = moduleName.getText();
+                Project project = getProject();
+                Collection<Perl6File> found = ProjectModulesStubIndex.getInstance()
+                        .get(name, project, GlobalSearchScope.projectScope(project));
+                if (found.size() > 0) {
+                    Perl6File file = found.iterator().next();
+                    file.contributeGlobals(collector);
+                }
+                else {
+                    for (Perl6Symbol sym : Perl6SdkType.getInstance().getNamesForNeed(project, name)) {
+                        collector.offerSymbol(sym);
+                        if (collector.isSatisfied())
+                            return;
+                    }
                 }
             }
         }
