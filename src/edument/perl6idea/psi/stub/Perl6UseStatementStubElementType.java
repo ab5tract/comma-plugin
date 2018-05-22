@@ -41,7 +41,7 @@ public class Perl6UseStatementStubElementType extends IStubElementType<Perl6UseS
     @Override
     public Perl6UseStatementStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef ref = dataStream.readName();
-        return new Perl6UseStatementStubImpl(null, ref == null ? null : ref.getString());
+        return new Perl6UseStatementStubImpl(parentStub, ref == null ? null : ref.getString());
     }
 
     @Override

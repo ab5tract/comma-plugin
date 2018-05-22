@@ -51,7 +51,7 @@ public class Perl6NeedStatementStubElementType extends IStubElementType<Perl6Nee
             StringRef ref = dataStream.readName();
             names.add(ref == null ? null : ref.getString());
         }
-        return new Perl6NeedStatementStubImpl(null, names);
+        return new Perl6NeedStatementStubImpl(parentStub, names);
     }
 
     @Override
