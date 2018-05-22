@@ -8,6 +8,7 @@ import edument.perl6idea.component.Perl6NameCache;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.Perl6ExternalSymbol;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
@@ -34,12 +35,13 @@ public class Perl6UseStatementImpl extends ASTWrapperPsiElement implements Perl6
                     if (collector.isSatisfied())
                         return;
                 }
+                // TODO Globals
             }
             else {
-                for (String sym : project.getComponent(Perl6NameCache.class).getNames(project, name)) {
-                    collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Variable, sym));
-                    if (sym.startsWith("&"))
-                        collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Routine, sym.substring(1)));
+                for (Perl6Symbol sym : project.getComponent(Perl6NameCache.class).getNamesForUse(project, name)) {
+                    collector.offerSymbol(sym);
+                    if (collector.isSatisfied())
+                        return;
                 }
             }
         }
