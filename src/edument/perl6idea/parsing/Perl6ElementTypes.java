@@ -14,6 +14,8 @@ public interface Perl6ElementTypes {
     IStubElementType REGEX_DECLARATION = new Perl6RegexDeclStubElementType();
     IStubElementType VARIABLE_DECLARATION = new Perl6VariableDeclStubElementType();
     IStubElementType SCOPED_DECLARATION = new Perl6ScopedDeclStubElementType();
+    IStubElementType USE_STATEMENT = new Perl6UseStatementStubElementType();
+    IStubElementType NEED_STATEMENT = new Perl6NeedStatementStubElementType();
     IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
     IElementType ARRAY_INDEX = new Perl6ElementType("ARRAY_INDEX");
     IElementType ARRAY_SHAPE = new Perl6ElementType("ARRAY_SHAPE");
@@ -53,7 +55,6 @@ public interface Perl6ElementTypes {
     IElementType MODULE_NAME = new Perl6ElementType("MODULE_NAME");
     IElementType MULTI_DECLARATION = new Perl6ElementType("MULTI_DECLARATION");
     IElementType NAMED_PARAMETER = new Perl6ElementType("NAMED_PARAMETER");
-    IElementType NEED_STATEMENT = new Perl6ElementType("NEED_STATEMENT");
     IElementType NEGATION_METAOP = new Perl6ElementType("NEGATION_METAOP");
     IElementType NO_STATEMENT = new Perl6ElementType("NO_STATEMENT");
     IElementType NULL_TERM = new Perl6ElementType("NULL_TERM");
@@ -120,7 +121,6 @@ public interface Perl6ElementTypes {
     IElementType TYPE_NAME = new Perl6ElementType("TYPE_NAME");
     IElementType UNLESS_STATEMENT = new Perl6ElementType("UNLESS_STATEMENT");
     IElementType UNTIL_STATEMENT = new Perl6ElementType("UNTIL_STATEMENT");
-    IElementType USE_STATEMENT = new Perl6ElementType("USE_STATEMENT");
     IElementType VALUE_CONSTRAINT = new Perl6ElementType("VALUE_CONSTRAINT");
     IElementType VARIABLE = new Perl6ElementType("VARIABLE");
     IElementType VERSION = new Perl6ElementType("VERSION");

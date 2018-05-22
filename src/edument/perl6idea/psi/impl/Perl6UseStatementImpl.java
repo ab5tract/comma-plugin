@@ -1,10 +1,12 @@
 package edument.perl6idea.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.stub.Perl6UseStatementStub;
+import edument.perl6idea.psi.stub.Perl6UseStatementStubElementType;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
@@ -13,16 +15,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public class Perl6UseStatementImpl extends ASTWrapperPsiElement implements Perl6UseStatement {
+public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseStatementStub> implements Perl6UseStatement {
     public Perl6UseStatementImpl(@NotNull ASTNode node) {
         super(node);
     }
 
+    public Perl6UseStatementImpl(Perl6UseStatementStub stub, Perl6UseStatementStubElementType type) {
+        super(stub, type);
+    }
+
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
-        Perl6ModuleName moduleName = findChildByClass(Perl6ModuleName.class);
-        if (moduleName != null) {
-            String name = moduleName.getText();
+        String name = getModuleName();
+        if (name != null) {
             Project project = getProject();
             Collection<Perl6File> found = ProjectModulesStubIndex.getInstance()
                     .get(name, project, GlobalSearchScope.projectScope(project));
@@ -43,5 +48,19 @@ public class Perl6UseStatementImpl extends ASTWrapperPsiElement implements Perl6
                 }
             }
         }
+    }
+
+    @Override
+    public String getModuleName() {
+        Perl6UseStatementStub stub = getStub();
+        if (stub != null)
+            return stub.getModuleName();
+
+        Perl6ModuleName moduleName = findChildByClass(Perl6ModuleName.class);
+        return moduleName != null ? moduleName.getText() : null;
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(Perl6:USE_STATEMENT)";
     }
 }
