@@ -28,7 +28,7 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertTrue(vars.containsAll(Arrays.asList("%?RESOURCES", "%hash")));
-        assertEquals(2, vars.size());
+        assertEquals(4, vars.size());
     }
 
     public void testCompletionInClass() {
