@@ -2,6 +2,7 @@ package edument.perl6idea.completion;
 
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,5 +56,31 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
         assertNotNull(vars);
         assertTrue(vars.containsAll(Arrays.asList("$?CLASS", "$?PACKAGE")));
         assertFalse(vars.contains("$?ROLE"));
+    }
+
+    public void testCompletionInBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $x = { &?<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.contains("&?BLOCK"));
+        assertFalse(vars.contains("&?ROUTINE"));
+    }
+
+    public void testCompletionInPointyBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $x = -> $y { &?<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.contains("&?BLOCK"));
+        assertFalse(vars.contains("&?ROUTINE"));
+    }
+
+    public void testCompletionInSub() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo() { &?<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("&?ROUTINE", "&?BLOCK")));
     }
 }
