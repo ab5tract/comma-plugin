@@ -87,4 +87,43 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         assertNotNull(vars);
         assertEmpty(vars);
     }
+
+    public void testSimpleDeclaredTypeOur() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Interesting { }\nmy In<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.contains("Interesting"));
+    }
+
+    public void testSimpleDeclaredTypeMy() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my class Interesting { }\nmy In<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.contains("Interesting"));
+    }
+
+    public void testNestedTypesOutside() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "class Interesting { class Nested { class Deeper { } }; my class Lexical { } }\nmy Inter<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("Interesting", "Interesting::Nested",
+            "Interesting::Nested::Deeper")));
+        assertFalse(vars.contains("Lexical"));
+        assertFalse(vars.contains("Interested::Lexical"));
+    }
+
+    public void testNestedTypesInside() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "class Interesting { class InterNested { class InterDeeper { } }; my class InterLexical { }; my Inter<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("Interesting", "Interesting::InterNested",
+            "Interesting::InterNested::InterDeeper", "InterNested", "InterNested::InterDeeper", "InterLexical")));
+        assertFalse(vars.contains("Interested::InterLexical"));
+    }
 }

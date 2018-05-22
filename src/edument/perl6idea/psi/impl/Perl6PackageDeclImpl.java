@@ -7,14 +7,13 @@ import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
-import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
-import edument.perl6idea.psi.symbols.Perl6ImplicitSymbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 
@@ -77,6 +76,45 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?ROLE"));
                 collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$?CLASS", this));
                 break;
+        }
+    }
+
+    @Override
+    public void contributeSymbols(Perl6SymbolCollector collector) {
+        super.contributeSymbols(collector);
+        contributeNestedPackagesWithPrefix(collector, getPackageName() + "::");
+    }
+
+    @Override
+    public void contributeNestedPackagesWithPrefix(Perl6SymbolCollector collector, String prefix) {
+        // Walk to find immediately nested packages, but now those within them
+        // (we make a recursive contribute call on those).
+        Queue<Perl6PsiElement> visit = new LinkedList<>();
+        visit.add(this);
+        while (!visit.isEmpty()) {
+            Perl6PsiElement current = visit.remove();
+            boolean addChildren = false;
+            if (current == this) {
+                addChildren = true;
+            }
+            else if (current instanceof Perl6PackageDecl) {
+                Perl6PackageDecl nested = (Perl6PackageDecl)current;
+                if (nested.getScope().equals("our")) {
+                    String nestedName = nested.getPackageName();
+                    if (nestedName != null && !nestedName.isEmpty()) {
+                        collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
+                            nested, prefix + nestedName));
+                        nested.contributeNestedPackagesWithPrefix(collector, prefix + nestedName + "::");
+                    }
+                }
+            }
+            else {
+                addChildren = true;
+            }
+            if (addChildren)
+                for (PsiElement e : current.getChildren())
+                    if (e instanceof Perl6PsiElement)
+                        visit.add((Perl6PsiElement) e);
         }
     }
 }

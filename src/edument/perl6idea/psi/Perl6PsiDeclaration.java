@@ -1,16 +1,11 @@
 package edument.perl6idea.psi;
 
-import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.parsing.Perl6TokenTypes;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolContributor;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierOwner, Perl6SymbolContributor {
