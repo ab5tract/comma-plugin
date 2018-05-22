@@ -33,6 +33,7 @@
     <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllRegexesStubIndex"/>
     <gotoClassContributor implementation="edument.perl6idea.contribution.Perl6ClassNameContributor" />
     <gotoSymbolContributor implementation="edument.perl6idea.contribution.Perl6SymbolNameContributor" />
+    <errorHandler implementation="edument.perl6idea.utils.Perl6ErrorReportSubmitter"/>
   </extensions>
 
   <actions>
