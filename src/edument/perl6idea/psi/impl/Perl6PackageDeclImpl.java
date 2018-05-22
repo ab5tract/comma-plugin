@@ -3,6 +3,7 @@ package edument.perl6idea.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
@@ -87,34 +88,66 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     @Override
     public void contributeNestedPackagesWithPrefix(Perl6SymbolCollector collector, String prefix) {
-        // Walk to find immediately nested packages, but now those within them
+        // Walk to find immediately nested packages, but not those within them
         // (we make a recursive contribute call on those).
-        Queue<Perl6PsiElement> visit = new LinkedList<>();
-        visit.add(this);
-        while (!visit.isEmpty()) {
-            Perl6PsiElement current = visit.remove();
-            boolean addChildren = false;
-            if (current == this) {
-                addChildren = true;
-            }
-            else if (current instanceof Perl6PackageDecl) {
-                Perl6PackageDecl nested = (Perl6PackageDecl)current;
-                if (nested.getScope().equals("our")) {
-                    String nestedName = nested.getPackageName();
-                    if (nestedName != null && !nestedName.isEmpty()) {
-                        collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
-                            nested, prefix + nestedName));
-                        nested.contributeNestedPackagesWithPrefix(collector, prefix + nestedName + "::");
+        Perl6PackageDeclStub stub = getStub();
+        if (stub != null) {
+            Queue<Stub> visit = new LinkedList<>();
+            visit.add(stub);
+            while (!visit.isEmpty()) {
+                Stub current = visit.remove();
+                boolean addChildren = false;
+                if (current == stub) {
+                    addChildren = true;
+                }
+                else if (current instanceof Perl6PackageDeclStub) {
+                    Perl6PackageDeclStub nested = (Perl6PackageDeclStub)current;
+                    if (nested.getScope().equals("our")) {
+                        String nestedName = nested.getTypeName();
+                        if (nestedName != null && !nestedName.isEmpty()) {
+                            Perl6PackageDecl psi = nested.getPsi();
+                            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
+                                psi, prefix + nestedName));
+                            psi.contributeNestedPackagesWithPrefix(collector, prefix + nestedName + "::");
+                        }
                     }
                 }
+                else {
+                    addChildren = true;
+                }
+                if (addChildren)
+                    for (Stub c : current.getChildrenStubs())
+                        visit.add(c);
             }
-            else {
-                addChildren = true;
+        }
+        else {
+            Queue<Perl6PsiElement> visit = new LinkedList<>();
+            visit.add(this);
+            while (!visit.isEmpty()) {
+                Perl6PsiElement current = visit.remove();
+                boolean addChildren = false;
+                if (current == this) {
+                    addChildren = true;
+                }
+                else if (current instanceof Perl6PackageDecl) {
+                    Perl6PackageDecl nested = (Perl6PackageDecl)current;
+                    if (nested.getScope().equals("our")) {
+                        String nestedName = nested.getPackageName();
+                        if (nestedName != null && !nestedName.isEmpty()) {
+                            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
+                                nested, prefix + nestedName));
+                            nested.contributeNestedPackagesWithPrefix(collector, prefix + nestedName + "::");
+                        }
+                    }
+                }
+                else {
+                    addChildren = true;
+                }
+                if (addChildren)
+                    for (PsiElement e : current.getChildren())
+                        if (e instanceof Perl6PsiElement)
+                            visit.add((Perl6PsiElement)e);
             }
-            if (addChildren)
-                for (PsiElement e : current.getChildren())
-                    if (e instanceof Perl6PsiElement)
-                        visit.add((Perl6PsiElement) e);
         }
     }
 }

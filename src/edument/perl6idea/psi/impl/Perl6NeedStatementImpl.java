@@ -30,7 +30,7 @@ public class Perl6NeedStatementImpl extends ASTWrapperPsiElement implements Perl
                     .get(name, project, GlobalSearchScope.projectScope(project));
             if (found.size() > 0) {
                 Perl6File file = found.iterator().next();
-                // TODO Globals
+                file.contributeGlobals(collector);
             }
             else {
                 for (Perl6Symbol sym : Perl6SdkType.getInstance().getNamesForNeed(project, name)) {

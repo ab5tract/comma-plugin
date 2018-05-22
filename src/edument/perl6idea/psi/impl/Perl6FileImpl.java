@@ -11,26 +11,19 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Processor;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
-import edument.perl6idea.psi.Perl6File;
-import edument.perl6idea.psi.Perl6PsiDeclaration;
-import edument.perl6idea.psi.Perl6RoutineDecl;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6FileStub;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
 import edument.perl6idea.psi.stub.index.Perl6AllRoutinesStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
-import edument.perl6idea.psi.symbols.Perl6ImplicitSymbol;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
@@ -75,6 +68,73 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         return PsiTreeUtil.findChildrenOfType(this, Perl6PsiDeclaration.class).stream()
               .filter(decl -> decl.isExported())
               .collect(Collectors.toList());
+    }
+
+    @Override
+    public void contributeGlobals(Perl6SymbolCollector collector) {
+        // Walk from the top of the PSI tree to find top-level, our-scoped packages.
+        // Contribute those.
+        Stub stub = this.getStub();
+        if (stub != null) {
+            Queue<Stub> visit = new LinkedList<>();
+            visit.add(stub);
+            while (!visit.isEmpty()) {
+                Stub current = visit.remove();
+                boolean addChildren = false;
+                if (current == stub) {
+                    addChildren = true;
+                }
+                else if (current instanceof Perl6PackageDeclStub) {
+                    Perl6PackageDeclStub nested = (Perl6PackageDeclStub)current;
+                    String scope = nested.getScope();
+                    if (scope.equals("our") || scope.equals("unit")) {
+                        String topName = nested.getTypeName();
+                        if (topName != null && !topName.isEmpty()) {
+                            Perl6PackageDecl psi = nested.getPsi();
+                            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
+                                psi, topName));
+                            psi.contributeNestedPackagesWithPrefix(collector, topName + "::");
+                        }
+                    }
+                }
+                else {
+                    addChildren = true;
+                }
+                if (addChildren)
+                    for (Stub c : current.getChildrenStubs())
+                        visit.add(c);
+            }
+        }
+        else {
+            Queue<Perl6PsiElement> visit = new LinkedList<>();
+            visit.add(this);
+            while (!visit.isEmpty()) {
+                Perl6PsiElement current = visit.remove();
+                boolean addChildren = false;
+                if (current == this) {
+                    addChildren = true;
+                }
+                else if (current instanceof Perl6PackageDecl) {
+                    Perl6PackageDecl nested = (Perl6PackageDecl)current;
+                    String scope = nested.getScope();
+                    if (scope.equals("our") || scope.equals("unit")) {
+                        String topName = nested.getName();
+                        if (topName != null && !topName.isEmpty()) {
+                            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
+                                nested, topName));
+                            nested.contributeNestedPackagesWithPrefix(collector, topName + "::");
+                        }
+                    }
+                }
+                else {
+                    addChildren = true;
+                }
+                if (addChildren)
+                    for (PsiElement e : current.getChildren())
+                        if (e instanceof Perl6PsiElement)
+                            visit.add((Perl6PsiElement)e);
+            }
+        }
     }
 
     @Override

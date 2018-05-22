@@ -33,7 +33,7 @@ public class Perl6UseStatementImpl extends ASTWrapperPsiElement implements Perl6
                     if (collector.isSatisfied())
                         return;
                 }
-                // TODO Globals
+                file.contributeGlobals(collector);
             }
             else {
                 for (Perl6Symbol sym : Perl6SdkType.getInstance().getNamesForUse(project, name)) {
