@@ -1,8 +1,8 @@
 my $a;
 my @b1;
 my @b2;
-my %c1;
-my %c2;
-my &d1;
-my &d2;
+my %coool1;
+my %coool2;
+my &dooooooood1;
+my &dooooooood2;
 $<caret>;
