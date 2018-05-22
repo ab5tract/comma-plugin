@@ -15,9 +15,7 @@ import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class Perl6NeedStatementImpl extends StubBasedPsiElementBase<Perl6NeedStatementStub> implements Perl6NeedStatement {
     public Perl6NeedStatementImpl(@NotNull ASTNode node) {
@@ -36,7 +34,9 @@ public class Perl6NeedStatementImpl extends StubBasedPsiElementBase<Perl6NeedSta
                     .get(name, project, GlobalSearchScope.projectScope(project));
             if (found.size() > 0) {
                 Perl6File file = found.iterator().next();
-                file.contributeGlobals(collector);
+                Set<String> seen = new HashSet<>();
+                seen.add(name);
+                file.contributeGlobals(collector, seen);
             }
             else {
                 for (Perl6Symbol sym : Perl6SdkType.getInstance().getNamesForNeed(project, name)) {

@@ -2,15 +2,20 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6FileStub;
+import edument.perl6idea.psi.stub.Perl6NeedStatementStub;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
+import edument.perl6idea.psi.stub.Perl6UseStatementStub;
+import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
@@ -64,7 +69,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     }
 
     @Override
-    public void contributeGlobals(Perl6SymbolCollector collector) {
+    public void contributeGlobals(Perl6SymbolCollector collector, Set<String> seen) {
         // Walk from the top of the PSI tree to find top-level, our-scoped packages.
         // Contribute those.
         Stub stub = this.getStub();
@@ -89,6 +94,15 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                             psi.contributeNestedPackagesWithPrefix(collector, topName + "::");
                         }
                     }
+                }
+                else if (current instanceof Perl6UseStatementStub) {
+                    Perl6UseStatementStub use = (Perl6UseStatementStub)current;
+                    contributeTransitive(collector, seen, use.getModuleName());
+                }
+                else if (current instanceof Perl6NeedStatementStub) {
+                    Perl6NeedStatementStub need = (Perl6NeedStatementStub)current;
+                    for (String name : need.getModuleNames())
+                        contributeTransitive(collector, seen, name);
                 }
                 else {
                     addChildren = true;
@@ -119,13 +133,44 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                         }
                     }
                 }
-                else {
+                else if (current instanceof Perl6UseStatement) {
+                    Perl6UseStatement use = (Perl6UseStatement)current;
+                    contributeTransitive(collector, seen, use.getModuleName());
+                }
+                else if (current instanceof Perl6NeedStatement) {
+                    Perl6NeedStatement need = (Perl6NeedStatement)current;
+                    for (String name : need.getModuleNames())
+                        contributeTransitive(collector, seen, name);
+                }
+                else if (!(current instanceof Perl6PsiScope)) {
                     addChildren = true;
                 }
                 if (addChildren)
                     for (PsiElement e : current.getChildren())
                         if (e instanceof Perl6PsiElement)
                             visit.add((Perl6PsiElement)e);
+            }
+        }
+    }
+
+    private void contributeTransitive(Perl6SymbolCollector collector, Set<String> seen, String name) {
+        if (name == null || seen.contains(name))
+            return;
+        seen.add(name);
+
+        Project project = getProject();
+        Collection<Perl6File> found = ProjectModulesStubIndex.getInstance()
+                .get(name, project, GlobalSearchScope.projectScope(project));
+        if (found.size() > 0) {
+            Perl6File file = found.iterator().next();
+            file.contributeGlobals(collector, seen);
+        }
+        else {
+            // We only have globals, not exports, transitively available.
+            for (Perl6Symbol sym : Perl6SdkType.getInstance().getNamesForNeed(project, name)) {
+                collector.offerSymbol(sym);
+                if (collector.isSatisfied())
+                    return;
             }
         }
     }

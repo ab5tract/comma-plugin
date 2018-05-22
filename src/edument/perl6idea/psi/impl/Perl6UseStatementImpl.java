@@ -14,6 +14,8 @@ import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseStatementStub> implements Perl6UseStatement {
     public Perl6UseStatementImpl(@NotNull ASTNode node) {
@@ -38,7 +40,9 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                     if (collector.isSatisfied())
                         return;
                 }
-                file.contributeGlobals(collector);
+                Set<String> seen = new HashSet<>();
+                seen.add(name);
+                file.contributeGlobals(collector, seen);
             }
             else {
                 for (Perl6Symbol sym : Perl6SdkType.getInstance().getNamesForUse(project, name)) {
