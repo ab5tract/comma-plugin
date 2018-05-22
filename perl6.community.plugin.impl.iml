@@ -39,5 +39,6 @@
     <orderEntry type="module" module-name="intellij.java.testFramework" scope="TEST" />
     <orderEntry type="library" name="org.tap4j:tap4j:4.3" level="project" />
     <orderEntry type="module" module-name="intellij.java.compiler" />
+    <orderEntry type="library" name="http-client" level="project" />
   </component>
 </module>
