@@ -13,6 +13,7 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.psi.Perl6PsiElement;
+import edument.perl6idea.psi.symbols.Perl6ExternalSymbol;
 import edument.perl6idea.psi.symbols.Perl6SettingSymbol;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,6 +44,8 @@ public class Perl6SdkType extends SdkType {
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
     private List<Perl6Symbol> setting;
     private Map<String, String> moarBuildConfig;
+    private Map<String, List<Perl6Symbol>> useNameCache = new ConcurrentHashMap<>();
+    private Map<String, List<Perl6Symbol>> needNameCache = new ConcurrentHashMap<>();
 
     private Perl6SdkType() {
         super(NAME);
@@ -237,11 +241,11 @@ public class Perl6SdkType extends SdkType {
 
     private List<Perl6Symbol> makeSettingSymbols(List<String> names) {
         return names.stream()
-            .flatMap(this::nameToSymbols)
+            .flatMap(this::nameToSettingSymbols)
             .collect(Collectors.toList());
     }
 
-    private Stream<Perl6Symbol> nameToSymbols(String name) {
+    private Stream<Perl6Symbol> nameToSettingSymbols(String name) {
         if (name.startsWith("&")) {
             return Stream.of(
                 new Perl6SettingSymbol(Perl6SymbolKind.Variable, name),
@@ -253,6 +257,64 @@ public class Perl6SdkType extends SdkType {
                 Character.isLetter(name.charAt(0))
                     ? Perl6SymbolKind.TypeOrConstant
                     : Perl6SymbolKind.Variable,
+                name));
+        }
+    }
+
+    public List<Perl6Symbol> getNamesForUse(Project project, String name) {
+        List<Perl6Symbol> cached = useNameCache.get(name);
+        if (cached == null) {
+            cached = loadModuleSymbols(project, "use", name);
+            useNameCache.put(name, cached);
+        }
+        return cached;
+    }
+
+    public List<Perl6Symbol> getNamesForNeed(Project project, String name) {
+        List<Perl6Symbol> cached = needNameCache.get(name);
+        if (cached == null) {
+            cached = loadModuleSymbols(project, "need", name);
+            needNameCache.put(name, cached);
+        }
+        return cached;
+    }
+
+    private List<Perl6Symbol> loadModuleSymbols(Project project, String directive, String name) {
+        String homePath = getSdkHomeByProject(project);
+        if (homePath == null) {
+            LOG.error(new ExecutionException("SDK path is not set"));
+            return new ArrayList<>();
+        }
+        File moduleSymbols = Perl6CommandLine.getResourceAsFile(this,"symbols/perl6-module-symbols.p6");
+        GeneralCommandLine cmd = Perl6CommandLine.getPerl6CommandLine(
+            System.getProperty("java.io.tmpdir"),
+            homePath);
+        cmd.addParameter(moduleSymbols.getPath());
+        cmd.addParameter(directive);
+        cmd.addParameter(name);
+
+        List<String> symbols = Perl6CommandLine.execute(cmd);
+        return symbols == null ? new ArrayList<>() : externalNamesToSymbols(symbols);
+    }
+
+    private List<Perl6Symbol> externalNamesToSymbols(List<String> names) {
+        return names.stream()
+                    .flatMap(this::nameToSymbols)
+                    .collect(Collectors.toList());
+    }
+
+    private Stream<Perl6Symbol> nameToSymbols(String name) {
+        if (name.startsWith("&")) {
+            return Stream.of(
+                new Perl6ExternalSymbol(Perl6SymbolKind.Variable, name),
+                new Perl6ExternalSymbol(Perl6SymbolKind.Routine, name.substring(1))
+            );
+        }
+        else {
+            return Stream.of(new Perl6ExternalSymbol(
+                Character.isLetter(name.charAt(0))
+                ? Perl6SymbolKind.TypeOrConstant
+                : Perl6SymbolKind.Variable,
                 name));
         }
     }

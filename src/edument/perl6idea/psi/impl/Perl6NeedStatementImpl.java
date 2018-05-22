@@ -4,13 +4,13 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
-import edument.perl6idea.component.Perl6NameCache;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6ModuleName;
 import edument.perl6idea.psi.Perl6NeedStatement;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ public class Perl6NeedStatementImpl extends ASTWrapperPsiElement implements Perl
                 // TODO Globals
             }
             else {
-                for (Perl6Symbol sym : project.getComponent(Perl6NameCache.class).getNamesForNeed(project, name)) {
+                for (Perl6Symbol sym : Perl6SdkType.getInstance().getNamesForNeed(project, name)) {
                     collector.offerSymbol(sym);
                     if (collector.isSatisfied())
                         return;
