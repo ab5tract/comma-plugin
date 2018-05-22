@@ -71,4 +71,20 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         assertNotNull(vars);
         assertTrue(vars.containsAll(Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU")));
     }
+
+    public void testUseFindsExportedSymbol() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; my lon<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("long", "longlong")));
+    }
+
+    public void testNeedDoesNotFindExportedSymbol() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "need NativeCall; my lon<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertEmpty(vars);
+    }
 }
