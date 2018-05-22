@@ -1,12 +1,36 @@
-// Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.annotation;
 
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
 public class AnnotationTest extends LightCodeInsightFixtureTestCase {
-    public void testUndeclaredVariableAnnotator() {
+    public void testUndeclaredVariableAnnotatorReallyUndeclared() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable $foo is not declared\">$foo</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testUndeclaredVariableAnnotatorNoErrorIfDeclared() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo; say $foo;");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
+    public void testUndeclaredVariableAnnotatorDefaultsInOuterScopeOK() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say $_, $/, $!");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
+    public void testUndeclaredVariableAnnotatorPostdeclaredSubOK() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say &a.arity; sub a { }");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
+    public void testUndeclaredVariableAnnotatorUndeclaredSubCaught() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable &a is not declared\">&a</error>.arity; sub ab { }");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
+    public void testUndeclaredVariableAnnotatorPostdeclared() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable $foo is not declared in this scope yet\">$foo</error>; my $foo = 42");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
