@@ -44,7 +44,7 @@ intellij {
     if (project.hasProperty('idea_path')) {
         alternativeIdePath = project.idea_path
     }
-    updateSinceUntilBuild = true
+    updateSinceUntilBuild = false
 }
 
 patchPluginXml {
