@@ -73,7 +73,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
     private void processBreakage() throws ParseException {
         String name = "Test file died";
         handleMessageSend(ServiceMessageBuilder.testStarted(name).toString());
-        String message = ServiceMessageBuilder.testIgnored(name)
+        String message = ServiceMessageBuilder.testFailed(name)
                                               .addAttribute("message", String.format("%s", currentTap)).toString();
         handleMessageSend(message);
         handleMessageSend(ServiceMessageBuilder.testFinished(name).toString());
