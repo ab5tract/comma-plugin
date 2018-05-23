@@ -13,5 +13,12 @@ method meth(Int $x, Str $y) {
 }
 }
 
+if $here {
+    say "blah";
+}
+else {
+    say "wah";
+}
+
 c.meth(10,
   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");

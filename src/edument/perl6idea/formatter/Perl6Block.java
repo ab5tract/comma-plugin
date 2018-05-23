@@ -70,7 +70,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             if (curNode.getElementType() == STATEMENT) {
                 int nodeOffset = myNode.getStartOffset() - curNode.getStartOffset();
                 String statementPrefix = curNode.getText().substring(0, nodeOffset);
-                return statementPrefix.contains("\n");
+                return statementPrefix.contains("\n") && !statementPrefix.endsWith("}\n");
             }
             curNode = curNode.getTreeParent();
         }
