@@ -8,6 +8,7 @@ import com.intellij.openapi.util.Key;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.tap4j.consumer.TapConsumer;
+import org.tap4j.consumer.TapConsumerException;
 import org.tap4j.consumer.TapConsumerFactory;
 import org.tap4j.model.Directive;
 import org.tap4j.model.TestResult;
@@ -38,9 +39,9 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             handleMessageSend(theMatrix);
         }
 
-        if (outputType == ProcessOutputTypes.STDOUT) {
-            if (text.startsWith("===")) {
-                currentFile = text.substring(3);
+        if (outputType == ProcessOutputTypes.STDOUT || outputType == ProcessOutputTypes.STDERR) {
+            if (text.startsWith("====")) {
+                currentFile = text.substring(4);
                 if (!currentTap.isEmpty())
                     processTapOutput();
             } else {
@@ -55,19 +56,32 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
     private void processTapOutput() throws ParseException {
         if (!currentTap.isEmpty()) {
-            TestSet set = myConsumer.load(currentTap);
+            TestSet set;
+            super.processServiceMessages(ServiceMessageBuilder.testSuiteStarted(currentFile).toString(), ProcessOutputTypes.STDOUT, myVisitor);
+            try {
+                set = myConsumer.load(currentTap);
+                processTestsCount(set);
+                processSingleSuite(set.getTestResults());
+            } catch (TapConsumerException e) {
+                processBreakage();
+            }
+            super.processServiceMessages(ServiceMessageBuilder.testSuiteFinished(currentFile).toString(), ProcessOutputTypes.STDOUT, myVisitor);
             currentTap = "";
-            processTestsCount(set);
-            processSingleSuite(set.getTestResults());
         }
     }
 
+    private void processBreakage() throws ParseException {
+        String name = "Test file died";
+        handleMessageSend(ServiceMessageBuilder.testStarted(name).toString());
+        String message = ServiceMessageBuilder.testIgnored(name)
+                                              .addAttribute("message", String.format("%s", currentTap)).toString();
+        handleMessageSend(message);
+        handleMessageSend(ServiceMessageBuilder.testFinished(name).toString());
+    }
+
     private void processSingleSuite(List<TestResult> results) throws ParseException {
-        super.processServiceMessages(ServiceMessageBuilder.testSuiteStarted(currentFile).toString(), ProcessOutputTypes.STDOUT, myVisitor);
-        for (TestResult result : results) {
+        for (TestResult result : results)
             processSingleTest(result);
-        }
-        super.processServiceMessages(ServiceMessageBuilder.testSuiteFinished(currentFile).toString(), ProcessOutputTypes.STDOUT, myVisitor);
     }
 
     private void processTestsCount(TestSet set) throws ParseException {
