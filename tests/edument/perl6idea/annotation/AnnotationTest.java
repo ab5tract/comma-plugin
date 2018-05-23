@@ -34,6 +34,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
+    public void testUndeclaredVariableAnnotatorNoErrorIfConstantDeclared() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my constant $foo = 42; say $foo;");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
     public void testLeadingZeroAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <warning descr=\"Leading 0 does not indicate octal in Perl 6; use 0o755\">0755</warning>;");
         myFixture.checkHighlighting(true, false, false);

@@ -26,8 +26,9 @@ public class Perl6ConstantImpl extends Perl6MemberStubBasedPsi<Perl6ConstantStub
     @Override
     public PsiElement getNameIdentifier() {
         Perl6Variable varNode = findChildByClass(Perl6Variable.class);
-        Perl6TermDefinition termNode = findChildByClass(Perl6TermDefinition.class);
-        return varNode != null ? varNode.getVariableToken() : termNode;
+        return varNode != null
+               ? varNode.getVariableToken()
+               : findChildByClass(Perl6TermDefinition.class);
     }
 
     @Override
@@ -60,12 +61,24 @@ public class Perl6ConstantImpl extends Perl6MemberStubBasedPsi<Perl6ConstantStub
 
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
-        collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, this));
-        if (!collector.isSatisfied()) {
-            String globalName = getGlobalName();
-            if (globalName != null)
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
-                    this, globalName));
+        String name = this.getName();
+        if (name != null && !name.isEmpty()) {
+            char sigil = name.charAt(0);
+            if (sigil == '$' || sigil == '@' || sigil == '%' || sigil == '&') {
+                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+                if (sigil == '&')
+                    collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine, this,
+                        name.substring(1)));
+            }
+            else {
+                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, this));
+                if (!collector.isSatisfied()) {
+                    String globalName = getGlobalName();
+                    if (globalName != null)
+                        collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
+                            this, globalName));
+                }
+            }
         }
     }
 }
