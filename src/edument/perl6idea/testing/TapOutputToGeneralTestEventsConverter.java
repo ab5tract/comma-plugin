@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.tap4j.consumer.TapConsumer;
 import org.tap4j.consumer.TapConsumerException;
 import org.tap4j.consumer.TapConsumerFactory;
+import org.tap4j.model.Comment;
 import org.tap4j.model.Directive;
 import org.tap4j.model.TestResult;
 import org.tap4j.model.TestSet;
@@ -109,9 +110,14 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
                     .addAttribute("message", String.format("%s %s", testName, testResult.getDirective().getReason())).toString();
             handleMessageSend(message);
         } else if (!hasSubtests && testResult.getStatus() == StatusValues.NOT_OK) {
+            StringBuilder errorMessage = new StringBuilder(testResult.getDescription() + "\n");
+            for (Comment comment : testResult.getComments()) {
+                errorMessage.append(comment.getText()).append("\n");
+            }
             String message = ServiceMessageBuilder.testFailed(testName)
                     .addAttribute("error", "true")
-                    .addAttribute("message", testResult.getDescription()).toString();
+                    .addAttribute("message", errorMessage.toString())
+                                                  .toString();
             handleMessageSend(message);
         }
         if (hasSubtests)
