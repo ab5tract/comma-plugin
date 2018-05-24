@@ -19,6 +19,7 @@ public interface Perl6TokenTypes {
     IElementType BRACKETED_INFIX_INCOMPLETE = new Perl6ElementType("BRACKETED_INFIX_INCOMPLETE");
     IElementType CAPTURE_INVALID = new Perl6ElementType("CAPTURE_INVALID");
     IElementType CAPTURE_TERM = new Perl6ElementType("CAPTURE_TERM");
+    IElementType CIRCUMFIX_CONTEXTUALIZER = new Perl6ElementType("CIRCUMFIX_CONTEXTUALIZER");
     IElementType COLON_PAIR = new Perl6ElementType("COLON_PAIR");
     IElementType COLON_PAIR_HAS_VALUE = new Perl6ElementType("COLON_PAIR_HAS_VALUE");
     IElementType COMMENT = new Perl6ElementType("COMMENT");

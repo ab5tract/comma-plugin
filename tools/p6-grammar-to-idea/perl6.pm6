@@ -1407,6 +1407,12 @@ grammar MAIN {
     token contextualizer {
         <.start-element('CONTEXTUALIZER')>
         [
+        || <?before [<.sigil> <?[ \[ \{ ]>]>
+           <.start-token('CIRCUMFIX_CONTEXTUALIZER')> <?> <.end-token('CIRCUMFIX_CONTEXTUALIZER')>
+           <.start-token('CONTEXTUALIZER')>
+           <.sigil>
+           <.end-token('CONTEXTUALIZER')>
+           <.circumfix>
         || <.start-token('CONTEXTUALIZER')>
            <.sigil>
            <.end-token('CONTEXTUALIZER')>
@@ -1419,11 +1425,6 @@ grammar MAIN {
                ')'
                <.end-token('CONTEXTUALIZER')>
            ]?
-        || <?before [<.sigil> <?[ \[ \{ ]>]>
-           <.start-token('CONTEXTUALIZER')>
-           <.sigil>
-           <.end-token('CONTEXTUALIZER')>
-           <.circumfix>
         ]
         <.end-element('CONTEXTUALIZER')>
     }
