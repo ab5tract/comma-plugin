@@ -1,5 +1,6 @@
 package edument.perl6idea.utils;
 
+import com.google.gson.Gson;
 import com.intellij.errorreport.bean.ErrorBean;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
@@ -9,6 +10,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.diagnostic.SubmittedReportInfo;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.util.Consumer;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -16,14 +18,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONObject;
 
 import java.awt.*;
 import java.io.IOException;
 
 public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
-    //private static String URL = "http://commaide.com/api/error-reports/";
-    private static String URL = "http://localhost:20000/error";
+    private static String URL = "http://commaide.com/api/error-reports/";
 
     @NotNull
     @Override
@@ -40,9 +40,7 @@ public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
                           @Nullable String additionalInfo,
                           @NotNull Component parentComponent,
                           @NotNull Consumer<SubmittedReportInfo> consumer) {
-        ErrorBean bean = createErrorBean(events[0], additionalInfo);
-        String json = new JSONObject(bean).toString();
-        postError(json);
+        postError(new Gson().toJson(createErrorBean(events[0], additionalInfo)));
         return true;
     }
 
@@ -57,10 +55,10 @@ public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
     }
 
     private static void postError(String json) {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(URL);
-        httpPost.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
         try {
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpPost httpPost = new HttpPost(URL);
+            httpPost.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
             httpClient.execute(httpPost);
         } catch (IOException e) {
             Logger.getInstance(Perl6ErrorReportSubmitter.class)
