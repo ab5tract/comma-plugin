@@ -6,12 +6,16 @@ public class Perl6StackFrameDescriptor {
     private Perl6LoadedFileDescriptor file;
     private String bytecodeFile;
     private int line;
+    private String name;
+    private String type;
     private Perl6ValueDescriptor[] lexicals;
 
     Perl6StackFrameDescriptor(Perl6LoadedFileDescriptor descriptor, StackFrame frame) {
-        this.file = descriptor;
-        this.bytecodeFile = frame.getBytecode_file();
-        this.line = frame.getLine();
+        file = descriptor;
+        bytecodeFile = frame.getBytecode_file();
+        line = frame.getLine();
+        name = frame.getName();
+        type = frame.getMethod();
     }
 
     public Perl6LoadedFileDescriptor getFile() {
@@ -27,10 +31,15 @@ public class Perl6StackFrameDescriptor {
     }
 
     public String getPresentableName() {
-        if (!file.getPath().equals("")) {
-            return file.getPath() + ":" + line;
+        if (name.isEmpty()) {
+            return String.format("%s:%s",
+                                 !file.getPath().isEmpty() ? file.getPath() : bytecodeFile,
+                                 line);
         } else {
-            return bytecodeFile + ":" + line;
+            return String.format("%s:%s (%s) (%s)",
+                                 name, line,
+                                 !file.getPath().isEmpty() ? file.getPath() : bytecodeFile,
+                                 type);
         }
     }
 
