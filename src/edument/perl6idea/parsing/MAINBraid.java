@@ -25744,7 +25744,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
-                this.bsMark(12);
+                this.bsMark(14);
                 this.state = 1;
                 break;
             case 1:
@@ -25755,8 +25755,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsFailMark(11);
-                this.bsMark(7);
+                this.bsFailMark(13);
+                this.bsMark(9);
                 this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 this.setArgs();
                 this.state = 2;
@@ -25790,12 +25790,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
+                this.bsMark(8);
+                this.state = 5;
+                break;
+            case 5:
                 this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
                 this.setArgs();
-                this.state = 5;
+                this.state = 6;
                 return 182;
 
-            case 5:
+            case 6:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -25805,35 +25809,40 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.state = 6;
+                this.state = 7;
                 return -3;
 
-            case 6:
-                this.bsCommit(11);
-                this.state = 11;
+            case 7:
+                this.bsCommit(8);
+                this.state = 8;
                 continue;
 
-            case 7:
-                this.bsMark(9);
-                this.setArgs();
-                this.state = 8;
-                return 183;
-
             case 8:
-                if (this.lastResult.isFailed()) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                } else {
-                    this.pos = this.lastResult.getPos();
-                }
-                this.bsCommit(11);
-                this.state = 11;
+                this.bsCommit(13);
+                this.state = 13;
                 continue;
 
             case 9:
+                this.bsMark(11);
+                this.setArgs();
+                this.state = 10;
+                return 183;
+
+            case 10:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(13);
+                this.state = 13;
+                continue;
+
+            case 11:
                 this.startToken(Perl6TokenTypes.STRING_LITERAL_CHAR);
                 if (!(this.anyChar())) {
                     if (this.backtrack()) {
@@ -25842,22 +25851,22 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.state = 10;
+                this.state = 12;
                 return -3;
 
-            case 10:
-                this.state = 11;
+            case 12:
+                this.state = 13;
                 continue;
 
-            case 11:
-                rep = this.peekRep(12);
+            case 13:
+                rep = this.peekRep(14);
                 ++rep;
-                this.bsCommit(12);
-                this.bsMark(12, rep);
+                this.bsCommit(14);
+                this.bsMark(14, rep);
                 this.state = 1;
                 continue;
 
-            case 12:
+            case 14:
                 return -1;
 
             }
