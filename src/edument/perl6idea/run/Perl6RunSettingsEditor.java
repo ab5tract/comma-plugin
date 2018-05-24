@@ -10,8 +10,10 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.PanelWithAnchor;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.components.JBTabbedPane;
+import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -20,7 +22,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration> {
@@ -90,8 +94,6 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
     }
 
     private JComponent getMainTab() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new VerticalFlowLayout(VerticalFlowLayout.TOP, 0, 5, true, false));
         FileChooserDescriptor chooserDescriptor = new FileChooserDescriptor(
                 true, false,
                 false, false,
@@ -102,19 +104,32 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
                         || Arrays.asList("pm6", "pl6", "p6", "").contains(file.getExtension());
             }
         };
-        fileField = new TextFieldWithBrowseButton();
-        fileField.addBrowseFolderListener("Select Script", null, myProject,
-                chooserDescriptor);
         myParams = new CommonProgramParametersPanel() {
+            private LabeledComponent<?> myFileComponent;
+            private LabeledComponent<RawCommandLineEditor> myPerl6ParametersComponent;
+
             @Override
             protected void addComponents() {
-                LabeledComponent<?> file = LabeledComponent.create(fileField, "Script", BorderLayout.WEST);
-                add(file);
+                fileField = new TextFieldWithBrowseButton();
+                fileField.addBrowseFolderListener("Select Script", null, myProject,
+                chooserDescriptor);
+                myFileComponent = LabeledComponent.create(fileField, "Script", BorderLayout.WEST);
+                add(myFileComponent);
                 super.addComponents();
-                myPerl6ParametersPanel = new RawCommandLineEditor();
-                LabeledComponent<RawCommandLineEditor> perl6ParametersPanel =
-                        LabeledComponent.create(myPerl6ParametersPanel, "Perl 6 parameters", BorderLayout.WEST);
-                add(perl6ParametersPanel);
+                Perl6RunSettingsEditor.this.myPerl6ParametersPanel = new RawCommandLineEditor();
+                myPerl6ParametersComponent =
+                  LabeledComponent.create(Perl6RunSettingsEditor.this.myPerl6ParametersPanel, "Perl 6 parameters", BorderLayout.WEST);
+                add(myPerl6ParametersComponent);
+            }
+
+            @Override
+            protected void setupAnchor() {
+                List<Component> components = new ArrayList<>();
+                components.add(myFileComponent);
+                components.addAll(Arrays.asList(super.getComponents()));
+                components.add(myPerl6ParametersComponent);
+                myAnchor = UIUtil.mergeComponentsWithAnchor(
+                  components.toArray(new PanelWithAnchor[components.size()]));
             }
         };
         myParams.setProgramParametersLabel("Script parameters:");
