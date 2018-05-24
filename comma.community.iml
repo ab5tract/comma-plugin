@@ -6,7 +6,8 @@
     <orderEntry type="jdk" jdkName="IDEA jdk" jdkType="JavaSDK" />
     <orderEntry type="module" module-name="perl6.community.plugin.impl" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="org.tap4j:tap4j:4.2.1" level="project" />
     <orderEntry type="library" name="org.json:json:20171018" level="project" />
+    <orderEntry type="library" name="org.tap4j:tap4j:4.3" level="project" />
+    <orderEntry type="library" name="com.miglayout:miglayout-swing:5.1" level="project" />
   </component>
 </module>

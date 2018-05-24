@@ -40,5 +40,6 @@
     <orderEntry type="library" name="org.tap4j:tap4j:4.3" level="project" />
     <orderEntry type="module" module-name="intellij.java.compiler" />
     <orderEntry type="library" name="http-client" level="project" />
+    <orderEntry type="library" name="com.miglayout:miglayout-swing:5.1" level="project" />
   </component>
 </module>
