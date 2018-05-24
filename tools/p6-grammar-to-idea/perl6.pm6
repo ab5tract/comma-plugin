@@ -3870,7 +3870,7 @@ grammar MAIN {
     token termconjseq {
         <.termalt>
         [
-            <!infixstopper>
+            <!rxinfixstopper>
             <.start-token('REGEX_INFIX')> '&&' <.end-token('REGEX_INFIX')>
             <.ws>
             [<.termalt> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
@@ -3880,7 +3880,7 @@ grammar MAIN {
     token termalt {
         <.termconj>
         [
-            <!infixstopper>
+            <!rxinfixstopper>
             <.start-token('REGEX_INFIX')> '|' <![|]> <.end-token('REGEX_INFIX')>
             <.ws>
             [<.termconj> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
@@ -3890,7 +3890,7 @@ grammar MAIN {
     token termconj {
         <.rxtermish>
         [
-            <!infixstopper>
+            <!rxinfixstopper>
             <.start-token('REGEX_INFIX')> '&' <![&]> <.end-token('REGEX_INFIX')>
             <.ws>
             [<.rxtermish> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
