@@ -23,7 +23,7 @@ import java.awt.*;
 import java.io.IOException;
 
 public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
-    private static String URL = "http://commaide.com/api/error-reports/";
+    private static String URL = "http://commaide.com/api/error-reports";
 
     @NotNull
     @Override
