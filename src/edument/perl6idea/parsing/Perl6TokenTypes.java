@@ -54,6 +54,7 @@ public interface Perl6TokenTypes {
     IElementType INVOCANT_MARKER = new Perl6ElementType("INVOCANT_MARKER");
     IElementType IS_DOTTY = new Perl6ElementType("IS_DOTTY");
     IElementType LAMBDA = new Perl6ElementType("LAMBDA");
+    IElementType LONGNAME_COLONPAIR = new Perl6ElementType("LONGNAME_COLONPAIR");
     IElementType METAOP = new Perl6ElementType("METAOP");
     IElementType METHOD_CALL_NAME = new Perl6ElementType("METHOD_CALL_NAME");
     IElementType METHOD_CALL_OPERATOR = new Perl6ElementType("METHOD_CALL_OPERATOR");
@@ -152,6 +153,7 @@ public interface Perl6TokenTypes {
     IElementType TR_DISTINCT_START_STOP = new Perl6ElementType("TR_DISTINCT_START_STOP");
     IElementType TYPE_COERCION_PARENTHESES_CLOSE = new Perl6ElementType("TYPE_COERCION_PARENTHESES_CLOSE");
     IElementType TYPE_COERCION_PARENTHESES_OPEN = new Perl6ElementType("TYPE_COERCION_PARENTHESES_OPEN");
+    IElementType TYPE_CONST = new Perl6ElementType("TYPE_CONST");
     IElementType TYPE_DECLARATOR = new Perl6ElementType("TYPE_DECLARATOR");
     IElementType TYPE_PARAMETER_BRACKET = new Perl6ElementType("TYPE_PARAMETER_BRACKET");
     IElementType UNSP_WHITE_SPACE = new Perl6ElementType("UNSP_WHITE_SPACE");

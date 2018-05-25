@@ -65,7 +65,11 @@ grammar MAIN {
     }
 
     token longname_colonpairs {
-        [ <?before [':' [<.alpha> || <[<[«]>]]> <.colonpair> ]*
+        [
+            <?before [':' [<.alpha> || <[<[«]>]]>
+            <.start-token('LONGNAME_COLONPAIR')> <?> <.end-token('LONGNAME_COLONPAIR')>
+            <.colonpair>
+        ]*
     }
 
     token routine_name {
@@ -1109,6 +1113,8 @@ grammar MAIN {
 
     token term_type_const {
         <.start-element('TYPE_NAME')>
+        <?before '::?' <.ident>>
+        <.start-token('TYPE_CONST')> <?> <.end-token('TYPE_CONST')>
         <.start-token('NAME')>
         '::?' <.identifier> >>
         <.end-token('NAME')>
