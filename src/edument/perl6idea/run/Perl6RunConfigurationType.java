@@ -8,11 +8,11 @@ import edument.perl6idea.Perl6Icons;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6RunConfigurationType extends ConfigurationTypeBase {
-    private static final String PERL_6_RUN_CONFIGURATION = "PERL6_RUN_CONFIGURATION";
+    private static final String PERL6_RUN_CONFIGURATION_ID = "PERL6_RUN_CONFIGURATION";
 
     protected Perl6RunConfigurationType() {
-        super(PERL_6_RUN_CONFIGURATION, "Perl 6",
-                "Run Perl 6 configuration", Perl6Icons.CAMELIA);
+        super(PERL6_RUN_CONFIGURATION_ID, "Perl 6",
+              "Run Perl 6 configuration", Perl6Icons.CAMELIA);
         addFactory(new ConfigurationFactory(this) {
             @NotNull
             @Override
