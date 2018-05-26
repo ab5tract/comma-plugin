@@ -10,6 +10,7 @@ import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import edument.perl6idea.debugger.event.Perl6DebugEventBreakpointReached;
 import edument.perl6idea.debugger.event.Perl6DebugEventBreakpointSet;
 import edument.perl6idea.debugger.event.Perl6DebugEventStop;
+import edument.perl6idea.run.Perl6DebuggableConfiguration;
 import edument.perl6idea.run.Perl6RunConfiguration;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.Subject;
@@ -23,7 +24,6 @@ import org.edument.moarvm.types.Lexical.NumValue;
 import org.edument.moarvm.types.Lexical.StrValue;
 import org.edument.moarvm.types.StackFrame;
 import org.edument.moarvm.types.event.BreakpointNotification;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class Perl6DebugThread extends Thread {
     @Override
     public void run() {
         try {
-            Perl6RunConfiguration runConfiguration = (Perl6RunConfiguration) mySession.getRunProfile();
+            Perl6DebuggableConfiguration runConfiguration = (Perl6DebuggableConfiguration) mySession.getRunProfile();
             client = RemoteInstance.connect(runConfiguration.getDebugPort()).get(2, TimeUnit.SECONDS);
             ready = true;
             sendBreakpoints();
@@ -121,7 +121,7 @@ public class Perl6DebugThread extends Thread {
         return result;
     }
 
-    private Perl6ValueDescriptor[] convertLexicals(Map<String, Lexical> lex) {
+    private static Perl6ValueDescriptor[] convertLexicals(Map<String, Lexical> lex) {
         Perl6ValueDescriptor[] result = new Perl6ValueDescriptor[lex.size()];
         AtomicInteger i = new AtomicInteger();
         lex.forEach((k, v) -> {
@@ -157,7 +157,6 @@ public class Perl6DebugThread extends Thread {
                 for (BreakpointActionRequest request : breakpointQueue) {
                     if (!request.isRemove) {
                         int realLine = client.setBreakpoint(request.file, request.line, true, true).get();
-                        // TODO handle difference between real line
                         Perl6DebugEventBreakpointSet setEvent =
                                 new Perl6DebugEventBreakpointSet(request.file, realLine);
                         setEvent.setDebugSession(mySession);
@@ -179,7 +178,7 @@ public class Perl6DebugThread extends Thread {
         sendBreakpoints();
     }
 
-    class BreakpointActionRequest {
+    static class BreakpointActionRequest {
         final boolean isRemove;
         final String file;
         final int line;

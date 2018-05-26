@@ -23,7 +23,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Perl6RunConfiguration extends LocatableConfigurationBase implements CommonProgramRunConfigurationParameters {
+public class Perl6RunConfiguration extends LocatableConfigurationBase implements CommonProgramRunConfigurationParameters,
+                                                                                 Perl6DebuggableConfiguration{
     private static final String SCRIPT_PATH = "SCRIPT_PATH";
     private static final String SCRIPT_ARGS = "SCRIPT_ARGS";
     private static final String WORKING_DIRECTORY = "WORKING_DIRECTORY";
@@ -39,9 +40,8 @@ public class Perl6RunConfiguration extends LocatableConfigurationBase implements
     private Map<String, String> envVars = new HashMap<>();
     private boolean passParentEnvs;
     private String interpreterParameters;
-
-    private int debugPort;
-    private boolean startSuspended;
+    private boolean myStartSuspended;
+    private int myDebugPort;
 
     Perl6RunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
         super(project, factory, name);
@@ -77,7 +77,7 @@ public class Perl6RunConfiguration extends LocatableConfigurationBase implements
     }
 
     @Override
-    public void readExternal(Element element) throws InvalidDataException {
+    public void readExternal(@NotNull Element element) throws InvalidDataException {
         super.readExternal(element);
         Element scriptPathElem = element.getChild(SCRIPT_PATH);
         Element scriptArgsElem = element.getChild(SCRIPT_ARGS);
@@ -101,13 +101,13 @@ public class Perl6RunConfiguration extends LocatableConfigurationBase implements
             envVars = env;
             passParentEnvs = Boolean.valueOf(passEnvElem.getText());
             interpreterParameters = perl6ParamsElem.getText();
-            debugPort = Integer.valueOf(debugPortElem.getText());
-            startSuspended = Boolean.valueOf(startSuspendedElem.getText());
+            myDebugPort = Integer.valueOf(debugPortElem.getText());
+            myStartSuspended = Boolean.valueOf(startSuspendedElem.getText());
         }
     }
 
     @Override
-    public void writeExternal(Element element) throws WriteExternalException {
+    public void writeExternal(@NotNull Element element) throws WriteExternalException {
         element.addContent(new Element(SCRIPT_PATH).setText(scriptPath));
         element.addContent(new Element(SCRIPT_ARGS).setText(scriptArgs));
         element.addContent(new Element(WORKING_DIRECTORY).setText(workingDirectory));
@@ -116,8 +116,8 @@ public class Perl6RunConfiguration extends LocatableConfigurationBase implements
         element.addContent(envVarsElement);
         element.addContent(new Element(PASS_ENVIRONMENT).setText(String.valueOf(passParentEnvs)));
         element.addContent(new Element(PERL6_PARAMS).setText(interpreterParameters));
-        element.addContent(new Element(DEBUG_PORT).setText(String.valueOf(debugPort)));
-        element.addContent(new Element(START_SUSPENDED).setText(String.valueOf(startSuspended)));
+        element.addContent(new Element(DEBUG_PORT).setText(String.valueOf(myDebugPort)));
+        element.addContent(new Element(START_SUSPENDED).setText(String.valueOf(myStartSuspended)));
     }
 
     @Override
@@ -171,27 +171,31 @@ public class Perl6RunConfiguration extends LocatableConfigurationBase implements
         return passParentEnvs;
     }
 
-    public int getDebugPort() {
-        return debugPort;
-    }
-
-    public void setDebugPort(int debugPort) {
-        this.debugPort = debugPort;
-    }
-
-    public boolean isStartSuspended() {
-        return startSuspended;
-    }
-
-    public void setStartSuspended(boolean startSuspended) {
-        this.startSuspended = startSuspended;
-    }
-
     public String getInterpreterParameters() {
         return interpreterParameters;
     }
 
     public void setInterpreterParameters(String interpreterParameters) {
         this.interpreterParameters = interpreterParameters;
+    }
+
+    @Override
+    public int getDebugPort() {
+        return myDebugPort;
+    }
+
+    @Override
+    public void setDebugPort(int debugPort) {
+        myDebugPort = debugPort;
+    }
+
+    @Override
+    public boolean isStartSuspended() {
+        return myStartSuspended;
+    }
+
+    @Override
+    public void setStartSuspended(boolean startSuspended) {
+        myStartSuspended = startSuspended;
     }
 }

@@ -13,6 +13,7 @@ import com.intellij.xdebugger.XDebugProcessStarter;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerManager;
 import edument.perl6idea.run.Perl6RunConfiguration;
+import edument.perl6idea.testing.Perl6TestRunConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +42,6 @@ public class Perl6DebugRunner extends DefaultProgramRunner {
     @Override
     public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile) {
         return DefaultDebugExecutor.EXECUTOR_ID.equals(executorId) &&
-                profile instanceof Perl6RunConfiguration;
+               (profile instanceof Perl6RunConfiguration || profile instanceof Perl6TestRunConfiguration);
     }
 }

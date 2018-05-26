@@ -4,31 +4,21 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import edument.perl6idea.run.Perl6RunCommandLineState;
 import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.utils.Perl6CommandLine;
 
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class Perl6DebugCommandLineState extends Perl6RunCommandLineState {
     public Perl6DebugCommandLineState(ExecutionEnvironment environment) throws ExecutionException {
         super(environment);
-        this.command = new LinkedList<>();
-        populateRunCommand();
     }
 
-    private void populateRunCommand() {
-        Perl6SdkType projectSdk = Perl6SdkType.getInstance();
-        Map<String, String> moarBuildConfiguration = projectSdk.
-            getMoarBuildConfiguration(getEnvironment().getProject());
-        String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", "");
-        this.command.add(prefix + "/bin/moar");
-        this.command.add("--debug-port=" + runConfiguration.getDebugPort());
-        this.command.add("--debug-suspend");
-        this.command.add("--libpath=" + prefix + "/share/nqp/lib");
-        this.command.add("--libpath=" + prefix + "/share/perl6/lib");
-        this.command.add("--libpath=" + prefix + "/share/perl6/runtime");
-        this.command.add(prefix + "/share/perl6/runtime/perl6.moarvm");
-        String params = runConfiguration.getInterpreterParameters();
-        if (params != null && !params.trim().isEmpty())
-            this.command.add(runConfiguration.getInterpreterParameters());
+    @Override
+    protected void populateRunCommand() throws ExecutionException {
+        command = Perl6CommandLine.populateDebugCommandLine(getEnvironment().getProject(),
+                                                            runConfiguration.getDebugPort());
     }
 }

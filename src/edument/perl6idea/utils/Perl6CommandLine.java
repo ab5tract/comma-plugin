@@ -3,31 +3,48 @@ package edument.perl6idea.utils;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.CharsetToolkit;
+import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Perl6CommandLine {
     private static Logger LOG = Logger.getInstance(Perl6CommandLine.class);
 
     @NotNull
+    public static GeneralCommandLine getCustomPerl6CommandLine(List<String> command, String workingPath) {
+        GeneralCommandLine line = command == null ? new GeneralCommandLine() : new GeneralCommandLine(command);
+        return line
+          .withWorkDirectory(workingPath)
+          .withCharset(CharsetToolkit.UTF8_CHARSET);
+    }
+
+    @NotNull
+    public static GeneralCommandLine getCustomPerl6CommandLine(String command, String workingPath) {
+        GeneralCommandLine line = command == null ? new GeneralCommandLine() : new GeneralCommandLine(command);
+        return line
+          .withWorkDirectory(workingPath)
+          .withCharset(CharsetToolkit.UTF8_CHARSET);
+    }
+
+    @NotNull
     public static GeneralCommandLine getPerl6CommandLine(String workingPath, String homePath) {
-        return new GeneralCommandLine()
-                .withWorkDirectory(workingPath)
-                .withExePath(Paths.get(homePath, "perl6").toString())
-                .withCharset(CharsetToolkit.UTF8_CHARSET);
+        return getCustomPerl6CommandLine((String)null, workingPath)
+          .withExePath(Paths.get(homePath, "perl6").toString());
     }
 
     public static GeneralCommandLine pushFile(GeneralCommandLine cmd, File script) throws ExecutionException {
         try {
             // We pass -Ilib after script path, because it is the script argument
-            cmd.addParameter(script.getCanonicalPath());
-            cmd.addParameter("-Ilib");
+            cmd.addParameters(script.getCanonicalPath(), "-Ilib");
             return cmd;
         } catch (IOException e) {
             LOG.error(e);
@@ -36,30 +53,34 @@ public class Perl6CommandLine {
     }
 
     public static GeneralCommandLine pushLine(GeneralCommandLine cmd, String line) {
-        cmd.addParameter("-e");
-        cmd.addParameter(line);
+        cmd.addParameters("-e", line);
         return cmd;
     }
 
     public static File getResourceAsFile(Object object, String resourcePath) {
+        InputStream in = object.getClass().getClassLoader().getResourceAsStream(resourcePath);
+        FileOutputStream out = null;
         try {
-            InputStream in = object.getClass().getClassLoader().getResourceAsStream(resourcePath);
             if (in == null) return null;
-            File tempFile = File.createTempFile(String.valueOf(in.hashCode()), ".tmp");
+            File tempFile = FileUtil.createTempFile(String.valueOf(in.hashCode()), ".tmp");
             tempFile.deleteOnExit();
-
-            try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                //copy stream
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-            }
+            out = new FileOutputStream(tempFile);
+            //copy stream
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1)
+                out.write(buffer, 0, bytesRead);
             return tempFile;
         } catch (IOException e) {
             LOG.error(e);
             return null;
+        } finally {
+            try {
+                if (in != null) in.close();
+                if (out != null) out.close();
+            } catch (IOException e) {
+                LOG.error(e);
+            }
         }
     }
 
@@ -68,19 +89,7 @@ public class Perl6CommandLine {
         AtomicBoolean died = new AtomicBoolean(false);
         try {
             Process p = cmd.createProcess();
-            final Thread read = new Thread(() -> {
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    String result;
-                    while ((result = reader.readLine()) != null)
-                        results.add(result);
-                    reader.close();
-                } catch (IOException e) {
-                    died.set(true);
-                    LOG.error(e);
-                }
-            });
-            read.start();
+            new Thread(() -> readFromProcess(results, died, p)).start();
             p.waitFor();
             if (died.get()) return null;
         } catch (InterruptedException | ExecutionException e) {
@@ -88,5 +97,40 @@ public class Perl6CommandLine {
             return null;
         }
         return results;
+    }
+
+    private static void readFromProcess(List<String> results, AtomicBoolean died, Process p) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        try {
+            String result;
+            while ((result = reader.readLine()) != null)
+                results.add(result);
+        } catch (IOException e) {
+            died.set(true);
+            LOG.error(e);
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                died.set(true);
+                LOG.error(e);
+            }
+        }
+    }
+
+    public static List<String> populateDebugCommandLine(Project project, int debugPort) {
+        List<String> command = new ArrayList<>();
+        Perl6SdkType projectSdk = Perl6SdkType.getInstance();
+        Map<String, String> moarBuildConfiguration = projectSdk.
+            getMoarBuildConfiguration(project);
+        String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", "");
+        command.add(prefix + "/bin/moar");
+        command.add("--debug-port=" + debugPort);
+        command.add("--debug-suspend");
+        command.add("--libpath=" + prefix + "/share/nqp/lib");
+        command.add("--libpath=" + prefix + "/share/perl6/lib");
+        command.add("--libpath=" + prefix + "/share/perl6/runtime");
+        command.add(prefix + "/share/perl6/runtime/perl6.moarvm");
+        return command;
     }
 }

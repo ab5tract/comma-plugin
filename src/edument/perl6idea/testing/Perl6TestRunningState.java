@@ -23,14 +23,22 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Disposer;
+import edument.perl6idea.run.Perl6DebuggableConfiguration;
 import edument.perl6idea.utils.Perl6CommandLine;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Perl6TestRunningState extends CommandLineState {
-    public Perl6TestRunningState(ExecutionEnvironment environment) {
+    boolean isDebugging;
+    private List<String> command = new ArrayList<>();
+
+    public Perl6TestRunningState(ExecutionEnvironment environment, boolean debug) {
         super(environment);
+        isDebugging = debug;
     }
 
     @Override
@@ -43,11 +51,10 @@ public class Perl6TestRunningState extends CommandLineState {
     }
 
     private static ConsoleView createConsole(@NotNull ExecutionEnvironment env) {
-        final Project project = env.getProject();
         final Perl6TestRunConfiguration runConfiguration = (Perl6TestRunConfiguration) env.getRunProfile();
         final TestConsoleProperties testConsoleProperties = new Perl6TestConsoleProperties(runConfiguration, env);
         final ConsoleView consoleView = SMTestRunnerConnectionUtil.createConsole("Perl 6 tests", testConsoleProperties);
-        Disposer.register(project, consoleView);
+        Disposer.register(env.getProject(), consoleView);
         return consoleView;
     }
 
@@ -61,17 +68,26 @@ public class Perl6TestRunningState extends CommandLineState {
     }
 
     private GeneralCommandLine createCommandLine() throws ExecutionException {
-        Project project = getEnvironment().getProject();
-        if (project.getBasePath() == null) throw new ExecutionException("SDK is not set");
-        Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        if (projectSdk == null) throw new ExecutionException("SDK is not set");
-        String homePath = projectSdk.getHomePath();
-        if (homePath == null) throw new ExecutionException("SDK is not set");
+        if (isDebugging) {
+            command = Perl6CommandLine.populateDebugCommandLine(
+              getEnvironment().getProject(),
+              ((Perl6DebuggableConfiguration)getEnvironment().getRunProfile()).getDebugPort());
+        } else {
+            Project project = getEnvironment().getProject();
+            if (project.getBasePath() == null) throw new ExecutionException("SDK is not set");
+            Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
+            if (projectSdk == null) throw new ExecutionException("SDK is not set");
+            String homePath = projectSdk.getHomePath();
+            if (homePath == null) throw new ExecutionException("SDK is not set");
+            command.add(Paths.get(homePath, "perl6").toString());
+        }
         File script = Perl6CommandLine.getResourceAsFile(this,"testing/perl6-test-harness.p6");
         if (script == null) throw new ExecutionException("Bundled resources are corrupted");
         return Perl6CommandLine.pushFile(
-                Perl6CommandLine.getPerl6CommandLine(project.getBasePath(), homePath),
-                script);
+          Perl6CommandLine.getCustomPerl6CommandLine(
+            command,
+            getEnvironment().getProject().getBasePath()),
+          script);
     }
 
     static class Perl6TestConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {
