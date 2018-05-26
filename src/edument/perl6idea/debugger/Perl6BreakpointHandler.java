@@ -1,5 +1,6 @@
 package edument.perl6idea.debugger;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.xdebugger.breakpoints.XBreakpoint;
 import com.intellij.xdebugger.breakpoints.XBreakpointHandler;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
@@ -7,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Perl6BreakpointHandler extends XBreakpointHandler {
     private final Perl6DebugThread debugThread;
+    private static Logger LOG = Logger.getInstance(Perl6BreakpointHandler.class);
 
     Perl6BreakpointHandler(Perl6DebugThread debugThread) {
         super(Perl6LineBreakpointType.class);
@@ -18,7 +20,7 @@ public class Perl6BreakpointHandler extends XBreakpointHandler {
         if (breakpoint instanceof XLineBreakpoint) {
             debugThread.queueBreakpoint((XLineBreakpoint)breakpoint, false);
         } else {
-            System.out.println("Unknown breakpoint during register action");
+            LOG.warn("Unknown breakpoint during register action");
         }
     }
 
@@ -27,7 +29,7 @@ public class Perl6BreakpointHandler extends XBreakpointHandler {
         if (breakpoint instanceof XLineBreakpoint) {
             debugThread.queueBreakpoint((XLineBreakpoint)breakpoint, true);
         } else {
-            System.out.println("Unknown breakpoint during un-register action");
+            LOG.warn("Unknown breakpoint during un-register action");
         }
     }
 }
