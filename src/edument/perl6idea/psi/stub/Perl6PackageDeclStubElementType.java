@@ -1,5 +1,6 @@
 package edument.perl6idea.psi.stub;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
@@ -14,6 +15,11 @@ import java.io.IOException;
 public class Perl6PackageDeclStubElementType extends IStubElementType<Perl6PackageDeclStub, Perl6PackageDecl> {
     public Perl6PackageDeclStubElementType() {
         super("PACKAGE_DECLARATION", Perl6Language.INSTANCE);
+    }
+
+    @Override
+    public boolean shouldCreateStub(ASTNode node) {
+        return ((Perl6PackageDecl)node.getPsi()).getPackageName() != null;
     }
 
     @Override
