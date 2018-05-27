@@ -18,16 +18,16 @@ import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
     static String[] ROUTINE_DEFAULT_TRAITS = new String[]{
-      "assoc", "tighter", "looser", "equiv", "default"
+      "assoc", "tighter", "looser", "equiv", "default", "export"
     };
     static String[] VARIABLE_DEFAULT_TRAITS = new String[]{
-      "default", "required", "DEPRECATED"
+      "default", "required", "DEPRECATED", "export"
     };
     static String[] PARAMETER_DEFAULT_TRAITS = new String[]{
       "copy", "raw", "rw", "readonly", "required"
     };
     static String[] REGEX_DEFAULT_TRAITS = new String[]{
-      "rw", "raw", "pure", "DEPRECATED", "inlinable", "nodal", "prec"
+      "rw", "raw", "pure", "DEPRECATED", "inlinable", "nodal", "prec", "export"
     };
 
     public Perl6IsTraitReference(Perl6PsiElement element) {
