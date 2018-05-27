@@ -219,6 +219,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new Perl6LongNameImpl(astNode);
         if (type == Perl6ElementTypes.MODULE_NAME)
             return new Perl6ModuleNameImpl(astNode);
+        if (type == Perl6ElementTypes.IS_TRAIT_NAME)
+            return new Perl6IsTraitNameImpl(astNode);
         if (type == Perl6ElementTypes.SELF)
             return new Perl6SelfImpl(astNode);
         if (type == Perl6ElementTypes.WHATEVER)
