@@ -1,38 +1,29 @@
 language: java
-
 env:
   global:
-    - export PATH="/opt/rakudo-pkg/bin:/opt/rakudo-pkg/share/perl6/site/bin:$PATH"
-
+  - export PATH="/opt/rakudo-pkg/bin:/opt/rakudo-pkg/share/perl6/site/bin:$PATH"
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
 addons:
   apt:
     sources:
-      - sourceline: 'deb https://dl.bintray.com/nxadm/rakudo-pkg-debs $(lsb_release -cs) main'
-        key_url: 'http://keyserver.ubuntu.com/pks/lookup?search=0x379CE192D401AB61&op=get'
+    - sourceline: deb https://dl.bintray.com/nxadm/rakudo-pkg-debs $(lsb_release -cs)
+        main
+      key_url: http://keyserver.ubuntu.com/pks/lookup?search=0x379CE192D401AB61&op=get
     packages:
-      - rakudo-pkg
-
+    - rakudo-pkg
 before_script:
-  - ./gradlew assemble
-
+- "./gradlew assemble"
 script:
-  # Test p6-grammer-to-idea/
-  - (cd tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
-  # Run unit tests
-  - ./gradlew test
-
+- (cd tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
+- "./gradlew test"
 after_success:
-  - ./gradlew buildPlugin
-
+- "./gradlew buildPlugin"
 deploy:
   provider: s3
   access_key_id: AKIAJV46PZNKKRZTY3EQ
@@ -46,6 +37,4 @@ deploy:
     branch: master
 notifications:
   slack:
-    on_success: change
-    on_failure: always
-    secure: FWTmN59qyqPcxE+efPdP4uqr93E1XjEd5+QbZA2H8Gj2r+4vk04wW+A9HOXYqBb1Sh3ct+LDCNtBTYn6P5wRJDsPaZmA3vX9W36KP/AQ81cuJAgE1PUg7+/IRckyyybZDxMocuB9cV4Q2ZxhQPSd0HW0fhdzaGJfoDeduMKEM+mZHXasiFti7dLt7nvIgf1AoLuKKOuzrZIrv228+nJn63ZJZzS7ULehC6SE0LrncwQNLWkiSJj9D5egosdMipbEnprlCMZWQG844MpZ1xwEycZPGNrpScQ2hlZcvfSgotEAj+amiL3xaCUAXUtro+nABqvGGsuKsCcWzrx/rril3tiL/l3m9tUII7HgMZHIQcJMhbtW+437gs66TU7AIwJCdBerUe7qcNwzD7GOUfZP/ZeGH4jff7hHM+qDtuenn9tGFL50E//KdcARtSajawIsXWY/vBN5Nrzqp0pl7xC3s0+dCmz+Fx/7EdslVFf/I1Ivl7rDECOioKDi7ShvTNvg8N5186c874pgI3vo6jUHOU9cxwm1+avJnpwQNKyJuR1pruqf1xSG+DdoDmmnB+sNFcPCpsuq3u9zJaa4GYOFUMO4TW5tNKXARYyyiVf4WoMQKVsQ1K3Skk3BNVhIY0fQFXVnVoFtjcNMQzBYXYImH2oTucTmToCusz7aMHoSA0c=
+    secure: h96D7ADnEYeD5/Ro8Y5HY9ZhmC84X2KOK1tOSvBpIJhte2MDquPKZO2r4J1hEHTMXHGMGtGr1dWtdvgcE6mKCik3ns7F22xzWFjhNl2XqWrGWZvkTZVuJNZEOfHeNw3aFdrA3vr8tGIPiNVIKCP0GOgbTocJlvsMGhhqm6GqHsZI6OQiOfmd41+Y0rNKZ0J948vxWrKtb3SSyrUqz9eRaCirzSV+ITozpUYmrDgDO9X28bgiEy4DJsxDFc+3btIuIhtzRglyGcguKZ+w0ovoNDCBPk6MRiyw71o7ddRlkOVQ400cT6x5b2jh0mCogmrXKZErvVClQRUZAEhkEGZpPUFhiL0By80jSpGXSmoX6F8xGpNiuc/8mLx4sdRHalKSiN4dzeaPF9Dvvi81RY5gFWubJAVde4pJymRzJhYiHPnAPqWB+PyQgmCRet8+9cAL365D2iDtuOGjvOAMtCXE9WqETFo2Md8srSfU4vdMz7LiYGDJytYNbJITjW+08szVzR1rXClxAN54hHBqDBsTNy3Wby/41WmpSRoS4cVaoUzrWWhr6nJSEIIktsYpKU/qbJW1eDVLPZbCOs1L8Wxudroyrf2ZqKgeENVBkwGgjVEvXlpe/bTx8sQwJ3M4TyPrm/SJU9PeEed++0N48p9w2ae44snScN9BjtA4EbRdaRI=
