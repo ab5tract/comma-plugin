@@ -4,7 +4,6 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import org.junit.Ignore;
 
 public class FormatterTest extends LightCodeInsightFixtureTestCase {
     @Override
@@ -12,12 +11,7 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
         return "testData/formatter";
   }
 
-    public void testTest() {
-        assertTrue(true);
-    }
-
-    // FIXME - test is broken
-    public void basicFormatting() {
+    public void testBasicFormatting() {
         myFixture.configureByFiles("basic.in.p6");
         WriteCommandAction.runWriteCommandAction(null, () -> {
             CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());

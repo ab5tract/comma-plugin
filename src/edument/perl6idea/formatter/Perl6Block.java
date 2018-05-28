@@ -5,12 +5,12 @@ import com.intellij.formatting.templateLanguages.BlockWithParent;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
@@ -58,7 +58,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     @Override
     public Indent getIndent() {
         if (myNode.getElementType() == STATEMENT_LIST && myNode.getTreeParent().getElementType() == BLOCKOID)
-            return Indent.getNormalIndent();
+            return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
         if (inStatementContinuation())
             return Indent.getContinuationWithoutFirstIndent();
         return Indent.getNoneIndent();
@@ -67,6 +67,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     private boolean inStatementContinuation() {
         ASTNode curNode = myNode;
         while (curNode != null && curNode.getElementType() != BLOCKOID) {
+            if (curNode.getElementType() == IF_STATEMENT)
+                return false;
             if (curNode.getElementType() == STATEMENT) {
                 int nodeOffset = myNode.getStartOffset() - curNode.getStartOffset();
                 String statementPrefix = curNode.getText().substring(0, nodeOffset);
@@ -77,15 +79,20 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         return false;
     }
 
+    private static final Set<IElementType> NOT_CONTINUATIONY = new HashSet<>(Arrays.asList(
+        FILE, STATEMENT_LIST, IF_STATEMENT
+    ));
+
     @NotNull
     @Override
     public ChildAttributes getChildAttributes(final int newIndex) {
+        IElementType elementType = myNode.getElementType();
         return new ChildAttributes(
-                myNode.getElementType() == BLOCKOID
+                 elementType == BLOCKOID
                     ? Indent.getNormalIndent()
-                    : myNode.getElementType() == FILE || myNode.getElementType() == STATEMENT_LIST
+                    : NOT_CONTINUATIONY.contains(elementType)
                         ? Indent.getNoneIndent()
-                        : Indent.getContinuationWithoutFirstIndent(),
+                        : Indent.getContinuationIndent(),
                 null);
     }
 
