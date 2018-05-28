@@ -46,25 +46,22 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
     public Object[] getVariants() {
         Perl6Trait trait = PsiTreeUtil.getParentOfType(getElement(), Perl6Trait.class);
         if (trait == null) return ArrayUtil.EMPTY_OBJECT_ARRAY;
-        PsiElement prevSibling = null;
-        for (PsiElement e = trait.getPrevSibling(); e != null && prevSibling == null; e = e.getPrevSibling())
-            if (e.getNode().getElementType() != UNV_WHITE_SPACE)
-                prevSibling = e;
-        if (prevSibling == null) return ArrayUtil.EMPTY_OBJECT_ARRAY;
+        PsiElement owner = trait.getParent();
+        if (owner == null) return ArrayUtil.EMPTY_OBJECT_ARRAY;
 
-        if (prevSibling instanceof Perl6ParameterVariable) {
+        if (owner instanceof Perl6Parameter) {
             return PARAMETER_DEFAULT_TRAITS;
-        } else if (prevSibling instanceof Perl6Variable) {
+        } else if (owner instanceof Perl6VariableDecl) {
             List<Object> types = new ArrayList<>(Arrays.asList(new Perl6TypeNameReference(myElement).getVariants()));
             types.addAll(Arrays.asList(VARIABLE_DEFAULT_TRAITS));
             return types.toArray();
-        } else if (prevSibling instanceof Perl6Signature) {
+        } else if (owner instanceof Perl6RoutineDecl) {
             return ROUTINE_DEFAULT_TRAITS;
-        } else if (prevSibling instanceof Perl6LongNameImpl) {
+        } else if (owner instanceof Perl6RegexDecl) {
             List<Object> traits = new ArrayList<>(Arrays.asList(REGEX_DEFAULT_TRAITS));
             traits.addAll(Arrays.asList(ROUTINE_DEFAULT_TRAITS));
             return traits.toArray();
-        } else if (prevSibling.getNode().getElementType() == NAME) {
+        } else if (owner instanceof Perl6PackageDecl) {
             List<Object> types = new ArrayList<>(Arrays.asList(new Perl6TypeNameReference(myElement).getVariants()));
             types.add("export");
             return types.toArray();
