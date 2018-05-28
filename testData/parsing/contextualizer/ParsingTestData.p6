@@ -1,5 +1,1 @@
-is-deeply $body, $
-
-{ foo => [ "bar", 42 ] }
-
-;
+is-deeply $body, ${ foo => [ "bar", 42 ] };
