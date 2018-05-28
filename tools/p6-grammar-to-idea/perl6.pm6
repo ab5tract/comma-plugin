@@ -256,7 +256,7 @@ grammar MAIN {
         || <.statement_control>
         || <.EXPR('')>
             [
-                || <?MARKED('endstmt')>
+                || <?before <.ws> <?MARKED('endstmt')>>
                    <.start-token('END_OF_STATEMENT')> <?> <.end-token('END_OF_STATEMENT')>
                 || <?before <.ws> <.statement_mod_cond_keyword> <.kok>>
                    <.ws>
