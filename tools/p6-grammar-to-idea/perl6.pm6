@@ -1951,12 +1951,14 @@ grammar MAIN {
            <.end-token('TRAIT')>
            <.ws>
            [
-           || <.start-element('LONG_NAME')>
+           || <.start-element('IS_TRAIT_NAME')>
+              <.start-element('LONG_NAME')>
               <.start-token('NAME')>
               <.name>
               <.end-token('NAME')>
               <.longname_colonpairs>
               <.end-element('LONG_NAME')>
+              <.end-element('IS_TRAIT_NAME')>
            || <.start-token('TRAIT_INCOMPLETE')> <?> <.end-token('TRAIT_INCOMPLETE')>
            ]
         || <?before 'hides' <.ws>>

@@ -48,6 +48,7 @@ public interface Perl6ElementTypes {
     IElementType IMPORT_STATEMENT = new Perl6ElementType("IMPORT_STATEMENT");
     IElementType INFIX = new Perl6ElementType("INFIX");
     IElementType INTEGER_LITERAL = new Perl6ElementType("INTEGER_LITERAL");
+    IElementType IS_TRAIT_NAME = new Perl6ElementType("IS_TRAIT_NAME");
     IElementType LAZY = new Perl6ElementType("LAZY");
     IElementType LONG_NAME = new Perl6ElementType("LONG_NAME");
     IElementType LOOP_STATEMENT = new Perl6ElementType("LOOP_STATEMENT");
