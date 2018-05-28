@@ -121,6 +121,7 @@ public interface Perl6ElementTypes {
     IElementType TRY = new Perl6ElementType("TRY");
     IElementType TYPE_NAME = new Perl6ElementType("TYPE_NAME");
     IElementType UNLESS_STATEMENT = new Perl6ElementType("UNLESS_STATEMENT");
+    IElementType UNTERMINATED_STATEMENT = new Perl6ElementType("UNTERMINATED_STATEMENT");
     IElementType UNTIL_STATEMENT = new Perl6ElementType("UNTIL_STATEMENT");
     IElementType VALUE_CONSTRAINT = new Perl6ElementType("VALUE_CONSTRAINT");
     IElementType VARIABLE = new Perl6ElementType("VARIABLE");

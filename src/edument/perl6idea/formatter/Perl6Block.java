@@ -7,17 +7,21 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import edument.perl6idea.parsing.Perl6ElementTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
+import static edument.perl6idea.parsing.Perl6ElementTypes.NULL_TERM;
+import static edument.perl6idea.parsing.Perl6OPPElementTypes.INFIX_APPLICATION;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 class Perl6Block extends AbstractBlock implements BlockWithParent {
     private BlockWithParent myParent;
     private CodeStyleSettings mySettings;
+    private Boolean isStatementContinuation;
 
     private TokenSet WHITESPACES = TokenSet.create(
             UNV_WHITE_SPACE, WHITE_SPACE,
@@ -27,6 +31,14 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     Perl6Block(ASTNode node, Wrap wrap, Alignment align, CodeStyleSettings settings) {
         super(node, wrap, align);
         mySettings = settings;
+        this.isStatementContinuation = false;
+    }
+
+    Perl6Block(ASTNode node, Wrap wrap, Alignment align, CodeStyleSettings settings,
+               Boolean isStatementContinuation) {
+        super(node, wrap, align);
+        mySettings = settings;
+        this.isStatementContinuation = isStatementContinuation;
     }
 
     @Override
@@ -37,7 +49,15 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         for (ASTNode child = getNode().getFirstChildNode(); child != null; child = child.getTreeNext()) {
             if (WHITESPACES.contains(child.getElementType()))
                 continue;
-            final Perl6Block childBlock = new Perl6Block(child, null, null, mySettings);
+            Boolean childIsStatementContinuation = null;
+            if (child.getElementType() != STATEMENT_LIST) {
+                if (isStatementContinuation != null && isStatementContinuation)
+                    childIsStatementContinuation = false;
+                else if (nodeInStatementContinuation(child))
+                    childIsStatementContinuation = true;
+            }
+            final Perl6Block childBlock = new Perl6Block(child, null, null, mySettings,
+                    childIsStatementContinuation);
             childBlock.setParent(this);
             children.add(childBlock);
         }
@@ -59,18 +79,18 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     public Indent getIndent() {
         if (myNode.getElementType() == STATEMENT_LIST && myNode.getTreeParent().getElementType() == BLOCKOID)
             return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
-        if (inStatementContinuation())
+        if (isStatementContinuation != null && isStatementContinuation)
             return Indent.getContinuationWithoutFirstIndent();
         return Indent.getNoneIndent();
     }
 
-    private boolean inStatementContinuation() {
-        ASTNode curNode = myNode;
+    private boolean nodeInStatementContinuation(ASTNode startNode) {
+        ASTNode curNode = startNode;
         while (curNode != null && curNode.getElementType() != BLOCKOID) {
             if (curNode.getElementType() == IF_STATEMENT)
                 return false;
             if (curNode.getElementType() == STATEMENT) {
-                int nodeOffset = myNode.getStartOffset() - curNode.getStartOffset();
+                int nodeOffset = startNode.getStartOffset() - curNode.getStartOffset();
                 String statementPrefix = curNode.getText().substring(0, nodeOffset);
                 return statementPrefix.contains("\n") && !statementPrefix.endsWith("}\n");
             }
@@ -87,13 +107,24 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     @Override
     public ChildAttributes getChildAttributes(final int newIndex) {
         IElementType elementType = myNode.getElementType();
-        return new ChildAttributes(
-                 elementType == BLOCKOID
-                    ? Indent.getNormalIndent()
-                    : NOT_CONTINUATIONY.contains(elementType)
-                        ? Indent.getNoneIndent()
-                        : Indent.getContinuationIndent(),
-                null);
+        if (elementType == BLOCKOID) {
+            return new ChildAttributes(Indent.getNormalIndent(), null);
+        }
+        /*else if (elementType == INFIX_APPLICATION) {
+            if (myNode.getLastChildNode().getElementType() == NULL_TERM)
+                return new ChildAttributes(Indent.getNoneIndent(), null);
+            else
+                return new ChildAttributes(Indent.getContinuationWithoutFirstIndent(), null);
+        }*/
+        else if (isStatementContinuation != null && isStatementContinuation) {
+            return new ChildAttributes(Indent.getNoneIndent(), null);
+        }
+        else if (NOT_CONTINUATIONY.contains(elementType)) {
+            return new ChildAttributes(Indent.getNoneIndent(), null);
+        }
+        else {
+            return new ChildAttributes(Indent.getContinuationWithoutFirstIndent(), null);
+        }
     }
 
     @Override

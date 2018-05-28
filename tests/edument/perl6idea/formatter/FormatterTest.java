@@ -20,4 +20,15 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
         });
         myFixture.checkResultByFile("basic.out.p6");
     }
+
+
+    public void testAssortedFormatting() {
+        myFixture.configureByFiles("assorted.in.p6");
+        WriteCommandAction.runWriteCommandAction(null, () -> {
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
+            PsiFile file = myFixture.getFile();
+            codeStyleManager.reformatText(file, 0, file.getTextLength());
+        });
+        myFixture.checkResultByFile("assorted.out.p6");
+    }
 }

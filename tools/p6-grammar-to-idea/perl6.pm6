@@ -293,12 +293,13 @@ grammar MAIN {
            <.start-token('STATEMENT_TERMINATOR')>
            ';'
            <.end-token('STATEMENT_TERMINATOR')>
-        || <?before [$ || <[)}]> || ']' || <?stopper>]>
-           <.start-token('END_OF_STATEMENT')> <?> <.end-token('END_OF_STATEMENT')>
-        || <?before [<.ws> [$ || <[)}]> || ']' || <?stopper>]]>
-           <.ws>
-           <.start-token('END_OF_STATEMENT')> <?> <.end-token('END_OF_STATEMENT')>
-        || <.bogus_statement>
+        || <?before <.ws>? [$ || <[)}]> || ']' || <?stopper>]>
+           <.start-token('END_OF_STATEMENT_STOPPER')> <?> <.end-token('END_OF_STATEMENT_STOPPER')>
+           <.unv>*
+           <.start-element('UNTERMINATED_STATEMENT')> <?> <.end-element('UNTERMINATED_STATEMENT')>
+        || <.ws>?
+           <.start-element('UNTERMINATED_STATEMENT')> <?> <.end-element('UNTERMINATED_STATEMENT')>
+           <.bogus_statement>
            [
            || <.start-token('STATEMENT_TERMINATOR')>
               ';'
@@ -3220,6 +3221,7 @@ grammar MAIN {
            ]
         || <?{ $*NEXT_TERM eq 'dotty' }>
            <.start-element('METHOD_CALL')>
+           <.start-token('DOTTY_NEXT_TERM')> <?> <.end-token('DOTTY_NEXT_TERM')>
            <.dottyop>
            <.end-element('METHOD_CALL')>
         || <.term>

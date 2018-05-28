@@ -55,6 +55,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
         IElementType type = astNode.getElementType();
         if (type == Perl6ElementTypes.STATEMENT_LIST)
             return new Perl6StatementListImpl(astNode);
+        if (type == Perl6ElementTypes.UNTERMINATED_STATEMENT)
+            return new Perl6UnterminatedStatementImpl(astNode);
         if (type == Perl6ElementTypes.SEMI_LIST)
             return new Perl6SemiListImpl(astNode);
         if (type == Perl6ElementTypes.STATEMENT)
