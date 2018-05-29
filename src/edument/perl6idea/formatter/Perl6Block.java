@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
+import static edument.perl6idea.parsing.Perl6ElementTypes.HEREDOC;
 import static edument.perl6idea.parsing.Perl6ElementTypes.NULL_TERM;
 import static edument.perl6idea.parsing.Perl6OPPElementTypes.INFIX_APPLICATION;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
@@ -88,9 +89,10 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     private boolean nodeInStatementContinuation(ASTNode startNode) {
         ASTNode curNode = startNode;
         while (curNode != null && curNode.getElementType() != BLOCKOID) {
-            if (curNode.getElementType() == IF_STATEMENT)
+            IElementType elementType = curNode.getElementType();
+            if (elementType == IF_STATEMENT || elementType == HEREDOC)
                 return false;
-            if (curNode.getElementType() == STATEMENT) {
+            if (elementType == STATEMENT) {
                 int nodeOffset = startNode.getStartOffset() - curNode.getStartOffset();
                 String statementPrefix = curNode.getText().substring(0, nodeOffset);
                 return statementPrefix.contains("\n") && !statementPrefix.endsWith("}\n");
