@@ -77,7 +77,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     @Override
     public Indent getIndent() {
-        if (myNode.getElementType() == STATEMENT_LIST && myNode.getTreeParent().getElementType() == BLOCKOID)
+        if ((myNode.getElementType() == STATEMENT_LIST || myNode.getElementType() == REGEX)
+            && myNode.getTreeParent().getElementType() == BLOCKOID)
             return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
         if (isStatementContinuation != null && isStatementContinuation)
             return Indent.getContinuationWithoutFirstIndent();
@@ -107,15 +108,9 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     @Override
     public ChildAttributes getChildAttributes(final int newIndex) {
         IElementType elementType = myNode.getElementType();
-        if (elementType == BLOCKOID) {
+        if (elementType == BLOCKOID || elementType == REGEX_GROUP) {
             return new ChildAttributes(Indent.getNormalIndent(), null);
         }
-        /*else if (elementType == INFIX_APPLICATION) {
-            if (myNode.getLastChildNode().getElementType() == NULL_TERM)
-                return new ChildAttributes(Indent.getNoneIndent(), null);
-            else
-                return new ChildAttributes(Indent.getContinuationWithoutFirstIndent(), null);
-        }*/
         else if (isStatementContinuation != null && isStatementContinuation) {
             return new ChildAttributes(Indent.getNoneIndent(), null);
         }
