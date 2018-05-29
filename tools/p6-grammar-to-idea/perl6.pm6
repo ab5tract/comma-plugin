@@ -282,6 +282,11 @@ grammar MAIN {
 
     token eat_terminator {
         [
+            <.has-heredoc>
+            <.start-token('EAT_TERMINATOR_HAS_HEREDOC')> <?> <.end-token('EAT_TERMINATOR_HAS_HEREDOC')>
+            <.ws>?
+        ]?
+        [
         || <?before <.ws> <?MARKED('endstmt')>>
            <.start-token('END_OF_STATEMENT_MARK')> <?> <.end-token('END_OF_STATEMENT_MARK')>
         || <?[;]>
@@ -297,7 +302,7 @@ grammar MAIN {
            <.start-token('END_OF_STATEMENT_STOPPER')> <?> <.end-token('END_OF_STATEMENT_STOPPER')>
            <.unv>*
            <.start-element('UNTERMINATED_STATEMENT')> <?> <.end-element('UNTERMINATED_STATEMENT')>
-        || <.ws>?
+        || <.unv>*
            <.start-element('UNTERMINATED_STATEMENT')> <?> <.end-element('UNTERMINATED_STATEMENT')>
            <.bogus_statement>
            [

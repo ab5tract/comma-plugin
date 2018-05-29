@@ -266,6 +266,9 @@ my class GrammarCompiler {
             when 'dequeue-heredoc' {
                 $append-to.push: unless(this-call('dequeueHeredoc'), [backtrack()]);
             }
+            when 'has-heredoc' {
+                $append-to.push: unless(this-call('hasHeredoc'), [backtrack()]);
+            }
             when 'MARKER' {
                 unless $rule.args.elems == 1 && $rule.args[0] ~~ StrValue {
                     die "MARKER must be called with a single string argument";

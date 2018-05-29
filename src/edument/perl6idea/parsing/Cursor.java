@@ -623,6 +623,10 @@ public abstract class Cursor<TCursor extends Cursor> {
         return true;
     }
 
+    public boolean hasHeredoc() {
+        return !stack.heredocs.isEmpty();
+    }
+
     public void precInfoToken() {
         stack.tokenStart = pos;
         stack.token = PrecInfoToken.tokenFor(
