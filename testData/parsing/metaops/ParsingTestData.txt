@@ -403,6 +403,8 @@ FILE(0,322)
                 Perl6StatementImpl(Perl6:STATEMENT)(311,313)
                   Perl6VariableImpl(Perl6:VARIABLE)(311,313)
                     PsiElement(Perl6:VARIABLE)('$x')(311,313)
+                  Perl6UnterminatedStatementImpl(Perl6:UNTERMINATED_STATEMENT)(313,313)
+                    <empty list>
               PsiElement(Perl6:ARRAY_INDEX_BRACKET_CLOSE)(']')(313,314)
       PsiElement(Perl6:STATEMENT_TERMINATOR)(';')(314,315)
     PsiWhiteSpace('\n')(315,316)

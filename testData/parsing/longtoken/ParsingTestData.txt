@@ -606,3 +606,5 @@ FILE(0,615)
               PsiElement(Perl6:STRING_LITERAL_CHAR)('?')(612,613)
               PsiElement(Perl6:STRING_LITERAL_CHAR)('\n')(613,614)
               PsiElement(Perl6:STRING_LITERAL_CHAR)('}')(614,615)
+      Perl6UnterminatedStatementImpl(Perl6:UNTERMINATED_STATEMENT)(615,615)
+        <empty list>

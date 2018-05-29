@@ -41,7 +41,11 @@ FILE(0,43)
                               Perl6IntLiteralImpl(Perl6:INTEGER_LITERAL)(36,38)
                                 PsiElement(Perl6:INTEGER_LITERAL)('42')(36,38)
                             PsiElement(Perl6:UNV_WHITE_SPACE)(' ')(38,39)
+                            Perl6UnterminatedStatementImpl(Perl6:UNTERMINATED_STATEMENT)(39,39)
+                              <empty list>
                         PsiElement(Perl6:ARRAY_COMPOSER_CLOSE)(']')(39,40)
                     PsiElement(Perl6:UNV_WHITE_SPACE)(' ')(40,41)
+                    Perl6UnterminatedStatementImpl(Perl6:UNTERMINATED_STATEMENT)(41,41)
+                      <empty list>
                 PsiElement(Perl6:BLOCK_CURLY_BRACKET_CLOSE)('}')(41,42)
       PsiElement(Perl6:STATEMENT_TERMINATOR)(';')(42,43)

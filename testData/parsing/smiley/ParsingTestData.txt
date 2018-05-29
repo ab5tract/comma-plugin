@@ -14,6 +14,8 @@ FILE(0,29)
                 Perl6StatementImpl(Perl6:STATEMENT)(17,18)
                   Perl6IntLiteralImpl(Perl6:INTEGER_LITERAL)(17,18)
                     PsiElement(Perl6:INTEGER_LITERAL)('0')(17,18)
+                  Perl6UnterminatedStatementImpl(Perl6:UNTERMINATED_STATEMENT)(18,18)
+                    <empty list>
               PsiElement(Perl6:ARRAY_INDEX_BRACKET_CLOSE)(']')(18,19)
           PsiElement(Perl6:UNV_WHITE_SPACE)(' ')(19,20)
           Perl6InfixImpl(Perl6:INFIX)(20,22)
