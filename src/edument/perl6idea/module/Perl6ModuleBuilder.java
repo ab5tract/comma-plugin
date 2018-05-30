@@ -184,7 +184,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     public static String stubScript(String moduleLibraryPath, String scriptName) {
         String scriptPath = moduleLibraryPath + separator + scriptName;
         if (!scriptPath.endsWith(".pl6") && !scriptPath.endsWith(".p6"))
-            scriptPath = scriptPath + ".p6";
+            scriptPath += ".p6";
 
         List<String> lines = Arrays.asList(
                 "#!/usr/bin/env perl6",
