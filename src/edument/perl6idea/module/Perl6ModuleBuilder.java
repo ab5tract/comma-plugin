@@ -15,6 +15,7 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -36,6 +37,7 @@ import java.util.*;
 import static java.io.File.separator;
 
 public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuilder {
+    private static Logger LOG = Logger.getInstance(Perl6ModuleBuilder.class);
     private Perl6ProjectType type = Perl6ProjectType.PERL6_SCRIPT;
     private List<Pair<String, String>> mySourcePaths;
     private String scriptName;
@@ -118,14 +120,14 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     private static void addModuleToMetaFile(Project project, String moduleName) {
         try {
             Path metaPath = getMETAFilePath(project);
-            String content = new String (Files.readAllBytes(metaPath));
+            String content = new String(Files.readAllBytes(metaPath), CharsetToolkit.UTF8_CHARSET);
             JSONObject metaInfo = new JSONObject(content);
             JSONObject providesSection = metaInfo.getJSONObject("provides");
             providesSection.put(moduleName, String.format("lib%s%s.pm6", separator, moduleName.replaceAll("::", separator)));
             metaInfo.put("provides", providesSection);
             writeCodeToPath(metaPath, Collections.singletonList(metaInfo.toString(4)));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.warn(e);
         }
     }
 
@@ -169,7 +171,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     public static String stubTest(String testPath, String fileName, List<String> imports) {
         testPath = testPath + separator + fileName;
         if (!testPath.endsWith(".t"))
-            testPath = testPath + ".t";
+            testPath += ".t";
         List<String> lines = new LinkedList<>();
         for (String oneImport : imports) {
             lines.add(String.format("use %s;", oneImport));
