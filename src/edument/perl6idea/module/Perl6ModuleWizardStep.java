@@ -89,14 +89,14 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
     private void checkEntryPointName() throws ConfigurationException {
         String name = myEntryName.getText();
         if (!name.matches(Patterns.ENTRY_POINT_PATTERN)) {
-            throw new ConfigurationException("Entry point name is incorrect");
+            throw new ConfigurationException("Entry point name is incorrect. Examples: `foo`, `foo.p6`, `foo.pl6`.");
         }
     }
 
     private void checkModuleName() throws ConfigurationException {
         String name = myModuleName.getText();
         if (!name.matches(Patterns.MODULE_PATTERN)) {
-            throw new ConfigurationException("Module name is incorrect");
+            throw new ConfigurationException("Module name is incorrect. Examples: `Foo`, `Foo::Bar`, `foo::Bar`");
         }
     }
 
