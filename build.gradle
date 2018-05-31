@@ -10,6 +10,7 @@ repositories {
 dependencies {
     implementation "org.tap4j:tap4j:4.2.1"
     implementation "org.json:json:20171018"
+    implementation "com.miglayout:miglayout-swing:5.1"
     implementation files('libs/moarvmremote.jar')
     testCompile 'junit:junit:4.12'
 }
