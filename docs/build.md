@@ -3,11 +3,15 @@
 * `git clone https://github.com/JetBrains/intellij-community.git`
 * `cd intellij-community`
 * Do steps from `intellij-idea` readme, noticeably creating `IDEA jdk` JDK and setting it to project, running of `getPlugins.sh` script (optional).
-* `git clone https://github.com/edumentab/perl6-idea-plugin.git`
-* Start IDEA, open project from `intellij-community` directory.
-* `Unregistered VCS root detected` for `perl6-idea-plugin` - add this root.
-* Open File -> Project Settings -> Modules. Import new module, select `comma.community.iml`, next-next. Apply. Import modules `perl6.community.plugin.impl.iml` and `perl6.community.plugin.main.iml` the same way.
-* On this stage, `json` and `tap4j` dependencies are missing. Open Project Settings, go to Libraries and add them manually using `From Maven`. Maven coodrinates are: `org.tap4j:tap4j:4.3` and `org.json:json:20171018`.
+* `git clone https://github.com/edumentab/perl6-idea-plugin.git` into the intellij-community folder.
+* Start IDEA, open the `perl6-idea-plugin` project from inside the `intellij-community` directory.
+* `Unregistered VCS root detected` for `perl6-idea-plugin` - let IDEA add this root.
+* Open `File` -> `Project Structure` -> `Modules`. `Import module`, select `comma.community.iml`, `next`, `next`, `Apply`.
+* Import modules `perl6.community.plugin.impl.iml` and `perl6.community.plugin.main.iml` the same way.
+* At this point, `json`, `tap4j`, and `miglayout` dependencies are missing.
+  * Open `Project Structure` -> `Libraries` and add them manually using `From Maven`.
+  * Maven coordinates are: `org.tap4j:tap4j:4.3`, `org.json:json:20171018`, and `com.miglayout:miglayout-swing:5.1`.
+  * Make sure to select the `plugin.main` module from the list of modules to add the library to.
 
 #### How to run Comma Product
 
