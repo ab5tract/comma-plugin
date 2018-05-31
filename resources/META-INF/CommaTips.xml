@@ -1,5 +1,10 @@
 <idea-plugin>
   <extensions defaultExtensionNs="com.intellij">
     <tipAndTrick file="Welcome.html"/>
+    <tipAndTrick file="GoToDecl.html"/>
+    <tipAndTrick file="NavigateToType.html"/>
+    <tipAndTrick file="WhatIsThisClosing.html"/>
+    <tipAndTrick file="JumpBetweenMethods.html"/>
+    <tipAndTrick file="CommentOutCode.html"/>
   </extensions>
 </idea-plugin>
