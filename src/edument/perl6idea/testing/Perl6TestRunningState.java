@@ -24,6 +24,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Disposer;
 import edument.perl6idea.run.Perl6DebuggableConfiguration;
+import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
 import org.jetbrains.annotations.NotNull;
 
@@ -79,7 +80,7 @@ public class Perl6TestRunningState extends CommandLineState {
             if (projectSdk == null) throw new ExecutionException("SDK is not set");
             String homePath = projectSdk.getHomePath();
             if (homePath == null) throw new ExecutionException("SDK is not set");
-            command.add(Paths.get(homePath, "perl6").toString());
+            command.add(Paths.get(homePath, Perl6SdkType.perl6Command()).toString());
         }
         File script = Perl6CommandLine.getResourceAsFile(this,"testing/perl6-test-harness.p6");
         if (script == null) throw new ExecutionException("Bundled resources are corrupted");

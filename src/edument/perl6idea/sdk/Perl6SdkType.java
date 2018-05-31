@@ -75,9 +75,7 @@ public class Perl6SdkType extends SdkType {
 
     @Nullable
     private static String findPerl6InPath() {
-        final String command = SystemInfo.isWindows
-            ? "perl6.bat"
-            : "perl6";
+        final String command = perl6Command();
         final String path = System.getenv("PATH");
         for (String root : path.split(File.pathSeparator)) {
             final File file = new File(root, command);
@@ -86,6 +84,10 @@ public class Perl6SdkType extends SdkType {
             }
         }
         return null;
+    }
+
+    public static String perl6Command() {
+        return SystemInfo.isWindows ? "perl6.bat"  : "perl6";
     }
 
     @Nullable
@@ -115,7 +117,7 @@ public class Perl6SdkType extends SdkType {
 
     @Override
     public boolean isValidSdkHome(@NotNull String path) {
-        return Paths.get(path, "perl6") != null;
+        return Paths.get(path, Perl6SdkType.perl6Command()) != null;
     }
 
     @Nullable
@@ -131,7 +133,7 @@ public class Perl6SdkType extends SdkType {
     @Nullable
     @Override
     public String getVersionString(@NotNull String path) {
-        Path binPath = Paths.get(path, "perl6");
+        Path binPath = Paths.get(path, perl6Command());
         String[] command = {binPath.normalize().toString(), "-e", "say $*PERL.compiler.version"};
         try {
             if (!Files.isDirectory(binPath) && Files.isExecutable(binPath)) {

@@ -38,7 +38,7 @@ public class Perl6CommandLine {
     @NotNull
     public static GeneralCommandLine getPerl6CommandLine(String workingPath, String homePath) {
         return getCustomPerl6CommandLine((String)null, workingPath)
-          .withExePath(Paths.get(homePath, "perl6").toString());
+          .withExePath(Paths.get(homePath, Perl6SdkType.perl6Command()).toString());
     }
 
     public static GeneralCommandLine pushFile(GeneralCommandLine cmd, File script) throws ExecutionException {
