@@ -8,6 +8,7 @@ import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.JBUI;
 import edument.perl6idea.utils.Patterns;
 import edument.perl6idea.utils.Perl6ProjectType;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -33,12 +34,7 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
         Border border = myMainPanel.getBorder();
         Border margin = JBUI.Borders.empty(10);
         myMainPanel.setBorder(new CompoundBorder(border, margin));
-        GridBagLayout layout = new GridBagLayout();
-        layout.columnWidths = new int[]{80, 80, 0};
-        layout.rowHeights = new int[]{20, 20, 0};
-        layout.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-        layout.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-        myMainPanel.setLayout(layout);
+        myMainPanel.setLayout(new MigLayout());
         switch (builder.getType()) {
             case PERL6_SCRIPT:
                 myScriptName = new JBTextField(40);
@@ -52,15 +48,12 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
                 break;
             }
             default: {
-                GridBagConstraints fieldConstraints = new GridBagConstraints();
-                fieldConstraints.gridy = 0;
                 myModuleName = new JBTextField(40);
-                LabeledComponent<JTextField> moduleName = LabeledComponent.create(myModuleName, "Module name", BorderLayout.WEST);
-                myMainPanel.add(moduleName, fieldConstraints);
-                fieldConstraints.gridy = 1;
+                myMainPanel.add(new JLabel("Module name"));
+                myMainPanel.add(myModuleName, "wrap");
                 myEntryName = new JBTextField(40);
-                LabeledComponent<JTextField> entryPointName = LabeledComponent.create(myEntryName, "Entry point name", BorderLayout.WEST);
-                myMainPanel.add(entryPointName, fieldConstraints);
+                myMainPanel.add(new JLabel("Entry point name"));
+                myMainPanel.add(myEntryName);
                 break;
             }
         }
