@@ -35656,7 +35656,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*Q_ARRAYS", 0);
                 this.declareDynamicVariable("$*Q_HASHES", 0);
                 this.declareDynamicVariable("$*Q_FUNCTIONS", 0);
-                this.bsFailMark(24);
+                this.bsFailMark(30);
                 this.bsMark(6);
                 this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("'"))) {
@@ -35705,8 +35705,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 5:
-                this.bsCommit(24);
-                this.state = 24;
+                this.bsCommit(30);
+                this.state = 30;
                 continue;
 
             case 6:
@@ -35758,8 +35758,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 11:
-                this.bsCommit(24);
-                this.state = 24;
+                this.bsCommit(30);
+                this.state = 30;
                 continue;
 
             case 12:
@@ -35811,11 +35811,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 17:
-                this.bsCommit(24);
-                this.state = 24;
+                this.bsCommit(30);
+                this.state = 30;
                 continue;
 
             case 18:
+                this.bsMark(24);
                 this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 if (!(this.literal("\u2019"))) {
                     if (this.backtrack()) {
@@ -35863,10 +35864,62 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 23:
-                this.state = 24;
+                this.bsCommit(30);
+                this.state = 30;
                 continue;
 
             case 24:
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
+                if (!(this.literal("\uFF62"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 25;
+                return -3;
+
+            case 25:
+                this.setArgs("\uFF62", "\uFF63", "\uFF63");
+                this.state = 26;
+                return 166;
+
+            case 26:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsMark(29);
+                this.state = 27;
+                break;
+            case 27:
+                this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE);
+                if (!(this.literal("\uFF63"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 28;
+                return -3;
+
+            case 28:
+                this.bsCommit(29);
+                this.state = 29;
+                continue;
+
+            case 29:
+                this.state = 30;
+                continue;
+
+            case 30:
                 return -1;
 
             }
@@ -48656,7 +48709,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
         while (true) {
             switch (this.state) {
             case 0:
-                if (!(this.inCharList("'\u2018\u201A"))) {
+                if (!(this.inCharList("'\u2018\u201A\uFF62"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {

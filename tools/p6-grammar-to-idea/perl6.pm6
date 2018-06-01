@@ -4101,7 +4101,7 @@ grammar MAIN {
            <.SIGOK>
            ]?
            <.end-element('REGEX_ASSERTION')>
-        || <?['‘‚]> <.rxq> <.SIGOK>
+        || <?['‘‚｢]> <.rxq> <.SIGOK>
         || <?["“„]> <.rxqq> <.SIGOK>
         || <?[{]> <.rxcodeblock>
         || <?before ':' ['my'||'constant'||'state'||'our'||'temp'||'let'] <.end_keyword>>
@@ -4145,6 +4145,9 @@ grammar MAIN {
         || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '’' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('’', '’', '‘')>
            [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
+        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '｢' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
+           <.quote_q('｢', '｣', '｣')>
+           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '｣' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
         ]
         <.end-element('STRING_LITERAL')>
     }
