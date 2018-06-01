@@ -123,7 +123,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
             String content = new String(Files.readAllBytes(metaPath), CharsetToolkit.UTF8_CHARSET);
             JSONObject metaInfo = new JSONObject(content);
             JSONObject providesSection = metaInfo.getJSONObject("provides");
-            providesSection.put(moduleName, String.format("lib%s%s.pm6", separator, moduleName.replaceAll("::", separator)));
+            providesSection.put(moduleName, String.format("lib%s%s.pm6", "/", moduleName.replaceAll("::", "/")));
             metaInfo.put("provides", providesSection);
             writeCodeToPath(metaPath, Collections.singletonList(metaInfo.toString(4)));
         } catch (IOException e) {
@@ -133,9 +133,9 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
 
     private static void writeMetaFile(Project project, String moduleName, @Nullable String entryPointName) {
         JSONObject providesSection = new JSONObject()
-                .put(moduleName, String.format("lib%s%s.pm6", separator, moduleName.replaceAll("::", separator)));
+                .put(moduleName, String.format("lib%s%s.pm6", "/", moduleName.replaceAll("::", "/")));
         if (entryPointName != null)
-            providesSection.put(entryPointName, String.format("bin%s%s", separator, entryPointName));
+            providesSection.put(entryPointName, String.format("bin%s%s", "/", entryPointName));
         JSONObject metaJson = new JSONObject()
                 .put("perl", "6.*")
                 .put("name", moduleName)
