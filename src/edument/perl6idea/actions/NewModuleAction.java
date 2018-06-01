@@ -54,10 +54,10 @@ public class NewModuleAction extends AnAction {
             }
             if (psiDirectory != null) {
                 String path = psiDirectory.getVirtualFile().getPath();
-                String[] parts = path.split(baseDir + separator + "lib" + separator);
+                String[] parts = path.split(baseDir + "[/\\\\]" + "lib" + "[/\\\\]");
                 if (parts.length > 1) {
                     baseDir = baseDir + separator + "lib";
-                    modulePrefix = String.join("::", parts[1].split("/")) + "::";
+                    modulePrefix = String.join("::", parts[1].split("[/\\\\]")) + "::";
                 } else {
                     baseDir = path;
                 }
