@@ -20061,6 +20061,11 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean variable_232_quant_16(PsiBuilder builder, OPP opp) {
+        if ((builder.getTokenType()) == Perl6TokenTypes.SELF_CALL_VARIABLE_ARGS) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
         PsiBuilder.Marker quantMarker21;
         quantMarker21 = builder.mark();
         if (this.variable_232_quant_15(builder, opp)) {
@@ -20075,6 +20080,11 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean variable_232_alt_17(PsiBuilder builder, OPP opp) {
+        if ((builder.getTokenType()) == Perl6TokenTypes.SELF_CALL_VARIABLE) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
         PsiBuilder.Marker marker18;
         marker18 = builder.mark();
         if ((builder.getTokenType()) == Perl6TokenTypes.SELF) {

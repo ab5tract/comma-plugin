@@ -1360,6 +1360,7 @@ grammar MAIN {
            ]?
            <.end-element('VARIABLE')>
         || <!{ $*IN_DECL }> <?before <.sigil> '.' <.desigilname>>
+           <.start-token('SELF_CALL_VARIABLE')> <?> <.end-token('SELF_CALL_VARIABLE')>
            <.start-element('METHOD_CALL')>
            <.start-token('SELF')>
            <.sigil>
@@ -1372,6 +1373,7 @@ grammar MAIN {
            <.end-token('METHOD_CALL_NAME')>
            [
                <?before [ <.unsp> || '\\' || <?> ] '('>
+               <.start-token('SELF_CALL_VARIABLE_ARGS')> <?> <.end-token('SELF_CALL_VARIABLE_ARGS')>
                [
                || <.unsp>
                || <.start-token('WHITE_SPACE')>
