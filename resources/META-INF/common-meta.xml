@@ -1,6 +1,7 @@
 <idea-plugin>
   <extensions defaultExtensionNs="com.intellij">
     <fileTypeFactory implementation="edument.perl6idea.filetypes.Perl6FileTypeFactory"/>
+    <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
     <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
     <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>
     <configurationType implementation="edument.perl6idea.run.Perl6RunConfigurationType"/>
@@ -34,6 +35,7 @@
     <gotoClassContributor implementation="edument.perl6idea.contribution.Perl6ClassNameContributor" />
     <gotoSymbolContributor implementation="edument.perl6idea.contribution.Perl6SymbolNameContributor" />
     <errorHandler implementation="edument.perl6idea.utils.Perl6ErrorReportSubmitter"/>
+
   </extensions>
 
   <actions>
