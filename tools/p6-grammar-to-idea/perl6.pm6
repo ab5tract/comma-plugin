@@ -3233,6 +3233,7 @@ grammar MAIN {
     }
 
     token prefixish {
+        [
         || <?before [<.prefix> ['«'||'<<']]>
            <.start-element('HYPER_METAOP')>
            <.prefix>
@@ -3243,6 +3244,8 @@ grammar MAIN {
         || <.start-element('PREFIX')>
            <.prefix>
            <.end-element('PREFIX')>
+       ]
+       <.ws>?
     }
 
     token prefix {

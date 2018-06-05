@@ -27589,6 +27589,29 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 7:
+                this.bsMark(10);
+                this.state = 8;
+                break;
+            case 8:
+                this.setArgs();
+                this.state = 9;
+                return 18;
+
+            case 9:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(10);
+                this.state = 10;
+                continue;
+
+            case 10:
                 return -1;
 
             }
