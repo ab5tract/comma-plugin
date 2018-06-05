@@ -18504,7 +18504,14 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean trait_mod_222_alt_22(PsiBuilder builder, OPP opp) {
+    private boolean trait_mod_222_quant_22(PsiBuilder builder, OPP opp) {
+        if (!(this.circumfix_27(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean trait_mod_222_alt_23(PsiBuilder builder, OPP opp) {
         PsiBuilder.Marker marker23;
         marker23 = builder.mark();
         PsiBuilder.Marker marker24;
@@ -18519,10 +18526,17 @@ public class Perl6Parser implements PsiParser {
         }
         marker24.done(Perl6ElementTypes.LONG_NAME);
         marker23.done(Perl6ElementTypes.IS_TRAIT_NAME);
+        PsiBuilder.Marker quantMarker25;
+        quantMarker25 = builder.mark();
+        if (this.trait_mod_222_quant_22(builder, opp)) {
+            quantMarker25.drop();
+        } else {
+            quantMarker25.rollbackTo();
+        }
         return true;
     }
 
-    private boolean trait_mod_222_alt_23(PsiBuilder builder, OPP opp) {
+    private boolean trait_mod_222_alt_24(PsiBuilder builder, OPP opp) {
         String tt7;
         tt7 = builder.getTokenText();
         if (((builder.getTokenType()) == Perl6TokenTypes.TRAIT) && (tt7.equals("is"))) {
@@ -18533,12 +18547,12 @@ public class Perl6Parser implements PsiParser {
         if (!(this.ws_237(builder))) {
             return false;
         }
-        PsiBuilder.Marker altMarker25;
-        altMarker25 = builder.mark();
-        if (this.trait_mod_222_alt_22(builder, opp)) {
-            altMarker25.drop();
+        PsiBuilder.Marker altMarker26;
+        altMarker26 = builder.mark();
+        if (this.trait_mod_222_alt_23(builder, opp)) {
+            altMarker26.drop();
         } else {
-            altMarker25.rollbackTo();
+            altMarker26.rollbackTo();
             PsiBuilder.Marker altMarker22;;
             altMarker22 = builder.mark();
             if (this.trait_mod_222_alt_21(builder, opp)) {
@@ -18556,12 +18570,12 @@ public class Perl6Parser implements PsiParser {
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        PsiBuilder.Marker altMarker26;
-        altMarker26 = builder.mark();
-        if (this.trait_mod_222_alt_23(builder, opp)) {
-            altMarker26.drop();
+        PsiBuilder.Marker altMarker27;
+        altMarker27 = builder.mark();
+        if (this.trait_mod_222_alt_24(builder, opp)) {
+            altMarker27.drop();
         } else {
-            altMarker26.rollbackTo();
+            altMarker27.rollbackTo();
             PsiBuilder.Marker altMarker21;;
             altMarker21 = builder.mark();
             if (this.trait_mod_222_alt_20(builder, opp)) {

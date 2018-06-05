@@ -1971,6 +1971,7 @@ grammar MAIN {
               <.longname_colonpairs>
               <.end-element('LONG_NAME')>
               <.end-element('IS_TRAIT_NAME')>
+              <.circumfix>?
            || <.start-token('TRAIT_INCOMPLETE')> <?> <.end-token('TRAIT_INCOMPLETE')>
            ]
         || <?before 'hides' <.ws>>
