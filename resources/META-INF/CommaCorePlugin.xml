@@ -34,7 +34,7 @@
                           serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
       <applicationService serviceImplementation="com.intellij.ide.projectWizard.ProjectCategoryUsagesCollector"/>
       <projectWizard.projectCategory implementation="com.intellij.ide.projectWizard.ModuleTypeCategory"/>
-      <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable"/>
+      <projectService serviceImplementation="edument.perl6idea.project.Perl6ProjectStructureConfigurable"/>
       <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectLibrariesConfigurable"/>
       <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleStructureConfigurable"/>
       <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.GlobalLibrariesConfigurable"/>
@@ -54,6 +54,12 @@
     <!-- Actions for standalone Comma -->
     <!-- Actions for Welcome Screen -->
     <actions>
+      <action id="ShowProjectStructureSettings" class="edument.perl6idea.actions.ShowPerl6ProjectStructureAction"
+              icon="AllIcons.General.ProjectStructure">
+        <add-to-group group-id="FileMainSettingsGroup" anchor="after" relative-to-action="ShowSettings"/>
+        <add-to-group group-id="MainToolBarSettings" anchor="after" relative-to-action="ShowSettings"/>
+        <add-to-group group-id="NavBarToolBar" anchor="last"/>
+      </action>
       <group id="WelcomeScreen.QuickStart.IDEA">
         <action id="WelcomeScreen.CreateNewProject" class="com.intellij.ide.actions.NewProjectAction" icon="AllIcons.General.CreateNewProject"/>
         <action id="WelcomeScreen.ImportProject" class="com.intellij.ide.actions.ImportProjectAction" icon="AllIcons.General.ImportProject"/>
