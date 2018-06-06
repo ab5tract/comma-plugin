@@ -1,10 +1,7 @@
 package edument.perl6idea.project;
 
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.*;
@@ -15,6 +12,7 @@ import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurableF
 import com.intellij.openapi.roots.ui.configuration.SidePanel;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.BaseStructureConfigurable;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleStructureConfigurable;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.StructureConfigurableContext;
 import com.intellij.openapi.ui.DetailsComponent;
 import com.intellij.openapi.ui.MasterDetailsComponent;
@@ -26,7 +24,9 @@ import com.intellij.ui.navigation.BackAction;
 import com.intellij.ui.navigation.ForwardAction;
 import com.intellij.ui.navigation.History;
 import com.intellij.ui.navigation.Place;
+import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +41,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
                                                                                    Configurable.NoScroll{
     private static final Logger LOG = Logger.getInstance(Perl6ProjectStructureConfigurable.class);
     private static final String CATEGORY = "category";
+    public static final DataKey<ProjectStructureConfigurable> KEY = DataKey.create("ProjectStructureConfiguration");
     protected final ProjectStructureConfigurable.UIState myUiState = new ProjectStructureConfigurable.UIState();
     private final Project myProject;
     private final ModulesConfigurator myModuleConfigurator;
@@ -59,6 +60,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     private JComponent myToFocus;
     private JLabel myEmptySelection = new JLabel("<html><body><center>Select a setting to view or edit its details here</center></body></html>",
                                                  SwingConstants.CENTER);
+    private ProjectSdksModel myProjectSdksModel = new ProjectSdksModel();
 
     public Perl6ProjectStructureConfigurable(final Project project,
                                              final ModuleStructureConfigurable moduleStructureConfigurable) {
@@ -93,7 +95,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     @Nullable
     @Override
     public JComponent createComponent() {
-        myComponent = new JPanel();
+        myComponent = new MyComponentPanel();
 
         mySplitter = new OnePixelSplitter(false, .15f);
         mySplitter.setSplitterProportionKey("ProjectStructure.TopLevelElements");
@@ -105,7 +107,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
             @Override
             public Dimension getMinimumSize() {
                 final Dimension original = super.getMinimumSize();
-                return new Dimension(Math.max(original.width, 100), original.height);
+                return new Dimension(Math.max(original.width, 200), original.height);
             }
         };
         final DefaultActionGroup toolbarGroup = new DefaultActionGroup();
@@ -146,7 +148,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     }
 
     private void addProjectConfig() {
-        myProjectConfig = new Perl6ProjectConfigurable(myProject, myContext);
+        myProjectConfig = new Perl6ProjectConfigurable(myProject, myContext, myProjectSdksModel);
         addConfigurable(myProjectConfig, ProjectStructureConfigurableFilter.ConfigurableId.PROJECT);
     }
 
@@ -272,5 +274,33 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     @Override
     public JComponent getPreferredFocusedComponent() {
         return myToFocus;
+    }
+
+    @Override
+    public void queryPlace(@NotNull Place place) {
+        place.putPath(CATEGORY, mySelectedConfigurable);
+        Place.queryFurther(mySelectedConfigurable, place);
+    }
+
+    private class MyComponentPanel extends JPanel implements DataProvider {
+        public MyComponentPanel() {
+            super(new MigLayout());
+        }
+
+        @Nullable
+        @Override
+        public Object getData(String dataId) {
+            if (KEY.is(dataId)) {
+                return Perl6ProjectStructureConfigurable.this;
+            } else if (History.KEY.is(dataId)) {
+                return myHistory;
+            }
+            return null;
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return JBUI.size(1024, 768);
+        }
     }
 }
