@@ -22,6 +22,7 @@
       <extensionPoint name="projectImportProvider" interface="com.intellij.projectImport.ProjectImportProvider"/>
       <extensionPoint name="projectStructureDetector" interface="com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector"/>
       <extensionPoint name="configuration.ModuleStructureExtension" interface="com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleStructureExtension"/>
+      <extensionPoint name="projectStructureConfigurableFilter" interface="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurableFilter"/>
     </extensionPoints>
 
     <extensions defaultExtensionNs="com.intellij">
