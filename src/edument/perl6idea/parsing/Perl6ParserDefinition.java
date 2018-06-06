@@ -315,6 +315,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new Perl6RegexVariableImpl(astNode);
         if (type == Perl6ElementTypes.TRANSLITERATION)
             return new Perl6TransliterationImpl(astNode);
+        if (type == Perl6ElementTypes.POD_BLOCK_FINISH)
+            return new PodBlockFinishImpl(astNode);
         return null;
     }
 

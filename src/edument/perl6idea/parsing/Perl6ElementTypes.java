@@ -68,6 +68,7 @@ public interface Perl6ElementTypes {
     IElementType PARAMETER_VARIABLE = new Perl6ElementType("PARAMETER_VARIABLE");
     IElementType PARENTHESIZED_EXPRESSION = new Perl6ElementType("PARENTHESIZED_EXPRESSION");
     IElementType PHASER = new Perl6ElementType("PHASER");
+    IElementType POD_BLOCK_FINISH = new Perl6ElementType("POD_BLOCK_FINISH");
     IElementType POINTY_BLOCK = new Perl6ElementType("POINTY_BLOCK");
     IElementType POSTFIX = new Perl6ElementType("POSTFIX");
     IElementType PREFIX = new Perl6ElementType("PREFIX");

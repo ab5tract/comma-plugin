@@ -192,6 +192,7 @@ grammar MAIN {
         || <.comment>
         || <.start-token('UNV_WHITE_SPACE')> \h+ <.end-token('UNV_WHITE_SPACE')>
            <.comment>?
+        || <?before [\h* '=' [ \w || '\\']]> ^^ <.pod_content_toplevel>
         ]
     }
 
@@ -199,6 +200,37 @@ grammar MAIN {
         <.start-token('COMMENT')>
        '#' \N*
         <.end-token('COMMENT')>
+    }
+
+    token pod_content_toplevel {
+        <.pod_block>
+    }
+
+    token pod_block {
+        || <.pod_block_finish>
+    }
+
+    token pod_block_finish {
+        ^^
+        <?before [\h* [ [ ['=begin' || '=for' ] \h+ 'finish' ] || '=finish' ] ]>
+        <.start-element('POD_BLOCK_FINISH')>
+        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        [
+        || <.start-token('POD_DIRECTIVE')> '=begin' <.end-token('POD_DIRECTIVE')>
+           <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+           <.start-token('POD_TYPENAME')> 'finish' <.end-token('POD_TYPENAME')>
+        || <.start-token('POD_DIRECTIVE')> '=for' <.end-token('POD_DIRECTIVE')>
+           <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+           <.start-token('POD_TYPENAME')> 'finish' <.end-token('POD_TYPENAME')>
+        || <.start-token('POD_DIRECTIVE')> '=finish' <.end-token('POD_DIRECTIVE')>
+        ]
+        <.pod_newline>?
+        <.start-token('POD_FINISH_TEXT')> .* <.end-token('POD_FINISH_TEXT')>
+        <.end-element('POD_BLOCK_FINISH')>
+    }
+
+    token pod_newline {
+        <.start-token('POD_NEWLINE')> \h* \n <.end-token('POD_NEWLINE')>
     }
 
     token vnum {
