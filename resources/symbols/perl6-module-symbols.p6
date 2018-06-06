@@ -1,4 +1,7 @@
 use MONKEY;
+
+my %seen{Any};
+
 EVAL "\{\n    @*ARGS[0] @*ARGS[1];\n" ~ Q:to/END/;
     # Emit explicit exports.
     for MY::.kv -> $_, \object {
@@ -15,7 +18,11 @@ EVAL "\{\n    @*ARGS[0] @*ARGS[1];\n" ~ Q:to/END/;
 
 sub output-package($name, Mu \object) {
     # Emit but don't traverse concrete constants.
-    if object.DEFINITE {
+    # Also, if we've seen the object before,
+    # don't recurse any deeper into it.
+    # (this can happen for example with constants used to
+    # make aliases to longer types)
+    if object.DEFINITE || %seen{object} {
         say $name;
     }
     else {
@@ -24,6 +31,8 @@ sub output-package($name, Mu \object) {
                 || object.HOW.WHAT =:= Metamodel::ModuleHOW {
             say $name;
         }
+
+        %seen{object} = 1;
 
         # Traverse children.
         try for object.WHO.keys {
