@@ -297,7 +297,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
 
     private class MyComponentPanel extends JPanel implements DataProvider {
         public MyComponentPanel() {
-            super(new MigLayout());
+            super(new BorderLayout());
         }
 
         @Nullable
@@ -312,8 +312,9 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         }
 
         @Override
-        public Dimension getPreferredSize() {
-            return JBUI.size(1024, 768);
+        public Dimension getMinimumSize() {
+            final Dimension original = super.getMinimumSize();
+            return new Dimension(Math.max(original.width, 750), original.height);
         }
     }
 }
