@@ -35,6 +35,7 @@ public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurabl
                                     ProjectSdksModel model) {
         myProject = project;
         mySettingsElement = new GeneralProjectSettingsElement(context);
+        model.reset(myProject);
         initUI(model);
     }
 
