@@ -2,10 +2,14 @@ package edument.perl6idea.project;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.options.*;
+import com.intellij.openapi.options.BaseConfigurable;
+import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ui.configuration.ModulesConfigurator;
 import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable;
@@ -25,6 +29,7 @@ import com.intellij.ui.navigation.BackAction;
 import com.intellij.ui.navigation.ForwardAction;
 import com.intellij.ui.navigation.History;
 import com.intellij.ui.navigation.Place;
+import com.intellij.util.io.storage.HeavyProcessLatch;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +42,7 @@ import java.util.List;
 
 public class Perl6ProjectStructureConfigurable extends BaseConfigurable implements SearchableConfigurable,
                                                                                    Place.Navigator, Configurable.NoMargin,
-                                                                                   Configurable.NoScroll{
+                                                                                   Configurable.NoScroll {
     private static final Logger LOG = Logger.getInstance(Perl6ProjectStructureConfigurable.class);
     private static final String CATEGORY = "category";
     public static final DataKey<ProjectStructureConfigurable> KEY = DataKey.create("ProjectStructureConfiguration");
@@ -48,6 +53,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     private JPanel myComponent;
     private OnePixelSplitter mySplitter;
     private SidePanel mySidePanel;
+    private final ProjectSdksModel myProjectSdkModel = new ProjectSdksModel();
     private Perl6ProjectConfigurable myProjectConfig;
     private final List<Configurable> myName2Config = new ArrayList<>();
     private JComponent myToolbarComponent;
@@ -59,7 +65,6 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     private JComponent myToFocus;
     private JLabel myEmptySelection = new JLabel("<html><body><center>Select a setting to view or edit its details here</center></body></html>",
                                                  SwingConstants.CENTER);
-    private ProjectSdksModel myProjectSdksModel = new ProjectSdksModel();
 
     public Perl6ProjectStructureConfigurable(final Project project,
                                              final ModuleStructureConfigurable moduleStructureConfigurable) {
@@ -151,8 +156,12 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         addConfigurable(config, isAvailable(configurableId));
     }
 
+    private void addConfigurable(Perl6ProjectConfigurable config, ProjectStructureConfigurableFilter.ConfigurableId configurableId) {
+        addConfigurable(config, isAvailable(configurableId));
+    }
+
     private void addProjectConfig() {
-        myProjectConfig = new Perl6ProjectConfigurable(myProject, myContext, myProjectSdksModel);
+        myProjectConfig = new Perl6ProjectConfigurable(myProject, myContext, myProjectSdkModel);
         addConfigurable(myProjectConfig, ProjectStructureConfigurableFilter.ConfigurableId.PROJECT);
     }
 
@@ -166,10 +175,6 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         return new Place().putPath(CATEGORY, configurable);
     }
 
-    private void addConfigurable(Perl6ProjectConfigurable config, ProjectStructureConfigurableFilter.ConfigurableId configurableId) {
-        addConfigurable(config, isAvailable(configurableId));
-    }
-
     private boolean isAvailable(ProjectStructureConfigurableFilter.ConfigurableId id) {
         for (ProjectStructureConfigurableFilter filter : ProjectStructureConfigurableFilter.EP_NAME.getExtensions()) {
             if (!filter.isAvailable(id, myProject)) {
@@ -180,14 +185,31 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     }
 
     @Override
+    public void reset() {
+        AccessToken token = HeavyProcessLatch.INSTANCE.processStarted("Resetting Project Structure");
+        try {
+            myContext.reset();
+            myProjectSdkModel.reset(myProject);
+            myProjectConfig.reset();
+        } finally {
+            token.finish();
+        }
+    }
+
+    @Override
+    public boolean isModified() {
+        for (Configurable each : myName2Config)
+            if (each.isModified()) return true;
+        return false;
+    }
+
+    @Override
     public void apply() throws ConfigurationException {
         LOG.assertTrue(TransactionGuard.getInstance().getContextTransaction() != null, "Project Structure should be shown in a transaction, see AnAction#startInTransaction");
 
         for (Configurable each : myName2Config)
-            if (each instanceof BaseStructureConfigurable && each.isModified()) {
-                ((BaseStructureConfigurable)each).checkCanApply();
+            if (each.isModified())
                 each.apply();
-            }
     }
 
     @Override
@@ -274,6 +296,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         myName2Config.clear();
 
         myModuleConfigurator.getFacetsConfigurator().clearMaps();
+        myModuleConfigurator.disposeUIResources();
 
         myUiInitialized = false;
     }

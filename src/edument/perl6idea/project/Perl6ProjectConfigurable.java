@@ -1,14 +1,17 @@
 package edument.perl6idea.project;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ex.ProjectEx;
 import com.intellij.openapi.roots.ui.configuration.GeneralProjectSettingsElement;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectStructureElementConfigurable;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.StructureConfigurableContext;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureElement;
 import com.intellij.openapi.ui.DetailsComponent;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.project.ProjectKt;
 import com.intellij.util.ui.JBUI;
 import net.miginfocom.swing.MigLayout;
@@ -37,6 +40,7 @@ public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurabl
 
     private void initUI(ProjectSdksModel model) {
         myPanel = new JPanel(new MigLayout());
+        myPanel.setPreferredSize(JBUI.size(700, 500));
         myPanel.setBorder(JBUI.Borders.empty(0, 10));
         if (ProjectKt.isDirectoryBased(myProject)) {
             myPanel.add(new JLabel("<html><body><b>Project name:</b></body></html>"), "wrap");
@@ -46,13 +50,6 @@ public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurabl
         }
         myProjectSdkConfigurable = new Perl6SdkConfigurable(myProject, model);
         myPanel.add(myProjectSdkConfigurable.createComponent(), "shrink 0");
-
-        myProjectSdkConfigurable.addChangeListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
     }
 
     @Nullable
@@ -67,7 +64,7 @@ public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurabl
 
     @Override
     public Project getEditableObject() {
-        return null;
+        return myProject;
     }
 
     @Override
@@ -80,6 +77,7 @@ public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurabl
         myDetailsComponent = new DetailsComponent(false, false);
         myDetailsComponent.setContent(myPanel);
         myDetailsComponent.setText(getBannerSlogan());
+        myProjectSdkConfigurable.createComponent();
         return myDetailsComponent.getComponent();
     }
 
@@ -97,16 +95,43 @@ public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurabl
 
     @Override
     public boolean isModified() {
+        if (!getProjectName().equals(myProject.getName())) return true;
+        if (myProjectSdkConfigurable.isModified()) return true;
         return false;
     }
 
     @Override
-    public void apply() throws ConfigurationException {
+    public void reset() {
+        if (myProjectName != null)
+            myProjectName.setText(myProject.getName());
+        myProjectSdkConfigurable.reset();
+    }
 
+    @Override
+    public void apply() throws ConfigurationException {
+        if (myProjectName != null && StringUtil.isEmptyOrSpaces(myProjectName.getText())) {
+            throw new ConfigurationException("Please, specify project name!");
+        }
+        ApplicationManager.getApplication().runWriteAction(() -> {
+            myProjectSdkConfigurable.apply();
+            if (myProjectName != null) {
+                ((ProjectEx)myProject).setProjectName(getProjectName());
+            }
+        });
     }
 
     @Override
     public DetailsComponent getDetailsComponent() {
         return myDetailsComponent;
+    }
+
+    public String getProjectName() {
+        return myProjectName != null ? myProjectName.getText().trim() : myProject.getName();
+    }
+
+    @Override
+    public void disposeUIResources() {
+        if (myProjectSdkConfigurable != null)
+            myProjectSdkConfigurable.disposeUIResources();
     }
 }
