@@ -2,6 +2,7 @@ package edument.perl6idea.project;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.*;
@@ -100,9 +101,19 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         mySplitter = new OnePixelSplitter(false, .15f);
         mySplitter.setSplitterProportionKey("ProjectStructure.TopLevelElements");
         mySplitter.setHonorComponentsMinimumSize(true);
+        mySplitter.setFirstComponent(createLeftBar());
+        mySplitter.setSecondComponent(myDetails);
 
-        initSidePanel();
+        myComponent.add(mySplitter, BorderLayout.CENTER);
 
+        navigateTo(createPlaceFor(myProjectConfig), true);
+        myUiInitialized = true;
+
+        return myComponent;
+    }
+
+    @NotNull
+    private JPanel createLeftBar() {
         final JPanel left = new JPanel(new BorderLayout()) {
             @Override
             public Dimension getMinimumSize() {
@@ -110,6 +121,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
                 return new Dimension(Math.max(original.width, 200), original.height);
             }
         };
+
         final DefaultActionGroup toolbarGroup = new DefaultActionGroup();
         toolbarGroup.add(new BackAction(myComponent));
         toolbarGroup.add(new ForwardAction(myComponent));
@@ -119,16 +131,10 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         left.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
         myToolbarComponent.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
         left.add(myToolbarComponent, BorderLayout.NORTH);
+
+        initSidePanel();
         left.add(mySidePanel, BorderLayout.CENTER);
-
-        mySplitter.setFirstComponent(left);
-        mySplitter.setSecondComponent(myDetails);
-
-        myComponent.add(mySplitter, BorderLayout.CENTER);
-
-        myUiInitialized = true;
-
-        return myComponent;
+        return left;
     }
 
     private void initSidePanel() {
@@ -177,7 +183,13 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
 
     @Override
     public void apply() throws ConfigurationException {
+        LOG.assertTrue(TransactionGuard.getInstance().getContextTransaction() != null, "Project Structure should be shown in a transaction, see AnAction#startInTransaction");
 
+        for (Configurable each : myName2Config)
+            if (each instanceof BaseStructureConfigurable && each.isModified()) {
+                ((BaseStructureConfigurable)each).checkCanApply();
+                each.apply();
+            }
     }
 
     @Override
@@ -209,7 +221,8 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
             if (toSelect instanceof DetailsComponent.Facade) {
                 DetailsComponent details = ((DetailsComponent.Facade)toSelect).getDetailsComponent();
                 details.setBannerMinHeight(myToolbarComponent.getPreferredSize().height);
-            } else if (toSelect instanceof BaseStructureConfigurable)
+            }
+            if (toSelect instanceof BaseStructureConfigurable)
                 ((BaseStructureConfigurable)toSelect).onStructureSelected();
         }
 
