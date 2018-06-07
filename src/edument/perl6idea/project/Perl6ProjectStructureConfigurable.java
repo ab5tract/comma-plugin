@@ -25,9 +25,7 @@ import com.intellij.ui.navigation.BackAction;
 import com.intellij.ui.navigation.ForwardAction;
 import com.intellij.ui.navigation.History;
 import com.intellij.ui.navigation.Place;
-import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
-import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -164,7 +162,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
             mySidePanel.addPlace(createPlaceFor(configurable), new Presentation(configurable.getDisplayName()));
     }
 
-    private Place createPlaceFor(Configurable configurable) {
+    private static Place createPlaceFor(Configurable configurable) {
         return new Place().putPath(CATEGORY, configurable);
     }
 
