@@ -37,30 +37,15 @@ public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurabl
 
     private void initUI(ProjectSdksModel model) {
         myPanel = new JPanel(new MigLayout());
+        myPanel.setBorder(JBUI.Borders.empty(0, 10));
         if (ProjectKt.isDirectoryBased(myProject)) {
-            final JPanel namePanel = new JPanel(new MigLayout());
-            final JLabel label =
-              new JLabel("<html><body><b>Project name:</b></body></html>", SwingConstants.LEFT);
-            namePanel.add(label, BorderLayout.NORTH);
-
+            myPanel.add(new JLabel("<html><body><b>Project name:</b></body></html>"), "wrap");
             myProjectName = new JTextField();
             myProjectName.setColumns(40);
-
-            final JPanel nameFieldPanel = new JPanel();
-            nameFieldPanel.setLayout(new BoxLayout(nameFieldPanel, BoxLayout.X_AXIS));
-            nameFieldPanel.add(Box.createHorizontalStrut(4));
-            nameFieldPanel.add(myProjectName);
-
-            namePanel.add(nameFieldPanel, BorderLayout.CENTER);
-            final JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-            wrapper.add(namePanel);
-            wrapper.setAlignmentX(0);
-            myPanel.add(wrapper, "wrap");
+            myPanel.add(myProjectName, "wrap");
         }
         myProjectSdkConfigurable = new Perl6SdkConfigurable(myProject, model);
-        myPanel.add(myProjectSdkConfigurable.createComponent());
-
-        myPanel.setBorder(JBUI.Borders.empty(0, 10));
+        myPanel.add(myProjectSdkConfigurable.createComponent(), "shrink 0");
 
         myProjectSdkConfigurable.addChangeListener(new ActionListener() {
             @Override
