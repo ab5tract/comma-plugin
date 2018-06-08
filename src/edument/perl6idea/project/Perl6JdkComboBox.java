@@ -42,21 +42,21 @@ public class Perl6JdkComboBox extends ComboBoxWithWidePopup<Perl6JdkComboBox.Jdk
     private JButton mySetUpButton;
     private final Condition<SdkTypeId> mySdkTypeFilter;
 
-    public Perl6JdkComboBox(@NotNull final ProjectSdksModel jdkModel, Project project) {
-        this(jdkModel, null, project);
+    public Perl6JdkComboBox(@NotNull final ProjectSdksModel jdkModel) {
+        this(jdkModel, null);
     }
 
     public Perl6JdkComboBox(@NotNull final ProjectSdksModel jdkModel,
-                            @Nullable Condition<SdkTypeId> filter, Project project) {
-        this(jdkModel, filter, getSdkFilter(filter), filter, false, project);
+                            @Nullable Condition<SdkTypeId> filter) {
+        this(jdkModel, filter, getSdkFilter(filter), filter, false);
     }
 
     public Perl6JdkComboBox(@NotNull final ProjectSdksModel jdkModel,
                             @Nullable Condition<SdkTypeId> sdkTypeFilter,
                             @Nullable Condition<Sdk> filter,
                             @Nullable Condition<SdkTypeId> creationFilter,
-                            boolean addSuggestedItems, Project project) {
-        super(new JdkComboBoxModel(jdkModel, sdkTypeFilter, filter, addSuggestedItems, project));
+                            boolean addSuggestedItems) {
+        super(new JdkComboBoxModel(jdkModel, sdkTypeFilter, filter, addSuggestedItems));
         myFilter = filter;
         mySdkTypeFilter = sdkTypeFilter;
         myCreationFilter = creationFilter;
@@ -259,11 +259,9 @@ public class Perl6JdkComboBox extends ComboBoxWithWidePopup<Perl6JdkComboBox.Jdk
     }
 
     private static class JdkComboBoxModel extends DefaultComboBoxModel<JdkComboBoxItem> {
-        private final Project myProject;
 
         JdkComboBoxModel(@NotNull final ProjectSdksModel jdksModel, @Nullable Condition<SdkTypeId> sdkTypeFilter,
-                         @Nullable Condition<Sdk> sdkFilter, boolean addSuggested, Project project) {
-            myProject = project;
+                         @Nullable Condition<Sdk> sdkFilter, boolean addSuggested) {
             reload(null, jdksModel, sdkTypeFilter, sdkFilter, addSuggested);
         }
 
@@ -272,8 +270,6 @@ public class Perl6JdkComboBox extends ComboBoxWithWidePopup<Perl6JdkComboBox.Jdk
                     @Nullable Condition<SdkTypeId> sdkTypeFilter,
                     @Nullable Condition<Sdk> sdkFilter,
                     boolean addSuggested) {
-            if (myProject != null)
-                jdksModel.reset(myProject);
             removeAllElements();
             if (firstItem != null) addElement(firstItem);
 

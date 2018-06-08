@@ -63,7 +63,7 @@ public class Perl6SdkConfigurable implements UnnamedConfigurable {
     public JComponent createComponent() {
         if (myJdkPanel == null) {
             myJdkPanel = new JPanel(new MigLayout("", "left", "top"));
-            myCbProjectJdk = new Perl6JdkComboBox(myJdksModel, myProject);
+            myCbProjectJdk = new Perl6JdkComboBox(myJdksModel);
             myCbProjectJdk.insertItemAt(new Perl6JdkComboBox.NoneJdkComboBoxItem(), 0);
             myCbProjectJdk.addActionListener(new ActionListener() {
                 @Override
