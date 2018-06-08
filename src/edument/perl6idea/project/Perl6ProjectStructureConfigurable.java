@@ -46,6 +46,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     protected final ProjectStructureConfigurable.UIState myUiState = new ProjectStructureConfigurable.UIState();
     private final Project myProject;
     private final ModulesConfigurator myModuleConfigurator;
+    private ModuleStructureConfigurable myModulesConfig;
     private final StructureConfigurableContext myContext;
     private JPanel myComponent;
     private OnePixelSplitter mySplitter;
@@ -55,7 +56,6 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     private final List<Configurable> myName2Config = new ArrayList<>();
     private JComponent myToolbarComponent;
     private Wrapper myDetails = new Wrapper();
-    private ModuleStructureConfigurable myModulesConfig;
     private boolean myUiInitialized;
     private Configurable mySelectedConfigurable;
     private History myHistory = new History(this);
@@ -192,6 +192,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
             myContext.reset();
             myProjectSdkModel.reset(myProject);
             myProjectConfig.reset();
+            myModulesConfig.reset();
         } finally {
             token.finish();
         }
