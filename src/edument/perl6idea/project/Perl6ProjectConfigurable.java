@@ -19,9 +19,6 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurable<Project> implements DetailsComponent.Facade {
     private final Project myProject;

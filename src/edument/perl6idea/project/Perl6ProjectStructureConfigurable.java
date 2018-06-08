@@ -171,6 +171,10 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
             mySidePanel.addPlace(createPlaceFor(configurable), new Presentation(configurable.getDisplayName()));
     }
 
+    public ProjectSdksModel getProjectSdkModel() {
+        return myProjectSdkModel;
+    }
+
     private static Place createPlaceFor(Configurable configurable) {
         return new Place().putPath(CATEGORY, configurable);
     }
@@ -301,7 +305,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         myUiInitialized = false;
     }
 
-    public static Configurable getInstance(final Project project) {
+    public static Perl6ProjectStructureConfigurable getInstance(final Project project) {
         return ServiceManager.getService(project, Perl6ProjectStructureConfigurable.class);
     }
 
