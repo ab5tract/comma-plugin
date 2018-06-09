@@ -45,7 +45,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     public static final DataKey<ProjectStructureConfigurable> KEY = DataKey.create("ProjectStructureConfiguration");
     protected final ProjectStructureConfigurable.UIState myUiState = new ProjectStructureConfigurable.UIState();
     private final Project myProject;
-    private final ModulesConfigurator myModuleConfigurator;
+    private final Perl6ModulesConfigurator myModuleConfigurator;
     private ModuleStructureConfigurable myModulesConfig;
     private final StructureConfigurableContext myContext;
     private JPanel myComponent;
@@ -67,7 +67,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
                                              final ModuleStructureConfigurable moduleStructureConfigurable) {
         myProject = project;
 
-        myModuleConfigurator = new ModulesConfigurator(myProject);
+        myModuleConfigurator = new Perl6ModulesConfigurator(myProject);
         myContext = new StructureConfigurableContext(myProject, myModuleConfigurator);
         myModuleConfigurator.setContext(myContext);
 
