@@ -50,6 +50,7 @@
                           serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.GlobalProjectStructureProblemsSettings"/>
       <favoritesListProvider implementation="com.intellij.ide.bookmarks.BookmarksFavoriteListProvider"/>
       <favoritesListProvider implementation="com.intellij.xdebugger.impl.breakpoints.BreakpointsFavoriteListProvider"/>
+      <moduleConfigurationEditorProvider implementation="edument.perl6idea.module.Perl6ModuleConfigurationEditorProvider" order="FIRST"/>
     </extensions>
 
     <application-components>
