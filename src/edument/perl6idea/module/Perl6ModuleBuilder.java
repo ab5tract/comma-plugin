@@ -131,6 +131,10 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         }
     }
 
+    public static void writeMetaFile(Path path, JSONObject object) {
+        writeCodeToPath(path, Collections.singletonList(object.toString(4)));
+    }
+
     private static void writeMetaFile(Project project, String moduleName, @Nullable String entryPointName) {
         JSONObject providesSection = new JSONObject()
                 .put(moduleName, String.format("lib%s%s.pm6", "/", moduleName.replaceAll("::", "/")));
@@ -162,6 +166,9 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 if (Files.notExists(codePath.getParent()))
                     Files.createDirectories(codePath.getParent());
                 Files.write(codePath, lines, StandardCharsets.UTF_8);
+                LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
+                VirtualFile vfile = localFileSystem.findFileByPath(codePath.toString());
+                localFileSystem.refreshFiles(Collections.singletonList(vfile));
             } catch (IOException e) {
                 Logger.getInstance(Perl6ModuleBuilder.class).error(e);
             }
