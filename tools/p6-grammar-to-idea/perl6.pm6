@@ -208,6 +208,9 @@ grammar MAIN {
 
     token pod_block {
         || <.pod_block_finish>
+        || <.pod_block_delimited>
+        || <.pod_block_paragraph>
+        || <.pod_block_abbreviated>
     }
 
     token pod_block_finish {
@@ -229,8 +232,107 @@ grammar MAIN {
         <.end-element('POD_BLOCK_FINISH')>
     }
 
+    token pod_block_delimited {
+        ^^
+        <?before [\h* '=begin']>
+        <.start-element('POD_BLOCK_DELIMITED')>
+        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_DIRECTIVE')> '=begin' <.end-token('POD_DIRECTIVE')>
+        [
+            <?before [\h+ <.ident>]>
+            <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+            <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
+            <.pod_configuration>?
+            [
+                <.pod_newline>
+                [
+                    <.pod_block_content>
+                    [
+                        <?before [\h* '=end']>
+                        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+                        <.start-token('POD_DIRECTIVE')> '=end' <.end-token('POD_DIRECTIVE')>
+                        [
+                            <?before [\h+ <.ident>]>
+                            <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+                            <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
+                            <.pod_newline>?
+                        ]?
+                    ]?
+                ]?
+            ]?
+        ]?
+        <.end-element('POD_BLOCK_DELIMITED')>
+    }
+
+    token pod_block_content {
+        [
+            <!before \h* '=end' [\s || $]>
+            <.start-token('POD_HAVE_CONTENT')> <?> <.end-token('POD_HAVE_CONTENT')>
+            [
+            || <.pod_block>
+            || <.start-token('POD_TEXT')> \N+ <.end-token('POD_TEXT')>
+               <.pod_newline>?
+            || <.pod_newline>
+            ]
+        ]*
+    }
+
+    token pod_block_paragraph {
+        ^^
+        <?before [\h* '=for']>
+        <.start-element('POD_BLOCK_PARAGRAPH')>
+        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_DIRECTIVE')> '=for' <.end-token('POD_DIRECTIVE')>
+        [
+            <?before [\h+ <.ident>]>
+            <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+            <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
+            <.pod_configuration>?
+            [
+                <.pod_newline>
+                <.pod_para_content>
+                <.pod_newline>?
+            ]?
+        ]?
+        <.end-element('POD_BLOCK_PARAGRAPH')>
+    }
+
+    token pod_para_content {
+        [
+            <!before ^^ \h* ['=' || \n || $]>
+            <.start-token('POD_TEXT')> \N+ <.end-token('POD_TEXT')>
+            <.pod_newline>?
+        ]*
+    }
+
+    token pod_block_abbreviated {
+        ^^
+        <?before [\h* '=' <.ident>]>
+        <.start-element('POD_BLOCK_ABBREVIATED')>
+        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_DIRECTIVE')> '=' <.end-token('POD_DIRECTIVE')>
+        <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
+        [
+            <.start-token('POD_WHITESPACE')> [\h*\n || \h+] <.end-token('POD_WHITESPACE')>
+            <.pod_para_content>
+            <.pod_newline>?
+        ]?
+        <.end-element('POD_BLOCK_ABBREVIATED')>
+    }
+
     token pod_newline {
         <.start-token('POD_NEWLINE')> \h* \n <.end-token('POD_NEWLINE')>
+    }
+
+    # XXX Total cheat, no multi-line configuration parsing yet
+    token pod_configuration {
+        <?before [\h* \S]>
+        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-element('POD_CONFIGURATION')>
+        <.start-token('POD_CONFIGURATION')>
+        [ \S+ || <!before [\h+ \n]> \h+ ]+
+        <.end-token('POD_CONFIGURATION')>
+        <.end-element('POD_CONFIGURATION')>
     }
 
     token vnum {

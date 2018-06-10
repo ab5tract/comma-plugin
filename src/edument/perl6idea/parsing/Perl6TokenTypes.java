@@ -84,9 +84,12 @@ public interface Perl6TokenTypes {
     IElementType PARENTHESES_OPEN = new Perl6ElementType("PARENTHESES_OPEN");
     IElementType PARSING_INITIALIZER = new Perl6ElementType("PARSING_INITIALIZER");
     IElementType PHASER = new Perl6ElementType("PHASER");
+    IElementType POD_CONFIGURATION = new Perl6ElementType("POD_CONFIGURATION");
     IElementType POD_DIRECTIVE = new Perl6ElementType("POD_DIRECTIVE");
     IElementType POD_FINISH_TEXT = new Perl6ElementType("POD_FINISH_TEXT");
+    IElementType POD_HAVE_CONTENT = new Perl6ElementType("POD_HAVE_CONTENT");
     IElementType POD_NEWLINE = new Perl6ElementType("POD_NEWLINE");
+    IElementType POD_TEXT = new Perl6ElementType("POD_TEXT");
     IElementType POD_TYPENAME = new Perl6ElementType("POD_TYPENAME");
     IElementType POD_WHITESPACE = new Perl6ElementType("POD_WHITESPACE");
     IElementType POSTFIX = new Perl6ElementType("POSTFIX");
