@@ -109,6 +109,10 @@ public class Perl6SyntaxHighlighter extends SyntaxHighlighterBase {
         ATTRIBUTES.put(Perl6TokenTypes.TRANS_RANGE, Perl6Highlighter.TRANS_RANGE);
         ATTRIBUTES.put(Perl6TokenTypes.TRANS_ESCAPE, Perl6Highlighter.TRANS_ESCAPE);
         ATTRIBUTES.put(Perl6TokenTypes.TRANS_BAD, Perl6Highlighter.TRANS_BAD);
+        ATTRIBUTES.put(Perl6TokenTypes.POD_DIRECTIVE, Perl6Highlighter.POD_DIRECTIVE);
+        ATTRIBUTES.put(Perl6TokenTypes.POD_TYPENAME, Perl6Highlighter.POD_TYPENAME);
+        ATTRIBUTES.put(Perl6TokenTypes.POD_CONFIGURATION, Perl6Highlighter.POD_CONFIGURATION);
+        ATTRIBUTES.put(Perl6TokenTypes.POD_TEXT, Perl6Highlighter.POD_TEXT);
     }
 
     @NotNull

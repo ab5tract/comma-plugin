@@ -85,6 +85,10 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Transliteration Escape", Perl6Highlighter.TRANS_ESCAPE),
             new AttributesDescriptor("Transliteration Range Operator", Perl6Highlighter.TRANS_RANGE),
             new AttributesDescriptor("Transliteration Invalid Syntax", Perl6Highlighter.TRANS_BAD),
+            new AttributesDescriptor("Pod Directive", Perl6Highlighter.POD_DIRECTIVE),
+            new AttributesDescriptor("Pod Typename", Perl6Highlighter.POD_TYPENAME),
+            new AttributesDescriptor("Pod Configuration", Perl6Highlighter.POD_CONFIGURATION),
+            new AttributesDescriptor("Pod Text", Perl6Highlighter.POD_TEXT),
     };
 
     @Nullable
