@@ -24,7 +24,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
         if (ref.getTwigil() != ' ')
             return;
 
-        // Make sure it's not a long or late-boiund name.
+        // Make sure it's not a long or late-bound name.
         if (ref.getTwigil() == '!' || variableName.contains("::") || variableName.contains(":["))
             return;
 
