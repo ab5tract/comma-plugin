@@ -31249,6 +31249,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 return -3;
 
             case 15:
+                this.assignDynamicVariable("$*PREC", "t=");
+                this.assignDynamicVariable("$*ASSOC", "left");
                 this.state = 16;
                 continue;
 

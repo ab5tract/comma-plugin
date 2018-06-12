@@ -3683,6 +3683,7 @@ grammar MAIN {
            || <.start-token('BRACKETED_INFIX_INCOMPLETE')>
               <?>
               <.end-token('BRACKETED_INFIX_INCOMPLETE')>
+              { $*PREC = 't=' } { $*ASSOC = 'left' }
            ]
            <.end-element('BRACKETED_INFIX')>
         || <.infix_prefix_meta_operator>
