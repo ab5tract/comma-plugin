@@ -3,7 +3,12 @@ package edument.perl6idea.annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.psi.Perl6File;
+import edument.perl6idea.psi.Perl6StatementList;
 import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.psi.PodBlockFinish;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +23,19 @@ public class UndeclaredVariableAnnotator implements Annotator {
         String variableName = ref.getVariableName();
         if (variableName == null)
             return;
+
+        // Check for $=finish section
+        if (ref.getTwigil() == '=' && variableName.equals("$=finish")) {
+            PsiElement list = PsiTreeUtil.getChildOfType(
+              PsiTreeUtil.getParentOfType(element, PsiFile.class),
+              Perl6StatementList.class);
+            if (list == null) return;
+            PsiElement maybeFinish = list.getLastChild();
+            if (!(maybeFinish instanceof PodBlockFinish))
+                holder.createErrorAnnotation(
+                  element,
+                  "There is no =finish section in this file");
+        }
 
         // We only check twigilless variables for now (can't yet do attributes
         // because they may come from a role).
