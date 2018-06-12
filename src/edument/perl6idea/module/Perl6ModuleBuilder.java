@@ -168,7 +168,8 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 Files.write(codePath, lines, StandardCharsets.UTF_8);
                 LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
                 VirtualFile vfile = localFileSystem.findFileByPath(codePath.toString());
-                localFileSystem.refreshFiles(Collections.singletonList(vfile));
+                if (vfile != null)
+                    localFileSystem.refreshFiles(Collections.singletonList(vfile));
             } catch (IOException e) {
                 Logger.getInstance(Perl6ModuleBuilder.class).error(e);
             }
