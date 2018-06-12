@@ -32,7 +32,6 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "%?RESOURCES"),
         new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$?PACKAGE"),
         new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$=pod"),
-        new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$=finish"),
         new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$_"),
         new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$/"),
         new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$!")
@@ -186,6 +185,13 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             collector.offerSymbol(symbol);
             if (collector.isSatisfied())
                 return;
+        }
+        PsiElement list = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
+        if (list == null) return;
+        PsiElement finish = list.getLastChild();
+        if (finish instanceof PodBlockFinish) {
+            Perl6Symbol finishBlock = new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$=finish");
+            collector.offerSymbol(finishBlock);
         }
     }
 }
