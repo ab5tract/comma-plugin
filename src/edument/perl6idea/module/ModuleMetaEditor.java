@@ -53,7 +53,7 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     @Nls
     @Override
     public String getDisplayName() {
-        return "META6 editor";
+        return "META6.json";
     }
 
     @Nullable
@@ -61,9 +61,6 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     public JComponent createComponent() {
         if (mySettingsPanel == null) {
             mySettingsPanel = new JPanel(new MigLayout());
-            mySettingsPanel.setBorder(
-              new TitledBorder(JBUI.Borders.customLine(JBColor.BLACK, 1),
-                               "META6.json"));
             createFields();
         }
         return mySettingsPanel;
