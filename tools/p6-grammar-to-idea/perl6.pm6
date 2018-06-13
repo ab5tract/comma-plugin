@@ -432,7 +432,7 @@ grammar MAIN {
            <.start-token('STATEMENT_TERMINATOR')>
            ';'
            <.end-token('STATEMENT_TERMINATOR')>
-        || <?before <.ws>? [$ || <[)}]> || ']' || <?stopper>]>
+        || <?before <.ws>? [<[)}]> || ']' || <?stopper>]>
            <.start-token('END_OF_STATEMENT_STOPPER')> <?> <.end-token('END_OF_STATEMENT_STOPPER')>
            <.unv>*
            <.start-element('UNTERMINATED_STATEMENT')> <?> <.end-element('UNTERMINATED_STATEMENT')>
@@ -445,6 +445,7 @@ grammar MAIN {
               <.end-token('STATEMENT_TERMINATOR')>
            || <.start-token('END_OF_STATEMENT')> <?> <.end-token('END_OF_STATEMENT')>
            ]
+        || <.ws> $
         ]?
     }
 
@@ -3347,9 +3348,13 @@ grammar MAIN {
         <.opp-end-expr>
 
         # Zero-width marker token to get nesting correct.
-        <.start-token('END_OF_EXPR')>
-        <?>
-        <.end-token('END_OF_EXPR')>
+        [
+        || <!before $>
+           <.start-token('END_OF_EXPR')>
+           <?>
+           <.end-token('END_OF_EXPR')>
+        || <?>
+        ]
     }
 
     token nextterm {
