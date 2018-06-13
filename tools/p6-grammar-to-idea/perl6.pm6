@@ -3319,6 +3319,7 @@ grammar MAIN {
             { $*NEXT_TERM = '' } { $*FAKE = 0 }
             <.infixish('')>
             <.opp-end-infix>
+            { $*SUB_PREC = '' }
             <.ws>
 
             [
