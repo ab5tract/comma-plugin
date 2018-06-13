@@ -4243,7 +4243,8 @@ grammar MAIN {
            <.SIGOK>
            ]?
            <.end-element('REGEX_ASSERTION')>
-        || <?['‘‚｢]> <.rxq> <.SIGOK>
+        || <?[｢]> <.rxQ> <.SIGOK>
+        || <?['‘‚]> <.rxq> <.SIGOK>
         || <?["“„]> <.rxqq> <.SIGOK>
         || <?[{]> <.rxcodeblock>
         || <?before ':' ['my'||'constant'||'state'||'our'||'temp'||'let'] <.end_keyword>>
@@ -4262,6 +4263,20 @@ grammar MAIN {
            ]?
            <.end-element('REGEX_GOAL')>
         || <.mod_internal>
+    }
+
+    token rxQ {
+        :my $*Q_BACKSLASH = 0;
+        :my $*Q_QBACKSLASH = 0;
+        :my $*Q_QQBACKSLASH = 0;
+        :my $*Q_CLOSURES = 0;
+        :my $*Q_SCALARS = 0;
+        :my $*Q_ARRAYS = 0;
+        :my $*Q_HASHES = 0;
+        :my $*Q_FUNCTIONS = 0;
+        <.start-token('STRING_LITERAL_QUOTE_OPEN')> '｢' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
+        <.quote_Q('｢', '｣', '｣')>
+        [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '｣' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
     }
 
     token rxq {
@@ -4287,9 +4302,6 @@ grammar MAIN {
         || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '’' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('’', '’', '‘')>
            [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '｢' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
-           <.quote_q('｢', '｣', '｣')>
-           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '｣' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
         ]
         <.end-element('STRING_LITERAL')>
     }
