@@ -27,5 +27,3 @@ FILE(0,31)
           PsiElement(Perl6:UNV_WHITE_SPACE)(' ')(26,27)
           Perl6VariableImpl(Perl6:VARIABLE)(27,31)
             PsiElement(Perl6:VARIABLE)('$buf')(27,31)
-      Perl6UnterminatedStatementImpl(Perl6:UNTERMINATED_STATEMENT)(31,31)
-        <empty list>

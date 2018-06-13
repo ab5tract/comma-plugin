@@ -14,5 +14,3 @@ FILE(0,9)
         PsiElement(Perl6:UNV_WHITE_SPACE)(' ')(7,8)
         Perl6BracketedInfixImpl(Perl6:BRACKETED_INFIX)(8,9)
           PsiElement(Perl6:INFIX)('[')(8,9)
-      Perl6UnterminatedStatementImpl(Perl6:UNTERMINATED_STATEMENT)(9,9)
-        <empty list>
