@@ -156,14 +156,23 @@ public class Perl6DebugThread extends Thread {
             try {
                 for (BreakpointActionRequest request : breakpointQueue) {
                     if (!request.isRemove) {
-                        int realLine = client.setBreakpoint(request.file, request.line, true, true).get();
+                        /* IDEA counts line numbers from 0, even though they
+                         * are counted starting at 1 in the UI.
+                         * MoarVM's debugserver likewise starts at 1, so we
+                         * have to add 1 here to get everything right.
+                         */
+                        int realLine = client.setBreakpoint(request.file, request.line + 1, true, true).get();
+                        /* The breakpoint line number we've received back from
+                         * the debugserver has to be translated back.
+                         */
+                        realLine = realLine - 1;
                         Perl6DebugEventBreakpointSet setEvent =
                                 new Perl6DebugEventBreakpointSet(request.file, realLine);
                         setEvent.setDebugSession(mySession);
                         setEvent.setDebugThread(this);
                         myExecutor.execute(setEvent);
                     } else {
-                        client.clearBreakpoint(request.file, request.line).get();
+                        client.clearBreakpoint(request.file, request.line + 1).get();
                     }
                 }
             } catch (CancellationException | InterruptedException | ExecutionException e) {

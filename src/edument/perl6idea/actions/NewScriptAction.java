@@ -19,7 +19,7 @@ public class NewScriptAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        Project project = e.getData(PlatformDataKeys.PROJECT);
+        Project project = e.getData(CommonDataKeys.PROJECT);
         if (project == null) return;
         InputValidator validator = new InputValidator() {
             @Override

@@ -201,7 +201,7 @@ multi sub compile($nyi) {
 }
 
 sub braid-methods(P6GrammarToIdea::Elements::BraidModel $bm) {
-    $bm.production-names.map: { production-method($^name, $bm.get-production-model($^name)) }
+    $bm.production-names.sort.map: { production-method($^name, $bm.get-production-model($^name)) }
 }
 
 sub parse-entry-method() {
@@ -223,7 +223,7 @@ sub parse-entry-method() {
 
 sub generate-parser(P6GrammarToIdea::Elements::Model $element-model) is export {
     my $main-model = $element-model.get-braid-model('MAIN');
-    my %*MANGLED = $main-model.production-names.map({ $_ => mangle($_, ++$) });
+    my %*MANGLED = $main-model.production-names.sort.map({ $_ => mangle($_, ++$) });
     my @methods = flat parse-entry-method(), braid-methods($main-model);
     my $class = Class.new: :access<public>, :name("Perl6Parser"),
         :interfaces(Interface.new(:name('PsiParser'))), :@methods;

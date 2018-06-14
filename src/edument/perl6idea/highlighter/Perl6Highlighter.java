@@ -500,4 +500,33 @@ public final class Perl6Highlighter {
             TRANS_ESCAPE_ID,
             DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE
     );
+
+    /* Pod
+     * ***
+     * Map to the default documentation colors.
+     */
+
+    static final String POD_DIRECTIVE_ID = "PERL6_DIRECTIVE";
+    public static final TextAttributesKey POD_DIRECTIVE = TextAttributesKey.createTextAttributesKey(
+            POD_DIRECTIVE_ID,
+            DefaultLanguageHighlighterColors.DOC_COMMENT_TAG
+    );
+
+    static final String POD_TYPENAME_ID = "PERL6_TYPENAME";
+    public static final TextAttributesKey POD_TYPENAME = TextAttributesKey.createTextAttributesKey(
+            POD_TYPENAME_ID,
+            DefaultLanguageHighlighterColors.DOC_COMMENT_TAG
+    );
+
+    static final String POD_CONFIGURATION_ID = "PERL6_CONFIGURATION";
+    public static final TextAttributesKey POD_CONFIGURATION = TextAttributesKey.createTextAttributesKey(
+            POD_CONFIGURATION_ID,
+            DefaultLanguageHighlighterColors.DOC_COMMENT_TAG
+    );
+
+    static final String POD_TEXT_ID = "PERL6_TEXT";
+    public static final TextAttributesKey POD_TEXT = TextAttributesKey.createTextAttributesKey(
+            POD_TEXT_ID,
+            DefaultLanguageHighlighterColors.DOC_COMMENT
+    );
 }

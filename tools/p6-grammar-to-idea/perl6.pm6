@@ -192,6 +192,7 @@ grammar MAIN {
         || <.comment>
         || <.start-token('UNV_WHITE_SPACE')> \h+ <.end-token('UNV_WHITE_SPACE')>
            <.comment>?
+        || <?before [\h* '=' [ \w || '\\']]> ^^ <.pod_content_toplevel>
         ]
     }
 
@@ -199,6 +200,139 @@ grammar MAIN {
         <.start-token('COMMENT')>
        '#' \N*
         <.end-token('COMMENT')>
+    }
+
+    token pod_content_toplevel {
+        <.pod_block>
+    }
+
+    token pod_block {
+        || <.pod_block_finish>
+        || <.pod_block_delimited>
+        || <.pod_block_paragraph>
+        || <.pod_block_abbreviated>
+    }
+
+    token pod_block_finish {
+        ^^
+        <?before [\h* [ [ ['=begin' || '=for' ] \h+ 'finish' ] || '=finish' ] ]>
+        <.start-element('POD_BLOCK_FINISH')>
+        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        [
+        || <.start-token('POD_DIRECTIVE')> '=begin' <.end-token('POD_DIRECTIVE')>
+           <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+           <.start-token('POD_TYPENAME')> 'finish' <.end-token('POD_TYPENAME')>
+        || <.start-token('POD_DIRECTIVE')> '=for' <.end-token('POD_DIRECTIVE')>
+           <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+           <.start-token('POD_TYPENAME')> 'finish' <.end-token('POD_TYPENAME')>
+        || <.start-token('POD_DIRECTIVE')> '=finish' <.end-token('POD_DIRECTIVE')>
+        ]
+        <.pod_newline>?
+        <.start-token('POD_FINISH_TEXT')> .* <.end-token('POD_FINISH_TEXT')>
+        <.end-element('POD_BLOCK_FINISH')>
+    }
+
+    token pod_block_delimited {
+        ^^
+        <?before [\h* '=begin']>
+        <.start-element('POD_BLOCK_DELIMITED')>
+        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_DIRECTIVE')> '=begin' <.end-token('POD_DIRECTIVE')>
+        [
+            <?before [\h+ <.ident>]>
+            <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+            <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
+            <.pod_configuration>?
+            [
+                <.pod_newline>
+                [
+                    <.pod_block_content>
+                    [
+                        <?before [\h* '=end']>
+                        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+                        <.start-token('POD_DIRECTIVE')> '=end' <.end-token('POD_DIRECTIVE')>
+                        [
+                            <?before [\h+ <.ident>]>
+                            <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+                            <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
+                            <.pod_newline>?
+                        ]?
+                    ]?
+                ]?
+            ]?
+        ]?
+        <.end-element('POD_BLOCK_DELIMITED')>
+    }
+
+    token pod_block_content {
+        [
+            <!before \h* '=end' [\s || $]>
+            <.start-token('POD_HAVE_CONTENT')> <?> <.end-token('POD_HAVE_CONTENT')>
+            [
+            || <.pod_block>
+            || <.start-token('POD_TEXT')> \N+ <.end-token('POD_TEXT')>
+               <.pod_newline>?
+            || <.pod_newline>
+            ]
+        ]*
+    }
+
+    token pod_block_paragraph {
+        ^^
+        <?before [\h* '=for']>
+        <.start-element('POD_BLOCK_PARAGRAPH')>
+        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_DIRECTIVE')> '=for' <.end-token('POD_DIRECTIVE')>
+        [
+            <?before [\h+ <.ident>]>
+            <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+            <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
+            <.pod_configuration>?
+            [
+                <.pod_newline>
+                <.pod_para_content>
+                <.pod_newline>?
+            ]?
+        ]?
+        <.end-element('POD_BLOCK_PARAGRAPH')>
+    }
+
+    token pod_para_content {
+        [
+            <!before ^^ \h* ['=' || \n || $]>
+            <.start-token('POD_TEXT')> \N+ <.end-token('POD_TEXT')>
+            <.pod_newline>?
+        ]*
+    }
+
+    token pod_block_abbreviated {
+        ^^
+        <?before [\h* '=' <.ident>]>
+        <.start-element('POD_BLOCK_ABBREVIATED')>
+        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_DIRECTIVE')> '=' <.end-token('POD_DIRECTIVE')>
+        <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
+        [
+            <.start-token('POD_WHITESPACE')> [\h*\n || \h+] <.end-token('POD_WHITESPACE')>
+            <.pod_para_content>
+            <.pod_newline>?
+        ]?
+        <.end-element('POD_BLOCK_ABBREVIATED')>
+    }
+
+    token pod_newline {
+        <.start-token('POD_NEWLINE')> \h* \n <.end-token('POD_NEWLINE')>
+    }
+
+    # XXX Total cheat, no multi-line configuration parsing yet
+    token pod_configuration {
+        <?before [\h* \S]>
+        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-element('POD_CONFIGURATION')>
+        <.start-token('POD_CONFIGURATION')>
+        [ \S+ || <!before [\h+ \n]> \h+ ]+
+        <.end-token('POD_CONFIGURATION')>
+        <.end-element('POD_CONFIGURATION')>
     }
 
     token vnum {
@@ -298,7 +432,7 @@ grammar MAIN {
            <.start-token('STATEMENT_TERMINATOR')>
            ';'
            <.end-token('STATEMENT_TERMINATOR')>
-        || <?before <.ws>? [$ || <[)}]> || ']' || <?stopper>]>
+        || <?before <.ws>? [<[)}]> || ']' || <?stopper>]>
            <.start-token('END_OF_STATEMENT_STOPPER')> <?> <.end-token('END_OF_STATEMENT_STOPPER')>
            <.unv>*
            <.start-element('UNTERMINATED_STATEMENT')> <?> <.end-element('UNTERMINATED_STATEMENT')>
@@ -311,6 +445,7 @@ grammar MAIN {
               <.end-token('STATEMENT_TERMINATOR')>
            || <.start-token('END_OF_STATEMENT')> <?> <.end-token('END_OF_STATEMENT')>
            ]
+        || <.ws> $
         ]?
     }
 
@@ -1360,6 +1495,7 @@ grammar MAIN {
            ]?
            <.end-element('VARIABLE')>
         || <!{ $*IN_DECL }> <?before <.sigil> '.' <.desigilname>>
+           <.start-token('SELF_CALL_VARIABLE')> <?> <.end-token('SELF_CALL_VARIABLE')>
            <.start-element('METHOD_CALL')>
            <.start-token('SELF')>
            <.sigil>
@@ -1372,6 +1508,7 @@ grammar MAIN {
            <.end-token('METHOD_CALL_NAME')>
            [
                <?before [ <.unsp> || '\\' || <?> ] '('>
+               <.start-token('SELF_CALL_VARIABLE_ARGS')> <?> <.end-token('SELF_CALL_VARIABLE_ARGS')>
                [
                || <.unsp>
                || <.start-token('WHITE_SPACE')>
@@ -1971,6 +2108,7 @@ grammar MAIN {
               <.longname_colonpairs>
               <.end-element('LONG_NAME')>
               <.end-element('IS_TRAIT_NAME')>
+              <.circumfix>?
            || <.start-token('TRAIT_INCOMPLETE')> <?> <.end-token('TRAIT_INCOMPLETE')>
            ]
         || <?before 'hides' <.ws>>
@@ -3182,6 +3320,7 @@ grammar MAIN {
             { $*NEXT_TERM = '' } { $*FAKE = 0 }
             <.infixish('')>
             <.opp-end-infix>
+            { $*SUB_PREC = '' }
             <.ws>
 
             [
@@ -3209,9 +3348,13 @@ grammar MAIN {
         <.opp-end-expr>
 
         # Zero-width marker token to get nesting correct.
-        <.start-token('END_OF_EXPR')>
-        <?>
-        <.end-token('END_OF_EXPR')>
+        [
+        || <!before $>
+           <.start-token('END_OF_EXPR')>
+           <?>
+           <.end-token('END_OF_EXPR')>
+        || <?>
+        ]
     }
 
     token nextterm {
@@ -3233,6 +3376,7 @@ grammar MAIN {
     }
 
     token prefixish {
+        [
         || <?before [<.prefix> ['«'||'<<']]>
            <.start-element('HYPER_METAOP')>
            <.prefix>
@@ -3243,6 +3387,8 @@ grammar MAIN {
         || <.start-element('PREFIX')>
            <.prefix>
            <.end-element('PREFIX')>
+       ]
+       <.ws>?
     }
 
     token prefix {
@@ -3543,6 +3689,7 @@ grammar MAIN {
            || <.start-token('BRACKETED_INFIX_INCOMPLETE')>
               <?>
               <.end-token('BRACKETED_INFIX_INCOMPLETE')>
+              { $*PREC = 't=' } { $*ASSOC = 'left' }
            ]
            <.end-element('BRACKETED_INFIX')>
         || <.infix_prefix_meta_operator>
@@ -4101,7 +4248,8 @@ grammar MAIN {
            <.SIGOK>
            ]?
            <.end-element('REGEX_ASSERTION')>
-        || <?['‘‚｢]> <.rxq> <.SIGOK>
+        || <?[｢]> <.rxQ> <.SIGOK>
+        || <?['‘‚]> <.rxq> <.SIGOK>
         || <?["“„]> <.rxqq> <.SIGOK>
         || <?[{]> <.rxcodeblock>
         || <?before ':' ['my'||'constant'||'state'||'our'||'temp'||'let'] <.end_keyword>>
@@ -4120,6 +4268,20 @@ grammar MAIN {
            ]?
            <.end-element('REGEX_GOAL')>
         || <.mod_internal>
+    }
+
+    token rxQ {
+        :my $*Q_BACKSLASH = 0;
+        :my $*Q_QBACKSLASH = 0;
+        :my $*Q_QQBACKSLASH = 0;
+        :my $*Q_CLOSURES = 0;
+        :my $*Q_SCALARS = 0;
+        :my $*Q_ARRAYS = 0;
+        :my $*Q_HASHES = 0;
+        :my $*Q_FUNCTIONS = 0;
+        <.start-token('STRING_LITERAL_QUOTE_OPEN')> '｢' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
+        <.quote_Q('｢', '｣', '｣')>
+        [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '｣' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
     }
 
     token rxq {
@@ -4145,9 +4307,6 @@ grammar MAIN {
         || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '’' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
            <.quote_q('’', '’', '‘')>
            [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <[’‘]> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
-        || <.start-token('STRING_LITERAL_QUOTE_OPEN')> '｢' <.end-token('STRING_LITERAL_QUOTE_OPEN')>
-           <.quote_q('｢', '｣', '｣')>
-           [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> '｣' <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
         ]
         <.end-element('STRING_LITERAL')>
     }

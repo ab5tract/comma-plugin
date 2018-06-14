@@ -22,7 +22,7 @@ public class NewTestAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        Project project = e.getData(PlatformDataKeys.PROJECT);
+        Project project = e.getData(CommonDataKeys.PROJECT);
         if (project == null) return;
         InputValidator validator = new InputValidator() {
             @Override
@@ -56,7 +56,7 @@ public class NewTestAction extends AnAction {
         if (testPath == null) {
             VirtualFile path = project.getBaseDir();
             if (path == null) return;
-            testPath = Paths.get(path.getPath(), "t", fileName).toString();
+            testPath = Paths.get(path.getPath(), "t").toString();
         }
 
         testPath = Perl6ModuleBuilder.stubTest(testPath, fileName, Collections.emptyList());

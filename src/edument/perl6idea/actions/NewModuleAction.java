@@ -22,10 +22,9 @@ import java.nio.file.Paths;
 import static java.io.File.separator;
 
 public class NewModuleAction extends AnAction {
-
     @Override
     public void actionPerformed(AnActionEvent e) {
-        Project project = e.getData(PlatformDataKeys.PROJECT);
+        Project project = e.getData(CommonDataKeys.PROJECT);
         if (project == null) return;
         InputValidator validator = new InputValidator() {
             @Override
@@ -42,6 +41,7 @@ public class NewModuleAction extends AnAction {
         String baseDir = project.getBaseDir().getCanonicalPath();
         if (baseDir == null)
             throw new IllegalStateException("Cannot create a module without a project base directory!");
+        baseDir = Paths.get(baseDir, "lib").toString();
 
         Object navigatable = e.getData(CommonDataKeys.NAVIGATABLE);
         String modulePrefix = null;

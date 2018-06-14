@@ -84,6 +84,14 @@ public interface Perl6TokenTypes {
     IElementType PARENTHESES_OPEN = new Perl6ElementType("PARENTHESES_OPEN");
     IElementType PARSING_INITIALIZER = new Perl6ElementType("PARSING_INITIALIZER");
     IElementType PHASER = new Perl6ElementType("PHASER");
+    IElementType POD_CONFIGURATION = new Perl6ElementType("POD_CONFIGURATION");
+    IElementType POD_DIRECTIVE = new Perl6ElementType("POD_DIRECTIVE");
+    IElementType POD_FINISH_TEXT = new Perl6ElementType("POD_FINISH_TEXT");
+    IElementType POD_HAVE_CONTENT = new Perl6ElementType("POD_HAVE_CONTENT");
+    IElementType POD_NEWLINE = new Perl6ElementType("POD_NEWLINE");
+    IElementType POD_TEXT = new Perl6ElementType("POD_TEXT");
+    IElementType POD_TYPENAME = new Perl6ElementType("POD_TYPENAME");
+    IElementType POD_WHITESPACE = new Perl6ElementType("POD_WHITESPACE");
     IElementType POSTFIX = new Perl6ElementType("POSTFIX");
     IElementType POSTFIX_INTERPOLATIN = new Perl6ElementType("POSTFIX_INTERPOLATIN");
     IElementType PREFIX = new Perl6ElementType("PREFIX");
@@ -124,6 +132,8 @@ public interface Perl6TokenTypes {
     IElementType ROUTINE_NAME = new Perl6ElementType("ROUTINE_NAME");
     IElementType SCOPE_DECLARATOR = new Perl6ElementType("SCOPE_DECLARATOR");
     IElementType SELF = new Perl6ElementType("SELF");
+    IElementType SELF_CALL_VARIABLE = new Perl6ElementType("SELF_CALL_VARIABLE");
+    IElementType SELF_CALL_VARIABLE_ARGS = new Perl6ElementType("SELF_CALL_VARIABLE_ARGS");
     IElementType SEMI_LIST_END = new Perl6ElementType("SEMI_LIST_END");
     IElementType SHAPE_DECLARATION = new Perl6ElementType("SHAPE_DECLARATION");
     IElementType SIGNATURE_BRACKET_CLOSE = new Perl6ElementType("SIGNATURE_BRACKET_CLOSE");

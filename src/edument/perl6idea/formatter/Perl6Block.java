@@ -103,7 +103,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     }
 
     private static final Set<IElementType> NOT_CONTINUATIONY = new HashSet<>(Arrays.asList(
-        FILE, STATEMENT_LIST, IF_STATEMENT
+        FILE, STATEMENT_LIST, IF_STATEMENT, PACKAGE_DECLARATION
     ));
 
     @NotNull

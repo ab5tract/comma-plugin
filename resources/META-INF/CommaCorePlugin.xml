@@ -35,7 +35,7 @@
       <applicationService serviceInterface="com.intellij.openapi.roots.ui.OrderEntryAppearanceService"
                           serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
       <applicationService serviceImplementation="com.intellij.ide.projectWizard.ProjectCategoryUsagesCollector"/>
-      <projectWizard.projectCategory implementation="com.intellij.ide.projectWizard.ModuleTypeCategory"/>
+      <projectWizard.projectCategory implementation="edument.perl6idea.module.Perl6ModuleTypeCategory"/>
       <projectService serviceImplementation="edument.perl6idea.project.Perl6ProjectStructureConfigurable"/>
       <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable"/>
       <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectLibrariesConfigurable"/>
