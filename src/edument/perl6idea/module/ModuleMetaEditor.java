@@ -53,7 +53,7 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     @Nls
     @Override
     public String getDisplayName() {
-        return "META6.json";
+        return "Metadata";
     }
 
     @Nullable

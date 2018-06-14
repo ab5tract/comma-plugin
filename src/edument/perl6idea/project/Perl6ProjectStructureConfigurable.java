@@ -6,6 +6,7 @@ import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.BaseConfigurable;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
@@ -145,7 +146,6 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     }
 
     private void addModulesConfig() {
-        myModulesConfig = ModuleStructureConfigurable.getInstance(myProject);
         addConfigurable(myModulesConfig, ProjectStructureConfigurableFilter.ConfigurableId.MODULES);
     }
 
@@ -170,6 +170,10 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
 
     public ProjectSdksModel getProjectSdkModel() {
         return myProjectSdkModel;
+    }
+
+    public StructureConfigurableContext getContext() {
+        return myContext;
     }
 
     private static Place createPlaceFor(Configurable configurable) {

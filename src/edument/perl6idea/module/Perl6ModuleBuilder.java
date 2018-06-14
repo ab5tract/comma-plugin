@@ -300,4 +300,17 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
             nameField.setText(StringUtil.sanitizeJavaIdentifier(moduleName));
         return super.modifySettingsStep(settingsStep);
     }
+
+    @Nullable
+    public static JSONObject getMetaJsonFromModulePath(String path) {
+        Path metaPath = Paths.get(path).resolveSibling("META6.json");
+        if (metaPath == null) return null;
+        String jsonString;
+        try {
+            jsonString = new String(Files.readAllBytes(metaPath), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            return null;
+        }
+        return new JSONObject(jsonString);
+    }
 }

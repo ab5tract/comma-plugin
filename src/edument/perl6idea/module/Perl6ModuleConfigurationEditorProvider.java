@@ -20,6 +20,7 @@ public class Perl6ModuleConfigurationEditorProvider implements ModuleConfigurati
         } else {
             List<ModuleConfigurationEditor> editors = new ArrayList<>();
             editors.add(new ModuleMetaEditor(state));
+            editors.add(new Perl6ModuleDependenciesEditor(state));
             return editors.toArray(ModuleConfigurationEditor.EMPTY);
         }
     }

@@ -9,8 +9,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.psi.PsiElement;
+import com.intellij.util.containers.ArrayListSet;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.symbols.Perl6ExternalSymbol;
@@ -18,9 +20,21 @@ import edument.perl6idea.psi.symbols.Perl6SettingSymbol;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.utils.Perl6CommandLine;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -31,10 +45,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,9 +59,56 @@ public class Perl6SdkType extends SdkType {
     private Map<String, String> moarBuildConfig;
     private Map<String, List<Perl6Symbol>> useNameCache = new ConcurrentHashMap<>();
     private Map<String, List<Perl6Symbol>> needNameCache = new ConcurrentHashMap<>();
+    private static Pair<Set<String>, Instant> modulesList = null;
 
     private Perl6SdkType() {
         super(NAME);
+    }
+
+    public static Set<String> getModulesList() {
+        if (modulesList != null) {
+            Instant past = Instant.now().minus(Duration.ofMinutes(30));
+            if (!past.isAfter(modulesList.second))
+                return modulesList.first;
+        }
+
+        // Try first mirror
+        String githubOutput = doRequest("http://ecosystem-api.p6c.org/projects.json");
+        // Try second mirror
+        if (githubOutput == null)
+            githubOutput = doRequest("http://ecosystem-api.p6c.org/projects1.json");
+
+        String cpanOutput = doRequest("https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan.json");
+
+        Set<String> names = new HashSet<>();
+        populateModulesSet(githubOutput, names);
+        populateModulesSet(cpanOutput, names);
+        modulesList = new Pair<>(names, Instant.now());
+        return names;
+    }
+
+    private static void populateModulesSet(String output, Set<String> names) {
+        if (output == null) return;
+        new JSONArray(output).forEach((o) -> {
+            try {
+                names.add(((JSONObject)(o)).getString("name"));
+            }
+            catch (JSONException ignored) {}
+        });
+    }
+
+    private static String doRequest(String url) {
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(url);
+        try {
+            HttpResponse response = client.execute(httpGet);
+            if (response.getStatusLine().getStatusCode() != 200) return null;
+            if (response.getEntity() == null) return null;
+            return EntityUtils.toString(response.getEntity());
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 
     public static Perl6SdkType getInstance() {
