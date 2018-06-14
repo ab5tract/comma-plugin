@@ -191,7 +191,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
                 myNameField.getText(),
                 (Perl6DependencyScope)myScopeCombo.getSelectedItem())
             )) {
-                return new ValidationInfo("Such dependency already exists");
+                return new ValidationInfo("This dependency already exists");
             }
             return null;
         }
