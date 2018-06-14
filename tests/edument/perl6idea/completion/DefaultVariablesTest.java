@@ -18,9 +18,10 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$_", "$/", "$!", "$=finish",
-                "$=pod", "$?FILE", "$?LANG", "$?LINE", "$?PACKAGE")));
-        assertEquals(9, vars.size());
+        assertTrue(vars.containsAll(
+          Arrays.asList("$_", "$/", "$!", "$=pod", "$?FILE",
+                        "$?LANG", "$?LINE", "$?PACKAGE")));
+        assertEquals(8, vars.size());
     }
 
     public void testCompletionResources() {
