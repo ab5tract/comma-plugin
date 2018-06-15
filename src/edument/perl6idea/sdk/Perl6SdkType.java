@@ -59,56 +59,9 @@ public class Perl6SdkType extends SdkType {
     private Map<String, String> moarBuildConfig;
     private Map<String, List<Perl6Symbol>> useNameCache = new ConcurrentHashMap<>();
     private Map<String, List<Perl6Symbol>> needNameCache = new ConcurrentHashMap<>();
-    private static Pair<Set<String>, Instant> modulesList = null;
 
     private Perl6SdkType() {
         super(NAME);
-    }
-
-    public static Set<String> getModulesList() {
-        if (modulesList != null) {
-            Instant past = Instant.now().minus(Duration.ofMinutes(30));
-            if (!past.isAfter(modulesList.second))
-                return modulesList.first;
-        }
-
-        // Try first mirror
-        String githubOutput = doRequest("http://ecosystem-api.p6c.org/projects.json");
-        // Try second mirror
-        if (githubOutput == null)
-            githubOutput = doRequest("http://ecosystem-api.p6c.org/projects1.json");
-
-        String cpanOutput = doRequest("https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan.json");
-
-        Set<String> names = new HashSet<>();
-        populateModulesSet(githubOutput, names);
-        populateModulesSet(cpanOutput, names);
-        modulesList = new Pair<>(names, Instant.now());
-        return names;
-    }
-
-    private static void populateModulesSet(String output, Set<String> names) {
-        if (output == null) return;
-        new JSONArray(output).forEach((o) -> {
-            try {
-                names.add(((JSONObject)(o)).getString("name"));
-            }
-            catch (JSONException ignored) {}
-        });
-    }
-
-    private static String doRequest(String url) {
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(url);
-        try {
-            HttpResponse response = client.execute(httpGet);
-            if (response.getStatusLine().getStatusCode() != 200) return null;
-            if (response.getEntity() == null) return null;
-            return EntityUtils.toString(response.getEntity());
-        }
-        catch (Exception e) {
-            return null;
-        }
     }
 
     public static Perl6SdkType getInstance() {

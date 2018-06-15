@@ -17,7 +17,7 @@ import com.intellij.ui.table.JBTable;
 import com.intellij.util.IconUtil;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.JBUI;
-import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.utils.Perl6ModuleListFetcher;
 import gnu.trove.TIntArrayList;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
@@ -228,12 +228,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(myProject, "Getting Perl 6 Modules List"){
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
-                    Set<String> variants = Perl6SdkType.getModulesList();
-                    ApplicationManager.getApplication().executeOnPooledThread(() -> ApplicationManager.getApplication().runReadAction(() -> {
-                        myNameField.setVariants(variants);
-                    }));
-                    indicator.setFraction(1.0);
-                    indicator.setText("finished");
+                    myNameField.setVariants(Perl6ModuleListFetcher.getModulesListAsync(myProject));
                 }
             }, new EmptyProgressIndicator());
             return myPanel;
