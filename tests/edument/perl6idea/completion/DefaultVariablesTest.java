@@ -18,9 +18,11 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$_", "$/", "$!", "$=finish",
-                "$=pod", "$?FILE", "$?LANG", "$?LINE", "$?PACKAGE")));
-        assertEquals(9, vars.size());
+        assertTrue(vars.containsAll(
+          Arrays.asList("$_", "$/", "$!", "$=pod", "$?FILE",
+                        "$?LANG", "$?LINE", "$?PACKAGE")));
+        assertFalse(vars.contains("$=finish"));
+        assertEquals(8, vars.size());
     }
 
     public void testCompletionResources() {
@@ -82,5 +84,13 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertTrue(vars.containsAll(Arrays.asList("&?ROUTINE", "&?BLOCK")));
+    }
+
+    public void testPodFinishCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say $=<caret>;\n=for finish\n\n");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("$=pod", "$=finish")));
     }
 }

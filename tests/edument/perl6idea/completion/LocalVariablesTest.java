@@ -20,7 +20,7 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertTrue(vars.containsAll(Collections.singletonList("$a")));
-        assertEquals(10, vars.size());
+        assertEquals(9, vars.size());
 
         myFixture.type("a;\n@");
         myFixture.complete(CompletionType.BASIC, 1);
