@@ -23,13 +23,14 @@ public class ModuleCompletionTest extends LightPlatformCodeInsightFixtureTestCas
         assertNull(newModuleAction.processNavigatable(psiDirectory));
         assertEquals(newModuleAction.getBaseDir(), baseDir.getCanonicalPath());
 
-        // Test 'lib/Foo' case
+        // Test 'lib' case
         newModuleAction.setBaseDir(Paths.get(baseDir.getCanonicalPath(), "lib").toString());
         VirtualFile lib = getOrCreateDirectory(baseDir, "lib");
         psiDirectory = new PsiDirectoryImpl(psiManager, lib);
         assertNull(newModuleAction.processNavigatable(psiDirectory));
         assertEquals(newModuleAction.getBaseDir(), lib.getCanonicalPath());
 
+        // Test 'lib/Foo' case
         VirtualFile foo = getOrCreateDirectory(lib, "Foo");
         PsiDirectory insideLib = new PsiDirectoryImpl(psiManager, foo);
         assertEquals("Foo::", newModuleAction.processNavigatable(insideLib));
