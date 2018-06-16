@@ -297,7 +297,7 @@ public class Perl6SdkType extends SdkType {
     private List<Perl6Symbol> loadModuleSymbols(Project project, String directive, String name) {
         String homePath = getSdkHomeByProject(project);
         if (homePath == null) {
-            LOG.error(new ExecutionException("SDK path is not set"));
+            LOG.warn(new ExecutionException("SDK path is not set"));
             return new ArrayList<>();
         }
         File moduleSymbols = Perl6CommandLine.getResourceAsFile(this,"symbols/perl6-module-symbols.p6");

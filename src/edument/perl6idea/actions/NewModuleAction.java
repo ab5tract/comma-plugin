@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidator;
@@ -22,6 +23,9 @@ import java.nio.file.Paths;
 import static java.io.File.separator;
 
 public class NewModuleAction extends AnAction {
+    private static final Logger LOG = Logger.getInstance(NewModuleAction.class);
+    private String myBaseDir;
+
     @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(CommonDataKeys.PROJECT);
@@ -38,10 +42,10 @@ public class NewModuleAction extends AnAction {
             }
         };
 
-        String baseDir = project.getBaseDir().getCanonicalPath();
-        if (baseDir == null)
+        myBaseDir = project.getBaseDir().getCanonicalPath();
+        if (myBaseDir == null)
             throw new IllegalStateException("Cannot create a module without a project base directory!");
-        baseDir = Paths.get(baseDir, "lib").toString();
+        myBaseDir = Paths.get(myBaseDir, "lib").toString();
 
         Object navigatable = e.getData(CommonDataKeys.NAVIGATABLE);
         String modulePrefix = null;
@@ -52,16 +56,7 @@ public class NewModuleAction extends AnAction {
             } else if (navigatable instanceof PsiFile) {
                 psiDirectory = ((PsiFile) navigatable).getParent();
             }
-            if (psiDirectory != null) {
-                String path = psiDirectory.getVirtualFile().getPath();
-                String[] parts = path.split(baseDir + "[/\\\\]" + "lib" + "[/\\\\]");
-                if (parts.length > 1) {
-                    baseDir = baseDir + separator + "lib";
-                    modulePrefix = String.join("::", parts[1].split("[/\\\\]")) + "::";
-                } else {
-                    baseDir = path;
-                }
-            }
+            modulePrefix = processNavigatable(psiDirectory);
         }
 
         String moduleName = Messages.showInputDialog(project,
@@ -71,15 +66,38 @@ public class NewModuleAction extends AnAction {
         // If user cancelled action.
         if (moduleName == null) return;
         Path meta = Perl6ModuleBuilder.getMETAFilePath(project);
-        boolean metaExists = true;
-        if (meta != null)
-            metaExists = !Files.exists(meta);
+        boolean metaExists = meta != null && Files.exists(meta);
 
-        String modulePath = Perl6ModuleBuilder.stubModule(project, baseDir,
-                moduleName, null,
-                metaExists);
+        String modulePath = Perl6ModuleBuilder.stubModule(project, myBaseDir,
+                                                          moduleName, null,
+                                                          !metaExists);
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(modulePath).toFile());
-        assert moduleFile != null;
-        FileEditorManager.getInstance(project).openFile(moduleFile, true);
+        if (moduleFile != null)
+            FileEditorManager.getInstance(project).openFile(moduleFile, true);
+        else
+            LOG.warn("File was not created");
+    }
+
+    public String processNavigatable(PsiDirectory psiDirectory) {
+        if (psiDirectory != null) {
+            String path = psiDirectory.getVirtualFile().getPath();
+            String[] parts = path.split(myBaseDir + "[/\\\\]");
+            if (parts.length > 1) {
+                // If we are inside of `lib`
+                return String.join("::", parts[1].split("[/\\\\]")) + "::";
+            } else {
+                // some another directory becomes root for module typed
+                myBaseDir = path;
+            }
+        }
+        return null;
+    }
+
+    public String getBaseDir() {
+        return myBaseDir;
+    }
+
+    public void setBaseDir(String baseDir) {
+        myBaseDir = baseDir;
     }
 }
