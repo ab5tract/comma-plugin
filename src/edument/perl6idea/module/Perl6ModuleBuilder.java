@@ -22,6 +22,7 @@ import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6ProjectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.SystemIndependent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -109,7 +110,11 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         if (firstModule) {
             writeMetaFile(project, moduleName, entryPointName);
         } else {
-            addModuleToMetaFile(project, moduleName);
+            String projectBasePath = project.getBasePath();
+            // Do not add module to META6.json if it is not under /lib
+            if (projectBasePath != null &&
+                moduleLibraryPath.contains(Paths.get(projectBasePath, "lib").toString()))
+                addModuleToMetaFile(project, moduleName);
         }
         String modulePath = Paths.get(moduleLibraryPath, (moduleName.split("::"))) + ".pm6";
         new File(modulePath).getParentFile().mkdirs();
@@ -176,9 +181,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         for (String oneImport : imports) {
             lines.add(String.format("use %s;", oneImport));
         }
-        lines.add("use Test;");
-        lines.add("");
-        lines.add("done-testing;");
+        lines.addAll(Arrays.asList("use Test;", "", "done-testing;"));
         writeCodeToPath(Paths.get(testPath), lines);
         return testPath;
     }
