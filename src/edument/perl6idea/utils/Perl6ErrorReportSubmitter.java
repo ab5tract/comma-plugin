@@ -10,17 +10,33 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.diagnostic.SubmittedReportInfo;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.util.Consumer;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import java.awt.*;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
     private static String URL = "https://commaide.com/api/error-reports";
@@ -40,8 +56,13 @@ public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
                           @Nullable String additionalInfo,
                           @NotNull Component parentComponent,
                           @NotNull Consumer<SubmittedReportInfo> consumer) {
-        postError(new Gson().toJson(createErrorBean(events[0], additionalInfo)));
-        return true;
+        try {
+            postError(new Gson().toJson(createErrorBean(events[0], additionalInfo)));
+            return true;
+        }
+        catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
+            return false;
+        }
     }
 
     private static ErrorBean createErrorBean(IdeaLoggingEvent event, String info) {
@@ -54,9 +75,9 @@ public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
         return errorBean;
     }
 
-    private static void postError(String json) {
+    private static void postError(String json) throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         try {
-            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpClient httpClient = createTrustingClient();
             HttpPost httpPost = new HttpPost(URL);
             httpPost.setEntity(new StringEntity(json, ContentType.APPLICATION_JSON));
             httpClient.execute(httpPost);
@@ -64,5 +85,24 @@ public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
             Logger.getInstance(Perl6ErrorReportSubmitter.class)
                   .error("Could not send bug report: " + e.getMessage());
         }
+    }
+
+    private static HttpClient createTrustingClient() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+        HttpClientBuilder builder = HttpClientBuilder.create();
+
+        SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+            public boolean isTrusted(X509Certificate[] arg0, String arg1) {
+                return true;
+            }
+        }).build();
+        builder.setSSLContext(sslContext);
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+          .register("http", PlainConnectionSocketFactory.getSocketFactory())
+          .register("https", new SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE))
+          .build();
+
+        PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+        builder.setConnectionManager(connMgr);
+        return builder.build();
     }
 }
