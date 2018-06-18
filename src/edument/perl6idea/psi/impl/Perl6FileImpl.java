@@ -188,8 +188,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         }
         PsiElement list = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
         if (list == null) return;
-        PsiElement finish = list.getLastChild();
-        if (finish instanceof PodBlockFinish) {
+        PsiElement finish = PsiTreeUtil.findChildOfType(list, PodBlockFinish.class);
+        if (finish != null) {
             Perl6Symbol finishBlock = new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$=finish");
             collector.offerSymbol(finishBlock);
         }

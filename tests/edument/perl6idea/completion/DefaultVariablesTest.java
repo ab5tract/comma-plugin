@@ -87,7 +87,15 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testPodFinishCompletion() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say $=<caret>;\n=for finish\n\n");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say $=<caret>\n\n=for finish\n\n");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("$=pod", "$=finish")));
+    }
+
+    public void testPodFinishInBlockComplection() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "if True {\nsay $=<caret>\n}\n\n=for finish\n\n");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
