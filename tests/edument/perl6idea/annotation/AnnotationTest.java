@@ -39,6 +39,21 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, false);
     }
 
+    public void testUndeclaredVariableAnnotatorFinishPresent() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"say $=finish;\n\n=begin finish\n\nfoo");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
+    public void testUndeclaredVariableAnnotatorFinishIsNotPresent() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"say <error descr=\"There is no =finish section in this file\">$=finish</error>;");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
+    public void testUndeclaredVariableAnnotatorFinishPresentInBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"if 1 {\nsay $=finish;\n}\n=begin finish\n\nfoo");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
     public void testLeadingZeroAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <warning descr=\"Leading 0 does not indicate octal in Perl 6; use 0o755\">0755</warning>;");
         myFixture.checkHighlighting(true, false, false);

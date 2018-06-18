@@ -27,11 +27,11 @@ public class UndeclaredVariableAnnotator implements Annotator {
         // Check for $=finish section
         if (ref.getTwigil() == '=' && variableName.equals("$=finish")) {
             PsiElement list = PsiTreeUtil.getChildOfType(
-              PsiTreeUtil.getTopmostParentOfType(element, PsiFile.class),
+              PsiTreeUtil.getParentOfType(element, PsiFile.class),
               Perl6StatementList.class);
             if (list == null) return;
-            PsiElement maybeFinish = PsiTreeUtil.getChildOfType(list, PodBlockFinish.class);
-            if (!(maybeFinish == null))
+            PsiElement maybeFinish = PsiTreeUtil.findChildOfType(list, PodBlockFinish.class);
+            if (maybeFinish == null)
                 holder.createErrorAnnotation(
                   element,
                   "There is no =finish section in this file");
