@@ -1,5 +1,37 @@
 <h1>Change List</h1>
 
-<h2>2018.5.0</h2>
+<h2>2018.6.0</h2>
 
-<p>Initial release. Everything is new!</p>
+<ul>
+  <li>Introduce a Project Structure dialog, available from the File menu.
+    This allows changing the project's Perl 6 SDK, as well as editing
+    various elements of META6.json.</li>
+  <li>Provide support for editing module dependencies in META6.json in the
+    new Project Structure dialog, with auto-complete of distribution names
+    based on data from the module ecosystem.</li>
+  <li>Implement basic Pod parsing (recognize the block, paragraph, and
+    abbreviated forms), with highlighting of directives and text</li>
+  <li>Support =finish and its various other forms</li>
+  <li>When the current file has a =finish, suggest $=finish in auto-complete</li>
+  <li>When $=finish is used without a =finish section, mark it as a problem</li>
+  <li>Recognize .pod6 files as Perl 6 and highlight them</li>
+  <li>Recognize halfwidth corner brackets in regexes</li>
+  <li>Enable the "Favorites" panel (used to throw an exception on opening)</li>
+  <li>Fix parser to accept whitespace after a prefix operator</li>
+  <li>Fix parser to accept a circumfix after an <code>is</code> trait longname</li>
+  <li>Fix %.foo{bar} parsing crash</li>
+  <li>Disable SSL verification when submitting bug reports, in an effort to
+    make it work for those behind coroproate firewalls</li>
+  <li>Fix ModuleType exception that was thrown when creating a new project or
+    doing a project import</li>
+  <li>Treat all files under bin/ as Perl 6 scripts</li>
+  <li>Fix multiple Unbalanced Tree parser failures</li>
+  <li>Fix indentation after a unit class declaration</li>
+  <li>Make auto-insertion of a closing brace work at the very end of the file</li>
+  <li>Avoid an infinite recursion when resolving module symbols</li>
+  <li>Fix an off-by-one in translating between IDEA and MoarVM line numbers in
+    the debugger</li>
+  <li>Improve file placement for File &gt; New &gt; Module/Test to place under lib
+    and t respectively</li>
+  <li>Provide a Send Feedback link so that the Send Feedback menu item now works</li>
+</ul>
