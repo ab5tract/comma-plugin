@@ -410,7 +410,7 @@ grammar MAIN {
 
     token bogus_statement {
         <.start-token('BAD_CHARACTER')>
-        <-[;}]>+
+        [ <-[;}=]>+ || <!before ^^ '='> '=' ]+
         <.end-token('BAD_CHARACTER')>
     }
 
