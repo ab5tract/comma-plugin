@@ -1,0 +1,1 @@
+use-ok 'Pod::To::BigPage', 'load module Pod::To::BigPage';

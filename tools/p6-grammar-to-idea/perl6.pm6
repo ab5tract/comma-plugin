@@ -740,6 +740,7 @@ grammar MAIN {
 
     token statement_control_need {
         <?before ['need' <.ws>]>
+        <!before 'need' <[-']>>
         <.start-element('NEED_STATEMENT')>
         <.start-token('STATEMENT_CONTROL')>
         'need'
@@ -771,6 +772,7 @@ grammar MAIN {
     token statement_control_import {
         :my $*IN_DECL = 'import';
         <?before ['import' <.ws>]>
+        <!before 'import' <[-']>>
         <.start-element('IMPORT_STATEMENT')>
         <.start-token('STATEMENT_CONTROL')>
         'import'
@@ -787,6 +789,7 @@ grammar MAIN {
     token statement_control_no {
         :my $*IN_DECL = 'no';
         <?before ['no' <.ws>]>
+        <!before 'no' <[-']>>
         <.start-element('NO_STATEMENT')>
         <.start-token('STATEMENT_CONTROL')>
         'no'
@@ -802,6 +805,7 @@ grammar MAIN {
 
     token statement_control_use {
         <?before ['use' <.ws>]>
+        <!before 'use' <[-']>>
         :my $*IN_DECL = 'use';
         <.start-element('USE_STATEMENT')>
         <.start-token('STATEMENT_CONTROL')>
@@ -818,6 +822,7 @@ grammar MAIN {
 
     token statement_control_require {
         <?before ['require' <.ws>]>
+        <!before 'require' <[-']>>
         <.start-element('REQUIRE_STATEMENT')>
         <.start-token('STATEMENT_CONTROL')>
         'require'

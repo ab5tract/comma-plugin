@@ -124,8 +124,8 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         };
 
         final DefaultActionGroup toolbarGroup = new DefaultActionGroup();
-        toolbarGroup.add(new BackAction(myComponent));
-        toolbarGroup.add(new ForwardAction(myComponent));
+        toolbarGroup.add(new BackAction(myComponent, null));
+        toolbarGroup.add(new ForwardAction(myComponent, null));
         final ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("ProjectStructure", toolbarGroup, true);
         toolbar.setTargetComponent(myComponent);
         myToolbarComponent = toolbar.getComponent();
