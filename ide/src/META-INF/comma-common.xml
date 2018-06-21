@@ -1,0 +1,61 @@
+<idea-plugin>
+  <extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="edument.perl6idea.filetypes.Perl6FileTypeFactory"/>
+    <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
+    <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>
+    <configurationType implementation="edument.perl6idea.run.Perl6RunConfigurationType"/>
+    <configurationType implementation="edument.perl6idea.testing.Perl6TestConfigurationType"/>
+    <programRunner implementation="edument.perl6idea.debugger.Perl6DebugRunner"/>
+    <xdebugger.breakpointType implementation="edument.perl6idea.debugger.Perl6LineBreakpointType"/>
+    <lang.syntaxHighlighterFactory language="Perl6" implementationClass="edument.perl6idea.highlighter.Perl6SyntaxHighlighterFactory"/>
+    <lang.parserDefinition language="Perl6" implementationClass="edument.perl6idea.parsing.Perl6ParserDefinition"/>
+    <colorSettingsPage implementation="edument.perl6idea.highlighter.Perl6ColorSettingsPage"/>
+    <lang.formatter language="Perl6" implementationClass="edument.perl6idea.formatter.Perl6FormattingModelBuilder"/>
+    <lang.braceMatcher language="Perl6" implementationClass="edument.perl6idea.editor.Perl6BraceMatcher"/>
+    <lang.psiStructureViewFactory language="Perl6" implementationClass="edument.perl6idea.structureView.Perl6StructureViewFactory"/>
+    <lang.commenter language="Perl6" implementationClass="edument.perl6idea.editor.Perl6Commenter"/>
+    <lang.foldingBuilder language="Perl6" implementationClass="edument.perl6idea.editor.Perl6FoldingBuilder"/>
+    <typedHandler implementation="edument.perl6idea.editor.SigilCompletionAutoPopupHandler"/>
+    <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultPerl6.xml"/>
+    <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaPerl6.xml"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredVariableAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.editor.SigSpaceAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.LeadingZeroAnnotation"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MethodNotOnRangeAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingUnitKeywordAnnotator"/>
+    <stubElementTypeHolder class="edument.perl6idea.parsing.Perl6ElementTypes" />
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.ProjectModulesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllConstantsStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllAttributesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllRoutinesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllRegexesStubIndex"/>
+    <gotoClassContributor implementation="edument.perl6idea.contribution.Perl6ClassNameContributor" />
+    <gotoSymbolContributor implementation="edument.perl6idea.contribution.Perl6SymbolNameContributor" />
+    <errorHandler implementation="edument.perl6idea.utils.Perl6ErrorReportSubmitter"/>
+  </extensions>
+
+  <actions>
+    <action id="Perl6Plugin.NewScriptAction" class="edument.perl6idea.actions.NewScriptAction" text="Perl 6 Script"
+            description="Create new Perl 6 script in current project" icon="/icons/camelia.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
+    </action>
+    <action id="Perl6Plugin.NewModuleAction" class="edument.perl6idea.actions.NewModuleAction" text="Perl 6 Module"
+            description="Create new Perl 6 module in current project" icon="/icons/camelia.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewScriptAction"/>
+    </action>
+    <action id="Perl6Plugin.NewTestAction" class="edument.perl6idea.actions.NewTestAction" text="Perl 6 Test"
+            description="Create new Perl 6 test in current project" icon="/icons/camelia.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewModuleAction"/>
+    </action>
+
+  </actions>
+  <application-components>
+    <component>
+      <implementation-class>edument.perl6idea.event.ModuleMetaChangeListener</implementation-class>
+    </component>
+  </application-components>
+  <project-components>
+  </project-components>
+</idea-plugin>
