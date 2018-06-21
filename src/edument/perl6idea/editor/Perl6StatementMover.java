@@ -16,6 +16,7 @@ import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6StatementList;
 import org.jetbrains.annotations.NotNull;
 
+import static edument.perl6idea.parsing.Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE;
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6StatementMover extends StatementUpDownMover {
@@ -33,11 +34,15 @@ public class Perl6StatementMover extends StatementUpDownMover {
         final PsiFile psiFile = PsiManager.getInstance(editor.getProject()).findFile(editorEx.getVirtualFile());
         assert psiFile != null;
 
+        if (editor.getSelectionModel().getSelectionStart() != editor.getSelectionModel().getSelectionEnd())
+            return;
+
         PsiElement rangeElement1 = getNode(editor.getDocument(), info.toMove.startLine, psiFile);
         if (rangeElement1 == null) return;
         PsiElement rangeElement2 = getNode(editor.getDocument(), info.toMove2.startLine, psiFile);
         if (rangeElement2 == null) return;
 
+        // For multi-line statements
         if (rangeElement1.equals(rangeElement2)) {
             PsiElement tempRange = skipEmpty(down ? rangeElement2.getNextSibling() : rangeElement1.getPrevSibling(), down);
             if (tempRange == null) {
@@ -52,23 +57,6 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
         LineRange lineRange1 = new LineRange(rangeElement1);
         LineRange lineRange2 = new LineRange(rangeElement2);
-
-        if (down) {
-            int begin2 = countStart(new LineRange(rangeElement2).startLine, editor.getDocument(), psiFile);
-            int indent = begin2 - getLineStartSafeOffset(editor.getDocument(), new LineRange(rangeElement2).startLine);
-            int size2 = indent + rangeElement2.getTextLength() + 1;
-            offset = editor.getCaretModel().getOffset() + size2;
-        } else {
-            if (lineRange1.startLine > lineRange2.startLine) {
-                PsiElement temp = rangeElement1;
-                rangeElement1 = rangeElement2;
-                rangeElement2 = temp;
-            }
-            int size1 = countStart(new LineRange(rangeElement1).startLine, editor.getDocument(), psiFile);
-            int begin2 = countStart(new LineRange(rangeElement2).startLine, editor.getDocument(), psiFile);
-            int rel = editor.getCaretModel().getOffset() - begin2;
-            offset = size1 + rel;
-        }
 
         info.toMove = lineRange1;
         info.toMove2 = lineRange2;
@@ -87,6 +75,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
     private static PsiElement getNode(@NotNull Document document, int startOffset, PsiFile psiFile) {
         PsiElement element = skipEmpty(psiFile.findElementAt(getLineStartSafeOffset(document, startOffset)), true);
         if (element == null) return null;
+        if (element.getNode().getElementType().equals(BLOCK_CURLY_BRACKET_CLOSE)) return element;
         if (element instanceof Perl6StatementList && element.getParent() instanceof Perl6Blockoid)
             element = element.getFirstChild();
         return element instanceof Perl6Statement ? element : PsiTreeUtil.getParentOfType(element, Perl6Statement.class);
