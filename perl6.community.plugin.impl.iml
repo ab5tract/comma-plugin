@@ -35,12 +35,39 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="org.json:json:20171018" level="project" />
+    <orderEntry type="module-library">
+      <library name="tap4j" type="repository">
+        <properties maven-id="org.tap4j:tap4j:4.2.1" />
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/tap4j/tap4j/4.2.1/tap4j-4.2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="json" type="repository">
+        <properties maven-id="org.json:json:20171018" />
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/json/json/20171018/json-20171018.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module" module-name="intellij.java.testFramework" scope="TEST" />
-    <orderEntry type="library" name="org.tap4j:tap4j:4.3" level="project" />
     <orderEntry type="module" module-name="intellij.java.compiler" />
     <orderEntry type="library" name="http-client" level="project" />
-    <orderEntry type="library" name="com.miglayout:miglayout-swing:5.1" level="project" />
+    <orderEntry type="module-library">
+      <library name="miglayout-swing" type="repository">
+        <properties maven-id="com.miglayout:miglayout-swing:5.1" />
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/com/miglayout/miglayout-swing/5.1/miglayout-swing-5.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="gson" level="project" />
   </component>
 </module>
