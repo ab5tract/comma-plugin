@@ -54,6 +54,16 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, false);
     }
 
+    public void testDeclaredSubAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo() {};\nmy sub bar() {};\nfoo;\nbar()");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
+    public void testUndeclaredSubAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Subroutine foo is not declared\">foo</error>;");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
     public void testLeadingZeroAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <warning descr=\"Leading 0 does not indicate octal in Perl 6; use 0o755\">0755</warning>;");
         myFixture.checkHighlighting(true, false, false);
