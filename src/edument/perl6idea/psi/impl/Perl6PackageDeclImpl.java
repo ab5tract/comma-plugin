@@ -1,21 +1,27 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.Stub;
+import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
+import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
+import edument.perl6idea.psi.stub.index.Perl6AllRoutinesStubIndex;
+import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
+import edument.perl6idea.psi.stub.index.Perl6IndexableType;
 import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static com.intellij.psi.stubs.StubIndex.getInstance;
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 
 public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub> implements Perl6PackageDecl {
@@ -43,7 +49,11 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     }
 
     @Override
-    public Perl6RoutineDecl[] privateMethods() {
+    public Object[] privateMethods() {
+        //Perl6PackageDeclStub stub = getStub();
+        //if (stub != null)
+        //    return stubBasedPrivatemethods(stub);
+
         List<Perl6PsiElement> result = new ArrayList<>();
         Perl6Blockoid blockoid = findChildByType(BLOCKOID);
         if (blockoid == null) return new Perl6RoutineDecl[0];
@@ -58,7 +68,47 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                     result.add(routine);
             }
         }
+        //List<Perl6Trait> appliedRoles = getTraits().stream().filter(t -> t.getTraitModifier().equals("does")).collect(Collectors.toList());
+
+        //List<String> appliedRolesNames = appliedRoles.stream().map(r -> r.getTraitName()).collect(Collectors.toList());
+        //Perl6GlobalTypeStubIndex typeStubIndex = Perl6GlobalTypeStubIndex.getInstance();
+        //Project project = getProject();
+        //Collection<String> packageKeys = typeStubIndex.getAllKeys(project).stream().filter(k -> appliedRolesNames.contains(k)).collect(Collectors.toList());
+
+        //ArrayList<Perl6IndexableType> packageStubs = new ArrayList<>();
+        //for (String packageKey : packageKeys) {
+        //    packageStubs.addAll(typeStubIndex.get(packageKey, project, GlobalSearchScope.projectScope(project)));
+        //}
+        //for (Perl6IndexableType indexable : packageStubs) {
+        //    if (indexable instanceof Perl6PackageDecl) {
+        //        Perl6PackageDeclStub stub = ((Perl6PackageDecl)indexable).getStub();
+        //        if (stub != null && !stub.getPackageKind().equals("role")) continue;
+        //        if (stub != null) {
+        //            List<StubElement> childrenStubs = stub.getChildrenStubs();
+        //            for (StubElement child : childrenStubs) {
+        //                if (!(child instanceof Perl6RoutineDeclStub)) continue;
+        //                if (((Perl6RoutineDeclStub)child).isPrivate())
+        //                    result.add(((Perl6RoutineDeclStub)child).getPsi());
+        //            }
+        //        } else {
+        //            result.addAll(Arrays.asList(((Perl6PackageDecl)indexable).privateMethods()));
+        //        }
+        //    }
+        //}
         return result.toArray(new Perl6RoutineDecl[result.size()]);
+    }
+
+    private Object[] stubBasedPrivatemethods(Perl6PackageDeclStub stub) {
+        List<Perl6RoutineDecl> routines = new ArrayList<>();
+        List<StubElement> children = stub.getChildrenStubs();
+        for (StubElement child : children) {
+            if (child instanceof Perl6RoutineDeclStub) {
+                if (((Perl6RoutineDeclStub)child).isPrivate())
+                    routines.add(((Perl6RoutineDeclStub)child).getPsi());
+            }
+        }
+
+        return new Perl6RoutineDecl[0];
     }
 
     public String toString() {
@@ -116,8 +166,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                     addChildren = true;
                 }
                 if (addChildren)
-                    for (Stub c : current.getChildrenStubs())
-                        visit.add(c);
+                    visit.addAll(current.getChildrenStubs());
             }
         }
         else {

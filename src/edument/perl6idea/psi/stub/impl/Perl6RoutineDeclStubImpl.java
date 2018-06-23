@@ -11,11 +11,13 @@ public class Perl6RoutineDeclStubImpl extends StubBase<Perl6RoutineDecl> impleme
     private String routineName;
     private String routineKind;
     private boolean isExported;
+    private boolean isPrivate;
 
-    public Perl6RoutineDeclStubImpl(StubElement stub, String name, String kind, boolean exported) {
+    public Perl6RoutineDeclStubImpl(StubElement stub, String name, String kind, boolean isPrivate, boolean exported) {
         super(stub, Perl6ElementTypes.ROUTINE_DECLARATION);
         this.routineName = name;
         this.routineKind = kind;
+        this.isPrivate = isPrivate;
         isExported = exported;
     }
 
@@ -32,6 +34,11 @@ public class Perl6RoutineDeclStubImpl extends StubBase<Perl6RoutineDecl> impleme
         return getParentStub() instanceof Perl6ScopedDeclStub
                ? ((Perl6ScopedDeclStub)getParentStub()).getScope()
                : (routineKind.equals("sub") || routineKind.isEmpty() ? "my" : "has");
+    }
+
+    @Override
+    public boolean isPrivate() {
+        return isPrivate;
     }
 
     @Override
