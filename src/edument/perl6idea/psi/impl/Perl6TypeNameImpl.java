@@ -30,4 +30,8 @@ public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub
             return stub.getTypeName();
         return getText();
     }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(Perl6:TYPE_NAME)";
+    }
 }

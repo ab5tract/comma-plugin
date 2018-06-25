@@ -39,4 +39,8 @@ public class Perl6TraitImpl extends StubBasedPsiElementBase<Perl6TraitStub> impl
         PsiElement name = findChildByType(TYPE_NAME);
         return name == null ? "" : name.getText();
     }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(Perl6:TRAIT)";
+    }
 }
