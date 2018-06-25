@@ -53,6 +53,7 @@ public class Perl6TraitStubElementType extends IStubElementType<Perl6TraitStub, 
 
     @Override
     public boolean shouldCreateStub(ASTNode node) {
+        if (!(node instanceof Perl6Trait)) return false;
         String modifier = ((Perl6Trait)node).getTraitModifier();
         return modifier.equals("does") || modifier.equals("is");
     }
