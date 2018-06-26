@@ -2,6 +2,7 @@ package edument.perl6idea.psi.stub;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.*;
+import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.Perl6Trait;
 import edument.perl6idea.psi.impl.Perl6TraitImpl;
@@ -34,16 +35,16 @@ public class Perl6TraitStubElementType extends IStubElementType<Perl6TraitStub, 
 
     @Override
     public void serialize(@NotNull Perl6TraitStub stub, @NotNull StubOutputStream dataStream) throws IOException {
-        dataStream.writeUTFFast(stub.getTraitName());
-        dataStream.writeUTFFast(stub.getTraitModifier());
+        dataStream.writeName(stub.getTraitName());
+        dataStream.writeName(stub.getTraitModifier());
     }
 
     @NotNull
     @Override
     public Perl6TraitStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
-        String name = dataStream.readUTFFast();
-        String modifier = dataStream.readUTFFast();
-        return new Perl6TraitStubImpl(parentStub, modifier, name);
+        StringRef name = dataStream.readName();
+        StringRef modifier = dataStream.readName();
+        return new Perl6TraitStubImpl(parentStub, modifier.getString(), name.getString());
     }
 
     @Override
