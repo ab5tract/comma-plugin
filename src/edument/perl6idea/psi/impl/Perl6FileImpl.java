@@ -107,8 +107,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     addChildren = true;
                 }
                 if (addChildren)
-                    for (Stub c : current.getChildrenStubs())
-                        visit.add(c);
+                    visit.addAll(current.getChildrenStubs());
             }
         }
         else {
