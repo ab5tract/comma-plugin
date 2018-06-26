@@ -25,12 +25,11 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         Perl6MethodCall call = (Perl6MethodCall)getElement();
         if (!call.getCallOperator().equals("!")) return null;
         Perl6PackageDeclImpl outerPackage = PsiTreeUtil.getParentOfType(call, Perl6PackageDeclImpl.class);
-        if (outerPackage != null)
-            for (Object element : outerPackage.privateMethods()) {
-                if (element instanceof Perl6RoutineDeclStub && ((Perl6RoutineDeclStub)element).getRoutineName().equals(call.getCallName()) ||
-                    element instanceof Perl6RoutineDecl && ((Perl6RoutineDecl)element).getRoutineName().equals(call.getCallName()))
-                    return (PsiElement)element;
-            }
+        if (outerPackage == null) return null;
+        for (Object element : outerPackage.privateMethods())
+            if (element instanceof Perl6RoutineDeclStub && ((Perl6RoutineDeclStub)element).getRoutineName().equals(call.getCallName()) ||
+                element instanceof Perl6RoutineDecl && ((Perl6RoutineDecl)element).getRoutineName().equals(call.getCallName()))
+                return (PsiElement)element;
         return null;
     }
 
