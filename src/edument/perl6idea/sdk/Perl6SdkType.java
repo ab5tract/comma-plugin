@@ -9,10 +9,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.psi.PsiElement;
-import com.intellij.util.containers.ArrayListSet;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.symbols.Perl6ExternalSymbol;
@@ -20,21 +18,9 @@ import edument.perl6idea.psi.symbols.Perl6SettingSymbol;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.utils.Perl6CommandLine;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -45,8 +31,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -254,13 +238,13 @@ public class Perl6SdkType extends SdkType {
         return new ArrayList<>();
     }
 
-    private List<Perl6Symbol> makeSettingSymbols(List<String> names) {
+    private static List<Perl6Symbol> makeSettingSymbols(List<String> names) {
         return names.stream()
-            .flatMap(this::nameToSettingSymbols)
+            .flatMap(Perl6SdkType::nameToSettingSymbols)
             .collect(Collectors.toList());
     }
 
-    private Stream<Perl6Symbol> nameToSettingSymbols(String name) {
+    private static Stream<Perl6Symbol> nameToSettingSymbols(String name) {
         if (name.startsWith("&")) {
             return Stream.of(
                 new Perl6SettingSymbol(Perl6SymbolKind.Variable, name),
@@ -312,13 +296,13 @@ public class Perl6SdkType extends SdkType {
         return symbols == null ? new ArrayList<>() : externalNamesToSymbols(symbols);
     }
 
-    private List<Perl6Symbol> externalNamesToSymbols(List<String> names) {
+    private static List<Perl6Symbol> externalNamesToSymbols(List<String> names) {
         return names.stream()
-                    .flatMap(this::nameToSymbols)
+                    .flatMap(Perl6SdkType::nameToSymbols)
                     .collect(Collectors.toList());
     }
 
-    private Stream<Perl6Symbol> nameToSymbols(String name) {
+    private static Stream<Perl6Symbol> nameToSymbols(String name) {
         if (name.startsWith("&")) {
             return Stream.of(
                 new Perl6ExternalSymbol(Perl6SymbolKind.Variable, name),
