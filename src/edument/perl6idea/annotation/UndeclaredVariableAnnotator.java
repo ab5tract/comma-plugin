@@ -39,7 +39,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
 
         // We only check twigilless variables for now (can't yet do attributes
         // because they may come from a role).
-        if (ref.getTwigil() != ' ')
+        if (ref.getTwigil() != ' ' || ref.getVariableName().equals("$"))
             return;
 
         // Make sure it's not a long or late-bound name.

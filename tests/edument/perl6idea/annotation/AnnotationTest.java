@@ -80,4 +80,9 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot use 'unit' with block form of declaration\">unit</error> class Foo{}");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testEmptyNameVariableAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say $;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }
