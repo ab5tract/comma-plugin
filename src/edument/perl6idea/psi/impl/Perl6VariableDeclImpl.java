@@ -63,7 +63,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public void contributeSymbols(Perl6SymbolCollector collector) {
         String name = getName();
         if (name != null && name.length() > 1) {
-            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+            boolean isInstanceScoped = getScope().equals("has");
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this, isInstanceScoped));
             if (!collector.isSatisfied() && name.substring(1, 2).equals("."))
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
                         this, name.substring(0, 1) + "!" + name.substring(2)));

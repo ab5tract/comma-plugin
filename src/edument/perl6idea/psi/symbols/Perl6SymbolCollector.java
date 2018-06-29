@@ -8,4 +8,7 @@ public interface Perl6SymbolCollector {
     /* Checks if the collector is already satisfied and there is no point continuing
      * to search. */
     boolean isSatisfied();
+
+    /* Called by the scope search when a package boundary has been crossed. */
+    void increasePackageDepth();
 }

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Perl6VariantsSymbolCollector implements Perl6SymbolCollector {
+public class Perl6VariantsSymbolCollector extends Perl6PackageConstrainedSymbolCollector{
     private Perl6SymbolKind wantedKind;
     private Map<String, Perl6Symbol> seen = new HashMap<>();
 
@@ -14,6 +14,8 @@ public class Perl6VariantsSymbolCollector implements Perl6SymbolCollector {
 
     @Override
     public void offerSymbol(Perl6Symbol symbol) {
+        if (!acceptablyScoped(symbol))
+            return;
         String name = symbol.getName();
         if (symbol.getKind() == wantedKind && !seen.containsKey(name))
             seen.put(name, symbol);

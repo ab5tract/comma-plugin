@@ -55,6 +55,8 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
             scope.contributeScopeSymbols(collector);
             if (collector.isSatisfied())
                 return;
+            if (scope instanceof Perl6PackageDecl)
+                collector.increasePackageDepth();
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
     }

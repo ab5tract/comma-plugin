@@ -1,6 +1,6 @@
 package edument.perl6idea.psi.symbols;
 
-public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollector {
+public class Perl6SingleResolutionSymbolCollector extends Perl6PackageConstrainedSymbolCollector {
     private Perl6Symbol result = null;
     private String wantedName;
     private Perl6SymbolKind wantedKind;
@@ -12,6 +12,8 @@ public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollecto
 
     @Override
     public void offerSymbol(Perl6Symbol symbol) {
+        if (!acceptablyScoped(symbol))
+            return;
         if (result == null && symbol.getKind() == wantedKind && symbol.getName().equals(wantedName))
             result = symbol;
     }
