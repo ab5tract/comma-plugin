@@ -59,4 +59,12 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertTrue(methods.containsAll(Arrays.asList("!a", "!bar", "!baz")));
         assertEquals(3, methods.size());
     }
+
+    public void testPrivateMethodFromExternalRoleCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role Foo does NativeCall::Native { method bar { self!<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.containsAll(Arrays.asList("!setup")));
+    }
 }
