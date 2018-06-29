@@ -7647,6 +7647,11 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean parameter_92_alt_8(PsiBuilder builder, OPP opp) {
+        if ((builder.getTokenType()) == Perl6TokenTypes.IS_PARAM_TERM_QUANT) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
         String tt1;
         tt1 = builder.getTokenText();
         if (((builder.getTokenType()) == Perl6TokenTypes.PARAMETER_QUANTIFIER) && (tt1.equals("+"))) {
@@ -7814,6 +7819,11 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean parameter_92_alt_21(PsiBuilder builder, OPP opp) {
+        if ((builder.getTokenType()) == Perl6TokenTypes.IS_PARAM_TERM_QUANT) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
         String tt4;
         tt4 = builder.getTokenText();
         if (((builder.getTokenType()) == Perl6TokenTypes.PARAMETER_QUANTIFIER) && (tt4.equals("+"))) {

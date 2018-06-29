@@ -56,6 +56,7 @@ public interface Perl6TokenTypes {
     IElementType INTEGER_LITERAL = new Perl6ElementType("INTEGER_LITERAL");
     IElementType INVOCANT_MARKER = new Perl6ElementType("INVOCANT_MARKER");
     IElementType IS_DOTTY = new Perl6ElementType("IS_DOTTY");
+    IElementType IS_PARAM_TERM_QUANT = new Perl6ElementType("IS_PARAM_TERM_QUANT");
     IElementType LABEL_COLON = new Perl6ElementType("LABEL_COLON");
     IElementType LABEL_NAME = new Perl6ElementType("LABEL_NAME");
     IElementType LAMBDA = new Perl6ElementType("LAMBDA");

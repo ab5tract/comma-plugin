@@ -1880,7 +1880,9 @@ grammar MAIN {
                   '\\'
                   <.end-token('TERM_DECLARATION_BACKSLASH')>
                || <.start-token('PARAMETER_QUANTIFIER')> '|' <.end-token('PARAMETER_QUANTIFIER')>
-               || <.start-token('PARAMETER_QUANTIFIER')> '+' <.end-token('PARAMETER_QUANTIFIER')>
+               || <?before '+' <.ident>>
+                  <.start-token('IS_PARAM_TERM_QUANT')> <?> <.end-token('IS_PARAM_TERM_QUANT')>
+                  <.start-token('PARAMETER_QUANTIFIER')> '+' <.end-token('PARAMETER_QUANTIFIER')>
                ]
                <.param_term>
             || <.start-token('PARAMETER_QUANTIFIER')>
@@ -1901,7 +1903,9 @@ grammar MAIN {
         || [
            || <.start-token('PARAMETER_QUANTIFIER')> '\\' <.end-token('PARAMETER_QUANTIFIER')>
            || <.start-token('PARAMETER_QUANTIFIER')> '|' <.end-token('PARAMETER_QUANTIFIER')>
-           || <.start-token('PARAMETER_QUANTIFIER')> '+' <.end-token('PARAMETER_QUANTIFIER')>
+           || <?before '+' <.ident>>
+              <.start-token('IS_PARAM_TERM_QUANT')> <?> <.end-token('IS_PARAM_TERM_QUANT')>
+              <.start-token('PARAMETER_QUANTIFIER')> '+' <.end-token('PARAMETER_QUANTIFIER')>
            ]
            <.param_term>
         || <.start-token('PARAMETER_QUANTIFIER')>
