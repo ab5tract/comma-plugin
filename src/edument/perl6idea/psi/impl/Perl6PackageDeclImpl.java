@@ -1,14 +1,9 @@
 package edument.perl6idea.psi.impl;
 
-import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.Stub;
-import com.intellij.psi.tree.TokenSet;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.ArrayUtil;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
@@ -16,9 +11,6 @@ import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-
-import static edument.perl6idea.parsing.Perl6ElementTypes.TRAIT;
-import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
 
 public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub> implements Perl6PackageDecl {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
@@ -42,61 +34,6 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     @Override
     public String getPackageName() {
         return getName();
-    }
-
-    @Override
-    public Object[] privateMethods() {
-        List<Object> routines = new ArrayList<>();
-        Set<String> seen = new HashSet<>();
-
-        // Add private routines of this method
-        PsiElement statementList = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
-        if (statementList == null) return ArrayUtil.EMPTY_OBJECT_ARRAY;
-
-        for (PsiElement statement : statementList.getChildren()) {
-            Perl6RoutineDecl decl = PsiTreeUtil.getChildOfType(statement, Perl6RoutineDecl.class);
-            if (decl != null && decl.isPrivateMethod() && !seen.contains(decl.getRoutineName())) {
-                routines.add(decl);
-                seen.add(decl.getRoutineName());
-            }
-        }
-
-        // Add private routines of roles
-        Perl6VariantsSymbolCollector collector = null;
-
-        PsiElement[] roles = getStubOrPsiChildren(TokenSet.create(TRAIT), ARRAY_FACTORY);
-        for (PsiElement role : roles) {
-            if (!(role instanceof StubBasedPsiElementBase)) continue;
-            Perl6TypeName typeName = (Perl6TypeName)((StubBasedPsiElementBase)role).getStubOrPsiChild(TYPE_NAME);
-            if (typeName == null) continue;
-            PsiReference ref = typeName.getReference();
-            if (ref == null) continue;
-            Perl6PackageDecl roleDecl = (Perl6PackageDecl)ref.resolve();
-            // Resolve project-local role
-            if (roleDecl != null) {
-                for (Object pmethod : roleDecl.privateMethods())
-                    if (pmethod instanceof Perl6RoutineDecl && !seen.contains(((Perl6RoutineDecl)pmethod).getRoutineName())) {
-                        routines.add(pmethod);
-                        seen.add(((Perl6RoutineDecl)pmethod).getRoutineName());
-                    }
-            } else {
-                // Try to resolve external role
-                if (collector == null) { // Do only once if we have a possibly external role used
-                    collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.ExternalPackage);
-                    applySymbolCollector(collector);
-                }
-                for (Perl6Symbol pack : collector.getVariants()) {
-                    Perl6ExternalPackage externalPackage = (Perl6ExternalPackage)pack;
-                    if (externalPackage.getPackageKind() == Perl6PackageKind.ROLE &&
-                        pack.getName().equals(typeName.getTypeName())) {
-                        routines.addAll(externalPackage.privateMethods());
-                        break;
-                    }
-                }
-            }
-        }
-
-        return routines.toArray();
     }
 
     public String toString() {
