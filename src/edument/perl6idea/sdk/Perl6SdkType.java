@@ -13,10 +13,7 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.psi.Perl6PsiElement;
-import edument.perl6idea.psi.symbols.Perl6ExternalSymbol;
-import edument.perl6idea.psi.symbols.Perl6SettingSymbol;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.utils.Perl6CommandLine;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -293,28 +290,6 @@ public class Perl6SdkType extends SdkType {
         cmd.addParameter(name);
 
         List<String> symbols = Perl6CommandLine.execute(cmd);
-        return symbols == null ? new ArrayList<>() : externalNamesToSymbols(symbols);
-    }
-
-    private static List<Perl6Symbol> externalNamesToSymbols(List<String> names) {
-        return names.stream()
-                    .flatMap(Perl6SdkType::nameToSymbols)
-                    .collect(Collectors.toList());
-    }
-
-    private static Stream<Perl6Symbol> nameToSymbols(String name) {
-        if (name.startsWith("&")) {
-            return Stream.of(
-                new Perl6ExternalSymbol(Perl6SymbolKind.Variable, name),
-                new Perl6ExternalSymbol(Perl6SymbolKind.Routine, name.substring(1))
-            );
-        }
-        else {
-            return Stream.of(new Perl6ExternalSymbol(
-                Character.isLetter(name.charAt(0))
-                ? Perl6SymbolKind.TypeOrConstant
-                : Perl6SymbolKind.Variable,
-                name));
-        }
+        return symbols == null ? new ArrayList<>() : new Perl6ExternalNamesParser(symbols).result();
     }
 }
