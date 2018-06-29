@@ -65,6 +65,6 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
-        assertTrue(methods.containsAll(Arrays.asList("!setup")));
+        assertTrue(methods.containsAll(Collections.singletonList("!setup")));
     }
 }
