@@ -381,10 +381,24 @@ grammar MAIN {
         <.end-element('SEMI_LIST')>
     }
 
+    token label {
+        <?before <.identifier> ':' [\s || $]>
+        <.start-element('LABEL')>
+        <.start-token('LABEL_NAME')>
+        <.identifier>
+        <.end-token('LABEL_NAME')>
+        <.start-token('LABEL_COLON')>
+        ':'
+        <.end-token('LABEL_COLON')>
+        <.end-element('LABEL')>
+        <.ws>
+    }
+
     token statement {
         :my $*QSIGIL = '';
         <!before <[\])}]> || $ >
         [
+        || <.label> <.statement>?
         || <.statement_control>
         || <.EXPR('')>
             [

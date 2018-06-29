@@ -15,10 +15,12 @@ import java.util.Map;
 public class Perl6ColorSettingsPage implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
             new AttributesDescriptor("Bad Syntax", Perl6Highlighter.BAD_CHARACTER),
-            new AttributesDescriptor("Type name", Perl6Highlighter.TYPE_NAME),
-            new AttributesDescriptor("Statement terminator", Perl6Highlighter.STATEMENT_TERMINATOR),
-            new AttributesDescriptor("Statement control", Perl6Highlighter.STATEMENT_CONTROL),
+            new AttributesDescriptor("Type Name", Perl6Highlighter.TYPE_NAME),
+            new AttributesDescriptor("Statement Terminator", Perl6Highlighter.STATEMENT_TERMINATOR),
+            new AttributesDescriptor("Statement Control", Perl6Highlighter.STATEMENT_CONTROL),
             new AttributesDescriptor("Phaser", Perl6Highlighter.PHASER),
+            new AttributesDescriptor("Label Name", Perl6Highlighter.LABEL_NAME),
+            new AttributesDescriptor("Label Colon", Perl6Highlighter.LABEL_COLON),
             new AttributesDescriptor("Statement Prefix", Perl6Highlighter.STATEMENT_PREFIX),
             new AttributesDescriptor("Statement modifier", Perl6Highlighter.STATEMENT_MOD),
             new AttributesDescriptor("Scope Keyword", Perl6Highlighter.SCOPE_DECLARATOR),

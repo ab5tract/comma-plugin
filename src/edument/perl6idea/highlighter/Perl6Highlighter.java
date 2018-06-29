@@ -129,6 +129,23 @@ public final class Perl6Highlighter {
             DefaultLanguageHighlighterColors.COMMA
     );
 
+    /* Labels
+     * ******
+     * Just inherit the platform defaults for these.
+     */
+
+    static final String LABEL_NAME_ID = "PERL6_LABEL_NAME";
+    public static final TextAttributesKey LABEL_NAME = TextAttributesKey.createTextAttributesKey(
+        LABEL_NAME_ID,
+        DefaultLanguageHighlighterColors.LABEL
+    );
+
+    static final String LABEL_COLON_ID = "PERL6_LABEL_COLON";
+    public static final TextAttributesKey LABEL_COLON = TextAttributesKey.createTextAttributesKey(
+        LABEL_COLON_ID,
+        DefaultLanguageHighlighterColors.LABEL
+    );
+
     /* Operators
      * *********
      * These map to operation symbol, which is by default not highlighted.
