@@ -47,6 +47,15 @@ public class SubCompletionTest extends LightCodeInsightFixtureTestCase {
         assertEquals(2, vars.size());
     }
 
+    public void testComplectionFromOurLocal() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo() {}\nfo<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Collections.singletonList("foo")));
+        assertEquals(2, vars.size());
+    }
+
     public void testCompletionFromCORE() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "se<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
