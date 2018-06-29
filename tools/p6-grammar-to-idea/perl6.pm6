@@ -1973,6 +1973,7 @@ grammar MAIN {
 
     token named_param {
         :my $*GOAL = ')';
+        <?before ':' \S>
         <.start-element('NAMED_PARAMETER')>
         <.start-token('NAMED_PARAMETER_SYNTAX')>
         ':'
