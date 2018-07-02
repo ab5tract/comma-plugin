@@ -204,11 +204,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             Perl6ExternalPackage externalPackage = (Perl6ExternalPackage)pack;
             if (externalPackage.getPackageKind() == Perl6PackageKind.ROLE &&
                 pack.getName().equals(typeName.getTypeName())) {
-                for (String sym : externalPackage.privateMethods()) {
-                    if (sym.startsWith("!")) {
-                        collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Routine, sym));
-                    }
-                }
+                for (String sym : externalPackage.privateMethods())
+                    collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Routine, sym));
+                for (String var : externalPackage.attributes())
+                    collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Variable, var));
             }
         }
     }

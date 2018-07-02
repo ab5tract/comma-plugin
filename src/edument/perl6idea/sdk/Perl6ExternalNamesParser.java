@@ -25,7 +25,7 @@ public class Perl6ExternalNamesParser {
                 line = line.substring(2);
                 if (line.startsWith("&")) processSub(line);
                 else processNonSub(line);
-            } else if (line.startsWith("R:") || line.startsWith("C")) {
+            } else if (line.startsWith("R:") || line.startsWith("C:")) {
                 finishCurrentPackage();
                 currentPackage = new Perl6ExternalPackage(
                         line.substring(2),
