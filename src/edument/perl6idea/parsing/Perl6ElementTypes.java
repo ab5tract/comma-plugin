@@ -74,6 +74,8 @@ public interface Perl6ElementTypes {
     IElementType POD_BLOCK_FINISH = new Perl6ElementType("POD_BLOCK_FINISH");
     IElementType POD_BLOCK_PARAGRAPH = new Perl6ElementType("POD_BLOCK_PARAGRAPH");
     IElementType POD_CONFIGURATION = new Perl6ElementType("POD_CONFIGURATION");
+    IElementType POD_FORMATTED = new Perl6ElementType("POD_FORMATTED");
+    IElementType POD_TEXT = new Perl6ElementType("POD_TEXT");
     IElementType POINTY_BLOCK = new Perl6ElementType("POINTY_BLOCK");
     IElementType POSTFIX = new Perl6ElementType("POSTFIX");
     IElementType PREFIX = new Perl6ElementType("PREFIX");

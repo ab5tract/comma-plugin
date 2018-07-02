@@ -43,6 +43,7 @@ public interface Perl6TokenTypes {
     IElementType ESCAPE_HASH = new Perl6ElementType("ESCAPE_HASH");
     IElementType ESCAPE_SCALAR = new Perl6ElementType("ESCAPE_SCALAR");
     IElementType FAKE_INFIX = new Perl6ElementType("FAKE_INFIX");
+    IElementType FORMAT_CODE = new Perl6ElementType("FORMAT_CODE");
     IElementType HASH_INDEX_BRACKET_CLOSE = new Perl6ElementType("HASH_INDEX_BRACKET_CLOSE");
     IElementType HASH_INDEX_BRACKET_OPEN = new Perl6ElementType("HASH_INDEX_BRACKET_OPEN");
     IElementType HEREDOC = new Perl6ElementType("HEREDOC");
@@ -90,6 +91,8 @@ public interface Perl6TokenTypes {
     IElementType POD_CONFIGURATION = new Perl6ElementType("POD_CONFIGURATION");
     IElementType POD_DIRECTIVE = new Perl6ElementType("POD_DIRECTIVE");
     IElementType POD_FINISH_TEXT = new Perl6ElementType("POD_FINISH_TEXT");
+    IElementType POD_FORMAT_STARTER = new Perl6ElementType("POD_FORMAT_STARTER");
+    IElementType POD_FORMAT_STOPPER = new Perl6ElementType("POD_FORMAT_STOPPER");
     IElementType POD_HAVE_CONTENT = new Perl6ElementType("POD_HAVE_CONTENT");
     IElementType POD_NEWLINE = new Perl6ElementType("POD_NEWLINE");
     IElementType POD_TEXT = new Perl6ElementType("POD_TEXT");

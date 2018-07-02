@@ -266,11 +266,16 @@ grammar MAIN {
 
     token pod_block_content {
         [
-            <!before \h* '=end' [\s || $]>
+            <!before \h* '=end' [\s || $] || $>
             <.start-token('POD_HAVE_CONTENT')> <?> <.end-token('POD_HAVE_CONTENT')>
             [
             || <.pod_block>
-            || <.start-token('POD_TEXT')> \N+ <.end-token('POD_TEXT')>
+            || [
+               || <.start-token('POD_TEXT')>
+                  [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
+                  <.end-token('POD_TEXT')>
+               || <.pod_formatting_code>
+               ]+
                <.pod_newline>?
             || <.pod_newline>
             ]
@@ -300,7 +305,12 @@ grammar MAIN {
     token pod_para_content {
         [
             <!before ^^ \h* ['=' || \n || $]>
-            <.start-token('POD_TEXT')> \N+ <.end-token('POD_TEXT')>
+            [
+            || <.start-token('POD_TEXT')>
+               [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
+               <.end-token('POD_TEXT')>
+            || <.pod_formatting_code>
+            ]+
             <.pod_newline>?
         ]*
     }
@@ -318,6 +328,39 @@ grammar MAIN {
             <.pod_newline>?
         ]?
         <.end-element('POD_BLOCK_ABBREVIATED')>
+    }
+
+    token pod_formatting_code {
+        :my $*STARTER = '';
+        :my $*STOPPER = '';
+        :my $*ALT_STOPPER = '';
+        :my $*DELIM = '';
+        <?before <[A..Z]> <[<«]>>
+        <.start-element('POD_FORMATTED')>
+        <.start-token('FORMAT_CODE')> <[A..Z]> <.end-token('FORMAT_CODE')>
+        <.peek-delimiters>
+        <.start-token('POD_FORMAT_STARTER')>
+        $*STARTER
+        <.end-token('POD_FORMAT_STARTER')>
+        <.pod_formatted_text>
+        [
+            <.start-token('POD_FORMAT_STOPPER')>
+            $*STOPPER
+            <.end-token('POD_FORMAT_STOPPER')>
+        ]?
+        <.end-element('POD_FORMATTED')>
+    }
+
+    token pod_formatted_text {
+        <.start-element('POD_TEXT')>
+        [
+        || <.pod_formatting_code>
+        || <.start-token('POD_TEXT')>
+           [ \d+ || \h+ || <[a..z]>+ || <!before $*STOPPER || <[A..Z}> <![<«]>> \N ]+
+           <.end-token('POD_TEXT')>
+        || <.pod_newline>
+        ]*
+        <.end-element('POD_TEXT')>
     }
 
     token pod_newline {

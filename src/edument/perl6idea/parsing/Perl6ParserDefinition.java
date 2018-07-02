@@ -327,6 +327,10 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new PodBlockAbbreviatedImpl(astNode);
         if (type == Perl6ElementTypes.POD_CONFIGURATION)
             return new PodConfigurationImpl(astNode);
+        if (type == Perl6ElementTypes.POD_FORMATTED)
+            return new PodFormattedImpl(astNode);
+        if (type == Perl6ElementTypes.POD_TEXT)
+            return new PodTextImpl(astNode);
         return null;
     }
 
