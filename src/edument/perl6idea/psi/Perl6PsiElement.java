@@ -2,6 +2,7 @@ package edument.perl6idea.psi;
 
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.NavigatablePsiElement;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.symbols.*;
 
@@ -44,8 +45,25 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         return collector.getVariants();
     }
 
+    default void applyExternalSymbolCollector(Perl6SymbolCollector collector) {
+        Perl6PsiScope scope = PsiTreeUtil.getParentOfType(this, Perl6PsiScope.class);
+        while (scope != null) {
+            for (PsiElement child : PsiTreeUtil.findChildrenOfAnyType(scope, Perl6UseStatement.class, Perl6NeedStatement.class)) {
+                if ((child instanceof Perl6UseStatement || child instanceof Perl6NeedStatement) &&
+                    child.getTextOffset() < this.getTextOffset()) {
+                    Perl6SymbolContributor cont = (Perl6SymbolContributor)child;
+                    cont.contributeSymbols(collector);
+                    if (collector.isSatisfied()) return;
+                }
+            }
+            scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
+        }
+    }
+
     default void applySymbolCollector(Perl6SymbolCollector collector) {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(this, Perl6PsiScope.class);
+        if (this instanceof Perl6TypeName && getParent() instanceof Perl6Trait)
+            scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         while (scope != null) {
             for (Perl6SymbolContributor cont : scope.getSymbolContributors()) {
                 cont.contributeSymbols(collector);
