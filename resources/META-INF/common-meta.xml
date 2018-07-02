@@ -22,6 +22,7 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredVariableAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredRoutineAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredPrivateMethod"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredAttribute"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.editor.SigSpaceAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.LeadingZeroAnnotation"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MethodNotOnRangeAnnotator"/>
