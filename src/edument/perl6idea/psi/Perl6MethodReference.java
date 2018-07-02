@@ -42,7 +42,8 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         if (!call.getCallOperator().equals("!")) return ArrayUtil.EMPTY_OBJECT_ARRAY;
         return call.getSymbolVariants(Perl6SymbolKind.Routine)
                    .stream()
-                   .filter(m -> m.getName().startsWith("!"))
+                   .map(s -> s.getName())
+                   .filter(n -> n.startsWith("!"))
                    .toArray();
     }
 }
