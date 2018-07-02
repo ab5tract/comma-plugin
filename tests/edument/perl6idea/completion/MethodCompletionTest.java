@@ -52,7 +52,7 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testPrivateMethodFromNestedRoleCompletion() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Baz { method !baz {} }; role Bar does Baz { method !bar {}; }; class Foo does Bar { method !a{ self!<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Baz { method !baz {} }; role Bar does Baz { method !bar {} }; class Foo does Bar { method !a { self!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
