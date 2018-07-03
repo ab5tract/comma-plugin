@@ -67,4 +67,12 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertNotNull(methods);
         assertTrue(methods.containsAll(Collections.singletonList("!setup")));
     }
+
+    public void testCorrectImportGathering() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { { use NativeCall; }; class Bar does NativeCall::Native { method !a { self!<caret> } } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        // We don't get methods from NativeCall in another block, so only method completes to null
+        assertNull(methods);
+    }
 }

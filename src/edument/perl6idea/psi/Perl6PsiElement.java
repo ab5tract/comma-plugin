@@ -48,10 +48,17 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
     default void applyExternalSymbolCollector(Perl6SymbolCollector collector) {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(this, Perl6PsiScope.class);
         while (scope != null) {
-            for (PsiElement child : PsiTreeUtil.findChildrenOfAnyType(scope, Perl6UseStatement.class, Perl6NeedStatement.class)) {
-                if ((child instanceof Perl6UseStatement || child instanceof Perl6NeedStatement) &&
-                    child.getTextOffset() < this.getTextOffset()) {
-                    Perl6SymbolContributor cont = (Perl6SymbolContributor)child;
+            Perl6StatementList list = PsiTreeUtil.findChildOfType(scope, Perl6StatementList.class);
+            if (list == null) return;
+            Perl6Statement[] stats = PsiTreeUtil.getChildrenOfType(list, Perl6Statement.class);
+            // Just go one level up, skipping the for loop below
+            if (stats == null) stats = new Perl6Statement[0];
+            for (Perl6Statement statement : stats) {
+                // Do not iterate further If we already passed current element
+                if (statement.getTextOffset() > this.getTextOffset()) break;
+                for (PsiElement maybeImport : statement.getChildren()) {
+                    if (!(maybeImport instanceof Perl6UseStatement || maybeImport instanceof Perl6NeedStatement)) continue;
+                    Perl6SymbolContributor cont = (Perl6SymbolContributor)maybeImport;
                     cont.contributeSymbols(collector);
                     if (collector.isSatisfied()) return;
                 }
