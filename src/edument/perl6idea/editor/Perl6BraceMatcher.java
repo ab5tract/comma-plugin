@@ -23,7 +23,8 @@ public class Perl6BraceMatcher implements PairedBraceMatcher {
                 new BracePair(Perl6TokenTypes.HASH_INDEX_BRACKET_OPEN, Perl6TokenTypes.HASH_INDEX_BRACKET_CLOSE, false),
                 new BracePair(Perl6TokenTypes.ARRAY_COMPOSER_OPEN, Perl6TokenTypes.ARRAY_COMPOSER_CLOSE, false),
                 new BracePair(Perl6TokenTypes.REGEX_GROUP_BRACKET_OPEN, Perl6TokenTypes.REGEX_GROUP_BRACKET_CLOSE, false),
-                new BracePair(Perl6TokenTypes.REGEX_ASSERTION_ANGLE_OPEN, Perl6TokenTypes.REGEX_ASSERTION_ANGLE_CLOSE, false)
+                new BracePair(Perl6TokenTypes.REGEX_ASSERTION_ANGLE_OPEN, Perl6TokenTypes.REGEX_ASSERTION_ANGLE_CLOSE, false),
+                new BracePair(Perl6TokenTypes.POD_FORMAT_STARTER, Perl6TokenTypes.POD_FORMAT_STOPPER, false),
         };
     }
 
