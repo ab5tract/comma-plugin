@@ -146,7 +146,6 @@
   <option name="PERL6_TEXT">
     <value>
       <option name="FOREGROUND" value="d0d0d0" />
-      <option name="FONT_TYPE" value="2" />
     </value>
   </option>
   <option name="PERL6_TYPENAME">
