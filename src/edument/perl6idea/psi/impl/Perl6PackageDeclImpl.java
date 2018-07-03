@@ -174,7 +174,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         for (StubElement child : children) {
             if (child instanceof Perl6RoutineDeclStub) {
                 Perl6RoutineDeclStub routine = (Perl6RoutineDeclStub)child;
-                if (routine.isPrivate() && routine.getRoutineKind().equals("method")) {
+                if (routine.isPrivate()) {
                     collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, routine.getPsi()));
                     if (collector.isSatisfied()) return;
                 }
