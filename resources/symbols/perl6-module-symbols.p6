@@ -16,11 +16,6 @@ EVAL "\{\n    @*ARGS[0] @*ARGS[1];\n" ~ Q:to/END/;
             output-package($_, object, $INTERNAL_MY_KEYS_SEQUENCE);
         }
     }
-    for (::(@*ARGS[1])::.WHO.kv) -> $_, \object {
-        when /^<:L>/ {
-            output-package($_, object, $INTERNAL_MY_KEYS_SEQUENCE);
-        }
-    }
 }
 
 sub describe-role(Mu \object) {
