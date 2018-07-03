@@ -91,6 +91,8 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Pod Typename", Perl6Highlighter.POD_TYPENAME),
             new AttributesDescriptor("Pod Configuration", Perl6Highlighter.POD_CONFIGURATION),
             new AttributesDescriptor("Pod Text", Perl6Highlighter.POD_TEXT),
+            new AttributesDescriptor("Pod Format Code", Perl6Highlighter.POD_FORMAT_CODE),
+            new AttributesDescriptor("Pod Format Delimiters", Perl6Highlighter.POD_FORMAT_QUOTES),
     };
 
     @Nullable

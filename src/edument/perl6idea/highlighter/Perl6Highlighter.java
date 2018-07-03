@@ -546,4 +546,16 @@ public final class Perl6Highlighter {
             POD_TEXT_ID,
             DefaultLanguageHighlighterColors.DOC_COMMENT
     );
+
+    static final String POD_FORMAT_CODE_ID = "PERL6_FORMAT_CODE";
+    public static final TextAttributesKey POD_FORMAT_CODE = TextAttributesKey.createTextAttributesKey(
+        POD_FORMAT_CODE_ID,
+        DefaultLanguageHighlighterColors.DOC_COMMENT_TAG
+    );
+
+    static final String POD_FORMAT_QUOTES_ID = "PERL6_FORMAT_QUOTES";
+    public static final TextAttributesKey POD_FORMAT_QUOTES = TextAttributesKey.createTextAttributesKey(
+        POD_FORMAT_QUOTES_ID,
+        DefaultLanguageHighlighterColors.DOC_COMMENT_TAG
+    );
 }

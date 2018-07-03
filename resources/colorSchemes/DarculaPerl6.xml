@@ -156,4 +156,18 @@
       <option name="EFFECT_TYPE" value="1" />
     </value>
   </option>
+  <option name="PERL6_FORMAT_CODE">
+    <value>
+      <option name="FOREGROUND" value="629755" />
+      <option name="FONT_TYPE" value="2" />
+      <option name="EFFECT_TYPE" value="1" />
+    </value>
+  </option>
+  <option name="PERL6_FORMAT_QUOTES">
+    <value>
+      <option name="FOREGROUND" value="629755" />
+      <option name="FONT_TYPE" value="2" />
+      <option name="EFFECT_TYPE" value="1" />
+    </value>
+  </option>
 </list>
