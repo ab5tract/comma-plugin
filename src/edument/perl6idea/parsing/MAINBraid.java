@@ -6062,7 +6062,14 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.startToken(Perl6TokenTypes.END_OF_STATEMENT_MARK);
+                this.startToken(Perl6TokenTypes.STATEMENT_TERMINATOR);
+                if (!(this.literal(";"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
                 this.state = 8;
                 return -3;
 
@@ -6072,33 +6079,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 9:
-                this.bsMark(11);
-                if (!(this.lookahead(296))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
-                this.startToken(Perl6TokenTypes.STATEMENT_TERMINATOR);
-                if (!(this.literal(";"))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
-                this.state = 10;
-                return -3;
-
-            case 10:
-                this.bsCommit(30);
-                this.state = 30;
-                continue;
-
-            case 11:
-                this.bsMark(14);
-                if (!(this.lookahead(297))) {
+                this.bsMark(12);
+                if (!(this.lookahead(295))) {
                     if (this.backtrack()) {
                         continue;
                     } else {
@@ -6106,10 +6088,10 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.setArgs();
-                this.state = 12;
+                this.state = 10;
                 return 18;
 
-            case 12:
+            case 10:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -6127,6 +6109,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
+                this.state = 11;
+                return -3;
+
+            case 11:
+                this.bsCommit(30);
+                this.state = 30;
+                continue;
+
+            case 12:
+                this.bsMark(14);
+                if (!(this.lookahead(296))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.startToken(Perl6TokenTypes.END_OF_STATEMENT_MARK);
                 this.state = 13;
                 return -3;
 
@@ -42525,54 +42525,6 @@ public class MAINBraid extends Cursor<MAINBraid> {
         while (true) {
             switch (this.state) {
             case 0:
-                this.setArgs();
-                this.state = 1;
-                return 18;
-
-            case 1:
-                if (this.lastResult.isFailed()) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                } else {
-                    this.pos = this.lastResult.getPos();
-                }
-                if (!(this.lookahead(295))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
-                return -1;
-
-            }
-        }
-    }
-
-    private int ___lookahead_43() {
-        while (true) {
-            switch (this.state) {
-            case 0:
-                if (!(this.marked("endstmt"))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
-                return -1;
-
-            }
-        }
-    }
-
-    private int ___lookahead_44() {
-        while (true) {
-            switch (this.state) {
-            case 0:
                 if (!(this.inCharList(";"))) {
                     if (this.backtrack()) {
                         continue;
@@ -42586,7 +42538,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
         }
     }
 
-    private int ___lookahead_45() {
+    private int ___lookahead_43() {
         while (true) {
             switch (this.state) {
             case 0:
@@ -42605,6 +42557,54 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     this.pos = this.lastResult.getPos();
                 }
                 if (!(this.literal(";"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                return -1;
+
+            }
+        }
+    }
+
+    private int ___lookahead_44() {
+        while (true) {
+            switch (this.state) {
+            case 0:
+                this.setArgs();
+                this.state = 1;
+                return 18;
+
+            case 1:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                if (!(this.lookahead(297))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                return -1;
+
+            }
+        }
+    }
+
+    private int ___lookahead_45() {
+        while (true) {
+            switch (this.state) {
+            case 0:
+                if (!(this.marked("endstmt"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {

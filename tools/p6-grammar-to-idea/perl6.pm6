@@ -478,8 +478,6 @@ grammar MAIN {
             <.ws>?
         ]?
         [
-        || <?before <.ws> <?MARKED('endstmt')>>
-           <.start-token('END_OF_STATEMENT_MARK')> <?> <.end-token('END_OF_STATEMENT_MARK')>
         || <?[;]>
            <.start-token('STATEMENT_TERMINATOR')>
            ';'
@@ -489,6 +487,8 @@ grammar MAIN {
            <.start-token('STATEMENT_TERMINATOR')>
            ';'
            <.end-token('STATEMENT_TERMINATOR')>
+        || <?before <.ws> <?MARKED('endstmt')>>
+           <.start-token('END_OF_STATEMENT_MARK')> <?> <.end-token('END_OF_STATEMENT_MARK')>
         || <?before <.ws>? [<[)}]> || ']' || <?stopper>]>
            <.start-token('END_OF_STATEMENT_STOPPER')> <?> <.end-token('END_OF_STATEMENT_STOPPER')>
            <.unv>*

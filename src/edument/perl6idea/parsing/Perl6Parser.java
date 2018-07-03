@@ -3498,6 +3498,15 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean eat_terminator_42_alt_10(PsiBuilder builder, OPP opp) {
+        if ((builder.getTokenType()) == Perl6TokenTypes.END_OF_STATEMENT_MARK) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean eat_terminator_42_alt_11(PsiBuilder builder, OPP opp) {
         if (!(this.ws_251(builder))) {
             return false;
         }
@@ -3511,19 +3520,10 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean eat_terminator_42_alt_11(PsiBuilder builder, OPP opp) {
+    private boolean eat_terminator_42_alt_12(PsiBuilder builder, OPP opp) {
         String tt3;
         tt3 = builder.getTokenText();
         if (((builder.getTokenType()) == Perl6TokenTypes.STATEMENT_TERMINATOR) && (tt3.equals(";"))) {
-            builder.advanceLexer();
-        } else {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean eat_terminator_42_alt_12(PsiBuilder builder, OPP opp) {
-        if ((builder.getTokenType()) == Perl6TokenTypes.END_OF_STATEMENT_MARK) {
             builder.advanceLexer();
         } else {
             return false;
