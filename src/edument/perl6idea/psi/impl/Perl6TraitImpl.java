@@ -3,16 +3,11 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.stubs.StubElement;
-import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.parsing.Perl6TokenTypes;
-import edument.perl6idea.psi.*;
-import edument.perl6idea.psi.stub.*;
-import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.Perl6Trait;
+import edument.perl6idea.psi.stub.Perl6TraitStub;
+import edument.perl6idea.psi.stub.Perl6TraitStubElementType;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
 
