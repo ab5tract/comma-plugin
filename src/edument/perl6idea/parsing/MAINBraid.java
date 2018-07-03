@@ -41927,7 +41927,14 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 1:
-                if (!(this.inCharList("ABCDEFGHIJKLMNOPQRSTUVWXYZ}><![<\u00AB"))) {
+                if (!(this.inCharList("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                if (!(this.inCharList("<\u00AB"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {

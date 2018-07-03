@@ -356,7 +356,7 @@ grammar MAIN {
         [
         || <.pod_formatting_code>
         || <.start-token('POD_TEXT')>
-           [ \d+ || \h+ || <[a..z]>+ || <!before $*STOPPER || <[A..Z}> <![<«]>> \N ]+
+           [ \d+ || \h+ || <[a..z]>+ || <!before $*STOPPER || <[A..Z]> <[<«]>> \N ]+
            <.end-token('POD_TEXT')>
         || <.pod_newline>
         ]*
