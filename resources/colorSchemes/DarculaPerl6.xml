@@ -170,4 +170,20 @@
       <option name="EFFECT_TYPE" value="1" />
     </value>
   </option>
+  <option name="PERL6_TEXT_BOLD">
+    <value>
+      <option name="FONT_TYPE" value="1" />
+    </value>
+  </option>
+  <option name="PERL6_TEXT_ITALIC">
+    <value>
+      <option name="FONT_TYPE" value="2" />
+    </value>
+  </option>
+  <option name="PERL6_TEXT_UNDERLINE">
+    <value>
+      <option name="EFFECT_COLOR" value="d0d0d0" />
+      <option name="EFFECT_TYPE" value="1" />
+    </value>
+  </option>
 </list>

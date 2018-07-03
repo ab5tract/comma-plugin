@@ -558,4 +558,19 @@ public final class Perl6Highlighter {
         POD_FORMAT_QUOTES_ID,
         DefaultLanguageHighlighterColors.DOC_COMMENT_TAG
     );
+
+    static final String POD_TEXT_BOLD_ID = "PERL6_TEXT_BOLD";
+    public static final TextAttributesKey POD_TEXT_BOLD = TextAttributesKey.createTextAttributesKey(
+        POD_TEXT_BOLD_ID
+    );
+
+    static final String POD_TEXT_ITALIC_ID = "PERL6_TEXT_ITALIC";
+    public static final TextAttributesKey POD_TEXT_ITALIC = TextAttributesKey.createTextAttributesKey(
+        POD_TEXT_ITALIC_ID
+    );
+
+    static final String POD_TEXT_UNDERLINE_ID = "PERL6_TEXT_UNDERLINE";
+    public static final TextAttributesKey POD_TEXT_UNDERLINE = TextAttributesKey.createTextAttributesKey(
+        POD_TEXT_UNDERLINE_ID
+    );
 }
