@@ -16,7 +16,7 @@ public class UndeclaredAttribute implements Annotator {
             return;
         final Perl6Variable variable = (Perl6Variable)element;
         String variableName = variable.getVariableName();
-        if (variable.getTwigil() != '!' && variable.getTwigil() != '.') return;
+        if (variable.getTwigil() != '!') return;
 
         PsiReference reference = variable.getReference();
         if (reference == null) return;
