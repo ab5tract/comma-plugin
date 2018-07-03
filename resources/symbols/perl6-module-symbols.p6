@@ -71,7 +71,11 @@ sub output-package($name, Mu \object, $keys) {
     else {
         # Emit anything that's type-like.
         if object.HOW.WHAT =:= Metamodel::PackageHOW
-        || object.HOW.WHAT =:= Metamodel::ModuleHOW {
+        || object.HOW.WHAT =:= Metamodel::ModuleHOW
+        || object.HOW.WHAT =:= Metamodel::ClassHOW {
+            CATCH {
+                default {}
+            }
             for object::.keys -> $key {
                 output-package($name ~ '::' ~ $key, (object::{$key}), $keys);
             }
