@@ -21,11 +21,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         Perl6MethodCall call = (Perl6MethodCall)getElement();
         if (!call.getCallOperator().equals("!")) return null;
         Perl6Symbol symbol = call.resolveSymbol(Perl6SymbolKind.Routine, call.getCallName());
-        if (symbol != null) {
-            PsiElement psi = symbol.getPsi();
-            if (psi != null) return psi;
-        }
-        return null;
+        return symbol != null ? symbol.getPsi() : null;
     }
 
     @NotNull
