@@ -73,6 +73,7 @@ sub output-package($name, Mu \object, $keys) {
         if object.HOW.WHAT =:= Metamodel::PackageHOW
         || object.HOW.WHAT =:= Metamodel::ModuleHOW
         || object.HOW.WHAT =:= Metamodel::ClassHOW {
+            say 'D:' ~ $name unless $name ~~ /'EXPORT::' .+? '&'/;
             CATCH {
                 default {}
             }
