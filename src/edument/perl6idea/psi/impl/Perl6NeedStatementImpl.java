@@ -10,8 +10,7 @@ import edument.perl6idea.psi.Perl6NeedStatement;
 import edument.perl6idea.psi.stub.Perl6NeedStatementStub;
 import edument.perl6idea.psi.stub.Perl6NeedStatementStubElementType;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 

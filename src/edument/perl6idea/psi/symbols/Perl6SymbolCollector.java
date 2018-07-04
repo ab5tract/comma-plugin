@@ -11,4 +11,7 @@ public interface Perl6SymbolCollector {
 
     /* Called by the scope search when a package boundary has been crossed. */
     void increasePackageDepth();
+
+    /* Is used to check if we should offer package symbols */
+    boolean areInstanceSymbolsRelevant();
 }

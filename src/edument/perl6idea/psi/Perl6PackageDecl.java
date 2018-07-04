@@ -10,6 +10,5 @@ public interface Perl6PackageDecl extends Perl6PsiScope, Perl6PsiDeclaration,
                                           Perl6IndexableType {
     String getPackageKind();
     String getPackageName();
-    Perl6RoutineDecl[] privateMethods();
     void contributeNestedPackagesWithPrefix(Perl6SymbolCollector collector, String prefix);
 }
