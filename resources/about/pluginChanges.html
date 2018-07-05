@@ -1,37 +1,25 @@
 <h1>Change List</h1>
 
-<h2>2018.6.0</h2>
+<h2>2018.7.0</h2>
 
 <ul>
-  <li>Introduce a Project Structure dialog, available from the File menu.
-    This allows changing the project's Perl 6 SDK, as well as editing
-    various elements of META6.json.</li>
-  <li>Provide support for editing module dependencies in META6.json in the
-    new Project Structure dialog, with auto-complete of distribution names
-    based on data from the module ecosystem.</li>
-  <li>Implement basic Pod parsing (recognize the block, paragraph, and
-    abbreviated forms), with highlighting of directives and text</li>
-  <li>Support =finish and its various other forms</li>
-  <li>When the current file has a =finish, suggest $=finish in auto-complete</li>
-  <li>When $=finish is used without a =finish section, mark it as a problem</li>
-  <li>Recognize .pod6 files as Perl 6 and highlight them</li>
-  <li>Recognize halfwidth corner brackets in regexes</li>
-  <li>Enable the "Favorites" panel (used to throw an exception on opening)</li>
-  <li>Fix parser to accept whitespace after a prefix operator</li>
-  <li>Fix parser to accept a circumfix after an <code>is</code> trait longname</li>
-  <li>Fix %.foo{bar} parsing crash</li>
-  <li>Disable SSL verification when submitting bug reports, in an effort to
-    make it work for those behind coroproate firewalls</li>
-  <li>Fix ModuleType exception that was thrown when creating a new project or
-    doing a project import</li>
-  <li>Treat all files under bin/ as Perl 6 scripts</li>
-  <li>Fix multiple Unbalanced Tree parser failures</li>
-  <li>Fix indentation after a unit class declaration</li>
-  <li>Make auto-insertion of a closing brace work at the very end of the file</li>
-  <li>Avoid an infinite recursion when resolving module symbols</li>
-  <li>Fix an off-by-one in translating between IDEA and MoarVM line numbers in
-    the debugger</li>
-  <li>Improve file placement for File &gt; New &gt; Module/Test to place under lib
-    and t respectively</li>
-  <li>Provide a Send Feedback link so that the Send Feedback menu item now works</li>
+  <li>Update the underlying platform version, fixing various issues, including a Linux focus loss bug</li>
+  <li>Add reference resolution (Ctrl+B) and auto-completion of attributes in composed roles</li>
+  <li>Add reference resolution (Ctrl+B) and auto-completion of private methods in composed roles</li>
+  <li>Add an annotator to mark calls to undeclared subroutines as an error</li>
+  <li>Add an annotator to mark calls to undeclared private methods as an error</li>
+  <li>Add an annotator to mark use of undeclared attributes as an error</li>
+  <li>Make sure our-scoped routines can be auto-completed and reference-resolved in their
+    declaring scope</li>
+  <li>Basic parsing and syntax highlighting of Pod formatting codes, including nested ones</li>
+  <li>Add Pod format angles (&lt; and &gt; plus other forms) to brace matcher</li>
+  <li>Render B/I/U Pod format codes as bold, italic, and underlined text</li>
+  <li>Offer to create a .pod6 file association in the Windows installer</li>
+  <li>Fix a parser/highlighting bug with a <code>use-ok</code> sub call</li>
+  <li>Don't incorrecly complain that the $ anonymous state variable is undeclared</li>
+  <li>Implement parsing and highlighting of labels</li>
+  <li>Fix mis-parse of : invocant marker in signatures</li>
+  <li>Fix parse bug in sub foo(+@bar) { }</li>
+  <li>Fix a parser hang when a ; followed a statement-terminating curly brace</li>
+  <li>Connect to MoarVM remote debugger with localhost, not 127.0.0.1, to match how MoarVM listens</li>
 </ul>
