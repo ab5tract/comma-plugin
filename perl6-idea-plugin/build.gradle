@@ -61,3 +61,16 @@ test {
         showStandardStreams = true
     }
 }
+
+task preparePluginMETA() {
+    group 'Maintainence'
+    description 'Sets plugin.xml for plugin testing'
+    doLast {
+        copy {
+            from 'resources/META-INF/plugin-meta/plugin.xml'
+            into 'resources/META-INF/'
+        }
+    }
+}
+
+test.dependsOn preparePluginMETA
