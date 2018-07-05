@@ -6,3 +6,5 @@ out/
 
 # Gradle things
 .gradle
+.sandbox/
+perl6-idea-plugin/build/
