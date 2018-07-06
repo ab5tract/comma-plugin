@@ -7,6 +7,7 @@
   <property name="idea.path" value=""/>
 
   <target name="cleanup">
+    <delete file="${python.home}/perl6-idea-plugin/resources/META-INF/plugin.xml" failonerror="false"/>
     <delete dir="${out.dir}" failonerror="false"/>
   </target>
 
