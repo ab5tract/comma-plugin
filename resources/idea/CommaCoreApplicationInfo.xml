@@ -1,7 +1,7 @@
 <component xmlns="http://jetbrains.org/intellij/schema/application-info"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://jetbrains.org/intellij/schema/application-info http://jetbrains.org/intellij/schema/ApplicationInfo.xsd">
-  <version major="2018" minor="5" eap="false"/>
+  <version major="2018" minor="7" eap="false"/>
   <company name="Edument" url="https://www.edument.se/" copyrightStart="2018"/>
   <build number="__BUILD_NUMBER__" date="__BUILD_DATE__"/>
   <logo url="/comma_core_logo.png" textcolor="000000" progressColor="000000" progressX="114" progressY="278" progressHeight="3"/>
@@ -17,4 +17,6 @@
   <help webhelp-url="https://commaide.com/docs"/>
   <update-urls check="https://commaide.com/updates/updates.xml" />
   <documentation url="https://commaide.com/docs"/>
+  <feedback eap-url="https://commaide.com/subscriber/feedback"
+            release-url="https://commaide.com/subscriber/feedback"/>
 </component>
