@@ -8,3 +8,4 @@ out/
 .gradle
 .sandbox/
 perl6-idea-plugin/build/
+perl6-idea-plugin/resources/META-INF/plugin.xml
