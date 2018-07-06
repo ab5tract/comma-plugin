@@ -20,7 +20,7 @@ addons:
 before_script:
 - (cd perl6-idea-plugin && ./gradlew assemble)
 script:
-- (cd tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
+- (cd perl6-idea-plugin/tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
 - (cd perl6-idea-plugin && ./gradlew test)
 after_success:
 - (cd perl6-idea-plugin && ./gradlew buildPlugin)
