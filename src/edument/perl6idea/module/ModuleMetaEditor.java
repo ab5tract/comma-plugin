@@ -132,7 +132,12 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     @Override
     public void reset() {
         Path meta = Paths.get(myModule.getModuleFilePath()).resolveSibling("META6.json");
-        if (meta == null) return;
+        if (!Files.exists(meta)) {
+            String path = myModule.getProject().getBasePath();
+            if (path == null) return;
+            meta = Paths.get(path, "META6.json");
+            if (!Files.exists(meta)) return;
+        }
         String jsonString;
         try {
             jsonString = new String(Files.readAllBytes(meta), StandardCharsets.UTF_8);
