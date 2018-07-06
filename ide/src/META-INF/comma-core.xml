@@ -11,8 +11,8 @@
   <xi:include href="/META-INF/SpellCheckerPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-  <version>2018.5.0</version>
-  <vendor email="jonathan@edument.se" url="http://www.edument.se/">Edument Central Europe sro.</vendor>
+  <version>2018.7.0</version>
+  <vendor email="info@commaide.com" url="http://www.edument.se/">Edument Central Europe sro.</vendor>
 
   <description><![CDATA[
     Comma, the Perl 6 IDE.
