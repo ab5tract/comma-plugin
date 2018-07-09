@@ -1257,9 +1257,11 @@ grammar MAIN {
     token term_ident {
         <?before <.identifier> [ <.unsp>? '(' || \\ '(' ]>
         <.start-element('SUB_CALL')>
+        <.start-element('SUB_CALL_NAME')>
         <.start-token('SUB_CALL_NAME')>
         <.identifier>
         <.end-token('SUB_CALL_NAME')>
+        <.end-element('SUB_CALL_NAME')>
         [ <?before '\\('> <.start-token('WHITE_SPACE')> '\\' <.end-token('WHITE_SPACE')> ]?
         <.args>
         <.end-element('SUB_CALL')>
@@ -1284,9 +1286,11 @@ grammar MAIN {
            <.end-element('TYPE_NAME')>
         || <.start-element('SUB_CALL')>
            <.start-element('LONG_NAME')>
+           <.start-element('SUB_CALL_NAME')>
            <.start-token('SUB_CALL_NAME')>
            <.name>
            <.end-token('SUB_CALL_NAME')>
+           <.end-element('SUB_CALL_NAME')>
            <.longname_colonpairs>
            <.end-element('LONG_NAME')>
            [ <?before '\\('> <.start-token('WHITE_SPACE')> '\\' <.end-token('WHITE_SPACE')> ]?

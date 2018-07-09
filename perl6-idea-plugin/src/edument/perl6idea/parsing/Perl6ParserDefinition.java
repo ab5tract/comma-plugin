@@ -215,6 +215,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new Perl6VersionImpl(astNode);
         if (type == Perl6ElementTypes.SUB_CALL)
             return new Perl6SubCallImpl(astNode);
+        if (type == Perl6ElementTypes.SUB_CALL_NAME)
+            return new Perl6SubCallNameImpl(astNode);
         if (type == Perl6ElementTypes.METHOD_CALL)
             return new Perl6MethodCallImpl(astNode);
         if (type == Perl6ElementTypes.TYPE_NAME)

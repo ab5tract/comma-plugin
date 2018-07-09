@@ -35,7 +35,7 @@ sub generate-perl6-element-types(@element-names) is export {
     push @fields, InterfaceField.new: :type<IStubElementType>, :name<TYPE_NAME>,
         :default(ConstructorCall.new(:name<Perl6TypeNameStubElementType>));
     push @fields, InterfaceField.new: :type<IStubElementType>, :name<TRAIT>,
-        :default(ConstructorCall.new(:name<Perl6TTraitStubElementType>));
+        :default(ConstructorCall.new(:name<Perl6TraitStubElementType>));
 
     for @element-names.sort -> $name {
         next if %custom{$name};
