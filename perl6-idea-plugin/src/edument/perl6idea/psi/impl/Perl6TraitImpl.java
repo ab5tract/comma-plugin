@@ -9,7 +9,7 @@ import edument.perl6idea.psi.stub.Perl6TraitStub;
 import edument.perl6idea.psi.stub.Perl6TraitStubElementType;
 import org.jetbrains.annotations.NotNull;
 
-import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
+import static edument.perl6idea.parsing.Perl6ElementTypes.IS_TRAIT_NAME;
 
 public class Perl6TraitImpl extends StubBasedPsiElementBase<Perl6TraitStub> implements Perl6Trait {
     public Perl6TraitImpl(@NotNull ASTNode node) {
@@ -36,7 +36,7 @@ public class Perl6TraitImpl extends StubBasedPsiElementBase<Perl6TraitStub> impl
         if (stub != null)
             return stub.getTraitName();
 
-        PsiElement name = findChildByType(TYPE_NAME);
+        PsiElement name = findChildByType(IS_TRAIT_NAME);
         return name == null ? "" : name.getText();
     }
 

@@ -63,8 +63,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
         // Otherwise, we need to walk the PSI tree.
         return PsiTreeUtil.findChildrenOfType(this, Perl6PsiDeclaration.class).stream()
-              .filter(decl -> decl.isExported())
-              .collect(Collectors.toList());
+                          .filter(decl -> decl.isExported())
+                          .collect(Collectors.toList());
     }
 
     @Override
