@@ -11,7 +11,7 @@ sub generate-perl6-element-types(@element-names) is export {
 
     my %custom := set 'PACKAGE_DECLARATION', 'ROUTINE_DECLARATION', 'SUBSET', 'ENUM',
         'CONSTANT', 'REGEX_DECLARATION', 'VARIABLE_DECLARATION', 'SCOPED_DECLARATION',
-        'USE_STATEMENT', 'NEED_STATEMENT', 'TYPE_NAME'. 'TRAIT';
+        'USE_STATEMENT', 'NEED_STATEMENT', 'TYPE_NAME', 'TRAIT';
     push @fields, InterfaceField.new: :type<IStubElementType>, :name<PACKAGE_DECLARATION>,
         :default(ConstructorCall.new(:name<Perl6PackageDeclStubElementType>));
     push @fields, InterfaceField.new: :type<IStubElementType>, :name<ROUTINE_DECLARATION>,
