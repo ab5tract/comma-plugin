@@ -39,7 +39,6 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
         assertTrue(methods.containsAll(Arrays.asList("!a", "!b")));
-        assertEquals(2, methods.size());
     }
 
     public void testPrivateMethodFromRoleCompletion() {
@@ -48,7 +47,6 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
         assertTrue(methods.containsAll(Arrays.asList("!a", "!bar")));
-        assertEquals(2, methods.size());
     }
 
     public void testPrivateMethodFromNestedRoleCompletion() {
@@ -57,7 +55,6 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
         assertTrue(methods.containsAll(Arrays.asList("!a", "!bar", "!baz")));
-        assertEquals(3, methods.size());
     }
 
     public void testPrivateMethodFromExternalRoleCompletion() {
@@ -72,7 +69,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { { use NativeCall; }; class Bar does NativeCall::Native { method !a { self!<caret> } } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
-        // We don't get methods from NativeCall in another block, so only method completes to null
-        assertNull(methods);
+        assertNotNull(methods);
+        // We don't get methods from NativeCall in another block, so `!setup` is not available
+        assertFalse(methods.contains("!setup"));
     }
 }

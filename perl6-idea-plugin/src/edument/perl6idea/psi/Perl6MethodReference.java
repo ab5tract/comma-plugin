@@ -19,7 +19,6 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     @Override
     public PsiElement resolve() {
         Perl6MethodCall call = (Perl6MethodCall)getElement();
-        if (!call.getCallOperator().equals("!")) return null;
         Perl6Symbol symbol = call.resolveSymbol(Perl6SymbolKind.Routine, call.getCallName());
         return symbol != null ? symbol.getPsi() : null;
     }
@@ -28,11 +27,9 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     @Override
     public Object[] getVariants() {
         Perl6MethodCall call = (Perl6MethodCall)getElement();
-        if (!call.getCallOperator().equals("!")) return ArrayUtil.EMPTY_OBJECT_ARRAY;
         return call.getSymbolVariants(Perl6SymbolKind.Routine)
                    .stream()
                    .map(s -> s.getName())
-                   .filter(n -> n.startsWith("!"))
                    .toArray();
     }
 }
