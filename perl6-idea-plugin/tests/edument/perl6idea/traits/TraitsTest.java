@@ -21,4 +21,17 @@ public class TraitsTest extends LightCodeInsightFixtureTestCase {
             assertEquals("export", traits.get(0).getTraitName());
         }
     }
+
+    public void testDoesTraitData() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Fo<caret>o does Bar {}");
+        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset()).getParent();
+        assertNotNull(usage);
+        assertTrue(usage instanceof Perl6PackageDecl);
+        if (usage instanceof Perl6PackageDecl) {
+            List<Perl6Trait> traits = ((Perl6PackageDecl)usage).getTraits();
+            assertTrue(traits.size() != 0);
+            assertEquals("does", traits.get(0).getTraitModifier());
+            assertEquals("Bar", traits.get(0).getTraitName());
+        }
+    }
 }
