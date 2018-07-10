@@ -57,6 +57,14 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
     }
 
+    public void testMethodOnSelfFromParentsRole() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Role { method role {} }; class Foo does Role { method a {} }; class Bar is Foo { method b{ self.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b", ".role")));
+    }
+
     public void testPrivateMethodCompletion() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { method !a{}; method !b{ self!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
