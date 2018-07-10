@@ -50,7 +50,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         } else if (prev instanceof Perl6Self) { // self.foo;
             return "self";
         } else if (prev instanceof Perl6TypeName) { // Foo.foo;
-            return ((Perl6TypeName)prev).getTypeName();
+            return "type:" + ((Perl6TypeName)prev).getTypeName();
         } else if (prev instanceof Perl6Variable) { // $foo.foo;
             return "Any";
         }
@@ -58,15 +58,16 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     }
 
     private static List getMethodsForType(Perl6MethodCall call, String type, boolean isSingle) {
-        switch (type) {
-            case "self": {
-                return isSingle ?
-                       Collections.singletonList(call.resolveSymbol(Perl6SymbolKind.Method, call.getCallName())) :
-                       call.getSymbolVariants(Perl6SymbolKind.Method).stream().map(s -> s.getName()).collect(Collectors.toList());
-            }
-            default: {
-                return Collections.EMPTY_LIST;
-            }
+        if (type.equals("self")) {
+            return isSingle ?
+                   Collections.singletonList(call.resolveSymbol(Perl6SymbolKind.Method, call.getCallName())) :
+                   call.getSymbolVariants(Perl6SymbolKind.Method).stream().map(s -> s.getName()).collect(Collectors.toList());
+        }
+        else if (type.startsWith("type:")) {
+            return Collections.EMPTY_LIST;
+        }
+        else {
+            return Collections.EMPTY_LIST;
         }
     }
 }
