@@ -50,8 +50,9 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (collector.isSatisfied()) return;
         contributeMethods(collector);
         if (collector.isSatisfied()) return;
-        if (collector.areInstanceSymbolsRelevant())
-            contributeFromRoles(collector);
+        if (collector.areInstanceSymbolsRelevant()) {
+            contributeFromElders(collector);
+        }
         switch (getPackageKind()) {
             case "class":
             case "grammar":
@@ -81,50 +82,62 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         contributeNestedPackagesWithPrefix(collector, getPackageName() + "::");
     }
 
-    private void contributeFromRoles(Perl6SymbolCollector collector) {
+    private void contributeFromElders(Perl6SymbolCollector collector) {
         Perl6PackageDeclStub stub = getStub();
-        List<Perl6TypeName> typeNames = new ArrayList<>();
+
+        List<Perl6PackageDecl> perl6PackageDecls = new ArrayList<>();
+        List<String> externals = new ArrayList<>();
         if (stub != null) {
             List<StubElement> children = stub.getChildrenStubs();
             for (StubElement child : children) {
                 if (!(child instanceof Perl6TraitStub)) continue;
                 Perl6TraitStub traitStub = (Perl6TraitStub)child;
-                if (!traitStub.getTraitModifier().equals("does")) continue;
+                if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
                 for (StubElement maybeType : traitStub.getChildrenStubs())
-                    if (maybeType instanceof Perl6TypeNameStub)
-                        typeNames.add(((Perl6TypeNameStub)maybeType).getPsi());
+                    if (maybeType instanceof Perl6TypeNameStub) {
+                        Perl6TypeName psi = ((Perl6TypeNameStub)maybeType).getPsi();
+                        if (psi == null) continue;
+                        PsiReference ref = psi.getReference();
+                        if (ref == null) continue;
+                        PsiElement decl = ref.resolve();
+                        if (decl != null) perl6PackageDecls.add((Perl6PackageDecl)decl);
+                        else externals.add(((Perl6TypeNameStub)maybeType).getTypeName());
+                    }
             }
         } else {
             Perl6Trait[] traits = PsiTreeUtil.getChildrenOfType(this, Perl6Trait.class);
             if (traits == null) return;
 
-            List<Perl6TypeName> types =
-                    Arrays.stream(traits)
-                          .filter(t -> t.getTraitModifier().equals("does"))
-                          .map(t -> PsiTreeUtil.findChildOfType(t, Perl6TypeName.class))
-                          .collect(Collectors.toList());
-            typeNames.addAll(types);
-        }
-        for (Perl6TypeName typeName : typeNames) {
-            if (typeName == null) continue;
-            PsiReference typeRef = typeName.getReference();
-            if (typeRef == null) continue;
-            Perl6PackageDecl role = (Perl6PackageDecl)typeRef.resolve();
-            if (role != null) {
-                // Local role
-                Perl6PackageDeclStub roleStub = role.getStub();
-                // Contribute role internals
-                if (roleStub == null) contributeLocalRole(collector, role);
-                else contributeLocalRoleStub(collector, roleStub);
-                if (collector.isSatisfied()) return;
-                // Contribute role itself
-                role.contributeScopeSymbols(collector);
-                if (collector.isSatisfied()) return;
-            } else {
-                // It can be either external role or non-existent one
-                contributeExternalRole(collector, typeName);
-                if (collector.isSatisfied()) return;
+            for (Perl6Trait trait : traits) {
+                if (trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is")) {
+                    PsiElement element = trait.getTraitModifier().equals("does") ?
+                                         PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class) :
+                                         PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
+                    if (element == null) continue;
+                    PsiReference ref = element.getReference();
+                    if (ref == null) continue;
+                    PsiElement decl = ref.resolve();
+                    if (decl != null) perl6PackageDecls.add((Perl6PackageDecl)decl);
+                    else externals.add(trait.getTraitName());
+                }
             }
+        }
+
+        for (Perl6PackageDecl typeRef : perl6PackageDecls) {
+            // Local perl6PackageDecl
+            Perl6PackageDeclStub roleStub = typeRef.getStub();
+            // Contribute perl6PackageDecl internals
+            if (roleStub == null) contributeLocalRole(collector, typeRef);
+            else contributeLocalRoleStub(collector, roleStub);
+            if (collector.isSatisfied()) return;
+            // Contribute perl6PackageDecl itself
+            typeRef.contributeScopeSymbols(collector);
+            if (collector.isSatisfied()) return;
+        }
+        for (String extType : externals) {
+            // It can be either external perl6PackageDecl or non-existent one
+            contributeExternalRole(collector, extType);
+            if (collector.isSatisfied()) return;
         }
     }
 
@@ -190,7 +203,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
     }
 
-    private void contributeExternalRole(Perl6SymbolCollector collector, Perl6TypeName typeName) {
+    private void contributeExternalRole(Perl6SymbolCollector collector, String typeName) {
         Perl6VariantsSymbolCollector extCollector =
                 new Perl6VariantsSymbolCollector(Perl6SymbolKind.ExternalPackage);
         applyExternalSymbolCollector(extCollector);
@@ -198,7 +211,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         for (Perl6Symbol pack : extCollector.getVariants()) {
             Perl6ExternalPackage externalPackage = (Perl6ExternalPackage)pack;
             if (!(externalPackage.getPackageKind() == Perl6PackageKind.ROLE &&
-                  pack.getName().equals(typeName.getTypeName()))) continue;
+                  pack.getName().equals(typeName))) continue;
             for (String sym : externalPackage.privateMethods()) {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, sym));
                 if (collector.isSatisfied()) return;
