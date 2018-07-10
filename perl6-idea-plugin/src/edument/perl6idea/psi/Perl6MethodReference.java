@@ -37,16 +37,17 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         return getMethodsForType(call, type, false).toArray();
     }
 
-    private String getCallerType(Perl6MethodCall call) {
+    private static String getCallerType(Perl6MethodCall call) {
         // Short-circuit as !foo is always self-based
         if (call.getCallOperator().equals("!"))
             return "self";
 
         // Based on previous element decide what type methods we want
         PsiElement prev = call.getPrevSibling();
-        // .foo or self.foo;
-        if (prev == null || prev instanceof Perl6Self) {
-            // No heuristic for now, not includes cases where `.foo` is called on $_, not self
+
+        if (prev == null) { // .foo
+            return "Any";
+        } else if (prev instanceof Perl6Self) { // self.foo;
             return "self";
         } else if (prev instanceof Perl6TypeName) { // Foo.foo;
             return ((Perl6TypeName)prev).getTypeName();
@@ -60,8 +61,8 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         switch (type) {
             case "self": {
                 return isSingle ?
-                       Collections.singletonList(call.resolveSymbol(Perl6SymbolKind.Routine, call.getCallName())) :
-                       call.getSymbolVariants(Perl6SymbolKind.Routine).stream().map(s -> s.getName()).collect(Collectors.toList());
+                       Collections.singletonList(call.resolveSymbol(Perl6SymbolKind.Method, call.getCallName())) :
+                       call.getSymbolVariants(Perl6SymbolKind.Method).stream().map(s -> s.getName()).collect(Collectors.toList());
             }
             default: {
                 return Collections.EMPTY_LIST;
