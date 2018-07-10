@@ -48,7 +48,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?PACKAGE"));
         if (collector.isSatisfied()) return;
-        contributePrivateMethods(collector);
+        contributeMethods(collector);
         if (collector.isSatisfied()) return;
         if (collector.areInstanceSymbolsRelevant())
             contributeFromRoles(collector);
@@ -64,16 +64,13 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
     }
 
-    private void contributePrivateMethods(Perl6SymbolCollector collector) {
+    private void contributeMethods(Perl6SymbolCollector collector) {
         Perl6StatementList list = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
         if (list == null) return;
         for (PsiElement child : list.getChildren()) {
             if (child.getFirstChild() instanceof Perl6RoutineDecl) {
-                Perl6RoutineDecl decl = (Perl6RoutineDecl)child.getFirstChild();
-                if (decl.isPrivateMethod() && decl.getRoutineKind().equals("method")) {
-                    collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, decl, true));
-                    if (collector.isSatisfied()) return;
-                }
+                ((Perl6RoutineDecl)child.getFirstChild()).contributeSymbols(collector);
+                if (collector.isSatisfied()) return;
             }
         }
     }
@@ -203,7 +200,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             if (!(externalPackage.getPackageKind() == Perl6PackageKind.ROLE &&
                   pack.getName().equals(typeName.getTypeName()))) continue;
             for (String sym : externalPackage.privateMethods()) {
-                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Routine, sym));
+                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, sym));
                 if (collector.isSatisfied()) return;
             }
             for (String var : externalPackage.attributes()) {

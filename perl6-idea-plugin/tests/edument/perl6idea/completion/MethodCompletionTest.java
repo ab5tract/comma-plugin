@@ -33,6 +33,14 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         super.tearDown();
     }
 
+    public void testMethodCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { method a{}; method b{ self.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
+    }
+
     public void testPrivateMethodCompletion() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { method !a{}; method !b{ self!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
@@ -69,8 +77,7 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { { use NativeCall; }; class Bar does NativeCall::Native { method !a { self!<caret> } } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
-        assertNotNull(methods);
         // We don't get methods from NativeCall in another block, so `!setup` is not available
-        assertFalse(methods.contains("!setup"));
+        assertNull(methods);
     }
 }
