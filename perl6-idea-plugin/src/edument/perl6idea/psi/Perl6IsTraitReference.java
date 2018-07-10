@@ -6,6 +6,8 @@ import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.impl.Perl6LongNameImpl;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +40,20 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
     @Nullable
     @Override
     public PsiElement resolve() {
+        Perl6PsiElement ref = getElement();
+        String typeName = ref.getText();
+        Perl6Symbol result = ref.resolveSymbol(Perl6SymbolKind.TypeOrConstant, typeName);
+        if (result != null) {
+            PsiElement psi = result.getPsi();
+            if (psi != null) {
+                // It's fine if it's either imported or declared ahead of the point
+                // it is being referenced.
+                if (psi.getContainingFile() != ref.getContainingFile())
+                    return psi;
+                if (psi.getTextOffset() < ref.getTextOffset())
+                    return psi;
+            }
+        }
         return null;
     }
 
