@@ -111,7 +111,7 @@ public class Perl6SdkType extends SdkType {
 
     @Override
     public boolean isValidSdkHome(@NotNull String path) {
-        return Paths.get(path, Perl6SdkType.perl6Command()) != null;
+        return Paths.get(path, perl6Command()) != null;
     }
 
     @Nullable
@@ -129,18 +129,29 @@ public class Perl6SdkType extends SdkType {
     public String getVersionString(@NotNull String path) {
         Path binPath = Paths.get(path, perl6Command());
         String[] command = {binPath.normalize().toString(), "-e", "say $*PERL.compiler.version"};
+        BufferedReader std = null;
         try {
             if (!Files.isDirectory(binPath) && Files.isExecutable(binPath)) {
                 Process p = Runtime.getRuntime().exec(command);
-                BufferedReader std = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                std = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String firstLine = std.readLine();
                 if (firstLine != null) {
+                    std.close();
                     return firstLine;
                 }
             }
         } catch (IOException e) {
             LOG.error(e);
             return null;
+        } finally {
+            if (std != null) {
+                try {
+                    std.close();
+                }
+                catch (IOException e) {
+                    LOG.warn(e);
+                }
+            }
         }
         return null;
     }
@@ -236,25 +247,7 @@ public class Perl6SdkType extends SdkType {
     }
 
     private static List<Perl6Symbol> makeSettingSymbols(List<String> names) {
-        return names.stream()
-            .flatMap(Perl6SdkType::nameToSettingSymbols)
-            .collect(Collectors.toList());
-    }
-
-    private static Stream<Perl6Symbol> nameToSettingSymbols(String name) {
-        if (name.startsWith("&")) {
-            return Stream.of(
-                new Perl6SettingSymbol(Perl6SymbolKind.Variable, name),
-                new Perl6SettingSymbol(Perl6SymbolKind.Routine, name.substring(1))
-            );
-        }
-        else {
-            return Stream.of(new Perl6SettingSymbol(
-                Character.isLetter(name.charAt(0))
-                    ? Perl6SymbolKind.TypeOrConstant
-                    : Perl6SymbolKind.Variable,
-                name));
-        }
+        return new Perl6ExternalNamesParser(names).result();
     }
 
     public List<Perl6Symbol> getNamesForUse(Project project, String name) {
