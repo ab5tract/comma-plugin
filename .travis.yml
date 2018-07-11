@@ -18,12 +18,12 @@ addons:
     packages:
     - rakudo-pkg
 before_script:
-- "./gradlew assemble"
+- (cd perl6-idea-plugin && ./gradlew assemble)
 script:
-- (cd tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
-- "./gradlew test"
+- (cd perl6-idea-plugin/tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
+- (cd perl6-idea-plugin && ./gradlew test)
 after_success:
-- "./gradlew buildPlugin"
+- (cd perl6-idea-plugin && ./gradlew buildPlugin)
 deploy:
   provider: s3
   access_key_id: AKIAJV46PZNKKRZTY3EQ

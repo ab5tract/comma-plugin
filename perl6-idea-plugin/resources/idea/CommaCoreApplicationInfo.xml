@@ -1,0 +1,28 @@
+<component xmlns="http://jetbrains.org/intellij/schema/application-info"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://jetbrains.org/intellij/schema/application-info http://jetbrains.org/intellij/schema/ApplicationInfo.xsd">
+  <version major="2018" minor="2" eap="true"/>
+  <company name="Edument Central Europe s.r.o." url="https://www.edument.se" copyrightStart="2010"/>
+  <build number="__BUILD_NUMBER__" date="__BUILD_DATE__"/>
+  <logo url="/comma_core_logo.png" textcolor="000000" progressColor="000000" progressX="114" progressY="278" progressHeight="3"/>
+  <about url="/comma_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="000000"
+         copyrightForeground="000000" linkColor="000000"/>
+  <icon size32="/CommaCore32.png" size16="/CommaCore16.png" ico="CommaCore.ico"/>
+  <package code="__PACKAGE_CODE__"/>
+  <names product="Comma" edition="Supporter Edition" script="comma"/>
+
+  <welcome-screen logo-url="/CommaCoreWelcomeScreen.png"/>
+
+  <plugins url="http://plugins.jetbrains.com/"/>
+  <update-urls check="http://www.jetbrains.com/updates/updates.xml"
+               patches="http://download.jetbrains.com/python/"/>
+
+  <help webhelp-url="https://www.jetbrains.com/pycharm/webhelp"/>
+  <documentation url="https://www.jetbrains.com/pycharm/documentation"/>
+  <support url="https://intellij-support.jetbrains.com/hc/en-us#"/>
+  <feedback eap-url="https://youtrack.jetbrains.com/newissue?project=PY&amp;clearDraft=true&amp;c=Affected+versions+$BUILD&amp;description=$DESCR"
+            release-url="https://www.jetbrains.com/feedback/feedback.jsp?product=PyCharm&amp;build=$BUILD&amp;timezone=$TIMEZONE&amp;eval=$EVAL"/>
+  <whatsnew url="https://www.jetbrains.com/pycharm/whatsnew/index.html"/>
+  <third-party url="https://confluence.jetbrains.com/display/PYH/Third-Party+Software+Used+by+PyCharm"/>
+  <jetbrains-tv url="https://www.youtube.com/playlist?list=PLQ176FUIyIUY5Ii58pzoZhS_3qIBL80nz"/>
+</component>
