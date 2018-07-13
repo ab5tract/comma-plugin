@@ -5,13 +5,11 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.impl.Perl6MethodCallImpl;
-import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
-import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,15 +64,53 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         } else if (caller.isTypeName()) {
             Perl6TypeName typeName = (Perl6TypeName)caller.getElement();
             Perl6Symbol type = typeName.resolveSymbol(Perl6SymbolKind.TypeOrConstant, typeName.getTypeName());
-            if (type == null) return Collections.EMPTY_LIST;
-            Perl6PackageDecl decl = (Perl6PackageDecl)type.getPsi();
-            if (decl == null) return Collections.EMPTY_LIST;
-            return isSingle ?
-                   Collections.singletonList(resolvePackageMethod(decl, call.getCallName())) :
-                   completePackageMethod(decl);
+            if (type != null) { // If we know that type, even as external
+                Perl6PackageDecl decl = (Perl6PackageDecl)type.getPsi();
+                if (decl != null) { // Not external type
+                    return isSingle ?
+                           Collections.singletonList(resolvePackageMethod(decl, call.getCallName())) :
+                           completePackageMethod(decl);
+                } else {
+                    return isSingle ? Collections.EMPTY_LIST :
+                           tryToCompleteExternalTypeMethods(typeName);
+                }
+            } else { // We don't know that type, assume it is derived from Mu/Any
+                return isSingle ? Collections.EMPTY_LIST : MuAnyMethods();
+            }
         } else {
             return Collections.EMPTY_LIST;
         }
+    }
+
+    private static List MuAnyMethods() {
+        // FIXME Needs to properly return methods here
+        return Collections.EMPTY_LIST;
+    }
+
+    private static List<String> tryToCompleteExternalTypeMethods(Perl6TypeName name) {
+        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name.getTypeName(), Perl6SymbolKind.ExternalPackage);
+        PsiElement element = name.getParent();
+        outer:
+        while (element != null) {
+            for (PsiElement child : element.getChildren()) {
+                if (child instanceof Perl6Statement) child = child.getFirstChild();
+                if ((child instanceof Perl6UseStatement || child instanceof Perl6NeedStatement) &&
+                    child.getTextOffset() < name.getTextOffset()) {
+                    Perl6SymbolContributor contributor = (Perl6SymbolContributor)child;
+                    contributor.contributeSymbols(collector);
+                    if (collector.isSatisfied()) break outer;
+                }
+            }
+            if (element instanceof Perl6File) {
+                ((Perl6File)element).contributeScopeSymbols(collector);
+                break outer;
+            }
+            element = element.getParent();
+        }
+
+        Perl6ExternalPackage type = (Perl6ExternalPackage)collector.getResult();
+        if (type == null) return new ArrayList<>();
+        return type.methods().stream().map(s -> '.' + s).collect(Collectors.toList());
     }
 
     private static List<String> completePackageMethod(Perl6PackageDecl decl) {
