@@ -65,7 +65,7 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertTrue(methods.containsAll(Arrays.asList(".a", ".b", ".role")));
     }
 
-    public void testMethodOnSelfFromCORE() {
+    public void testMethodOnSelfFromAnyInheritance() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { method foo{ self.<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
@@ -105,12 +105,28 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertTrue(methods.containsAll(Arrays.asList(".a", ".b", ".role")));
     }
 
-    public void testMethodOnTypeNameFromCORE() {
+    public void testMethodOnTypeNameFromAnyInheritance() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { method foo{ Foo.<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
         assertTrue(methods.containsAll(Arrays.asList(".sink", ".minpairs")));
+    }
+
+    public void testMethodOnTypeFromCORE() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "Int.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.contains(".Range"));
+    }
+
+    public void testMethodOnTypeFromModule() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; Pointer.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.contains(".of"));
     }
 
     public void testPrivateMethodCompletion() {
