@@ -2,15 +2,14 @@ package edument.perl6idea.sdk;
 
 import edument.perl6idea.psi.symbols.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Perl6ExternalNamesParser {
     private final List<String> names;
     private List<Perl6Symbol> result = new ArrayList<>();
-    private Perl6ExternalPackage currentPackage;
+    private Perl6ExternalPackage currentPackage = null;
+    private Set<String> seen = new HashSet<>();
 
     public Perl6ExternalNamesParser(List<String> names) {
         this.names = names;
@@ -27,6 +26,7 @@ public class Perl6ExternalNamesParser {
                 else processNonSub(line);
             } else if (line.startsWith("R:") || line.startsWith("C:")) {
                 finishCurrentPackage();
+                result.add(new Perl6ExternalSymbol(Perl6SymbolKind.TypeOrConstant, line.substring(2)));
                 currentPackage = new Perl6ExternalPackage(
                         line.substring(2),
                         line.charAt(0) == 'R'
@@ -46,8 +46,11 @@ public class Perl6ExternalNamesParser {
     }
 
     private void finishCurrentPackage() {
-        if (currentPackage != null)
+        if (currentPackage == null) return;
+        if (!seen.contains(currentPackage.getName())) {
             result.add(currentPackage);
+            seen.add(currentPackage.getName());
+        }
         currentPackage = null;
     }
 
