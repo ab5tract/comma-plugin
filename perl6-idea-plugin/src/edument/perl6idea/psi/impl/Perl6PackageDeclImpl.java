@@ -14,7 +14,6 @@ import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub> implements Perl6PackageDecl {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
@@ -127,8 +126,8 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             // Local perl6PackageDecl
             Perl6PackageDeclStub roleStub = typeRef.getStub();
             // Contribute perl6PackageDecl internals
-            if (roleStub == null) contributeLocalRole(collector, typeRef);
-            else contributeLocalRoleStub(collector, roleStub);
+            if (roleStub == null) contributeLocalPackage(collector, typeRef);
+            else contributeLocalPackageStub(collector, roleStub);
             if (collector.isSatisfied()) return;
             // Contribute perl6PackageDecl itself
             typeRef.contributeScopeSymbols(collector);
@@ -136,12 +135,12 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
         for (String extType : externals) {
             // It can be either external perl6PackageDecl or non-existent one
-            contributeExternalRole(collector, extType);
+            contributeExternalPackage(collector, extType);
             if (collector.isSatisfied()) return;
         }
     }
 
-    private static void contributeLocalRole(Perl6SymbolCollector collector, PsiElement resolve) {
+    private static void contributeLocalPackage(Perl6SymbolCollector collector, PsiElement resolve) {
         Perl6StatementList list = PsiTreeUtil.findChildOfType(resolve, Perl6StatementList.class);
         if (list == null) return;
         Perl6Statement[] states = PsiTreeUtil.getChildrenOfType(list, Perl6Statement.class);
@@ -179,7 +178,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
     }
 
-    private static void contributeLocalRoleStub(Perl6SymbolCollector collector, Perl6PackageDeclStub stub) {
+    private static void contributeLocalPackageStub(Perl6SymbolCollector collector, Perl6PackageDeclStub stub) {
         List<StubElement> children = stub.getChildrenStubs();
         for (StubElement child : children) {
             if (child instanceof Perl6RoutineDeclStub) {
@@ -203,7 +202,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
     }
 
-    private void contributeExternalRole(Perl6SymbolCollector collector, String typeName) {
+    private void contributeExternalPackage(Perl6SymbolCollector collector, String typeName) {
         Perl6VariantsSymbolCollector extCollector =
                 new Perl6VariantsSymbolCollector(Perl6SymbolKind.ExternalPackage);
         applyExternalSymbolCollector(extCollector);
@@ -214,6 +213,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                   pack.getName().equals(typeName))) continue;
             for (String sym : externalPackage.privateMethods()) {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, sym));
+                if (collector.isSatisfied()) return;
+            }
+            for (String sym : externalPackage.methods()) {
+                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, "." + sym));
                 if (collector.isSatisfied()) return;
             }
             for (String var : externalPackage.attributes()) {
