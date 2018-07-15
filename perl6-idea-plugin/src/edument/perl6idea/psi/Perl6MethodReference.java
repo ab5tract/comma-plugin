@@ -75,16 +75,20 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
                            tryToCompleteExternalTypeMethods(typeName);
                 }
             } else { // We don't know that type, assume it is derived from Mu/Any
-                return isSingle ? Collections.EMPTY_LIST : MuAnyMethods();
+                return isSingle ? Collections.EMPTY_LIST : MuAnyMethods(typeName, null);
             }
         } else {
             return Collections.EMPTY_LIST;
         }
     }
 
-    private static List MuAnyMethods() {
-        // FIXME Needs to properly return methods here
-        return Collections.EMPTY_LIST;
+    private static List MuAnyMethods(Perl6PsiElement element, Perl6VariantsSymbolCollector collector) {
+        if (collector == null)
+            collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
+        Perl6File file = PsiTreeUtil.getParentOfType(element, Perl6File.class);
+        if (file != null)
+            file.contributeScopeSymbols(collector);
+        return collector.getVariants().stream().map(s -> s.getName()).collect(Collectors.toList());
     }
 
     private static List<String> tryToCompleteExternalTypeMethods(Perl6TypeName name) {
@@ -96,8 +100,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
                 if (child instanceof Perl6Statement) child = child.getFirstChild();
                 if ((child instanceof Perl6UseStatement || child instanceof Perl6NeedStatement) &&
                     child.getTextOffset() < name.getTextOffset()) {
-                    Perl6SymbolContributor contributor = (Perl6SymbolContributor)child;
-                    contributor.contributeSymbols(collector);
+                    ((Perl6SymbolContributor)child).contributeSymbols(collector);
                     if (collector.isSatisfied()) break outer;
                 }
             }
@@ -110,15 +113,15 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
 
         Perl6ExternalPackage type = (Perl6ExternalPackage)collector.getResult();
         if (type == null) return new ArrayList<>();
+        // From external types we get "raw" method names, so should be prepended with `.`
+        // While our local packages properly export already prepended named
         return type.methods().stream().map(s -> '.' + s).collect(Collectors.toList());
     }
 
     private static List<String> completePackageMethod(Perl6PackageDecl decl) {
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
         decl.contributeScopeSymbols(collector);
-        Perl6File file = PsiTreeUtil.getParentOfType(decl, Perl6File.class);
-        if (file != null)
-            file.contributeScopeSymbols(collector);
+        MuAnyMethods(decl, collector);
         return collector.getVariants().stream().map(s -> s.getName()).collect(Collectors.toList());
     }
 

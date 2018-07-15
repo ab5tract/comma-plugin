@@ -168,4 +168,12 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         // We don't get methods from NativeCall in another block, so `!setup` is not available
         assertTrue(!methods.contains("!setup"));
     }
+
+    public void testUnknownTypeHasAnyMuMethods() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "UnknownTypeName.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.containsAll(Arrays.asList(".note", ".reduce", ".return-rw")));
+    }
 }
