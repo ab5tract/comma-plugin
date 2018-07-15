@@ -18,11 +18,7 @@ EVAL "\{\n    @*ARGS[0] @*ARGS[1];\n" ~ Q:to/END/;
 sub describe-role(Mu \object) {
     for object, |object.^roles {
         say "!$_" for .^candidates[0].^private_method_table.keys;
-    }
-    for object, |object.^roles {
         say .name for .^methods(:local);
-    }
-    for object, |object.^roles {
         say .name for .^attributes(:local);
     }
 }
@@ -58,6 +54,7 @@ sub describer($name, Mu \object) {
 }
 
 sub output-package($name, Mu \object) {
+    # To aboid weird `C:NativeCall::EXPORT::ALL::&postcircumfix:<[ ]>` like things
     return if object ~~ Sub;
     # Emit but don't traverse concrete constants.
     # Also, if we've seen the object before,
