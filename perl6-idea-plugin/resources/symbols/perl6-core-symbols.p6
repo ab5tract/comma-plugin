@@ -17,12 +17,11 @@ sub output-package($name, Mu \object) {
     else {
         # Emit anything that's type-like.
         if object.HOW.WHAT =:= Metamodel::ClassHOW {
-            say 'D:' ~ $name;
-            say 'C:' ~ $name;
-            put .name for object.^methods(:local);
-        } elsif object.HOW.WHAT =:= Metamodel::PackageHOW
-          || object.HOW.WHAT =:= Metamodel::ModuleHOW {
-            say 'D:' ~ $name;
+            say "C:$name";
+            say .name for object.^methods(:local);
+        } elsif object.HOW.WHAT =:= Metamodel::PackageHOW ||
+          object.HOW.WHAT =:= Metamodel::ModuleHOW {
+            say "D:$name";
         }
 
         # Traverse children.
