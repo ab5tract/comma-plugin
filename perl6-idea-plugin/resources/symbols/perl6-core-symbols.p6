@@ -2,7 +2,7 @@ for CORE::.keys {
     # Ignore a few things.
     when 'EXPORTHOW' | 'Rakudo' { }
     # Collect all top-level subs.
-    when /^"&"<:Ll>/ { say 'V:' ~ $_ }
+    when /^"&"<:Ll>/ { say "V:$_" }
     # Collect all types.
     when /^<:L>/ {
         output-package($_, CORE::{$_});
@@ -12,7 +12,7 @@ for CORE::.keys {
 sub output-package($name, Mu \object) {
     # Emit but don't traverse concrete constants.
     if object.DEFINITE {
-        say 'D:' ~ $name;
+        say "D:$name";
     }
     else {
         # Emit anything that's type-like.
