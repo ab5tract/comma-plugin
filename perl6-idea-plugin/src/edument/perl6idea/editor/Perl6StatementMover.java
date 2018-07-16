@@ -20,8 +20,6 @@ import static edument.perl6idea.parsing.Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOS
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6StatementMover extends StatementUpDownMover {
-    private int offset = 0;
-
     @Override
     public boolean checkAvailable(@NotNull Editor editor, @NotNull PsiFile file, @NotNull MoveInfo info, boolean down) {
         return file instanceof Perl6File;
@@ -49,10 +47,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
                 info.toMove2 = info.toMove;
                 return;
             }
-            if (down)
-                rangeElement2 = tempRange;
-            else
-                rangeElement1 = tempRange;
+            rangeElement2 = tempRange;
         }
 
         LineRange lineRange1 = new LineRange(rangeElement1);
@@ -60,16 +55,6 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
         info.toMove = lineRange1;
         info.toMove2 = lineRange2;
-    }
-
-    private static int countStart(int startLine, Document doc, PsiFile file) {
-        int zero = getLineStartSafeOffset(doc, startLine);
-        PsiElement temp = file.findElementAt(zero);
-        while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE))) {
-            zero += temp.getTextLength();
-            temp = temp.getNextSibling();
-        }
-        return zero;
     }
 
     private static PsiElement getNode(@NotNull Document document, int startOffset, PsiFile psiFile) {
@@ -90,7 +75,5 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
     @Override
     public void afterMove(@NotNull Editor editor, @NotNull PsiFile file, @NotNull MoveInfo info, boolean down) {
-        if (offset != 0)
-            editor.getCaretModel().moveToOffset(offset);
     }
 }
