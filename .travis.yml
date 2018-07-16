@@ -31,7 +31,7 @@ deploy:
     secure: dgHgQvaflj/BCM1aDum6uPNQu4niXxLJTO3E/kT+NAWe4ra4c2DbdVm9ZwkCyJxoovWwvOxJpvRTzkTvZyeA7f2NEl4BHsbQ3zGsgYk3K7CqVnEmzqGv79syzuEcdmbMepQcLEqHscb2KCxnJgZ6Bb7MAMBEPLPJx/hlVqhci2aHZwUNjupTvMdZykFYXvmKMBprRaDfhsjkTnWURyO0raID/8wPOTGFJ/TxIVLBpXWxxndv/NsV4jg/PU/73WxyhLmtlpyJn4ozeHCAL55wgmACCpPzwlsyxfFHgNXMqMLJ58f6oAKXjgTLfr7GkTsWCqKEMhWR0H4CTGBPD2S2oadzw0l1lLkWhpK1YfvoBepQdpqad4HOKM/sWwX1aHZm2SVeGiExpckBkhGDuen2+JY1DouY97ixcWIK/3SqXAmrsNLiavvNca1L4J+2PgADdeAXnM5lsfgqafpivGDIvUurx6FRv53mnQel9P1mh8vxK2OO2HF2ZAv/IoyGqZNW4jZFKnMfgXeOkboTD3Jkd46uxEv/3UrOWH/QZpD3DGFjMK3/RNjy0ikTiK3MmgwjaINdXA7/F4Yo0kBc55l0cTbVQshZkclbkcz3b5cBc9r9gMYtoCGgGTyWNZoa/D9WCr1F4SJU26goAP2Nw0SKZdbozbMMULPFRmpmVazvK2c=
   bucket: comma-plugin
   skip_cleanup: true
-  local-dir: build/distributions
+  local-dir: perl6-idea-plugin/build/distributions
   on:
     repo: edumentab/perl6-idea-plugin
     branch: master
