@@ -40,21 +40,18 @@ public class Perl6StatementMover extends StatementUpDownMover {
         PsiElement rangeElement2 = getNode(editor.getDocument(), info.toMove2.startLine, psiFile);
         if (rangeElement2 == null) return;
 
-        // For multi-line statements
         if (rangeElement1.equals(rangeElement2)) {
             // It is a multi-line statement and we're in the middle of it
             PsiElement tempRange = skipEmpty(down ? rangeElement2.getNextSibling() : rangeElement1.getPrevSibling(), down);
             if (tempRange == null) {
-                // If we are close to file end
-
-                // If the block is not last
-                //info.toMove = new LineRange(rangeElement1);
+                // It is first element in the block and we are moving up, so need to jump out
+                // Firstly, get parent statement for this block, then set ranges
                 PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Statement.class);
-                if (blockStatement == null) return;
                 moveOutOfBlockUp(info, rangeElement1, blockStatement.getPrevSibling());
                 return;
             } else if (tempRange instanceof PsiWhiteSpace) {
-                tempRange = fixBlockWhitespace(tempRange, down);
+                // It seems to be last element of block, so we need to jump and move next
+                tempRange = tempRange.getParent().getNextSibling();
             }
             rangeElement2 = tempRange;
         } else if (PsiTreeUtil.isAncestor(rangeElement2, rangeElement1, true)) {
@@ -62,29 +59,15 @@ public class Perl6StatementMover extends StatementUpDownMover {
             moveOutOfBlockUp(info, rangeElement1, rangeElement2);
             return;
         }
-        LineRange lineRange1 = new LineRange(rangeElement1);
-        LineRange lineRange2 = new LineRange(rangeElement2);
 
-        info.toMove = lineRange1;
-        info.toMove2 = lineRange2;
+        info.toMove = new LineRange(rangeElement1);
+        info.toMove2 = new LineRange(rangeElement2);
     }
 
     private static void moveOutOfBlockUp(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
         info.toMove = new LineRange(rangeElement1);
         info.toMove2 = new LineRange(rangeElement2.getPrevSibling());
         info.toMove2 = new LineRange(info.toMove2.startLine + 1, info.toMove2.endLine);
-    }
-
-    private static PsiElement fixBlockWhitespace(PsiElement el, boolean down) {
-        // We want to move statement outside of block
-        if (el.getParent() instanceof Perl6StatementList) {
-            if (down)
-                return el.getParent().getNextSibling();
-            else
-                return el.getParent().getLastChild();
-        } else {
-            return null;
-        }
     }
 
     private static PsiElement getNode(@NotNull Document document, int startOffset, PsiFile psiFile) {
