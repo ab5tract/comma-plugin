@@ -47,7 +47,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
                 // It is first element in the block and we are moving up, so need to jump out
                 // Firstly, get parent statement for this block, then set ranges
                 PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Statement.class);
-                moveOutOfBlockUp(info, rangeElement1, blockStatement.getPrevSibling());
+                moveOutOfBlockUp(info, rangeElement1, blockStatement);
                 return;
             } else if (tempRange instanceof PsiWhiteSpace) {
                 // It seems to be last element of block, so we need to jump and move next
@@ -66,8 +66,15 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
     private static void moveOutOfBlockUp(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
         info.toMove = new LineRange(rangeElement1);
-        info.toMove2 = new LineRange(rangeElement2.getPrevSibling());
-        info.toMove2 = new LineRange(info.toMove2.startLine + 1, info.toMove2.endLine);
+        PsiElement prev = rangeElement2.getPrevSibling();
+        if (prev != null) {
+            // If we have previous element to swap with
+            info.toMove2 = new LineRange(rangeElement2.getPrevSibling());
+            info.toMove2 = new LineRange(info.toMove2.startLine + 1, info.toMove2.endLine);
+        } else {
+            // It looks like file beginning, so swap with first line
+            info.toMove2 = new LineRange(0, 0);
+        }
     }
 
     private static PsiElement getNode(@NotNull Document document, int startOffset, PsiFile psiFile) {

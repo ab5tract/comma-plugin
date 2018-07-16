@@ -33,6 +33,12 @@ public class Perl6StatementMoveTest extends LightPlatformCodeInsightFixtureTestC
         myFixture.checkResultByFile("BlockTestDataUp.p6");
     }
 
+    public void testBracketedUpFirstBlock() {
+        myFixture.configureByFile("BlockTestDataBegin.p6");
+        myFixture.performEditorAction("MoveStatementUp");
+        myFixture.checkResultByFile("BlockTestDataBeginUp.p6");
+    }
+
     public void testMultilineDown() {
         myFixture.configureByFile("MultilineTestData.p6");
         myFixture.performEditorAction("MoveStatementDown");
