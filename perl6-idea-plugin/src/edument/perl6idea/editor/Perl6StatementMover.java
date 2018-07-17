@@ -46,7 +46,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
             if (tempRange == null) {
                 // It is first element in the block and we are moving up, so need to jump out
                 // Firstly, get parent statement for this block, then set ranges
-                PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Statement.class);
+                PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Blockoid.class);
                 moveOutOfBlockUp(info, rangeElement1, blockStatement);
             } else if (tempRange instanceof PsiWhiteSpace) {
                 // It seems to be last element of block, so we need to jump and move next
@@ -57,7 +57,8 @@ public class Perl6StatementMover extends StatementUpDownMover {
             }
         } else if (PsiTreeUtil.isAncestor(rangeElement2, rangeElement1, true)) {
             // If we are moving out of the block moving up
-            moveOutOfBlockUp(info, rangeElement1, rangeElement2);
+            PsiElement blockStatement = PsiTreeUtil.findChildOfType(rangeElement2, Perl6Blockoid.class);
+            moveOutOfBlockUp(info, rangeElement1, blockStatement);
         } else {
             setInfo(info, rangeElement1, rangeElement2);
         }
@@ -70,15 +71,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
     private static void moveOutOfBlockUp(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
         info.toMove = new LineRange(rangeElement1);
-        PsiElement prev = rangeElement2.getPrevSibling();
-        if (prev != null) {
-            // If we have previous element to swap with
-            info.toMove2 = new LineRange(rangeElement2.getPrevSibling());
-            info.toMove2 = new LineRange(info.toMove2.startLine + 1, info.toMove2.endLine);
-        } else {
-            // It looks like file beginning, so swap with first line
-            info.toMove2 = new LineRange(0, 0);
-        }
+        info.toMove2 = new LineRange(rangeElement2.getFirstChild()); // Blockoid is started with CURLY BRACKET OPEN
     }
 
     private static PsiElement getNode(@NotNull Document document, int startOffset, PsiFile psiFile) {
