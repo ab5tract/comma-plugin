@@ -27,16 +27,43 @@ public class Perl6StatementMoveTest extends LightPlatformCodeInsightFixtureTestC
         myFixture.checkResultByFile("BlockTestDataDown.p6");
     }
 
+    public void testBracketedCursorFirstUp() {
+        myFixture.configureByFile("BlockTestData.p6");
+        myFixture.getEditor().getCaretModel().moveToOffset(25);
+        myFixture.performEditorAction("MoveStatementUp");
+        myFixture.checkResultByFile("BlockTestDataCursorUp.p6");
+    }
+
     public void testBracketedUp() {
         myFixture.configureByFile("BlockTestData.p6");
         myFixture.performEditorAction("MoveStatementUp");
         myFixture.checkResultByFile("BlockTestDataUp.p6");
     }
 
+    public void testBracketedUpFirstBlockCursor() {
+        myFixture.configureByFile("BlockTestDataBegin.p6");
+        myFixture.getEditor().getCaretModel().moveToOffset(24);
+        myFixture.performEditorAction("MoveStatementUp");
+        myFixture.checkResultByFile("BlockTestDataBeginUpCursor.p6");
+    }
+
     public void testBracketedUpFirstBlock() {
         myFixture.configureByFile("BlockTestDataBegin.p6");
         myFixture.performEditorAction("MoveStatementUp");
         myFixture.checkResultByFile("BlockTestDataBeginUp.p6");
+    }
+
+    public void testBracketedNestedCursor() {
+        myFixture.configureByFile("NestedBrackets.p6");
+        myFixture.getEditor().getCaretModel().moveToOffset(45);
+        myFixture.performEditorAction("MoveStatementUp");
+        myFixture.checkResultByFile("NestedBracketsUpCursor.p6");
+    }
+
+    public void testBracketedNested() {
+        myFixture.configureByFile("NestedBrackets.p6");
+        myFixture.performEditorAction("MoveStatementUp");
+        myFixture.checkResultByFile("NestedBracketsUp.p6");
     }
 
     public void testMultilineDown() {
