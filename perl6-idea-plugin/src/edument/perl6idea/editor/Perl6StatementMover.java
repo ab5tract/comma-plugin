@@ -65,15 +65,10 @@ public class Perl6StatementMover extends StatementUpDownMover {
             // If we are moving block from its first line into "insides", switch it with next list-level statement
             if (down) {
                 PsiElement next = skipEmpty(rangeElement1.getNextSibling(), true);
-                if (next == null) {
-                    // Last thing in the block, do not act
-                    setInfo(info, rangeElement1, rangeElement1);
-                } else {
-                    setInfo(info, rangeElement1, next);
-                }
-            } else {
-                PsiElement next = skipEmpty(rangeElement1.getNextSibling(), true);
                 setInfo(info, rangeElement1, next == null ? rangeElement1 : next);
+            } else {
+                PsiElement prev = skipEmpty(rangeElement1.getPrevSibling(), false);
+                setInfo(info, rangeElement1, prev == null ? rangeElement1 : prev);
             }
         } else {
             setInfo(info, rangeElement1, rangeElement2);
