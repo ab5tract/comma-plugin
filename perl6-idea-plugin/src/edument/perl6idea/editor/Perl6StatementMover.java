@@ -48,18 +48,22 @@ public class Perl6StatementMover extends StatementUpDownMover {
                 // Firstly, get parent statement for this block, then set ranges
                 PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Statement.class);
                 moveOutOfBlockUp(info, rangeElement1, blockStatement);
-                return;
             } else if (tempRange instanceof PsiWhiteSpace) {
                 // It seems to be last element of block, so we need to jump and move next
                 tempRange = tempRange.getParent().getNextSibling();
+                setInfo(info, rangeElement1, tempRange);
+            } else {
+                setInfo(info, rangeElement1, tempRange);
             }
-            rangeElement2 = tempRange;
         } else if (PsiTreeUtil.isAncestor(rangeElement2, rangeElement1, true)) {
             // If we are moving out of the block moving up
             moveOutOfBlockUp(info, rangeElement1, rangeElement2);
-            return;
+        } else {
+            setInfo(info, rangeElement1, rangeElement2);
         }
+    }
 
+    private static void setInfo(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
         info.toMove = new LineRange(rangeElement1);
         info.toMove2 = new LineRange(rangeElement2);
     }
