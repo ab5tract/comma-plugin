@@ -88,15 +88,17 @@ public class Perl6StatementMover extends StatementUpDownMover {
     }
 
     private static void setInfo(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
-        if (rangeElement1 == rangeElement2) {
-            LineRange range = new LineRange(rangeElement1);
-            info.toMove = range;
-            info.toMove2 = range;
+        LineRange range1 = new LineRange(rangeElement1);
+        LineRange range2 = new LineRange(rangeElement2);
+        if (rangeElement1 == rangeElement2 || // If heuristic is wrong
+            range1.contains(range2) || range2.contains(range1)) {
+            info.toMove = range1;
+            info.toMove2 = range1;
             info.indentTarget = false;
             info.indentSource = false;
         } else {
-            info.toMove = new LineRange(rangeElement1);
-            info.toMove2 = new LineRange(rangeElement2);
+            info.toMove = range1;
+            info.toMove2 = range2;
         }
     }
 
