@@ -58,7 +58,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
         } else if (PsiTreeUtil.isAncestor(rangeElement2, rangeElement1, true)) {
             // If we are moving out of the block moving up
             if (!down) {
-                PsiElement blockStatement = PsiTreeUtil.findChildOfType(rangeElement2, Perl6Blockoid.class);
+                PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement1, Perl6Blockoid.class);
                 setInfo(info, rangeElement1, blockStatement == null ? rangeElement1 : blockStatement.getFirstChild());
             }
         } else if (PsiTreeUtil.isAncestor(rangeElement1, rangeElement2, true)) {
@@ -74,7 +74,9 @@ public class Perl6StatementMover extends StatementUpDownMover {
                 PsiElement prev = skipEmpty(rangeElement1.getPrevSibling(), false);
                 if (prev == null) {
                     PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Blockoid.class);
-                    blockStatement = PsiTreeUtil.getParentOfType(blockStatement, Perl6Blockoid.class);
+                    PsiElement outerBlock = PsiTreeUtil.getParentOfType(blockStatement, Perl6Blockoid.class);
+                    if (outerBlock != null)
+                        blockStatement = outerBlock;
                     setInfo(info, rangeElement1, blockStatement == null ? rangeElement1 : blockStatement.getFirstChild());
                 } else {
                     setInfo(info, rangeElement1, prev);
