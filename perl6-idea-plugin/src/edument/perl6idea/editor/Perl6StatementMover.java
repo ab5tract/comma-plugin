@@ -65,8 +65,10 @@ public class Perl6StatementMover extends StatementUpDownMover {
             // If we are moving block from its first line into "insides", switch it with next list-level statement
             if (down) {
                 PsiElement next = skipEmpty(rangeElement1.getNextSibling(), true);
-                if (next != null) {
+                if (next != null && (!(next instanceof PsiWhiteSpace)) && !next.getNode().getElementType().equals(UNV_WHITE_SPACE)) {
                     setInfo(info, rangeElement1, next);
+                } else {
+                    setInfo(info, rangeElement1, rangeElement1);
                 }
             } else {
                 PsiElement prev = skipEmpty(rangeElement1.getPrevSibling(), false);
@@ -74,7 +76,6 @@ public class Perl6StatementMover extends StatementUpDownMover {
                     PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Blockoid.class);
                     blockStatement = PsiTreeUtil.getParentOfType(blockStatement, Perl6Blockoid.class);
                     moveOutOfBlockUp(info, rangeElement1, blockStatement);
-
                 } else {
                     setInfo(info, rangeElement1, prev);
                 }
@@ -85,8 +86,16 @@ public class Perl6StatementMover extends StatementUpDownMover {
     }
 
     private static void setInfo(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
-        info.toMove = new LineRange(rangeElement1);
-        info.toMove2 = new LineRange(rangeElement2);
+        if (rangeElement1 == rangeElement2) {
+            LineRange range = new LineRange(rangeElement1);
+            info.toMove = range;
+            info.toMove2 = range;
+            info.indentTarget = false;
+            info.indentSource = false;
+        } else {
+            info.toMove = new LineRange(rangeElement1);
+            info.toMove2 = new LineRange(rangeElement2);
+        }
     }
 
     private static void moveOutOfBlockUp(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
