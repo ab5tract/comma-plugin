@@ -40,6 +40,7 @@
     <gotoSymbolContributor implementation="edument.perl6idea.contribution.Perl6SymbolNameContributor" />
     <errorHandler implementation="edument.perl6idea.utils.Perl6ErrorReportSubmitter"/>
     <statementUpDownMover implementation="edument.perl6idea.editor.Perl6StatementMover"/>
+    <treeStructureProvider implementation="edument.perl6idea.structureView.Perl6ProjectStructureProvider"/>
   </extensions>
 
   <actions>
