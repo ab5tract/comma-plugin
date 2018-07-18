@@ -35,9 +35,9 @@ public class Perl6StatementMover extends StatementUpDownMover {
         if (editor.getSelectionModel().getSelectionStart() != editor.getSelectionModel().getSelectionEnd())
             return;
 
-        PsiElement rangeElement1 = getNode(editor.getDocument(), info.toMove.startLine, psiFile);
+        PsiElement rangeElement1 = getNode(editor.getDocument(), editorEx, info.toMove.startLine, psiFile, true);
         if (rangeElement1 == null) return;
-        PsiElement rangeElement2 = getNode(editor.getDocument(), info.toMove2.startLine, psiFile);
+        PsiElement rangeElement2 = getNode(editor.getDocument(), editorEx, info.toMove2.startLine, psiFile, false);
         if (rangeElement2 == null) return;
 
         if (rangeElement1.equals(rangeElement2)) {
@@ -102,8 +102,22 @@ public class Perl6StatementMover extends StatementUpDownMover {
         }
     }
 
-    private static PsiElement getNode(@NotNull Document document, int startOffset, PsiFile psiFile) {
-        PsiElement element = skipEmpty(psiFile.findElementAt(getLineStartSafeOffset(document, startOffset)), true);
+    private static PsiElement getNode(@NotNull Document document,
+                                      EditorEx editor,
+                                      int startOffset,
+                                      PsiFile psiFile,
+                                      boolean is_first) {
+        PsiElement element;
+        if (is_first) {
+            PsiElement el = psiFile.findElementAt(editor.getCaretModel().getOffset());
+            while (el != null && (el instanceof PsiWhiteSpace || el.getNode().getElementType().equals(UNV_WHITE_SPACE))) {
+                int basicOffset = el.getTextOffset();
+                el = psiFile.findElementAt(basicOffset + el.getTextLength());
+            }
+            element = el;
+        } else {
+            element = skipEmpty(psiFile.findElementAt(getLineStartSafeOffset(document, startOffset)), true);
+        }
         if (element == null) return null;
         if (element.getNode().getElementType().equals(BLOCK_CURLY_BRACKET_CLOSE)) return element;
         if (element instanceof Perl6StatementList && element.getParent() instanceof Perl6Blockoid)
