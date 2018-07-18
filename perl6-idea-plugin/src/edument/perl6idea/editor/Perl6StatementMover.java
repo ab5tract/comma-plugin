@@ -47,7 +47,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
                 // It is first element in the block and we are moving up, so need to jump out
                 // Firstly, get parent statement for this block, then set ranges
                 PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Blockoid.class);
-                moveOutOfBlockUp(info, rangeElement1, blockStatement);
+                setInfo(info, rangeElement1, blockStatement == null ? rangeElement1 : blockStatement.getFirstChild());
             } else if (tempRange instanceof PsiWhiteSpace) {
                 // It seems to be last element of block, so we need to jump and move next
                 tempRange = tempRange.getParent().getNextSibling();
@@ -59,7 +59,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
             // If we are moving out of the block moving up
             if (!down) {
                 PsiElement blockStatement = PsiTreeUtil.findChildOfType(rangeElement2, Perl6Blockoid.class);
-                moveOutOfBlockUp(info, rangeElement1, blockStatement);
+                setInfo(info, rangeElement1, blockStatement == null ? rangeElement1 : blockStatement.getFirstChild());
             }
         } else if (PsiTreeUtil.isAncestor(rangeElement1, rangeElement2, true)) {
             // If we are moving block from its first line into "insides", switch it with next list-level statement
@@ -75,7 +75,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
                 if (prev == null) {
                     PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Blockoid.class);
                     blockStatement = PsiTreeUtil.getParentOfType(blockStatement, Perl6Blockoid.class);
-                    moveOutOfBlockUp(info, rangeElement1, blockStatement);
+                    setInfo(info, rangeElement1, blockStatement == null ? rangeElement1 : blockStatement.getFirstChild());
                 } else {
                     setInfo(info, rangeElement1, prev);
                 }
@@ -96,11 +96,6 @@ public class Perl6StatementMover extends StatementUpDownMover {
             info.toMove = new LineRange(rangeElement1);
             info.toMove2 = new LineRange(rangeElement2);
         }
-    }
-
-    private static void moveOutOfBlockUp(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
-        info.toMove = new LineRange(rangeElement1);
-        info.toMove2 = new LineRange(rangeElement2.getFirstChild()); // Blockoid is started with CURLY BRACKET OPEN
     }
 
     private static PsiElement getNode(@NotNull Document document, int startOffset, PsiFile psiFile) {
