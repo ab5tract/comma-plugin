@@ -1,6 +1,6 @@
 sub foo() {
-    sub bar() {
-        say 1;
-    <caret>}
     say 3;
+    sub bar() {
+    <caret>}
+    say 1;
 }
