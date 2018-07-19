@@ -10,10 +10,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.Perl6Blockoid;
-import edument.perl6idea.psi.Perl6File;
-import edument.perl6idea.psi.Perl6Statement;
-import edument.perl6idea.psi.Perl6StatementList;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE;
@@ -56,10 +53,16 @@ public class Perl6StatementMover extends StatementUpDownMover {
                 setInfo(info, rangeElement1, tempRange);
             }
         } else if (PsiTreeUtil.isAncestor(rangeElement2, rangeElement1, true)) {
-            // If we are moving out of the block moving up
-            if (!down) {
+            if (rangeElement2.getFirstChild() instanceof Perl6IfStatement) {
+                handleIfCase(info, rangeElement1, down);
+            } else { // If we are moving out of the block moving
                 PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement1, Perl6Blockoid.class);
-                setInfo(info, rangeElement1, blockStatement == null ? rangeElement1 : blockStatement.getFirstChild());
+                if (blockStatement == null) {
+                    setInfo(info, rangeElement1, rangeElement1);
+                } else {
+                    setInfo(info, rangeElement1,
+                            down ? blockStatement.getLastChild() : blockStatement.getFirstChild());
+                }
             }
         } else if (PsiTreeUtil.isAncestor(rangeElement1, rangeElement2, true)) {
             // If we are moving block from its first line into "insides", switch it with next list-level statement
@@ -84,6 +87,36 @@ public class Perl6StatementMover extends StatementUpDownMover {
             }
         } else {
             setInfo(info, rangeElement1, rangeElement2);
+        }
+    }
+
+    private static void handleIfCase(MoveInfo info, PsiElement line, boolean down) {
+        PsiElement block = PsiTreeUtil.getParentOfType(line, Perl6Block.class);
+        if (block == null) {
+            setInfo(info, line, line);
+            return;
+        }
+        PsiElement sib = down ? block.getNextSibling() : block.getPrevSibling();
+        while (sib != null && (!(sib instanceof Perl6Block))) {
+            sib = down ? sib.getNextSibling() : sib.getPrevSibling();
+        }
+        if (sib != null) {
+            LineRange firstRange = new LineRange(line);
+            PsiElement sibBlockoid = sib.getFirstChild();
+            PsiElement blockoid = block.getFirstChild();
+            LineRange secondRange = new LineRange(
+                down ? blockoid.getLastChild() : sibBlockoid.getLastChild(),
+                down ? sibBlockoid.getFirstChild() : blockoid.getFirstChild());
+            info.toMove = firstRange;
+            info.toMove2 = secondRange;
+        } else {
+            info.toMove = new LineRange(line);
+            info.toMove2 = new LineRange(block.getFirstChild().getFirstChild());
+        }
+        if (info.toMove.contains(info.toMove2) || info.toMove2.contains(info.toMove)) {
+            info.toMove2 = info.toMove;
+            info.indentTarget = false;
+            info.indentSource = false;
         }
     }
 
@@ -119,7 +152,6 @@ public class Perl6StatementMover extends StatementUpDownMover {
             element = skipEmpty(psiFile.findElementAt(getLineStartSafeOffset(document, startOffset)), true);
         }
         if (element == null) return null;
-        if (element.getNode().getElementType().equals(BLOCK_CURLY_BRACKET_CLOSE)) return element;
         if (element instanceof Perl6StatementList && element.getParent() instanceof Perl6Blockoid)
             element = element.getFirstChild();
         return element instanceof Perl6Statement ? element : PsiTreeUtil.getParentOfType(element, Perl6Statement.class);

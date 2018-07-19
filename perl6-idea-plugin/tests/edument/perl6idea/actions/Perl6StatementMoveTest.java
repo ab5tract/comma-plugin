@@ -107,4 +107,16 @@ public class Perl6StatementMoveTest extends LightPlatformCodeInsightFixtureTestC
         myFixture.performEditorAction("MoveStatementUp");
         myFixture.checkResultByFile("Case5.p6");
     }
+
+    public void testCase6() {
+        myFixture.configureByFile("Case6.p6");
+        myFixture.performEditorAction("MoveStatementUp");
+        myFixture.checkResultByFile("Case6Up.p6");
+    }
+
+    public void testCase7() {
+        myFixture.configureByFile("Case7.p6");
+        myFixture.performEditorAction("MoveStatementDown");
+        myFixture.checkResultByFile("Case7Down.p6");
+    }
 }
