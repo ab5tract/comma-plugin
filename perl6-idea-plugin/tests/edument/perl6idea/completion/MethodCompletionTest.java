@@ -106,7 +106,7 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testMethodOnTypeNameFromAnyInheritance() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { method foo{ Foo.<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { method foo { Foo.<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);

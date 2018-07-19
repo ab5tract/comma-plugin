@@ -11,6 +11,7 @@ import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -83,9 +84,11 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     private void contributeFromElders(Perl6SymbolCollector collector) {
         Perl6PackageDeclStub stub = getStub();
-
         List<Perl6PackageDecl> perl6PackageDecls = new ArrayList<>();
         List<String> externals = new ArrayList<>();
+        boolean isAny = true;
+        boolean isMu = true;
+
         if (stub != null) {
             List<StubElement> children = stub.getChildrenStubs();
             for (StubElement child : children) {
@@ -94,33 +97,44 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
                 for (StubElement maybeType : traitStub.getChildrenStubs())
                     if (maybeType instanceof Perl6TypeNameStub) {
-                        Perl6TypeName psi = ((Perl6TypeNameStub)maybeType).getPsi();
+                        Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub)maybeType;
+                        Perl6TypeName psi = typeNameStub.getPsi();
                         if (psi == null) continue;
                         PsiReference ref = psi.getReference();
                         if (ref == null) continue;
                         PsiElement decl = ref.resolve();
                         if (decl != null) perl6PackageDecls.add((Perl6PackageDecl)decl);
-                        else externals.add(((Perl6TypeNameStub)maybeType).getTypeName());
+                        else externals.add(typeNameStub.getTypeName());
+                        if ((typeNameStub).getTypeName().equals("Mu"))
+                            isAny = false;
                     }
             }
         } else {
             Perl6Trait[] traits = PsiTreeUtil.getChildrenOfType(this, Perl6Trait.class);
-            if (traits == null) return;
-
-            for (Perl6Trait trait : traits) {
-                if (trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is")) {
-                    PsiElement element = trait.getTraitModifier().equals("does") ?
-                                         PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class) :
-                                         PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
-                    if (element == null) continue;
-                    PsiReference ref = element.getReference();
-                    if (ref == null) continue;
-                    PsiElement decl = ref.resolve();
-                    if (decl != null) perl6PackageDecls.add((Perl6PackageDecl)decl);
-                    else externals.add(trait.getTraitName());
+            if (traits != null)
+                for (Perl6Trait trait : traits) {
+                    if (trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is")) {
+                        PsiElement element = trait.getTraitModifier().equals("does") ?
+                                             PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class) :
+                                             PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
+                        if (element == null) continue;
+                        PsiReference ref = element.getReference();
+                        if (ref == null) continue;
+                        PsiElement decl = ref.resolve();
+                        if (decl != null) perl6PackageDecls.add((Perl6PackageDecl)decl);
+                        else externals.add(trait.getTraitName());
+                        if (trait.getTraitName().equals("Mu"))
+                            isAny = false;
+                    }
                 }
-            }
         }
+
+        if (isAny)
+            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Any", this).methods())
+                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
+        if (isMu)
+            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this).methods())
+                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
 
         for (Perl6PackageDecl typeRef : perl6PackageDecls) {
             // Local perl6PackageDecl

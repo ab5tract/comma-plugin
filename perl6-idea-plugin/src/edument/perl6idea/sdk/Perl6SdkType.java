@@ -37,6 +37,7 @@ public class Perl6SdkType extends SdkType {
     private static final String NAME = "Perl 6 SDK";
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
     private List<Perl6Symbol> setting;
+    private Map<String, Perl6ExternalPackage> settingClasses;
     private Map<String, String> moarBuildConfig;
     private Map<String, List<Perl6Symbol>> useNameCache = new ConcurrentHashMap<>();
     private Map<String, List<Perl6Symbol>> needNameCache = new ConcurrentHashMap<>();
@@ -199,6 +200,12 @@ public class Perl6SdkType extends SdkType {
         return moarBuildConfig;
     }
 
+    public Perl6ExternalPackage getCoreSettingSymbol(String name, Perl6PsiElement element) {
+        if (settingClasses == null)
+            getCoreSettingSymbols(element);
+        return settingClasses.get(name);
+    }
+
     public List<Perl6Symbol> getCoreSettingSymbols(Perl6PsiElement element) {
         if (setting != null)
             return setting;
@@ -246,8 +253,10 @@ public class Perl6SdkType extends SdkType {
         return new ArrayList<>();
     }
 
-    private static List<Perl6Symbol> makeSettingSymbols(List<String> names) {
-        return new Perl6ExternalNamesParser(names).result();
+    private List<Perl6Symbol> makeSettingSymbols(List<String> names) {
+        Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(names);
+        settingClasses = parser.getExternal();
+        return parser.result();
     }
 
     public List<Perl6Symbol> getNamesForUse(Project project, String name) {

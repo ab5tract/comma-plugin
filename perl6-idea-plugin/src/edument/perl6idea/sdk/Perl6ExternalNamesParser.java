@@ -10,6 +10,7 @@ public class Perl6ExternalNamesParser {
     private List<Perl6Symbol> result = new ArrayList<>();
     private Perl6ExternalPackage currentPackage = null;
     private Set<String> seen = new HashSet<>();
+    private Map<String, Perl6ExternalPackage> externalClasses = new HashMap<>();
 
     public Perl6ExternalNamesParser(List<String> names) {
         this.names = names;
@@ -49,6 +50,7 @@ public class Perl6ExternalNamesParser {
         if (currentPackage == null) return;
         if (!seen.contains(currentPackage.getName())) {
             result.add(currentPackage);
+            externalClasses.put(currentPackage.getName(), currentPackage);
             seen.add(currentPackage.getName());
         }
         currentPackage = null;
@@ -69,5 +71,9 @@ public class Perl6ExternalNamesParser {
 
     public List<Perl6Symbol> result() {
         return result;
+    }
+
+    public Map<String, Perl6ExternalPackage> getExternal() {
+        return externalClasses;
     }
 }

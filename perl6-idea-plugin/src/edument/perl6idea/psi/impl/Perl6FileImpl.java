@@ -181,12 +181,6 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                 return;
         }
         for (Perl6Symbol symbol : Perl6SdkType.getInstance().getCoreSettingSymbols(this)) {
-            if (symbol.getKind() == Perl6SymbolKind.ExternalPackage &&
-                (symbol.getName().equals("Mu") || symbol.getName().equals("Any"))) {
-                for (String method : ((Perl6ExternalPackage)symbol).methods()) {
-                    collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
-                }
-            }
             collector.offerSymbol(symbol);
             if (collector.isSatisfied())
                 return;
