@@ -6,6 +6,7 @@ import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.impl.Perl6MethodCallImpl;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,9 +86,10 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     private static List MuAnyMethods(Perl6PsiElement element, Perl6VariantsSymbolCollector collector) {
         if (collector == null)
             collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-        Perl6File file = PsiTreeUtil.getParentOfType(element, Perl6File.class);
-        if (file != null)
-            file.contributeScopeSymbols(collector);
+        for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Any", element).methods())
+                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
+        for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", element).methods())
+            collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
         return collector.getVariants().stream().map(s -> s.getName()).collect(Collectors.toList());
     }
 
