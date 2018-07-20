@@ -48,7 +48,8 @@ public class Perl6StatementMover extends StatementUpDownMover {
             } else if (tempRange instanceof PsiWhiteSpace) {
                 // It seems to be last element of block, so we need to jump and move next
                 tempRange = tempRange.getParent().getNextSibling();
-                setInfo(info, rangeElement1, tempRange);
+                // We check it for null, because it may be last statement in the file, so no sibling
+                setInfo(info, rangeElement1, tempRange != null ? tempRange : rangeElement1);
             } else {
                 setInfo(info, rangeElement1, tempRange);
             }
@@ -162,7 +163,8 @@ public class Perl6StatementMover extends StatementUpDownMover {
             element = skipEmpty(psiFile.findElementAt(getLineStartSafeOffset(document, startOffset)), true);
         }
         if (element == null) return null;
-        if (element instanceof Perl6StatementList && element.getParent() instanceof Perl6Blockoid)
+        if (element instanceof Perl6StatementList &&
+            element.getParent() instanceof Perl6Blockoid && element.getFirstChild() != null)
             element = element.getFirstChild();
         return element instanceof Perl6Statement ? element : PsiTreeUtil.getParentOfType(element, Perl6Statement.class);
     }
