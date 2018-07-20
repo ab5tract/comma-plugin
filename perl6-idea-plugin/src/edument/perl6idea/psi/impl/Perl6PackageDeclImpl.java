@@ -1,6 +1,7 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.stubs.IStubElementType;
@@ -15,6 +16,7 @@ import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub> implements Perl6PackageDecl {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
@@ -84,7 +86,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     private void contributeFromElders(Perl6SymbolCollector collector) {
         Perl6PackageDeclStub stub = getStub();
-        List<Perl6PackageDecl> perl6PackageDecls = new ArrayList<>();
+        List<Pair<String, Perl6PackageDecl>> perl6PackageDecls = new ArrayList<>();
         List<String> externals = new ArrayList<>();
         boolean isAny = true;
         boolean isMu = true;
@@ -103,30 +105,28 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                         PsiReference ref = psi.getReference();
                         if (ref == null) continue;
                         PsiElement decl = ref.resolve();
-                        if (decl != null) perl6PackageDecls.add((Perl6PackageDecl)decl);
+                        if (decl != null) perl6PackageDecls.add(Pair.create(traitStub.getTraitModifier(), (Perl6PackageDecl)decl));
                         else externals.add(typeNameStub.getTypeName());
                         if ((typeNameStub).getTypeName().equals("Mu"))
                             isAny = false;
                     }
             }
         } else {
-            Perl6Trait[] traits = PsiTreeUtil.getChildrenOfType(this, Perl6Trait.class);
-            if (traits != null)
-                for (Perl6Trait trait : traits) {
-                    if (trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is")) {
-                        PsiElement element = trait.getTraitModifier().equals("does") ?
-                                             PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class) :
-                                             PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
-                        if (element == null) continue;
-                        PsiReference ref = element.getReference();
-                        if (ref == null) continue;
-                        PsiElement decl = ref.resolve();
-                        if (decl != null) perl6PackageDecls.add((Perl6PackageDecl)decl);
-                        else externals.add(trait.getTraitName());
-                        if (trait.getTraitName().equals("Mu"))
-                            isAny = false;
-                    }
+            for (Perl6Trait trait : getTraits()) {
+                if (trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is")) {
+                    PsiElement element = trait.getTraitModifier().equals("does") ?
+                                         PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class) :
+                                         PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
+                    if (element == null) continue;
+                    PsiReference ref = element.getReference();
+                    if (ref == null) continue;
+                    PsiElement decl = ref.resolve();
+                    if (decl != null) perl6PackageDecls.add(Pair.create(trait.getTraitModifier(), (Perl6PackageDecl)decl));
+                    else externals.add(trait.getTraitName());
+                    if (trait.getTraitName().equals("Mu"))
+                        isAny = false;
                 }
+            }
         }
 
         if (isAny)
@@ -136,7 +136,12 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this).methods())
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
 
-        for (Perl6PackageDecl typeRef : perl6PackageDecls) {
+        for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
+            Perl6PackageDecl typeRef = pair.second;
+            String mod = pair.first;
+            // We allow gathering of submethods from roles, but not classes
+            collector.setSubmethodFlag(mod.equals("does"));
+
             // Local perl6PackageDecl
             Perl6PackageDeclStub roleStub = typeRef.getStub();
             // Contribute perl6PackageDecl internals

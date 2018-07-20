@@ -176,4 +176,36 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertNotNull(methods);
         assertTrue(methods.containsAll(Arrays.asList(".note", ".reduce", ".return-rw")));
     }
+
+    public void testSubmethodCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { submethod subm {}; method foo { self.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.containsAll(Arrays.asList(".foo", ".subm")));
+    }
+
+    public void testSubmethodFromParent() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Base { submethod subm {} }; class Foo is Base { method foo { self.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(!methods.containsAll(Collections.singletonList(".subm")));
+    }
+
+    public void testSubmethodFromRole() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Base { submethod subm {} }; class Foo does Base { method foo { self.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.containsAll(Collections.singletonList(".subm")));
+    }
+
+    public void testSubmethodCalledFromOutside() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { submethod foo {}; method bar {} }; Foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.containsAll(Arrays.asList(".foo", ".foo")));
+    }
 }

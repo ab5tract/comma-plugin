@@ -99,16 +99,17 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
         String name = getName();
-        if (!getRoutineKind().equals("method")) {
+        if (getRoutineKind().equals("method") || getRoutineKind().equals("submethod")) {
+            if (getRoutineKind().equals("submethod") && !collector.getSubmethodFlag()) return;
+            // Contribute so `.foo` is matched, not `foo`
+            if (!isPrivateMethod()) name = "." + name;
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this, name));
+        } else {
             if (name != null && (getScope().equals("my") || getScope().equals("our"))) {
                 collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
                                                                      this, "&" + name));
             }
-        } else {
-            // Contribute so `.foo` is matched, not `foo`
-            if (!isPrivateMethod()) name = "." + name;
-            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this,name));
         }
     }
 
