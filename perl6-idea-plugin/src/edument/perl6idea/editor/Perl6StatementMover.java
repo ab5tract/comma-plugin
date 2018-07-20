@@ -122,8 +122,17 @@ public class Perl6StatementMover extends StatementUpDownMover {
     }
 
     private static void setInfo(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
-        LineRange range1 = new LineRange(rangeElement1);
-        LineRange range2 = new LineRange(rangeElement2);
+        if (rangeElement1.getFirstChild() != null && rangeElement1.getFirstChild().equals(rangeElement1.getLastChild()))
+            rangeElement1 = rangeElement1.getFirstChild();
+        if (rangeElement2.getFirstChild() != null && rangeElement2.getFirstChild().equals(rangeElement2.getLastChild()))
+            rangeElement2 = rangeElement2.getFirstChild();
+
+        LineRange range1 = rangeElement1.getFirstChild() != null
+                 ? new LineRange(skipEmpty(rangeElement1.getFirstChild(), true), skipEmpty(rangeElement1.getLastChild(), false))
+                 : new LineRange(rangeElement1);
+        LineRange range2 = rangeElement2.getFirstChild() != null
+                 ? new LineRange(skipEmpty(rangeElement2.getFirstChild(), true), skipEmpty(rangeElement2.getLastChild(), false))
+                 : new LineRange(rangeElement2);
         if (rangeElement1 == rangeElement2 || // If heuristic is wrong
             range1.contains(range2) || range2.contains(range1)) {
             info.toMove = range1;
