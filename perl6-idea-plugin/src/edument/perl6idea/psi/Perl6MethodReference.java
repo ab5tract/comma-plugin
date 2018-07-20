@@ -83,7 +83,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         }
     }
 
-    private static List MuAnyMethods(Perl6PsiElement element, Perl6VariantsSymbolCollector collector) {
+    private static List<String> MuAnyMethods(Perl6PsiElement element, Perl6VariantsSymbolCollector collector) {
         if (collector == null)
             collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
         for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Any", element).methods())
@@ -117,7 +117,9 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         if (type == null) return new ArrayList<>();
         // From external types we get "raw" method names, so should be prepended with `.`
         // While our local packages properly export already prepended named
-        return type.methods().stream().map(s -> '.' + s).collect(Collectors.toList());
+        List<String> basicMethods = MuAnyMethods(name, null);
+        basicMethods.addAll(type.methods().stream().map(s -> '.' + s).collect(Collectors.toList()));
+        return basicMethods;
     }
 
     private static List<String> completePackageMethod(Perl6PackageDecl decl) {
