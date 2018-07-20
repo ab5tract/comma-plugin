@@ -111,7 +111,8 @@ public class Perl6StatementMover extends StatementUpDownMover {
             info.toMove2 = secondRange;
         } else {
             info.toMove = new LineRange(line);
-            info.toMove2 = new LineRange(block.getFirstChild().getFirstChild());
+            PsiElement blockoid = block.getFirstChild();
+            info.toMove2 = new LineRange(down ? blockoid.getLastChild() : blockoid.getFirstChild());
         }
         if (info.toMove.contains(info.toMove2) || info.toMove2.contains(info.toMove)) {
             info.toMove2 = info.toMove;
