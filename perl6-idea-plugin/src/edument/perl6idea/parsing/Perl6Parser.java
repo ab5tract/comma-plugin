@@ -14026,39 +14026,14 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean rxws_155_alt_1(PsiBuilder builder, OPP opp) {
-        if ((builder.getTokenType()) == Perl6TokenTypes.COMMENT) {
+    private boolean rxws_155_quant_1(PsiBuilder builder, OPP opp) {
+        if ((builder.getTokenType()) == Perl6TokenTypes.RX_WHITESPACE) {
             builder.advanceLexer();
         } else {
             return false;
         }
-        return true;
-    }
-
-    private boolean rxws_155_alt_2(PsiBuilder builder, OPP opp) {
-        if ((builder.getTokenType()) == Perl6TokenTypes.WHITE_SPACE) {
-            builder.advanceLexer();
-        } else {
+        if (!(this.ws_252(builder))) {
             return false;
-        }
-        return true;
-    }
-
-    private boolean rxws_155_quant_3(PsiBuilder builder, OPP opp) {
-        PsiBuilder.Marker altMarker2;
-        altMarker2 = builder.mark();
-        if (this.rxws_155_alt_2(builder, opp)) {
-            altMarker2.drop();
-        } else {
-            altMarker2.rollbackTo();
-            PsiBuilder.Marker altMarker1;;
-            altMarker1 = builder.mark();
-            if (this.rxws_155_alt_1(builder, opp)) {
-                altMarker1.drop();
-            } else {
-                altMarker1.rollbackTo();
-                return false;
-            }
         }
         return true;
     }
@@ -14066,15 +14041,12 @@ public class Perl6Parser implements PsiParser {
     private boolean rxws_155(PsiBuilder builder) {
         OPP opp;
         opp = null;
-        while (true) {
-            PsiBuilder.Marker quantMarker3;;
-            quantMarker3 = builder.mark();
-            if (this.rxws_155_quant_3(builder, opp)) {
-                quantMarker3.drop();
-            } else {
-                quantMarker3.rollbackTo();
-                break;
-            }
+        PsiBuilder.Marker quantMarker1;
+        quantMarker1 = builder.mark();
+        if (this.rxws_155_quant_1(builder, opp)) {
+            quantMarker1.drop();
+        } else {
+            quantMarker1.rollbackTo();
         }
         return true;
     }

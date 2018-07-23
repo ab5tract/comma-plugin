@@ -4069,9 +4069,10 @@ grammar MAIN {
 
     token rxws {
         [
-        || <.start-token('WHITE_SPACE')> \s+ <.end-token('WHITE_SPACE')>
-        || <.start-token('COMMENT')> '#' \N* <.end-token('COMMENT')>
-        ]*
+        <?before [\s || '#']>
+        <.start-token('RX_WHITESPACE')> <?> <.end-token('RX_WHITESPACE')>
+        <.ws>
+        ]?
     }
 
     token regex_nibbler {
