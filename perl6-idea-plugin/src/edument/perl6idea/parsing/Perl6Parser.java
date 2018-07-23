@@ -20805,13 +20805,20 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean value_245_alt_1(PsiBuilder builder, OPP opp) {
-        if (!(this.quote_119(builder))) {
+        if (!(this.version_248(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean value_245_alt_2(PsiBuilder builder, OPP opp) {
+        if (!(this.quote_119(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean value_245_alt_3(PsiBuilder builder, OPP opp) {
         if (!(this.number_81(builder))) {
             return false;
         }
@@ -20821,19 +20828,26 @@ public class Perl6Parser implements PsiParser {
     private boolean value_245(PsiBuilder builder) {
         OPP opp;
         opp = null;
-        PsiBuilder.Marker altMarker2;
-        altMarker2 = builder.mark();
-        if (this.value_245_alt_2(builder, opp)) {
-            altMarker2.drop();
+        PsiBuilder.Marker altMarker3;
+        altMarker3 = builder.mark();
+        if (this.value_245_alt_3(builder, opp)) {
+            altMarker3.drop();
         } else {
-            altMarker2.rollbackTo();
-            PsiBuilder.Marker altMarker1;;
-            altMarker1 = builder.mark();
-            if (this.value_245_alt_1(builder, opp)) {
-                altMarker1.drop();
+            altMarker3.rollbackTo();
+            PsiBuilder.Marker altMarker2;;
+            altMarker2 = builder.mark();
+            if (this.value_245_alt_2(builder, opp)) {
+                altMarker2.drop();
             } else {
-                altMarker1.rollbackTo();
-                return false;
+                altMarker2.rollbackTo();
+                PsiBuilder.Marker altMarker1;;
+                altMarker1 = builder.mark();
+                if (this.value_245_alt_1(builder, opp)) {
+                    altMarker1.drop();
+                } else {
+                    altMarker1.rollbackTo();
+                    return false;
+                }
             }
         }
         return true;

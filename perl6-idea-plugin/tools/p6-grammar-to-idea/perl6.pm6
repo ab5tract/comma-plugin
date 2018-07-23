@@ -2457,6 +2457,7 @@ grammar MAIN {
     token value {
         || <.number>
         || <.quote>
+        || <.version>
     }
 
     token number {
