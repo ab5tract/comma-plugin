@@ -39,8 +39,8 @@
     <gotoClassContributor implementation="edument.perl6idea.contribution.Perl6ClassNameContributor" />
     <gotoSymbolContributor implementation="edument.perl6idea.contribution.Perl6SymbolNameContributor" />
     <errorHandler implementation="edument.perl6idea.utils.Perl6ErrorReportSubmitter"/>
-    <treeStructureProvider implementation="edument.perl6idea.structureView.Perl6ProjectStructureProvider"/>
     <statementUpDownMover implementation="edument.perl6idea.editor.Perl6StatementMover"/>
+    <treeStructureProvider implementation="edument.perl6idea.structureView.Perl6ProjectStructureProvider"/>
   </extensions>
 
   <actions>
