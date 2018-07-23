@@ -154,6 +154,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
         for (String extType : externals) {
             // It can be either external perl6PackageDecl or non-existent one
+            // Firstly, chop off possible parametrized roles
+            int index = extType.indexOf('[');
+            if (index != -1)
+                extType = extType.substring(0, index);
             contributeExternalPackage(collector, extType);
             if (collector.isSatisfied()) return;
         }
