@@ -101,6 +101,7 @@ public interface Perl6TokenTypes {
     IElementType POSTFIX = new Perl6ElementType("POSTFIX");
     IElementType POSTFIX_INTERPOLATIN = new Perl6ElementType("POSTFIX_INTERPOLATIN");
     IElementType PREFIX = new Perl6ElementType("PREFIX");
+    IElementType QUASI = new Perl6ElementType("QUASI");
     IElementType QUOTE_MOD = new Perl6ElementType("QUOTE_MOD");
     IElementType QUOTE_PAIR = new Perl6ElementType("QUOTE_PAIR");
     IElementType QUOTE_REGEX = new Perl6ElementType("QUOTE_REGEX");

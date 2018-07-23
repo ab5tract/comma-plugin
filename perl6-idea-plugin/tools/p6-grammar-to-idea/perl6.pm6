@@ -1777,6 +1777,10 @@ grammar MAIN {
            'submethod' <.end_keyword>
            <.end-token('ROUTINE_DECLARATOR')>
            <.method_def>
+        || <.start-token('ROUTINE_DECLARATOR')>
+           'macro' <.end_keyword>
+           <.end-token('ROUTINE_DECLARATOR')>
+           <.method_def>
         ]
         <.end-element('ROUTINE_DECLARATION')>
     }
@@ -2724,7 +2728,7 @@ grammar MAIN {
     }
 
     token quote {
-         <.quote_rxlang> || <.quote_tr> || <.quote_qlang>
+         <.quote_quasi> || <.quote_rxlang> || <.quote_tr> || <.quote_qlang> 
     }
 
     token quote_qlang {
@@ -3281,6 +3285,17 @@ grammar MAIN {
             ]
             <.end-token('STRING_LITERAL_ESCAPE')>
         || <?[{]> <?{ $*Q_CLOSURES }> <.block>
+    }
+
+    token quote_quasi {
+        <?before 'quasi' <.ws>>
+        <.start-element('QUASI')>
+        <.start-token('QUASI')>
+        'quasi'
+        <.end-token('QUASI')>
+        <.ws>
+        <.block>?
+        <.end-element('QUASI')>
     }
 
     token quote_interpolation_postfix {

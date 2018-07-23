@@ -81,6 +81,7 @@ public interface Perl6ElementTypes {
     IElementType POINTY_BLOCK = new Perl6ElementType("POINTY_BLOCK");
     IElementType POSTFIX = new Perl6ElementType("POSTFIX");
     IElementType PREFIX = new Perl6ElementType("PREFIX");
+    IElementType QUASI = new Perl6ElementType("QUASI");
     IElementType QUIETLY = new Perl6ElementType("QUIETLY");
     IElementType QUIT_STATEMENT = new Perl6ElementType("QUIT_STATEMENT");
     IElementType QUOTE_PAIR = new Perl6ElementType("QUOTE_PAIR");

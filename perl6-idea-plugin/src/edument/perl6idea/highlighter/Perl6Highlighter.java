@@ -256,6 +256,12 @@ public final class Perl6Highlighter {
             DefaultLanguageHighlighterColors.KEYWORD
     );
 
+    static final String QUASI_ID = "PERL6_QUASI";
+    public static final TextAttributesKey QUASI = TextAttributesKey.createTextAttributesKey(
+      QUASI_ID,
+      DefaultLanguageHighlighterColors.KEYWORD
+    );
+
     static final String SCOPE_DECLARATOR_ID = "PERL6_SCOPE_DECLARATOR";
     public static final TextAttributesKey SCOPE_DECLARATOR = TextAttributesKey.createTextAttributesKey(
             SCOPE_DECLARATOR_ID,

@@ -22,7 +22,7 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Label Name", Perl6Highlighter.LABEL_NAME),
             new AttributesDescriptor("Label Colon", Perl6Highlighter.LABEL_COLON),
             new AttributesDescriptor("Statement Prefix", Perl6Highlighter.STATEMENT_PREFIX),
-            new AttributesDescriptor("Statement modifier", Perl6Highlighter.STATEMENT_MOD),
+            new AttributesDescriptor("Statement Modifier", Perl6Highlighter.STATEMENT_MOD),
             new AttributesDescriptor("Scope Keyword", Perl6Highlighter.SCOPE_DECLARATOR),
             new AttributesDescriptor("Multi Keyword", Perl6Highlighter.MULTI_DECLARATOR),
             new AttributesDescriptor("Routine Keyword", Perl6Highlighter.ROUTINE_DECLARATOR),
@@ -96,6 +96,7 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Pod Text (Underlined)", Perl6Highlighter.POD_TEXT_UNDERLINE),
             new AttributesDescriptor("Pod Format Code", Perl6Highlighter.POD_FORMAT_CODE),
             new AttributesDescriptor("Pod Format Delimiters", Perl6Highlighter.POD_FORMAT_QUOTES),
+            new AttributesDescriptor("Quasi Quote", Perl6Highlighter.QUASI),
     };
 
     @Nullable

@@ -333,6 +333,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new PodFormattedImpl(astNode);
         if (type == Perl6ElementTypes.POD_TEXT)
             return new PodTextImpl(astNode);
+        if (type == Perl6ElementTypes.QUASI)
+            return new Perl6QuasiImpl(astNode);
         return null;
     }
 
