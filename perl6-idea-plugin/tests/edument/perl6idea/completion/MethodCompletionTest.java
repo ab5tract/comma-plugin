@@ -216,4 +216,25 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertNotNull(methods);
         assertTrue(methods.stream().allMatch(p -> p.startsWith("!")));
     }
+
+    public void testAccessors1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { has $!foo; method !a { self!<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList("!a", "!foo")));
+    }
+
+    public void testAccessors2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { has $.foo; method a { self.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".foo"));
+    }
+
+    public void testAccessors3() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { has $.foo; method !a { self!<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList("!a", "!foo")));
+    }
 }

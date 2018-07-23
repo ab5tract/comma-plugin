@@ -25,7 +25,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     @Nullable
     @Override
     public PsiElement getNameIdentifier() {
-        Perl6Variable varNode = findChildByClass(Perl6Variable.class);
+        Perl6Variable varNode = getVariable();
         return varNode != null ? varNode.getVariableToken() : null;
     }
 
@@ -62,6 +62,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
         String name = getName();
+        Perl6Variable var = getVariable();
+
         if (name != null && name.length() > 1) {
             boolean isInstanceScoped = getScope().equals("has");
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this, isInstanceScoped));
@@ -71,6 +73,23 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             if (!collector.isSatisfied() && name.startsWith("&") && getScope().equals("my"))
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
                          this, name.substring(1)));
+            if (!collector.isSatisfied() && isInstanceScoped) {
+                if (var.getTwigil() == '!') {
+                    collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self!foo;
+                        Perl6SymbolKind.Method, this, '!' + var.getVariableName().substring(2)));
+                } else if (var.getTwigil() == '.') {
+                    collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self!foo;
+                        Perl6SymbolKind.Method, this, '!' + var.getVariableName().substring(2)));
+                    collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self.foo;
+                        Perl6SymbolKind.Method, this, '.' + var.getVariableName().substring(2)));
+                    collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer $.foo;
+                        Perl6SymbolKind.Method, this, var.getSigil() + '.' + var.getVariableName().substring(2)));
+                }
+            }
         }
+    }
+
+    private Perl6Variable getVariable() {
+        return findChildByClass(Perl6Variable.class);
     }
 }
