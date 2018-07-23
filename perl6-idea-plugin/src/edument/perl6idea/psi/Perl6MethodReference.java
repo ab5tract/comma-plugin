@@ -3,7 +3,6 @@ package edument.perl6idea.psi;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
-import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.impl.Perl6MethodCallImpl;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -34,7 +33,10 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     @Override
     public Object[] getVariants() {
         Perl6MethodCall call = (Perl6MethodCall)getElement();
-        return getMethodsForType(call, getCallerType(call), false).toArray();
+        List<String> methods = getMethodsForType(call, getCallerType(call), false);
+        if (call.getCallOperator().equals("!"))
+            methods = methods.stream().filter(name -> name.startsWith("!")).collect(Collectors.toList());
+        return methods.toArray();
     }
 
     private static Caller getCallerType(Perl6MethodCall call) {
