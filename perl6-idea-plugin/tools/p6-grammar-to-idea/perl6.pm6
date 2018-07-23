@@ -4067,8 +4067,15 @@ grammar MAIN {
         <.regex_nibbler>
     }
 
+    token rxws {
+        [
+        || <.start-token('WHITE_SPACE')> \s+ <.end-token('WHITE_SPACE')>
+        || <.start-token('COMMENT')> '#' \N* <.end-token('COMMENT')>
+        ]*
+    }
+
     token regex_nibbler {
-        <.ws>
+        <.rxws>
         [
             <!rxstopper>
             [
@@ -4077,7 +4084,7 @@ grammar MAIN {
             || <.start-token('REGEX_INFIX')> '&&' <.end-token('REGEX_INFIX')>
             || <.start-token('REGEX_INFIX')> '&' <.end-token('REGEX_INFIX')>
             ]
-            <.ws>
+            <.rxws>
         ]?
         <.termseq>?
     }
@@ -4101,7 +4108,7 @@ grammar MAIN {
         [
             <!rxinfixstopper>
             <.start-token('REGEX_INFIX')> '||' <.end-token('REGEX_INFIX')>
-            <.ws>
+            <.rxws>
             [<.termconjseq> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
         ]*
     }
@@ -4111,7 +4118,7 @@ grammar MAIN {
         [
             <!rxinfixstopper>
             <.start-token('REGEX_INFIX')> '&&' <.end-token('REGEX_INFIX')>
-            <.ws>
+            <.rxws>
             [<.termalt> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
         ]*
     }
@@ -4121,7 +4128,7 @@ grammar MAIN {
         [
             <!rxinfixstopper>
             <.start-token('REGEX_INFIX')> '|' <![|]> <.end-token('REGEX_INFIX')>
-            <.ws>
+            <.rxws>
             [<.termconj> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
         ]*
     }
@@ -4131,7 +4138,7 @@ grammar MAIN {
         [
             <!rxinfixstopper>
             <.start-token('REGEX_INFIX')> '&' <![&]> <.end-token('REGEX_INFIX')>
-            <.ws>
+            <.rxws>
             [<.rxtermish> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
         ]*
     }
@@ -4172,8 +4179,8 @@ grammar MAIN {
             ]
             [ <.SIGOK> <.sigmaybe> ]?
             [
-                <?before <.ws> '%''%'? <.ws>>
-                <.ws> <.separator>
+                <?before <.rxws> '%''%'? <.rxws>>
+                <.rxws> <.separator>
             ]?
         ]?
         <.end-element('REGEX_ATOM')>
@@ -4186,9 +4193,9 @@ grammar MAIN {
         '%''%'?
         <.end-token('REGEX_QUANTIFIER')>
         :my $*SIGOK = 0;
-        <.ws>
+        <.rxws>
         <.quantified_atom>?
-        <.ws>
+        <.rxws>
         <.end-element('REGEX_SEPARATOR')>
     }
 
@@ -4333,10 +4340,10 @@ grammar MAIN {
            <.start-token('REGEX_INFIX')>
            '~'
            <.end-token('REGEX_INFIX')>
-           <.ws>
+           <.rxws>
            [
                <.quantified_atom>
-               [ <.ws> <.quantified_atom>? ]
+               [ <.rxws> <.quantified_atom>? ]
            ]?
            <.end-element('REGEX_GOAL')>
         || <.mod_internal>
