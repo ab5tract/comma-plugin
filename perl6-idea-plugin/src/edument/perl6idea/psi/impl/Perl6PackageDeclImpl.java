@@ -228,10 +228,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             for (String var : externalPackage.attributes()) {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Variable, var));
                 if (!collector.isSatisfied()) {
-                    if (Perl6Variable.getTwigil(var) == '!') {
-                        collector.offerSymbol(new Perl6ExternalSymbol( // Offer self!foo;
-                            Perl6SymbolKind.Method, '!' + var.substring(2)));
-                    } else if (Perl6Variable.getTwigil(var) == '.') {
+                    if (Perl6Variable.getTwigil(var) == '.') {
                         collector.offerSymbol(new Perl6ExternalSymbol( // Offer self!foo;
                             Perl6SymbolKind.Method, '!' + var.substring(2)));
                         collector.offerSymbol(new Perl6ExternalSymbol( // Offer self.foo;
