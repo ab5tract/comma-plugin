@@ -77,16 +77,16 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
                      var, name.substring(1)));
         if (!collector.isSatisfied() && isInstanceScoped) {
-            if (Perl6Variable.getTwigil(var.getVariableName()) == '!' && collector.areInternalPartsCollected()) {
+            if (Perl6Variable.getTwigil(name) == '!' && collector.areInternalPartsCollected()) {
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self!foo;
-                    Perl6SymbolKind.Method, var, '!' + var.getVariableName().substring(2)));
-            } else if (Perl6Variable.getTwigil(var.getVariableName()) == '.') {
+                    Perl6SymbolKind.Method, var, '!' + name.substring(2)));
+            } else if (Perl6Variable.getTwigil(name) == '.') {
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self!foo;
-                    Perl6SymbolKind.Method, var, '!' + var.getVariableName().substring(2)));
+                    Perl6SymbolKind.Method, var, '!' + name.substring(2)));
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self.foo;
-                    Perl6SymbolKind.Method, var, '.' + var.getVariableName().substring(2)));
+                    Perl6SymbolKind.Method, var, '.' + name.substring(2)));
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer $.foo;
-                    Perl6SymbolKind.Method, var, Perl6Variable.getSigil(var.getVariableName()) + '.' + var.getVariableName().substring(2)));
+                    Perl6SymbolKind.Method, var, Perl6Variable.getSigil(name) + '.' + name.substring(2)));
             }
         }
     }
