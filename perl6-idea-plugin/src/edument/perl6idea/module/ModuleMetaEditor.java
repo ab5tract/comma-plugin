@@ -144,7 +144,11 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
         } catch (IOException e) {
             return;
         }
-        myMetaProps = new JSONObject(jsonString);
+        try {
+            myMetaProps = new JSONObject(jsonString);
+        } catch (JSONException e) {
+            return;
+        }
         for (String field : keys) {
             try {
                 myMeta.put(field, myMetaProps.getString(field));
