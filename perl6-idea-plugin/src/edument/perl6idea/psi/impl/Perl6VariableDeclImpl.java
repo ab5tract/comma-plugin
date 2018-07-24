@@ -85,8 +85,6 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
                     Perl6SymbolKind.Method, var, '!' + name.substring(2)));
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self.foo;
                     Perl6SymbolKind.Method, var, '.' + name.substring(2)));
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer $.foo;
-                    Perl6SymbolKind.Method, var, Perl6Variable.getSigil(name) + '.' + name.substring(2)));
             }
         }
     }
