@@ -138,7 +138,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
             Perl6PackageDecl typeRef = pair.second;
             String mod = pair.first;
-            // We allow gathering of submethods from roles, but not classes
+            // We allow gathering of private parts from roles, but not classes
             collector.setAreInternalPartsCollected(mod.equals("does"));
 
             // Local perl6PackageDecl
