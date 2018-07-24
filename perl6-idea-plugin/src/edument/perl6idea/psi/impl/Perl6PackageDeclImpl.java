@@ -16,7 +16,6 @@ import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub> implements Perl6PackageDecl {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
@@ -140,7 +139,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             Perl6PackageDecl typeRef = pair.second;
             String mod = pair.first;
             // We allow gathering of submethods from roles, but not classes
-            collector.setSubmethodFlag(mod.equals("does"));
+            collector.setAreInternalPartsCollected(mod.equals("does"));
 
             // Local perl6PackageDecl
             Perl6PackageDeclStub roleStub = typeRef.getStub();
@@ -170,32 +169,13 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (states == null) return;
         for (Perl6Statement s : states) {
             PsiElement firstChild = s.getFirstChild();
-            if (firstChild instanceof Perl6RoutineDecl) {
-                Perl6RoutineDecl routine = (Perl6RoutineDecl)firstChild;
-                if ((!routine.isPrivateMethod() && routine.getRoutineKind().equals("method"))) continue;
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, routine));
-                if (collector.isSatisfied()) return;
-            } else if (firstChild instanceof Perl6ScopedDecl) {
+            if (firstChild instanceof Perl6ScopedDecl) {
                 Perl6ScopedDecl scopedDecl = (Perl6ScopedDecl)firstChild;
                 for (PsiElement child : scopedDecl.getChildren()) {
                     if (!(child instanceof Perl6VariableDecl)) continue;
                     Perl6VariableDecl variableDecl = (Perl6VariableDecl)child;
                     if (!variableDecl.getScope().equals("has")) continue;
-                    Perl6Variable variable = PsiTreeUtil.findChildOfType(child, Perl6Variable.class);
-                    if (variable == null) continue;
-                    if (variable.getTwigil() == '!') {
-                        collector.offerSymbol(new Perl6ExplicitSymbol(
-                                Perl6SymbolKind.Variable, variableDecl
-                        ));
-                        if (collector.isSatisfied()) return;
-                    } else if (variable.getTwigil() == '.') {
-                        // Add '!' variant to refer for `has $.foo` as `self!foo`.
-                        collector.offerSymbol(new Perl6ExplicitAliasedSymbol(
-                                Perl6SymbolKind.Variable, variableDecl,
-                                variable.getSigil() + "!" + variable.getVariableName().substring(2)
-                        ));
-                        if (collector.isSatisfied()) return;
-                    }
+                    variableDecl.contributeSymbols(collector);
                 }
             }
         }
@@ -217,7 +197,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 for (StubElement childStub : stubs) {
                     if (childStub instanceof Perl6VariableDeclStub) {
                         Perl6VariableDeclStub declStub = (Perl6VariableDeclStub)childStub;
-                        collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, declStub.getPsi()));
+                        if (!declStub.getScope().equals("has")) continue;
+                        Perl6VariableDeclImpl.offerVariableSymbols(
+                            collector, declStub.getVariableName(), declStub.getPsi()
+                        );
                         if (collector.isSatisfied()) return;
                     }
                 }

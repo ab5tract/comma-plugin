@@ -2,7 +2,7 @@ package edument.perl6idea.psi.symbols;
 
 public abstract class Perl6PackageConstrainedSymbolCollector implements Perl6SymbolCollector {
     private int packageDepth = 0;
-    private boolean submethodFlag = true;
+    private boolean areInternalPartsCollected = true;
 
     public void increasePackageDepth() {
         packageDepth++;
@@ -16,11 +16,11 @@ public abstract class Perl6PackageConstrainedSymbolCollector implements Perl6Sym
         return !test.isInstanceScoped() || areInstanceSymbolsRelevant();
     }
 
-    public void setSubmethodFlag(boolean flag) {
-        submethodFlag = flag;
+    public void setAreInternalPartsCollected(boolean flag) {
+        areInternalPartsCollected = flag;
     }
 
-    public boolean getSubmethodFlag() {
-        return submethodFlag;
+    public boolean areInternalPartsCollected() {
+        return areInternalPartsCollected;
     }
 }

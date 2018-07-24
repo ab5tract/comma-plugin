@@ -245,4 +245,18 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertNotNull(methods);
         assertTrue(methods.containsAll(Collections.singletonList("!setup")));
     }
+
+    public void testPrivateGettersInChildClasses() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Bar { has $.bar }; class Foo is Bar { method a { $!<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNull(methods);
+    }
+
+    public void testPublicGettersInChildClasses() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Bar { has $.bar }; class Foo is Bar { method a { self.ba<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".bar"));
+    }
 }

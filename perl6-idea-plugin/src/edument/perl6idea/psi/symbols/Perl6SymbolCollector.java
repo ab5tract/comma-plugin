@@ -15,9 +15,9 @@ public interface Perl6SymbolCollector {
     /* Is used to check if we should offer package symbols */
     boolean areInstanceSymbolsRelevant();
 
-    /* Sets flag indicating if submethods should be offered */
-    void setSubmethodFlag(boolean flag);
+    /* Sets flag indicating if internal parts should be offered */
+    void setAreInternalPartsCollected(boolean flag);
 
-    /* Returns flag value that indicates if submethods should be offered */
-    boolean getSubmethodFlag();
+    /* Returns flag value that indicates if internal parts of package should be offered */
+    boolean areInternalPartsCollected();
 }

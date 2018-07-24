@@ -11,8 +11,8 @@ public interface Perl6Variable extends Perl6PsiElement {
         return varToken != null ? varToken.getText() : null;
     }
 
-    default char getSigil() {
-        switch (getText().charAt(0)) {
+    static char getSigil(String text) {
+        switch (text.charAt(0)) {
             case '$': return '$';
             case '@': return '@';
             case '%': return '%';
@@ -21,9 +21,9 @@ public interface Perl6Variable extends Perl6PsiElement {
         }
     }
 
-    default char getTwigil() {
-        if (getText().length() < 2) return ' ';
-        switch (getText().charAt(1)) {
+    static char getTwigil(String text) {
+        if (text.length() < 2) return ' ';
+        switch (text.charAt(1)) {
             case '*': return '*';
             case '?': return '?';
             case '!': return '!';
