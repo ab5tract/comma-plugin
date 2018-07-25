@@ -129,14 +129,18 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
         LineRange range1 = null;
         LineRange range2 = null;
-        PsiElement heredoc = skipEmpty(rangeElement1.getNextSibling(), true);
+        PsiElement heredoc1 = skipEmpty(rangeElement1.getNextSibling(), true);
+        PsiElement heredoc2 = skipEmpty(rangeElement2.getNextSibling(), true);
 
         if (rangeElement2 instanceof Perl6Heredoc) {
             range1 = new LineRange(rangeElement1, rangeElement2);
             rangeElement2 = skipEmpty(rangeElement2.getNextSibling(), true);
-        } else if (heredoc instanceof Perl6Heredoc) {
-            range1 = new LineRange(rangeElement1, heredoc);
         }
+
+        if (heredoc1 instanceof Perl6Heredoc)
+            range1 = new LineRange(rangeElement1, heredoc1);
+        if (heredoc2 instanceof Perl6Heredoc)
+            range2 = new LineRange(rangeElement2, heredoc2);
 
         if (rangeElement1.getFirstChild() != null && rangeElement1.getFirstChild().equals(rangeElement1.getLastChild()))
             rangeElement1 = rangeElement1.getFirstChild();
@@ -153,6 +157,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
                      ? new LineRange(skipEmpty(rangeElement2.getFirstChild(), true),
                                      skipEmpty(rangeElement2.getLastChild(), false))
                      : new LineRange(rangeElement2);
+
         if (rangeElement1 == rangeElement2 || // If heuristic is wrong
             range1.contains(range2) || range2.contains(range1)) {
             cancelMoving(info, range1);
