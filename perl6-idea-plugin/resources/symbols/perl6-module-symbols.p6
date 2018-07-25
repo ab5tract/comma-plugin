@@ -74,6 +74,10 @@ sub output-package($name, Mu \object) {
                 output-package("$name\::$_", object.WHO{$_});
             }
         }
+        CATCH {
+            default {
+            }
+        }
     }
 }
 END
