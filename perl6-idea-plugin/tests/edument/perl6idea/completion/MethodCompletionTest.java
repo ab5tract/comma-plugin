@@ -273,4 +273,11 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertNull(methods);
     }
+
+    public void testCOREClassMethodCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C is IO::Socket::Async { method a { self.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".listen"));
+    }
 }

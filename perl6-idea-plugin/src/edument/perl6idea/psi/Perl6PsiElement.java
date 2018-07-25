@@ -48,6 +48,10 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
     default void applyExternalSymbolCollector(Perl6SymbolCollector collector) {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(this, Perl6PsiScope.class);
         while (scope != null) {
+            // If we are at top level already, we need to contribute CORE external symbols too
+            if (scope instanceof Perl6File)
+                scope.contributeScopeSymbols(collector);
+
             Perl6StatementList list = PsiTreeUtil.findChildOfType(scope, Perl6StatementList.class);
             if (list == null) return;
             Perl6Statement[] stats = PsiTreeUtil.getChildrenOfType(list, Perl6Statement.class);
