@@ -13,10 +13,11 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
-import static edument.perl6idea.parsing.Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE;
-import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
+import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 public class Perl6StatementMover extends StatementUpDownMover {
+    private boolean down;
+
     @Override
     public boolean checkAvailable(@NotNull Editor editor, @NotNull PsiFile file, @NotNull MoveInfo info, boolean down) {
         return file instanceof Perl6File;
@@ -24,6 +25,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
     @Override
     public void beforeMove(@NotNull Editor editor, @NotNull MoveInfo info, boolean down) {
+        this.down = down;
         if (editor.getProject() == null || !(editor instanceof EditorEx)) return;
         EditorEx editorEx = (EditorEx) editor;
         final PsiFile psiFile = PsiManager.getInstance(editor.getProject()).findFile(editorEx.getVirtualFile());
@@ -55,7 +57,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
             }
         } else if (PsiTreeUtil.isAncestor(rangeElement2, rangeElement1, true)) {
             if (rangeElement2.getFirstChild() instanceof Perl6IfStatement) {
-                handleIfCase(info, rangeElement1, down);
+                handleIfCase(info, rangeElement1);
             } else { // If we are moving out of the block moving
                 PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement1, Perl6Blockoid.class);
                 if (blockStatement == null) {
@@ -91,7 +93,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
         }
     }
 
-    private static void handleIfCase(MoveInfo info, PsiElement line, boolean down) {
+    private void handleIfCase(MoveInfo info, PsiElement line) {
         PsiElement block = PsiTreeUtil.getParentOfType(line, Perl6Block.class);
         if (block == null) {
             setInfo(info, line, line);
@@ -122,28 +124,70 @@ public class Perl6StatementMover extends StatementUpDownMover {
         }
     }
 
-    private static void setInfo(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
+    private void setInfo(@NotNull MoveInfo info, PsiElement rangeElement1, PsiElement rangeElement2) {
+        if (checkHeredocEdgeCases(info, rangeElement1)) return;
+
+        LineRange range1 = null;
+        LineRange range2 = null;
+        PsiElement heredoc = skipEmpty(rangeElement1.getNextSibling(), true);
+
+        if (rangeElement2 instanceof Perl6Heredoc) {
+            range1 = new LineRange(rangeElement1, rangeElement2);
+            rangeElement2 = skipEmpty(rangeElement2.getNextSibling(), true);
+        } else if (heredoc instanceof Perl6Heredoc) {
+            range1 = new LineRange(rangeElement1, heredoc);
+        }
+
         if (rangeElement1.getFirstChild() != null && rangeElement1.getFirstChild().equals(rangeElement1.getLastChild()))
             rangeElement1 = rangeElement1.getFirstChild();
         if (rangeElement2.getFirstChild() != null && rangeElement2.getFirstChild().equals(rangeElement2.getLastChild()))
             rangeElement2 = rangeElement2.getFirstChild();
 
-        LineRange range1 = rangeElement1.getFirstChild() != null
-                 ? new LineRange(skipEmpty(rangeElement1.getFirstChild(), true), skipEmpty(rangeElement1.getLastChild(), false))
-                 : new LineRange(rangeElement1);
-        LineRange range2 = rangeElement2.getFirstChild() != null
-                 ? new LineRange(skipEmpty(rangeElement2.getFirstChild(), true), skipEmpty(rangeElement2.getLastChild(), false))
-                 : new LineRange(rangeElement2);
+        if (range1 == null)
+            range1 = rangeElement1.getFirstChild() != null
+                     ? new LineRange(skipEmpty(rangeElement1.getFirstChild(), true),
+                                     skipEmpty(rangeElement1.getLastChild(), false))
+                     : new LineRange(rangeElement1);
+        if (range2 == null)
+            range2 = rangeElement2.getFirstChild() != null
+                     ? new LineRange(skipEmpty(rangeElement2.getFirstChild(), true),
+                                     skipEmpty(rangeElement2.getLastChild(), false))
+                     : new LineRange(rangeElement2);
         if (rangeElement1 == rangeElement2 || // If heuristic is wrong
             range1.contains(range2) || range2.contains(range1)) {
-            info.toMove = range1;
-            info.toMove2 = range1;
-            info.indentTarget = false;
-            info.indentSource = false;
+            cancelMoving(info, range1);
         } else {
             info.toMove = range1;
             info.toMove2 = range2;
         }
+    }
+
+    private boolean checkHeredocEdgeCases(MoveInfo info, PsiElement element1) {
+        // Handle all cases where the cursor is inside of heredoc part
+        boolean isHeredoc = skipEmpty(element1.getNextSibling(), true) instanceof Perl6Heredoc;
+        if (isHeredoc) {
+            PsiElement neighbour = down ?
+                                   skipEmpty(element1.getNextSibling(), true) :
+                                   skipEmpty(element1.getPrevSibling(), false);
+            if (down && neighbour instanceof Perl6Heredoc) {
+                // If we're moving down, for first iteration we return known heredoc
+                // but we are checking if we have a statement _after_ that
+                neighbour = skipEmpty(neighbour.getNextSibling(), true);
+            }
+            if (!(neighbour instanceof Perl6Statement)) {
+                LineRange range = new LineRange(element1);
+                cancelMoving(info, range);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void cancelMoving(MoveInfo info, LineRange range) {
+        info.toMove = range;
+        info.toMove2 = range;
+        info.indentSource = false;
+        info.indentTarget = false;
     }
 
     private static PsiElement getNode(@NotNull Document document,
@@ -163,6 +207,11 @@ public class Perl6StatementMover extends StatementUpDownMover {
             element = skipEmpty(psiFile.findElementAt(getLineStartSafeOffset(document, startOffset)), true);
         }
         if (element == null) return null;
+        if (element.getNode().getElementType() == STRING_LITERAL_CHAR || element.getNode().getElementType() == STRING_LITERAL_QUOTE_CLOSE) {
+            PsiElement heredoc = element.getParent();
+            if (heredoc instanceof Perl6Heredoc)
+                return skipEmpty(heredoc.getPrevSibling(), false);
+        }
         if (element instanceof Perl6StatementList &&
             element.getParent() instanceof Perl6Blockoid && element.getFirstChild() != null)
             element = element.getFirstChild();

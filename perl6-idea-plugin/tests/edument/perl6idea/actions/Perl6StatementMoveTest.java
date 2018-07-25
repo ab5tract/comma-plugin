@@ -143,4 +143,43 @@ public class Perl6StatementMoveTest extends LightPlatformCodeInsightFixtureTestC
         myFixture.performEditorAction("MoveStatementUp");
         myFixture.checkResultByFile("Case10Up.p6");
     }
+
+    public void testHeredocEdgeCases() {
+        myFixture.configureByFile("Heredoc1.p6");
+        myFixture.performEditorAction("MoveStatementUp");
+        myFixture.checkResultByFile("Heredoc1.p6");
+        myFixture.performEditorAction("MoveStatementDown");
+        myFixture.checkResultByFile("Heredoc1.p6");
+        myFixture.getEditor().getCaretModel().moveToOffset(100);
+        myFixture.performEditorAction("MoveStatementUp");
+        myFixture.checkResultByFile("Heredoc1Cursor.p6");
+        myFixture.performEditorAction("MoveStatementDown");
+        myFixture.checkResultByFile("Heredoc1Cursor.p6");
+    }
+
+    public void testHeredocDown() {
+        myFixture.configureByFile("Heredoc2.p6");
+        myFixture.performEditorAction("MoveStatementDown");
+        myFixture.checkResultByFile("Heredoc2Down.p6");
+    }
+
+    public void testHeredocDownCursor() {
+        myFixture.configureByFile("Heredoc2.p6");
+        myFixture.getEditor().getCaretModel().moveToOffset(100);
+        myFixture.performEditorAction("MoveStatementDown");
+        myFixture.checkResultByFile("Heredoc2Down.p6");
+    }
+
+    public void testHeredocUp() {
+        myFixture.configureByFile("Heredoc3.p6");
+        myFixture.performEditorAction("MoveStatementUp");
+        myFixture.checkResultByFile("Heredoc3Up.p6");
+    }
+
+    public void testHeredocUpCursor() {
+        myFixture.configureByFile("Heredoc3.p6");
+        myFixture.getEditor().getCaretModel().moveToOffset(100);
+        myFixture.performEditorAction("MoveStatementUp");
+        myFixture.checkResultByFile("Heredoc3Up.p6");
+    }
 }
