@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     public Perl6MethodReference(Perl6MethodCallImpl call) {
-        super(call, new TextRange(0, call.getTextLength()));
+        super(call, new TextRange(0, call.getCallName().length()));
     }
 
     @Nullable
