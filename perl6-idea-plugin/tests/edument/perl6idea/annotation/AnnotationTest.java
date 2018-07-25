@@ -144,4 +144,24 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testRegexPositionalDeclAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex positional match variable\">my $0 = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testTypedRegexPositionalDeclAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex positional match variable\">my Int $0 = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testRegexNamedDeclAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex named match variable\">my $<foo> = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testContextualizerDeclAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a contextualizer\">my $('x') = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }
