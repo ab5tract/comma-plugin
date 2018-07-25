@@ -215,22 +215,23 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (collector.isSatisfied()) return;
         for (Perl6Symbol pack : extCollector.getVariants()) {
             Perl6ExternalPackage externalPackage = (Perl6ExternalPackage)pack;
-            if (!(externalPackage.getPackageKind() == Perl6PackageKind.ROLE &&
-                  pack.getName().equals(typeName))) continue;
-            for (String sym : externalPackage.privateMethods()) {
-                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, sym));
-                if (collector.isSatisfied()) return;
+            if (!(pack.getName().equals(typeName))) continue;
+            if (((Perl6ExternalPackage)pack).getPackageKind() == Perl6PackageKind.ROLE) {
+                for (String sym : externalPackage.privateMethods()) {
+                    collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, sym));
+                    if (collector.isSatisfied()) return;
+                }
             }
             for (String sym : externalPackage.methods()) {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, "." + sym));
                 if (collector.isSatisfied()) return;
             }
             for (String var : externalPackage.attributes()) {
+                if (((Perl6ExternalPackage)pack).getPackageKind() == Perl6PackageKind.CLASS &&
+                    Perl6Variable.getTwigil(var) == '!') continue;
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Variable, var));
                 if (!collector.isSatisfied()) {
                     if (Perl6Variable.getTwigil(var) == '.') {
-                        collector.offerSymbol(new Perl6ExternalSymbol( // Offer self!foo;
-                            Perl6SymbolKind.Method, '!' + var.substring(2)));
                         collector.offerSymbol(new Perl6ExternalSymbol( // Offer self.foo;
                             Perl6SymbolKind.Method, '.' + var.substring(2)));
                     }
