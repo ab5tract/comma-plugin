@@ -27,7 +27,10 @@ Starting from `intellij-community` directory.
 
 #### How to run Comma from IDEA Run Configuration for testing
 
-**WARNING**: some features that are present in built artifact are not present in this configuration, notably error reporter used is always Intellij's one, not Edument-based.
+**WARNING**: some features that are present in built artifact are not present in this configuration, such as:
+
+* Error reporter used is always Intellij's one, not Edument-based. 
+* Becuase of plugin absence, `Check out from version control` always has no options, but those are present in final build.
 
 * Open Run Configurations tab. Create a new one:
   - Type: Application.
