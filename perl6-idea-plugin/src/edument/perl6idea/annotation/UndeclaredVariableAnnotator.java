@@ -25,7 +25,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
             return;
 
         // Check for $=finish section
-        if (ref.getTwigil() == '=' && variableName.equals("$=finish")) {
+        if (Perl6Variable.getTwigil(ref.getVariableName()) == '=' && variableName.equals("$=finish")) {
             PsiElement list = PsiTreeUtil.getChildOfType(
               PsiTreeUtil.getParentOfType(element, PsiFile.class),
               Perl6StatementList.class);
@@ -39,11 +39,11 @@ public class UndeclaredVariableAnnotator implements Annotator {
 
         // We only check twigilless variables for now (can't yet do attributes
         // because they may come from a role).
-        if (ref.getTwigil() != ' ' || ref.getVariableName().equals("$"))
+        if (Perl6Variable.getTwigil(ref.getVariableName()) != ' ' || ref.getVariableName().equals("$"))
             return;
 
         // Make sure it's not a long or late-bound name.
-        if (ref.getTwigil() == '!' || variableName.contains("::") || variableName.contains(":["))
+        if (Perl6Variable.getTwigil(ref.getVariableName()) == '!' || variableName.contains("::") || variableName.contains(":["))
             return;
 
         // Otherwise, try to resolve it.
@@ -55,7 +55,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
         }
         else {
             // May not be available yet.
-            if (ref.getTwigil() == ' ' && ref.getSigil() != '&') {
+            if (Perl6Variable.getTwigil(ref.getVariableName()) == ' ' && Perl6Variable.getSigil(ref.getVariableName()) != '&') {
                 PsiElement psi = resolved.getPsi();
                 if (psi != null && psi.getContainingFile() == ref.getContainingFile() &&
                         psi.getTextOffset() > ref.getTextOffset())

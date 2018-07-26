@@ -24,7 +24,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
                 if (psi.getContainingFile() != var.getContainingFile())
                     return psi;
                 if (psi.getTextOffset() > var.getTextOffset()) {
-                    if (var.getSigil() == '&' || var.getTwigil() == '!')
+                    if (Perl6Variable.getSigil(var.getVariableName()) == '&' || Perl6Variable.getTwigil(var.getVariableName()) == '!')
                         return psi;
                 }
                 else {

@@ -2,7 +2,7 @@ for CORE::.keys {
     # Ignore a few things.
     when 'EXPORTHOW' | 'Rakudo' { }
     # Collect all top-level subs.
-    when /^"&"<:Ll>/ { .say }
+    when /^"&"<:Ll>/ { say "V:$_" }
     # Collect all types.
     when /^<:L>/ {
         output-package($_, CORE::{$_});
@@ -12,13 +12,16 @@ for CORE::.keys {
 sub output-package($name, Mu \object) {
     # Emit but don't traverse concrete constants.
     if object.DEFINITE {
-        say $name;
+        say "D:$name";
     }
     else {
         # Emit anything that's type-like.
-        unless object.HOW.WHAT =:= Metamodel::PackageHOW
-                || object.HOW.WHAT =:= Metamodel::ModuleHOW {
-            say $name;
+        if object.HOW.WHAT =:= Metamodel::ClassHOW {
+            say "C:$name";
+            say .name for object.^methods(:local);
+        } elsif object.HOW.WHAT =:= Metamodel::PackageHOW ||
+          object.HOW.WHAT =:= Metamodel::ModuleHOW {
+            say "D:$name";
         }
 
         # Traverse children.
