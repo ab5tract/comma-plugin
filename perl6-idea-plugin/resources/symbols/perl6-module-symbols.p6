@@ -44,9 +44,6 @@ sub describer($name, Mu \object) {
     } elsif object.HOW.WHAT ~~ Metamodel::ClassHOW { # Emit classes
         say "C:$name";
         describe-class(object);
-    } elsif object.HOW.WHAT ~~ Metamodel::ModuleHOW || # Emit module
-      object.HOW.WHAT ~~ Metamodel::PackageHOW { # or package content
-        output-package("$name\::$_", (object::{$_})) for object::.keys;
     } elsif object.HOW.WHAT ~~ Metamodel::ParametricRoleGroupHOW { # Emit roles
         say "R:$name";
         describe-role(object);
