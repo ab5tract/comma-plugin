@@ -1,6 +1,6 @@
 use MONKEY;
 
-my %seen{Any};
+my %seen{Mu};
 
 EVAL "\{\n    @*ARGS[0] @*ARGS[1];\n" ~ Q:to/END/;
     for MY::.kv -> $_, \object {
