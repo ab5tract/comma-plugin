@@ -9,7 +9,7 @@ Do inside some work-related directory, e.g. `comma`.
 * `Unregistered VCS root detected` for `comma-bulid` - let IDEA add this root.
 * At this point, `json`, `tap4j`, and `miglayout` dependencies may be missing.
   * Open `Project Structure` -> `Libraries` and add them manually using `From Maven`.
-  * Maven coordinates are: `org.tap4j:tap4j:4.3`, `org.json:json:20171018`, and `com.miglayout:miglayout-swing:5.1`.
+  * Maven coordinates are: `org.tap4j:tap4j:4.3`, `org.json:json:20171018`, and `com.miglayout:miglayout-swing:5.1`. Add them to the module `perl6.community.plugin.main`.
 
 #### How to build a plugin
 
