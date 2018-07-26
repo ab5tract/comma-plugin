@@ -68,11 +68,7 @@ sub output-package($name, Mu \object) {
         # Traverse children.
         try for object.WHO.keys {
             when /^<:L>/ {
-                output-package("$name\::$_", object.WHO{$_});
-            }
-        }
-        CATCH {
-            default {
+                try output-package("$name\::$_", object.WHO{$_});
             }
         }
     }
