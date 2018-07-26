@@ -51,7 +51,7 @@ sub describer($name, Mu \object) {
 }
 
 sub output-package($name, Mu \object) {
-    # To aboid weird `C:NativeCall::EXPORT::ALL::&postcircumfix:<[ ]>` like things
+    # To avoid weird `C:NativeCall::EXPORT::ALL::&postcircumfix:<[ ]>` like things
     return if object ~~ Sub;
     # Emit but don't traverse concrete constants.
     # Also, if we've seen the object before,
