@@ -1,13 +1,13 @@
 package edument.perl6idea.psi;
 
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.stubs.StubIndex;
-import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
+import edument.perl6idea.utils.Perl6ExternalModulesStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +41,11 @@ public class Perl6ModuleReference extends PsiReferenceBase<Perl6PsiElement> {
             if (!matching.isEmpty())
                 reallyInThisProject.add(module);
         }
+
+        Perl6ExternalModulesStorage storage = ServiceManager.getService(Perl6ExternalModulesStorage.class);
+        List<String> externals = storage.getExternalModules();
+        if (externals != null)
+            reallyInThisProject.addAll(externals);
         return reallyInThisProject.toArray();
     }
 }

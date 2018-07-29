@@ -41,6 +41,7 @@
     <errorHandler implementation="edument.perl6idea.utils.Perl6ErrorReportSubmitter"/>
     <statementUpDownMover implementation="edument.perl6idea.editor.Perl6StatementMover"/>
     <treeStructureProvider implementation="edument.perl6idea.structureView.Perl6ProjectStructureProvider"/>
+    <applicationService serviceImplementation="edument.perl6idea.utils.Perl6ExternalModulesStorage"/>
   </extensions>
 
   <actions>
