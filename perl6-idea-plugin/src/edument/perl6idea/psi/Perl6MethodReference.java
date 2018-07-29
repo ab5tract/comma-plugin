@@ -45,18 +45,16 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
             return new Caller("self");
 
         // Based on previous element decide what type methods we want
-        PsiElement prev = call.getPrevSibling();
+        Perl6PsiElement prev = (Perl6PsiElement)call.getPrevSibling();
 
-        if (prev == null) { // .foo
+        if (prev == null) // .foo
             return new Caller("Any");
-        } else if (prev instanceof Perl6Self) { // self.foo;
-            return new Caller("self");
-        } else if (prev instanceof Perl6TypeName) { // Foo.foo;
-            return new Caller((Perl6TypeName)prev);
-        } else if (prev instanceof Perl6Variable) { // $foo.foo;
-            return new Caller("Any");
-        }
-        return new Caller("Any");
+
+        Object type = prev.inferType();
+        if (type instanceof Perl6TypeName)
+            return new Caller((Perl6TypeName)type);
+        else
+            return new Caller((String)type);
     }
 
     private static List getMethodsForType(Perl6MethodCall call, Caller caller, boolean isSingle) {

@@ -9,4 +9,9 @@ public class Perl6SelfImpl extends ASTWrapperPsiElement implements Perl6Self {
     public Perl6SelfImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "self";
+    }
 }
