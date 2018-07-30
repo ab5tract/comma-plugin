@@ -53,11 +53,6 @@ public class Perl6CommandLine {
         }
     }
 
-    public static GeneralCommandLine pushLine(GeneralCommandLine cmd, String line) {
-        cmd.addParameters("-e", line);
-        return cmd;
-    }
-
     public static File getResourceAsFile(Object object, String resourcePath) {
         InputStream in = object.getClass().getClassLoader().getResourceAsStream(resourcePath);
         FileOutputStream out = null;
