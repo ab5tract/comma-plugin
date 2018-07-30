@@ -96,7 +96,7 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         }
     }
 
-    default Object inferType() {
+    default String inferType() {
         return "Any";
     }
 }

@@ -9,4 +9,9 @@ public class Perl6ComplexLiteralImpl extends ASTWrapperPsiElement implements Per
     public Perl6ComplexLiteralImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "Complex";
+    }
 }

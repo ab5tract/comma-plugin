@@ -36,7 +36,7 @@ public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub
     }
 
     @Override
-    public Object inferType() {
-        return this;
+    public String inferType() {
+        return getTypeName();
     }
 }

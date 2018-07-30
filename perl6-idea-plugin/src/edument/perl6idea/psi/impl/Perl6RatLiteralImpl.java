@@ -9,4 +9,9 @@ public class Perl6RatLiteralImpl extends ASTWrapperPsiElement implements Perl6Ra
     public Perl6RatLiteralImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "Rat";
+    }
 }

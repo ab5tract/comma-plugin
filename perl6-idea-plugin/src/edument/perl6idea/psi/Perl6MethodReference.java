@@ -42,19 +42,15 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     private static Caller getCallerType(Perl6MethodCall call) {
         // Short-circuit as !foo is always self-based
         if (call.getCallOperator().equals("!"))
-            return new Caller("self");
+            return new Caller("self", null);
 
         // Based on previous element decide what type methods we want
         Perl6PsiElement prev = (Perl6PsiElement)call.getPrevSibling();
 
         if (prev == null) // .foo
-            return new Caller("Any");
+            return new Caller("Any", null);
 
-        Object type = prev.inferType();
-        if (type instanceof Perl6TypeName)
-            return new Caller((Perl6TypeName)type);
-        else
-            return new Caller((String)type);
+        return new Caller(prev.inferType(), prev);
     }
 
     private static List getMethodsForType(Perl6MethodCall call, Caller caller, boolean isSingle) {
@@ -73,13 +69,15 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
                            completePackageMethod(decl);
                 } else {
                     return isSingle ? Collections.EMPTY_LIST :
-                           tryToCompleteExternalTypeMethods(typeName);
+                           tryToCompleteExternalTypeMethods(typeName.getTypeName(), typeName);
                 }
             } else { // We don't know that type, assume it is derived from Mu/Any
                 return isSingle ? Collections.EMPTY_LIST : MuAnyMethods(typeName, null);
             }
         } else {
-            return Collections.EMPTY_LIST;
+            return isSingle ?
+                   Collections.EMPTY_LIST :
+                   tryToCompleteExternalTypeMethods(caller.getName(), (Perl6PsiElement)caller.getElement());
         }
     }
 
@@ -93,15 +91,16 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         return collector.getVariants().stream().map(s -> s.getName()).collect(Collectors.toList());
     }
 
-    private static List<String> tryToCompleteExternalTypeMethods(Perl6TypeName name) {
-        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name.getTypeName(), Perl6SymbolKind.ExternalPackage);
-        PsiElement element = name.getParent();
+    private static List<String> tryToCompleteExternalTypeMethods(String name, Perl6PsiElement element) {
+        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, Perl6SymbolKind.ExternalPackage);
+        int baseOffset = element.getTextOffset();
+        element = (Perl6PsiElement)element.getParent();
         outer:
         while (element != null) {
             for (PsiElement child : element.getChildren()) {
                 if (child instanceof Perl6Statement) child = child.getFirstChild();
                 if ((child instanceof Perl6UseStatement || child instanceof Perl6NeedStatement) &&
-                    child.getTextOffset() < name.getTextOffset()) {
+                    child.getTextOffset() < baseOffset) {
                     ((Perl6SymbolContributor)child).contributeSymbols(collector);
                     if (collector.isSatisfied()) break outer;
                 }
@@ -110,14 +109,14 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
                 ((Perl6File)element).contributeScopeSymbols(collector);
                 break outer;
             }
-            element = element.getParent();
+            element = (Perl6PsiElement)element.getParent();
         }
 
         Perl6ExternalPackage type = (Perl6ExternalPackage)collector.getResult();
         if (type == null) return new ArrayList<>();
         // From external types we get "raw" method names, so should be prepended with `.`
         // While our local packages properly export already prepended named
-        List<String> basicMethods = MuAnyMethods(name, null);
+        List<String> basicMethods = MuAnyMethods(element, null);
         basicMethods.addAll(type.methods().stream().map(s -> '.' + s).collect(Collectors.toList()));
         return basicMethods;
     }
@@ -136,17 +135,16 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     }
 
     static class Caller {
+        private String name;
         private Object element;
 
-        public Caller(String pointer) {
-            element = pointer;
-        }
-        public Caller(Perl6TypeName typeName) {
-            element = typeName;
+        public Caller(String name, Object element) {
+            this.name = name;
+            this.element = element;
         }
 
         boolean isSelf() {
-            return element instanceof String && element.equals("self");
+            return name.equals("self");
         }
         boolean isTypeName() {
             return element instanceof Perl6TypeName;
@@ -154,6 +152,9 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
 
         public Object getElement() {
             return element;
+        }
+        public String getName() {
+            return name;
         }
     }
 }

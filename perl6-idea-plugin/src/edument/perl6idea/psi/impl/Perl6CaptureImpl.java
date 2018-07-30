@@ -9,4 +9,9 @@ public class Perl6CaptureImpl extends ASTWrapperPsiElement implements Perl6Captu
     public Perl6CaptureImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "Capture";
+    }
 }
