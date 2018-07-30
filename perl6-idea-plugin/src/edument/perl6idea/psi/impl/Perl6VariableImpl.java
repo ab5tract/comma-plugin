@@ -23,4 +23,13 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     public PsiElement getVariableToken() {
         return findChildByType(Perl6TokenTypes.VARIABLE);
     }
+
+    @Override
+    public String inferType() {
+        String text = getText();
+        if (text.equals("$!")) return "Exception";
+        if (text.equals("$/")) return "Match";
+        if (text.substring(1).chars().allMatch(Character::isDigit)) return "Match";
+        return "Any";
+    }
 }

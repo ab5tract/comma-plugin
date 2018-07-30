@@ -373,4 +373,25 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.containsAll(Arrays.asList(".parts", ".plus")));
     }
+
+    public void testSpecialVariable1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$/.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".made", ".prematch")));
+    }
+
+    public void testSpecialVariable2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$3.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".made", ".prematch")));
+    }
+
+    public void testSpecialVariable3() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$!.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
 }
