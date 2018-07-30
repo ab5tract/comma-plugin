@@ -33,20 +33,6 @@ public class Perl6ScopedDeclImpl extends StubBasedPsiElementBase<Perl6ScopedDecl
         return "";
     }
 
-    public String getTypeLikeName() {
-        PsiElement subDeclarator = findChildByType(Perl6ElementTypes.ROUTINE_DECLARATION);
-        if (subDeclarator != null) return ((Perl6RoutineDecl)subDeclarator).getRoutineName();
-        PsiElement declarator = findChildByType(Perl6ElementTypes.PACKAGE_DECLARATION);
-        if (declarator != null) return ((Perl6PackageDecl)declarator).getPackageName();
-        PsiElement enumElement = findChildByType(Perl6ElementTypes.ENUM);
-        if (enumElement != null) return ((Perl6EnumImpl)enumElement).getEnumName();
-        PsiElement subset = findChildByType(Perl6ElementTypes.SUBSET);
-        if (subset != null) return ((Perl6SubsetImpl)subset).getSubsetName();
-        PsiElement variable = findChildByType(Perl6ElementTypes.VARIABLE_DECLARATION);
-        if (variable != null) return ((Perl6VariableDeclImpl)variable).getName();
-        return "<anon>";
-    }
-
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:SCOPED_DECLARATION)";
     }
