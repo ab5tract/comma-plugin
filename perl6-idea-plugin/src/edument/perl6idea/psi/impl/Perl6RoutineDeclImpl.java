@@ -3,15 +3,20 @@ package edument.perl6idea.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.stubs.StubElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
+import edument.perl6idea.psi.stub.Perl6TraitStub;
 import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static edument.perl6idea.parsing.Perl6ElementTypes.*;
+import java.util.Collection;
+
+import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 
 public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDeclStub> implements Perl6RoutineDecl, Perl6SignatureHolder {
     private static final String[] ROUTINE_SYMBOLS = { "$/", "$!", "$_", "&?ROUTINE", "&?BLOCK" };
@@ -26,6 +31,10 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
     @Override
     public String getRoutineKind() {
+        Perl6RoutineDeclStub stub = getStub();
+        if (stub != null)
+            return stub.getRoutineKind();
+
         PsiElement declarator = findChildByType(Perl6TokenTypes.ROUTINE_DECLARATOR);
         return declarator == null ? "sub" : declarator.getText();
     }
@@ -37,17 +46,27 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
     @Override
     public boolean isPrivateMethod() {
+        Perl6RoutineDeclStub stub = getStub();
+        if (stub != null)
+            return stub.isPrivate();
+
         return getRoutineName().startsWith("!");
     }
 
     @Override
     @Nullable
     public String getReturnsTrait() {
-        ASTNode trait = getNode().findChildByType(TRAIT);
-        if (trait != null && trait.getFirstChildNode().getText().equals("returns")) {
-            ASTNode type = trait.findChildByType(TYPE_NAME);
-            if (type != null) return type.getText();
-        }
+        Perl6RoutineDeclStub stub = getStub();
+        if (stub != null)
+            for (StubElement s : stub.getChildrenStubs())
+                if (s instanceof Perl6TraitStub &&
+                    ((Perl6TraitStub)s).getTraitModifier().equals("returns"))
+                    return ((Perl6TraitStub)s).getTraitName();
+
+        Collection<Perl6Trait> traits = PsiTreeUtil.findChildrenOfType(this, Perl6Trait.class);
+        for (Perl6Trait trait : traits)
+            if (trait.getTraitModifier().equals("returns"))
+                return trait.getTraitName();
         return null;
     }
 
@@ -100,9 +119,12 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public void contributeSymbols(Perl6SymbolCollector collector) {
         String name = getName();
         if (getRoutineKind().equals("method") || getRoutineKind().equals("submethod")) {
+            // Do not contribute submethods if restricted
             if (getRoutineKind().equals("submethod") && !collector.areInternalPartsCollected()) return;
+            // Do not contribute private methods if restricted
             if (name != null && name.startsWith("!") && !collector.areInternalPartsCollected()) return;
-            // Contribute so `.foo` is matched, not `foo`
+            // Contribute name with prefix, so `.foo` can be matched, not `foo`,
+            // private methods have `!` as name part already
             if (!isPrivateMethod()) name = "." + name;
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this, name));
         } else {
