@@ -71,15 +71,25 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
     public static void offerVariableSymbols(Perl6SymbolCollector collector, String name, Perl6VariableDecl var) {
         boolean isInstanceScoped = var.getScope().equals("has");
+        // Contribute usual attributes or private if allowed
         if (Perl6Variable.getTwigil(name) == '!' && collector.areInternalPartsCollected() || Perl6Variable.getTwigil(name) != '!')
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, var, isInstanceScoped));
-        if (!collector.isSatisfied() && Perl6Variable.getTwigil(name) == '.' && collector.areInternalPartsCollected())
+        if (collector.isSatisfied()) return;
+
+        // if it's $.foo, contribute $!foo too
+        if (Perl6Variable.getTwigil(name) == '.' && collector.areInternalPartsCollected())
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
                                                                  var, name.substring(0, 1) + "!" + name.substring(2)));
-        if (!collector.isSatisfied() && name.startsWith("&") && var.getScope().equals("my"))
+        if (collector.isSatisfied()) return;
+
+        // Offer routine if `&name`;
+        if (name.startsWith("&") && var.getScope().equals("my"))
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
                      var, name.substring(1)));
-        if (!collector.isSatisfied() && isInstanceScoped && Perl6Variable.getTwigil(name) == '.') {
+        if (collector.isSatisfied()) return;
+
+        // Offer self-centered symbols
+        if (isInstanceScoped && Perl6Variable.getTwigil(name) == '.') {
             if (Perl6Variable.getTwigil(name) == '.') {
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self!foo;
                     Perl6SymbolKind.Method, var, '!' + name.substring(2)));
