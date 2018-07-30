@@ -49,6 +49,10 @@ public class Perl6NeedStatementImpl extends StubBasedPsiElementBase<Perl6NeedSta
 
     @Override
     public List<String> getModuleNames() {
+        Perl6NeedStatementStub stub = getStub();
+        if (stub != null)
+            return stub.getModuleNames();
+
         List<String> result = new ArrayList<>();
         for (Perl6ModuleName moduleName : findChildrenByClass(Perl6ModuleName.class))
             result.add(moduleName.getText());
