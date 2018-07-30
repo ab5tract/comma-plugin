@@ -26,7 +26,7 @@ public class Perl6FoldingBuilder extends FoldingBuilderEx implements DumbAware {
         return descriptors.toArray(FoldingDescriptor.EMPTY);
     }
 
-    private void getLevelFolding(@NotNull PsiElement root, int recursionLevel, List<FoldingDescriptor> descriptors) {
+    private static void getLevelFolding(@NotNull PsiElement root, int recursionLevel, List<FoldingDescriptor> descriptors) {
         Collection<Perl6Blockoid> blocks = PsiTreeUtil.findChildrenOfType(root, Perl6Blockoid.class);
         for (final Perl6Blockoid block : blocks) {
             descriptors.add(new FoldingDescriptor(block.getNode(),

@@ -1,7 +1,6 @@
 package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
-import org.junit.Ignore;
 
 public class GrammarTest extends ParsingTestCase {
     public GrammarTest() {

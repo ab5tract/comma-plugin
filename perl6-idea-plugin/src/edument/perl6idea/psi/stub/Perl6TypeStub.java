@@ -11,31 +11,33 @@ public interface Perl6TypeStub<T extends PsiElement & Perl6PsiDeclaration> exten
         String globalName = getTypeName();
         if (globalName == null)
             return null;
+        StringBuilder globalNameBuilder = new StringBuilder(globalName);
         Stub current = getParentStub();
         while (current != null) {
             if (current instanceof Perl6ScopedDeclStub)
                 if (((Perl6ScopedDeclStub)current).getScope().equals("my"))
                     return null;
             if (current instanceof Perl6PackageDeclStub)
-                globalName = ((Perl6PackageDeclStub)current).getTypeName() + "::" + globalName;
+                globalNameBuilder.insert(0, ((Perl6PackageDeclStub)current).getTypeName() + "::");
             current = current.getParentStub();
         }
-        return globalName;
+        return globalNameBuilder.toString();
     }
 
     default String getLexicalName() {
         String lexicalName = getTypeName();
         if (lexicalName == null)
             return null;
+        StringBuilder lexicalNameBuilder = new StringBuilder(lexicalName);
         Stub current = getParentStub();
         while (current != null) {
             if (current instanceof Perl6ScopedDeclStub) {
                 if (((Perl6ScopedDeclStub)current).getScope().equals("my"))
-                    return lexicalName;
+                    return lexicalNameBuilder.toString();
                 return null;
             }
             if (current instanceof Perl6PackageDeclStub)
-                lexicalName = ((Perl6PackageDeclStub)current).getTypeName() + "::" + lexicalName;
+                lexicalNameBuilder.insert(0, ((Perl6PackageDeclStub)current).getTypeName() + "::");
             current = current.getParentStub();
         }
         return null;

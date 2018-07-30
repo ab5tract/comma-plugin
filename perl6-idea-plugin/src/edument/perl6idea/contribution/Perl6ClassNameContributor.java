@@ -4,6 +4,7 @@ import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +19,7 @@ public class Perl6ClassNameContributor implements ChooseByNameContributor {
         List<String> result = new ArrayList<>();
         result.addAll(Perl6GlobalTypeStubIndex.getInstance().getAllKeys(project));
         result.addAll(Perl6LexicalTypeStubIndex.getInstance().getAllKeys(project));
-        return result.toArray(new String[0]);
+        return result.toArray(ArrayUtil.EMPTY_STRING_ARRAY);
     }
 
     @NotNull
@@ -34,6 +35,6 @@ public class Perl6ClassNameContributor implements ChooseByNameContributor {
         for (String lexicalType : Filtering.typeMatch(lexicalIndex.getAllKeys(project), pattern))
             results.addAll(lexicalIndex.get(lexicalType, project, GlobalSearchScope.projectScope(project)));
 
-        return results.toArray(new NavigationItem[0]);
+        return results.toArray(NavigationItem.EMPTY_NAVIGATION_ITEM_ARRAY);
     }
 }

@@ -5,7 +5,6 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6StatementList;
 import edument.perl6idea.psi.Perl6Variable;
 import edument.perl6idea.psi.PodBlockFinish;

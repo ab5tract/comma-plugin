@@ -11,7 +11,7 @@ class Filtering {
             String[] testParts = test.toLowerCase().split("::");
             for (String patternPart : patternParts)
                 for (String testPart : testParts)
-                    if (testPart.indexOf(patternPart) >= 0) {
+                    if (testPart.contains(patternPart)) {
                         result.add(test);
                         continue tests;
                     }
@@ -22,7 +22,7 @@ class Filtering {
     public static Collection<String> simpleMatch(Collection<String> in, String pattern) {
         Collection<String> result = new ArrayList<>();
         for (String test : in)
-            if (test.indexOf(pattern) >= 0)
+            if (test.contains(pattern))
                 result.add(test);
         return result;
     }
@@ -30,7 +30,7 @@ class Filtering {
     public static Collection<String> variableMatch(Collection<String> in, String pattern) {
         Collection<String> result = new ArrayList<>();
         for (String test : in)
-            if (test.indexOf(pattern) >= 0 || test.replace('.', '!').indexOf(pattern) >= 0)
+            if (test.contains(pattern) || test.replace('.', '!').contains(pattern))
                 result.add(test);
         return result;
     }

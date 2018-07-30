@@ -1,5 +1,6 @@
 package edument.perl6idea.annotation;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.util.TextRange;
@@ -25,11 +26,11 @@ public class MissingUnitKeywordAnnotator implements Annotator {
             if (scopedDeclarator.getFirstChild().getText().equals("unit")) {
                     PsiElement maybeBlockoid = ref.getLastChild();
 
-                    while (maybeBlockoid != null && maybeBlockoid instanceof PsiWhiteSpace) {
+                    while (maybeBlockoid instanceof PsiWhiteSpace) {
                         maybeBlockoid = maybeBlockoid.getPrevSibling();
                     }
 
-                    if (maybeBlockoid != null && maybeBlockoid instanceof Perl6Blockoid) {
+                    if (maybeBlockoid instanceof Perl6Blockoid) {
                         holder.createErrorAnnotation(scopedDeclarator.getFirstChild(), "Cannot use 'unit' with block form of declaration");
                     }
             }
@@ -40,10 +41,12 @@ public class MissingUnitKeywordAnnotator implements Annotator {
              * separator if we can find it.
              */
             PsiElement maybeStatementTerminator = ref.getLastChild().getPrevSibling();
-            while (maybeStatementTerminator != null && maybeStatementTerminator instanceof PsiWhiteSpace) {
+            while (maybeStatementTerminator instanceof PsiWhiteSpace) {
                 maybeStatementTerminator = maybeStatementTerminator.getPrevSibling();
             }
-            if (maybeStatementTerminator.getNode().getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR) {
+            if (maybeStatementTerminator == null) return;
+            ASTNode node = maybeStatementTerminator.getNode();
+            if (node.getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR) {
                 PsiElement packageDeclarator = ref.getFirstChild();
                 String declaratorType = null;
                 if (packageDeclarator.getNode().getElementType() == Perl6TokenTypes.PACKAGE_DECLARATOR) {
@@ -52,8 +55,7 @@ public class MissingUnitKeywordAnnotator implements Annotator {
                 if (declaratorType != null) {
                     holder.createErrorAnnotation(maybeStatementTerminator,
                             String.format(
-                                    "Semicolon form of '%s' without 'unit' is illegal.",
-                                    declaratorType, declaratorType))
+                                    "Semicolon form of '%s' without 'unit' is illegal.", declaratorType))
                             .registerFix(new AddUnitDeclaratorQuickFix(), new TextRange(ref.getTextOffset(), maybeStatementTerminator.getTextOffset() + 1));
                 }
                 else {

@@ -19,7 +19,7 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
             return super.createStubForFile(file);
     }
 
-    private String generateCompilationUnitName(PsiFile file) {
+    private static String generateCompilationUnitName(PsiFile file) {
         VirtualFile vf = file.getViewProvider().getVirtualFile();
         if (vf instanceof LightVirtualFile)
             vf = ((LightVirtualFile)vf).getOriginalFile();

@@ -3,7 +3,6 @@ package edument.perl6idea.sdk;
 import edument.perl6idea.psi.symbols.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Perl6ExternalNamesParser {
     private final List<String> names;
