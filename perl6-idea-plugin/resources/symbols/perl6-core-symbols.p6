@@ -19,6 +19,9 @@ sub output-package($name, Mu \object) {
         if object.HOW.WHAT =:= Metamodel::ClassHOW {
             say "C:$name";
             say .name for object.^methods(:local);
+        } elsif object.HOW.WHAT =:= Metamodel::ParametricRoleGroupHOW {
+            say "R:$name";
+            say .name for object.^methods(:local);
         } elsif object.HOW.WHAT =:= Metamodel::PackageHOW ||
           object.HOW.WHAT =:= Metamodel::ModuleHOW {
             say "D:$name";
