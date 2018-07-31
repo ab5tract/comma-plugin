@@ -117,10 +117,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
-        String name = getRoutineName();
-        if (name != null && name.length() >= 1) {
-            offerRoutineSymbols(collector, name, this);
-        }
+        offerRoutineSymbols(collector, getRoutineName(), this);
     }
 
     public static void offerRoutineSymbols(Perl6SymbolCollector collector, String name, Perl6RoutineDecl decl) {
@@ -128,10 +125,10 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
             // Do not contribute submethods if restricted
             if (decl.getRoutineKind().equals("submethod") && !collector.areInternalPartsCollected()) return;
             // Do not contribute private methods if restricted
-            if (name != null && name.startsWith("!") && !collector.areInternalPartsCollected()) return;
+            if (name.startsWith("!") && !collector.areInternalPartsCollected()) return;
             // Contribute name with prefix, so `.foo` can be matched, not `foo`,
             // private methods have `!` as name part already
-            if (!decl.isPrivate()) name = "." + name;
+            if (!name.startsWith("!")) name = "." + name;
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, decl, name));
         } else {
             if (name != null && (decl.getScope().equals("my") || decl.getScope().equals("our"))) {
