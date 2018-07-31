@@ -35,10 +35,12 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         if (text.substring(1).chars().allMatch(Character::isDigit)) return "Match";
 
         // Check if typed
+        // Firstly get definition
+        PsiReference ref = getReference();
+        if (ref == null) return "Any";
+        PsiElement resolved = ref.resolve();
+        // Handle $ case
         if (text.startsWith("$")) {
-            PsiReference ref = getReference();
-            if (ref == null) return "Any";
-            PsiElement resolved = ref.resolve();
             if (resolved instanceof Perl6VariableDecl) {
                 Perl6VariableDecl decl = (Perl6VariableDecl)resolved;
                 String type = decl.getVariableType();
@@ -51,7 +53,26 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
                     return type;
             }
         } else {
-            // @, %, & cases
+            if (resolved instanceof Perl6VariableDecl) {
+                Perl6VariableDecl decl = (Perl6VariableDecl)resolved;
+                String type = decl.getVariableType();
+                if (type.equals(" ")) {
+                    // Untyped @% variable
+                    if (text.startsWith("@"))
+                        return "Array";
+                    if (text.startsWith("%"))
+                        return "Hash";
+                }
+            } else if (resolved instanceof Perl6ParameterVariable) {
+                Perl6ParameterVariable parameter = (Perl6ParameterVariable)resolved;
+                String type = parameter.getVariableType();
+                if (type == " ") {
+                    if (text.startsWith("@"))
+                        return "List";
+                    if (text.startsWith("%"))
+                        return "Map";
+                }
+            }
         }
 
         return "Any";

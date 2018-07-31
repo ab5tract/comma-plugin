@@ -429,4 +429,34 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
     }
+
+    public void testTypedArrayVar() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @foo; @foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Collections.singletonList(".reification-target")));
+    }
+
+    public void testTypedListParameter() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(@foo) { @foo.<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".reification-target"));
+    }
+
+    public void testTypedHashVar() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my %foo; %foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".dynamic"));
+        assertFalse(methods.contains(".reification-target"));
+    }
+
+    public void testTypedMapParameter() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(%foo) { %foo.<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".IterationBuffer"));
+        assertFalse(methods.contains(".reification-target"));
+    }
 }
