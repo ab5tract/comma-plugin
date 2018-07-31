@@ -61,7 +61,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (stub != null)
             return stub.getVariableType();
         PsiElement type = PsiTreeUtil.findSiblingBackward(this, TYPE_NAME, null);
-        return type != null ? type.getText() : " ";
+        if (type == null) return " ";
+        return getCuttedName(type.getText());
     }
 
     @Override

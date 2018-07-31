@@ -394,4 +394,39 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
     }
+
+    public void testTypedVar() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my Exception $foo; $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
+
+    public void testTypedVarWithSmiley() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my Exception:D $foo; $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
+
+    public void testTypedParameter() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(Exception $foo) { $foo.<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
+
+    public void testTypedParameterWithSmiley() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(Exception:D $foo) { $foo.<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
+
+    public void testTypedParameterWithCoercion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(Exception(Str) $foo) { $foo.<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
 }
