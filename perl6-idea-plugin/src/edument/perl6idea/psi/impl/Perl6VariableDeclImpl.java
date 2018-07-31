@@ -2,8 +2,10 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6MemberStubBasedPsi;
+import edument.perl6idea.psi.Perl6TypeName;
 import edument.perl6idea.psi.Perl6Variable;
 import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
@@ -14,6 +16,8 @@ import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
 
 public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub> implements Perl6VariableDecl {
     public Perl6VariableDeclImpl(@NotNull ASTNode node) {
@@ -49,6 +53,15 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     @Override
     public String getVariableName() {
         return getName();
+    }
+
+    @Override
+    public String getVariableType() {
+        Perl6VariableDeclStub stub = getStub();
+        if (stub != null)
+            return stub.getVariableType();
+        PsiElement type = PsiTreeUtil.findSiblingBackward(this, TYPE_NAME, null);
+        return type != null ? type.getText() : " ";
     }
 
     @Override
