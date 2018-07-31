@@ -67,6 +67,19 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     }
 
     private void contributeMethods(Perl6SymbolCollector collector) {
+        Perl6PackageDeclStub stub = getStub();
+        if (stub != null) {
+            List<StubElement> stubs = stub.getChildrenStubs();
+            for (StubElement nestedStub : stubs) {
+                if (nestedStub instanceof Perl6RoutineDeclStub) {
+                    Perl6RoutineDeclStub declStub = (Perl6RoutineDeclStub)nestedStub;
+                    Perl6RoutineDeclImpl.offerRoutineSymbols(
+                        collector, declStub.getRoutineName(), declStub.getPsi());
+                }
+            }
+            return;
+        }
+
         Perl6StatementList list = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
         if (list == null) return;
         for (PsiElement child : list.getChildren()) {

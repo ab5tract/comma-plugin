@@ -45,7 +45,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
-    public boolean isPrivateMethod() {
+    public boolean isPrivate() {
         Perl6RoutineDeclStub stub = getStub();
         if (stub != null)
             return stub.isPrivate();
@@ -117,21 +117,27 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
-        String name = getName();
-        if (getRoutineKind().equals("method") || getRoutineKind().equals("submethod")) {
+        String name = getRoutineName();
+        if (name != null && name.length() >= 1) {
+            offerRoutineSymbols(collector, name, this);
+        }
+    }
+
+    public static void offerRoutineSymbols(Perl6SymbolCollector collector, String name, Perl6RoutineDecl decl) {
+        if (decl.getRoutineKind().equals("method") || decl.getRoutineKind().equals("submethod")) {
             // Do not contribute submethods if restricted
-            if (getRoutineKind().equals("submethod") && !collector.areInternalPartsCollected()) return;
+            if (decl.getRoutineKind().equals("submethod") && !collector.areInternalPartsCollected()) return;
             // Do not contribute private methods if restricted
             if (name != null && name.startsWith("!") && !collector.areInternalPartsCollected()) return;
             // Contribute name with prefix, so `.foo` can be matched, not `foo`,
             // private methods have `!` as name part already
-            if (!isPrivateMethod()) name = "." + name;
-            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this, name));
+            if (!decl.isPrivate()) name = "." + name;
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, decl, name));
         } else {
-            if (name != null && (getScope().equals("my") || getScope().equals("our"))) {
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
+            if (name != null && (decl.getScope().equals("my") || decl.getScope().equals("our"))) {
+                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, decl));
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
-                                                                     this, "&" + name));
+                                                                     decl, "&" + name));
             }
         }
     }

@@ -8,5 +8,5 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
                                           Perl6SignatureHolder {
     String getRoutineKind();
     String getRoutineName();
-    boolean isPrivateMethod();
+    boolean isPrivate();
 }
