@@ -144,4 +144,24 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testNullRegexAnnotator1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"Empty regex is not allowed\">//</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testNullRegexAnnotator2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "token foo<error=\"Empty regex is not allowed\">{}</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testNullRegexAnnotator3() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "regex foo <error=\"Empty regex is not allowed\">{}</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testNullRegexAnnotator4() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "rule foo <error=\"Empty regex is not allowed\">{}</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }
