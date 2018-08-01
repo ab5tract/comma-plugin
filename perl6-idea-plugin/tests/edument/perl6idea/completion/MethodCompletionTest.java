@@ -466,4 +466,18 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.containsAll(Collections.singletonList(".acos")));
     }
+
+    public void testAssignmentInference() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = Int.new; $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".acos"));
+    }
+
+        public void testAssignmentInferenceWithArguments() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = Int.new('Non-existent argument'); $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".acos"));
+    }
 }
