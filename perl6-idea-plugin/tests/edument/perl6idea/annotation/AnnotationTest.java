@@ -144,4 +144,19 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testRawWheneverAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=descr=\"A whenever must be within a supply or react block\"whenever</error> $foo {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testWheneverInReactAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "supply { whenever $foo {} }");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testWheneverInSupplyAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "supply { whenever $foo {} }");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }
