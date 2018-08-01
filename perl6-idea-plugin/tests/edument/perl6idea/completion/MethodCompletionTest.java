@@ -459,4 +459,11 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertTrue(methods.contains(".IterationBuffer"));
         assertFalse(methods.contains(".reification-target"));
     }
+
+    public void testNewMethodOnTypeObjectCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "Int.new.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Collections.singletonList(".acos")));
+    }
 }
