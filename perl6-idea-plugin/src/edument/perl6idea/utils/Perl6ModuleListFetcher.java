@@ -20,40 +20,72 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class Perl6ModuleListFetcher {
     public static final String GITHUB_MIRROR1 = "http://ecosystem-api.p6c.org/projects.json";
     public static final String GITHUB_MIRROR2 = "http://ecosystem-api.p6c.org/projects1.json";
-    public static final String CPAN_MIRROR1 = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan.json";
-    private static Pair<Set<String>, Instant> modulesList = null;
+    public static final String CPAN_MIRROR1   = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan.json";
+    private static Pair<JSONArray, Instant> modulesList = null;
+    private static boolean isFirst = true;
 
-    public static Set<String> getModulesListAsync(Project project) {
+    public static Set<String> getModulesNamesAsync(Project project) {
         if (modulesList != null) {
             Instant past = Instant.now().minus(Duration.ofMinutes(30));
             if (!past.isAfter(modulesList.second))
-                return modulesList.first;
+                return getNames(modulesList.first);
         }
 
-        CompletableFuture<Set<String>> f = new CompletableFuture<>();
-        ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(project, "Getting Perl 6 Modules List"){
-            @Override
-            public void run(@NotNull ProgressIndicator indicator) {
-                f.complete(getModulesList());
-                indicator.setFraction(1.0);
-                indicator.setText("finished");
-            }
-        }, new EmptyProgressIndicator());
-        try {
-            return f.get();
+        populateModulesAsync(project);
+        return modulesList != null ? getNames(modulesList.first) : new HashSet<>();
+    }
+
+    private static Set<String> getNames(JSONArray modules) {
+        Set<String> names = new HashSet<>();
+        for (Object module : modules) {
+            JSONObject json = (JSONObject)module;
+            if (json.has("name"))
+                names.add(json.getString("name"));
         }
-        catch (InterruptedException | ExecutionException e) {
-            return new HashSet<>();
+        return names;
+    }
+
+    public static Set<String> getProvidesAsync(Project project) {
+        if (modulesList != null) {
+            Instant past = Instant.now().minus(Duration.ofMinutes(30));
+            if (!past.isAfter(modulesList.second))
+                return getProvides(modulesList.first);
+        }
+
+        populateModulesAsync(project);
+        return modulesList != null ? getProvides(modulesList.first) : new HashSet<>();
+    }
+
+    public static Set<String> getProvides(JSONArray modules) {
+        Set<String> names = new HashSet<>();
+        for (Object module : modules) {
+            JSONObject json = (JSONObject)module;
+            if (json.has("provides"))
+                names.addAll(json.getJSONObject("provides").keySet());
+        }
+        return names;
+    }
+
+    private static void populateModulesAsync(Project project) {
+        if (isFirst) {
+            isFirst = false;
+            ProgressManager.getInstance()
+                           .runProcessWithProgressAsynchronously(new Task.Backgroundable(project, "Getting Perl 6 Modules List") {
+                               @Override
+                               public void run(@NotNull ProgressIndicator indicator) {
+                                   populateModules();
+                                   indicator.setFraction(1.0);
+                                   indicator.setText("finished");
+                               }
+                           }, new EmptyProgressIndicator());
         }
     }
 
-    private static Set<String> getModulesList() {
+    private static void populateModules() {
         // Try first mirror
         String githubOutput = doRequest(GITHUB_MIRROR1);
         // Try second mirror
@@ -62,21 +94,17 @@ public class Perl6ModuleListFetcher {
 
         String cpanOutput = doRequest(CPAN_MIRROR1);
 
-        Set<String> names = new HashSet<>();
-        populateModulesSet(githubOutput, names);
-        populateModulesSet(cpanOutput, names);
-        modulesList = new Pair<>(names, Instant.now());
-        return names;
+        JSONArray jsonArray = new JSONArray();
+        populateArrayFromSource(githubOutput, jsonArray);
+        populateArrayFromSource(cpanOutput, jsonArray);
+        modulesList = new Pair<>(jsonArray, Instant.now());
     }
 
-    private static void populateModulesSet(String output, Set<String> names) {
+    private static void populateArrayFromSource(String output, JSONArray array) {
         if (output == null) return;
-        new JSONArray(output).forEach((o) -> {
-            try {
-                names.add(((JSONObject)(o)).getString("name"));
-            }
-            catch (JSONException ignored) {}
-        });
+        try {
+            new JSONArray(output).forEach((o) -> array.put(o));
+        } catch (JSONException ignored) {}
     }
 
     private static String doRequest(String url) {

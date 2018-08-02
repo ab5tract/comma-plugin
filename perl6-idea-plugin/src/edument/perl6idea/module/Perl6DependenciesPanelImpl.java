@@ -1,7 +1,6 @@
 package edument.perl6idea.module;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -228,7 +227,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(myProject, "Getting Perl 6 Modules List"){
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
-                    myNameField.setVariants(Perl6ModuleListFetcher.getModulesListAsync(myProject));
+                    myNameField.setVariants(Perl6ModuleListFetcher.getModulesNamesAsync(myProject));
                 }
             }, new EmptyProgressIndicator());
             return myPanel;
