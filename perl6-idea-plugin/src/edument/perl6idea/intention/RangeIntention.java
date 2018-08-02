@@ -29,6 +29,7 @@ public class RangeIntention extends PsiElementBaseIntentionAction implements Int
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element) throws IncorrectOperationException {
         // Infix application, not token and not Perl6Infix
+        int startCaretOffset = editor.getCaretModel().getOffset();
         PsiElement parent = element.getParent().getParent();
         // Start of `0..foo`
         int offset = parent.getTextOffset();
@@ -51,6 +52,7 @@ public class RangeIntention extends PsiElementBaseIntentionAction implements Int
             if (infixInParens != null)
                 handleInfix(editor, offset, infixInParens, offsetEnd, last.getTextLength());
         }
+        editor.getCaretModel().moveToOffset(startCaretOffset);
     }
 
     private static void handleInfix(Editor editor, int offset, PsiElement last, int offsetEnd, int length) {
