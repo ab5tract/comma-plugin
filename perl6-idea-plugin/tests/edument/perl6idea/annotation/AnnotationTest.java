@@ -144,4 +144,24 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testSignature1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put required parameter $b after optional parameters\">$b</error>) { }");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testSignature2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put required parameter $c after variadic parameters\">$c</error>) { }");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testSignature3() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put optional parameter $c after variadic parameters\">$c?</error>) { }");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testSignature4() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$a, <error descr=\"Cannot put required parameter $b after variadic parameters\">$b</error>) { }");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }
