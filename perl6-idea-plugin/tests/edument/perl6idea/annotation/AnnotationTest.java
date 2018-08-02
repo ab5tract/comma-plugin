@@ -144,4 +144,14 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testInfiniteRangeAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "1..*");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testIncompleteRangeAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 1<error=\"The range operator must have a second argument\">..</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }
