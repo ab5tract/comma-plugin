@@ -28,6 +28,29 @@ public class Perl6ModuleListFetcher {
     private static Pair<JSONArray, Instant> modulesList = null;
     private static boolean isFirst = true;
 
+    public static String getModuleByProvideAsync(Project project, String text) {
+        if (modulesList != null) {
+            Instant past = Instant.now().minus(Duration.ofMinutes(30));
+            if (!past.isAfter(modulesList.second))
+                return getModuleByProvide(modulesList.first, text);
+        }
+
+        populateModulesAsync(project);
+        return null;
+    }
+
+    private static String getModuleByProvide(JSONArray array, String text) {
+        for (Object module : array) {
+            JSONObject jsonModule = (JSONObject)module;
+            if (!jsonModule.has("name")) continue;
+            if (!jsonModule.has("provides")) continue;
+            JSONObject provide = (JSONObject)jsonModule.get("provides");
+            if (provide.keySet().contains(text))
+                return (String)jsonModule.get("name");
+        }
+        return null;
+    }
+
     public static Set<String> getProvidesByModuleAsync(Project project, String dependency) {
         if (modulesList != null) {
             Instant past = Instant.now().minus(Duration.ofMinutes(30));

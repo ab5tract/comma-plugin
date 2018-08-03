@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import edument.perl6idea.annotation.fix.MissingModuleFix;
 import edument.perl6idea.psi.Perl6ModuleName;
 import edument.perl6idea.utils.Perl6ModuleListFetcher;
 import org.jetbrains.annotations.NotNull;
@@ -49,11 +50,13 @@ public class UsedModuleAnnotator implements Annotator {
             for (Object dependency : depends) {
                 Set<String> provides = Perl6ModuleListFetcher.getProvidesByModuleAsync(element.getProject(), (String)dependency);
                 inDepends = provides.contains(element.getText());
+                if (inDepends) break;
             }
 
             if (!inDepends) {
                 holder
-                    .createErrorAnnotation(element, String.format("Cannot find %s based on dependencies from META6.json", element.getText()));
+                    .createErrorAnnotation(element, String.format("Cannot find %s based on dependencies from META6.json", element.getText()))
+                    .registerFix(new MissingModuleFix(project, element.getText()));
 
             }
         }
