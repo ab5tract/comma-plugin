@@ -28,6 +28,38 @@ public class Perl6ModuleListFetcher {
     private static Pair<JSONArray, Instant> modulesList = null;
     private static boolean isFirst = true;
 
+    public static Set<String> getProvidesByModuleAsync(Project project, String dependency) {
+        if (modulesList != null) {
+            Instant past = Instant.now().minus(Duration.ofMinutes(30));
+            if (!past.isAfter(modulesList.second))
+                return getProvidesByModule(modulesList.first, dependency);
+        }
+
+        populateModulesAsync(project);
+        return new HashSet<>();
+    }
+
+    private static Set<String> getProvidesByModule(JSONArray array, String name) {
+        HashSet<String> provides = new HashSet<>();
+        for (Object module : array) {
+            JSONObject jsonModule = (JSONObject)module;
+            if (!jsonModule.has("name")) continue;
+            if (!jsonModule.get("name").equals(name)) continue;
+            if (!jsonModule.has("provides")) continue;
+            Object localProvides = jsonModule.get("provides");
+            if (localProvides instanceof JSONObject)
+                provides.addAll(((JSONObject)jsonModule.get("provides")).keySet());
+            if (!jsonModule.has("depends")) continue;
+            Object localDepends = jsonModule.get("depends");
+            if (localDepends instanceof JSONArray) {
+                for (Object depend : (JSONArray)localDepends) {
+                    provides.addAll(getProvidesByModule(array, (String)depend));
+                }
+            }
+        }
+        return provides;
+    }
+
     public static Set<String> getModulesNamesAsync(Project project) {
         if (modulesList != null) {
             Instant past = Instant.now().minus(Duration.ofMinutes(30));
@@ -60,7 +92,7 @@ public class Perl6ModuleListFetcher {
         return modulesList != null ? getProvides(modulesList.first) : new HashSet<>();
     }
 
-    public static Set<String> getProvides(JSONArray modules) {
+    private static Set<String> getProvides(JSONArray modules) {
         Set<String> names = new HashSet<>();
         for (Object module : modules) {
             JSONObject json = (JSONObject)module;
