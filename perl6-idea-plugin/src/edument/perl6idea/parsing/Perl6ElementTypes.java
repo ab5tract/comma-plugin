@@ -96,6 +96,7 @@ public interface Perl6ElementTypes {
     IElementType REGEX_ASSERTION = new Perl6ElementType("REGEX_ASSERTION");
     IElementType REGEX_ATOM = new Perl6ElementType("REGEX_ATOM");
     IElementType REGEX_BUILTIN_CCLASS = new Perl6ElementType("REGEX_BUILTIN_CCLASS");
+    IElementType REGEX_CALL = new Perl6ElementType("REGEX_CALL");
     IElementType REGEX_CAPTURE_POSITIONAL = new Perl6ElementType("REGEX_CAPTURE_POSITIONAL");
     IElementType REGEX_CCLASS = new Perl6ElementType("REGEX_CCLASS");
     IElementType REGEX_CCLASS_ELEM = new Perl6ElementType("REGEX_CCLASS_ELEM");
