@@ -26,7 +26,10 @@ public class IllegalVariableDeclarationAnnotator implements Annotator {
                 holder.createErrorAnnotation(element, "Cannot declare a regex positional match variable");
 
         // Check out contextualizer
-        if (var.getText().equals("$") && var.getNextSibling() != null && var.getNextSibling() instanceof Perl6Signature)
+        if ((var.getText().equals("$") ||
+             var.getText().equals("@") ||
+             var.getText().equals("%")) &&
+            var.getNextSibling() instanceof Perl6Signature)
             holder.createErrorAnnotation(element, "Cannot declare a contextualizer");
     }
 }
