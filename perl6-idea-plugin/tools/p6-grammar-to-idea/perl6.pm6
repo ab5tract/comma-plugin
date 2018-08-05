@@ -4051,9 +4051,9 @@ grammar MAIN {
     }
 
     token term_reduce {
+        :my $*IN_REDUCE = 1;
         <!before [ '[' <[ - + ? ~ ^ ]> [\w || <[$@]>] ]>
         <?before [ '[' [ <.infixish('red')> || '\\' <.infixish('tri')> ] ']' ]>
-        :my $*IN_REDUCE = 1;
 
         <.start-element('REDUCE_METAOP')>
         <.start-token('METAOP')>

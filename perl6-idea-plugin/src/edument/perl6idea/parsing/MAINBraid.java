@@ -35391,6 +35391,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
+                this.declareDynamicVariable("$*IN_REDUCE", 1);
                 if (this.lookahead(562)) {
                     if (this.backtrack()) {
                         continue;
@@ -35405,7 +35406,6 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.declareDynamicVariable("$*IN_REDUCE", 1);
                 this.startToken(Perl6TokenTypes.METAOP);
                 if (!(this.literal("["))) {
                     if (this.backtrack()) {
