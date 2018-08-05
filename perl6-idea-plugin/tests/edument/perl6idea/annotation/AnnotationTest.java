@@ -164,4 +164,54 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "rule foo <error=\"Empty regex is not allowed\">{}</error>;");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testRegexPositionalDeclAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex positional match variable\">my $0 = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testTypedRegexPositionalDeclAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex positional match variable\">my Int $0 = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testRegexNamedDeclScalarSigilAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex named match variable\">my $<foo> = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testRegexNamedDeclArraySigilAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex named match variable\">my @<foo> = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testRegexNamedDeclHashSigilAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex named match variable\">my %<foo> = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testContextualizerDeclScalarSigilAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a contextualizer\">my $('x') = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testContextualizerDeclArraySigilAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a contextualizer\">my @('x') = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testContextualizerDeclHashSigilAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a contextualizer\">my %('x') = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testRestrictUnitKeywordToMAINSubAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"The unit sub syntax is only allowed for the sub MAIN\">unit</error> sub foo() {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testPermitUnitKeywordForMAINSubAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "unit sub MAIN() {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }
