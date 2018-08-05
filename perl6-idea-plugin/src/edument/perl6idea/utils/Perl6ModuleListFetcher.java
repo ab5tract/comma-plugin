@@ -59,7 +59,7 @@ public class Perl6ModuleListFetcher {
         }
 
         populateModulesAsync(project);
-        return new HashSet<>();
+        return null;
     }
 
     private static Set<String> getProvidesByModule(JSONArray array, String name) {
