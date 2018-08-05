@@ -19,13 +19,15 @@ import org.json.JSONObject;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Perl6ModuleListFetcher {
     public static final String GITHUB_MIRROR1 = "http://ecosystem-api.p6c.org/projects.json";
     public static final String GITHUB_MIRROR2 = "http://ecosystem-api.p6c.org/projects1.json";
     public static final String CPAN_MIRROR1   = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan.json";
-    private static Pair<JSONArray, Instant> modulesList = null;
+    private static Pair<Map<String, JSONObject>, Instant> modulesList = null;
     private static boolean isFirst = true;
 
     public static String getModuleByProvideAsync(Project project, String text) {
@@ -39,10 +41,9 @@ public class Perl6ModuleListFetcher {
         return null;
     }
 
-    private static String getModuleByProvide(JSONArray array, String text) {
-        for (Object module : array) {
+    private static String getModuleByProvide(Map<String, JSONObject> modules, String text) {
+        for (Object module : modules.values()) {
             JSONObject jsonModule = (JSONObject)module;
-            if (!jsonModule.has("name")) continue;
             if (!jsonModule.has("provides")) continue;
             JSONObject provide = (JSONObject)jsonModule.get("provides");
             if (provide.keySet().contains(text))
@@ -62,21 +63,21 @@ public class Perl6ModuleListFetcher {
         return null;
     }
 
-    private static Set<String> getProvidesByModule(JSONArray array, String name) {
+    private static Set<String> getProvidesByModule(Map<String, JSONObject> modules, String name) {
         HashSet<String> provides = new HashSet<>();
-        for (Object module : array) {
-            JSONObject jsonModule = (JSONObject)module;
-            if (!jsonModule.has("name")) continue;
-            if (!jsonModule.get("name").equals(name)) continue;
-            if (!jsonModule.has("provides")) continue;
-            Object localProvides = jsonModule.get("provides");
-            if (localProvides instanceof JSONObject)
-                provides.addAll(((JSONObject)jsonModule.get("provides")).keySet());
-            if (!jsonModule.has("depends")) continue;
-            Object localDepends = jsonModule.get("depends");
-            if (localDepends instanceof JSONArray) {
-                for (Object depend : (JSONArray)localDepends) {
-                    provides.addAll(getProvidesByModule(array, (String)depend));
+        JSONObject module = modules.get(name);
+        if (module != null) {
+            if (module.has("provides")) {
+                Object localProvides = module.get("provides");
+                if (localProvides instanceof JSONObject)
+                    provides.addAll(((JSONObject)module.get("provides")).keySet());
+            }
+            if (module.has("depends")) {
+                Object localDepends = module.get("depends");
+                if (localDepends instanceof JSONArray) {
+                    for (Object depend : (JSONArray)localDepends) {
+                        provides.addAll(getProvidesByModule(modules, (String)depend));
+                    }
                 }
             }
         }
@@ -94,9 +95,9 @@ public class Perl6ModuleListFetcher {
         return modulesList != null ? getNames(modulesList.first) : new HashSet<>();
     }
 
-    private static Set<String> getNames(JSONArray modules) {
+    private static Set<String> getNames(Map<String, JSONObject> modules) {
         Set<String> names = new HashSet<>();
-        for (Object module : modules) {
+        for (Object module : modules.values()) {
             JSONObject json = (JSONObject)module;
             if (json.has("name"))
                 names.add(json.getString("name"));
@@ -115,9 +116,9 @@ public class Perl6ModuleListFetcher {
         return modulesList != null ? getProvides(modulesList.first) : new HashSet<>();
     }
 
-    private static Set<String> getProvides(JSONArray modules) {
+    private static Set<String> getProvides(Map<String, JSONObject> modules) {
         Set<String> names = new HashSet<>();
-        for (Object module : modules) {
+        for (Object module : modules.values()) {
             JSONObject json = (JSONObject)module;
             if (json.has("provides"))
                 names.addAll(json.getJSONObject("provides").keySet());
@@ -152,7 +153,13 @@ public class Perl6ModuleListFetcher {
         JSONArray jsonArray = new JSONArray();
         populateArrayFromSource(githubOutput, jsonArray);
         populateArrayFromSource(cpanOutput, jsonArray);
-        modulesList = new Pair<>(jsonArray, Instant.now());
+        Map<String, JSONObject> modulesMap = new ConcurrentHashMap<>();
+        for (Object json : jsonArray) {
+            JSONObject jsonObject = (JSONObject)json;
+            if (jsonObject.has("name"))
+                modulesMap.put(jsonObject.getString("name"), jsonObject);
+        }
+        modulesList = new Pair<>(modulesMap, Instant.now());
     }
 
     private static void populateArrayFromSource(String output, JSONArray array) {
