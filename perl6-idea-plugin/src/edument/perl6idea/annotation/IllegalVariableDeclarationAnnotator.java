@@ -20,7 +20,9 @@ public class IllegalVariableDeclarationAnnotator implements Annotator {
         Perl6Variable var = PsiTreeUtil.findChildOfType(element, Perl6Variable.class);
         if (var == null) return;
         if (var.getFirstChild() != null && var.getFirstChild().getNode().getElementType() == REGEX_CAPTURE_NAME)
-            if (var.getFirstChild().getText().equals("$<") && var.getLastChild().getText().equals(">")) // $<foo>
+            if (var.getFirstChild().getText().equals("$<") && var.getLastChild().getText().equals(">") || // $<foo>
+                var.getFirstChild().getText().equals("@<") && var.getLastChild().getText().equals(">") || // @<foo>
+                var.getFirstChild().getText().equals("%<") && var.getLastChild().getText().equals(">"))   // %<foo>
                 holder.createErrorAnnotation(element, "Cannot declare a regex named match variable");
             else // $ + integer
                 holder.createErrorAnnotation(element, "Cannot declare a regex positional match variable");

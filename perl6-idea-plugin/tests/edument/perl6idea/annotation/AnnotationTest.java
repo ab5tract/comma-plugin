@@ -155,8 +155,18 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
-    public void testRegexNamedDeclAnnotator() {
+    public void testRegexNamedDeclScalarSigilAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex named match variable\">my $<foo> = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testRegexNamedDeclArraySigilAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex named match variable\">my @<foo> = 42</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testRegexNamedDeclHashSigilAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex named match variable\">my %<foo> = 42</error>;");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
