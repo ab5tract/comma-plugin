@@ -5,9 +5,7 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.Perl6StatementList;
-import edument.perl6idea.psi.Perl6Variable;
-import edument.perl6idea.psi.PodBlockFinish;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +37,14 @@ public class UndeclaredVariableAnnotator implements Annotator {
         // We only check twigilless variables for now (can't yet do attributes
         // because they may come from a role).
         if (Perl6Variable.getTwigil(ref.getVariableName()) != ' ' || ref.getVariableName().equals("$"))
+            return;
+
+        // If it is attempt declare @() or %() contextualizer, IllegalVariableDeclarationAnnotator
+        // will take care of this.
+        if (ref.getParent() instanceof Perl6VariableDecl &&
+            ref.getNextSibling() instanceof Perl6Signature &&
+            (ref.getVariableName().equals("@") ||
+             ref.getVariableName().equals("%")))
             return;
 
         // Make sure it's not a long or late-bound name.
