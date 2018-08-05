@@ -20871,6 +20871,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
+                this.declareDynamicVariable("$*IS_ROLE", 0);
                 if (!(this.lookahead(431))) {
                     if (this.backtrack()) {
                         continue;
@@ -20997,6 +20998,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
+                this.assignDynamicVariable("$*IS_ROLE", 1);
                 this.bsCommit(10);
                 this.state = 10;
                 continue;
@@ -21092,7 +21094,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsMark(6);
+                this.bsMark(16);
                 this.state = 2;
                 break;
             case 2:
@@ -21129,19 +21131,32 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(6);
+                this.bsMark(15);
                 this.state = 6;
-                continue;
-
-            case 6:
-                this.assignDynamicVariable("$*IN_DECL", "");
-                this.bsMark(9);
-                this.state = 7;
                 break;
+            case 6:
+                if (!(this.isValueTruthy(this.findDynamicVariable("$*IS_ROLE")))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.startToken(Perl6TokenTypes.TYPE_PARAMETER_BRACKET);
+                if (!(this.literal("["))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 7;
+                return -3;
+
             case 7:
                 this.setArgs();
                 this.state = 8;
-                return 135;
+                return 126;
 
             case 8:
                 if (this.lastResult.isFailed()) {
@@ -21153,61 +21168,30 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                rep = this.peekRep(9);
-                ++rep;
-                this.bsCommit(9);
-                this.bsMark(9, rep);
-                this.state = 7;
-                continue;
-
-            case 9:
-                this.bsFailMark(18);
                 this.bsMark(11);
-                if (!(this.lookahead(432))) {
+                this.state = 9;
+                break;
+            case 9:
+                this.startToken(Perl6TokenTypes.TYPE_PARAMETER_BRACKET);
+                if (!(this.literal("]"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {
                         return -2;
                     }
                 }
-                this.setArgs();
                 this.state = 10;
-                return 49;
+                return -3;
 
             case 10:
-                if (this.lastResult.isFailed()) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                } else {
-                    this.pos = this.lastResult.getPos();
-                }
-                this.bsCommit(18);
-                this.state = 18;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 11:
-                this.bsMark(17);
-                if (!(this.lookahead(433))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
-                this.startToken(Perl6TokenTypes.STATEMENT_TERMINATOR);
-                if (!(this.literal(";"))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
+                this.bsMark(14);
                 this.state = 12;
-                return -3;
-
+                break;
             case 12:
                 this.setArgs();
                 this.state = 13;
@@ -21223,15 +21207,31 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsMark(16);
+                this.bsCommit(14);
                 this.state = 14;
-                break;
+                continue;
+
             case 14:
-                this.setArgs();
+                this.bsCommit(15);
                 this.state = 15;
-                return 38;
+                continue;
 
             case 15:
+                this.bsCommit(16);
+                this.state = 16;
+                continue;
+
+            case 16:
+                this.assignDynamicVariable("$*IN_DECL", "");
+                this.bsMark(19);
+                this.state = 17;
+                break;
+            case 17:
+                this.setArgs();
+                this.state = 18;
+                return 135;
+
+            case 18:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -21241,20 +21241,108 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(16);
-                this.state = 16;
+                rep = this.peekRep(19);
+                ++rep;
+                this.bsCommit(19);
+                this.bsMark(19, rep);
+                this.state = 17;
                 continue;
 
-            case 16:
-                this.bsCommit(18);
-                this.state = 18;
+            case 19:
+                this.bsFailMark(28);
+                this.bsMark(21);
+                if (!(this.lookahead(432))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.setArgs();
+                this.state = 20;
+                return 49;
+
+            case 20:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(28);
+                this.state = 28;
                 continue;
 
-            case 17:
-                this.state = 18;
+            case 21:
+                this.bsMark(27);
+                if (!(this.lookahead(433))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.startToken(Perl6TokenTypes.STATEMENT_TERMINATOR);
+                if (!(this.literal(";"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 22;
+                return -3;
+
+            case 22:
+                this.setArgs();
+                this.state = 23;
+                return 18;
+
+            case 23:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsMark(26);
+                this.state = 24;
+                break;
+            case 24:
+                this.setArgs();
+                this.state = 25;
+                return 38;
+
+            case 25:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(26);
+                this.state = 26;
                 continue;
 
-            case 18:
+            case 26:
+                this.bsCommit(28);
+                this.state = 28;
+                continue;
+
+            case 27:
+                this.state = 28;
+                continue;
+
+            case 28:
                 return -1;
 
             }
