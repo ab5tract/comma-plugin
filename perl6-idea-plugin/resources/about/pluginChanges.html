@@ -1,25 +1,31 @@
 <h1>Change List</h1>
 
-<h2>2018.7.0</h2>
+<h2>2018.7.1</h2>
 
 <ul>
-  <li>Update the underlying platform version, fixing various issues, including a Linux focus loss bug</li>
-  <li>Add reference resolution (Ctrl+B) and auto-completion of attributes in composed roles</li>
-  <li>Add reference resolution (Ctrl+B) and auto-completion of private methods in composed roles</li>
-  <li>Add an annotator to mark calls to undeclared subroutines as an error</li>
-  <li>Add an annotator to mark calls to undeclared private methods as an error</li>
-  <li>Add an annotator to mark use of undeclared attributes as an error</li>
-  <li>Make sure our-scoped routines can be auto-completed and reference-resolved in their
-    declaring scope</li>
-  <li>Basic parsing and syntax highlighting of Pod formatting codes, including nested ones</li>
-  <li>Add Pod format angles (&lt; and &gt; plus other forms) to brace matcher</li>
-  <li>Render B/I/U Pod format codes as bold, italic, and underlined text</li>
-  <li>Offer to create a .pod6 file association in the Windows installer</li>
-  <li>Fix a parser/highlighting bug with a <code>use-ok</code> sub call</li>
-  <li>Don't incorrecly complain that the $ anonymous state variable is undeclared</li>
-  <li>Implement parsing and highlighting of labels</li>
-  <li>Fix mis-parse of : invocant marker in signatures</li>
-  <li>Fix parse bug in sub foo(+@bar) { }</li>
-  <li>Fix a parser hang when a ; followed a statement-terminating curly brace</li>
-  <li>Connect to MoarVM remote debugger with localhost, not 127.0.0.1, to match how MoarVM listens</li>
+    <li>Add first steps towards method auto-completion, supporting it for method
+        calls on <code>self</code> and type objects; includes methods composed from roles and
+        inherited from base classes, whether they are internal to the project, in
+        the CORE builtins, or from an external module</li>
+    <li>Support Go To Definition (Ctrl+B) for method calls within the project that
+        are made on <code>self</code> or a type object</li>
+    <li>Implement Move Statement support (Ctrl+Shift+Up, Ctrl+Shift+Down), so that
+        multi-line statements can be moved</li>
+    <li>Correct some cases where a sub call imported from another module within the
+        project was wrongly detected as undeclared and failed to Go To Definition</li>
+    <li>Fix a bug causing partially missing auto-complete information from external
+        modules</li>
+    <li>Make the display of test results more incremental, showing them as each file
+        completes its run</li>
+    <li>Add Project view in the standalone Comma IDE</li>
+    <li>Made Project view hide .precomp directories</li>
+    <li>Parse and highlight version literals</li>
+    <li>Parse and highlight macro and quasi</li>
+    <li>Correct whitespace parsing in various places in regexes, so that a
+        backslashed comment character is never incorrectly treated as unspace</li>
+    <li>Avoid a crash when encountering incorrect JSON in the META6.json file</li>
+    <li>Fix a crash that could occur sometimes during project import or creation</li>
+    <li>Correct highlighting of a sub or private method call to indicate other calls to the
+        same sub to put a background highlight on the name, not on the whole
+        argument list</li>
 </ul>

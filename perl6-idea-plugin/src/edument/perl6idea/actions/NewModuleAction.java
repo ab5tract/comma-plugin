@@ -3,7 +3,6 @@ package edument.perl6idea.actions;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
@@ -19,8 +18,6 @@ import edument.perl6idea.utils.Patterns;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static java.io.File.separator;
 
 public class NewModuleAction extends AnAction {
     private static final Logger LOG = Logger.getInstance(NewModuleAction.class);

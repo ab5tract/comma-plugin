@@ -11,7 +11,6 @@ import edument.perl6idea.debugger.event.Perl6DebugEventBreakpointReached;
 import edument.perl6idea.debugger.event.Perl6DebugEventBreakpointSet;
 import edument.perl6idea.debugger.event.Perl6DebugEventStop;
 import edument.perl6idea.run.Perl6DebuggableConfiguration;
-import edument.perl6idea.run.Perl6RunConfiguration;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.Subject;
 import org.edument.moarvm.DebugEvent;
@@ -165,7 +164,7 @@ public class Perl6DebugThread extends Thread {
                         /* The breakpoint line number we've received back from
                          * the debugserver has to be translated back.
                          */
-                        realLine = realLine - 1;
+                        realLine -= 1;
                         Perl6DebugEventBreakpointSet setEvent =
                                 new Perl6DebugEventBreakpointSet(request.file, realLine);
                         setEvent.setDebugSession(mySession);

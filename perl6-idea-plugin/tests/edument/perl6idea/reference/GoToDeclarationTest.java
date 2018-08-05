@@ -8,7 +8,6 @@ import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6ScopedDecl;
 import edument.perl6idea.psi.Perl6Variable;
-import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 
 public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
     @Override

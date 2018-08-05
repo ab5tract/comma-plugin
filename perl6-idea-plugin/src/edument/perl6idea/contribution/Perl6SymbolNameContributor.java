@@ -4,6 +4,7 @@ import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.stub.index.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +22,7 @@ public class Perl6SymbolNameContributor implements ChooseByNameContributor {
         result.addAll(Perl6AllRegexesStubIndex.getInstance().getAllKeys(project));
         result.addAll(Perl6AllAttributesStubIndex.getInstance().getAllKeys(project));
         result.addAll(Perl6AllConstantsStubIndex.getInstance().getAllKeys(project));
-        return result.toArray(new String[0]);
+        return result.toArray(ArrayUtil.EMPTY_STRING_ARRAY);
     }
 
     @NotNull
@@ -53,6 +54,6 @@ public class Perl6SymbolNameContributor implements ChooseByNameContributor {
         for (String constant : Filtering.simpleMatch(constantIndex.getAllKeys(project), pattern))
             results.addAll(constantIndex.get(constant, project, GlobalSearchScope.projectScope(project)));
 
-        return results.toArray(new NavigationItem[0]);
+        return results.toArray(NavigationItem.EMPTY_NAVIGATION_ITEM_ARRAY);
     }
 }

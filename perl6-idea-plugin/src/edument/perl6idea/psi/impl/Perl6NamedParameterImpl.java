@@ -6,13 +6,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6NamedParameter;
 import edument.perl6idea.psi.Perl6ParameterVariable;
-import edument.perl6idea.psi.Perl6Variable;
 import org.jetbrains.annotations.NotNull;
 
-import static edument.perl6idea.parsing.Perl6ElementTypes.NAMED_PARAMETER;
-import static edument.perl6idea.parsing.Perl6ElementTypes.PARAMETER_VARIABLE;
 import static edument.perl6idea.parsing.Perl6TokenTypes.NAMED_PARAMETER_NAME_ALIAS;
-import static edument.perl6idea.parsing.Perl6TokenTypes.VARIABLE;
 
 public class Perl6NamedParameterImpl extends ASTWrapperPsiElement implements Perl6NamedParameter {
     public Perl6NamedParameterImpl(@NotNull ASTNode node) {

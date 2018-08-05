@@ -2,7 +2,6 @@ package edument.perl6idea.psi;
 
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiNameIdentifierOwner;
-import com.intellij.psi.tree.IStubFileElementType;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 
 import java.util.List;

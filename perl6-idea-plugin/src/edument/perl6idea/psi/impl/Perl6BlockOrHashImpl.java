@@ -2,9 +2,7 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6BlockOrHash;
-import edument.perl6idea.psi.Perl6IfStatement;
 import edument.perl6idea.psi.symbols.Perl6ImplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;

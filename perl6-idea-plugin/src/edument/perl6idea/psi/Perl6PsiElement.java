@@ -48,6 +48,10 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
     default void applyExternalSymbolCollector(Perl6SymbolCollector collector) {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(this, Perl6PsiScope.class);
         while (scope != null) {
+            // If we are at top level already, we need to contribute CORE external symbols too
+            if (scope instanceof Perl6File)
+                scope.contributeScopeSymbols(collector);
+
             Perl6StatementList list = PsiTreeUtil.findChildOfType(scope, Perl6StatementList.class);
             if (list == null) return;
             Perl6Statement[] stats = PsiTreeUtil.getChildrenOfType(list, Perl6Statement.class);
@@ -75,7 +79,7 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         // so `scope` points to this PackageDecl, and calling `contributeSymbols` on that
         // will cycle itself.
         // But if is not a TypeName inside of Trait, we are safe to complete/resolve;
-        if (this instanceof Perl6TypeName && getParent() instanceof Perl6Trait)
+        if ((this instanceof Perl6TypeName || this instanceof Perl6IsTraitName) && getParent() instanceof Perl6Trait)
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         while (scope != null) {
             for (Perl6SymbolContributor cont : scope.getSymbolContributors()) {

@@ -102,6 +102,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         } else
             handleMessageSend(ServiceMessageBuilder.testStarted(testName).toString());
 
+        //noinspection StatementWithEmptyBody
         if (!hasSubtests && testResult.getStatus() == StatusValues.OK &&
             testResult.getDirective() == null) {
         } else if (!hasSubtests && ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP) ||

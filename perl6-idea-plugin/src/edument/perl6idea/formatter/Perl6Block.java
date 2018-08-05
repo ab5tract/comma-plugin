@@ -7,7 +7,6 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
-import edument.perl6idea.parsing.Perl6ElementTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,8 +14,6 @@ import java.util.*;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 import static edument.perl6idea.parsing.Perl6ElementTypes.HEREDOC;
-import static edument.perl6idea.parsing.Perl6ElementTypes.NULL_TERM;
-import static edument.perl6idea.parsing.Perl6OPPElementTypes.INFIX_APPLICATION;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 class Perl6Block extends AbstractBlock implements BlockWithParent {
@@ -86,7 +83,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         return Indent.getNoneIndent();
     }
 
-    private boolean nodeInStatementContinuation(ASTNode startNode) {
+    private static boolean nodeInStatementContinuation(ASTNode startNode) {
         ASTNode curNode = startNode;
         while (curNode != null && curNode.getElementType() != BLOCKOID) {
             IElementType elementType = curNode.getElementType();

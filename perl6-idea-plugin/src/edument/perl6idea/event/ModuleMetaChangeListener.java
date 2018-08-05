@@ -2,6 +2,8 @@ package edument.perl6idea.event;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -31,9 +33,10 @@ import static java.io.File.separator;
 
 public class ModuleMetaChangeListener implements ApplicationComponent, BulkFileListener {
     private final MessageBusConnection conn;
+    private static Logger LOGGER = Logger.getInstance(ModuleMetaChangeListener.class);
 
     @Nullable
-    private List<String> calculateModuleName(String path) {
+    private static List<String> calculateModuleName(String path) {
         Matcher m = Pattern.compile("(.*)/lib/(.+).pm6").matcher(path);
         if (m.matches()) {
             return Arrays.asList(m.group(1),
@@ -64,7 +67,7 @@ public class ModuleMetaChangeListener implements ApplicationComponent, BulkFileL
         }
     }
 
-    private void processEvent(VFileDeleteEvent evt) {
+    private static void processEvent(VFileDeleteEvent evt) {
         if (Objects.equals(evt.getFile().getExtension(), "pm6")) {
             List<String> metaAndModule = calculateModuleName(evt.getPath());
             if (metaAndModule == null) return;
@@ -75,7 +78,7 @@ public class ModuleMetaChangeListener implements ApplicationComponent, BulkFileL
         }
     }
 
-    private void processEvent(VFilePropertyChangeEvent evt) {
+    private static void processEvent(VFilePropertyChangeEvent evt) {
         if (Objects.equals(evt.getFile().getExtension(), "pm6")) {
             List<String> metaAndModule = calculateModuleName(evt.getOldPath());
             if (metaAndModule == null) return;
@@ -86,7 +89,7 @@ public class ModuleMetaChangeListener implements ApplicationComponent, BulkFileL
         }
     }
 
-    private void processEvent(VFileMoveEvent evt) {
+    private static void processEvent(VFileMoveEvent evt) {
         if (Objects.equals(evt.getFile().getExtension(), "pm6")) {
             List<String> metaAndModule = calculateModuleName(evt.getOldPath());
             if (metaAndModule == null) return;
@@ -97,9 +100,9 @@ public class ModuleMetaChangeListener implements ApplicationComponent, BulkFileL
         }
     }
 
-    private void updateMeta(Path metaPath, String oldName, String newName) {
+    private static void updateMeta(Path metaPath, String oldName, String newName) {
         try {
-            String content = new String(Files.readAllBytes(metaPath));
+            String content = new String(Files.readAllBytes(metaPath), CharsetToolkit.UTF8_CHARSET);
             JSONObject metaInfo = new JSONObject(content);
             JSONObject providesSection = metaInfo.getJSONObject("provides");
             providesSection.remove(oldName);
@@ -110,7 +113,7 @@ public class ModuleMetaChangeListener implements ApplicationComponent, BulkFileL
             metaInfo.put("provides", providesSection);
             Files.write(metaPath, Collections.singletonList(metaInfo.toString(4)), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.warn(e);
         }
     }
 

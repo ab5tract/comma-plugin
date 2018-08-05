@@ -2,7 +2,6 @@ package edument.perl6idea.psi.stub.index;
 
 import com.intellij.psi.stubs.StringStubIndexExtension;
 import com.intellij.psi.stubs.StubIndexKey;
-import edument.perl6idea.psi.Perl6PackageDecl;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6GlobalTypeStubIndex extends StringStubIndexExtension<Perl6IndexableType> {

@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Perl6CommandLine {
@@ -52,11 +53,6 @@ public class Perl6CommandLine {
         }
     }
 
-    public static GeneralCommandLine pushLine(GeneralCommandLine cmd, String line) {
-        cmd.addParameters("-e", line);
-        return cmd;
-    }
-
     public static File getResourceAsFile(Object object, String resourcePath) {
         InputStream in = object.getClass().getClassLoader().getResourceAsStream(resourcePath);
         FileOutputStream out = null;
@@ -87,9 +83,11 @@ public class Perl6CommandLine {
     public static List<String> execute(GeneralCommandLine cmd) {
         List<String> results = new ArrayList<>();
         AtomicBoolean died = new AtomicBoolean(false);
+        Semaphore readerDone = new Semaphore(0);
         try {
             Process p = cmd.createProcess();
-            new Thread(() -> readFromProcess(results, died, p)).start();
+            new Thread(() -> readFromProcess(results, died, p, readerDone)).start();
+            readerDone.acquire();
             p.waitFor();
             if (died.get()) return null;
         } catch (InterruptedException | ExecutionException e) {
@@ -99,7 +97,7 @@ public class Perl6CommandLine {
         return results;
     }
 
-    private static void readFromProcess(List<String> results, AtomicBoolean died, Process p) {
+    private static void readFromProcess(List<String> results, AtomicBoolean died, Process p, Semaphore readerDone) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         try {
             String result;
@@ -115,6 +113,7 @@ public class Perl6CommandLine {
                 died.set(true);
                 LOG.error(e);
             }
+            readerDone.release();
         }
     }
 

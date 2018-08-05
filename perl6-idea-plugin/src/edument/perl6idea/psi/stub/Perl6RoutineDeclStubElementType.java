@@ -24,7 +24,7 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
     @NotNull
     @Override
     public Perl6RoutineDeclStub createStub(@NotNull Perl6RoutineDecl psi, StubElement parentStub) {
-         return new Perl6RoutineDeclStubImpl(parentStub, psi.getRoutineName(), psi.getRoutineKind(), psi.isPrivateMethod(), psi.isExported());
+         return new Perl6RoutineDeclStubImpl(parentStub, psi.getRoutineName(), psi.getRoutineKind(), psi.isPrivate(), psi.isExported());
     }
 
     @NotNull

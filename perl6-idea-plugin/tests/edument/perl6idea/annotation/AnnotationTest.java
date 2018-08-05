@@ -184,4 +184,14 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a contextualizer\">my %('x') = 42</error>;");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testRestrictUnitKeywordToMAINSubAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"The unit sub syntax is only allowed for the sub MAIN\">unit</error> sub foo() {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testPermitUnitKeywordForMAINSubAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "unit sub MAIN() {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }

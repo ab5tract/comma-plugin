@@ -8,5 +8,6 @@ for @test-files {
     say $output;
     LEAVE {
         say "===={$_.Str}";
+        $*OUT.flush;
     }
 }

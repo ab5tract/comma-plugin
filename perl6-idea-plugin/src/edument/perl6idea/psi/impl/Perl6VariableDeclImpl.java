@@ -3,7 +3,9 @@ package edument.perl6idea.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.Perl6MemberStubBasedPsi;
+import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
 import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
@@ -25,7 +27,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     @Nullable
     @Override
     public PsiElement getNameIdentifier() {
-        Perl6Variable varNode = findChildByClass(Perl6Variable.class);
+        Perl6Variable varNode = getVariable();
         return varNode != null ? varNode.getVariableToken() : null;
     }
 
@@ -63,14 +65,45 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public void contributeSymbols(Perl6SymbolCollector collector) {
         String name = getName();
         if (name != null && name.length() > 1) {
-            boolean isInstanceScoped = getScope().equals("has");
-            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this, isInstanceScoped));
-            if (!collector.isSatisfied() && name.substring(1, 2).equals("."))
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
-                        this, name.substring(0, 1) + "!" + name.substring(2)));
-            if (!collector.isSatisfied() && name.startsWith("&") && getScope().equals("my"))
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
-                         this, name.substring(1)));
+            offerVariableSymbols(collector, name, this);
         }
+    }
+
+    public static void offerVariableSymbols(Perl6SymbolCollector collector, String name, Perl6VariableDecl var) {
+        boolean isInstanceScoped = var.getScope().equals("has");
+        // Contribute usual attributes or private if allowed
+        if (Perl6Variable.getTwigil(name) == '!' && collector.areInternalPartsCollected() || Perl6Variable.getTwigil(name) != '!')
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, var, isInstanceScoped));
+        if (collector.isSatisfied()) return;
+
+        // if it's $.foo, contribute $!foo too
+        if (Perl6Variable.getTwigil(name) == '.' && collector.areInternalPartsCollected())
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
+                                                                 var, name.substring(0, 1) + "!" + name.substring(2)));
+        if (collector.isSatisfied()) return;
+
+        // Offer routine if `&name`;
+        if (name.startsWith("&") && var.getScope().equals("my"))
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
+                     var, name.substring(1)));
+        if (collector.isSatisfied()) return;
+
+        // Offer self-centered symbols
+        if (isInstanceScoped && Perl6Variable.getTwigil(name) == '.') {
+            if (Perl6Variable.getTwigil(name) == '.') {
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self!foo;
+                    Perl6SymbolKind.Method, var, '!' + name.substring(2)));
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self.foo;
+                    Perl6SymbolKind.Method, var, '.' + name.substring(2)));
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer $.foo;
+                    Perl6SymbolKind.Method, var,
+                    Perl6Variable.getSigil(var.getVariableName()) + '.' + var.getVariableName().substring(2)
+                ));
+            }
+        }
+    }
+
+    private Perl6Variable getVariable() {
+        return findChildByClass(Perl6Variable.class);
     }
 }

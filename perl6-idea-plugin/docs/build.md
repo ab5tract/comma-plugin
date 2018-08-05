@@ -9,7 +9,7 @@ Do inside some work-related directory, e.g. `comma`.
 * `Unregistered VCS root detected` for `comma-bulid` - let IDEA add this root.
 * At this point, `json`, `tap4j`, and `miglayout` dependencies may be missing.
   * Open `Project Structure` -> `Libraries` and add them manually using `From Maven`.
-  * Maven coordinates are: `org.tap4j:tap4j:4.3`, `org.json:json:20171018`, and `com.miglayout:miglayout-swing:5.1`.
+  * Maven coordinates are: `org.tap4j:tap4j:4.3`, `org.json:json:20171018`, and `com.miglayout:miglayout-swing:5.1`. Add them to the module `perl6.community.plugin.main`.
 
 #### How to build a plugin
 
@@ -27,7 +27,10 @@ Starting from `intellij-community` directory.
 
 #### How to run Comma from IDEA Run Configuration for testing
 
-**WARNING**: some features that are present in built artifact are not present in this configuration, notably error reporter used is always Intellij's one, not Edument-based.
+**WARNING**: some features that are present in built artifact are not present in this configuration, such as:
+
+* Error reporter used is always Intellij's one, not Edument-based. 
+* Becuase of plugin absence, `Check out from version control` always has no options, but those are present in final build.
 
 * Open Run Configurations tab. Create a new one:
   - Type: Application.
