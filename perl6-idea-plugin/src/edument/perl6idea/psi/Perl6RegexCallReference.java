@@ -9,7 +9,14 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+
 public class Perl6RegexCallReference extends PsiReferenceBase<Perl6PsiElement> {
+    private static final String[] PREDEFINED_METHODS = new String[]{"after", "digit", "before", "space", "ww", "upper", "wb", "cntrl", "ws", "graph", "xdigit", "ident", "lower", "punct", "print", "alnum", "alpha"};
+
     public Perl6RegexCallReference(Perl6RegexCallImpl call) {
         super(call, new TextRange(0, call.getTextLength()));
     }
@@ -25,9 +32,11 @@ public class Perl6RegexCallReference extends PsiReferenceBase<Perl6PsiElement> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        return getElement().getSymbolVariants(Perl6SymbolKind.Regex)
-                           .stream()
-                           .map(sym -> sym.getName())
-                           .toArray();
+        List<String> result = getElement()
+            .getSymbolVariants(Perl6SymbolKind.Regex)
+            .stream()
+            .map(sym -> sym.getName()).collect(toList());
+        result.addAll(Arrays.asList(PREDEFINED_METHODS));
+        return result.toArray();
     }
 }

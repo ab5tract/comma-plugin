@@ -280,4 +280,25 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.contains(".listen"));
     }
+
+    public void testBuiltInRegexCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar A { rule a { <<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains("alpha"));
+    }
+
+    public void testOwnRegexCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar A { rule rule-a { <<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains("rule-a"));
+    }
+
+    public void testInheritedRegexCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar B { regex regex-a {''} }; grammar A  is B{ rule rule-a { <<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains("regex-a"));
+    }
 }
