@@ -239,4 +239,9 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "unit sub MAIN() {}");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testInfixAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $lc-and-trim := { $_ = .lc.trim };");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }

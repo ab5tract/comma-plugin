@@ -13,6 +13,7 @@ public class NoEndpointRangeAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6Infix)) return;
+        if (!element.getText().equals("..")) return;
         PsiElement next = element.getNextSibling();
         while (next != null && next.getNode().getElementType() == UNV_WHITE_SPACE)
             next = next.getNextSibling();
