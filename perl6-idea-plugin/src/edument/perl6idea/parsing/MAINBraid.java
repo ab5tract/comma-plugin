@@ -45728,7 +45728,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 3:
-                if (!(this.inCharList("[{<\u00AB"))) {
+                if (!(this.inCharList("[{<\u00AB("))) {
                     if (this.backtrack()) {
                         continue;
                     } else {
@@ -45752,7 +45752,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                if (!(this.inCharList("[{<\u00AB"))) {
+                if (!(this.inCharList("[{<\u00AB("))) {
                     if (this.backtrack()) {
                         continue;
                     } else {

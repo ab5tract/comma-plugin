@@ -1470,12 +1470,12 @@ grammar MAIN {
            <.identifier>
            <.end-token('COLON_PAIR')>
            [
-               <?before [<.unsp>? <[[{<«]>]>
+               <?before [<.unsp>? <[[{<«(]>]>
                <.start-token('COLON_PAIR_HAS_VALUE')> <?> <.end-token('COLON_PAIR_HAS_VALUE')>
                <.unsp>?
                <.coloncircumfix>
            ]?
-        || <?before [':' <[[{<«]>]>
+        || <?before [':' <[[{<«(]>]>
            <.start-token('COLON_PAIR')>
            ':'
            <.end-token('COLON_PAIR')>
