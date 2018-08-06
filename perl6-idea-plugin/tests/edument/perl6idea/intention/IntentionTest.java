@@ -12,7 +12,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
 
     public void testZeroToN() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for 0.<caret>.9 {}");
-        IntentionAction intention = myFixture.findSingleIntention("Remove redundant zero");
+        IntentionAction intention = myFixture.findSingleIntention("Use simpler range syntax");
         assertNotNull(intention);
         myFixture.launchAction(intention);
         myFixture.checkResultByFile("Range1.p6");
@@ -20,7 +20,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
 
     public void testZeroToExclusiveN() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for 0.<caret>.^10 {}");
-        IntentionAction intention = myFixture.findSingleIntention("Remove redundant zero");
+        IntentionAction intention = myFixture.findSingleIntention("Use simpler range syntax");
         assertNotNull(intention);
         myFixture.launchAction(intention);
         myFixture.checkResultByFile("Range1.p6");
@@ -28,7 +28,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
 
     public void testZeroToVar() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for 0.<caret>.^$n {}");
-        IntentionAction intention = myFixture.findSingleIntention("Remove redundant zero");
+        IntentionAction intention = myFixture.findSingleIntention("Use simpler range syntax");
         assertNotNull(intention);
         myFixture.launchAction(intention);
         myFixture.checkResultByFile("Range2.p6");
@@ -36,7 +36,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
 
     public void testZeroToExclusiveVar() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for 0.<caret>.$n-1 {}");
-        IntentionAction intention = myFixture.findSingleIntention("Remove redundant zero");
+        IntentionAction intention = myFixture.findSingleIntention("Use simpler range syntax");
         assertNotNull(intention);
         myFixture.launchAction(intention);
         myFixture.checkResultByFile("Range2.p6");
@@ -44,7 +44,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
 
     public void testUndeclaredVariableAnnotatorReallyUndeclared() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for 0.<caret>.($n-1) {}");
-        IntentionAction intention = myFixture.findSingleIntention("Remove redundant zero");
+        IntentionAction intention = myFixture.findSingleIntention("Use simpler range syntax");
         assertNotNull(intention);
         myFixture.launchAction(intention);
         myFixture.checkResultByFile("Range2.p6");

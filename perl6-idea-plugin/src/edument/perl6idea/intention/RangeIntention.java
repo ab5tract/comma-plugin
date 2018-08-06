@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static edument.perl6idea.parsing.Perl6TokenTypes.INFIX;
+import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 public class RangeIntention extends PsiElementBaseIntentionAction implements IntentionAction {
     static final Set<String> OPS = new HashSet<>(Arrays.asList("..", "..^"));
@@ -23,18 +23,21 @@ public class RangeIntention extends PsiElementBaseIntentionAction implements Int
     @NotNull
     @Override
     public String getText() {
-        return "Remove redundant zero";
+        return "Use simpler range syntax";
     }
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element) throws IncorrectOperationException {
-        // Infix application, not token and not Perl6Infix
+        Perl6InfixApplication application = PsiTreeUtil.getParentOfType(element, Perl6InfixApplication.class);
+        if (application == null) return;
+
+        element = PsiTreeUtil.findChildOfType(application, Perl6Infix.class);
+        if (element == null) return;
         int startCaretOffset = editor.getCaretModel().getOffset();
-        PsiElement parent = element.getParent().getParent();
         // Start of `0..foo`
-        int offset = parent.getTextOffset();
+        int offset = application.getTextOffset();
         // Offset of `foo`, last child of application
-        PsiElement last = parent.getLastChild();
+        PsiElement last = application.getLastChild();
         int offsetEnd = last.getTextOffset();
 
         String infixText = element.getText();
@@ -74,13 +77,23 @@ public class RangeIntention extends PsiElementBaseIntentionAction implements Int
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-        if (!(element.getNode().getElementType() == INFIX)) return false;
-        String op = element.getText();
+        if (!(element.getNode().getElementType() == INFIX || // ..
+              element.getNode().getElementType() == INTEGER_LITERAL || // numbers
+              element.getNode().getElementType() == VARIABLE || // $foo
+              element.getNode().getElementType() == PARENTHESES_OPEN || // (
+              element.getNode().getElementType() == PARENTHESES_CLOSE)) // )
+            return false;
+
+        Perl6InfixApplication application = PsiTreeUtil.getParentOfType(element, Perl6InfixApplication.class);
+        if (application == null)
+            return false;
+
+        PsiElement infix = PsiTreeUtil.getChildOfType(application, Perl6Infix.class);
+        if (infix == null) return false;
+        String op = infix.getText();
         if (!OPS.contains(op)) return false;
-        // Not PsiElement with token, but Perl6Infix
-        element = element.getParent();
         // Get and check possible siblings
-        PsiElement temp = element.getNextSibling();
+        PsiElement temp = infix.getNextSibling();
         while (temp != null) {
             if (temp instanceof Perl6IntLiteral || temp instanceof Perl6Variable ||
                 temp instanceof Perl6InfixApplication || temp instanceof Perl6ParenthesizedExpr)
@@ -88,19 +101,19 @@ public class RangeIntention extends PsiElementBaseIntentionAction implements Int
             temp = temp.getNextSibling();
         }
 
-        PsiElement prev = PsiTreeUtil.getPrevSiblingOfType(element, Perl6IntLiteral.class);
+        PsiElement prev = PsiTreeUtil.getPrevSiblingOfType(infix, Perl6IntLiteral.class);
         Perl6InfixApplication infixInParens = null;
         if (temp instanceof Perl6ParenthesizedExpr)
             infixInParens = PsiTreeUtil.findChildOfType(temp, Perl6InfixApplication.class);
         return prev != null && prev.getText().equals("0") && // Basic condition
                // Int condition
-               (temp instanceof Perl6IntLiteral && (element.getText().equals("..") || element.getText().equals("..^")) ||
+               (temp instanceof Perl6IntLiteral && (infix.getText().equals("..") || infix.getText().equals("..^")) ||
                 // Var condition
-                temp instanceof Perl6Variable && element.getText().equals("..^") ||
+                temp instanceof Perl6Variable && infix.getText().equals("..^") ||
                 // Infix, possible `0..$n-1`
-                temp instanceof Perl6InfixApplication && element.getText().equals("..") ||
+                temp instanceof Perl6InfixApplication && infix.getText().equals("..") ||
                 // Parens, possible ..($n-1)
-                temp instanceof Perl6ParenthesizedExpr && element.getText().equals("..") &&
+                temp instanceof Perl6ParenthesizedExpr && infix.getText().equals("..") &&
                 ( // inner parens expr
                   infixInParens != null && checkInfix(infixInParens.getChildren())
                 )
