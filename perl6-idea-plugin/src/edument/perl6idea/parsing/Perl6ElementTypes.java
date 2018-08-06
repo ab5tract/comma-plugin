@@ -111,6 +111,7 @@ public interface Perl6ElementTypes {
     IElementType REQUIRE_STATEMENT = new Perl6ElementType("REQUIRE_STATEMENT");
     IElementType RETURN_CONSTRAINT = new Perl6ElementType("RETURN_CONSTRAINT");
     IElementType REVERSE_METAOP = new Perl6ElementType("REVERSE_METAOP");
+    IElementType ROLE_SIGNATURE = new Perl6ElementType("ROLE_SIGNATURE");
     IElementType SELF = new Perl6ElementType("SELF");
     IElementType SEMI_LIST = new Perl6ElementType("SEMI_LIST");
     IElementType SEQUENTIAL_METAOP = new Perl6ElementType("SEQUENTIAL_METAOP");
