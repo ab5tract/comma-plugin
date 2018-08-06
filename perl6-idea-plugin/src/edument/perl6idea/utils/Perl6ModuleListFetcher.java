@@ -171,10 +171,42 @@ public class Perl6ModuleListFetcher {
         Map<String, JSONObject> modulesMap = new ConcurrentHashMap<>();
         for (Object json : jsonArray) {
             JSONObject jsonObject = (JSONObject)json;
-            if (jsonObject.has("name"))
-                modulesMap.put(jsonObject.getString("name"), jsonObject);
+            if (jsonObject.has("name") && jsonObject.has("version"))
+                if (checkVersions(jsonObject, modulesMap))
+                    modulesMap.put(jsonObject.getString("name"), jsonObject);
         }
         modulesList = new Pair<>(modulesMap, Instant.now());
+    }
+
+    private static boolean checkVersions(JSONObject module, Map<String, JSONObject> modulesMap) {
+        // Return immediately if the module is not yet added
+        if (!modulesMap.containsKey(module.getString("name"))) return true;
+
+        // Do not add if invalid, in any case
+        if (!module.has("version")) return false;
+
+        String versionBefore = modulesMap.get(module.getString("name")).getString("version");
+        String versionNew = module.getString("version");
+
+        String[] version1 = versionBefore.split("\\.");
+        String[] version2 = versionNew.split("\\.");
+
+        int i = 0;
+        // set index to first non-equal ordinal or length of shortest version string
+        while (i < version1.length && i < version2.length && version1[i].equals(version2[i])) {
+            i++;
+        }
+        // compare first non-equal ordinal number
+        if (i < version1.length && i < version2.length) {
+            try {
+                return Integer.valueOf(version1[i]) < Integer.valueOf(version2[i]);
+            } catch (Exception e) {
+                return true;
+            }
+        }
+        // the strings are equal or one string is a substring of the other
+        // e.g. "1.2.3" = "1.2.3" or "1.2.3" < "1.2.3.4"
+        return version1.length < version2.length;
     }
 
     private static void populateArrayFromSource(String output, JSONArray array) {
