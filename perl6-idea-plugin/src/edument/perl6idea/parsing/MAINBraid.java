@@ -31692,7 +31692,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*Q_ARRAYS", 0);
                 this.declareDynamicVariable("$*Q_HASHES", 0);
                 this.declareDynamicVariable("$*Q_FUNCTIONS", 0);
-                this.bsFailMark(46);
+                this.bsFailMark(49);
                 this.bsMark(8);
                 this.startToken(Perl6TokenTypes.ARRAY_INDEX_BRACKET_OPEN);
                 if (!(this.literal("["))) {
@@ -31750,8 +31750,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 7:
-                this.bsCommit(46);
-                this.state = 46;
+                this.bsCommit(49);
+                this.state = 49;
                 continue;
 
             case 8:
@@ -31812,8 +31812,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 15:
-                this.bsCommit(46);
-                this.state = 46;
+                this.bsCommit(49);
+                this.state = 49;
                 continue;
 
             case 16:
@@ -31874,8 +31874,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 23:
-                this.bsCommit(46);
-                this.state = 46;
+                this.bsCommit(49);
+                this.state = 49;
                 continue;
 
             case 24:
@@ -31936,8 +31936,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 31:
-                this.bsCommit(46);
-                this.state = 46;
+                this.bsCommit(49);
+                this.state = 49;
                 continue;
 
             case 32:
@@ -31998,8 +31998,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 39:
-                this.bsCommit(46);
-                this.state = 46;
+                this.bsCommit(49);
+                this.state = 49;
                 continue;
 
             case 40:
@@ -32033,6 +32033,29 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 43;
                 break;
             case 43:
+                this.setArgs();
+                this.state = 44;
+                return 18;
+
+            case 44:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(45);
+                this.state = 45;
+                continue;
+
+            case 45:
+                this.bsMark(48);
+                this.state = 46;
+                break;
+            case 46:
                 this.startToken(Perl6TokenTypes.PARENTHESES_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
@@ -32041,19 +32064,19 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.state = 44;
+                this.state = 47;
                 return -3;
 
-            case 44:
-                this.bsCommit(45);
-                this.state = 45;
+            case 47:
+                this.bsCommit(48);
+                this.state = 48;
                 continue;
 
-            case 45:
-                this.state = 46;
+            case 48:
+                this.state = 49;
                 continue;
 
-            case 46:
+            case 49:
                 return -1;
 
             }

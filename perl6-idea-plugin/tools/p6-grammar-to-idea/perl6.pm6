@@ -3734,7 +3734,7 @@ grammar MAIN {
            <.end-element('HASH_INDEX')>
         || <.start-element('CALL')>
            <.start-token('PARENTHESES_OPEN')> '(' <.end-token('PARENTHESES_OPEN')>
-           <.arglist>
+           <.arglist> <.ws>?
            [ <.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')> ]?
            <.end-element('CALL')>
        ]
