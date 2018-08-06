@@ -45,6 +45,8 @@ public class Perl6ModuleReference extends PsiReferenceBase<Perl6PsiElement> {
         Set<String> externals = Perl6ModuleListFetcher.getProvidesAsync(myElement.getProject());
         if (externals != null)
             reallyInThisProject.addAll(externals);
+        reallyInThisProject.addAll(Perl6ModuleListFetcher.PREINSTALLED_MODULES);
+        reallyInThisProject.addAll(Perl6ModuleListFetcher.PRAGMAS);
         return reallyInThisProject.toArray();
     }
 }
