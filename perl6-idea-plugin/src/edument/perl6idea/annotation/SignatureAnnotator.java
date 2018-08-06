@@ -23,27 +23,28 @@ public class SignatureAnnotator implements Annotator {
             if (!(psiElement instanceof Perl6Parameter)) continue;
             Perl6Parameter parameter = (Perl6Parameter)psiElement;
 
+            String summary = parameter.summary();
             if (isFirst) {
-                state = isRequired(parameter.summary()) ? SignatureState.REQUIRED :
-                        isOptional(parameter.summary()) ? SignatureState.OPTIONAL :
+                state = isRequired(summary) ? SignatureState.REQUIRED :
+                        isOptional(summary) ? SignatureState.OPTIONAL :
                         SignatureState.VARIADIC;
                 isFirst = false;
             }
 
-            if (state == SignatureState.REQUIRED && isOptional(parameter.summary()))
+            if (state == SignatureState.REQUIRED && isOptional(summary))
                 state = SignatureState.OPTIONAL;
-            else if (isVariadic(parameter.summary()) && (state == SignatureState.REQUIRED || state == SignatureState.OPTIONAL))
+            else if (isVariadic(summary) && (state == SignatureState.REQUIRED || state == SignatureState.OPTIONAL))
                 state = SignatureState.VARIADIC;
 
-            if (state == SignatureState.OPTIONAL && isRequired(parameter.summary())) {
+            if (state == SignatureState.OPTIONAL && isRequired(summary)) {
                 holder.createErrorAnnotation(
                     parameter, String.format("Cannot put required parameter %s after optional parameters", parameter.getVariableName()));
                 break;
-            } else if (state == SignatureState.VARIADIC && isRequired(parameter.summary())) {
+            } else if (state == SignatureState.VARIADIC && isRequired(summary)) {
                 holder.createErrorAnnotation(
                     parameter, String.format("Cannot put required parameter %s after variadic parameters", parameter.getVariableName()));
                 break;
-            } else if (state == SignatureState.VARIADIC && isOptional(parameter.summary())) {
+            } else if (state == SignatureState.VARIADIC && isOptional(summary)) {
                 holder.createErrorAnnotation(
                     parameter, String.format("Cannot put optional parameter %s after variadic parameters", parameter.getVariableName()));
             }
@@ -56,12 +57,12 @@ public class SignatureAnnotator implements Annotator {
     }
 
     private static boolean isOptional(String summary) {
-        return summary.endsWith("?");
+        return summary.endsWith("?") || summary.startsWith(":");
     }
 
     private static boolean isVariadic(String summary) {
         return summary.startsWith("*") || summary.startsWith("|") ||
-               summary.startsWith("+") || summary.startsWith(":");
+               summary.startsWith("+");
     }
 
     enum SignatureState {
