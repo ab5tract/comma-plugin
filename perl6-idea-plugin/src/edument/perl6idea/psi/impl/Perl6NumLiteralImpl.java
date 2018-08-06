@@ -9,4 +9,9 @@ public class Perl6NumLiteralImpl extends ASTWrapperPsiElement implements Perl6Nu
     public Perl6NumLiteralImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "Num";
+    }
 }

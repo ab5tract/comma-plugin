@@ -2,10 +2,9 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.Perl6MemberStubBasedPsi;
-import edument.perl6idea.psi.Perl6Variable;
-import edument.perl6idea.psi.Perl6VariableDecl;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
 import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
@@ -14,6 +13,8 @@ import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
 
 public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub> implements Perl6VariableDecl {
     public Perl6VariableDeclImpl(@NotNull ASTNode node) {
@@ -49,6 +50,28 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     @Override
     public String getVariableName() {
         return getName();
+    }
+
+    @Override
+    public String getVariableType() {
+        Perl6VariableDeclStub stub = getStub();
+        if (stub != null)
+            return stub.getVariableType();
+        PsiElement type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
+        if (type != null) return getCuttedName(type.getText());
+        return resolveAssign();
+    }
+
+    private String resolveAssign() {
+        PsiElement infix = PsiTreeUtil.getChildOfType(this, Perl6InfixImpl.class);
+        if (infix == null || !infix.getText().equals("=")) return " ";
+        PsiElement postfix = PsiTreeUtil.getNextSiblingOfType(infix, Perl6PostfixApplication.class);
+        if (postfix == null) return " ";
+        PsiElement first = postfix.getFirstChild();
+        if (!(first instanceof Perl6TypeName)) return " ";
+        PsiElement last = postfix.getLastChild();
+        if (!(last instanceof Perl6MethodCall)) return " ";
+        return getCuttedName(last.getText()).equals(".new") ? getCuttedName(first.getText()) : " ";
     }
 
     @Override

@@ -9,4 +9,9 @@ public class Perl6StartImpl extends ASTWrapperPsiElement implements Perl6Start {
     public Perl6StartImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "Promise";
+    }
 }

@@ -3,6 +3,7 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6ParameterVariable;
@@ -12,6 +13,8 @@ import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
 
 public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements Perl6ParameterVariable {
     public Perl6ParameterVariableImpl(@NotNull ASTNode node) {
@@ -45,6 +48,13 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     @Override
     public String summary() {
         return String.valueOf(this.getName().charAt(0));
+    }
+
+    @Override
+    public String getVariableType() {
+        PsiElement type = PsiTreeUtil.findSiblingBackward(this, TYPE_NAME, null);
+        if (type == null) return " ";
+        return getCuttedName(type.getText());
     }
 
     @Override
