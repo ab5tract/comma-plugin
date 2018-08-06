@@ -33,6 +33,7 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         if (text.equals("$!")) return "Exception";
         if (text.equals("$/")) return "Match";
         if (text.substring(1).chars().allMatch(Character::isDigit)) return "Match";
+        if (text.startsWith("$<") && text.endsWith(">")) return "Match";
 
         // Check if typed
         // Firstly get definition
