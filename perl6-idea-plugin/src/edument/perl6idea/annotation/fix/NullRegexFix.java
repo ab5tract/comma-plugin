@@ -9,12 +9,6 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 public class NullRegexFix implements IntentionAction {
-    private final int offset;
-
-    public NullRegexFix(int offset) {
-        this.offset = offset;
-    }
-
     @Nls
     @NotNull
     @Override
@@ -36,7 +30,7 @@ public class NullRegexFix implements IntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        editor.getDocument().insertString(offset, "<?>");
+        editor.getDocument().insertString(editor.getCaretModel().getOffset(), "<?>");
     }
 
     @Override

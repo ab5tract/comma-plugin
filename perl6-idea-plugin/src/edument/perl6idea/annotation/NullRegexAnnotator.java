@@ -14,7 +14,7 @@ public class NullRegexAnnotator implements Annotator {
             return;
         if (element.getText().isEmpty())
             holder.createErrorAnnotation(element.getParent(), "Empty regex is not allowed").registerFix(
-                new NullRegexFix(element.getTextOffset())
+                new NullRegexFix()
             );
     }
 }
