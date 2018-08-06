@@ -52,4 +52,13 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         assertTrue(vars.containsAll(Arrays.asList("&sec", "&sech")));
         assertEquals(2, vars.size());
     }
+
+    public void testRoleParameterVariable() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role P[$name1, $name2] { method m { $na<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("$name1", "$name2")));
+        assertEquals(2, vars.size());
+    }
 }
