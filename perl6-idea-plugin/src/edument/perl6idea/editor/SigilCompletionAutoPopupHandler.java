@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorModificationUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,8 +28,10 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
         sigilsAndTwigils.add('?');
         sigilsAndTwigils.add('=');
         sigilsAndTwigils.add(':');
+        sigilsAndTwigils.add('<');
     }
 
+    @NotNull
     @Override
     public Result checkAutoPopup(char charTyped, Project project, Editor editor, PsiFile file) {
         LookupImpl lookup = (LookupImpl) LookupManager.getActiveLookup(editor);

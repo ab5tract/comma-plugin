@@ -4508,12 +4508,16 @@ grammar MAIN {
         || <?before <.name>>
            [
            || <?{ $*METHOD_CALL }>
+              <.start-element('REGEX_CALL')>
               <.start-token('METHOD_CALL_NAME')>
               <.name>
               <.end-token('METHOD_CALL_NAME')>
-           || <.start-token('REGEX_CAPTURE_NAME')>
+              <.end-element('REGEX_CALL')>
+           || <.start-element('REGEX_CALL')>
+              <.start-token('REGEX_CAPTURE_NAME')>
               <.name>
               <.end-token('REGEX_CAPTURE_NAME')>
+              <.end-element('REGEX_CALL')>
            ]
            [
            || <?before '>'>
