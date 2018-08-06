@@ -38,15 +38,15 @@ public class SignatureAnnotator implements Annotator {
 
             if (state == SignatureState.OPTIONAL && isRequired(summary)) {
                 holder.createErrorAnnotation(
-                    parameter, String.format("Cannot put required parameter %s after optional parameters", parameter.getVariableName()));
+                    parameter, String.format("Cannot put positional parameter %s after a named parameter", parameter.getVariableName()));
                 break;
             } else if (state == SignatureState.VARIADIC && isRequired(summary)) {
                 holder.createErrorAnnotation(
-                    parameter, String.format("Cannot put required parameter %s after variadic parameters", parameter.getVariableName()));
+                    parameter, String.format("Cannot put positional parameter %s after a variadic parameter", parameter.getVariableName()));
                 break;
             } else if (state == SignatureState.VARIADIC && isOptional(summary)) {
                 holder.createErrorAnnotation(
-                    parameter, String.format("Cannot put optional parameter %s after variadic parameters", parameter.getVariableName()));
+                    parameter, String.format("Cannot put optional parameter %s after a variadic parameter", parameter.getVariableName()));
             }
         }
     }

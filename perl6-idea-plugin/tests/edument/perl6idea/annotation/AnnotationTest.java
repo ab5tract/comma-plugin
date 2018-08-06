@@ -147,22 +147,22 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
 
     public void testSignature1() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put required parameter $b after optional parameters\">$b</error>) { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put positional parameter $b after a named parameter\">$b</error>) { }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
     public void testSignature2() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put required parameter $c after variadic parameters\">$c</error>) { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put positional parameter $c after a variadic parameter\">$c</error>) { }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
     public void testSignature3() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put optional parameter $c after variadic parameters\">$c?</error>) { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put optional parameter $c after a variadic parameter\">$c?</error>) { }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
     public void testSignature4() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$a, <error descr=\"Cannot put required parameter $b after optional parameters\">$b</error>) { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$a, <error descr=\"Cannot put positional parameter $b after a named parameter\">$b</error>) { }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
