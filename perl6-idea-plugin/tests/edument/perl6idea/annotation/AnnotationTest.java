@@ -145,6 +145,16 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
+    public void testInfiniteRangeAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "1..*");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testIncompleteRangeAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 1<error=\"The range operator must have a second argument\">..</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
     public void testNullRegexAnnotator1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"Empty regex is not allowed\">//</error>;");
         myFixture.checkHighlighting(false, false, true, true);
