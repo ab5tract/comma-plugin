@@ -58,26 +58,32 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
             return isSingle ?
                    Collections.singletonList(call.resolveSymbol(Perl6SymbolKind.Method, call.getCallName())) :
                    call.getSymbolVariants(Perl6SymbolKind.Method).stream().map(s -> s.getName()).collect(Collectors.toList());
-        } else if (caller.isTypeName()) {
-            Perl6TypeName typeName = (Perl6TypeName)caller.getElement();
-            Perl6Symbol type = typeName.resolveSymbol(Perl6SymbolKind.TypeOrConstant, typeName.getTypeName());
-            if (type != null) { // If we know that type, even as external
-                Perl6PackageDecl decl = (Perl6PackageDecl)type.getPsi();
-                if (decl != null) { // Not external type
-                    return isSingle ?
-                           Collections.singletonList(resolvePackageMethod(decl, call.getCallName())) :
-                           completePackageMethod(decl);
-                } else {
-                    return isSingle ? Collections.EMPTY_LIST :
-                           tryToCompleteExternalTypeMethods(typeName.getTypeName(), typeName);
-                }
-            } else { // We don't know that type, assume it is derived from Mu/Any
-                return isSingle ? Collections.EMPTY_LIST : MuAnyMethods(typeName, null);
-            }
         } else {
-            return isSingle ?
-                   Collections.EMPTY_LIST :
-                   tryToCompleteExternalTypeMethods(caller.getName(), (Perl6PsiElement)caller.getElement());
+            String name;
+            if (caller.isTypeName()) {
+                Perl6TypeName typeName = (Perl6TypeName)caller.getElement();
+                name = typeName.getTypeName();
+            } else {
+                name = caller.getName();
+            }
+            return getMethodsByTypeName(call, name, isSingle);
+        }
+    }
+
+    private static List getMethodsByTypeName(Perl6MethodCall call, String name, boolean isSingle) {
+        Perl6Symbol type = call.resolveSymbol(Perl6SymbolKind.TypeOrConstant, name);
+        if (type != null) { // If we know that type, even as external
+            Perl6PackageDecl decl = (Perl6PackageDecl)type.getPsi();
+            if (decl != null) { // Not external type
+                return isSingle ?
+                       Collections.singletonList(resolvePackageMethod(decl, call.getCallName())) :
+                       completePackageMethod(decl);
+            } else {
+                return isSingle ? Collections.EMPTY_LIST :
+                       tryToCompleteExternalTypeMethods(name, call);
+            }
+        } else { // We don't know that type, assume it is derived from Mu/Any
+            return isSingle ? Collections.EMPTY_LIST : MuAnyMethods(call, null);
         }
     }
 
