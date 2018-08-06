@@ -7,7 +7,6 @@ import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6MemberStubBasedPsi;
 import edument.perl6idea.psi.Perl6Signature;
-import edument.perl6idea.psi.Perl6TypeStubBasedPsi;
 import edument.perl6idea.psi.Perl6RegexDecl;
 import edument.perl6idea.psi.stub.Perl6RegexDeclStub;
 import edument.perl6idea.psi.stub.Perl6RegexDeclStubElementType;

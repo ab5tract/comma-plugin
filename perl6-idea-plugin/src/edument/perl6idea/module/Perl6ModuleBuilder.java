@@ -22,7 +22,6 @@ import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6ProjectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.SystemIndependent;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

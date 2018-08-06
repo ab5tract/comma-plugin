@@ -50,7 +50,7 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
         String name = getName();
-        if (name != null && name.length() > 1) {
+        if (name.length() > 1) {
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
             if (!collector.isSatisfied() && name.startsWith("&") && getScope().equals("my"))
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,

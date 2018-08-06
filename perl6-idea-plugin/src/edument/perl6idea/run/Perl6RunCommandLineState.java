@@ -9,6 +9,7 @@ import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
+import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +34,7 @@ public class Perl6RunCommandLineState extends CommandLineState {
         String path = projectSdk.getHomePath();
         if (path == null)
             throw new ExecutionException("Perl 6 SDK path is likely to be corrupt");
-        command.add(Paths.get(path, "perl6").toAbsolutePath().toString());
+        command.add(Paths.get(path, Perl6SdkType.perl6Command()).toAbsolutePath().toString());
         String params = runConfiguration.getInterpreterParameters();
         if (params != null && !params.trim().isEmpty())
             command.add(params);

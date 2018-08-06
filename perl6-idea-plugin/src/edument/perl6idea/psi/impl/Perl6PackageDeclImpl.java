@@ -49,11 +49,12 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?PACKAGE"));
         if (collector.isSatisfied()) return;
-        contributeMethods(collector);
+        contributeMethodsAndAttributes(collector);
         if (collector.isSatisfied()) return;
         if (collector.areInstanceSymbolsRelevant()) {
             contributeFromElders(collector);
         }
+        if (collector.isSatisfied()) return;
         switch (getPackageKind()) {
             case "class":
             case "grammar":
@@ -66,12 +67,46 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
     }
 
-    private void contributeMethods(Perl6SymbolCollector collector) {
+    private void contributeMethodsAndAttributes(Perl6SymbolCollector collector) {
+        Perl6PackageDeclStub stub = getStub();
+        if (stub != null) {
+            for (StubElement nestedStub : stub.getChildrenStubs()) {
+                if (nestedStub instanceof Perl6RoutineDeclStub) {
+                    Perl6RoutineDeclStub declStub = (Perl6RoutineDeclStub)nestedStub;
+                    Perl6RoutineDeclImpl.offerRoutineSymbols(
+                        collector, declStub.getRoutineName(), declStub.getPsi());
+                    if (collector.isSatisfied()) return;
+                } else if (nestedStub instanceof Perl6ScopedDeclStub) {
+                    Perl6ScopedDeclStub scopedVar = (Perl6ScopedDeclStub)nestedStub;
+                    List<StubElement> stubsUnderScoped = scopedVar.getChildrenStubs();
+                    for (StubElement var : stubsUnderScoped) {
+                        if (var instanceof Perl6VariableDeclStub) {
+                            Perl6VariableDeclStub declStub = (Perl6VariableDeclStub)var;
+                            if (!declStub.getScope().equals("has")) continue;
+                            Perl6VariableDeclImpl.offerVariableSymbols(
+                                collector, declStub.getVariableName(), declStub.getPsi()
+                            );
+                            if (collector.isSatisfied()) return;
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
         Perl6StatementList list = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
         if (list == null) return;
         for (PsiElement child : list.getChildren()) {
             if (child.getFirstChild() instanceof Perl6RoutineDecl) {
                 ((Perl6RoutineDecl)child.getFirstChild()).contributeSymbols(collector);
+                if (collector.isSatisfied()) return;
+            } else if (child.getFirstChild() instanceof Perl6ScopedDecl) {
+                Perl6ScopedDecl decl = (Perl6ScopedDecl)child.getFirstChild();
+                if (decl.getScope().equals("has") || decl.getScope().equals("our")) {
+                    Perl6VariableDecl varDecl = PsiTreeUtil.getChildOfType(decl, Perl6VariableDecl.class);
+                    if (varDecl != null)
+                        varDecl.contributeSymbols(collector);
+                }
                 if (collector.isSatisfied()) return;
             }
         }
@@ -96,35 +131,35 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 if (!(child instanceof Perl6TraitStub)) continue;
                 Perl6TraitStub traitStub = (Perl6TraitStub)child;
                 if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
-                for (StubElement maybeType : traitStub.getChildrenStubs())
-                    if (maybeType instanceof Perl6TypeNameStub) {
-                        Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub)maybeType;
-                        Perl6TypeName psi = typeNameStub.getPsi();
-                        if (psi == null) continue;
-                        PsiReference ref = psi.getReference();
-                        if (ref == null) continue;
-                        PsiElement decl = ref.resolve();
-                        if (decl != null) perl6PackageDecls.add(Pair.create(traitStub.getTraitModifier(), (Perl6PackageDecl)decl));
-                        else externals.add(typeNameStub.getTypeName());
-                        if ((typeNameStub).getTypeName().equals("Mu"))
-                            isAny = false;
-                    }
+                for (StubElement maybeType : traitStub.getChildrenStubs()) {
+                    // Check only type names
+                    if (!(maybeType instanceof Perl6TypeNameStub)) continue;
+                    Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub)maybeType;
+                    Perl6TypeName psi = typeNameStub.getPsi();
+                    if (psi == null) continue;
+                    PsiReference ref = psi.getReference();
+                    if (ref == null) continue;
+                    PsiElement decl = ref.resolve();
+                    if (decl != null) perl6PackageDecls.add(Pair.create(traitStub.getTraitModifier(), (Perl6PackageDecl)decl));
+                    else externals.add(typeNameStub.getTypeName());
+                    if ((typeNameStub).getTypeName().equals("Mu"))
+                        isAny = false;
+                }
             }
         } else {
             for (Perl6Trait trait : getTraits()) {
-                if (trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is")) {
-                    PsiElement element = trait.getTraitModifier().equals("does") ?
-                                         PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class) :
-                                         PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
-                    if (element == null) continue;
-                    PsiReference ref = element.getReference();
-                    if (ref == null) continue;
-                    PsiElement decl = ref.resolve();
-                    if (decl != null) perl6PackageDecls.add(Pair.create(trait.getTraitModifier(), (Perl6PackageDecl)decl));
-                    else externals.add(trait.getTraitName());
-                    if (trait.getTraitName().equals("Mu"))
-                        isAny = false;
-                }
+                if (!(trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is"))) continue;
+                PsiElement element = trait.getTraitModifier().equals("does") ?
+                                     PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class) :
+                                     PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
+                if (element == null) continue;
+                PsiReference ref = element.getReference();
+                if (ref == null) continue;
+                PsiElement decl = ref.resolve();
+                if (decl != null) perl6PackageDecls.add(Pair.create(trait.getTraitModifier(), (Perl6PackageDecl)decl));
+                else externals.add(trait.getTraitName());
+                if (trait.getTraitName().equals("Mu"))
+                    isAny = false;
             }
         }
 
@@ -136,18 +171,12 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
 
         for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
+            // Local perl6PackageDecl
             Perl6PackageDecl typeRef = pair.second;
             String mod = pair.first;
             // We allow gathering of private parts from roles, but not classes
             collector.setAreInternalPartsCollected(mod.equals("does"));
-
-            // Local perl6PackageDecl
-            Perl6PackageDeclStub roleStub = typeRef.getStub();
-            // Contribute perl6PackageDecl internals
-            if (roleStub == null) contributeLocalPackage(collector, typeRef);
-            else contributeLocalPackageStub(collector, roleStub);
-            if (collector.isSatisfied()) return;
-            // Contribute perl6PackageDecl itself
+            // Contribute perl6PackageDecl internals using stub or node
             typeRef.contributeScopeSymbols(collector);
             if (collector.isSatisfied()) return;
         }
@@ -162,57 +191,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
     }
 
-    private static void contributeLocalPackage(Perl6SymbolCollector collector, PsiElement resolve) {
-        Perl6StatementList list = PsiTreeUtil.findChildOfType(resolve, Perl6StatementList.class);
-        if (list == null) return;
-        Perl6Statement[] states = PsiTreeUtil.getChildrenOfType(list, Perl6Statement.class);
-        if (states == null) return;
-        for (Perl6Statement s : states) {
-            PsiElement firstChild = s.getFirstChild();
-            if (firstChild instanceof Perl6ScopedDecl) {
-                Perl6ScopedDecl scopedDecl = (Perl6ScopedDecl)firstChild;
-                for (PsiElement child : scopedDecl.getChildren()) {
-                    if (!(child instanceof Perl6VariableDecl)) continue;
-                    Perl6VariableDecl variableDecl = (Perl6VariableDecl)child;
-                    if (!variableDecl.getScope().equals("has")) continue;
-                    variableDecl.contributeSymbols(collector);
-                }
-            }
-        }
-    }
-
-    private static void contributeLocalPackageStub(Perl6SymbolCollector collector, Perl6PackageDeclStub stub) {
-        List<StubElement> children = stub.getChildrenStubs();
-        for (StubElement child : children) {
-            if (child instanceof Perl6RoutineDeclStub) {
-                Perl6RoutineDeclStub routine = (Perl6RoutineDeclStub)child;
-                if (routine.isPrivate()) {
-                    collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, routine.getPsi()));
-                    if (collector.isSatisfied()) return;
-                }
-            }
-            else if (child instanceof Perl6ScopedDeclStub) {
-                Perl6ScopedDeclStub var = (Perl6ScopedDeclStub)child;
-                List<StubElement> stubs = var.getChildrenStubs();
-                for (StubElement childStub : stubs) {
-                    if (childStub instanceof Perl6VariableDeclStub) {
-                        Perl6VariableDeclStub declStub = (Perl6VariableDeclStub)childStub;
-                        if (!declStub.getScope().equals("has")) continue;
-                        Perl6VariableDeclImpl.offerVariableSymbols(
-                            collector, declStub.getVariableName(), declStub.getPsi()
-                        );
-                        if (collector.isSatisfied()) return;
-                    }
-                }
-            }
-        }
-    }
-
     private void contributeExternalPackage(Perl6SymbolCollector collector, String typeName) {
         Perl6VariantsSymbolCollector extCollector =
                 new Perl6VariantsSymbolCollector(Perl6SymbolKind.ExternalPackage);
         applyExternalSymbolCollector(extCollector);
-        if (collector.isSatisfied()) return;
         for (Perl6Symbol pack : extCollector.getVariants()) {
             Perl6ExternalPackage externalPackage = (Perl6ExternalPackage)pack;
             if (!(pack.getName().equals(typeName))) continue;
