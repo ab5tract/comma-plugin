@@ -26,6 +26,11 @@ public class UsedModuleAnnotator implements Annotator {
         if (!(element instanceof Perl6ModuleName))
             return;
 
+        if (Perl6ModuleListFetcher.PREINSTALLED_MODULES.contains(element.getText()))
+            return;
+        if (Perl6ModuleListFetcher.PRAGMAS.contains(element.getText()))
+            return;
+
         Project project = element.getProject();
         VirtualFile file = project.getBaseDir().findChild("META6.json");
         if (file == null) return;

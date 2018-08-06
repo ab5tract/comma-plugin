@@ -18,15 +18,30 @@ import org.json.JSONObject;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Perl6ModuleListFetcher {
     public static final String GITHUB_MIRROR1 = "http://ecosystem-api.p6c.org/projects.json";
     public static final String GITHUB_MIRROR2 = "http://ecosystem-api.p6c.org/projects1.json";
     public static final String CPAN_MIRROR1   = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan.json";
+    public static final List<String> PREINSTALLED_MODULES =
+        Arrays.asList("CompUnit::Repository::Staging",
+                      "CompUnit::Repository::FileSystem",
+                      "CompUnit::Repository::Installation",
+                      "CompUnit::Repository::AbsolutePath",
+                      "CompUnit::Repository::Unknown",
+                      "CompUnit::Repository::NQP", "CompUnit::Repository::Perl6",
+                      "CompUnit::Repository::RepositoryRegistry",
+                      "NativeCall", "NativeCall::Types", "NativeCall::Compiler::GNU",
+                      "NativeCall::Compiler::MSVC",
+                      "Test", "Pod::To::Text");
+    public static final List<String> PRAGMAS =
+        Arrays.asList("v6.c", "v6.d", "MONKEY-GUTS", "MONKEY-SEE-NO-EVAL",
+                      "MONKEY-TYPING", "MONKEY", "experimental", "fatal",
+                      "internals", "invocant", "isms", "lib", "nqp", "newline",
+                      "parameters", "precompilation", "soft", "strict",
+                      "trace", "v6", "variables", "worries");
     private static Pair<Map<String, JSONObject>, Instant> modulesList = null;
     private static boolean isFirst = true;
 
