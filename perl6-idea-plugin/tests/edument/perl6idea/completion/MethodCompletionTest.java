@@ -317,13 +317,12 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertTrue(methods.containsAll(Arrays.asList(".acosh", ".abs")));
     }
 
-    // TODO Blocked by https://edument.atlassian.net/browse/P6I-330
-    //public void testArrayCompletion() {
-    //    myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "[1, 2, 3].<caret>");
-    //    myFixture.complete(CompletionType.BASIC, 1);
-    //    List<String> methods = myFixture.getLookupElementStrings();
-    //    assertTrue(methods.containsAll(Arrays.asList(".reification-target", ".prepend")));
-    //}
+    public void testArrayCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "[1, 2, 3].<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".reification-target", ".prepend")));
+    }
 
     public void testArrayEnclosedCompletion() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "([1, 2, 3]).<caret>");
