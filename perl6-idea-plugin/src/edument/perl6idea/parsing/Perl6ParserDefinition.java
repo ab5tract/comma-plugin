@@ -147,6 +147,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new Perl6VariableDeclImpl(astNode);
         if (type == Perl6ElementTypes.PACKAGE_DECLARATION)
             return new Perl6PackageDeclImpl(astNode);
+        if (type == Perl6ElementTypes.ROLE_SIGNATURE)
+            return new Perl6RoleSignatureImpl(astNode);
         if (type == Perl6ElementTypes.POINTY_BLOCK)
             return new Perl6PointyBlockImpl(astNode);
         if (type == Perl6ElementTypes.PREFIX)
@@ -209,6 +211,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new Perl6HeredocImpl(astNode);
         if (type == Perl6ElementTypes.QUOTE_REGEX)
             return new Perl6QuoteRegexImpl(astNode);
+        if (type == Perl6ElementTypes.REGEX_CALL)
+            return new Perl6RegexCallImpl(astNode);
         if (type == Perl6ElementTypes.QUOTE_PAIR)
             return new Perl6QuotePairImpl(astNode);
         if (type == Perl6ElementTypes.VERSION)

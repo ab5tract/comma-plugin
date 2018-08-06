@@ -2418,6 +2418,7 @@ grammar MAIN {
     token twigil { <[.!^:*?=~]> <?before \w> }
 
     token package_declarator {
+        :my $*IS_ROLE = 0;
         <?before <.package_kind> <.kok>>
         <.start-element('PACKAGE_DECLARATION')>
         <.start-token('PACKAGE_DECLARATOR')>
@@ -2429,7 +2430,8 @@ grammar MAIN {
     }
 
     token package_kind {
-        'package' || 'module' || 'class' || 'grammar' || 'role' || 'knowhow' || 'native' || 'slang' || 'monitor' || 'actor'
+        'package' || 'module' || 'class' || 'grammar' || 'role' { $*IS_ROLE = 1 } ||
+        'knowhow' || 'native' || 'slang' || 'monitor' || 'actor'
     }
 
     token package_def {
@@ -2440,6 +2442,21 @@ grammar MAIN {
             <.name>
             <.end-token('NAME')>
             <.ws>
+            [
+                <?{ $*IS_ROLE }>
+                <.start-element('ROLE_SIGNATURE')>
+                <.start-token('TYPE_PARAMETER_BRACKET')>
+                '['
+                <.end-token('TYPE_PARAMETER_BRACKET')>
+                <.signature>
+                [
+                    <.start-token('TYPE_PARAMETER_BRACKET')>
+                    ']'
+                    <.end-token('TYPE_PARAMETER_BRACKET')>
+                ]?
+                <.end-element('ROLE_SIGNATURE')>
+                <.ws>?
+            ]?
         ]?
         { $*IN_DECL = '' }
         <.trait>*
@@ -4051,9 +4068,9 @@ grammar MAIN {
     }
 
     token term_reduce {
+        :my $*IN_REDUCE = 1;
         <!before [ '[' <[ - + ? ~ ^ ]> [\w || <[$@]>] ]>
         <?before [ '[' [ <.infixish('red')> || '\\' <.infixish('tri')> ] ']' ]>
-        :my $*IN_REDUCE = 1;
 
         <.start-element('REDUCE_METAOP')>
         <.start-token('METAOP')>
@@ -4491,12 +4508,16 @@ grammar MAIN {
         || <?before <.name>>
            [
            || <?{ $*METHOD_CALL }>
+              <.start-element('REGEX_CALL')>
               <.start-token('METHOD_CALL_NAME')>
               <.name>
               <.end-token('METHOD_CALL_NAME')>
-           || <.start-token('REGEX_CAPTURE_NAME')>
+              <.end-element('REGEX_CALL')>
+           || <.start-element('REGEX_CALL')>
+              <.start-token('REGEX_CAPTURE_NAME')>
               <.name>
               <.end-token('REGEX_CAPTURE_NAME')>
+              <.end-element('REGEX_CALL')>
            ]
            [
            || <?before '>'>

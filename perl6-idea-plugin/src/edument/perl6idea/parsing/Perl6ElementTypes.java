@@ -96,6 +96,7 @@ public interface Perl6ElementTypes {
     IElementType REGEX_ASSERTION = new Perl6ElementType("REGEX_ASSERTION");
     IElementType REGEX_ATOM = new Perl6ElementType("REGEX_ATOM");
     IElementType REGEX_BUILTIN_CCLASS = new Perl6ElementType("REGEX_BUILTIN_CCLASS");
+    IElementType REGEX_CALL = new Perl6ElementType("REGEX_CALL");
     IElementType REGEX_CAPTURE_POSITIONAL = new Perl6ElementType("REGEX_CAPTURE_POSITIONAL");
     IElementType REGEX_CCLASS = new Perl6ElementType("REGEX_CCLASS");
     IElementType REGEX_CCLASS_ELEM = new Perl6ElementType("REGEX_CCLASS_ELEM");
@@ -111,6 +112,7 @@ public interface Perl6ElementTypes {
     IElementType REQUIRE_STATEMENT = new Perl6ElementType("REQUIRE_STATEMENT");
     IElementType RETURN_CONSTRAINT = new Perl6ElementType("RETURN_CONSTRAINT");
     IElementType REVERSE_METAOP = new Perl6ElementType("REVERSE_METAOP");
+    IElementType ROLE_SIGNATURE = new Perl6ElementType("ROLE_SIGNATURE");
     IElementType SELF = new Perl6ElementType("SELF");
     IElementType SEMI_LIST = new Perl6ElementType("SEMI_LIST");
     IElementType SEQUENTIAL_METAOP = new Perl6ElementType("SEQUENTIAL_METAOP");
