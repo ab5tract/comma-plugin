@@ -42,7 +42,7 @@ public class SignatureAnnotator implements Annotator {
                 String message = "";
                 switch (state) {
                     case NAMED: {
-                        message = "Cannot put positional parameter %s after a named parameter"
+                        message = "Cannot put positional parameter %s after a named parameter";
                         break;
                     }
                     case OPTIONAL: {
