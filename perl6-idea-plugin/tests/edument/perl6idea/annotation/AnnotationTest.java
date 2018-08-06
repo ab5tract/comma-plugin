@@ -145,6 +145,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
+
     public void testSignature1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put required parameter $b after optional parameters\">$b</error>) { }");
         myFixture.checkHighlighting(false, false, true, true);
@@ -162,6 +163,21 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testSignature4() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$a, <error descr=\"Cannot put required parameter $b after variadic parameters\">$b</error>) { }");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+  public void testRawWheneverAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=descr=\"A whenever must be within a supply or react block\"whenever</error> $foo {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testWheneverInReactAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "supply { whenever $foo {} }");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testWheneverInSupplyAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "supply { whenever $foo {} }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
