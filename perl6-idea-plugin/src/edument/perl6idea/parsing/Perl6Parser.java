@@ -7493,6 +7493,11 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean param_var_91_quant_1(PsiBuilder builder, OPP opp) {
+        if ((builder.getTokenType()) == Perl6TokenTypes.PARAM_ARRAY_SHAPE) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
         PsiBuilder.Marker marker2;
         marker2 = builder.mark();
         if (!(this.postcircumfix_108(builder))) {

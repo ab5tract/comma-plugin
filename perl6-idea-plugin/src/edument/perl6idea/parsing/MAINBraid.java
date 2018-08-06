@@ -17870,7 +17870,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
-                this.bsFailMark(26);
+                this.bsFailMark(27);
                 this.bsMark(6);
                 this.startToken(Perl6TokenTypes.SIGNATURE_BRACKET_OPEN);
                 if (!(this.literal("["))) {
@@ -17919,8 +17919,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 5:
-                this.bsCommit(26);
-                this.state = 26;
+                this.bsCommit(27);
+                this.state = 27;
                 continue;
 
             case 6:
@@ -17972,8 +17972,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 11:
-                this.bsCommit(26);
-                this.state = 26;
+                this.bsCommit(27);
+                this.state = 27;
                 continue;
 
             case 12:
@@ -18060,7 +18060,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 return -3;
 
             case 22:
-                this.bsMark(25);
+                this.bsMark(26);
                 this.state = 23;
                 break;
             case 23:
@@ -18071,11 +18071,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.setArgs();
+                this.startToken(Perl6TokenTypes.PARAM_ARRAY_SHAPE);
                 this.state = 24;
-                return 212;
+                return -3;
 
             case 24:
+                this.setArgs();
+                this.state = 25;
+                return 212;
+
+            case 25:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -18085,15 +18090,15 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(25);
-                this.state = 25;
-                continue;
-
-            case 25:
+                this.bsCommit(26);
                 this.state = 26;
                 continue;
 
             case 26:
+                this.state = 27;
+                continue;
+
+            case 27:
                 return -1;
 
             }

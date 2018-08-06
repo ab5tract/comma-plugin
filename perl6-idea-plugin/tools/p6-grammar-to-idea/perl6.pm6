@@ -2014,6 +2014,7 @@ grammar MAIN {
            <.end-token('VARIABLE')>
            [
                <?before '['>
+               <.start-token('PARAM_ARRAY_SHAPE')> <?> <.end-token('PARAM_ARRAY_SHAPE')>
                <.start-element('ARRAY_SHAPE')>
                <.postcircumfix>
                <.end-element('ARRAY_SHAPE')>
