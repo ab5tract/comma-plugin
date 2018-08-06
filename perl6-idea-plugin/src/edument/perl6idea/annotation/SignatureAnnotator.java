@@ -18,6 +18,7 @@ public class SignatureAnnotator implements Annotator {
         if (params.length == 0) return;
 
         boolean isFirst = true;
+        boolean positionalAllowed = true;
 
         for (PsiElement psiElement : params) {
             if (!(psiElement instanceof Perl6Parameter)) continue;
@@ -25,39 +26,72 @@ public class SignatureAnnotator implements Annotator {
 
             String summary = parameter.summary();
             if (isFirst) {
-                state = isRequired(summary) ? SignatureState.REQUIRED :
+                state = isPositional(summary) ? SignatureState.POSITIONAL :
                         isOptional(summary) ? SignatureState.OPTIONAL :
+                        isNamed(summary) ? SignatureState.NAMED :
                         SignatureState.VARIADIC;
                 isFirst = false;
+                positionalAllowed = state == SignatureState.POSITIONAL;
             }
 
-            if (state == SignatureState.REQUIRED && isOptional(summary))
+            // If we passed last POSITIONAL, break the flag
+            if (state == SignatureState.POSITIONAL && !isPositional(summary))
+                positionalAllowed = false;
+
+            if (!positionalAllowed && isPositional(summary)) {
+                String message = "";
+                switch (state) {
+                    case NAMED: {
+                        message = "Cannot put positional parameter %s after a named parameter"
+                        break;
+                    }
+                    case OPTIONAL: {
+                        message = "Cannot put positional parameter %s after an optional parameter";
+                        break;
+                    }
+                    case VARIADIC: {
+                        message = "Cannot put positional parameter %s after a variadic parameter";
+                        break;
+                    }
+                }
+                holder.createErrorAnnotation(parameter, String.format(message, parameter.getVariableName()));
+                return;
+            }
+
+            if (isOptional(summary) && state == SignatureState.VARIADIC) {
+                holder.createErrorAnnotation(
+                    parameter, String.format("Cannot put optional parameter %s after a variadic parameter",
+                                             parameter.getVariableName()));
+                return;
+            }
+
+            if (isOptional(summary) && state == SignatureState.NAMED) {
+                holder.createErrorAnnotation(
+                    parameter, String.format("Cannot put an optional parameter %s after a named parameter",
+                                             parameter.getVariableName()));
+                return;
+            }
+
+            if (isOptional(summary))
                 state = SignatureState.OPTIONAL;
-            else if (isVariadic(summary) && (state == SignatureState.REQUIRED || state == SignatureState.OPTIONAL))
+            else if (isNamed(summary))
+                state = SignatureState.NAMED;
+            else if (isVariadic(summary))
                 state = SignatureState.VARIADIC;
-
-            if (state == SignatureState.OPTIONAL && isRequired(summary)) {
-                holder.createErrorAnnotation(
-                    parameter, String.format("Cannot put positional parameter %s after a named parameter", parameter.getVariableName()));
-                break;
-            } else if (state == SignatureState.VARIADIC && isRequired(summary)) {
-                holder.createErrorAnnotation(
-                    parameter, String.format("Cannot put positional parameter %s after a variadic parameter", parameter.getVariableName()));
-                break;
-            } else if (state == SignatureState.VARIADIC && isOptional(summary)) {
-                holder.createErrorAnnotation(
-                    parameter, String.format("Cannot put optional parameter %s after a variadic parameter", parameter.getVariableName()));
-            }
         }
     }
 
-    private static boolean isRequired(String summary) {
+    private static boolean isPositional(String summary) {
         return summary.equals("$") || summary.equals("@") ||
                summary.equals("%") || summary.equals("&");
     }
 
+    private static boolean isNamed(String summary) {
+        return summary.startsWith(":");
+    }
+
     private static boolean isOptional(String summary) {
-        return summary.endsWith("?") || summary.startsWith(":");
+        return summary.endsWith("?");
     }
 
     private static boolean isVariadic(String summary) {
@@ -66,6 +100,6 @@ public class SignatureAnnotator implements Annotator {
     }
 
     enum SignatureState {
-        REQUIRED, OPTIONAL, VARIADIC
+        POSITIONAL, NAMED, OPTIONAL, VARIADIC
     }
 }

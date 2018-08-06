@@ -146,7 +146,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testSignature1() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put positional parameter $b after a named parameter\">$b</error>) { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
@@ -162,6 +162,26 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testSignature4() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$a, <error descr=\"Cannot put positional parameter $b after a named parameter\">$b</error>) { }");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testSignature5() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { }");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testSignature6() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c!) {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testSignature7() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c) {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testSignature8() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(*%h, :$c) {}");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
@@ -191,7 +211,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testWheneverInReactAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "supply { whenever $foo {} }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "react { whenever $foo {} }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
