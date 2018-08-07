@@ -19,6 +19,6 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
         if (!(first instanceof Perl6TypeName)) return "Any";
         PsiElement last = getLastChild();
         if (!(last instanceof Perl6MethodCall)) return "Any";
-        return last.getText().equals(".new") ? first.getText() : "Any";
+        return ((Perl6MethodCall)last).getCallName().equals(".new") ? ((Perl6TypeName)first).getTypeName() : "Any";
     }
 }
