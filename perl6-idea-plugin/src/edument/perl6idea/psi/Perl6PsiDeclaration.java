@@ -28,6 +28,17 @@ public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierO
         return findTrait("is", "export") != null;
     }
 
+    default String getCuttedName(String text) {
+        // Chop off possible parenthesis or smileys
+        int index = text.indexOf('(');
+        if (index != -1)
+            text = text.substring(0, index);
+        index = text.indexOf(':');
+        if (index != -1)
+            text = text.substring(0, index);
+        return text;
+    }
+
     default String getGlobalName() {
         // If it's not an our-scoped thing, no global name.
         String scope = getScope();

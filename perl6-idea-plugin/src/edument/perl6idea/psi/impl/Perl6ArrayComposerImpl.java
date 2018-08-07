@@ -9,4 +9,9 @@ public class Perl6ArrayComposerImpl extends ASTWrapperPsiElement implements Perl
     public Perl6ArrayComposerImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "Array";
+    }
 }

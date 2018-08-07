@@ -49,7 +49,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?PACKAGE"));
         if (collector.isSatisfied()) return;
-        contributeMethodsAndAttributes(collector);
+        contributeInternals(collector);
         if (collector.isSatisfied()) return;
         if (collector.areInstanceSymbolsRelevant()) {
             contributeFromElders(collector);
@@ -67,7 +67,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
     }
 
-    private void contributeMethodsAndAttributes(Perl6SymbolCollector collector) {
+    private void contributeInternals(Perl6SymbolCollector collector) {
         Perl6PackageDeclStub stub = getStub();
         if (stub != null) {
             for (StubElement nestedStub : stub.getChildrenStubs()) {
@@ -89,6 +89,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                             if (collector.isSatisfied()) return;
                         }
                     }
+                } else if (nestedStub instanceof Perl6RegexDeclStub) {
+                    Perl6RegexDeclStub declStub = (Perl6RegexDeclStub)nestedStub;
+                    collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Regex, declStub.getPsi(), declStub.getRegexName()));
+                    if (collector.isSatisfied()) return;
                 }
             }
             return;
@@ -107,6 +111,9 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                     if (varDecl != null)
                         varDecl.contributeSymbols(collector);
                 }
+                if (collector.isSatisfied()) return;
+            } else if (child.getFirstChild() instanceof Perl6RegexDecl) {
+                ((Perl6RegexDecl)child.getFirstChild()).contributeSymbols(collector);
                 if (collector.isSatisfied()) return;
             }
         }

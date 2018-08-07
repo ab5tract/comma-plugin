@@ -95,4 +95,8 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
     }
+
+    default String inferType() {
+        return "Any";
+    }
 }

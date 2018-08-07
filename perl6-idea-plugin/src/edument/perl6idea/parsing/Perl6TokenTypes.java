@@ -84,6 +84,7 @@ public interface Perl6TokenTypes {
     IElementType PARAMETER_INCOMPLETE = new Perl6ElementType("PARAMETER_INCOMPLETE");
     IElementType PARAMETER_QUANTIFIER = new Perl6ElementType("PARAMETER_QUANTIFIER");
     IElementType PARAMETER_SEPARATOR = new Perl6ElementType("PARAMETER_SEPARATOR");
+    IElementType PARAM_ARRAY_SHAPE = new Perl6ElementType("PARAM_ARRAY_SHAPE");
     IElementType PARENTHESES_CLOSE = new Perl6ElementType("PARENTHESES_CLOSE");
     IElementType PARENTHESES_OPEN = new Perl6ElementType("PARENTHESES_OPEN");
     IElementType PARSING_INITIALIZER = new Perl6ElementType("PARSING_INITIALIZER");

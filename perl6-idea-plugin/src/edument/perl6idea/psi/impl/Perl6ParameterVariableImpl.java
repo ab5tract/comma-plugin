@@ -15,6 +15,8 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
+
 public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements Perl6ParameterVariable {
     public Perl6ParameterVariableImpl(@NotNull ASTNode node) {
         super(node);
@@ -50,6 +52,13 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
         PsiElement defaultValue = PsiTreeUtil.getNextSiblingOfType(this, Perl6ParameterDefault.class);
         if (defaultValue != null) sigil += '?';
         return sigil;
+    }
+
+    @Override
+    public String getVariableType() {
+        PsiElement type = PsiTreeUtil.findSiblingBackward(this, TYPE_NAME, null);
+        if (type == null) return " ";
+        return getCuttedName(type.getText());
     }
 
     @Override

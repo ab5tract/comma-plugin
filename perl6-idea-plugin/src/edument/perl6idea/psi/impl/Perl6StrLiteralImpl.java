@@ -9,4 +9,9 @@ public class Perl6StrLiteralImpl extends ASTWrapperPsiElement implements Perl6St
     public Perl6StrLiteralImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "Str";
+    }
 }

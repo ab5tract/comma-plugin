@@ -20,7 +20,7 @@ public class NullRegexFix implements IntentionAction {
     @NotNull
     @Override
     public String getFamilyName() {
-        return "Regex properties";
+        return "Perl 6";
     }
 
     @Override

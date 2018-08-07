@@ -25,7 +25,7 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
     @NotNull
     @Override
     public Perl6VariableDeclStub createStub(@NotNull Perl6VariableDecl psi, StubElement parentStub) {
-        return new Perl6VariableDeclStubImpl(parentStub, psi.getVariableName(), psi.isExported());
+        return new Perl6VariableDeclStubImpl(parentStub, psi.getVariableName(), psi.getVariableType(), psi.isExported());
     }
 
     @NotNull
@@ -37,6 +37,7 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
     @Override
     public void serialize(@NotNull Perl6VariableDeclStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getVariableName());
+        dataStream.writeName(stub.getVariableType());
         dataStream.writeBoolean(stub.isExported());
     }
 
@@ -44,8 +45,9 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
     @Override
     public Perl6VariableDeclStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef variableNameRef = dataStream.readName();
+        StringRef variableTypeRef = dataStream.readName();
         boolean exported = dataStream.readBoolean();
-        return new Perl6VariableDeclStubImpl(parentStub, variableNameRef.getString(), exported);
+        return new Perl6VariableDeclStubImpl(parentStub, variableNameRef.getString(), variableTypeRef.getString(), exported);
     }
 
     @Override

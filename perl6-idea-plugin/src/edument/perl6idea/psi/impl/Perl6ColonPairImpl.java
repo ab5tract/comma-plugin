@@ -9,4 +9,9 @@ public class Perl6ColonPairImpl extends ASTWrapperPsiElement implements Perl6Col
     public Perl6ColonPairImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "Pair";
+    }
 }

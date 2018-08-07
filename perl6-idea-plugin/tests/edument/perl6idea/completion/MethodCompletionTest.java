@@ -280,4 +280,238 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.contains(".listen"));
     }
+
+    // Literal cases test
+    public void testIntCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "1.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".acosh", ".abs")));
+    }
+
+    public void testRatCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "1.15.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".denominator", ".polymod")));
+    }
+
+    public void testNumCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "1e5.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".is-prime", ".abs")));
+    }
+
+    public void testStrCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "'Foo'.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".match", ".samespace")));
+    }
+
+    public void testComplexCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "1.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".acosh", ".abs")));
+    }
+
+    public void testArrayCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "[1, 2, 3].<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".reification-target", ".prepend")));
+    }
+
+    public void testArrayEnclosedCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "([1, 2, 3]).<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".reification-target", ".prepend")));
+    }
+
+    public void testCaptureCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\\(1).<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".from-args", ".elems")));
+    }
+
+    public void testColonPairCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, ":foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".freeze", ".antipair")));
+    }
+
+    public void testGatherCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "gather {}.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".iterator", ".lazy")));
+    }
+
+    public void testStartCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "start {}.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".kept", ".broken")));
+    }
+
+    public void testSupplyCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "supply {}.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".live", ".on-demand")));
+    }
+
+    public void testVersionCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "(v1).<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".parts", ".plus")));
+    }
+
+    public void testSpecialVariable1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$/.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".made", ".prematch")));
+    }
+
+    public void testSpecialVariable2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$3.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".made", ".prematch")));
+    }
+
+    public void testSpecialVariable3() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$!.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
+
+    public void testSpecialVariable4() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$<foo>.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".made", ".prematch")));
+    }
+
+    public void testTypedVar() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my Exception $foo; $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
+
+    public void testTypedVarWithSmiley() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my Exception:D $foo; $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
+
+    public void testTypedParameter() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(Exception $foo) { $foo.<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
+
+    public void testTypedParameterWithSmiley() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(Exception:D $foo) { $foo.<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
+
+    public void testTypedParameterWithCoercion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(Exception(Str) $foo) { $foo.<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".resume", ".backtrace")));
+    }
+
+    public void testTypedArrayVar() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @foo; @foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Collections.singletonList(".reification-target")));
+    }
+
+    public void testTypedListParameter() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(@foo) { @foo.<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".reification-target"));
+    }
+
+    public void testTypedHashVar() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my %foo; %foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".dynamic"));
+        assertFalse(methods.contains(".reification-target"));
+    }
+
+    public void testTypedMapParameter() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(%foo) { %foo.<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".IterationBuffer"));
+        assertFalse(methods.contains(".reification-target"));
+    }
+
+    public void testNewMethodOnTypeObjectCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "Int.new.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Collections.singletonList(".acos")));
+    }
+
+    public void testAssignmentInference() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = Int.new; $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".acos"));
+    }
+
+    public void testAssignmentInferenceWithArguments() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = Int.new('Non-existent argument'); $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".acos"));
+    }
+
+    public void testLocalClassCase() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Cow { method moo {} }; my Cow $c .= new; $c.<caret>;");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".moo"));
+    }
+
+    public void testBuiltInRegexCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar A { rule a { <<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains("alpha"));
+    }
+
+    public void testOwnRegexCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar A { rule rule-a { <<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains("rule-a"));
+    }
+
+    public void testInheritedRegexCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar B { regex regex-a {''} }; grammar A  is B{ rule rule-a { <<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains("regex-a"));
+    }
 }

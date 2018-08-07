@@ -6,12 +6,14 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.search.GlobalSearchScope;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
+import edument.perl6idea.utils.Perl6ModuleListFetcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class Perl6ModuleReference extends PsiReferenceBase<Perl6PsiElement> {
     public Perl6ModuleReference(@NotNull Perl6ModuleName moduleName) {
@@ -39,6 +41,12 @@ public class Perl6ModuleReference extends PsiReferenceBase<Perl6PsiElement> {
             if (!matching.isEmpty())
                 reallyInThisProject.add(module);
         }
+
+        Set<String> externals = Perl6ModuleListFetcher.getProvidesAsync(myElement.getProject());
+        if (externals != null)
+            reallyInThisProject.addAll(externals);
+        reallyInThisProject.addAll(Perl6ModuleListFetcher.PREINSTALLED_MODULES);
+        reallyInThisProject.addAll(Perl6ModuleListFetcher.PRAGMAS);
         return reallyInThisProject.toArray();
     }
 }

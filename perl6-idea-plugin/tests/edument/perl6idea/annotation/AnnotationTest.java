@@ -190,6 +190,16 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
+    public void testInfiniteRangeAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "1..*");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testIncompleteRangeAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 1<error=\"The range operator must have a second argument\">..</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
     public void testNullRegexAnnotator1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"Empty regex is not allowed\">//</error>;");
         myFixture.checkHighlighting(false, false, true, true);
@@ -267,6 +277,36 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testPermitUnitKeywordForMAINSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "unit sub MAIN() {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testInfixAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $lc-and-trim := { $_ = .lc.trim };");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testEVALCase1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL \"5\";");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testEVALCase2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL q[5];");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testEVALCase3() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; EVAL q[$foo];");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testEVALCase4() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; EVAL <error descr=\"Cannot EVAL interpolated expression without MONKEY-SEE-NO-EVAL pragma\">qq[$foo]</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testEVALCase5() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL qq[];");
         myFixture.checkHighlighting(false, false, true, true);
     }
 }
