@@ -7,6 +7,7 @@ for CORE::.keys {
     when /^<:L>/ {
         output-package($_, CORE::{$_});
     }
+    when '&EVAL' { say "V:$_" }
 }
 
 sub output-package($name, Mu \object) {
