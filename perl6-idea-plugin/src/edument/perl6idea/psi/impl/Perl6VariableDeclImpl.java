@@ -2,6 +2,7 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
+import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub> implements Perl6VariableDecl {
     public Perl6VariableDeclImpl(@NotNull ASTNode node) {
@@ -65,13 +67,10 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     private String resolveAssign() {
         PsiElement infix = PsiTreeUtil.getChildOfType(this, Perl6InfixImpl.class);
         if (infix == null || !infix.getText().equals("=")) return " ";
-        PsiElement postfix = PsiTreeUtil.getNextSiblingOfType(infix, Perl6PostfixApplication.class);
-        if (postfix == null) return " ";
-        PsiElement first = postfix.getFirstChild();
-        if (!(first instanceof Perl6TypeName)) return " ";
-        PsiElement last = postfix.getLastChild();
-        if (!(last instanceof Perl6MethodCall)) return " ";
-        return getCuttedName(last.getText()).equals(".new") ? getCuttedName(first.getText()) : " ";
+        PsiElement value = infix.getNextSibling();
+        while (value instanceof PsiWhiteSpace || (value != null && value.getNode().getElementType() == UNV_WHITE_SPACE))
+            value = value.getNextSibling();
+        return value == null ? " " : ((Perl6PsiElement)value).inferType();
     }
 
     @Override
