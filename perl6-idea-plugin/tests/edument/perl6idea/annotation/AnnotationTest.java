@@ -244,4 +244,29 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $lc-and-trim := { $_ = .lc.trim };");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testEVALCase1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL \"5\";");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testEVALCase2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL q[5];");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testEVALCase3() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; EVAL q[$foo];");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testEVALCase4() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; EVAL <error descr=\"Cannot EVAL interpolated expression without MONKEY-SEE-NO-EVAL pragma\">qq[$foo]</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testEVALCase5() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL qq[];");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }
