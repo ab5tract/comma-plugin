@@ -514,4 +514,18 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.contains("regex-a"));
     }
+
+    public void testGeneralizedMethodInferenceOnKeyword() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = start {}; $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".keep"));
+    }
+
+    public void testGeneralizedMethodInferenceOnLiteral() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 50; $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".acos"));
+    }
 }
