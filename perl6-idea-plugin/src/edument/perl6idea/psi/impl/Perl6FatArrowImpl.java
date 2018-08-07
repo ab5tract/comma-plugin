@@ -9,4 +9,9 @@ public class Perl6FatArrowImpl extends ASTWrapperPsiElement implements Perl6FatA
     public Perl6FatArrowImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String  inferType() {
+        return "Pair";
+    }
 }

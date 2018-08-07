@@ -9,4 +9,9 @@ public class Perl6VersionImpl extends ASTWrapperPsiElement implements Perl6Versi
     public Perl6VersionImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "Version";
+    }
 }

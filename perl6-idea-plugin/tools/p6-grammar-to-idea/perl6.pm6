@@ -1470,12 +1470,12 @@ grammar MAIN {
            <.identifier>
            <.end-token('COLON_PAIR')>
            [
-               <?before [<.unsp>? <[[{<«]>]>
+               <?before [<.unsp>? <[[{<«(]>]>
                <.start-token('COLON_PAIR_HAS_VALUE')> <?> <.end-token('COLON_PAIR_HAS_VALUE')>
                <.unsp>?
                <.coloncircumfix>
            ]?
-        || <?before [':' <[[{<«]>]>
+        || <?before [':' <[[{<«(]>]>
            <.start-token('COLON_PAIR')>
            ':'
            <.end-token('COLON_PAIR')>
@@ -2014,6 +2014,7 @@ grammar MAIN {
            <.end-token('VARIABLE')>
            [
                <?before '['>
+               <.start-token('PARAM_ARRAY_SHAPE')> <?> <.end-token('PARAM_ARRAY_SHAPE')>
                <.start-element('ARRAY_SHAPE')>
                <.postcircumfix>
                <.end-element('ARRAY_SHAPE')>
@@ -3734,7 +3735,7 @@ grammar MAIN {
            <.end-element('HASH_INDEX')>
         || <.start-element('CALL')>
            <.start-token('PARENTHESES_OPEN')> '(' <.end-token('PARENTHESES_OPEN')>
-           <.arglist>
+           <.arglist> <.ws>?
            [ <.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')> ]?
            <.end-element('CALL')>
        ]
@@ -4508,12 +4509,16 @@ grammar MAIN {
         || <?before <.name>>
            [
            || <?{ $*METHOD_CALL }>
+              <.start-element('REGEX_CALL')>
               <.start-token('METHOD_CALL_NAME')>
               <.name>
               <.end-token('METHOD_CALL_NAME')>
-           || <.start-token('REGEX_CAPTURE_NAME')>
+              <.end-element('REGEX_CALL')>
+           || <.start-element('REGEX_CALL')>
+              <.start-token('REGEX_CAPTURE_NAME')>
               <.name>
               <.end-token('REGEX_CAPTURE_NAME')>
+              <.end-element('REGEX_CALL')>
            ]
            [
            || <?before '>'>
