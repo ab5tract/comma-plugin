@@ -23,6 +23,7 @@ import edument.perl6idea.utils.Perl6ProjectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -310,7 +311,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         String jsonString;
         try {
             jsonString = new String(Files.readAllBytes(metaPath), StandardCharsets.UTF_8);
-        } catch (IOException e) {
+        } catch (IOException|JSONException e) {
             return null;
         }
         return new JSONObject(jsonString);

@@ -227,7 +227,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(myProject, "Getting Perl 6 Modules List"){
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
-                    myNameField.setVariants(Perl6ModuleListFetcher.getModulesListAsync(myProject));
+                    myNameField.setVariants(Perl6ModuleListFetcher.getModulesNamesAsync(myProject));
                 }
             }, new EmptyProgressIndicator());
             return myPanel;

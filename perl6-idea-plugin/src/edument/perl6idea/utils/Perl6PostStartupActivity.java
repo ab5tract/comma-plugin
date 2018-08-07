@@ -14,7 +14,7 @@ public class Perl6PostStartupActivity implements StartupActivity {
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(project, "Getting Perl 6 Modules List"){
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
-                Perl6ModuleListFetcher.getModulesListAsync(project);
+                Perl6ModuleListFetcher.getModulesNamesAsync(project);
             }
         }, new EmptyProgressIndicator());
     }
