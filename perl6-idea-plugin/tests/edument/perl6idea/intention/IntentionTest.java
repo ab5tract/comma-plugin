@@ -49,4 +49,20 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         myFixture.launchAction(intention);
         myFixture.checkResultByFile("Range2.p6");
     }
+
+    public void testEVALCase1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; EVAL $f<caret>oo;");
+        IntentionAction intention = myFixture.findSingleIntention("Add MONKEY");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResultByFile("Eval1.p6");
+    }
+
+    public void testEVALCase2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; EVAL qq[$<caret>foo];");
+        IntentionAction intention = myFixture.findSingleIntention("Add MONKEY");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResultByFile("Eval2.p6");
+    }
 }

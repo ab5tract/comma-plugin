@@ -26,7 +26,7 @@ public class NoEndPointRangeFix implements IntentionAction {
     @NotNull
     @Override
     public String getFamilyName() {
-        return "Range properties";
+        return "Perl 6";
     }
 
     @Override

@@ -8,12 +8,12 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-public class NullRegexFix implements IntentionAction {
+public class AddEvalPragma implements IntentionAction {
     @Nls
     @NotNull
     @Override
     public String getText() {
-        return "Add always successful assertion";
+        return "Add MONKEY-SEE-NO-EVAL pragma";
     }
 
     @Nls
@@ -30,7 +30,7 @@ public class NullRegexFix implements IntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        editor.getDocument().insertString(editor.getCaretModel().getOffset(), "<?>");
+        editor.getDocument().insertString(0, "use MONKEY-SEE-NO-EVAL;\n");
     }
 
     @Override
