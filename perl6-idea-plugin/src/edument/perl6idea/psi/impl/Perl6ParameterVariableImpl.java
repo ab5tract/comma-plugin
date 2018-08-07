@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
+import edument.perl6idea.psi.Perl6ParameterDefault;
 import edument.perl6idea.psi.Perl6ParameterVariable;
 import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
@@ -47,7 +48,10 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
 
     @Override
     public String summary() {
-        return String.valueOf(this.getName().charAt(0));
+        String sigil = String.valueOf(this.getName().charAt(0));
+        PsiElement defaultValue = PsiTreeUtil.getNextSiblingOfType(this, Perl6ParameterDefault.class);
+        if (defaultValue != null) sigil += '?';
+        return sigil;
     }
 
     @Override
