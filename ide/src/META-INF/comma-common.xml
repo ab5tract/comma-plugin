@@ -39,7 +39,7 @@
     <intentionAction>
       <className>edument.perl6idea.intention.RangeIntentionFix</className>
       <category>Range</category>
-      <descriptionDirectoryName>RangeIntention</descriptionDirectoryName>
+      <descriptionDirectoryName>RangeIntentionFix</descriptionDirectoryName>
     </intentionAction>
     <stubElementTypeHolder class="edument.perl6idea.parsing.Perl6ElementTypes" />
     <stubIndex implementation="edument.perl6idea.psi.stub.index.ProjectModulesStubIndex"/>
@@ -76,9 +76,4 @@
       <implementation-class>edument.perl6idea.event.ModuleMetaChangeListener</implementation-class>
     </component>
   </application-components>
-  <project-components>
-    <component>
-      <implementation-class>edument.perl6idea.intention.RangeIntentionFix</implementation-class>
-    </component>
-  </project-components>
 </idea-plugin>
