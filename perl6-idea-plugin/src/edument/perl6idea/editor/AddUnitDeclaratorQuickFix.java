@@ -72,8 +72,7 @@ public class AddUnitDeclaratorQuickFix extends PsiElementBaseIntentionAction imp
     @NotNull
     @Override
     public String getFamilyName() {
-        /* TODO: what should these be? Where do they appear? */
-        return "Family of Comma Intentions";
+        return "Perl 6";
     }
 
     @Override
