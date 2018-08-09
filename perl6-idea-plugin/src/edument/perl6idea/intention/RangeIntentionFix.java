@@ -17,7 +17,7 @@ import java.util.Set;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
-public class RangeIntention extends PsiElementBaseIntentionAction implements IntentionAction {
+public class RangeIntentionFix extends PsiElementBaseIntentionAction implements IntentionAction {
     static final Set<String> OPS = new HashSet<>(Arrays.asList("..", "..^"));
 
     @NotNull

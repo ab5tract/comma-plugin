@@ -6,7 +6,7 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
-import edument.perl6idea.editor.AddUnitDeclaratorQuickFix;
+import edument.perl6idea.annotation.fix.AddUnitDeclaratorQuickFix;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;

@@ -5,7 +5,7 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.annotation.fix.AddEvalPragma;
+import edument.perl6idea.annotation.fix.AddEvalPragmaFix;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,6 +49,6 @@ public class InterpolatedEVALAnnotator implements Annotator {
         }
         holder
             .createErrorAnnotation(arg, "Cannot EVAL interpolated expression without MONKEY-SEE-NO-EVAL pragma")
-            .registerFix(new AddEvalPragma());
+            .registerFix(new AddEvalPragmaFix());
     }
 }
