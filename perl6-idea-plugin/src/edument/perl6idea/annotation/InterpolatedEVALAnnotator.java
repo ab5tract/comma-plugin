@@ -16,8 +16,10 @@ public class InterpolatedEVALAnnotator implements Annotator {
         if (!element.getText().equals("EVAL")) return;
 
         PsiElement arg = element.getNextSibling();
+        if (arg == null) return;
         while (arg instanceof PsiWhiteSpace)
             arg = arg.getNextSibling();
+        if (arg == null) return;
 
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(arg, Perl6PsiScope.class);
         while (scope != null) {
@@ -29,8 +31,9 @@ public class InterpolatedEVALAnnotator implements Annotator {
                 if (statement.getTextOffset() > arg.getTextOffset()) break;
                 for (PsiElement child : statement.getChildren()) {
                     if (!(child instanceof Perl6UseStatement)) continue;
-                    if (((Perl6UseStatement)child).getModuleName().equals("MONKEY") ||
-                        ((Perl6UseStatement)child).getModuleName().equals("MONKEY-SEE-NO-EVAL"))
+                    String moduleName = ((Perl6UseStatement)child).getModuleName();
+                    if (moduleName.equals("MONKEY") ||
+                        moduleName.equals("MONKEY-SEE-NO-EVAL"))
                         return;
                 }
             }
