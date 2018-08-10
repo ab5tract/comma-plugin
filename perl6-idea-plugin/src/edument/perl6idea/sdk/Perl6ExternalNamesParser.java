@@ -43,6 +43,7 @@ public class Perl6ExternalNamesParser {
                 }
             }
         }
+        finishCurrentPackage();
     }
 
     private void finishCurrentPackage() {
