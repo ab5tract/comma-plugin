@@ -40,6 +40,13 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
+    public int getTextOffset() {
+        PsiElement name = getNameIdentifier();
+        return name == null ? 0 : name.getStartOffsetInParent();
+    }
+
+
+    @Override
     public String getSignature() {
         return getRoutineName() + summarySignature();
     }
