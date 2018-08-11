@@ -54,7 +54,7 @@ public class Perl6RunCommandLineState extends CommandLineState {
 
     private void setScript() {
         command.add(runConfiguration.getScriptPath());
-        String params = runConfiguration.getInterpreterParameters();
+        String params = runConfiguration.getProgramParameters();
         // To avoid a call like `perl6 script.p6 ""`
         if (params != null && !params.trim().isEmpty())
             command.addAll(Arrays.asList(params.split(" ")));
