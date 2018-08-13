@@ -2,21 +2,23 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://jetbrains.org/intellij/schema/application-info http://jetbrains.org/intellij/schema/ApplicationInfo.xsd">
   <version major="2018" minor="7" eap="false"/>
-  <company name="Edument" url="https://www.edument.se/" copyrightStart="2018"/>
-  <build number="__BUILD_NUMBER__" date="__BUILD_DATE__"/>
+  <company name="Edument Central Europe s.r.o." url="https://www.edument.se" copyrightStart="2010"/>
+  <build number="CO-2017.7.1" date="20180626"/>
   <logo url="/comma_core_logo.png" textcolor="000000" progressColor="000000" progressX="114" progressY="278" progressHeight="3"/>
   <about url="/comma_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="000000"
          copyrightForeground="000000" linkColor="000000"/>
   <icon size32="/CommaCore32.png" size16="/CommaCore16.png" ico="CommaCore.ico"/>
-  <package code="__PACKAGE_CODE__"/>
-  <names product="Comma" edition="Supporter Edition" script="comma" motto="The Perl 6 IDE"/>
+  <package code="CO"/>
+  <names product="Comma" edition="Supporter Edition" script="comma"/>
 
   <welcome-screen logo-url="/CommaCoreWelcomeScreen.png"/>
 
   <plugins url="http://plugins.jetbrains.com/"/>
+  <update-urls check="https://commaide.com/updates/updates.xml"/>
+
   <help webhelp-url="https://commaide.com/docs"/>
-  <update-urls check="https://commaide.com/updates/updates.xml" />
   <documentation url="https://commaide.com/docs"/>
+  <support url="https://commaide.com/subscriber/feedback"/>
   <feedback eap-url="https://commaide.com/subscriber/feedback"
             release-url="https://commaide.com/subscriber/feedback"/>
 </component>
