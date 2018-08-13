@@ -25,6 +25,12 @@ public class SignatureAnnotator implements Annotator {
             Perl6Parameter parameter = (Perl6Parameter)psiElement;
 
             String summary = parameter.summary();
+
+            // Chop off type to match e.g. `$` instead of `Str $`
+            int spaceIndex = summary.indexOf(' ');
+            if (spaceIndex != -1)
+                summary = summary.substring(spaceIndex + 1);
+
             if (isFirst) {
                 state = isPositional(summary) ? SignatureState.POSITIONAL :
                         isOptional(summary) ? SignatureState.OPTIONAL :
