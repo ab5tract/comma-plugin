@@ -40,6 +40,6 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
 
     @Override
     protected void setListeners(KillableColoredProcessHandler handler) {
-        handler.addProcessListener(new ProfileTerminationListener(tempFile));
+        handler.addProcessListener(new ProfileTerminationListener(tempFile, getEnvironment().getProject()));
     }
 }
