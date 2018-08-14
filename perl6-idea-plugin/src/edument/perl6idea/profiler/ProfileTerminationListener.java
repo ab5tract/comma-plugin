@@ -2,7 +2,11 @@ package edument.perl6idea.profiler;
 
 import com.intellij.execution.process.ProcessAdapter;
 import com.intellij.execution.process.ProcessEvent;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -14,12 +18,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
 public class ProfileTerminationListener extends ProcessAdapter {
-    public static Logger LOG = Logger.getInstance(ProfileTerminationListener.class);
+    public static final Logger LOG = Logger.getInstance(ProfileTerminationListener.class);
     private final File file;
     private final Project project;
 
@@ -34,15 +41,29 @@ public class ProfileTerminationListener extends ProcessAdapter {
             file.delete();
             return;
         }
-        ProgressManager.getInstance().run(new Task.Modal(project, "Processing Profiling Data", false) {
+        final Connection[] connection = {null};
+
+        ProgressManager.getInstance().run(new Task.Modal(project, "Processing Profiling Data", true) {
+            @Override
+            public void onCancel() {
+                if (connection[0] != null) {
+                    try {
+                        connection[0].close();
+                    }
+                    catch (SQLException e) {
+                        LOG.warn(e);
+                    }
+                }
+                file.delete();
+            }
+
             public void run(@NotNull ProgressIndicator indicator) {
-                Connection connection = null;
                 try {
                     // Create in-memory DB
                     indicator.setText("Creating database...");
                     indicator.setFraction(0.1);
-                    connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-                    Statement statement = connection.createStatement();
+                    connection[0] = DriverManager.getConnection("jdbc:sqlite::memory:");
+                    Statement statement = connection[0].createStatement();
                     indicator.setText("Reading data...");
                     indicator.setFraction(0.2);
                     Stream<String> lines = Files.lines(Paths.get(file.getCanonicalPath()), StandardCharsets.UTF_8);
@@ -57,17 +78,13 @@ public class ProfileTerminationListener extends ProcessAdapter {
                 }
                 catch (SQLException | IOException e) {
                     LOG.warn(e);
+                    Notifications.Bus.notify(
+                        new Notification("Perl 6 Profiler", "Error during profiling data procession",
+                                         e.getMessage(), NotificationType.ERROR));
+                    throw new ProcessCanceledException();
                 }
                 finally {
-                    if (connection != null) {
-                        try {
-                            connection.close();
-                        }
-                        catch (SQLException e) {
-                            LOG.warn(e);
-                        }
-                    }
-                    file.delete();
+                    onCancel();
                 }
             }
         });
