@@ -95,10 +95,10 @@ public class Perl6RunConfiguration extends LocatableConfigurationBase implements
         Element perl6ParamsElem = element.getChild(PERL6_PARAMS);
         Element debugPortElem = element.getChild(DEBUG_PORT);
         Element startSuspendedElem = element.getChild(START_SUSPENDED);
-        if (scriptPathElem == null || scriptArgsElem == null ||
-                workDirectoryElem == null || envVarsElem == null ||
-                passEnvElem == null || perl6ParamsElem == null ||
-                debugPortElem == null || startSuspendedElem == null) {
+        if (scriptPathElem == null    || scriptArgsElem == null ||
+            workDirectoryElem == null || envVarsElem == null ||
+            passEnvElem == null       || perl6ParamsElem == null ||
+            debugPortElem == null     || startSuspendedElem == null) {
             throw new InvalidDataException();
         } else {
             scriptPath = scriptPathElem.getText();
