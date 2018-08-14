@@ -66,5 +66,6 @@
     <orderEntry type="library" name="com.miglayout:miglayout-swing:5.1" level="project" />
     <orderEntry type="library" name="gson" level="project" />
     <orderEntry type="module" module-name="intellij.java.impl" />
+    <orderEntry type="library" name="sqlite" level="project" />
   </component>
 </module>

@@ -55,13 +55,16 @@ public class Perl6RunCommandLineState extends CommandLineState {
         GeneralCommandLine cmd = Perl6CommandLine.getCustomPerl6CommandLine(command, runConfiguration.getWorkingDirectory());
         setEnvironment(cmd);
         KillableColoredProcessHandler handler = new KillableColoredProcessHandler(cmd, true);
-        ProcessTerminatedListener.attach(handler);
+        ProcessTerminatedListener.attach(handler, getEnvironment().getProject());
+        setListeners(handler);
         return handler;
     }
 
     protected void setEnvironment(GeneralCommandLine cmd) {
         cmd.withEnvironment(runConfiguration.getEnvs());
     }
+
+    protected void setListeners(KillableColoredProcessHandler handler) {}
 
     private void setScript() {
         command.add(runConfiguration.getScriptPath());
