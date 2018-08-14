@@ -15,6 +15,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.coverage.CoverageExecutor;
 import edument.perl6idea.coverage.Perl6CoverageCommandLineState;
 import edument.perl6idea.debugger.Perl6DebugCommandLineState;
+import edument.perl6idea.profiler.Perl6ProfileCommandLineState;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,6 +61,8 @@ public class Perl6RunConfiguration extends LocatableConfigurationBase implements
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
         if (executor instanceof DefaultDebugExecutor) {
             return new Perl6DebugCommandLineState(environment);
+        } else if (executor instanceof Perl6ProfileExecutor) {
+            return new Perl6ProfileCommandLineState(environment);
         }
         if (executor instanceof CoverageExecutor) {
             return new Perl6CoverageCommandLineState(environment);

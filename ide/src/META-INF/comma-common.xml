@@ -7,6 +7,7 @@
     <configurationType implementation="edument.perl6idea.run.Perl6RunConfigurationType"/>
     <configurationType implementation="edument.perl6idea.testing.Perl6TestConfigurationType"/>
     <programRunner implementation="edument.perl6idea.debugger.Perl6DebugRunner"/>
+    <executor implementation="edument.perl6idea.run.Perl6ProfileExecutor"/>
     <xdebugger.breakpointType implementation="edument.perl6idea.debugger.Perl6LineBreakpointType"/>
     <lang.syntaxHighlighterFactory language="Perl6" implementationClass="edument.perl6idea.highlighter.Perl6SyntaxHighlighterFactory"/>
     <lang.parserDefinition language="Perl6" implementationClass="edument.perl6idea.parsing.Perl6ParserDefinition"/>
