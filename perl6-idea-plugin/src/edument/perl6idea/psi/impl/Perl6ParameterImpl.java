@@ -5,6 +5,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6ParameterVariable;
+import edument.perl6idea.psi.Perl6ValueConstraint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,9 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
         String maybeSignature = yieldSignature();
         if (maybeSignature != null)
             return maybeSignature;
+
+        if (findChildByClass(Perl6ValueConstraint.class) != null)
+            return "$";
 
         StringBuilder summary = new StringBuilder();
         Perl6TypeNameImpl maybeType = findChildByClass(Perl6TypeNameImpl.class);
