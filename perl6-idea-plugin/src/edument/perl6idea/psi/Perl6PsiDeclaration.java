@@ -35,7 +35,7 @@ public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierO
             text = text.substring(0, index);
         index = text.lastIndexOf(":");
         if (index != -1 && text.charAt(index - 1) != ':')
-            text = text.substring(0, index - 1);
+            text = text.substring(0, index);
         return text;
     }
 

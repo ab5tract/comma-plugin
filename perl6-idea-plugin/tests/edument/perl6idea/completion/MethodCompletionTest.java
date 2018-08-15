@@ -42,7 +42,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testMethodOnSelfFromRoleCompletion() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Foo { method a {} }; class Bar does Foo { method b{ self.<caret> } }");
+        myFixture
+            .configureByText(Perl6ScriptFileType.INSTANCE, "role Foo { method a {} }; class Bar does Foo { method b{ self.<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
@@ -58,7 +59,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testMethodOnSelfFromParentsRole() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Role { method role {} }; class Foo does Role { method a {} }; class Bar is Foo { method b{ self.<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "role Role { method role {} }; class Foo does Role { method a {} }; class Bar is Foo { method b{ self.<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
@@ -98,7 +100,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testMethodOnTypeNameFromParentsRole() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Role { method role {} }; class Foo does Role { method a {} }; class Bar is Foo { method b{ Bar.<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "role Role { method role {} }; class Foo does Role { method a {} }; class Bar is Foo { method b{ Bar.<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
@@ -138,7 +141,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testPrivateMethodFromRoleCompletion() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Bar { method !bar {}; }; class Foo does Bar { method !a{ self!<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "role Bar { method !bar {}; }; class Foo does Bar { method !a{ self!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
@@ -146,7 +150,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testPrivateMethodFromNestedRoleCompletion() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Baz { method !baz {} }; role Bar does Baz { method !bar {} }; class Foo does Bar { method !a { self!<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "role Baz { method !baz {} }; role Bar does Baz { method !bar {} }; class Foo does Bar { method !a { self!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
@@ -154,7 +159,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testPrivateMethodFromExternalRoleCompletion() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role Foo does NativeCall::Native { method bar { self!<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "use NativeCall; role Foo does NativeCall::Native { method bar { self!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
@@ -162,7 +168,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testCorrectImportGathering() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { { use NativeCall; }; class Bar does NativeCall::Native { method !b {}; method !a { self!<caret> } } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Foo { { use NativeCall; }; class Bar does NativeCall::Native { method !b {}; method !a { self!<caret> } } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         // We don't get methods from NativeCall in another block, so `!setup` is not available
@@ -186,7 +193,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testSubmethodFromParent() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Base { submethod subm {} }; class Foo is Base { method foo { self.<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Base { submethod subm {} }; class Foo is Base { method foo { self.<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
@@ -194,7 +202,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testSubmethodFromRole() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Base { submethod subm {} }; class Foo does Base { method foo { self.<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "role Base { submethod subm {} }; class Foo does Base { method foo { self.<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
@@ -239,7 +248,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testMethodsFromParametrizedRole() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role Foo does NativeCall::Native[Foo, lib-path] { method bar { self!<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "use NativeCall; role Foo does NativeCall::Native[Foo, lib-path] { method bar { self!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
@@ -254,21 +264,24 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testPublicGettersInChildClasses() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Bar { has $.bar }; class Foo is Bar { method a { self.ba<caret> } }");
+        myFixture
+            .configureByText(Perl6ScriptFileType.INSTANCE, "class Bar { has $.bar }; class Foo is Bar { method a { self.ba<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.contains(".bar"));
     }
 
     public void testParentPrivateMethodIsPrivate() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Bar { method !private {}; }; class Foo is Bar { method a { self!<caret> } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Bar { method !private {}; }; class Foo is Bar { method a { self!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertEquals(0, methods.size());
     }
 
     public void testParentPrivateAttributeIsPrivate() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Bar { has $!private; }; class Foo is Bar { method a { $!<caret> } }");
+        myFixture
+            .configureByText(Perl6ScriptFileType.INSTANCE, "class Bar { has $!private; }; class Foo is Bar { method a { $!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNull(methods);
@@ -509,7 +522,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testInheritedRegexCompletion() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar B { regex regex-a {''} }; grammar A  is B{ rule rule-a { <<caret> } }");
+        myFixture
+            .configureByText(Perl6ScriptFileType.INSTANCE, "grammar B { regex regex-a {''} }; grammar A  is B{ rule rule-a { <<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.contains("regex-a"));
@@ -524,6 +538,27 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
 
     public void testGeneralizedMethodInferenceOnLiteral() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 50; $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".acos"));
+    }
+
+    public void testInferenceOnMultiPartTypeName() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo::Bar { method foo-bar {} }; Foo::Bar.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".foo-bar"));
+    }
+
+    public void testInferenceOnMultiPartTypedVar() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo::Bar { method foo-bar {} }; my Foo::Bar $foo = Foo::Bar.new; $foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".foo-bar"));
+    }
+
+    public void testAnnotatedTypeOverridesAssigned() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my Int $foo = Str.new; $foo.<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.contains(".acos"));
