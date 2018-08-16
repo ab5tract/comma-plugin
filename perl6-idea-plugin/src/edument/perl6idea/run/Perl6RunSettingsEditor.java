@@ -51,10 +51,14 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
         toStartSuspended.setSelected(conf.isStartSuspended());
         if (conf.getInterpreterParameters() == null) {
             myPerl6ParametersPanel.setText("");
+        } else {
+            myPerl6ParametersPanel.setText(conf.getInterpreterParameters());
         }
         myParams.reset(conf);
         if (conf.getWorkingDirectory() == null) {
             myParams.setWorkingDirectory(myProject.getBasePath());
+        } else {
+            myParams.setWorkingDirectory(conf.getWorkingDirectory());
         }
     }
 
