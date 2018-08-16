@@ -1,31 +1,46 @@
 <h1>Change List</h1>
 
-<h2>2018.7.1</h2>
+<h2>2018.8.0</h2>
 
 <ul>
-    <li>Add first steps towards method auto-completion, supporting it for method
-        calls on <code>self</code> and type objects; includes methods composed from roles and
-        inherited from base classes, whether they are internal to the project, in
-        the CORE builtins, or from an external module</li>
-    <li>Support Go To Definition (Ctrl+B) for method calls within the project that
-        are made on <code>self</code> or a type object</li>
-    <li>Implement Move Statement support (Ctrl+Shift+Up, Ctrl+Shift+Down), so that
-        multi-line statements can be moved</li>
-    <li>Correct some cases where a sub call imported from another module within the
-        project was wrongly detected as undeclared and failed to Go To Definition</li>
-    <li>Fix a bug causing partially missing auto-complete information from external
-        modules</li>
-    <li>Make the display of test results more incremental, showing them as each file
-        completes its run</li>
-    <li>Add Project view in the standalone Comma IDE</li>
-    <li>Made Project view hide .precomp directories</li>
-    <li>Parse and highlight version literals</li>
-    <li>Parse and highlight macro and quasi</li>
-    <li>Correct whitespace parsing in various places in regexes, so that a
-        backslashed comment character is never incorrectly treated as unspace</li>
-    <li>Avoid a crash when encountering incorrect JSON in the META6.json file</li>
-    <li>Fix a crash that could occur sometimes during project import or creation</li>
-    <li>Correct highlighting of a sub or private method call to indicate other calls to the
-        same sub to put a background highlight on the name, not on the whole
-        argument list</li>
+    <li>Provide better method auto-completion by accounting for declared types of
+        variables and parameters, as well as performing basic type inference on
+        literals, various special variables ($/ and $0 are always a Match),
+        syntactic constructs producing known types, Foo.new, and initial assignment
+        to a variable</li>
+    <li>Add auto-completion of rule names when authoring grammars</li>
+    <li>Provide Go To Declaration (Ctrl + B) support on grammar rules, to make it
+        easier to navigate around grammars</li>
+    <li>When auto-completing <code>use</code> and <code>need</code>, suggest ecosystem modules as well as
+        pragmas and modules included with Perl 6 (Test and NativeCall)</li>
+    <li>Detect dependency on a module whose distribution is not declared in the
+        depends section of META6.json, and provide a fix to add the appropriate
+        distribution to META6.json (this handles cases where the distribution name
+        does not match the module name; for example, use of Cro::HTTP::Client would
+        add the Cro::HTTP distribution to the META6.json)</li>
+    <li>In Project View, show the dependencies under the External Libraries section</li>
+    <li>Detect and mark various incorrect parameter orderings as an error (for
+        example, declaration of a required parameter after an optional one)</li>
+    <li>Mark declaration of undeclarable variables like $0 as an error</li>
+    <li>Mark use of unit sub as an error if the sub is not named MAIN</li>
+    <li>Mark use of whenever outside of a supply or react block as an error</li>
+    <li>Mark null regex as an error, and add a fix to insert &lt;?&gt;</li>
+    <li>Mark use of range with no endpoint as an error, and add a fix to add a * endpoint</li>
+    <li>If an EVAL is used with an interpolated variable, and MONKEY or MONKEY-SEE-NO-EVAL is not
+        used, mark it as an error and provide a fix to include MONKEY-SEE-NO-EVAL</li>
+    <li>When the cursor is on a range 0..10, offer ^9 as an alternative; do similar for
+        0..$n-1 with the fix replacing it with ^$n</li>
+    <li>Run tests in subdirectories under t/ and sort the test files</li>
+    <li>Fix running of scripts on Windows</li>
+    <li>Fix passing of arguments when running a script</li>
+    <li>Do not forget Perl 6 parameters in run configurations between restarts</li>
+    <li>Fix parsing of a colonpair inside of an array literal</li>
+    <li>Implement parsing of parametric role signatures, and support Go To Declaration
+        for sigil parameters declared by the role</li>
+    <li>Fix mis-parsing of colonpairs with parenthesized values</li>
+    <li>Accept whitespace at the end of an argument list</li>
+    <li>Fix parser crash with <code>sub foo($c&lt;x&gt;)</code></li>
+    <li>Don't wrongly mark EVAL as an undeclared routine</li>
+    <li>Correct signature summary for signatures with literal values</li>
+    <li>Fix checking for updates to Comma</li>
 </ul>
