@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.tap4j:tap4j:4.2.1"
+    compile "org.tap4j:tap4j:4.3"
     compile "org.json:json:20171018"
     compile "com.miglayout:miglayout-swing:5.1"
     compile files('libs/moarvmremote.jar')
