@@ -2,7 +2,7 @@ sub MAIN($version) {
     my $number = "CO-$version";
     my $date = Date.new(DateTime.now).Str.subst('-', '', :g);
 
-    with $version ~~ /^ (\d**4) '.' (\d**1..2) '.' (\d+)? $/ -> ($maj, $min, $build |) {
+    with $version ~~ /^ (\d**4) '.' (\d**1..2) '.' (\d+)? $/ -> ($maj, $min, $build, |) {
         given slurp('ide/src/META-INF/comma-core.xml') {
             spurt 'ide/src/META-INF/comma-core.xml',
                 .subst(/ '<version>' <( .+? )> '</version>' /, $version);
@@ -19,6 +19,8 @@ sub MAIN($version) {
             spurt 'resources/idea/CommaCoreApplicationInfo.xml',
                 .subst(/'<version ' <( 'major="' \d+ '" minor="' \d+ '"' )>/,
                     qq|major="$maj" minor="$min"|);
+        }
+        given slurp('resources/idea/CommaCoreApplicationInfo.xml') {
             spurt 'resources/idea/CommaCoreApplicationInfo.xml',
                 .subst(/'<build ' <( 'number="' \d+ '" date="' \d+ '"' )>/,
                     qq|number="$maj" date="$min"|);
