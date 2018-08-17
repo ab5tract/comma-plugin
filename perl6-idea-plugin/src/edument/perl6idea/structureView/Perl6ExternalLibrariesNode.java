@@ -40,12 +40,9 @@ public class Perl6ExternalLibrariesNode extends ExternalLibrariesNode {
         try {
             String jsonString = new String(Files.readAllBytes(metaPath), StandardCharsets.UTF_8);
             meta = new JSONObject(jsonString);
-        } catch (IOException ignored) {
-        } catch (JSONException e) {
+        } catch (IOException|JSONException e) {
             return c;
         }
-        if (meta == null)
-            return c;
         List<String> names = new ArrayList<>();
         if (meta.has("depends")) {
             JSONArray providesSection = (JSONArray)meta.get("depends");
