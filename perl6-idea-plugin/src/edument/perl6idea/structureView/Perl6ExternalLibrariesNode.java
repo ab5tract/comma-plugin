@@ -11,6 +11,7 @@ import com.intellij.util.PlatformIcons;
 import edument.perl6idea.module.Perl6ModuleBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -40,6 +41,8 @@ public class Perl6ExternalLibrariesNode extends ExternalLibrariesNode {
             String jsonString = new String(Files.readAllBytes(metaPath), StandardCharsets.UTF_8);
             meta = new JSONObject(jsonString);
         } catch (IOException ignored) {
+        } catch (JSONException e) {
+            return c;
         }
         if (meta == null)
             return c;
