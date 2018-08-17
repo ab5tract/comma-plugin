@@ -54,6 +54,7 @@
     <errorHandler implementation="edument.perl6idea.utils.Perl6ErrorReportSubmitter"/>
     <statementUpDownMover implementation="edument.perl6idea.editor.Perl6StatementMover"/>
     <treeStructureProvider implementation="edument.perl6idea.structureView.Perl6ProjectStructureProvider"/>
+    <spellchecker.support language="Perl6" implementationClass="com.intellij.spellchecker.tokenizer.SpellcheckingStrategy"/>
   </extensions>
 
   <actions>
