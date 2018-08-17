@@ -57,6 +57,7 @@
     <spellchecker.support language="Perl6" implementationClass="edument.perl6idea.editor.Perl6SpellCheckingStrategy"/>
     <enterHandlerDelegate implementation="edument.perl6idea.editor.Perl6EnterDelegate"/>
     <lang.findUsagesProvider language="Perl6" implementationClass="edument.perl6idea.findUsages.Perl6FindUsagesProvider"/>
+    <spellchecker.support language="Perl6" implementationClass="com.intellij.spellchecker.tokenizer.SpellcheckingStrategy"/>
   </extensions>
 
   <actions>
