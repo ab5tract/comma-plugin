@@ -29,6 +29,7 @@
       <extensionPoint name="projectStructureDetector" interface="com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector"/>
       <extensionPoint name="configuration.ModuleStructureExtension" interface="com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleStructureExtension"/>
       <extensionPoint name="projectStructureConfigurableFilter" interface="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurableFilter"/>
+      <extensionPoint name="projectStructureConfigurableAdder" interface="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurableContributor"/>
       <extensionPoint name="projectStructureValidator" interface="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureValidator"/>
     </extensionPoints>
 
