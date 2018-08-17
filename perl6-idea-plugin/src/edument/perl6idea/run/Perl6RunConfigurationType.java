@@ -17,7 +17,7 @@ public class Perl6RunConfigurationType extends ConfigurationTypeBase {
             @NotNull
             @Override
             public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
-                return new Perl6RunConfiguration(project, this, "Unnamed run");
+                return new Perl6RunConfiguration(project, this, "Run script");
             }
         });
     }

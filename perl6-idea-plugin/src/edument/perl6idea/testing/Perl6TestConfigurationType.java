@@ -18,7 +18,7 @@ public class Perl6TestConfigurationType extends ConfigurationTypeBase implements
             @NotNull
             @Override
             public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
-                return new Perl6TestRunConfiguration(project, this, "Unnamed test");
+                return new Perl6TestRunConfiguration(project, this, "Test project");
             }
         });
     }
