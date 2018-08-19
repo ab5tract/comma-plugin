@@ -64,11 +64,11 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                 Perl6ModuleFileType.INSTANCE,
                 GlobalSearchScope.projectScope(getProject()));
 
+            String newName = "lib" + separator + name.replaceAll("::", separator) + ".pm6";
             for (VirtualFile file : slowFound) {
                 String path = file.getCanonicalPath();
                 if (path == null) continue;
-                name = "lib" + separator + name.replaceAll("::", separator) + ".pm6";
-                if (!path.endsWith(name)) continue;
+                if (!path.endsWith(newName)) continue;
                 PsiFile psiFile = PsiManager.getInstance(getProject()).findFile(file);
                 if (psiFile instanceof Perl6File) {
                     for (Perl6PsiDeclaration export : ((Perl6File)psiFile).getExports()) {

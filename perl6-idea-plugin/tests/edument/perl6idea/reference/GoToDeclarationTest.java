@@ -8,10 +8,7 @@ import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import edument.perl6idea.psi.Perl6PackageDecl;
-import edument.perl6idea.psi.Perl6ScopedDecl;
-import edument.perl6idea.psi.Perl6TypeName;
-import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
@@ -26,29 +23,95 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
         return new Perl6LightProjectDescriptor();
     }
 
-    public void testLocalVarReference() {
+    public void testLocalVariable1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = 5; say $a<caret>;");
         PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
-        assertNotNull(usage);
-        PsiElement rawWar = usage.getParent();
-        Perl6Variable var = (Perl6Variable) rawWar;
-        assertNotNull(var);
-        PsiElement decl = myFixture.getFile().findElementAt(1);
+        Perl6Variable var = PsiTreeUtil.getParentOfType(usage, Perl6Variable.class);
+        PsiElement decl = var.getReference().resolve();
         assertNotNull(decl);
-        PsiReference reference = var.getReference();
-        assertNotNull(reference);
-        PsiElement scopedDecl = PsiTreeUtil.getParentOfType(reference.resolve(), Perl6ScopedDecl.class);
-        assertEquals(decl.getParent(), scopedDecl);
+        assertEquals(3, decl.getTextOffset());
     }
 
-    public void testUseExternalReference() {
+    public void testLocalVariable2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our $a = 5; say $a<caret>;");
+        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
+        Perl6Variable var = PsiTreeUtil.getParentOfType(usage, Perl6Variable.class);
+        PsiElement decl = var.getReference().resolve();
+        assertNotNull(decl);
+        assertEquals(4, decl.getTextOffset());
+    }
+
+    public void testExternalVariable1() {
+        myFixture.configureByFiles("IdeaFoo/Baz.pm6", "IdeaFoo/Bar.pm6");
+        PsiElement usage = myFixture.getFile().findElementAt(42);
+        Perl6Variable var = PsiTreeUtil.getParentOfType(usage, Perl6Variable.class);
+        PsiElement resolved = var.getReference().resolve();
+        assertNull(resolved);
+    }
+
+    public void testExternalVariable2() {
+        myFixture.configureByFiles("IdeaFoo/Baz.pm6", "IdeaFoo/Bar.pm6");
+        PsiElement usage = myFixture.getFile().findElementAt(60);
+        Perl6Variable var = PsiTreeUtil.getParentOfType(usage, Perl6Variable.class);
+        PsiElement resolved = var.getReference().resolve();
+        assertNotNull(resolved);
+        PsiFile file = resolved.getContainingFile();
+        assertEquals("Bar.pm6", file.getName());
+    }
+
+    public void testUseLocalType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo; Fo<caret>o.new;");
+        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
+        Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
+        PsiElement decl = var.getReference().resolve();
+        assertNotNull(decl);
+        assertEquals(0, decl.getTextOffset());
+    }
+
+    public void testUseLocalTypeMultiPart() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo::Bar::Baz; Foo::<caret>Bar::Baz.new;");
+        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
+        Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
+        PsiElement decl = var.getReference().resolve();
+        assertNotNull(decl);
+        assertEquals(0, decl.getTextOffset());
+    }
+
+    public void testUseLocalTypeParametrized() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo::Bar[TypeName]; Foo::<caret>Bar.new;");
+        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
+        Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
+        PsiElement decl = var.getReference().resolve();
+        assertNotNull(decl);
+        assertEquals(0, decl.getTextOffset());
+    }
+
+    public void testUseExternalType() {
         myFixture.configureByFiles("IdeaFoo/Baz.pm6", "IdeaFoo/Bar.pm6");
         PsiElement usage = myFixture.getFile().findElementAt(25);
-        Perl6TypeName type = (Perl6TypeName)PsiTreeUtil.findFirstParent(usage, true, p -> p instanceof Perl6TypeName);
+        Perl6TypeName type = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
         PsiElement resolved = type.getReference().resolve();
         assertNotNull(resolved);
         PsiFile file = resolved.getContainingFile();
         assertEquals("Bar.pm6", file.getName());
+    }
+
+    public void testUseExternalRoutine1() {
+        myFixture.configureByFiles("IdeaFoo/Baz.pm6", "IdeaFoo/Bar.pm6");
+        PsiElement usage = myFixture.getFile().findElementAt(80);
+        Perl6SubCallName call = PsiTreeUtil.getParentOfType(usage, Perl6SubCallName.class);
+        PsiElement resolved = call.getReference().resolve();
+        assertNotNull(resolved);
+        PsiFile file = resolved.getContainingFile();
+        assertEquals("Bar.pm6", file.getName());
+    }
+
+    public void testUseExternalRoutine2() {
+        myFixture.configureByFiles("IdeaFoo/Baz.pm6", "IdeaFoo/Bar.pm6");
+        PsiElement usage = myFixture.getFile().findElementAt(100);
+        Perl6SubCallName call = PsiTreeUtil.getParentOfType(usage, Perl6SubCallName.class);
+        PsiElement resolved = call.getReference().resolve();
+        assertNull(resolved);
     }
 
     public void testPrivateMethodsReference() {
