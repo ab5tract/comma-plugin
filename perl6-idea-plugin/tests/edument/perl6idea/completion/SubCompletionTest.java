@@ -5,9 +5,12 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.sdk.Perl6SdkType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,7 +21,7 @@ public class SubCompletionTest extends LightCodeInsightFixtureTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/codeInsight/localVariables";
+        return "testData/completion";
     }
 
     @Override
@@ -30,6 +33,12 @@ public class SubCompletionTest extends LightCodeInsightFixtureTestCase {
             testSdk = SdkConfigurationUtil.createAndAddSDK(homePath, Perl6SdkType.getInstance());
             ProjectRootManager.getInstance(myModule.getProject()).setProjectSdk(testSdk);
         });
+    }
+
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
     }
 
     @Override
@@ -45,6 +54,13 @@ public class SubCompletionTest extends LightCodeInsightFixtureTestCase {
         assertNotNull(vars);
         assertTrue(vars.containsAll(Collections.singletonList("foo")));
         assertEquals(2, vars.size());
+    }
+
+    public void testCompletionFromOuter() {
+        myFixture.configureByFiles("IdeaFoo/Bar8.pm6", "IdeaFoo/Baz.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNull(vars);
     }
 
     public void testComplectionFromOurLocal() {

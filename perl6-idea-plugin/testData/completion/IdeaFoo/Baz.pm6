@@ -28,3 +28,6 @@ class Foo::Bar::Baz {
     method !private {}
     method visible {}
 }
+
+sub foo-one {}
+sub foo-two is export {}
