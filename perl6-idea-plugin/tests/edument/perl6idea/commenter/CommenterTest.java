@@ -13,4 +13,13 @@ public class CommenterTest extends LightCodeInsightFixtureTestCase {
         commentAction.actionPerformedImpl(getProject(), myFixture.getEditor());
         myFixture.checkResult("say 'foo';");
     }
+
+    public void testMultilineCommenter() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>say 'foo';\nsay 'bar';\n\n</selection>");
+        CommentByLineCommentAction commentAction = new CommentByLineCommentAction();
+        commentAction.actionPerformedImpl(getProject(), myFixture.getEditor());
+        myFixture.checkResult("#say 'foo';\n#say 'bar';\n#\n");
+        commentAction.actionPerformedImpl(getProject(), myFixture.getEditor());
+        myFixture.checkResult("say 'foo';\nsay 'bar';\n\n");
+    }
 }

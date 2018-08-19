@@ -45,33 +45,22 @@ public class ModuleCompletionTest extends LightPlatformCodeInsightFixtureTestCas
     }
 
     private void removeLeftovers(VirtualFile... files) {
-        ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                @Override
-                public void run() {
+        ApplicationManager.getApplication().runWriteAction(() -> {
                     try {
-                        for (VirtualFile file : files) {
+                        for (VirtualFile file : files)
                             file.delete(this);
-                        }
-                    }
-                    catch (IOException ignore) {
-                    }
-                }
-        });
+                    } catch (IOException ignore) {}
+                });
     }
 
     VirtualFile getOrCreateDirectory(VirtualFile base, String name) {
-        if (base.findFileByRelativePath(name) == null) {
-            ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        base.createChildDirectory(this, name);
-                    }
-                    catch (IOException ignore) {
-                    }
+        if (base.findFileByRelativePath(name) == null)
+            ApplicationManager.getApplication().runWriteAction(() -> {
+                try {
+                    base.createChildDirectory(this, name);
                 }
+                catch (IOException ignore) {}
             });
-        }
         return base.findFileByRelativePath(name);
     }
 }
