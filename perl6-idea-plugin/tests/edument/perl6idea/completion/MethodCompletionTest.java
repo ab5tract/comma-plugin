@@ -5,9 +5,12 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.sdk.Perl6SdkType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +28,17 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
             testSdk = SdkConfigurationUtil.createAndAddSDK(homePath, Perl6SdkType.getInstance());
             ProjectRootManager.getInstance(myModule.getProject()).setProjectSdk(testSdk);
         });
+    }
+
+    @Override
+    protected String getTestDataPath() {
+        return "testData/completion";
+    }
+
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
     }
 
     @Override
@@ -58,6 +72,14 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
     }
 
+    public void testMethodOnSelfFromOuterParent() {
+        myFixture.configureByFiles("IdeaFoo/Bar7.pm6", "IdeaFoo/Baz.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.contains(".visible"));
+    }
+
     public void testMethodOnSelfFromParentsRole() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "role Role { method role {} }; class Foo does Role { method a {} }; class Bar is Foo { method b{ self.<caret> } }");
@@ -73,6 +95,23 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
         assertTrue(methods.containsAll(Arrays.asList(".sink", ".minpairs")));
+    }
+
+
+    public void testMethodOnTypeNameOuterFileCompletion() {
+        myFixture.configureByFiles("IdeaFoo/Bar4.pm6", "IdeaFoo/Baz.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.contains(".visible"));
+    }
+
+    public void testMethodOnLongTypeNameOuterFileCompletion() {
+        myFixture.configureByFiles("IdeaFoo/Bar5.pm6", "IdeaFoo/Baz.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.contains(".visible"));
     }
 
     public void testMethodOnTypeNameCompletion() {
@@ -147,6 +186,14 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
         assertTrue(methods.containsAll(Arrays.asList("!a", "!bar")));
+    }
+
+    public void testPrivateMethodFromOuterRoleCompletion() {
+        myFixture.configureByFiles("IdeaFoo/Bar6.pm6", "IdeaFoo/Baz.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.contains("!private"));
     }
 
     public void testPrivateMethodFromNestedRoleCompletion() {
