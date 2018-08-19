@@ -14,7 +14,8 @@ public class Perl6SingleResolutionSymbolCollector extends Perl6PackageConstraine
     public void offerSymbol(Perl6Symbol symbol) {
         if (!acceptablyScoped(symbol))
             return;
-        if (result == null && symbol.getKind() == wantedKind && symbol.getName().equals(wantedName))
+        if (result == null && symbol.getKind() == wantedKind &&
+            symbol.getName() != null && symbol.getName().equals(wantedName))
             result = symbol;
     }
 
