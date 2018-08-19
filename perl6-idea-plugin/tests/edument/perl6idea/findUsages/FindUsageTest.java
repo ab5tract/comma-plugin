@@ -1,7 +1,10 @@
 package edument.perl6idea.findUsages;
 
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import com.intellij.usageView.UsageInfo;
+import edument.perl6idea.Perl6LightProjectDescriptor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -11,17 +14,38 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         return "testData/findUsage";
     }
 
-    public void testFindUsagesForVariableDefinition() {
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
+    }
+
+    // When declarator has different PsiElement comparing to usage,
+    // it is not counted in this test, yet it is correctly resolved
+
+    public void testVariableDefinition() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("VariableDefinition.p6");
         assertEquals(3, usageInfos.size());
     }
 
-    public void testFindUsagesForVariable() {
+    public void testVariable() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("Variable.p6");
         assertEquals(3, usageInfos.size());
     }
 
-    public void testFindUsagesForVariablesInBlock() {
+    public void testOuterVariable1() {
+        myFixture.configureByFiles("IdeaFoo/User.pm6", "IdeaFoo/Base.pm6");
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(2, usages.size());
+    }
+
+    public void testOuterVariable2() {
+        myFixture.configureByFiles("IdeaFoo/Base.pm6", "IdeaFoo/User.pm6");
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(2, usages.size());
+    }
+
+    public void testVariablesInBlock() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("VariableBlock.p6");
         assertEquals(3, usageInfos.size());
     }
