@@ -31,6 +31,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
         return Perl6ElementTypes.FILE;
     }
 
+    // Both whitespace and comment tokens are empty, as we want to
+    // match it in our parser
     @NotNull
     @Override
     public TokenSet getWhitespaceTokens() {
