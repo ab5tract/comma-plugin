@@ -80,6 +80,11 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         assertEquals(3, usageInfos.size());
     }
 
+    public void testComposedAndInherited() {
+        Collection<UsageInfo> usageInfos = myFixture.testFindUsages("RoleClassAttribute.p6");
+        assertEquals(3, usageInfos.size());
+    }
+
     //public void testFindUsagesForTypeDefinition() {
     //    Collection<UsageInfo> usageInfos = myFixture.testFindUsages("TypeDefinition.p6");
     //    assertEquals(2, usageInfos.size());
