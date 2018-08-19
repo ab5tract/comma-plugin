@@ -3,7 +3,12 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6UseStatementStub;
 import edument.perl6idea.psi.stub.Perl6UseStatementStubElementType;
@@ -15,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import static java.io.File.separator;
 
 public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseStatementStub> implements Perl6UseStatement {
     public Perl6UseStatementImpl(@NotNull ASTNode node) {
@@ -48,6 +55,30 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                     collector.offerSymbol(sym);
                     if (collector.isSatisfied())
                         return;
+                }
+            }
+
+            // Workaround for https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000437020-Usage-of-StringStubIndexExtension-during-unit-testing
+            // Quite a slow manual method which does not use stubs, that we hardly fallback to "in real life"
+            Collection <VirtualFile> slowFound = FileTypeIndex.getFiles(
+                Perl6ModuleFileType.INSTANCE,
+                GlobalSearchScope.projectScope(getProject()));
+
+            for (VirtualFile file : slowFound) {
+                String path = file.getCanonicalPath();
+                if (path == null) continue;
+                name = "lib" + separator + name.replaceAll("::", separator) + ".pm6";
+                if (!path.endsWith(name)) continue;
+                PsiFile psiFile = PsiManager.getInstance(getProject()).findFile(file);
+                if (psiFile instanceof Perl6File) {
+                    for (Perl6PsiDeclaration export : ((Perl6File)psiFile).getExports()) {
+                        export.contributeSymbols(collector);
+                        if (collector.isSatisfied())
+                            return;
+                    }
+                    Set<String> seen = new HashSet<>();
+                    seen.add(name);
+                    ((Perl6File)psiFile).contributeGlobals(collector, seen);
                 }
             }
         }

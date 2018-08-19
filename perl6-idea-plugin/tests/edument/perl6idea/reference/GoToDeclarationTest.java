@@ -1,18 +1,29 @@
 package edument.perl6idea.reference;
 
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6ScopedDecl;
+import edument.perl6idea.psi.Perl6TypeName;
 import edument.perl6idea.psi.Perl6Variable;
+import org.jetbrains.annotations.NotNull;
 
 public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "testData/reference";
+    }
+
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
     }
 
     public void testLocalVarReference() {
@@ -31,7 +42,13 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testUseExternalReference() {
-        // TODO
+        myFixture.configureByFiles("IdeaFoo/Baz.pm6", "IdeaFoo/Bar.pm6");
+        PsiElement usage = myFixture.getFile().findElementAt(25);
+        Perl6TypeName type = (Perl6TypeName)PsiTreeUtil.findFirstParent(usage, true, p -> p instanceof Perl6TypeName);
+        PsiElement resolved = type.getReference().resolve();
+        assertNotNull(resolved);
+        PsiFile file = resolved.getContainingFile();
+        assertEquals("Bar.pm6", file.getName());
     }
 
     public void testPrivateMethodsReference() {
