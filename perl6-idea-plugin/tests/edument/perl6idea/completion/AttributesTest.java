@@ -5,15 +5,29 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.sdk.Perl6SdkType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class AttributesTest extends LightCodeInsightFixtureTestCase {
     private Sdk testSdk;
+
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
+    }
+
+    @Override
+    protected String getTestDataPath() {
+        return "testData/completion";
+    }
 
     @Override
     protected void setUp() throws Exception {
@@ -69,6 +83,30 @@ public class AttributesTest extends LightCodeInsightFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertTrue(vars.containsAll(Arrays.asList("$!", "$!a", "$!setup", "$!is-clone")));
+    }
+
+    public void testOuterFileAttributes() {
+        myFixture.configureByFiles("IdeaFoo/Bar1.pm6", "IdeaFoo/Baz.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("$!private", "$!visible", "$.visible")));
+    }
+
+    public void testOuterFileLongFormAttributes() {
+        myFixture.configureByFiles("IdeaFoo/Bar2.pm6", "IdeaFoo/Baz.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("$!private", "$!visible", "$.visible")));
+    }
+
+    public void testOuterFileNestedAttributes() {
+        myFixture.configureByFiles("IdeaFoo/Bar3.pm6", "IdeaFoo/Baz.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("$!private", "$!visible", "$.visible")));
     }
 
     public void testAttributeCompletionWithInnerClasses() {
