@@ -139,4 +139,13 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
         PsiElement resolved = call.getReference().resolve();
         assertTrue(resolved instanceof Perl6VariableDecl);
     }
+
+    public void testMultipleInheritance() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Foo {}; class Bar does Foo {}; Ba<caret>r.new;");
+        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
+        Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
+        PsiElement decl = var.getReference().resolve();
+        assertNotNull(decl);
+        assertNotSame(6, decl.getTextOffset());
+    }
 }
