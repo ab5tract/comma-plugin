@@ -217,11 +217,15 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
 
         if (isAny)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Any", this).methods())
+            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Any", this).methods()) {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
+                if (collector.isSatisfied()) return;
+            }
         if (isMu)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this).methods())
+            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this).methods()) {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
+                if (collector.isSatisfied()) return;
+            }
 
         int level = collector.getNestingLevel();
         for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
@@ -268,12 +272,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 if (((Perl6ExternalPackage)pack).getPackageKind() == Perl6PackageKind.CLASS &&
                     Perl6Variable.getTwigil(var) == '!') continue;
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Variable, var));
-                if (!collector.isSatisfied()) {
-                    if (Perl6Variable.getTwigil(var) == '.') {
-                        collector.offerSymbol(new Perl6ExternalSymbol( // Offer self.foo;
-                            Perl6SymbolKind.Method, '.' + var.substring(2)));
-                    }
-                }
+                if (collector.isSatisfied()) return;
+                if (Perl6Variable.getTwigil(var) == '.')
+                    collector.offerSymbol(new Perl6ExternalSymbol( // Offer self.foo;
+                                          Perl6SymbolKind.Method, '.' + var.substring(2)));
                 if (collector.isSatisfied()) return;
             }
         }
