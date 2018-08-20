@@ -146,6 +146,6 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
         Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
         PsiElement decl = var.getReference().resolve();
         assertNotNull(decl);
-        assertNotSame(6, decl.getTextOffset());
+        assertEquals(19, decl.getTextOffset());
     }
 }
