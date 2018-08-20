@@ -14,8 +14,6 @@ import static edument.perl6idea.parsing.Perl6TokenTypes.METHOD_CALL_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.METHOD_CALL_OPERATOR;
 
 public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6MethodCall {
-    private PsiElement name = null;
-
     public Perl6MethodCallImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -27,11 +25,9 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
 
     @Override
     public String getCallName() {
-        if (name == null) {
-            name = findChildByType(LONG_NAME);
-            if (name == null)
-                name = findChildByType(METHOD_CALL_NAME);
-        }
+        PsiElement name = findChildByType(LONG_NAME);
+        if (name == null)
+            name = findChildByType(METHOD_CALL_NAME);
         return name == null ? "" : getCallOperator() + name.getText();
     }
 
