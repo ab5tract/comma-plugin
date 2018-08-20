@@ -3,6 +3,7 @@ package edument.perl6idea.psi;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.PsiWhiteSpace;
 import edument.perl6idea.psi.impl.Perl6MethodCallImpl;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -45,15 +46,22 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
             return new Caller("self", null);
 
         // Based on previous element decide what type methods we want
-        Perl6PsiElement prev = (Perl6PsiElement)call.getPrevSibling();
+        PsiElement prev = call.getPrevSibling();
+
+        if (prev instanceof PsiWhiteSpace)
+            return new Caller("self", null);
 
         if (prev == null) // .foo
             return new Caller("Any", null);
 
-        return new Caller(prev.inferType(), prev);
+        if (prev instanceof Perl6PsiElement)
+            return new Caller(((Perl6PsiElement)prev).inferType(), prev);
+        else
+            return null;
     }
 
     private static List getMethodsForType(Perl6MethodCall call, Caller caller, boolean isSingle) {
+        if (caller == null) return new ArrayList();
         if (caller.isSelf()) {
             return isSingle ?
                    Collections.singletonList(call.resolveSymbol(Perl6SymbolKind.Method, call.getCallName())) :

@@ -118,4 +118,12 @@ public class AttributesTest extends LightCodeInsightFixtureTestCase {
         assertTrue(vars.containsAll(Arrays.asList("$!", "$!xyz")));
         assertEquals(2, vars.size());
     }
+
+    public void testDotAttribute() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Foo { has $.foo; has $.bar; method test { $.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertTrue(vars.contains(".foo"));
+    }
 }
