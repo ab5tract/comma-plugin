@@ -65,7 +65,7 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
         Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
         PsiElement decl = var.getReference().resolve();
         assertNotNull(decl);
-        assertEquals(0, decl.getTextOffset());
+        assertEquals(6, decl.getTextOffset());
     }
 
     public void testUseLocalTypeMultiPart() {
@@ -74,7 +74,7 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
         Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
         PsiElement decl = var.getReference().resolve();
         assertNotNull(decl);
-        assertEquals(0, decl.getTextOffset());
+        assertEquals(6, decl.getTextOffset());
     }
 
     public void testUseLocalTypeParametrized() {
@@ -83,7 +83,7 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
         Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
         PsiElement decl = var.getReference().resolve();
         assertNotNull(decl);
-        assertEquals(0, decl.getTextOffset());
+        assertEquals(6, decl.getTextOffset());
     }
 
     public void testUseExternalType() {
