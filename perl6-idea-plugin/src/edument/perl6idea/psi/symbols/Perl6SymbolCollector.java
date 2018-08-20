@@ -20,4 +20,15 @@ public interface Perl6SymbolCollector {
 
     /* Returns flag value that indicates if internal parts of package should be offered */
     boolean areInternalPartsCollected();
+
+    /* Is used to check nesting level of inheritance, so we could differentiate
+     * directly composed roles from non-direct ones,
+     * starts from 0, first package is 1 */
+    void setNestingLevel(int level);
+    int getNestingLevel();
+
+    /* When doing recursive inheritance/composition walking, we use this flag to
+     * see if composition chain was broken by class */
+    void setClassInheritanceBarrier(boolean occur);
+    boolean getClassInheritanceBarrier();
 }

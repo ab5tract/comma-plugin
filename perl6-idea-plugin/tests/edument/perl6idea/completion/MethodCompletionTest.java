@@ -610,4 +610,10 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.contains(".acos"));
     }
+
+    public void testGrandParentRolesPrivatePartsAreNotConsidered() {
+        myFixture.configureByFile("IdeaFoo/GrandParentBug.p6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        assertNotNull(myFixture.getLookupElementStrings());
+    }
 }

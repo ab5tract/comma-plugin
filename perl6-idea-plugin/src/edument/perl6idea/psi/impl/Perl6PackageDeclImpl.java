@@ -126,6 +126,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     }
 
     private void contributeFromElders(Perl6SymbolCollector collector) {
+        collector.setNestingLevel(collector.getNestingLevel() + 1);
         Perl6PackageDeclStub stub = getStub();
         List<Pair<String, Perl6PackageDecl>> perl6PackageDecls = new ArrayList<>();
         List<String> externals = new ArrayList<>();
@@ -177,15 +178,23 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this).methods())
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
 
+        int level = collector.getNestingLevel();
+        boolean line = collector.getClassInheritanceBarrier();
         for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
             // Local perl6PackageDecl
             Perl6PackageDecl typeRef = pair.second;
             String mod = pair.first;
-            // We allow gathering of private parts from roles, but not classes
-            collector.setAreInternalPartsCollected(mod.equals("does"));
+            // We allow gathering of private parts from composition chain(e.g. role-role-role)
+            // but the chain is broken on first class occurrence
+            if (mod.equals("is"))
+                collector.setClassInheritanceBarrier(false);
+            collector.setAreInternalPartsCollected(collector.getClassInheritanceBarrier());
             // Contribute perl6PackageDecl internals using stub or node
             typeRef.contributeScopeSymbols(collector);
             if (collector.isSatisfied()) return;
+            collector.setNestingLevel(level);
+            if (level == 1)
+                collector.setClassInheritanceBarrier(true);
         }
         for (String extType : externals) {
             // It can be either external perl6PackageDecl or non-existent one
