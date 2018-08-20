@@ -2,6 +2,7 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import edument.perl6idea.psi.Perl6LongName;
 import edument.perl6idea.psi.Perl6MethodCall;
@@ -9,10 +10,11 @@ import edument.perl6idea.psi.Perl6MethodReference;
 import org.jetbrains.annotations.NotNull;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
+import static edument.perl6idea.parsing.Perl6TokenTypes.METHOD_CALL_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.METHOD_CALL_OPERATOR;
 
 public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6MethodCall {
-    private Perl6LongName name = null;
+    private PsiElement name = null;
 
     public Perl6MethodCallImpl(@NotNull ASTNode node) {
         super(node);
@@ -25,8 +27,11 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
 
     @Override
     public String getCallName() {
-        if (name == null)
+        if (name == null) {
             name = findChildByType(LONG_NAME);
+            if (name == null)
+                name = findChildByType(METHOD_CALL_NAME);
+        }
         return name == null ? "" : getCallOperator() + name.getText();
     }
 

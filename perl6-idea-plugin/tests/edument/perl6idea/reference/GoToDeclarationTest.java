@@ -133,4 +133,12 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
         assertTrue(class_ instanceof Perl6PackageDecl);
         assertEquals("Bar", ((Perl6PackageDecl)class_).getPackageName());
     }
+
+    public void testAttributeByCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { has $.foo; method test { $.fo<caret>o; } }");
+        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset());
+        Perl6MethodCall call = PsiTreeUtil.getParentOfType(usage, Perl6MethodCall.class);
+        PsiElement resolved = call.getReference().resolve();
+        assertTrue(resolved instanceof Perl6VariableDecl);
+    }
 }

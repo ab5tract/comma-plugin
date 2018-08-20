@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static edument.perl6idea.parsing.Perl6TokenTypes.SELF;
+
 public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     public Perl6MethodReference(Perl6MethodCallImpl call) {
         super(call, new TextRange(0, call.getCallName().length()));
@@ -43,6 +45,9 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     private static Caller getCallerType(Perl6MethodCall call) {
         // Short-circuit as !foo is always self-based
         if (call.getCallOperator().equals("!"))
+            return new Caller("self", null);
+
+        if (call.findElementAt(0) != null && call.findElementAt(0).getNode().getElementType() == SELF)
             return new Caller("self", null);
 
         // Based on previous element decide what type methods we want
