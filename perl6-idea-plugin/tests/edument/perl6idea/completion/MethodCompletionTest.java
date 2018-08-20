@@ -611,9 +611,18 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertTrue(methods.contains(".acos"));
     }
 
-    public void testGrandParentRolesPrivatePartsAreNotConsidered() {
-        myFixture.configureByFile("IdeaFoo/GrandParentBug.p6");
+    public void testRolesCompositionIsFlattened1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "role A { has $!foo = 5 }; role B does A {}; class C does B { method a { say $!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         assertNotNull(myFixture.getLookupElementStrings());
+    }
+
+    public void testRolesCompositionIsFlattened2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "role A { has $!foo = 5 }; role B does A { method a { say $!<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        // TODO
+        // assertNull(myFixture.getLookupElementStrings());
     }
 }
