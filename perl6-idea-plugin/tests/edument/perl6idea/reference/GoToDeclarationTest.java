@@ -118,20 +118,18 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Foo { method !a{} }; class Bar does Foo { method !b{ self!<caret>a; } }");
         PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset()).getParent().getParent();
         PsiElement resolved = usage.getReference().resolve();
-        PsiElement role = PsiTreeUtil.getParentOfType(resolved, Perl6PackageDecl.class);
+        Perl6PackageDecl role = PsiTreeUtil.getParentOfType(resolved, Perl6PackageDecl.class);
         assertNotNull(role);
-        assertTrue(role instanceof Perl6PackageDecl);
-        assertEquals("Foo", ((Perl6PackageDecl)role).getPackageName());
+        assertEquals("Foo", role.getPackageName());
     }
 
     public void testOverloadedPrivateMethodReference() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Foo { method !a{} }; class Bar does Foo { method !a{}; method !b{ self!<caret>a; } }");
         PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset()).getParent().getParent();
         PsiElement resolved = usage.getReference().resolve();
-        PsiElement class_ = PsiTreeUtil.getParentOfType(resolved, Perl6PackageDecl.class);
+        Perl6PackageDecl class_ = PsiTreeUtil.getParentOfType(resolved, Perl6PackageDecl.class);
         assertNotNull(class_);
-        assertTrue(class_ instanceof Perl6PackageDecl);
-        assertEquals("Bar", ((Perl6PackageDecl)class_).getPackageName());
+        assertEquals("Bar", class_.getPackageName());
     }
 
     public void testAttributeByCall() {
