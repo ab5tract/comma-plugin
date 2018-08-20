@@ -43,7 +43,7 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
     @Override
     public int getTextOffset() {
         PsiElement name = getNameIdentifier();
-        return name == null ? 0 : name.getStartOffsetInParent();
+        return name == null ? 0 : name.getTextOffset();
     }
 
     @Override
