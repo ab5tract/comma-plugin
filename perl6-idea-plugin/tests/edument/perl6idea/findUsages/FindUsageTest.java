@@ -85,6 +85,21 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         assertEquals(3, usageInfos.size());
     }
 
+    public void testPrivateMethod() {
+        Collection<UsageInfo> usageInfos = myFixture.testFindUsages("PrivateMethod.p6");
+        assertEquals(4, usageInfos.size());
+    }
+
+    public void testPrivateMethodFromRole() {
+        Collection<UsageInfo> usageInfos = myFixture.testFindUsages("PrivateMethodFromRole.p6");
+        assertEquals(4, usageInfos.size());
+    }
+
+    public void testPrivateMethodFromRoleOverloaded() {
+        Collection<UsageInfo> usageInfos = myFixture.testFindUsages("PrivateMethodFromRoleOverloaded.p6");
+        assertEquals(2, usageInfos.size());
+    }
+
     //public void testFindUsagesForTypeDefinition() {
     //    Collection<UsageInfo> usageInfos = myFixture.testFindUsages("TypeDefinition.p6");
     //    assertEquals(2, usageInfos.size());
