@@ -197,10 +197,43 @@ grammar MAIN {
     }
 
     token comment {
-        <.start-token('COMMENT')>
-       '#' \N*
-        <.end-token('COMMENT')>
+        [
+        || <.pre-comment>
+        || <.post-comment>
+        || <.plain-comment>
+        ]
     }
+
+    token pre-comment {
+        <.start-element('POD_PRE_COMMENT')>
+        <.start-token('COMMENT_STARTER')>
+        '#|'
+        <.end-token('COMMENT_STARTER')>
+        <.start-token('COMMENT')>        
+        \N*
+        <.end-token('COMMENT')>
+        <.end-element('POD_PRE_COMMENT')>
+    }
+
+    token post-comment {
+        <.start-element('POD_POST_COMMENT')>
+        <.start-token('COMMENT_STARTER')>
+        '#='
+        <.end-token('COMMENT_STARTER')>
+        <.start-token('COMMENT')>
+        \N*
+        <.end-token('COMMENT')>
+        <.end-element('POD_POST_COMMENT')>
+    }
+
+    token plain-comment {
+        <.start-token('COMMENT_STARTER')>
+        '#'
+        <.end-token('COMMENT_STARTER')>
+        <.start-token('COMMENT')>
+        \N*
+        <.end-token('COMMENT')>
+}
 
     token pod_content_toplevel {
         <.pod_block>
