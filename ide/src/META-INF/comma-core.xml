@@ -31,6 +31,9 @@
       <extensionPoint name="projectStructureConfigurableFilter" interface="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurableFilter"/>
       <extensionPoint name="projectStructureConfigurableAdder" interface="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurableContributor"/>
       <extensionPoint name="projectStructureValidator" interface="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureValidator"/>
+      <extensionPoint name="OrderRootTypeUI" beanClass="com.intellij.openapi.extensions.KeyedFactoryEPBean">
+        <with attribute="implementationClass" implements="com.intellij.openapi.roots.ui.OrderRootTypeUIFactory"/>
+      </extensionPoint>
     </extensionPoints>
 
     <extensions defaultExtensionNs="com.intellij">
@@ -53,8 +56,12 @@
       <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.JdkListConfigurable"/>
       <projectService serviceInterface="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureProblemsSettings"
                       serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureProblemsSettingsImpl"/>
+      <projectService serviceInterface="com.intellij.openapi.roots.LanguageLevelProjectExtension"
+                      serviceImplementation="com.intellij.openapi.roots.impl.LanguageLevelProjectExtensionImpl"/>
       <projectService serviceInterface="com.intellij.openapi.roots.CompilerProjectExtension"
                       serviceImplementation="com.intellij.openapi.roots.impl.CompilerProjectExtensionImpl"/>
+      <projectService serviceInterface="com.intellij.packaging.artifacts.ArtifactPointerManager"
+                      serviceImplementation="com.intellij.packaging.impl.artifacts.ArtifactPointerManagerImpl"/>
       <applicationService serviceInterface="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureProblemsSettings"
                           serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.GlobalProjectStructureProblemsSettings"/>
       <favoritesListProvider implementation="com.intellij.ide.bookmarks.BookmarksFavoriteListProvider"/>
@@ -62,6 +69,20 @@
       <moduleConfigurationEditorProvider implementation="edument.perl6idea.module.Perl6ModuleConfigurationEditorProvider" order="FIRST"/>
       <postStartupActivity implementation="edument.perl6idea.utils.Perl6PostStartupActivity"/>
       <projectViewPane implementation="com.intellij.ide.projectView.impl.ProjectViewPane"/>
+
+      <OrderRootTypeUI key="JAVADOC"
+                       implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.JavadocOrderRootTypeUIFactory"/>
+      <OrderRootTypeUI key="ANNOTATIONS"
+                       implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.AnnotationsOrderRootTypeUIFactory"/>
+      <OrderRootTypeUI key="NATIVE"
+                       implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.NativeLibraryOrderRootTypeUIFactory"/>
+      <OrderRootTypeUI key="CLASSES"
+                       implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.ClassesOrderRootTypeUIFactory"/>
+      <OrderRootTypeUI key="SOURCES"
+                       implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.SourcesOrderRootTypeUIFactory"/>
+      <OrderRootTypeUI key="DOCUMENTATION"
+                       implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.DocumentationOrderRootTypeUIFactory"/>
+
     </extensions>
 
     <application-components>
@@ -70,6 +91,13 @@
         <implementation-class>com.intellij.openapi.projectRoots.impl.JavaSdkImpl</implementation-class>
       </component>
     </application-components>
+
+    <project-components>
+      <component>
+        <interface-class>com.intellij.packaging.artifacts.ArtifactManager</interface-class>
+        <implementation-class>com.intellij.packaging.impl.artifacts.ArtifactManagerImpl</implementation-class>
+      </component>
+    </project-components>
 
     <!-- Actions for standalone Comma -->
     <!-- Actions for Welcome Screen -->
