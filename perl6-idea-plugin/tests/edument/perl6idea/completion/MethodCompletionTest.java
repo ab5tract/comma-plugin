@@ -202,7 +202,7 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
-        assertTrue(methods.containsAll(Arrays.asList("!a", "!bar", "!baz")));
+        assertTrue(methods.containsAll(Arrays.asList("!a", "!bar")));
     }
 
     public void testPrivateMethodFromExternalRoleCompletion() {
@@ -615,14 +615,13 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "role A { has $!foo = 5 }; role B does A {}; class C does B { method a { say $!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
-        assertNotNull(myFixture.getLookupElementStrings());
+        assertNull(myFixture.getLookupElementStrings());
     }
 
     public void testRolesCompositionIsFlattened2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "role A { has $!foo = 5 }; role B does A { method a { say $!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
-        // TODO
-        // assertNull(myFixture.getLookupElementStrings());
+        assertNull(myFixture.getLookupElementStrings());
     }
 }

@@ -179,14 +179,13 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
 
         int level = collector.getNestingLevel();
-        boolean line = collector.getClassInheritanceBarrier();
         for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
             // Local perl6PackageDecl
             Perl6PackageDecl typeRef = pair.second;
             String mod = pair.first;
             // We allow gathering of private parts from composition chain(e.g. role-role-role)
             // but the chain is broken on first class occurrence
-            if (mod.equals("is"))
+            if (mod.equals("is") || !getPackageKind().equals("class"))
                 collector.setClassInheritanceBarrier(false);
             collector.setAreInternalPartsCollected(collector.getClassInheritanceBarrier());
             // Contribute perl6PackageDecl internals using stub or node
