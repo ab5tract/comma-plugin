@@ -80,6 +80,20 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         assertEquals(3, usageInfos.size());
     }
 
+    public void testPrivateAttributeFromOuterRole1() {
+        myFixture.configureByFiles("IdeaFoo2/Base.pm6", "IdeaFoo2/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(24);
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(4, usages.size());
+    }
+
+    public void testPrivateAttributeFromOuterRole2() {
+        myFixture.configureByFiles("IdeaFoo2/Base.pm6", "IdeaFoo2/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(44);
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(5, usages.size());
+    }
+
     public void testComposedAndInherited() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("RoleClassAttribute.p6");
         assertEquals(3, usageInfos.size());
