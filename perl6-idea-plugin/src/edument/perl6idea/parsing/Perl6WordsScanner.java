@@ -9,7 +9,10 @@ public class Perl6WordsScanner extends DefaultWordsScanner {
               // Identifiers
               TokenSet.create(Perl6TokenTypes.NAME,
                               Perl6TokenTypes.SUB_CALL_NAME,
-                              Perl6TokenTypes.METHOD_CALL_NAME),
+                              Perl6TokenTypes.METHOD_CALL_NAME,
+                              Perl6TokenTypes.VARIABLE,
+                              Perl6TokenTypes.SELF_CALL_VARIABLE,
+                              Perl6TokenTypes.ROUTINE_NAME),
               // Comments
               TokenSet.create(Perl6TokenTypes.COMMENT),
               // Literals, no string literal here
