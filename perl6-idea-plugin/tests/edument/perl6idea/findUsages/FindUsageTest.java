@@ -115,6 +115,25 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         assertEquals(2, usageInfos.size());
     }
 
+    public void testFindUsagesForSub() {
+        Collection<UsageInfo> usageInfos = myFixture.testFindUsages("Sub.p6");
+        assertEquals(4, usageInfos.size());
+    }
+
+    public void testFindUsagesForOuterSub1() {
+        myFixture.configureByFiles("IdeaFoo3/Base.pm6", "IdeaFoo3/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(6);
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(4, usages.size());
+    }
+
+    public void testFindUsagesForOuterSub2() {
+        myFixture.configureByFiles("IdeaFoo3/Base.pm6", "IdeaFoo3/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(39);
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(2, usages.size());
+    }
+
     //public void testFindUsagesForTypeDefinition() {
     //    Collection<UsageInfo> usageInfos = myFixture.testFindUsages("TypeDefinition.p6");
     //    assertEquals(2, usageInfos.size());
@@ -128,10 +147,5 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
     //public void testFindUsagesForMethod() {
     //    Collection<UsageInfo> usageInfos = myFixture.testFindUsages("Method.p6");
     //    assertEquals(2, usageInfos.size());
-    //}
-    //
-    //public void testFindUsagesForSub() {
-    //    Collection<UsageInfo> usageInfos = myFixture.testFindUsages("Sub.p6");
-    //    assertEquals(4, usageInfos.size());
     //}
 }
