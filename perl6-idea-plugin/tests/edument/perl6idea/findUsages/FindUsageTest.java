@@ -181,4 +181,25 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
         assertEquals(6, usages.size());
     }
+
+    public void testMultiPartNameOuter() {
+        myFixture.configureByFiles("IdeaFoo7/Base.pm6", "IdeaFoo7/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(8);
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(1, usages.size());
+    }
+
+    public void testMultiPartNameMiddle() {
+        myFixture.configureByFiles("IdeaFoo7/Base.pm6", "IdeaFoo7/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(24);
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(1, usages.size());
+    }
+
+    public void testMultiPartNameInner() {
+        myFixture.configureByFiles("IdeaFoo7/Base.pm6", "IdeaFoo7/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(43);
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(2, usages.size());
+    }
 }
