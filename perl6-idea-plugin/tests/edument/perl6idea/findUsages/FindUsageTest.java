@@ -150,4 +150,35 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
         assertEquals(9, usages.size());
     }
+
+    public void testGrammar() {
+        Collection<UsageInfo> usageInfos = myFixture.testFindUsages("Grammar.p6");
+        assertEquals(2, usageInfos.size());
+    }
+
+    public void testMonitor() {
+        Collection<UsageInfo> usageInfos = myFixture.testFindUsages("Monitor.p6");
+        assertEquals(2, usageInfos.size());
+    }
+
+    public void testSubsetOuter1() {
+        myFixture.configureByFiles("IdeaFoo5/Base.pm6", "IdeaFoo5/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(8);
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(2, usages.size());
+    }
+
+    public void testSubsetOuter2() {
+        myFixture.configureByFiles("IdeaFoo5/Base.pm6", "IdeaFoo5/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(50);
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(0, usages.size());
+    }
+
+    public void testEnum() {
+        myFixture.configureByFiles("IdeaFoo6/Base.pm6", "IdeaFoo6/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(7);
+        Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
+        assertEquals(6, usages.size());
+    }
 }
