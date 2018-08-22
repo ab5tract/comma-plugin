@@ -15,7 +15,6 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub> implements Perl6VariableDecl {
