@@ -18,6 +18,7 @@ public interface Perl6ElementTypes {
     IStubElementType NEED_STATEMENT = new Perl6NeedStatementStubElementType();
     IStubElementType TYPE_NAME = new Perl6TypeNameStubElementType();
     IStubElementType TRAIT = new Perl6TraitStubElementType();
+    IElementType ALSO = new Perl6ElementType("ALSO");
     IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
     IElementType ARRAY_INDEX = new Perl6ElementType("ARRAY_INDEX");
     IElementType ARRAY_SHAPE = new Perl6ElementType("ARRAY_SHAPE");

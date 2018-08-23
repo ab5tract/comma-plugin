@@ -3,6 +3,7 @@ import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 
 public interface Perl6TokenTypes {
+    IElementType ALSO = new Perl6ElementType("ALSO");
     IElementType ARGLIST_EMPTY = new Perl6ElementType("ARGLIST_EMPTY");
     IElementType ARGLIST_END = new Perl6ElementType("ARGLIST_END");
     IElementType ARGLIST_START = new Perl6ElementType("ARGLIST_START");

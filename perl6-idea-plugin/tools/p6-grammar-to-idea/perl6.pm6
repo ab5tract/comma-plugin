@@ -2420,14 +2420,23 @@ grammar MAIN {
 
     token package_declarator {
         :my $*IS_ROLE = 0;
-        <?before <.package_kind> <.kok>>
-        <.start-element('PACKAGE_DECLARATION')>
-        <.start-token('PACKAGE_DECLARATOR')>
-        <.package_kind>
-        <.end-token('PACKAGE_DECLARATOR')>
-        <.kok>
-        <.package_def>
-        <.end-element('PACKAGE_DECLARATION')>
+        [
+        || <?before <.package_kind> <.kok>>
+           <.start-element('PACKAGE_DECLARATION')>
+           <.start-token('PACKAGE_DECLARATOR')>
+           <.package_kind>
+           <.end-token('PACKAGE_DECLARATOR')>
+           <.kok>
+           <.package_def>
+           <.end-element('PACKAGE_DECLARATION')>
+        || <?before 'also' <.kok>>
+           <.start-element('ALSO')>
+           <.start-token('ALSO')> 'also' <.end-token('ALSO')> <.kok>
+           <.ws>?
+           <.trait>*
+           <.ws>?
+           <.end-element('ALSO')>
+        ]
     }
 
     token package_kind {
