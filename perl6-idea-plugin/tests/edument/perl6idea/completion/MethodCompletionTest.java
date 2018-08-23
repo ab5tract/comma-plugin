@@ -615,7 +615,9 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "role A { has $!foo = 5 }; role B does A {}; class C does B { method a { say $!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
-        assertNull(myFixture.getLookupElementStrings());
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.contains("$!foo"));
     }
 
     public void testRolesCompositionIsFlattened2() {

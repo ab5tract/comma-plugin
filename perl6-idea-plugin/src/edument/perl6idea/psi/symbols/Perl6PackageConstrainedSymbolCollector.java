@@ -3,8 +3,8 @@ package edument.perl6idea.psi.symbols;
 public abstract class Perl6PackageConstrainedSymbolCollector implements Perl6SymbolCollector {
     private int packageDepth = 0;
     private boolean areInternalPartsCollected = true;
+    private String enclosingPackageKind = null;
     private int inheritanceNesting = 0;
-    private boolean classInheritanceBarrier = true;
 
     public void increasePackageDepth() {
         packageDepth++;
@@ -18,10 +18,16 @@ public abstract class Perl6PackageConstrainedSymbolCollector implements Perl6Sym
         return !test.isInstanceScoped() || areInstanceSymbolsRelevant();
     }
 
+    public String enclosingPackageKind() {
+        return enclosingPackageKind;
+    }
+    public void setEnclosingPackageKind(String kind) {
+        enclosingPackageKind = kind;
+    }
+
     public void setAreInternalPartsCollected(boolean flag) {
         areInternalPartsCollected = flag;
     }
-
     public boolean areInternalPartsCollected() {
         return areInternalPartsCollected;
     }
@@ -32,15 +38,5 @@ public abstract class Perl6PackageConstrainedSymbolCollector implements Perl6Sym
 
     public int getNestingLevel() {
         return inheritanceNesting;
-    }
-
-    @Override
-    public boolean getClassInheritanceBarrier() {
-        return classInheritanceBarrier;
-    }
-
-    @Override
-    public void setClassInheritanceBarrier(boolean classInheritanceBarrier) {
-        this.classInheritanceBarrier = classInheritanceBarrier;
     }
 }

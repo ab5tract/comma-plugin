@@ -47,6 +47,9 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     @Override
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
+        if (collector.enclosingPackageKind() == null) {
+            collector.setEnclosingPackageKind(getPackageKind());
+        }
         collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?PACKAGE"));
         if (collector.isSatisfied()) return;
         contributeInternals(collector);
@@ -183,17 +186,13 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             // Local perl6PackageDecl
             Perl6PackageDecl typeRef = pair.second;
             String mod = pair.first;
-            // We allow gathering of private parts from composition chain(e.g. role-role-role)
-            // but the chain is broken on first class occurrence
-            if (mod.equals("is") || !getPackageKind().equals("class"))
-                collector.setClassInheritanceBarrier(false);
-            collector.setAreInternalPartsCollected(collector.getClassInheritanceBarrier());
+            // We allow gathering of private parts from roles, not classes
+            if (mod.equals("is"))
+                collector.setAreInternalPartsCollected(false);
             // Contribute perl6PackageDecl internals using stub or node
             typeRef.contributeScopeSymbols(collector);
             if (collector.isSatisfied()) return;
             collector.setNestingLevel(level);
-            if (level == 1)
-                collector.setClassInheritanceBarrier(true);
         }
         for (String extType : externals) {
             // It can be either external perl6PackageDecl or non-existent one

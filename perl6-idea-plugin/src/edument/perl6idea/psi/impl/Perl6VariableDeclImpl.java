@@ -94,7 +94,12 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public static void offerVariableSymbols(Perl6SymbolCollector collector, String name, Perl6VariableDecl var) {
         boolean isInstanceScoped = var.getScope().equals("has");
         // Contribute usual attributes or private if allowed
-        if (Perl6Variable.getTwigil(name) == '!' && collector.areInternalPartsCollected() || Perl6Variable.getTwigil(name) != '!')
+        String askerKind = collector.enclosingPackageKind();
+        // If private variable and we collect internals, it is class asking for composed variable or whatever that gets its own parts (level == 1)
+        // then contribute, or contribute if it is not a private variable
+        if (Perl6Variable.getTwigil(name) == '!' && collector.areInternalPartsCollected() &&
+            (askerKind != null && askerKind.equals("class") || collector.getNestingLevel() == 0) ||
+            Perl6Variable.getTwigil(name) != '!')
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, var, isInstanceScoped));
         if (collector.isSatisfied()) return;
 

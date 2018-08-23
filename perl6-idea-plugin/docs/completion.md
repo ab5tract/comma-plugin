@@ -55,7 +55,7 @@ Given the case of
 we must not complete `$.a` attribute. For this purpose, we check this flag and contribute if
 symbols are allowed.
 
-##### Collect of internal parts
+##### Collect internal parts
 
 Main flag that is used to indicate whether we export private methods and attributes or not.
 
@@ -83,7 +83,12 @@ For example
 
 Level of C is 1, level of B *and* A is 1 regardless of their order in declaration.
 
-##### Broken compositional chain flag
+##### Caller
+
+Caller flag indicates what type of package is enclosing for element we want to complete/resolve.
+It is needed because private attributes have different behavior based on `role does roles` or `class does roles` pattern.
+
+##### Broken compositional chain
 
 When walking over composition/inheritance chain, it is important to consider that not
 every type of chain preserves all passed elements.

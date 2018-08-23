@@ -9,11 +9,15 @@ public interface Perl6SymbolCollector {
      * to search. */
     boolean isSatisfied();
 
-    /* Called by the scope search when a package boundary has been crossed. */
+    /* Called by the scope search when a package boundary has been crossed */
     void increasePackageDepth();
 
     /* Is used to check if we should offer package symbols */
     boolean areInstanceSymbolsRelevant();
+
+    /* Indicates what package encloses completed element */
+    String enclosingPackageKind();
+    void setEnclosingPackageKind(String kind);
 
     /* Sets flag indicating if internal parts should be offered */
     void setAreInternalPartsCollected(boolean flag);
@@ -26,9 +30,4 @@ public interface Perl6SymbolCollector {
      * starts from 0, first package is 1 */
     void setNestingLevel(int level);
     int getNestingLevel();
-
-    /* When doing recursive inheritance/composition walking, we use this flag to
-     * see if composition chain was broken by class */
-    void setClassInheritanceBarrier(boolean occur);
-    boolean getClassInheritanceBarrier();
 }
