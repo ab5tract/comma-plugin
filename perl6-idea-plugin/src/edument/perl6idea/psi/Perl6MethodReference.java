@@ -4,7 +4,9 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.impl.Perl6MethodCallImpl;
+import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
@@ -43,10 +45,6 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     }
 
     private static Caller getCallerType(Perl6MethodCall call) {
-        // Short-circuit as !foo is always self-based
-        if (call.getCallOperator().equals("!"))
-            return new Caller("self", null);
-
         if (call.findElementAt(0) != null && call.findElementAt(0).getNode().getElementType() == SELF)
             return new Caller("self", null);
 
@@ -85,12 +83,18 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
 
     private static List getMethodsByTypeName(Perl6MethodCall call, String name, boolean isSingle) {
         Perl6Symbol type = call.resolveSymbol(Perl6SymbolKind.TypeOrConstant, name);
+        Perl6PackageDecl enclosingPackage = PsiTreeUtil.getParentOfType(call, Perl6PackageDeclImpl.class);
+        String kind = null, packageName = null;
+        if (enclosingPackage != null) {
+            kind = enclosingPackage.getPackageKind();
+            packageName = enclosingPackage.getPackageName();
+        }
         if (type != null) { // If we know that type, even as external
             Perl6PackageDecl decl = (Perl6PackageDecl)type.getPsi();
             if (decl != null) { // Not external type
                 return isSingle ?
-                       Collections.singletonList(resolvePackageMethod(decl, call.getCallName())) :
-                       completePackageMethod(decl);
+                       Collections.singletonList(resolvePackageMethod(decl, call.getCallName(), kind, packageName)) :
+                       completePackageMethod(decl, kind, packageName);
             } else {
                 return isSingle ? Collections.EMPTY_LIST :
                        tryToCompleteExternalTypeMethods(name, call);
@@ -140,15 +144,19 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         return basicMethods;
     }
 
-    private static List<String> completePackageMethod(Perl6PackageDecl decl) {
+    private static List<String> completePackageMethod(Perl6PackageDecl decl, String kind, String packageName) {
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
+        collector.setEnclosingPackageKind(kind);
+        collector.setEnclosingPackageName(packageName);
         decl.contributeScopeSymbols(collector);
         MuAnyMethods(decl, collector);
         return collector.getVariants().stream().map(s -> s.getName()).collect(Collectors.toList());
     }
 
-    private static Object resolvePackageMethod(Perl6PackageDecl decl, String name) {
+    private static Object resolvePackageMethod(Perl6PackageDecl decl, String name, String kind, String packageName) {
         Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, Perl6SymbolKind.Method);
+        collector.setEnclosingPackageKind(kind);
+        collector.setEnclosingPackageName(packageName);
         decl.contributeScopeSymbols(collector);
         return collector.getResult();
     }

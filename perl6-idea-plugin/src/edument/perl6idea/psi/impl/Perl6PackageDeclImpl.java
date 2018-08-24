@@ -16,6 +16,7 @@ import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub> implements Perl6PackageDecl {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
@@ -50,9 +51,16 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (collector.enclosingPackageKind() == null) {
             collector.setEnclosingPackageKind(getPackageKind());
         }
+        if (collector.enclosingPackageName() == null) {
+            collector.setEnclosingPackageName(getPackageName());
+        }
         collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?PACKAGE"));
         if (collector.isSatisfied()) return;
-        contributeInternals(collector);
+        List<String> trusts = getTrusts();
+        // If it is not first encountered package (enclosing one) and current package trusts
+        boolean isTrusted = !getPackageName().equals(collector.enclosingPackageName()) &&
+                            trusts.contains(collector.enclosingPackageName());
+        contributeInternals(collector, isTrusted);
         if (collector.isSatisfied()) return;
         if (collector.areInstanceSymbolsRelevant()) {
             contributeFromElders(collector);
@@ -70,14 +78,36 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
     }
 
-    private void contributeInternals(Perl6SymbolCollector collector) {
+    private List<String> getTrusts() {
+        List<String> trusts = new ArrayList<>();
+        Perl6StatementList statementList = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
+        if (statementList == null) return new ArrayList<>();
+        for (PsiElement statement : statementList.getChildren()) {
+            if (statement.getFirstChild() instanceof Perl6Trusts)
+                trusts.add(((Perl6Trusts)statement.getFirstChild()).getTypeName());
+        }
+        return trusts;
+    }
+
+    private void contributeInternals(Perl6SymbolCollector collector, boolean isTrusted) {
         Perl6PackageDeclStub stub = getStub();
         if (stub != null) {
             for (StubElement nestedStub : stub.getChildrenStubs()) {
                 if (nestedStub instanceof Perl6RoutineDeclStub) {
                     Perl6RoutineDeclStub declStub = (Perl6RoutineDeclStub)nestedStub;
-                    Perl6RoutineDeclImpl.offerRoutineSymbols(
-                        collector, declStub.getRoutineName(), declStub.getPsi());
+                    if (isTrusted && declStub.isPrivate()) {
+                        boolean areInternalsCollected = collector.areInternalPartsCollected();
+                        collector.setAreInternalPartsCollected(true);
+                        Perl6RoutineDeclImpl.offerRoutineSymbols(
+                            collector,
+                            "!" + getPackageName() + "::" + declStub.getRoutineName().substring(1),
+                            declStub.getPsi());
+                        collector.setAreInternalPartsCollected(areInternalsCollected);
+                        if (collector.isSatisfied()) return;
+                    } else {
+                        Perl6RoutineDeclImpl.offerRoutineSymbols(
+                            collector, declStub.getRoutineName(), declStub.getPsi());
+                    }
                     if (collector.isSatisfied()) return;
                 } else if (nestedStub instanceof Perl6ScopedDeclStub) {
                     Perl6ScopedDeclStub scopedVar = (Perl6ScopedDeclStub)nestedStub;
@@ -105,7 +135,19 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (list == null) return;
         for (PsiElement child : list.getChildren()) {
             if (child.getFirstChild() instanceof Perl6RoutineDecl) {
-                ((Perl6RoutineDecl)child.getFirstChild()).contributeSymbols(collector);
+                Perl6RoutineDecl decl = (Perl6RoutineDecl)child.getFirstChild();
+                if (isTrusted && decl.isPrivate()) {
+                    boolean areInternalsCollected = collector.areInternalPartsCollected();
+                    collector.setAreInternalPartsCollected(true);
+                    Perl6RoutineDeclImpl.offerRoutineSymbols(
+                        collector,
+                        "!" + getPackageName() + "::" + decl.getRoutineName().substring(1),
+                        decl);
+                    collector.setAreInternalPartsCollected(areInternalsCollected);
+                    if (collector.isSatisfied()) return;
+                } else {
+                    ((Perl6RoutineDecl)child.getFirstChild()).contributeSymbols(collector);
+                }
                 if (collector.isSatisfied()) return;
             } else if (child.getFirstChild() instanceof Perl6ScopedDecl) {
                 Perl6ScopedDecl decl = (Perl6ScopedDecl)child.getFirstChild();
