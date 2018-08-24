@@ -19,6 +19,10 @@ public interface Perl6SymbolCollector {
     String enclosingPackageKind();
     void setEnclosingPackageKind(String kind);
 
+    /* Indicates what name has package that encloses completed element */
+    String enclosingPackageName();
+    void setEnclosingPackageName(String name);
+
     /* Sets flag indicating if internal parts should be offered */
     void setAreInternalPartsCollected(boolean flag);
 

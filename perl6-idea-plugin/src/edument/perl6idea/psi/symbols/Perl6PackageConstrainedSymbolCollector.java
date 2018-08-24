@@ -4,6 +4,7 @@ public abstract class Perl6PackageConstrainedSymbolCollector implements Perl6Sym
     private int packageDepth = 0;
     private boolean areInternalPartsCollected = true;
     private String enclosingPackageKind = null;
+    private String enclosingPackageName = null;
     private int inheritanceNesting = 0;
 
     public void increasePackageDepth() {
@@ -23,6 +24,13 @@ public abstract class Perl6PackageConstrainedSymbolCollector implements Perl6Sym
     }
     public void setEnclosingPackageKind(String kind) {
         enclosingPackageKind = kind;
+    }
+
+    public String enclosingPackageName() {
+        return enclosingPackageName;
+    }
+    public void setEnclosingPackageName(String name) {
+        enclosingPackageName = name;
     }
 
     public void setAreInternalPartsCollected(boolean flag) {
