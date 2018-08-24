@@ -82,4 +82,30 @@ public class ClassRoleCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNull(vars);
     }
+
+    public void testAlsoTraitComposition() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method mmm1 {} }; class B { also is A; method mmm2 { self.mmm<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.containsAll(Arrays.asList(".mmm2", ".mmm1")));
+    }
+
+    public void testAlsoTraitInheritance() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "role A { method mmm1 {} }; class B { also does A; method mmm2 { self.mmm<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertTrue(methods.containsAll(Arrays.asList(".mmm2", ".mmm1")));
+    }
+
+    public void testAlsoTraitWrongTraitIsNotCompleted() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "role A { method mmm1 {} }; class B { also doe A; method mmm2 { self.mmm<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNull(methods);
+    }
 }
