@@ -201,7 +201,9 @@ public class Perl6SdkType extends SdkType {
     public Perl6ExternalPackage getCoreSettingSymbol(String name, Perl6PsiElement element) {
         if (settingClasses == null)
             getCoreSettingSymbols(element);
-        return settingClasses.get(name);
+        Perl6ExternalPackage externalPackage = settingClasses.get(name);
+        // If no such core symbol, return empty class
+        return externalPackage != null ? externalPackage : new Perl6ExternalPackage("", Perl6PackageKind.CLASS);
     }
 
     public List<Perl6Symbol> getCoreSettingSymbols(Perl6PsiElement element) {
