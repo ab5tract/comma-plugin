@@ -150,7 +150,9 @@ public class Perl6ParserDefinition implements ParserDefinition {
         if (type == Perl6ElementTypes.PACKAGE_DECLARATION)
             return new Perl6PackageDeclImpl(astNode);
         if (type == Perl6ElementTypes.ALSO)
-            return  new Perl6AlsoImpl(astNode);
+            return new Perl6AlsoImpl(astNode);
+        if (type == Perl6ElementTypes.TRUSTS)
+            return new Perl6TrustsImpl(astNode);
         if (type == Perl6ElementTypes.ROLE_SIGNATURE)
             return new Perl6RoleSignatureImpl(astNode);
         if (type == Perl6ElementTypes.POINTY_BLOCK)

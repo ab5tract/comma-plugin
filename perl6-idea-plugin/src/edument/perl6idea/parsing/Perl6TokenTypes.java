@@ -173,6 +173,7 @@ public interface Perl6TokenTypes {
     IElementType TRANS_CHAR = new Perl6ElementType("TRANS_CHAR");
     IElementType TRANS_ESCAPE = new Perl6ElementType("TRANS_ESCAPE");
     IElementType TRANS_RANGE = new Perl6ElementType("TRANS_RANGE");
+    IElementType TRUSTS = new Perl6ElementType("TRUSTS");
     IElementType TR_DISTINCT_START_STOP = new Perl6ElementType("TR_DISTINCT_START_STOP");
     IElementType TYPE_COERCION_PARENTHESES_CLOSE = new Perl6ElementType("TYPE_COERCION_PARENTHESES_CLOSE");
     IElementType TYPE_COERCION_PARENTHESES_OPEN = new Perl6ElementType("TYPE_COERCION_PARENTHESES_OPEN");

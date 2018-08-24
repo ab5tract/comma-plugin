@@ -2436,6 +2436,13 @@ grammar MAIN {
            <.trait>*
            <.ws>?
            <.end-element('ALSO')>
+        || <?before 'trusts' <.kok>>
+           <.start-element('TRUSTS')>
+           <.start-token('TRUSTS')> 'trusts' <.end-token('TRUSTS')> <.kok>
+           <.ws>?
+           <.typename>?
+           <.ws>?
+           <.end-element('TRUSTS')>
         ]
     }
 
