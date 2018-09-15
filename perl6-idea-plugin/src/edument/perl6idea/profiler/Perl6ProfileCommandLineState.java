@@ -22,7 +22,7 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
     @Override
     protected void populateRunCommand() throws ExecutionException {
         checkSDK();
-        String canonicalPath = null;
+        String canonicalPath;
         try {
             tempFile = FileUtil.createTempFile("comma-profiler", ".sql");
             // We use safe canonical path here, as running profiler is not performance-critical operation
