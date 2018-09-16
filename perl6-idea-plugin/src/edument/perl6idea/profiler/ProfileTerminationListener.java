@@ -19,6 +19,8 @@ import edument.perl6idea.Perl6Icons;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import java.io.File;
@@ -83,16 +85,23 @@ public class ProfileTerminationListener extends ProcessAdapter {
                         statement.executeUpdate(iterator.next());
 
                     List<ProfilerNode> nodes = new ArrayList<>();
-                    ResultSet calls = statement.executeQuery("SELECT name, inclusive_time, exclusive_time, entries " +
-                                                             "FROM calls INNER JOIN routines ON routines.id = calls.routine_id " +
-                                                             "ORDER BY inclusive_time DESC");
+                    ResultSet calls = statement.executeQuery("SELECT r.file, r.name, c.inclusive_time, c.exclusive_time, c.entries, json_group_array(sr.name) as callee " +
+                                                             "FROM calls c INNER JOIN calls sc ON sc.parent_id == c.id INNER JOIN routines sr " +
+                                                             "ON sc.routine_id == sr.id INNER JOIN routines r ON c.routine_id == r.id " +
+                                                             "GROUP BY c.id ORDER BY c.inclusive_time DESC");
+
                     while(calls.next()) {
-                        calls.getString("name");
+                        JSONArray calleeJSON = new JSONArray(calls.getString("callee"));
+                        List<CalleeNode> callees = new ArrayList<>();
+                        for (int i = 0; i < calleeJSON.length(); i++)
+                            callees.add(new CalleeNode(calleeJSON.getString(i)));
                         nodes.add(new ProfilerNode(
+                            calls.getString("file"),
                             calls.getString("name"),
                             calls.getInt("inclusive_time"),
                             calls.getInt("exclusive_time"),
-                            calls.getInt("entries")
+                            calls.getInt("entries"),
+                            callees
                         ));
                     }
 
@@ -108,7 +117,7 @@ public class ProfileTerminationListener extends ProcessAdapter {
                         window.activate(() -> {
                             JComponent component = window.getComponent();
                             TreeTableModel treeTableModel = new Perl6ProfileModel(nodes);
-                            JXTreeTable treeTable = new JXTreeTable(treeTableModel);
+                            JXTreeTable treeTable = new Perl6ProfileTreeTable(treeTableModel);
                             JScrollPane scrollpane = new JScrollPane(treeTable);
                             component.add(scrollpane);
                         });
