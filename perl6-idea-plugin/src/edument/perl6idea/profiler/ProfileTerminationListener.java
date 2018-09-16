@@ -15,6 +15,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
+import edument.perl6idea.Perl6Icons;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.jetbrains.annotations.NotNull;
@@ -91,6 +92,7 @@ public class ProfileTerminationListener extends ProcessAdapter {
                             true,
                             ToolWindowAnchor.BOTTOM
                         );
+                        window.setIcon(Perl6Icons.CAMELIA_13x13);
                         window.activate(() -> {
                             JComponent component = window.getComponent();
                             List<ProfilerNode> routines = new ArrayList<>();
