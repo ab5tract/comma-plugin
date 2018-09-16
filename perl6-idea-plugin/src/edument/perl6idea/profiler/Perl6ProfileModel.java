@@ -82,9 +82,9 @@ public class Perl6ProfileModel extends AbstractTreeTableModel {
             case 0:
                 return "Routine";
             case 1:
-                return "Inclusive time";
+                return "Inclusive time (μs)";
             case 2:
-                return "Exclusive time";
+                return "Exclusive time (μs)";
             default:
                 return "Call count";
         }
