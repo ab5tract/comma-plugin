@@ -26,10 +26,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -84,6 +81,21 @@ public class ProfileTerminationListener extends ProcessAdapter {
                     indicator.setFraction(0.3);
                     while (iterator.hasNext())
                         statement.executeUpdate(iterator.next());
+
+                    List<ProfilerNode> nodes = new ArrayList<>();
+                    ResultSet calls = statement.executeQuery("SELECT name, inclusive_time, exclusive_time, entries " +
+                                                             "FROM calls INNER JOIN routines ON routines.id = calls.routine_id " +
+                                                             "ORDER BY inclusive_time DESC");
+                    while(calls.next()) {
+                        calls.getString("name");
+                        nodes.add(new ProfilerNode(
+                            calls.getString("name"),
+                            calls.getInt("inclusive_time"),
+                            calls.getInt("exclusive_time"),
+                            calls.getInt("entries")
+                        ));
+                    }
+
                     indicator.setText("Done!");
                     indicator.setFraction(1);
                     ApplicationManager.getApplication().invokeLater(() -> {
@@ -95,10 +107,7 @@ public class ProfileTerminationListener extends ProcessAdapter {
                         window.setIcon(Perl6Icons.CAMELIA_13x13);
                         window.activate(() -> {
                             JComponent component = window.getComponent();
-                            List<ProfilerNode> routines = new ArrayList<>();
-                            routines.add(new ProfilerNode("Foo", 50, 50, 1));
-                            routines.add(new ProfilerNode("Bar", 50, 50, 1));
-                            TreeTableModel treeTableModel = new Perl6ProfileModel(routines);
+                            TreeTableModel treeTableModel = new Perl6ProfileModel(nodes);
                             JXTreeTable treeTable = new JXTreeTable(treeTableModel);
                             JScrollPane scrollpane = new JScrollPane(treeTable);
                             component.add(scrollpane);
