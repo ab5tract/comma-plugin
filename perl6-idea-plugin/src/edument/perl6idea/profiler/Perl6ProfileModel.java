@@ -2,14 +2,14 @@ package edument.perl6idea.profiler;
 
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Perl6ProfileModel extends AbstractTreeTableModel {
-    private final List<ProfilerNode> routines;
 
     public Perl6ProfileModel(List<ProfilerNode> routines) {
         super(routines);
-        this.routines = routines;
     }
 
     @Override
@@ -19,27 +19,30 @@ public class Perl6ProfileModel extends AbstractTreeTableModel {
 
     @Override
     public Object getValueAt(Object node, int column) {
-        if (node instanceof List) {
-            return column == 0 ? "Foo": 0;
-        }
-        else {
+        if (node instanceof ProfilerNode) {
+            ProfilerNode profilerNode = (ProfilerNode)node;
             switch (column) {
                 case 0:
-                    return ((ProfilerNode)node).getName();
+                    return profilerNode.getName();
                 case 1:
-                    return ((ProfilerNode)node).getInclusiveTime();
+                    return profilerNode.getInclusiveTime();
                 case 2:
-                    return ((ProfilerNode)node).getExclusiveTime();
+                    return profilerNode.getExclusiveTime();
                 default:
-                    return ((ProfilerNode)node).getCallCount();
+                    return profilerNode.getCallCount();
             }
+        } else if (node instanceof CalleeNode && column == 0) {
+            return ((CalleeNode)node).getName();
         }
+        return null;
     }
 
     @Override
     public Object getChild(Object parent, int index) {
         if (parent instanceof List) {
             return ((List)parent).get(index);
+        } else if (parent instanceof ProfilerNode) {
+            return ((ProfilerNode)parent).getCalleeNode(index);
         }
         return null;
     }
@@ -48,6 +51,8 @@ public class Perl6ProfileModel extends AbstractTreeTableModel {
     public int getChildCount(Object parent) {
         if (parent instanceof List) {
             return ((List)parent).size();
+        } else if (parent instanceof ProfilerNode) {
+            return ((ProfilerNode)parent).getCalleeSize();
         } else {
             return 0;
         }
@@ -83,5 +88,28 @@ public class Perl6ProfileModel extends AbstractTreeTableModel {
             default:
                 return "Call count";
         }
+    }
+
+    public void sortRoutines(int index, boolean reverse) {
+        if (reverse && root instanceof List) {
+            Collections.reverse((List)root);
+            modelSupport.fireNewRoot();
+            return;
+        }
+
+        if (!(root instanceof List)) return;
+        Collections.sort((List)root, (Comparator<ProfilerNode>)(o1, o2) -> {
+            switch (index) {
+                case 0:
+                    return o2.getName().compareTo(o1.getName());
+                case 1:
+                    return Integer.compare(o2.getInclusiveTime(), o1.getInclusiveTime());
+                case 2:
+                    return Integer.compare(o2.getExclusiveTime(), o1.getExclusiveTime());
+                default:
+                    return Integer.compare(o2.getCallCount(), o1.getCallCount());
+            }
+        });
+        modelSupport.fireNewRoot();
     }
 }
