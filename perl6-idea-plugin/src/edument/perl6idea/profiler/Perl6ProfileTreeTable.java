@@ -1,9 +1,9 @@
 package edument.perl6idea.profiler;
 
+import edument.perl6idea.Perl6Icons;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -68,5 +68,12 @@ public class Perl6ProfileTreeTable extends JXTreeTable {
 
             }
         });
+
+        // Set proper icons
+        setLeafIcon(Perl6Icons.SUB);
+        setCollapsedIcon(Perl6Icons.SUB);
+        setExpandedIcon(Perl6Icons.SUB);
+        setClosedIcon(Perl6Icons.SUB);
+        setOpenIcon(Perl6Icons.SUB);
     }
 }
