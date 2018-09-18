@@ -7195,21 +7195,21 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean package_declarator_86_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.ws_253(builder))) {
+        if (!(this.ws_256(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean package_declarator_86_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.typename_244(builder))) {
+        if (!(this.typename_247(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean package_declarator_86_quant_3(PsiBuilder builder, OPP opp) {
-        if (!(this.ws_253(builder))) {
+        if (!(this.ws_256(builder))) {
             return false;
         }
         return true;
@@ -7254,21 +7254,21 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean package_declarator_86_quant_5(PsiBuilder builder, OPP opp) {
-        if (!(this.ws_253(builder))) {
+        if (!(this.ws_256(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean package_declarator_86_quant_6(PsiBuilder builder, OPP opp) {
-        if (!(this.trait_237(builder))) {
+        if (!(this.trait_240(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean package_declarator_86_quant_7(PsiBuilder builder, OPP opp) {
-        if (!(this.ws_253(builder))) {
+        if (!(this.ws_256(builder))) {
             return false;
         }
         return true;
