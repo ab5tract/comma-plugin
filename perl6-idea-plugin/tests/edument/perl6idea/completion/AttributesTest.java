@@ -132,8 +132,6 @@ public class AttributesTest extends LightCodeInsightFixtureTestCase {
                                   "class Foo { has $.foo1; has $.foo2; method test { $.fo<caret>; } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
-        // TODO
-        System.out.println(vars);
-        // assertTrue(vars.containsAll(Arrays.asList("$.foo1", "$.foo2")));
+        assertTrue(vars.containsAll(Arrays.asList(".foo1", ".foo2")));
     }
 }

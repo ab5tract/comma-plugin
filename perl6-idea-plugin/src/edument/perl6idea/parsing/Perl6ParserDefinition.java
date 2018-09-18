@@ -167,7 +167,7 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new Perl6OperatorAdverbImpl(astNode);
         if (type == Perl6OPPElementTypes.PREFIX_APPLICATION)
             return new Perl6PrefixApplicationImpl(astNode);
-        if (type == Perl6OPPElementTypes.POSTFIX_APPLICATION)
+        if (type == Perl6OPPElementTypes.POSTFIX_APPLICATION || type == Perl6ElementTypes.POSTFIX_APPLICATION)
             return new Perl6PostfixApplicationImpl(astNode);
         if (type == Perl6OPPElementTypes.INFIX_APPLICATION)
             return new Perl6InfixApplicationImpl(astNode);

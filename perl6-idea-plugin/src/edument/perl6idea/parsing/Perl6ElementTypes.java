@@ -83,6 +83,7 @@ public interface Perl6ElementTypes {
     IElementType POD_TEXT = new Perl6ElementType("POD_TEXT");
     IElementType POINTY_BLOCK = new Perl6ElementType("POINTY_BLOCK");
     IElementType POSTFIX = new Perl6ElementType("POSTFIX");
+    IElementType POSTFIX_APPLICATION = new Perl6ElementType("POSTFIX_APPLICATION");
     IElementType PREFIX = new Perl6ElementType("PREFIX");
     IElementType QUASI = new Perl6ElementType("QUASI");
     IElementType QUIETLY = new Perl6ElementType("QUIETLY");
