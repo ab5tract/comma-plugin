@@ -1593,30 +1593,38 @@ grammar MAIN {
                ]?
            ]?
            <.end-element('VARIABLE')>
-        || <!{ $*IN_DECL }> <?before <.sigil> '.' <.desigilname>>
+        || <!{ $*IN_DECL }> <?before <.sigil> '.' [<.desigilname> || \s || $]>
            <.start-token('SELF_CALL_VARIABLE')> <?> <.end-token('SELF_CALL_VARIABLE')>
-           <.start-element('METHOD_CALL')>
+           <.start-element('POSTFIX_APPLICATION')>
+           <.start-element('SELF')>
            <.start-token('SELF')>
            <.sigil>
            <.end-token('SELF')>
+           <.end-element('SELF')>
+           <.start-element('METHOD_CALL')>
            <.start-token('METHOD_CALL_OPERATOR')>
            '.'
            <.end-token('METHOD_CALL_OPERATOR')>
-           <.start-token('METHOD_CALL_NAME')>
-           <.desigilname>
-           <.end-token('METHOD_CALL_NAME')>
            [
-               <?before [ <.unsp> || '\\' || <?> ] '('>
-               <.start-token('SELF_CALL_VARIABLE_ARGS')> <?> <.end-token('SELF_CALL_VARIABLE_ARGS')>
+               <.start-element('LONG_NAME')>
+               <.start-token('METHOD_CALL_NAME')>
+               <.desigilname>
+               <.end-token('METHOD_CALL_NAME')>
+               <.end-element('LONG_NAME')>
                [
-               || <.unsp>
-               || <.start-token('WHITE_SPACE')>
-                  '\\'
-                  <.end-token('WHITE_SPACE')>
+                   <?before [ <.unsp> || '\\' || <?> ] '('>
+                   <.start-token('SELF_CALL_VARIABLE_ARGS')> <?> <.end-token('SELF_CALL_VARIABLE_ARGS')>
+                   [
+                   || <.unsp>
+                   || <.start-token('WHITE_SPACE')>
+                      '\\'
+                      <.end-token('WHITE_SPACE')>
+                   ]?
+                   <.postcircumfix>
                ]?
-               <.postcircumfix>
            ]?
            <.end-element('METHOD_CALL')>
+           <.end-element('POSTFIX_APPLICATION')>
         || <.start-element('VARIABLE')>
            <.start-token('VARIABLE')>
            <.sigil> <.twigil>? <.desigilname>
