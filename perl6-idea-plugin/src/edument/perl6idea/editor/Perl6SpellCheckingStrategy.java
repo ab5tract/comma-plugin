@@ -20,7 +20,9 @@ public class Perl6SpellCheckingStrategy extends SpellcheckingStrategy {
     @NotNull
     @Override
     public Tokenizer getTokenizer(PsiElement element) {
-        if ( element.getNode().getElementType() == Perl6TokenTypes.COMMENT) {
+        if (element.getNode().getElementType() == Perl6TokenTypes.COMMENT ||
+            element.getNode().getElementType() == Perl6TokenTypes.POD_FINISH_TEXT ||
+            element.getNode().getElementType() == Perl6TokenTypes.POD_TEXT) {
             if (SuppressionUtil.isSuppressionComment(element)) {
                 return EMPTY_TOKENIZER;
             }
