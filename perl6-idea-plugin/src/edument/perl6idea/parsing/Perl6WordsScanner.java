@@ -1,6 +1,5 @@
 package edument.perl6idea.parsing;
 
-import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
 import com.intellij.lang.cacheBuilder.VersionedWordsScanner;
 import com.intellij.lang.cacheBuilder.WordOccurrence;
 import com.intellij.lexer.Lexer;
@@ -54,6 +53,7 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
     }
 
     public void processWords(CharSequence fileText, Processor<WordOccurrence> processor) {
+        myLexer.start(fileText);
         WordOccurrence occurrence = new WordOccurrence(fileText, 0, 0, null); // shared occurrence
 
         IElementType type;
