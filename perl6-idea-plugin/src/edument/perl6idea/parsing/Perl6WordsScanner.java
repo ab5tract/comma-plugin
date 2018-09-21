@@ -44,6 +44,15 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
                 processor.process(occurrence);
             }
             else if (myIdentifierTokenSet.contains(type)) {
+                if (type == Perl6TokenTypes.VARIABLE) {
+                    String text = myLexer.getTokenText();
+                    if (text.indexOf('.') != -1) {
+                        if (!stripWords(processor, text.substring(2), 0, text.length() - 2, WordOccurrence.Kind.CODE, occurrence)) return;
+                    }
+                } else if (type == Perl6TokenTypes.METHOD_CALL_NAME) {
+                    String text = myLexer.getTokenText();
+                    if (!stripWords(processor, "$." + text, 0, text.length() + 2, WordOccurrence.Kind.CODE, occurrence)) return;
+                }
                 if (!stripWords(processor, fileText, myLexer.getTokenStart(), myLexer.getTokenEnd(), WordOccurrence.Kind.CODE, occurrence)) return;
             }
             else if (myCommentTokenSet.contains(type)) {
