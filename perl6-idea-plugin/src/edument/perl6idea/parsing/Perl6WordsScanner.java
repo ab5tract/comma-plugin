@@ -8,26 +8,8 @@ import com.intellij.psi.tree.TokenSet;
 import com.intellij.util.Processor;
 import org.jetbrains.annotations.NotNull;
 
-//public class Perl6WordsScanner extends DefaultWordsScanner {
-//    public Perl6WordsScanner() {
-//        super(new Perl6Lexer(),
-//              // Identifiers
-//              TokenSet.create(Perl6TokenTypes.NAME,
-//                              Perl6TokenTypes.SUB_CALL_NAME,
-//                              Perl6TokenTypes.METHOD_CALL_NAME,
-//                              Perl6TokenTypes.VARIABLE,
-//                              Perl6TokenTypes.SELF_CALL_VARIABLE,
-//                              Perl6TokenTypes.ROUTINE_NAME),
-//              // Comments
-//              TokenSet.create(Perl6TokenTypes.COMMENT),
-//              // Literals, no string literal here
-//              TokenSet.create(
-//                  Perl6TokenTypes.INTEGER_LITERAL, Perl6TokenTypes.COMPLEX_LITERAL,
-//                  Perl6TokenTypes.NUMBER_LITERAL, Perl6TokenTypes.RAT_LITERAL));
-//        System.out.println("Creates word scanner");
-//    }
-//}
-
+// A straightforward copy of `DefaultWordsScanner` class,
+// tweaked to handle Perl 6 attributes
 public class Perl6WordsScanner extends VersionedWordsScanner {
     private final Lexer myLexer;
     private final TokenSet myIdentifierTokenSet;
@@ -37,7 +19,6 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
     private final TokenSet myProcessAsWordTokenSet;
 
     public Perl6WordsScanner() {
-        System.out.println("Creates word scanner");
         myLexer = new Perl6Lexer();
         myIdentifierTokenSet = TokenSet.create(
             Perl6TokenTypes.NAME, Perl6TokenTypes.SUB_CALL_NAME,
