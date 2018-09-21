@@ -38,9 +38,11 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
             if (myIdentifierTokenSet.contains(type)) {
                 String text = myLexer.getTokenText();
                 if (type == Perl6TokenTypes.VARIABLE) {
-                    occurrence.init(text, Character.isLetter(text.charAt(1)) ? 1 : 2,
-                            text.length(), WordOccurrence.Kind.CODE);
-                    if (!processor.process(occurrence)) return;
+                    if (text.length() > 1) {
+                        occurrence.init(text, Character.isLetter(text.charAt(1)) ? 1 : 2,
+                                        text.length(), WordOccurrence.Kind.CODE);
+                        if (!processor.process(occurrence)) return;
+                    }
                     if (text.startsWith("$")) {
                         occurrence.init("$", 0, 1, WordOccurrence.Kind.CODE);
                         if (!processor.process(occurrence)) return;
