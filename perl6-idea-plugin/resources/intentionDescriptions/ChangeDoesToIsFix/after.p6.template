@@ -1,0 +1,3 @@
+class C {}
+
+role A is C {}

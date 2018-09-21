@@ -65,4 +65,12 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         myFixture.launchAction(intention);
         myFixture.checkResultByFile("Eval2.p6");
     }
+
+    public void testRoleDoesClass() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C {}; role A do<caret>es C {}");
+        IntentionAction intention = myFixture.findSingleIntention("Replace \"does\"");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class C {}; role A is<caret> C {}");
+    }
 }
