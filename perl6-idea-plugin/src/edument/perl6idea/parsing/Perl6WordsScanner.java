@@ -15,22 +15,18 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
     private final TokenSet myIdentifierTokenSet;
     private final TokenSet myCommentTokenSet;
     private final TokenSet myLiteralTokenSet;
-    private final TokenSet mySkipCodeContextTokenSet;
-    private final TokenSet myProcessAsWordTokenSet;
 
     public Perl6WordsScanner() {
         myLexer = new Perl6Lexer();
         myIdentifierTokenSet = TokenSet.create(
             Perl6TokenTypes.NAME, Perl6TokenTypes.SUB_CALL_NAME,
             Perl6TokenTypes.METHOD_CALL_NAME, Perl6TokenTypes.VARIABLE,
-            Perl6TokenTypes.SELF_CALL_VARIABLE, Perl6TokenTypes.ROUTINE_NAME
+            Perl6TokenTypes.ROUTINE_NAME
         );
         myCommentTokenSet = TokenSet.create(Perl6TokenTypes.COMMENT, Perl6TokenTypes.POD_TEXT, Perl6TokenTypes.POD_FINISH_TEXT);
         myLiteralTokenSet = TokenSet.create(
             Perl6TokenTypes.INTEGER_LITERAL, Perl6TokenTypes.COMPLEX_LITERAL,
             Perl6TokenTypes.NUMBER_LITERAL, Perl6TokenTypes.RAT_LITERAL);
-        mySkipCodeContextTokenSet = TokenSet.EMPTY;
-        myProcessAsWordTokenSet = TokenSet.EMPTY;
     }
 
     public void processWords(CharSequence fileText, Processor<WordOccurrence> processor) {
@@ -39,30 +35,29 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
 
         IElementType type;
         while ((type = myLexer.getTokenType()) != null) {
-            if (myProcessAsWordTokenSet.contains(type)) {
-                occurrence.init(fileText, myLexer.getTokenStart(), myLexer.getTokenEnd(), WordOccurrence.Kind.CODE);
-                processor.process(occurrence);
-            }
-            else if (myIdentifierTokenSet.contains(type)) {
+            if (myIdentifierTokenSet.contains(type)) {
+                String text = myLexer.getTokenText();
                 if (type == Perl6TokenTypes.VARIABLE) {
-                    String text = myLexer.getTokenText();
-                    if (text.indexOf('.') != -1) {
-                        if (!stripWords(processor, text.substring(2), 0, text.length() - 2, WordOccurrence.Kind.CODE, occurrence)) return;
+                    occurrence.init(text, Character.isLetter(text.charAt(1)) ? 1 : 2,
+                            text.length(), WordOccurrence.Kind.CODE);
+                    if (!processor.process(occurrence)) return;
+                    if (text.startsWith("$")) {
+                        occurrence.init("$", 0, 1, WordOccurrence.Kind.CODE);
+                        if (!processor.process(occurrence)) return;
+                        occurrence.init(text, 0, text.length(), WordOccurrence.Kind.CODE);
+                        if (!processor.process(occurrence)) return;
                     }
-                } else if (type == Perl6TokenTypes.METHOD_CALL_NAME) {
-                    String text = myLexer.getTokenText();
-                    if (!stripWords(processor, "$." + text, 0, text.length() + 2, WordOccurrence.Kind.CODE, occurrence)) return;
                 }
-                if (!stripWords(processor, fileText, myLexer.getTokenStart(), myLexer.getTokenEnd(), WordOccurrence.Kind.CODE, occurrence)) return;
+                else {
+                    occurrence.init(text, 0, text.length(), WordOccurrence.Kind.CODE);
+                    if (!processor.process(occurrence)) return;
+                }
             }
             else if (myCommentTokenSet.contains(type)) {
                 if (!stripWords(processor, fileText, myLexer.getTokenStart(), myLexer.getTokenEnd(), WordOccurrence.Kind.COMMENTS, occurrence)) return;
             }
             else if (myLiteralTokenSet.contains(type)) {
                 if (!stripWords(processor, fileText, myLexer.getTokenStart(), myLexer.getTokenEnd(), WordOccurrence.Kind.LITERALS, occurrence)) return;
-            }
-            else if (!mySkipCodeContextTokenSet.contains(type)) {
-                if (!stripWords(processor, fileText, myLexer.getTokenStart(), myLexer.getTokenEnd(), WordOccurrence.Kind.CODE, occurrence)) return;
             }
             myLexer.advance();
         }
