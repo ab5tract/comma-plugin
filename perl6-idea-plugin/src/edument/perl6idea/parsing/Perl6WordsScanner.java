@@ -49,6 +49,14 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
                         occurrence.init(text, 0, text.length(), WordOccurrence.Kind.CODE);
                         if (!processor.process(occurrence)) return;
                     }
+                } else if (type == Perl6TokenTypes.NAME) {
+                    String fixedName = text;
+                    if (fixedName.indexOf(':') != -1) {
+                        int lastPartIndex = fixedName.lastIndexOf(':') + 1;
+                        fixedName = fixedName.substring(lastPartIndex);
+                    }
+                    occurrence.init(fixedName, 0, fixedName.length(), WordOccurrence.Kind.CODE);
+                    if (!processor.process(occurrence)) return;
                 }
                 else {
                     occurrence.init(text, 0, text.length(), WordOccurrence.Kind.CODE);
