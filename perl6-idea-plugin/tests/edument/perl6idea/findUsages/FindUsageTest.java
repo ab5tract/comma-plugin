@@ -25,8 +25,7 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
 
     public void testVariableDefinition() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("VariableDefinition.p6");
-        // FIXME
-        //assertEquals(3, usageInfos.size());
+        assertEquals(3, usageInfos.size());
     }
 
     public void testVariable() {
