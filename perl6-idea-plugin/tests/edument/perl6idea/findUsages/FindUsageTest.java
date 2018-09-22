@@ -30,28 +30,24 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
 
     public void testVariable() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("Variable.p6");
-        // FIXME
-        //assertEquals(3, usageInfos.size());
+        assertEquals(3, usageInfos.size());
     }
 
     public void testOuterVariable1() {
         myFixture.configureByFiles("IdeaFoo/User.pm6", "IdeaFoo/Base.pm6");
         Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
-        // FIXME
-        //assertEquals(2, usages.size());
+        assertEquals(2, usages.size());
     }
 
     public void testOuterVariable2() {
         myFixture.configureByFiles("IdeaFoo/Base.pm6", "IdeaFoo/User.pm6");
         Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
-        // FIXME
-        //assertEquals(2, usages.size());
+        assertEquals(2, usages.size());
     }
 
     public void testVariablesInBlock() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("VariableBlock.p6");
-        // FIXME
-        //assertEquals(3, usageInfos.size());
+        assertEquals(3, usageInfos.size());
     }
 
     public void testVariableFromParameter1() {
