@@ -97,10 +97,10 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public PsiMetaData getMetaData() {
         PsiElement decl = this;
         String desigilname = getName();
-        // Chop off sigil
+        // Chop off sigil, if it's not sigil-only name
         if (desigilname.length() > 1)
             desigilname = desigilname.substring(1);
-        // Chop off twigil
+        // Chop off twigil if any
         if (desigilname.length() >= 2 && !Character.isLetter(desigilname.charAt(0)))
             desigilname = desigilname.substring(1);
         String finaldesigilname = desigilname;
