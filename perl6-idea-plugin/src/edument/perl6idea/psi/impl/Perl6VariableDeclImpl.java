@@ -6,6 +6,7 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
@@ -127,7 +128,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             @NotNull
             @Override
             public Object[] getDependences() {
-                return new Object[0];
+                return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };
     }

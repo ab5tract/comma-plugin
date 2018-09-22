@@ -51,6 +51,8 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
                     }
                 } else if (type == Perl6TokenTypes.NAME) {
                     String fixedName = text;
+                    // If it is nested NAME(`Foo` inside of `Bar` gives `Bar::Foo`), provide a last part
+                    // version so that usages like `Bar::Foo` could we matched with `Foo` in `class Foo`
                     if (fixedName.indexOf(':') != -1) {
                         int lastPartIndex = fixedName.lastIndexOf(':') + 1;
                         fixedName = fixedName.substring(lastPartIndex);
