@@ -7,6 +7,16 @@ import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.impl.Perl6VariableImpl;
 
 public class Perl6ElementFactory {
+    public static Perl6SubCallName createSubCallName(Project project, String name) {
+        String text = getSubroutineText(name);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6SubCallName.class);
+    }
+
+    private static String getSubroutineText(String name) {
+        return name;
+    }
+
     public static Perl6LongName createPrivateMethodCall(Project project, String name) {
         String text = getPrivateMethodText(name);
         Perl6File dummyFile = createFile(project, text);
