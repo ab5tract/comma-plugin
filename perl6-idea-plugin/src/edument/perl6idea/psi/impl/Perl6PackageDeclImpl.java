@@ -11,6 +11,7 @@ import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
+import static edument.perl6idea.parsing.Perl6TokenTypes.NAME;
 
 public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub> implements Perl6PackageDecl, PsiMetaOwner {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
@@ -397,5 +400,15 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };
+    }
+
+    @Override
+    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        PsiElement nameElement = Perl6ElementFactory
+            .createTypeDeclarationName(getProject(), name);
+        ASTNode keyNode = findChildByType(NAME);
+        ASTNode newKeyNode = nameElement.getNode();
+        getNode().replaceChild(keyNode, newKeyNode);
+        return this;
     }
 }

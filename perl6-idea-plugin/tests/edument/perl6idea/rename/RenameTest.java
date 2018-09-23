@@ -43,4 +43,39 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.renameElementAtCaret("renamed-sub");
         myFixture.checkResultByFile("SubroutinesAfter.pm6");
     }
+
+    public void testRenameOfTypeFromDeclaration() {
+        myFixture.configureByFile("Type.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(10);
+        myFixture.renameElementAtCaret("FooNewType");
+        myFixture.checkResultByFile("TypeAfter.pm6");
+    }
+
+    public void testRenameOfTypeFromUsage() {
+        myFixture.configureByFile("Type.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(37);
+        myFixture.renameElementAtCaret("FooNewType");
+        myFixture.checkResultByFile("TypeAfter.pm6");
+    }
+
+    public void testRenameOfTypeFromReturn() {
+        myFixture.configureByFile("Type.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(73);
+        myFixture.renameElementAtCaret("FooNewType");
+        myFixture.checkResultByFile("TypeAfter.pm6");
+    }
+
+    public void testRenameOfTypeFromTrait() {
+        myFixture.configureByFile("Type.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(86);
+        myFixture.renameElementAtCaret("FooNewType");
+        myFixture.checkResultByFile("TypeAfter.pm6");
+    }
+
+    public void testRenameOfTypeFromIsTrait() {
+        myFixture.configureByFile("Type.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(163);
+        myFixture.renameElementAtCaret("FooNewType");
+        myFixture.checkResultByFile("TypeAfter.pm6");
+    }
 }
