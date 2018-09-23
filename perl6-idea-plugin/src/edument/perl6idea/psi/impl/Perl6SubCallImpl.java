@@ -21,6 +21,6 @@ public class Perl6SubCallImpl extends ASTWrapperPsiElement implements Perl6SubCa
         ASTNode keyNode = findChildByClass(Perl6SubCallName.class).getNode();
         ASTNode newKeyNode = call.getNode();
         getNode().replaceChild(keyNode, newKeyNode);
-        return null;
+        return this;
     }
 }
