@@ -22,4 +22,25 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.renameElementAtCaret("!private-method");
         myFixture.checkResultByFile("PrivateMethodsAfter.pm6");
     }
+
+    public void testRenameOfSubFromName() {
+        myFixture.configureByFile("Subroutines.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(5);
+        myFixture.renameElementAtCaret("renamed-sub");
+        myFixture.checkResultByFile("SubroutinesAfter.pm6");
+    }
+
+    public void testRenameOfSubFromCall() {
+        myFixture.configureByFile("Subroutines.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(47);
+        myFixture.renameElementAtCaret("renamed-sub");
+        myFixture.checkResultByFile("SubroutinesAfter.pm6");
+    }
+
+    public void testRenameOfSubFromIndirectName() {
+        myFixture.configureByFile("Subroutines.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(71);
+        myFixture.renameElementAtCaret("renamed-sub");
+        myFixture.checkResultByFile("SubroutinesAfter.pm6");
+    }
 }
