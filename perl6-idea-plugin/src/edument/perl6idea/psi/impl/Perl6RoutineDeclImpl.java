@@ -99,7 +99,14 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        return null;
+        if (!isPrivate())
+            throw new IncorrectOperationException("Rename for non-private messages is not yet supported");
+        Perl6LongName longName =
+            Perl6ElementFactory.createPrivateMethodCall(getProject(), name);
+        ASTNode keyNode = findChildByClass(Perl6LongName.class).getNode();
+        ASTNode newKeyNode = longName.getNode();
+        getNode().replaceChild(keyNode, newKeyNode);
+        return this;
     }
 
     @Override
