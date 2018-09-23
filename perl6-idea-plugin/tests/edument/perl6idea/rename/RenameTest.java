@@ -9,9 +9,16 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         return "testData/rename";
     }
 
-    public void testRenameOfLexical1() {
+    public void testRenameOfPrivateMethodFromName() {
         myFixture.configureByFile("PrivateMethods.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(28);
+        myFixture.renameElementAtCaret("!private-method");
+        myFixture.checkResultByFile("PrivateMethodsAfter.pm6");
+    }
+
+    public void testRenameOfPrivateMethodFromCall() {
+        myFixture.configureByFile("PrivateMethods.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(136);
         myFixture.renameElementAtCaret("!private-method");
         myFixture.checkResultByFile("PrivateMethodsAfter.pm6");
     }
