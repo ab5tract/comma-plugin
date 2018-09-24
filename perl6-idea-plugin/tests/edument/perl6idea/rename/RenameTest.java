@@ -91,10 +91,8 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
     public void testMultiFileSubRename() {
         myFixture.configureByFiles("IdeaFoo/Base.pm6", "IdeaFoo/User.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(9);
-        System.out.println(myFixture.getEditor().getDocument().getText());
         myFixture.renameElementAtCaret("foo-bar-sub-new");
-        System.out.println(myFixture.getEditor().getDocument().getText());
-        //myFixture.checkResultByFile("IdeaFoo/Base.pm6", "IdeaFoo/BaseAfter.pm6", true);
-        //myFixture.checkResultByFile("IdeaFoo/User.pm6", "IdeaFoo/UserAfter.pm6", true);
+        myFixture.checkResultByFile("IdeaFoo/Base.pm6", "IdeaFoo/BaseAfter.pm6", true);
+        myFixture.checkResultByFile("IdeaFoo/User.pm6", "IdeaFoo/UserAfter.pm6", true);
     }
 }
