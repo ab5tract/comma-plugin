@@ -2,9 +2,12 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.meta.PsiMetaData;
+import com.intellij.psi.meta.PsiMetaOwner;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
@@ -18,7 +21,7 @@ import java.util.Collection;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 
-public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDeclStub> implements Perl6RoutineDecl, Perl6SignatureHolder {
+public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDeclStub> implements Perl6RoutineDecl, Perl6SignatureHolder, PsiMetaOwner {
     private static final String[] ROUTINE_SYMBOLS = { "$/", "$!", "$_", "&?ROUTINE", "&?BLOCK" };
 
     public Perl6RoutineDeclImpl(@NotNull ASTNode node) {
@@ -132,6 +135,42 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
         offerRoutineSymbols(collector, getRoutineName(), this);
+    }
+
+    @Nullable
+    @Override
+    public PsiMetaData getMetaData() {
+        PsiElement decl = this;
+        String un_dashed_name = getName();
+        // Chop off everything before last `-` symbol
+        un_dashed_name = un_dashed_name.substring(un_dashed_name.lastIndexOf('-') + 1);
+        String final_un_dashed_name = un_dashed_name;
+        return new PsiMetaData() {
+            @Override
+            public PsiElement getDeclaration() {
+                return decl;
+            }
+
+            @Override
+            public String getName(PsiElement context) {
+                return final_un_dashed_name;
+            }
+
+            @Override
+            public String getName() {
+                return final_un_dashed_name;
+            }
+
+            @Override
+            public void init(PsiElement element) {
+            }
+
+            @NotNull
+            @Override
+            public Object[] getDependences() {
+                return ArrayUtil.EMPTY_OBJECT_ARRAY;
+            }
+        };
     }
 
     public static void offerRoutineSymbols(Perl6SymbolCollector collector, String name, Perl6RoutineDecl decl) {

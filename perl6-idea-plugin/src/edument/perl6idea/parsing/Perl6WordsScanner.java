@@ -59,8 +59,22 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
                     }
                     occurrence.init(fixedName, 0, fixedName.length(), WordOccurrence.Kind.CODE);
                     if (!processor.process(occurrence)) return;
-                }
-                else {
+                } else if (type == Perl6TokenTypes.METHOD_CALL_NAME || type == Perl6TokenTypes.ROUTINE_NAME) {
+                    if (text.indexOf('-') == -1) {
+                        occurrence.init(text, 0, text.length(), WordOccurrence.Kind.CODE);
+                        if (!processor.process(occurrence)) return;
+                    } else {
+                        String[] splitted = text.split("-");
+                        for (int i = 0; i < splitted.length; i ++) {
+                            occurrence.init(splitted[i], 0, splitted[i].length(), WordOccurrence.Kind.CODE);
+                            if (!processor.process(occurrence)) return;
+                            if (i + 1 != splitted.length) {
+                                occurrence.init("-", 0, 1, WordOccurrence.Kind.CODE);
+                                if (!processor.process(occurrence)) return;
+                            }
+                        }
+                    }
+                } else {
                     occurrence.init(text, 0, text.length(), WordOccurrence.Kind.CODE);
                     if (!processor.process(occurrence)) return;
                 }
