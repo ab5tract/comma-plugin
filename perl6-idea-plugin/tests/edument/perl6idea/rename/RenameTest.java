@@ -1,12 +1,21 @@
 package edument.perl6idea.rename;
 
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import org.jetbrains.annotations.NotNull;
 
 public class RenameTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "testData/rename";
+    }
+
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
     }
 
     public void testRenameOfPrivateMethodFromName() {
@@ -77,5 +86,15 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.getEditor().getCaretModel().moveToOffset(163);
         myFixture.renameElementAtCaret("FooNewType");
         myFixture.checkResultByFile("TypeAfter.pm6");
+    }
+
+    public void testMultiFileSubRename() {
+        myFixture.configureByFiles("IdeaFoo/Base.pm6", "IdeaFoo/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(9);
+        System.out.println(myFixture.getEditor().getDocument().getText());
+        myFixture.renameElementAtCaret("foo-bar-sub-new");
+        System.out.println(myFixture.getEditor().getDocument().getText());
+        //myFixture.checkResultByFile("IdeaFoo/Base.pm6", "IdeaFoo/BaseAfter.pm6", true);
+        //myFixture.checkResultByFile("IdeaFoo/User.pm6", "IdeaFoo/UserAfter.pm6", true);
     }
 }
