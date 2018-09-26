@@ -59,7 +59,8 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
                     }
                     occurrence.init(fixedName, 0, fixedName.length(), WordOccurrence.Kind.CODE);
                     if (!processor.process(occurrence)) return;
-                } else if (type == Perl6TokenTypes.METHOD_CALL_NAME || type == Perl6TokenTypes.ROUTINE_NAME) {
+                } else if (type == Perl6TokenTypes.METHOD_CALL_NAME || type == Perl6TokenTypes.ROUTINE_NAME ||
+                  type == Perl6TokenTypes.SUB_CALL_NAME) {
                     if (text.indexOf('-') == -1) {
                         occurrence.init(text, 0, text.length(), WordOccurrence.Kind.CODE);
                         if (!processor.process(occurrence)) return;
