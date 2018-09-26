@@ -45,6 +45,8 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
                     if (text.startsWith("$")) {
                         occurrence.init("$", 0, 1, WordOccurrence.Kind.CODE);
                         if (!processor.process(occurrence)) return;
+                        occurrence.init(text, 0, text.length(), WordOccurrence.Kind.CODE);
+                        if (!processor.process(occurrence)) return;
                     }
                 } else if (type == Perl6TokenTypes.NAME) {
                     String fixedName = text;
