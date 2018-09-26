@@ -129,7 +129,7 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
     public void testParameterRename() {
         myFixture.configureByFile("Parameter.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(54);
-        myFixture.renameElementAtCaret("foo-one");
+        myFixture.renameElementAtCaret("just-parameter");
         myFixture.checkResultByFile("ParameterAfter.pm6");
     }
 
@@ -137,6 +137,13 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("ArraySigil.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(29);
         myFixture.renameElementAtCaret("my-array");
-        myFixture.checkResultByFile("ArraySigil.pm6");
+        myFixture.checkResultByFile("ArraySigilAfter.pm6");
+    }
+
+    public void testPrivateAttributeRename() {
+        myFixture.configureByFile("PrivateAttribute.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(137);
+        myFixture.renameElementAtCaret("two");
+        myFixture.checkResultByFile("PrivateAttributeAfter.pm6");
     }
 }
