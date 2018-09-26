@@ -25,6 +25,13 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("PrivateMethodsAfter.pm6");
     }
 
+    public void testRenameOfPrivateMethodFromNameWithdash() {
+        myFixture.configureByFile("PrivateMethodsWithDash.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(28);
+        myFixture.renameElementAtCaret("!private-method");
+        myFixture.checkResultByFile("PrivateMethodsAfter.pm6");
+    }
+
     public void testRenameOfPrivateMethodFromCall() {
         myFixture.configureByFile("PrivateMethods.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(136);
@@ -88,11 +95,42 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("TypeAfter.pm6");
     }
 
+    public void testRenameOfMultiPartTypeFromUsage() {
+        myFixture.configureByFile("MultiPartType.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(45);
+        myFixture.renameElementAtCaret("Foo::Baz");
+        myFixture.checkResultByFile("MultiPartTypeAfter.pm6");
+    }
+
+    // TODO
+    //public void testRenameOfMultiPartNestedTypeFromUsage() {
+    //    myFixture.configureByFile("MultiPartTypeNested.pm6");
+    //    myFixture.getEditor().getCaretModel().moveToOffset(138);
+    //    myFixture.renameElementAtCaret("Foo::Bartender");
+    //    myFixture.checkResultByFile("MultiPartTypeNestedAfter.pm6");
+    //}
+
     public void testMultiFileSubRename() {
         myFixture.configureByFiles("IdeaFoo/Base.pm6", "IdeaFoo/User.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(9);
         myFixture.renameElementAtCaret("foo-bar-sub-new");
         myFixture.checkResultByFile("IdeaFoo/Base.pm6", "IdeaFoo/BaseAfter.pm6", true);
         myFixture.checkResultByFile("IdeaFoo/User.pm6", "IdeaFoo/UserAfter.pm6", true);
+    }
+
+    public void testLocalVariablesWithExportRename() {
+        myFixture.configureByFiles("IdeaFoo2/Base.pm6", "IdeaFoo2/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(36);
+        myFixture.renameElementAtCaret("foo-baz");
+        myFixture.checkResultByFile("IdeaFoo2/Base.pm6", "IdeaFoo2/BaseAfter.pm6", true);
+        myFixture.checkResultByFile("IdeaFoo2/User.pm6", "IdeaFoo2/UserAfter.pm6", true);
+    }
+
+    public void testParameterRename() {
+
+    }
+
+    public void testArraySigilVariableRename() {
+
     }
 }
