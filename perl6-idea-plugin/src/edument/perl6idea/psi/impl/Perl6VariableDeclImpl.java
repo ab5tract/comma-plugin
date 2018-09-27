@@ -47,8 +47,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
     @Override
     public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
-        // TODO See https://github.com/JetBrains/intellij-community/blob/db9200fcdb58eccfeb065524bd211b3aa6d6b83c/java/java-psi-impl/src/com/intellij/psi/impl/PsiImplUtil.java
-        return null;
+        return this;
     }
 
     @Override
