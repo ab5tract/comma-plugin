@@ -146,4 +146,12 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.renameElementAtCaret("two");
         myFixture.checkResultByFile("PrivateAttributeAfter.pm6");
     }
+
+    public void testPublicAttributeRename() {
+        myFixture.configureByFiles("IdeaFoo3/Base.pm6", "IdeaFoo3/User.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(146);
+        myFixture.renameElementAtCaret("renamed-attribute");
+        myFixture.checkResultByFile("IdeaFoo3/Base.pm6", "IdeaFoo3/BaseAfter.pm6", true);
+        myFixture.checkResultByFile("IdeaFoo3/User.pm6", "IdeaFoo3/UserAfter.pm6", true);
+    }
 }

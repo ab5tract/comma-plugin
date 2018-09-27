@@ -7,6 +7,16 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
 public class Perl6ElementFactory {
+    public static Perl6LongName createPublicMethodCall(Project project, String name) {
+        String text = getPublicMethodText(name);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6LongName.class);
+    }
+
+    private static String getPublicMethodText(String name) {
+        return "self." + name;
+    }
+
     public static PsiElement createTypeDeclarationName(Project project, String name) {
         String text = getTypeDeclarationText(name);
         Perl6File dummyFile = createFile(project, text);
@@ -66,6 +76,9 @@ public class Perl6ElementFactory {
     }
 
     private static String getVariableText(String name) {
+        if (name.length() > 1 && (name.charAt(1) == '.' || name.charAt(1) == '!')) {
+            return "has " + name;
+        }
         return name;
     }
 
