@@ -69,19 +69,9 @@ public class Perl6ElementFactory {
         return name;
     }
 
-    //public static Perl6ParameterVariable createParameter(Project project, String name) {
-    //    String text = getParameterText(name);
-    //    Perl6File dummyFile = createFile(project, text);
-    //    return PsiTreeUtil.findChildOfType(dummyFile, Perl6ParameterVariable.class);
-    //}
-
     private static Perl6File createFile(Project project, String text) {
         String filename = "dummy." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
         return (Perl6File)PsiFileFactory.getInstance(project)
                                         .createFileFromText(filename, Perl6ScriptFileType.INSTANCE, text);
     }
-
-    //private static String getParameterText(String name) {
-    //    return "sub (" + name + ") {}";
-    //}
 }
