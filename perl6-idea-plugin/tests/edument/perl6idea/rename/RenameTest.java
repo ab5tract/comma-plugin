@@ -121,7 +121,7 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
     public void testLocalVariablesWithExportRename() {
         myFixture.configureByFiles("IdeaFoo2/Base.pm6", "IdeaFoo2/User.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(36);
-        myFixture.renameElementAtCaret("foo-baz");
+        myFixture.renameElementAtCaret("$foo-baz");
         myFixture.checkResultByFile("IdeaFoo2/Base.pm6", "IdeaFoo2/BaseAfter.pm6", true);
         myFixture.checkResultByFile("IdeaFoo2/User.pm6", "IdeaFoo2/UserAfter.pm6", true);
     }
@@ -129,28 +129,28 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
     public void testParameterRename() {
         myFixture.configureByFile("Parameter.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(54);
-        myFixture.renameElementAtCaret("just-parameter");
+        myFixture.renameElementAtCaret("$just-parameter");
         myFixture.checkResultByFile("ParameterAfter.pm6");
     }
 
     public void testArraySigilVariableRename() {
         myFixture.configureByFile("ArraySigil.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(29);
-        myFixture.renameElementAtCaret("my-array");
+        myFixture.renameElementAtCaret("@my-array");
         myFixture.checkResultByFile("ArraySigilAfter.pm6");
     }
 
     public void testPrivateAttributeRename() {
         myFixture.configureByFile("PrivateAttribute.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(137);
-        myFixture.renameElementAtCaret("two");
+        myFixture.renameElementAtCaret("@!two");
         myFixture.checkResultByFile("PrivateAttributeAfter.pm6");
     }
 
     public void testPublicAttributeRename() {
         myFixture.configureByFiles("IdeaFoo3/Base.pm6", "IdeaFoo3/User.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(146);
-        myFixture.renameElementAtCaret("renamed-attribute");
+        myFixture.renameElementAtCaret("$.renamed-attribute");
         myFixture.checkResultByFile("IdeaFoo3/Base.pm6", "IdeaFoo3/BaseAfter.pm6", true);
         myFixture.checkResultByFile("IdeaFoo3/User.pm6", "IdeaFoo3/UserAfter.pm6", true);
     }
