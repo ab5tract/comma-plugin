@@ -46,7 +46,11 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
-    public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
+    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        Perl6Variable var = Perl6ElementFactory.createVariable(getProject(), name);
+        ASTNode keyNode = getVariable().getNode();
+        ASTNode newKeyNode = var.getVariableToken().getNode();
+        getNode().replaceChild(keyNode, newKeyNode);
         return this;
     }
 
