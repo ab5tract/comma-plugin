@@ -12,6 +12,6 @@ public class Perl6InputValidator implements NamesValidator {
 
     @Override
     public boolean isIdentifier(@NotNull String name, Project project) {
-        return true;
+        return !name.endsWith("-") && !name.startsWith("-") && !(Character.isDigit(name.charAt(0)));
     }
 }
