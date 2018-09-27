@@ -190,7 +190,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
         Perl6MethodCall call = (Perl6MethodCall)myElement;
         if (!call.getCallName().startsWith("!"))
-            throw new IncorrectOperationException("Rename for non-private messages is not yet supported");
+            throw new IncorrectOperationException("Rename for non-private methods is not yet supported");
         return call.setName(newElementName);
     }
 }
