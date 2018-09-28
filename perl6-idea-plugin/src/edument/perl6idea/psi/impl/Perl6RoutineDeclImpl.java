@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.StubElement;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
+import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCKOID;
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 
 public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDeclStub> implements Perl6RoutineDecl, Perl6SignatureHolder {
@@ -68,6 +70,17 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
             if (trait.getTraitModifier().equals("returns"))
                 return trait.getTraitName();
         return null;
+    }
+
+    @Override
+    public boolean isStubbed() {
+        Perl6Blockoid blockoid = (Perl6Blockoid)findChildByFilter(TokenSet.create(BLOCKOID));
+        if (blockoid == null) return false;
+        PsiElement statementList = PsiTreeUtil.getChildOfType(blockoid, Perl6StatementList.class);
+        if (statementList == null || statementList.getChildren().length != 1) return false;
+        PsiElement[] statement = statementList.getChildren()[0].getChildren();
+        if (statement.length != 0 && statement[0] instanceof Perl6StubCode) return true;
+        return false;
     }
 
     @Override
