@@ -576,6 +576,14 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         assertTrue(methods.contains("regex-a"));
     }
 
+    public void testMethodAsARuleInGrammarCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar B { method panic() {}; regex regex-a { <.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".orig", ".panic")));
+    }
+
+
     public void testInheritedGrammarMethodsCompletion() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar A { method a { self.<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
