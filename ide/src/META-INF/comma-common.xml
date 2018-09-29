@@ -36,6 +36,7 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.IllegalVariableDeclarationAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UnitSubAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.InterpolatedEVALAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MyScopedVariableExportedAnnotator"/>
     <intentionAction>
       <className>edument.perl6idea.intention.RangeIntentionFix</className>
       <category>Range</category>

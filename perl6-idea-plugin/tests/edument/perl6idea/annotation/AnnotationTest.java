@@ -319,4 +319,9 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL qq[];");
         myFixture.checkHighlighting(false, false, true, true);
     }
+
+    public void testMyScopedVariableExportAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"`my` scoped variable cannot be exported\">my $var is export</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }

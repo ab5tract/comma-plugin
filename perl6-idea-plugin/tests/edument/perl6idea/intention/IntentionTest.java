@@ -65,4 +65,12 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         myFixture.launchAction(intention);
         myFixture.checkResultByFile("Eval2.p6");
     }
+
+    public void testMyVariableExport() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo is expo<caret>rt;");
+        IntentionAction intention = myFixture.findSingleIntention("Change scope");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("our $foo is export;");
+    }
 }
