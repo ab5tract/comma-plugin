@@ -22,8 +22,8 @@ public class UndeclaredPrivateMethod implements Annotator {
 
         PsiReference reference = call.getReference();
         if (reference == null) return;
-        Perl6Symbol symbol = call.resolveSymbol(Perl6SymbolKind.Method, call.getCallName());
-        if (symbol != null) return;
+        PsiElement declaration = reference.resolve();
+        if (declaration != null) return;
         PsiElement prev = call.getPrevSibling();
         if (prev instanceof Perl6RoutineDecl) {
             holder.createErrorAnnotation(
