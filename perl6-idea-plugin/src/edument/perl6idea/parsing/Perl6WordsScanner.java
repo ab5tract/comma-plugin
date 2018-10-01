@@ -39,9 +39,8 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
                 String text = myLexer.getTokenText();
                 if (type == Perl6TokenTypes.VARIABLE) {
                     if (text.length() > 1) {
-                        occurrence.init(text, Character.isLetter(text.charAt(1)) ? 1 : 2,
-                                        text.length(), WordOccurrence.Kind.CODE);
-                        if (!processor.process(occurrence)) return;
+                        String sigilLess = text.substring(Character.isLetter(text.charAt(1)) ? 1 : 2);
+                        if (indexByDash(processor, occurrence, sigilLess)) return;
                     }
                     if (text.startsWith("$")) {
                         occurrence.init("$", 0, 1, WordOccurrence.Kind.CODE);
@@ -59,8 +58,15 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
                     }
                     occurrence.init(fixedName, 0, fixedName.length(), WordOccurrence.Kind.CODE);
                     if (!processor.process(occurrence)) return;
-                }
-                else {
+                } else if (type == Perl6TokenTypes.METHOD_CALL_NAME || type == Perl6TokenTypes.ROUTINE_NAME ||
+                  type == Perl6TokenTypes.SUB_CALL_NAME) {
+                    if (text.indexOf('-') == -1) {
+                        occurrence.init(text, 0, text.length(), WordOccurrence.Kind.CODE);
+                        if (!processor.process(occurrence)) return;
+                    } else {
+                        if (indexByDash(processor, occurrence, text)) return;
+                    }
+                } else {
                     occurrence.init(text, 0, text.length(), WordOccurrence.Kind.CODE);
                     if (!processor.process(occurrence)) return;
                 }
@@ -73,6 +79,19 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
             }
             myLexer.advance();
         }
+    }
+
+    private static boolean indexByDash(Processor<WordOccurrence> processor, WordOccurrence occurrence, String text) {
+        String[] splitted = text.split("-");
+        for (int i = 0; i < splitted.length; i++) {
+            occurrence.init(splitted[i], 0, splitted[i].length(), WordOccurrence.Kind.CODE);
+            if (!processor.process(occurrence)) return true;
+            if (i + 1 != splitted.length) {
+                occurrence.init("-", 0, 1, WordOccurrence.Kind.CODE);
+                if (!processor.process(occurrence)) return true;
+            }
+        }
+        return false;
     }
 
     protected static boolean stripWords(final Processor<WordOccurrence> processor,

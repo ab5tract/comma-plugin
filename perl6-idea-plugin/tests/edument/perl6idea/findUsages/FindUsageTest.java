@@ -60,6 +60,11 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         assertEquals(2, usageInfos.size());
     }
 
+    public void testVariableWithDashFromParameter() {
+        Collection<UsageInfo> usageInfos = myFixture.testFindUsages("VariableWithDashFromParameter.p6");
+        assertEquals(2, usageInfos.size());
+    }
+
     public void testPrivateAttributeOfClass() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("AttributeOfClass.p6");
         assertEquals(3, usageInfos.size());
@@ -85,6 +90,11 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         myFixture.getEditor().getCaretModel().moveToOffset(24);
         Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
         assertEquals(4, usages.size());
+    }
+
+    public void testPublicAttributeWithDash() {
+        Collection<UsageInfo> usageInfos = myFixture.testFindUsages("AttributeWithDash.p6");
+        assertEquals(5, usageInfos.size());
     }
 
     public void testPrivateAttributeFromOuterRole() {
