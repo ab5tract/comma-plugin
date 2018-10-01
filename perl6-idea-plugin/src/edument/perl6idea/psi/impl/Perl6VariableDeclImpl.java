@@ -3,7 +3,10 @@ package edument.perl6idea.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.meta.PsiMetaData;
+import com.intellij.psi.meta.PsiMetaOwner;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
@@ -15,10 +18,9 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
-public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub> implements Perl6VariableDecl {
+public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub> implements Perl6VariableDecl, PsiMetaOwner {
     public Perl6VariableDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -89,6 +91,46 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (name != null && name.length() > 1) {
             offerVariableSymbols(collector, name, this);
         }
+    }
+
+    @Nullable
+    @Override
+    public PsiMetaData getMetaData() {
+        PsiElement decl = this;
+        String desigilname = getName();
+        // Chop off sigil, if it's not sigil-only name
+        if (desigilname.length() > 1)
+            desigilname = desigilname.substring(1);
+        // Chop off twigil if any
+        if (desigilname.length() >= 2 && !Character.isLetter(desigilname.charAt(0)))
+            desigilname = desigilname.substring(1);
+        String finaldesigilname = desigilname;
+        return new PsiMetaData() {
+            @Override
+            public PsiElement getDeclaration() {
+                return decl;
+            }
+
+            @Override
+            public String getName(PsiElement context) {
+                return finaldesigilname;
+            }
+
+            @Override
+            public String getName() {
+                return finaldesigilname;
+            }
+
+            @Override
+            public void init(PsiElement element) {
+            }
+
+            @NotNull
+            @Override
+            public Object[] getDependences() {
+                return ArrayUtil.EMPTY_OBJECT_ARRAY;
+            }
+        };
     }
 
     public static void offerVariableSymbols(Perl6SymbolCollector collector, String name, Perl6VariableDecl var) {

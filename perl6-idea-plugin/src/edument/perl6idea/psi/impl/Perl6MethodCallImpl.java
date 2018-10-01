@@ -4,7 +4,6 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import edument.perl6idea.psi.Perl6LongName;
 import edument.perl6idea.psi.Perl6MethodCall;
 import edument.perl6idea.psi.Perl6MethodReference;
 import org.jetbrains.annotations.NotNull;

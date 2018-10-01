@@ -4,21 +4,27 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.meta.PsiMetaData;
+import com.intellij.psi.meta.PsiMetaOwner;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ArrayUtil;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
-public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub> implements Perl6PackageDecl {
+public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub> implements Perl6PackageDecl, PsiMetaOwner {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -217,11 +223,15 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
 
         if (isAny)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Any", this).methods())
+            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Any", this).methods()) {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
+                if (collector.isSatisfied()) return;
+            }
         if (isMu)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this).methods())
+            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this).methods()) {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
+                if (collector.isSatisfied()) return;
+            }
 
         int level = collector.getNestingLevel();
         for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
@@ -268,12 +278,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 if (((Perl6ExternalPackage)pack).getPackageKind() == Perl6PackageKind.CLASS &&
                     Perl6Variable.getTwigil(var) == '!') continue;
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Variable, var));
-                if (!collector.isSatisfied()) {
-                    if (Perl6Variable.getTwigil(var) == '.') {
-                        collector.offerSymbol(new Perl6ExternalSymbol( // Offer self.foo;
-                            Perl6SymbolKind.Method, '.' + var.substring(2)));
-                    }
-                }
+                if (collector.isSatisfied()) return;
+                if (Perl6Variable.getTwigil(var) == '.')
+                    collector.offerSymbol(new Perl6ExternalSymbol( // Offer self.foo;
+                                          Perl6SymbolKind.Method, '.' + var.substring(2)));
                 if (collector.isSatisfied()) return;
             }
         }
@@ -285,63 +293,109 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         // (we make a recursive contribute call on those).
         Perl6PackageDeclStub stub = getStub();
         if (stub != null) {
-            Queue<Stub> visit = new LinkedList<>();
-            visit.add(stub);
-            while (!visit.isEmpty()) {
-                Stub current = visit.remove();
-                boolean addChildren = false;
-                if (current == stub) {
-                    addChildren = true;
-                }
-                else if (current instanceof Perl6PackageDeclStub) {
-                    Perl6PackageDeclStub nested = (Perl6PackageDeclStub)current;
-                    if (nested.getScope().equals("our")) {
-                        String nestedName = nested.getTypeName();
-                        if (nestedName != null && !nestedName.isEmpty()) {
-                            Perl6PackageDecl psi = nested.getPsi();
-                            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
-                                psi, prefix + nestedName));
-                            if (collector.isSatisfied()) return;
-                            psi.contributeNestedPackagesWithPrefix(collector, prefix + nestedName + "::");
-                        }
-                    }
-                }
-                else {
-                    addChildren = true;
-                }
-                if (addChildren)
-                    visit.addAll(current.getChildrenStubs());
-            }
+            contributeNestedPackagesWithPrefixStub(collector, prefix, stub);
         }
         else {
-            Queue<Perl6PsiElement> visit = new LinkedList<>();
-            visit.add(this);
-            while (!visit.isEmpty()) {
-                Perl6PsiElement current = visit.remove();
-                boolean addChildren = false;
-                if (current == this) {
-                    addChildren = true;
-                }
-                else if (current instanceof Perl6PackageDecl) {
-                    Perl6PackageDecl nested = (Perl6PackageDecl)current;
-                    if (nested.getScope().equals("our")) {
-                        String nestedName = nested.getPackageName();
-                        if (nestedName != null && !nestedName.isEmpty()) {
-                            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
-                                nested, prefix + nestedName));
-                            if (collector.isSatisfied()) return;
-                            nested.contributeNestedPackagesWithPrefix(collector, prefix + nestedName + "::");
-                        }
+            contributeNestedPackagesWithPrefixNonStub(collector, prefix);
+        }
+    }
+
+    private void contributeNestedPackagesWithPrefixNonStub(Perl6SymbolCollector collector, String prefix) {
+        Queue<Perl6PsiElement> visit = new LinkedList<>();
+        visit.add(this);
+        while (!visit.isEmpty()) {
+            Perl6PsiElement current = visit.remove();
+            boolean addChildren = false;
+            if (current == this) {
+                addChildren = true;
+            }
+            else if (current instanceof Perl6PackageDecl) {
+                Perl6PackageDecl nested = (Perl6PackageDecl)current;
+                if (nested.getScope().equals("our")) {
+                    String nestedName = nested.getPackageName();
+                    if (nestedName != null && !nestedName.isEmpty()) {
+                        collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
+                                                                             nested, prefix + nestedName));
+                        if (collector.isSatisfied()) return;
+                        nested.contributeNestedPackagesWithPrefix(collector, prefix + nestedName + "::");
                     }
                 }
-                else {
-                    addChildren = true;
-                }
-                if (addChildren)
-                    for (PsiElement e : current.getChildren())
-                        if (e instanceof Perl6PsiElement)
-                            visit.add((Perl6PsiElement)e);
             }
+            else {
+                addChildren = true;
+            }
+            if (addChildren)
+                for (PsiElement e : current.getChildren())
+                    if (e instanceof Perl6PsiElement)
+                        visit.add((Perl6PsiElement)e);
         }
+    }
+
+    private static void contributeNestedPackagesWithPrefixStub(Perl6SymbolCollector collector, String prefix, Perl6PackageDeclStub stub) {
+        Queue<Stub> visit = new LinkedList<>();
+        visit.add(stub);
+        while (!visit.isEmpty()) {
+            Stub current = visit.remove();
+            boolean addChildren = false;
+            if (current == stub) {
+                addChildren = true;
+            }
+            else if (current instanceof Perl6PackageDeclStub) {
+                Perl6PackageDeclStub nested = (Perl6PackageDeclStub)current;
+                if (nested.getScope().equals("our")) {
+                    String nestedName = nested.getTypeName();
+                    if (nestedName != null && !nestedName.isEmpty()) {
+                        Perl6PackageDecl psi = nested.getPsi();
+                        collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
+                                                                             psi, prefix + nestedName));
+                        if (collector.isSatisfied()) return;
+                        psi.contributeNestedPackagesWithPrefix(collector, prefix + nestedName + "::");
+                    }
+                }
+            }
+            else {
+                addChildren = true;
+            }
+            if (addChildren)
+                visit.addAll(current.getChildrenStubs());
+        }
+    }
+
+    @Nullable
+    @Override
+    public PsiMetaData getMetaData() {
+        PsiElement decl = this;
+        String shortName = getPackageName();
+        int lastIndexOf = shortName.lastIndexOf(':');
+        if (lastIndexOf != -1) {
+            shortName = shortName.substring(lastIndexOf + 1);
+        }
+        String finalShortPackageName = shortName;
+        return new PsiMetaData() {
+            @Override
+            public PsiElement getDeclaration() {
+                return decl;
+            }
+
+            @Override
+            public String getName(PsiElement context) {
+                return finalShortPackageName;
+            }
+
+            @Override
+            public String getName() {
+                return finalShortPackageName;
+            }
+
+            @Override
+            public void init(PsiElement element) {
+            }
+
+            @NotNull
+            @Override
+            public Object[] getDependences() {
+                return ArrayUtil.EMPTY_OBJECT_ARRAY;
+            }
+        };
     }
 }
