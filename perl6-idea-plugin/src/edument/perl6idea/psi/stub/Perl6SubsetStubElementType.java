@@ -1,5 +1,6 @@
 package edument.perl6idea.psi.stub;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
@@ -45,6 +46,13 @@ public class Perl6SubsetStubElementType extends IStubElementType<Perl6SubsetStub
         StringRef subsetNameRef = dataStream.readName();
         boolean exported = dataStream.readBoolean();
         return new Perl6SubsetStubImpl(parentStub, subsetNameRef.getString(), exported);
+    }
+
+    @Override
+    public boolean shouldCreateStub(ASTNode node) {
+        if (!(node instanceof Perl6Subset)) return false;
+        String name = ((Perl6Subset)node).getSubsetName();
+        return name != null;
     }
 
     @Override
