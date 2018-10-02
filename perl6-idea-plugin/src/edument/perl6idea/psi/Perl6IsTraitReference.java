@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
@@ -80,6 +81,11 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
         } else {
             return ArrayUtil.EMPTY_OBJECT_ARRAY;
         }
+    }
 
+    @Override
+    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+        Perl6IsTraitName isTraitName = (Perl6IsTraitName)getElement();
+        return isTraitName.setName(newElementName);
     }
 }

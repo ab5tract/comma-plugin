@@ -105,7 +105,7 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
             @Override
             public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
                 return file.isDirectory() || file.getExtension() == null
-                        || Arrays.asList("pm6", "pl6", "p6", "").contains(file.getExtension());
+                        || Arrays.asList("pm6", "pl6", "p6", "t", "").contains(file.getExtension());
             }
         };
         myParams = new CommonProgramParametersPanel() {

@@ -2,7 +2,11 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.psi.Perl6ElementFactory;
+import edument.perl6idea.psi.Perl6LongName;
 import edument.perl6idea.psi.Perl6TypeName;
 import edument.perl6idea.psi.Perl6TypeNameReference;
 import edument.perl6idea.psi.stub.Perl6TypeNameStub;
@@ -38,5 +42,15 @@ public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub
     @Override
     public String inferType() {
         return getTypeName();
+    }
+
+    @Override
+    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        Perl6LongName type = Perl6ElementFactory
+            .createTypeName(getProject(), name);
+        ASTNode keyNode = findChildByClass(Perl6LongName.class).getNode();
+        ASTNode newKeyNode = type.getNode();
+        getNode().replaceChild(keyNode, newKeyNode);
+        return this;
     }
 }

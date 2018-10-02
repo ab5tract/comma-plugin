@@ -13,7 +13,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/codeInsight/localVariables";
+        return "testData/annotation";
     }
 
     @Override
@@ -348,5 +348,10 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     public void testNormalInheritance2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C {}; role A is C {}");
         myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testTrustedMethodIsCountedAsDeclarted() {
+        myFixture.configureByFile("TrustedClass.pm6");
+        myFixture.checkHighlighting();
     }
 }
