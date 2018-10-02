@@ -3,6 +3,7 @@ package edument.perl6idea.psi;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.impl.Perl6SubCallNameImpl;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
@@ -29,5 +30,16 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6PsiElement> {
                            .stream()
                            .map(sym -> sym.getName())
                            .toArray();
+    }
+
+    @Override
+    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+        Perl6SubCallName callName = (Perl6SubCallName)myElement;
+        PsiElement call = callName.getParent();
+        if (call instanceof Perl6SubCall) {
+            Perl6SubCall subCall = (Perl6SubCall)call;
+            return subCall.setName(newElementName);
+        }
+        throw new IncorrectOperationException();
     }
 }

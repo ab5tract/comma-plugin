@@ -79,7 +79,13 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         // so `scope` points to this PackageDecl, and calling `contributeSymbols` on that
         // will cycle itself.
         // But if is not a TypeName inside of Trait, we are safe to complete/resolve;
-        if ((this instanceof Perl6TypeName || this instanceof Perl6IsTraitName) && getParent() instanceof Perl6Trait)
+        boolean insideOfTrait = getParent() instanceof Perl6Trait;
+        boolean packageTrait = false;
+        if (insideOfTrait) {
+            packageTrait = getParent().getParent() instanceof Perl6PackageDecl || getParent().getParent() instanceof Perl6Also;
+        }
+
+        if ((this instanceof Perl6TypeName || this instanceof Perl6IsTraitName) && packageTrait)
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         while (scope != null) {
             for (Perl6SymbolContributor cont : scope.getSymbolContributors()) {
