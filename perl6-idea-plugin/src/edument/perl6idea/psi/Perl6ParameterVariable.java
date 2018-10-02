@@ -1,6 +1,9 @@
 package edument.perl6idea.psi;
 
-public interface Perl6ParameterVariable extends Perl6PsiDeclaration {
+import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.meta.PsiMetaOwner;
+
+public interface Perl6ParameterVariable extends Perl6PsiDeclaration, PsiNamedElement, PsiMetaOwner {
     String summary();
     String getVariableType();
 }

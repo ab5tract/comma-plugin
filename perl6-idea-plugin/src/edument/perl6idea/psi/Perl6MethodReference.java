@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.impl.Perl6MethodCallImpl;
 import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.symbols.*;
@@ -183,5 +184,14 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
         public String getName() {
             return name;
         }
+    }
+
+    @Override
+    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+        PsiElement resolved = resolve();
+        Perl6MethodCall call = (Perl6MethodCall)myElement;
+        if (resolved instanceof Perl6LongName && !call.getCallName().startsWith("!"))
+            throw new IncorrectOperationException("Rename for non-private methods is not yet supported");
+        return call.setName(newElementName);
     }
 }

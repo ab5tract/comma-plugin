@@ -3,6 +3,7 @@ package edument.perl6idea.psi;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
@@ -56,5 +57,11 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
 
         // Otherwise, should be already declared.
         return psi.getTextOffset() < ref.getTextOffset();
+    }
+
+    @Override
+    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+        Perl6TypeName type = (Perl6TypeName)getElement();
+        return type.setName(newElementName);
     }
 }
