@@ -580,9 +580,16 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar B { method panic() {}; regex regex-a { <.<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
-        assertTrue(methods.containsAll(Arrays.asList(".orig", ".panic")));
+        assertTrue(methods.contains("panic"));
+        assertFalse(methods.contains("orig"));
     }
 
+    public void testGrammarFromSelfHasCursorMethods() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar B { method panic() {}; method foo() { self.<caret> }; regex regex-a { <?> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".orig", ".target")));
+    }
 
     public void testInheritedGrammarMethodsCompletion() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar A { method a { self.<caret> } }");
