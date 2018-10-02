@@ -237,7 +237,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 if (collector.isSatisfied()) return;
             }
         if (isGrammar)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Cursor", this).methods())
+            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Cursor", this).methods()) {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
                 if (collector.isSatisfied()) return;
             }
