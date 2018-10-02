@@ -20,7 +20,7 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
       "export", "rw", "raw", "nodal", "pure"
     };
     static String[] VARIABLE_DEFAULT_TRAITS = new String[]{
-      "default", "required", "DEPRECATED", "export", "rw"
+      "default", "required", "DEPRECATED", "rw"
     };
     static String[] PARAMETER_DEFAULT_TRAITS = new String[]{
       "copy", "raw", "rw", "readonly", "required"
@@ -66,6 +66,8 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
         } else if (owner instanceof Perl6VariableDecl) {
             List<Object> types = new ArrayList<>(Arrays.asList(new Perl6TypeNameReference(myElement).getVariants()));
             types.addAll(Arrays.asList(VARIABLE_DEFAULT_TRAITS));
+            if (!((Perl6VariableDecl)owner).getScope().equals("my"))
+                types.add("export");
             return types.toArray();
         } else if (owner instanceof Perl6RoutineDecl) {
             return ROUTINE_DEFAULT_TRAITS;

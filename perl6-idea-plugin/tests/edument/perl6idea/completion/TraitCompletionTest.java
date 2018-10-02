@@ -47,11 +47,11 @@ public class TraitCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testCompletionForRoutine() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo is r<caret> {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo is e<caret> {}");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Collections.singletonList("rw")));
+        assertTrue(vars.containsAll(Collections.singletonList("export")));
         assertEquals(6, vars.size());
     }
 
@@ -65,10 +65,24 @@ public class TraitCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testCompletionForPackage() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo is I<foo> {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo is I<caret> {}");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertTrue(vars.containsAll(Collections.singletonList("Int")));
+    }
+
+    public void testExportTraitAbsenceForMyScopedVariables() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo is exp<caret> {}");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertFalse(vars.contains("export"));
+    }
+
+    public void testExportTraitPresenceForOurScopedVariables() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our $foo is exp<caret> {}");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNull(vars);
     }
 }
