@@ -15,19 +15,29 @@ public class RoleDoesClassAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6Trait)) return;
+
         Perl6Trait trait = (Perl6Trait)element;
         if (!trait.getTraitModifier().equals("does")) return;
+
         PsiElement declaration = trait.getParent();
         if (!(declaration instanceof Perl6PackageDecl)) return;
-        if (!((Perl6PackageDecl)declaration).getPackageKind().equals("role")) return;
+
         Perl6TypeName typeName = PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class);
         if (typeName == null) return;
+
         PsiReference ref = typeName.getReference();
         if (ref == null) return;
+
         PsiElement composedDeclaration = ref.resolve();
         if (!(composedDeclaration instanceof Perl6PackageDecl)) return;
-        if (((Perl6PackageDecl)composedDeclaration).getPackageKind().equals("class")) {
+
+        if (((Perl6PackageDecl)declaration).getPackageKind().equals("role") &&
+            ((Perl6PackageDecl)composedDeclaration).getPackageKind().equals("class")) {
             holder.createErrorAnnotation(trait, "Role cannot compose a class")
+                  .registerFix(new ChangeDoesToIsFix(trait.getTextOffset()));
+        } else if (((Perl6PackageDecl)declaration).getPackageKind().equals("class") &&
+                   ((Perl6PackageDecl)composedDeclaration).getPackageKind().equals("class")) {
+            holder.createErrorAnnotation(trait, "Class cannot compose a class")
                   .registerFix(new ChangeDoesToIsFix(trait.getTextOffset()));
         }
     }

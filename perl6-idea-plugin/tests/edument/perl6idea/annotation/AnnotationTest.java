@@ -325,6 +325,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
+    public void testClassDoesClassAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C {}; class A <error descr=\"Class cannot compose a class\">does C</error> {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
     public void testNormalComposition1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R {}; role A does C {}");
         myFixture.checkHighlighting(false, false, true, true);
