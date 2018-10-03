@@ -285,7 +285,7 @@ public class Perl6SdkType extends SdkType {
         if (currentSdkVersion == null) {
             currentSdkVersion = versionString;
         } else {
-            if (currentSdkVersion != versionString) {
+            if (!currentSdkVersion.equals(versionString)) {
                 // Sdk has changed, purge module cache
                 currentSdkVersion = versionString;
                 useNameCache  = new ConcurrentHashMap<>();
