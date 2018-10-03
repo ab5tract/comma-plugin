@@ -217,4 +217,9 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
         assertEquals(2, usages.size());
     }
+
+    public void testRegexDeclarationOffsetPresence() {
+        Collection<UsageInfo> usageInfos = myFixture.testFindUsages("RegexDecl.pm6");
+        assertEquals(2, usageInfos.size());
+    }
 }

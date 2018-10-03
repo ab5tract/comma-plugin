@@ -39,6 +39,12 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
     }
 
     @Override
+    public int getTextOffset() {
+        PsiElement name = getNameIdentifier();
+        return name == null ? 0 : name.getTextOffset();
+    }
+
+    @Override
     public String getName() {
         Perl6RegexDeclStub stub = getStub();
         if (stub != null)
