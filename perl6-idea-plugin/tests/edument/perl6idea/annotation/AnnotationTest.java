@@ -320,6 +320,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
+    public void testMyScopedVariableExportAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"`my` scoped variable cannot be exported\">my $var is export</error>;");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
     public void testRoleDoesClassAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C {}; role A <error descr=\"Role cannot compose a class\">does C</error> {}");
         myFixture.checkHighlighting(false, false, true, true);
