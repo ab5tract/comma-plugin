@@ -2,7 +2,10 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6SubCallName;
 import edument.perl6idea.psi.Perl6SubCallReference;
 import org.jetbrains.annotations.NotNull;

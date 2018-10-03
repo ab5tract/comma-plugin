@@ -4,11 +4,9 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
-import edument.perl6idea.psi.Perl6ParameterVariable;
-import edument.perl6idea.psi.Perl6Variable;
-import edument.perl6idea.psi.Perl6VariableDecl;
-import edument.perl6idea.psi.Perl6VariableReference;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Variable {
@@ -24,6 +22,20 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     @Override
     public PsiElement getVariableToken() {
         return findChildByType(Perl6TokenTypes.VARIABLE);
+    }
+
+    @Override
+    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        String oldVarName = getVariableName();
+        // If this variable derives from sub, it must have `&` prefix
+        String fixedName = oldVarName.startsWith("&") ? "&" + name : name;
+        // If this variable was public, but had `!` accessing before, preserve it
+        fixedName = oldVarName.charAt(1) == '!' ? fixedName.replace('.', '!') : fixedName;
+        Perl6Variable var = Perl6ElementFactory.createVariable(getProject(), fixedName);
+        ASTNode keyNode = getVariableToken().getNode();
+        ASTNode newKeyNode = var.getVariableToken().getNode();
+        getNode().replaceChild(keyNode, newKeyNode);
+        return this;
     }
 
     @Override

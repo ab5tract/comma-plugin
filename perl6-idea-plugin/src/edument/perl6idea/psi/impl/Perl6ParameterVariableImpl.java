@@ -3,11 +3,16 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.meta.PsiMetaData;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
+import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6ParameterDefault;
 import edument.perl6idea.psi.Perl6ParameterVariable;
+import edument.perl6idea.psi.Perl6Variable;
 import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
@@ -41,9 +46,19 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     }
 
     @Override
-    public PsiElement setName(@NotNull String s) throws IncorrectOperationException {
-        // TODO See https://github.com/JetBrains/intellij-community/blob/db9200fcdb58eccfeb065524bd211b3aa6d6b83c/java/java-psi-impl/src/com/intellij/psi/impl/PsiImplUtil.java
-        return null;
+    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        String variableName = getName();
+        char sigil = Perl6Variable.getSigil(variableName);
+        char twigil = Perl6Variable.getTwigil(variableName);
+        String prefix = twigil != ' ' ?
+                        String.valueOf(sigil) + String.valueOf(twigil) :
+                        String.valueOf(sigil);
+        Perl6Variable variable =
+            Perl6ElementFactory.createVariable(getProject(), prefix + name);
+        PsiElement keyNode = findChildByFilter(TokenSet.create(Perl6TokenTypes.VARIABLE));
+        ASTNode newKeyNode = variable.getNode();
+        getNode().replaceChild(keyNode.getNode(), newKeyNode);
+        return this;
     }
 
     @Override
@@ -70,5 +85,45 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
                     this, name.substring(1)));
         }
+    }
+
+    @Nullable
+    @Override
+    public PsiMetaData getMetaData() {
+        String desigilname = getName();
+        PsiElement decl = this;
+        // Chop off sigil, if it's not sigil-only name
+        if (desigilname.length() > 1)
+            desigilname = desigilname.substring(1);
+        // Chop off twigil if any
+        if (desigilname.length() >= 2 && !Character.isLetter(desigilname.charAt(0)))
+            desigilname = desigilname.substring(1);
+        String finaldesigilname = desigilname;
+        return new PsiMetaData() {
+            @Override
+            public PsiElement getDeclaration() {
+                return decl;
+            }
+
+            @Override
+            public String getName(PsiElement context) {
+                return finaldesigilname;
+            }
+
+            @Override
+            public String getName() {
+                return finaldesigilname;
+            }
+
+            @Override
+            public void init(PsiElement element) {
+            }
+
+            @NotNull
+            @Override
+            public Object[] getDependences() {
+                return ArrayUtil.EMPTY_OBJECT_ARRAY;
+            }
+        };
     }
 }

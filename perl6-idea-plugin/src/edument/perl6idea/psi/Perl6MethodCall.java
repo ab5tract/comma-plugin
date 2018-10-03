@@ -1,6 +1,8 @@
 package edument.perl6idea.psi;
 
-public interface Perl6MethodCall extends Perl6PsiElement {
+import com.intellij.psi.PsiNamedElement;
+
+public interface Perl6MethodCall extends Perl6PsiElement, PsiNamedElement {
     String getCallName();
     String getCallOperator();
 }
