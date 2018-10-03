@@ -36,6 +36,14 @@ public class Perl6RegexCallReference extends PsiReferenceBase<Perl6PsiElement> {
             .getSymbolVariants(Perl6SymbolKind.Regex)
             .stream()
             .map(sym -> sym.getName()).collect(toList());
+        result.addAll(
+            getElement().getSymbolVariants(Perl6SymbolKind.Method)
+                        .stream()
+                        // Filter out external symbols for regex-calls
+                        .filter(symbol -> !symbol.isExternal() )
+                        // Delete first `.`, as we already have one in method (e.g. `.alpha`)
+                        .map(sym -> sym.getName().substring(1)).collect(toList())
+        );
         result.addAll(Arrays.asList(PREDEFINED_METHODS));
         return result.toArray();
     }
