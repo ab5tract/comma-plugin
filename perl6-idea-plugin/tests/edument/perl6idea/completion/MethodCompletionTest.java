@@ -648,4 +648,11 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         assertNull(myFixture.getLookupElementStrings());
     }
+
+    public void testCompletionOfMultiMethodByType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class T { multi method test-me {}; multi method test-me {} }; sub foo(T $t) { $t.test-m<caret> };");
+        myFixture.complete(CompletionType.BASIC, 1);
+        assertNull(myFixture.getLookupElementStrings());
+    }
 }
