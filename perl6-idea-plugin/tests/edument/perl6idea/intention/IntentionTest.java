@@ -68,7 +68,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
 
     public void testRoleMethodsStubbing() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "role R { method foo($a) {...}; method bar($a) {...} };\nclas<caret>s C does R {\n}");
+                                  "role R { method foo($a) {...}; method bar($a) {...} };\nclass C d<caret>oes R {\n}");
         IntentionAction intention = myFixture.findSingleIntention("Stub");
         assertNotNull(intention);
         myFixture.launchAction(intention);
