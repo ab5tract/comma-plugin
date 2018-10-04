@@ -66,6 +66,15 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("Eval2.p6");
     }
 
+    public void testRoleMethodsStubbing() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "role R { method foo($a) {...}; method bar($a) {...} };\nclas<caret>s C does R {\n}");
+        IntentionAction intention = myFixture.findSingleIntention("Stub");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResultByFile("MethodStubbing.p6");
+    }
+
     public void testMyVariableExport() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo is expo<caret>rt;");
         IntentionAction intention = myFixture.findSingleIntention("Change scope");

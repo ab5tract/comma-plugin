@@ -10,4 +10,5 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     String getRoutineKind();
     String getRoutineName();
     boolean isPrivate();
+    boolean isStubbed();
 }

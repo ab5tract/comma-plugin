@@ -5,9 +5,11 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6Trait;
+import edument.perl6idea.psi.Perl6TypeName;
 import edument.perl6idea.psi.stub.Perl6TraitStub;
 import edument.perl6idea.psi.stub.Perl6TraitStubElementType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.IS_TRAIT_NAME;
 import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
@@ -41,6 +43,12 @@ public class Perl6TraitImpl extends StubBasedPsiElementBase<Perl6TraitStub> impl
         PsiElement typeName = findChildByType(TYPE_NAME);
         return isName != null ? isName.getText() :
                typeName != null ? typeName.getText() : "";
+    }
+
+    @Nullable
+    @Override
+    public Perl6TypeName getCompositionTypeName() {
+        return findChildByType(TYPE_NAME);
     }
 
     public String toString() {

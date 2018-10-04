@@ -320,6 +320,16 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
+    public void testMissingStubbedMethod() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { method foo($a) {...}; method bar($a) {...} }; <error descr=\"Composed roles require to implement methods: bar, foo\">class C does R </error>{}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testMissingStubbedMethodsDoNotIncludeMulti() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { multi method foo($a) {...}; method bar($a) {...} }; <error descr=\"Composed roles require to implement methods: bar\">class C does R </error>{}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
     public void testMyScopedVariableExportAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"`my` scoped variable cannot be exported\">my $var is export</error>;");
         myFixture.checkHighlighting(false, false, true, true);
