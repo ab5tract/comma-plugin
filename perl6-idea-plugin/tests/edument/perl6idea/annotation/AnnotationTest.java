@@ -369,4 +369,9 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("TrustedClass.pm6");
         myFixture.checkHighlighting();
     }
+
+    public void testOOMonitors() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "monitor <error descr=\"Cannot use monitor type package without OO::Monitors module being included\">LongName::Name</error> {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
 }
