@@ -72,7 +72,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             public void run(AnActionButton button) {
                 Perl6DependencyAddAction action = new Perl6DependencyAddAction(
                   myProject,
-                  new HashSet(myModel.getItems()));
+                  new HashSet<>(myModel.getItems()));
                 boolean isOk = action.showAndGet();
                 if (isOk)
                     myModel.addRow(new Perl6DependencyTableItem(
