@@ -374,4 +374,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFile("TrustedClass.pm6");
         myFixture.checkHighlighting();
     }
+
+    public void testSigspaceAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "grammar G { rule foo { abc<info desc=\"Implicit <.ws> call\"> </info>def<info desc=\"Implicit <.ws> call\"> </info>} }");
+        myFixture.checkHighlighting(false, true, false, false);
+
+    }
 }
