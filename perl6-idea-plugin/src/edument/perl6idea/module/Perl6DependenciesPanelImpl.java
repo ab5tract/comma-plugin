@@ -87,7 +87,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
                 if (getSelectedItem() == null) return;
                 Perl6DependencyAddAction action = new Perl6DependencyAddAction(
                   myProject,
-                  new HashSet(myModel.getItems()), getSelectedItem());
+                  new HashSet<>(myModel.getItems()), getSelectedItem());
                 boolean isOk = action.showAndGet();
                 if (isOk) {
                     int rowIndex = myEntryTable.getSelectedRow();
