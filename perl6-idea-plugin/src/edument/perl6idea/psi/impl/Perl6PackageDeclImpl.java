@@ -186,6 +186,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         List<String> externals = new ArrayList<>();
         boolean isAny = true;
         boolean isMu = true;
+        boolean isGrammar = getPackageKind().equals("grammar");
 
         if (stub != null) {
             List<StubElement> children = stub.getChildrenStubs();
@@ -232,6 +233,11 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             }
         if (isMu)
             for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this).methods()) {
+                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
+                if (collector.isSatisfied()) return;
+            }
+        if (isGrammar)
+            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Cursor", this).methods()) {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
                 if (collector.isSatisfied()) return;
             }
