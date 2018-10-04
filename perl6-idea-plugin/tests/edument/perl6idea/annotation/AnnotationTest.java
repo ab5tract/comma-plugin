@@ -380,10 +380,14 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testOOMonitors() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "monitor <error descr=\"Cannot use monitor type package without OO::Monitors module being included\">LongName::Name</error> {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
     public void testSigspaceAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
             "grammar G { rule foo { abc<info desc=\"Implicit <.ws> call\"> </info>def<info desc=\"Implicit <.ws> call\"> </info>} }");
         myFixture.checkHighlighting(false, true, false, false);
-
     }
 }
