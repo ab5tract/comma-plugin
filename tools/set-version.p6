@@ -21,9 +21,10 @@ sub MAIN($version) {
                     qq|major="$maj" minor="$min"|);
         }
         given slurp('resources/idea/CommaCoreApplicationInfo.xml') {
+            my $date = Date.today.yyyy-mm-dd.subst('-', '', :g);
             spurt 'resources/idea/CommaCoreApplicationInfo.xml',
-                .subst(/'<build ' <( 'number="' \d+ '" date="' \d+ '"' )>/,
-                    qq|number="$maj" date="$min"|);
+                .subst(/'<build ' <( 'number="' <-["]>+ '" date="' \d+ '"' )>/,
+                    qq|number="CO-$maj.$min.$build" date="$date"|);
         }
         spurt '../build.txt', "$version\n";
     }
