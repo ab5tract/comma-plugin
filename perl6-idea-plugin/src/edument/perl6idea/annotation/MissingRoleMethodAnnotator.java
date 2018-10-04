@@ -26,11 +26,33 @@ public class MissingRoleMethodAnnotator implements Annotator {
         List<Perl6Trait> traits = decl.getTraits();
         if (traits.size() == 0) return;
 
-        boolean classDoesRole = false;
         Map<String, String> methodsToImplement = new HashMap<>();
+        gatherRoleStubs(traits, methodsToImplement);
+
+        List<Perl6PsiDeclaration> declarations = decl.getDeclarations();
+        for (Perl6PsiDeclaration declaration : declarations) {
+            if (!(declaration instanceof Perl6RoutineDecl)) continue;
+            Perl6RoutineDecl routineDecl = (Perl6RoutineDecl)declaration;
+            if (routineDecl.getRoutineKind().equals("method") && !(routineDecl.getParent() instanceof Perl6MultiDecl)) {
+                methodsToImplement.remove(routineDecl.getRoutineName());
+            }
+        }
+
+        if (methodsToImplement.size() != 0) {
+            String names = String.join(", ", methodsToImplement.keySet());
+            int start = decl.getTextOffset();
+            PsiElement blockoid = PsiTreeUtil.getChildOfType(decl, Perl6Blockoid.class);
+            // Block is not yet typed
+            if (blockoid == null) return;
+            int end = blockoid.getTextOffset();
+            holder.createErrorAnnotation(new TextRange(start, end), String.format("Composed roles require to implement methods: %s", names))
+                  .registerFix(new StubMissingMethodsFix(decl, methodsToImplement.values()));
+        }
+    }
+
+    private static void gatherRoleStubs(List<Perl6Trait> traits, Map<String, String> methodsToImplement) {
         for (Perl6Trait trait : traits) {
             if (trait.getTraitModifier().equals("does")) {
-                classDoesRole = true;
                 Perl6TypeName type = trait.getCompositionTypeName();
                 if (type == null) continue;
                 PsiReference ref = type.getReference();
@@ -45,28 +67,9 @@ public class MissingRoleMethodAnnotator implements Annotator {
                                                method.getText().replace("...", ""));
                     }
                 }
+                List<Perl6Trait> innerTraits = ((Perl6PackageDecl)roleDeclaration).getTraits();
+                gatherRoleStubs(innerTraits, methodsToImplement);
             }
-        }
-        if (!classDoesRole) return;
-
-        List<Perl6PsiDeclaration> declarations = decl.getDeclarations();
-        for (Perl6PsiDeclaration declaration : declarations) {
-            if (!(declaration instanceof Perl6RoutineDecl)) continue;
-            Perl6RoutineDecl routineDecl = (Perl6RoutineDecl)declaration;
-            if (routineDecl.getRoutineKind().equals("method") && !(routineDecl.getParent() instanceof Perl6MultiDecl)) {
-                methodsToImplement.remove(routineDecl.getRoutineName());
-            }
-        }
-
-        if (methodsToImplement.size() != 0) {
-            String names = String.join(", ", methodsToImplement.keySet());
-            int start = element.getTextOffset();
-            PsiElement blockoid = PsiTreeUtil.getChildOfType(decl, Perl6Blockoid.class);
-            // Block is not yet typed
-            if (blockoid == null) return;
-            int end = blockoid.getTextOffset();
-            holder.createErrorAnnotation(new TextRange(start, end), String.format("Composed roles require to implement methods: %s", names))
-                  .registerFix(new StubMissingMethodsFix(decl, methodsToImplement.values()));
         }
     }
 
