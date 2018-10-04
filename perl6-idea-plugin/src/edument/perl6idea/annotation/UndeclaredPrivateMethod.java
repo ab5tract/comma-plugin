@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import edument.perl6idea.psi.Perl6MethodCall;
@@ -30,9 +31,10 @@ public class UndeclaredPrivateMethod implements Annotator {
                     element,
                     "Subroutine cannot start with '!'");
         } else {
+            int offset = call.getTextOffset();
             holder.createErrorAnnotation(
-                    element,
-                    String.format("Private method %s is used, but not declared", methodName));
+                new TextRange(offset, offset + methodName.length()),
+                String.format("Private method %s is used, but not declared", methodName));
         }
     }
 }
