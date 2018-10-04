@@ -116,7 +116,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testUndeclaredPrivateMethodAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { method !a {} }; class B does A { method b { self<error descr=\"Private method !c is used, but not declared\">!c</error>; } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { method !a($one) {} }; class B does A { method b { self<error descr=\"Private method !c is used, but not declared\">!c</error>(1); } }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
