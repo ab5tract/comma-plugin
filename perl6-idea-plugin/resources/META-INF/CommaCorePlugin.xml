@@ -52,6 +52,7 @@
       <favoritesListProvider implementation="com.intellij.xdebugger.impl.breakpoints.BreakpointsFavoriteListProvider"/>
       <moduleConfigurationEditorProvider implementation="edument.perl6idea.module.Perl6ModuleConfigurationEditorProvider" order="FIRST"/>
       <postStartupActivity implementation="edument.perl6idea.utils.Perl6PostStartupActivity"/>
+      <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
     </extensions>
 
     <application-components>

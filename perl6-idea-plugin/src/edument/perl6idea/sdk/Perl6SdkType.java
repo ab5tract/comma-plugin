@@ -39,7 +39,6 @@ public class Perl6SdkType extends SdkType {
     private Map<String, String> moarBuildConfig;
     private Map<String, List<Perl6Symbol>> useNameCache = new ConcurrentHashMap<>();
     private Map<String, List<Perl6Symbol>> needNameCache = new ConcurrentHashMap<>();
-    private String currentSdkVersion = null;
 
     private Perl6SdkType() {
         super(NAME);
@@ -261,7 +260,6 @@ public class Perl6SdkType extends SdkType {
     }
 
     public List<Perl6Symbol> getNamesForUse(Project project, String name) {
-        checkSdkChange(getSdkHomeByProject(project));
         List<Perl6Symbol> cached = useNameCache.get(name);
         if (cached == null) {
             cached = loadModuleSymbols(project, "use", name);
@@ -271,7 +269,6 @@ public class Perl6SdkType extends SdkType {
     }
 
     public List<Perl6Symbol> getNamesForNeed(Project project, String name) {
-        checkSdkChange(getSdkHomeByProject(project));
         List<Perl6Symbol> cached = needNameCache.get(name);
         if (cached == null) {
             cached = loadModuleSymbols(project, "need", name);
@@ -280,18 +277,10 @@ public class Perl6SdkType extends SdkType {
         return cached;
     }
 
-    private void checkSdkChange(String project) {
-        String versionString = project == null ? "" : getVersionString(project);
-        if (currentSdkVersion == null) {
-            currentSdkVersion = versionString;
-        } else {
-            if (!currentSdkVersion.equals(versionString)) {
-                // Sdk has changed, purge module cache
-                currentSdkVersion = versionString;
-                useNameCache  = new ConcurrentHashMap<>();
-                needNameCache = new ConcurrentHashMap<>();
-            }
-        }
+    public void invalidateCaches() {
+        settingClasses = new ConcurrentHashMap<>();
+        useNameCache = new ConcurrentHashMap<>();
+        needNameCache = new ConcurrentHashMap<>();
     }
 
     private List<Perl6Symbol> loadModuleSymbols(Project project, String directive, String name) {
