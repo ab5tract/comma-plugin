@@ -72,7 +72,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             public void run(AnActionButton button) {
                 Perl6DependencyAddAction action = new Perl6DependencyAddAction(
                   myProject,
-                  new HashSet(myModel.getItems()));
+                  new HashSet<>(myModel.getItems()));
                 boolean isOk = action.showAndGet();
                 if (isOk)
                     myModel.addRow(new Perl6DependencyTableItem(
@@ -87,7 +87,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
                 if (getSelectedItem() == null) return;
                 Perl6DependencyAddAction action = new Perl6DependencyAddAction(
                   myProject,
-                  new HashSet(myModel.getItems()), getSelectedItem());
+                  new HashSet<>(myModel.getItems()), getSelectedItem());
                 boolean isOk = action.showAndGet();
                 if (isOk) {
                     int rowIndex = myEntryTable.getSelectedRow();
@@ -231,6 +231,12 @@ public class Perl6DependenciesPanelImpl extends JPanel {
                 }
             }, new EmptyProgressIndicator());
             return myPanel;
+        }
+
+        @Nullable
+        @Override
+        public JComponent getPreferredFocusedComponent() {
+            return myNameField;
         }
     }
 }
