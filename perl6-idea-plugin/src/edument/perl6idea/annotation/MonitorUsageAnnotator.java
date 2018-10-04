@@ -36,8 +36,11 @@ public class MonitorUsageAnnotator implements Annotator {
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
 
+
+        String packageName = ((Perl6PackageDecl)element).getPackageName();
+        if (packageName == null) return;
         holder.createErrorAnnotation(new TextRange(elementTextOffset,
-                                                   elementTextOffset + ((Perl6PackageDecl)element).getPackageName().length()),
+                                                   elementTextOffset + packageName.length()),
                                      "Cannot use monitor type package without OO::Monitors module being included")
               .registerFix(new AddMonitorModuleFix());
     }
