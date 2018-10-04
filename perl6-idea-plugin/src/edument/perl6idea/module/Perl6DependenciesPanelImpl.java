@@ -232,5 +232,11 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             }, new EmptyProgressIndicator());
             return myPanel;
         }
+
+        @Nullable
+        @Override
+        public JComponent getPreferredFocusedComponent() {
+            return myNameField;
+        }
     }
 }
