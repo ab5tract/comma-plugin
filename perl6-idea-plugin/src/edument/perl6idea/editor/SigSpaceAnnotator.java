@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class SigSpaceAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-        if (psiElement instanceof Perl6RegexSigspace) {
+        if (psiElement instanceof Perl6RegexSigspace && psiElement.getTextLength() >= 1) {
             Annotation ann = annotationHolder.createInfoAnnotation(psiElement, "Implicit <.ws> call");
             ann.setTextAttributes(Perl6Highlighter.REGEX_SIG_SPACE);
         }

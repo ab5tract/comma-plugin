@@ -61,7 +61,10 @@ public class MissingRoleMethodAnnotator implements Annotator {
         if (methodsToImplement.size() != 0) {
             String names = String.join(", ", methodsToImplement.keySet());
             int start = element.getTextOffset();
-            int end = PsiTreeUtil.getChildOfType(decl, Perl6Blockoid.class).getTextOffset();
+            PsiElement blockoid = PsiTreeUtil.getChildOfType(decl, Perl6Blockoid.class);
+            // Block is not yet typed
+            if (blockoid == null) return;
+            int end = blockoid.getTextOffset();
             holder.createErrorAnnotation(new TextRange(start, end), String.format("Composed roles require to implement methods: %s", names))
                   .registerFix(new StubMissingMethodsFix(decl, methodsToImplement.values()));
         }

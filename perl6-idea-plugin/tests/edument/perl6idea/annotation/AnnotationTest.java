@@ -116,7 +116,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testUndeclaredPrivateMethodAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { method !a {} }; class B does A { method b { self<error descr=\"Private method !c is used, but not declared\">!c</error>; } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { method !a($one) {} }; class B does A { method b { self<error descr=\"Private method !c is used, but not declared\">!c</error>(1); } }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
@@ -193,6 +193,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     public void testSignature10() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "multi sub MAIN('web', ExistingFile $cfg-filename, ExistingFile $model-filename, Str $tech-file?) is export {}");
         myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testUnnamedTypenameInSignature() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub MAIN(Admin, 'web') {}");
+        myFixture.checkHighlighting();
     }
 
     public void testRawWheneverAnnotator() {
@@ -373,5 +378,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     public void testOOMonitors() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "monitor <error descr=\"Cannot use monitor type package without OO::Monitors module being included\">LongName::Name</error> {}");
         myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testSigspaceAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "grammar G { rule foo { abc<info desc=\"Implicit <.ws> call\"> </info>def<info desc=\"Implicit <.ws> call\"> </info>} }");
+        myFixture.checkHighlighting(false, true, false, false);
     }
 }

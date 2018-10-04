@@ -89,7 +89,8 @@ public class SignatureAnnotator implements Annotator {
 
     private static boolean isPositional(String summary) {
         return summary.equals("$") || summary.equals("@") ||
-               summary.equals("%") || summary.equals("&");
+               summary.equals("%") || summary.equals("&") ||
+               (!isNamed(summary) && !isOptional(summary) && !isVariadic(summary)); // It may be plain type name
     }
 
     private static boolean isNamed(String summary) {
