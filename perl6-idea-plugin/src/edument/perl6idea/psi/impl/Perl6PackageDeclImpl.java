@@ -143,34 +143,47 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         Perl6StatementList list = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
         if (list == null) return;
         for (PsiElement child : list.getChildren()) {
-            if (child.getFirstChild() instanceof Perl6RoutineDecl) {
-                Perl6RoutineDecl decl = (Perl6RoutineDecl)child.getFirstChild();
-                if (isTrusted && decl.isPrivate()) {
-                    boolean areInternalsCollected = collector.areInternalPartsCollected();
-                    collector.setAreInternalPartsCollected(true);
-                    Perl6RoutineDeclImpl.offerRoutineSymbols(
-                        collector,
-                        "!" + getPackageName() + "::" + decl.getRoutineName().substring(1),
-                        decl);
-                    collector.setAreInternalPartsCollected(areInternalsCollected);
-                    if (collector.isSatisfied()) return;
-                } else {
-                    ((Perl6RoutineDecl)child.getFirstChild()).contributeSymbols(collector);
-                }
-                if (collector.isSatisfied()) return;
-            } else if (child.getFirstChild() instanceof Perl6ScopedDecl) {
-                Perl6ScopedDecl decl = (Perl6ScopedDecl)child.getFirstChild();
+            PsiElement firstChild = child.getFirstChild();
+            if (firstChild instanceof Perl6RoutineDecl) {
+                Perl6RoutineDecl decl = (Perl6RoutineDecl)firstChild;
+                if (contributeMethod(collector, isTrusted, decl)) return;
+            } else if (firstChild instanceof Perl6ScopedDecl) {
+                Perl6ScopedDecl decl = (Perl6ScopedDecl)firstChild;
                 if (decl.getScope().equals("has") || decl.getScope().equals("our")) {
                     Perl6VariableDecl varDecl = PsiTreeUtil.getChildOfType(decl, Perl6VariableDecl.class);
                     if (varDecl != null)
                         varDecl.contributeSymbols(collector);
                 }
                 if (collector.isSatisfied()) return;
-            } else if (child.getFirstChild() instanceof Perl6RegexDecl) {
-                ((Perl6RegexDecl)child.getFirstChild()).contributeSymbols(collector);
+            } else if (firstChild instanceof Perl6RegexDecl) {
+                ((Perl6RegexDecl)firstChild).contributeSymbols(collector);
                 if (collector.isSatisfied()) return;
+            } else if (firstChild instanceof Perl6MultiDecl) {
+                Perl6RoutineDecl maybeDecl = PsiTreeUtil.getChildOfType(firstChild, Perl6RoutineDecl.class);
+                if (maybeDecl != null)
+                    // Contribute multi
+                    if (contributeMethod(collector, isTrusted, maybeDecl)) return;
             }
         }
+    }
+
+    private boolean contributeMethod(Perl6SymbolCollector collector,
+                                     boolean isTrusted,
+                                     Perl6RoutineDecl decl) {
+        if (isTrusted && decl.isPrivate()) {
+            boolean areInternalsCollected = collector.areInternalPartsCollected();
+            collector.setAreInternalPartsCollected(true);
+            Perl6RoutineDeclImpl.offerRoutineSymbols(
+                collector,
+                "!" + getPackageName() + "::" + decl.getRoutineName().substring(1),
+                decl);
+            collector.setAreInternalPartsCollected(areInternalsCollected);
+            if (collector.isSatisfied()) return true;
+        } else {
+            decl.contributeSymbols(collector);
+        }
+        if (collector.isSatisfied()) return true;
+        return false;
     }
 
     @Override
