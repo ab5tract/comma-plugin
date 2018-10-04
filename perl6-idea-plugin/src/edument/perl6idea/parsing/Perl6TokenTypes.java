@@ -24,6 +24,8 @@ public interface Perl6TokenTypes {
     IElementType COLON_PAIR = new Perl6ElementType("COLON_PAIR");
     IElementType COLON_PAIR_HAS_VALUE = new Perl6ElementType("COLON_PAIR_HAS_VALUE");
     IElementType COMMENT = new Perl6ElementType("COMMENT");
+    IElementType COMMENT_QUOTE_CLOSE = new Perl6ElementType("COMMENT_QUOTE_CLOSE");
+    IElementType COMMENT_QUOTE_OPEN = new Perl6ElementType("COMMENT_QUOTE_OPEN");
     IElementType COMMENT_STARTER = new Perl6ElementType("COMMENT_STARTER");
     IElementType COMPLEX_LITERAL = new Perl6ElementType("COMPLEX_LITERAL");
     IElementType COND_OP_INCOMPLETE = new Perl6ElementType("COND_OP_INCOMPLETE");

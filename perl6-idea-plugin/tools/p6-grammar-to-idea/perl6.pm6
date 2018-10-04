@@ -200,6 +200,7 @@ grammar MAIN {
         [
         || <.pre-comment>
         || <.post-comment>
+        || <.multiline-comment>
         || <.plain-comment>
         ]
     }
@@ -224,6 +225,40 @@ grammar MAIN {
         \N*
         <.end-token('COMMENT')>
         <.end-element('POD_POST_COMMENT')>
+    }
+
+    token multiline-comment {
+        <?before '#`' <.has-delimiter>>
+        :my $*STARTER = '';
+        :my $*STOPPER = '';
+        :my $*ALT_STOPPER = '';
+        :my $*DELIM = '';
+        <.start-token('COMMENT_STARTER')>
+        '#`'
+        <.end-token('COMMENT_STARTER')>
+        <.peek-delimiters>
+        <.start-token('COMMENT_QUOTE_OPEN')>
+        $*STARTER
+        <.end-token('COMMENT_QUOTE_OPEN')>
+        <.multiline-comment-nibbler>
+        [
+            <.start-token('COMMENT_QUOTE_CLOSE')>
+            <.stopper>
+            <.end-token('COMMENT_QUOTE_CLOSE')>
+        ]?
+    }
+
+    token multiline-comment-nibbler {
+        [
+            <!stopper>
+            [
+            || <.start-token('COMMENT_QUOTE_OPEN')> <.starter> <.end-token('COMMENT_QUOTE_OPEN')>
+               <.multiline-comment-nibbler>
+               [<.start-token('COMMENT_QUOTE_CLOSE')> <.stopper> <.end-token('COMMENT_QUOTE_CLOSE')>]?
+            || <.start-token('COMMENT')> [\w+ || \d+ || \s+]+ <.end-token('COMMENT')>
+            || <.start-token('COMMENT')> . <.end-token('COMMENT')>
+            ]
+        ]*
     }
 
     token plain-comment {
