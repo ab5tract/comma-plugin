@@ -11,8 +11,12 @@ public class Perl6DebugCommandLineState extends Perl6RunCommandLineState {
     }
 
     @Override
-    protected void populateRunCommand() throws ExecutionException {
+    protected void populateRunCommand() {
         command = Perl6CommandLine.populateDebugCommandLine(getEnvironment().getProject(),
                                                             runConfiguration.getDebugPort());
+        String params = runConfiguration.getInterpreterParameters();
+        if (params != null && !params.trim().isEmpty()) {
+            command.add(params);
+        }
     }
 }
