@@ -35,8 +35,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static java.io.File.separator;
-
 public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuilder {
     private static Logger LOG = Logger.getInstance(Perl6ModuleBuilder.class);
     private Perl6ProjectType type = Perl6ProjectType.PERL6_SCRIPT;
@@ -182,7 +180,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     }
 
     public static String stubTest(String testPath, String fileName, List<String> imports) {
-        testPath = testPath + separator + fileName;
+        testPath = testPath + "/" + fileName;
         if (!testPath.endsWith(".t"))
             testPath += ".t";
         List<String> lines = new LinkedList<>();
@@ -195,7 +193,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     }
 
     public static String stubScript(String moduleLibraryPath, String scriptName) {
-        String scriptPath = moduleLibraryPath + separator + scriptName;
+        String scriptPath = moduleLibraryPath + "/" + scriptName;
         if (!scriptPath.endsWith(".pl6") && !scriptPath.endsWith(".p6"))
             scriptPath += ".p6";
 
@@ -251,7 +249,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     }
 
     private void addPath(List<Pair<String, String>> paths, String dirName) {
-        String path = this.getContentEntryPath() + separator + dirName;
+        String path = this.getContentEntryPath() + "/" + dirName;
         paths.add(Pair.create(path, ""));
     }
 

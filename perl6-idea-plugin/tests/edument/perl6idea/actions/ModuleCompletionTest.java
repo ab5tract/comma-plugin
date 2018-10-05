@@ -59,7 +59,9 @@ public class ModuleCompletionTest extends LightPlatformCodeInsightFixtureTestCas
                 try {
                     base.createChildDirectory(this, name);
                 }
-                catch (IOException ignore) {}
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
             });
         return base.findFileByRelativePath(name);
     }

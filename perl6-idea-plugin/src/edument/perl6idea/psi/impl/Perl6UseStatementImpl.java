@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.io.File.separator;
-
 public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseStatementStub> implements Perl6UseStatement {
     public Perl6UseStatementImpl(@NotNull ASTNode node) {
         super(node);
@@ -64,7 +62,7 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                 Perl6ModuleFileType.INSTANCE,
                 GlobalSearchScope.projectScope(getProject()));
 
-            String newName = "lib" + separator + name.replaceAll("::", separator) + ".pm6";
+            String newName = "lib" + "/" + name.replaceAll("::", "/") + ".pm6";
             for (VirtualFile file : slowFound) {
                 String path = file.getCanonicalPath();
                 if (path == null) continue;

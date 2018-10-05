@@ -29,8 +29,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.io.File.separator;
-
 public class ModuleMetaChangeListener implements ApplicationComponent, BulkFileListener {
     private final MessageBusConnection conn;
     private static Logger LOGGER = Logger.getInstance(ModuleMetaChangeListener.class);
@@ -40,7 +38,7 @@ public class ModuleMetaChangeListener implements ApplicationComponent, BulkFileL
         Matcher m = Pattern.compile("(.*)/lib/(.+).pm6").matcher(path);
         if (m.matches()) {
             return Arrays.asList(m.group(1),
-                                 m.group(2).replaceAll(separator, "::"));
+                                 m.group(2).replaceAll("/", "::"));
         }
         return null;
     }
@@ -108,7 +106,7 @@ public class ModuleMetaChangeListener implements ApplicationComponent, BulkFileL
             providesSection.remove(oldName);
             if (newName != null) {
                 providesSection.put(newName,
-                        String.format("lib%s%s.pm6", separator, newName.replaceAll("::", separator)));
+                        String.format("lib/%s.pm6", newName.replaceAll("::", "/")));
             }
             metaInfo.put("provides", providesSection);
             Files.write(metaPath, Collections.singletonList(metaInfo.toString(4)), StandardCharsets.UTF_8);

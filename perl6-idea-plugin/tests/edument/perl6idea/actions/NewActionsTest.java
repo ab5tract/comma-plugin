@@ -11,8 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-import static java.io.File.separator;
-
 public class NewActionsTest extends LightPlatformCodeInsightFixtureTestCase {
     public void testNewScriptAction() {
         Perl6ModuleBuilder.stubScript(getProject().getBasePath(), "test.p6");
@@ -28,18 +26,18 @@ public class NewActionsTest extends LightPlatformCodeInsightFixtureTestCase {
         Perl6ModuleBuilder.stubModule(p, Paths.get(basePath, "lib").toString(), "Foo::Bar", null, true);
         assertExists(Paths.get(basePath, "lib", "Foo", "Bar.pm6").toFile());
         assertExists(Paths.get(basePath, "META6.json").toFile());
-        checkMETA(basePath,"Foo::Bar", "Foo" + separator + "Bar.pm6");
+        checkMETA(basePath,"Foo::Bar", "Foo/Bar.pm6");
         Perl6ModuleBuilder.stubModule(p, Paths.get(basePath, "lib").toString(), "Foo::Baz", null, false);
         assertExists(Paths.get(basePath, "lib", "Foo", "Baz.pm6").toFile());
-        checkMETA(basePath,"Foo::Bar", "Foo" + separator + "Bar.pm6");
-        checkMETA(basePath, "Foo::Baz", "Foo" + separator + "Baz.pm6");
+        checkMETA(basePath,"Foo::Bar", "Foo/Bar.pm6");
+        checkMETA(basePath, "Foo::Baz", "Foo/Baz.pm6");
     }
 
     public void testNewTestAction() {
         Project p = getProject();
         String basePath = p.getBasePath();
-        Perl6ModuleBuilder.stubTest(basePath + separator + "t", "10-sanity", Collections.emptyList());
-        Perl6ModuleBuilder.stubTest(basePath + separator + "t", "20-sanity.t", Collections.emptyList());
+        Perl6ModuleBuilder.stubTest(basePath + "/t", "10-sanity", Collections.emptyList());
+        Perl6ModuleBuilder.stubTest(basePath + "/t", "20-sanity.t", Collections.emptyList());
         assertExists(Paths.get(basePath, "t", "10-sanity.t").toFile());
         assertExists(Paths.get(basePath, "t", "20-sanity.t").toFile());
     }

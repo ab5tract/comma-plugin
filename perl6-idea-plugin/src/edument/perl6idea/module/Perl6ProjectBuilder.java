@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor;
-import static java.io.File.separator;
 
 public class Perl6ProjectBuilder extends ProjectImportBuilder {
     private final Logger LOG = Logger.getInstance(getClass());
@@ -84,7 +83,7 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
                 VirtualFile contentRoot = lfs.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(getFileToImport()));
                 if (contentRoot == null) return;
                 ModifiableModuleModel manager = ModuleManager.getInstance(project).getModifiableModel();
-                String name = contentRoot.getPath() + separator + project.getName() + ".iml";
+                String name = contentRoot.getPath() + "/" + project.getName() + ".iml";
                 Module module = manager.newModule(name, Perl6ModuleType.getInstance().getId());
                 ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
                 ContentEntry entry = rootModel.addContentEntry(contentRoot);
