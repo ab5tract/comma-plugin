@@ -335,6 +335,21 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
+    public void testMissingStubbedMethodDoNotIncludeFilledOnes1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R1 { method m {...} }; role R2 does R1 { method m {...} }; class C does R2 {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testMissingStubbedMethodDoNotIncludeFilledOnes2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R1 { method m {...} }; role R2 { method m {} }; class C does R1 does R2 {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
+    public void testMissingStubbedMethodDoNotIncludeFilledOnes3() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R1 { method m {...} }; role R2 { method m {} }; class C does RR does R1 {}");
+        myFixture.checkHighlighting(false, false, true, true);
+    }
+
     public void testMyScopedVariableExportAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"`my` scoped variable cannot be exported\">my $var is export</error>;");
         myFixture.checkHighlighting(false, false, true, true);
