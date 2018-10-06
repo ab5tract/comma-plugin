@@ -75,6 +75,8 @@ public class MissingRoleMethodAnnotator implements Annotator {
                     Perl6RoutineDecl method = (Perl6RoutineDecl)maybeMethod;
                     if (!method.getRoutineKind().equals("method") || method.getParent() instanceof Perl6MultiDecl) continue;
                     if (method.isStubbed()) {
+                        // If method is not indexed or we saw it, and it was not closer to root class than current stub,
+                        // add it to candidates for stubbing
                         boolean isIndexed = seen.containsKey(method.getRoutineName());
                         if ((!isIndexed || seen.get(method.getRoutineName()) > level)) {
                             Pair<Integer, String> value = Pair.create(
@@ -83,6 +85,8 @@ public class MissingRoleMethodAnnotator implements Annotator {
                         }
                     }
                     else {
+                        // If this method was planned to be stubbed, but now we see an implementation
+                        // with level closer to equal relatively to root class, do not stub it
                         Pair<Integer, String> value = methodsToImplement.get(method.getRoutineName());
                         if (value != null && value.first >= level) {
                             methodsToImplement.remove(method.getRoutineName());
