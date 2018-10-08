@@ -388,6 +388,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     public PsiMetaData getMetaData() {
         PsiElement decl = this;
         String shortName = getPackageName();
+        if (shortName == null) return null;
         int lastIndexOf = shortName.lastIndexOf(':');
         if (lastIndexOf != -1) {
             shortName = shortName.substring(lastIndexOf + 1);
