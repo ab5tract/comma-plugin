@@ -8,6 +8,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidator;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
@@ -78,12 +79,18 @@ public class NewModuleAction extends AnAction {
     public String processNavigatable(PsiDirectory psiDirectory) {
         if (psiDirectory != null) {
             String path = psiDirectory.getVirtualFile().getPath();
-            String[] parts = path.split(myBaseDir + "[/\\\\]");
-            if (parts.length > 1) {
-                // If we are inside of `lib`
-                return String.join("::", parts[1].split("[/\\\\]")) + "::";
+            // On windows, myBaseDir has canonical path, while `path` is not OS-indenendent
+            // It does not work if call `getCanonicalPath` for psiDirectory
+            String tempBaseDir = myBaseDir.replaceAll("\\\\", "/");
+            if (path.startsWith(tempBaseDir)) {
+                // Get full path, cut off its prefix up to "lib" directory, split it by `\` or `/` symbols,
+                // then join pieces with `::` as delimiter
+                String cuttedPath = String.join("::", path.substring(tempBaseDir.length()).split("[/\\\\]"));
+                // if it's linux, we have `/` as first symbol, so because of previous line,
+                // we have `::Foo` now. In this case, trim it
+                // and add `::` postfix, so user has `Foo::`, not `Foo` pre-filled
+                return StringUtil.trimStart(cuttedPath, "::") + "::";
             } else {
-                // some another directory becomes root for module typed
                 myBaseDir = path;
             }
         }
