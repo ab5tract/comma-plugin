@@ -8,6 +8,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidator;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -81,7 +82,12 @@ public class NewModuleAction extends AnAction {
             String path = psiDirectory.getVirtualFile().getPath();
             // On windows, myBaseDir has canonical path, while `path` is not OS-indenendent
             // It does not work if call `getCanonicalPath` for psiDirectory
-            String tempBaseDir = myBaseDir.replaceAll("\\\\", "/");
+            String tempBaseDir = myBaseDir;
+            if (SystemInfo.isWindows) {
+                tempBaseDir = tempBaseDir.replaceAll("\\\\", "/") + "/";
+            } else {
+                tempBaseDir += "/";
+            }
             if (path.startsWith(tempBaseDir)) {
                 // Get full path, cut off its prefix up to "lib" directory, split it by `\` or `/` symbols,
                 // then join pieces with `::` as delimiter
