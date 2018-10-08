@@ -1,28 +1,34 @@
 <h1>Change List</h1>
 
-<h2>2018.9.0</h2>
+<h2>2018.10.0</h2>
 
 <ul>
-    <li>Implement Find Usages feature for variables, attributes, subs, private
-        methods, and types</li>
-    <li>Implement Rename refactoring for variables, attributes, subs, private
-        methods and types (the type case has some known limitations with regards to
-        nested packages, which will be resolved in a future release)</li>
-    <li>Implement spell checking in comments and Pod</li>
-    <li>Parse and highlight the also keyword, and respect the traits that it applies
-        to a package</li>
-    <li>Parse and highlight the trusts keyword, and allow auto-complete and reference
-        resolution of private method calls allowed because of its use</li>
-    <li>Implement inserting #| on next line when pressing enter, to allow easier
-        continuation of writing documentation comments</li>
-    <li>Provide better default run configuration names</li>
-    <li>Fix assorted issues with symbol resolution in more complex cases of class
-        inheritance and role composition structures</li>
-    <li>Fix auto-complete of $.foo style calls</li>
-    <li>When the project SDK changes, invalidate cached symbol resolutions based on
-        the previous SDK</li>
-    <li>Fix exceptions on empty project creation</li>
-    <li>Fix exception when META6.json is invalid</li>
-    <li>Fix exception when <code>subset</code> keyword is not followed by a name and indexing
-        takes place</li>
+    <li>Annotate a class that fails to implement stubbed role methods, and provide
+        a fix that stubs those methods inside of the class (this is especially handy
+        when using roles as an interface, and want to implement it in many classes)</li>
+    <li>Annotate use of does trait with a class, and offer a fix to use is trait
+        instead</li>
+    <li>Annotate use of the export trait on a my-scoped variable as an error, and
+        propose to switch to our scope</li>
+    <li>Annotate use of monitor without having used OO::Monitors as an error, and
+        provide a fix to add that use statement and update META6.json if needed</li>
+    <li>Complete methods from Cursor when writing a method in a grammar</li>
+    <li>Offer multi methods in auto-complete</li>
+    <li>Parse, highlight, and brace-match multiline comments</li>
+    <li>Fix a performance regression on reference resolution and auto-complete that
+        was particularly noticeable in larger projects</li>
+    <li>When completing the rule call syntax, offer methods in the current grammar
+        (for example, if a grammar contains a panic method, calling it from a rule
+        will now auto-complete and reference resolve)</li>
+    <li>Fix Find Usages for a rule in a regex when the cursor is placed on its name</li>
+    <li>Fix incorrect error annotation about wrong parameter order when a normal positional
+        parameter came after a positional parameter constrained on type only</li>
+    <li>When annotating a call to an undeclared private method, only mark the method
+        name, not its arguments</li>
+    <li>Fix bogus triggering of undeclarable variable error</li>
+    <li>Make sure module name field gets focus in the dialog to add a module
+        dependency</li>
+    <li>Fix incorrect sigspace indication on unquoted literals</li>
+    <li>Pass Perl 6 options when running under the debugger</li>
+    <li>Fix an exception related to modules resolution which occurred on Windows</li>
 </ul>
