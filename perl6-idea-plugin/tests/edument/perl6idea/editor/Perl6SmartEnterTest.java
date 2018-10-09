@@ -79,4 +79,8 @@ public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
     public void testClassAfterBlockoid() {
        doTest();
     }
+
+    public void testUnit() {
+        doTest();
+    }
 }

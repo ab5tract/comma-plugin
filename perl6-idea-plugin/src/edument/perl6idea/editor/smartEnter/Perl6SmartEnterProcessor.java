@@ -18,6 +18,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         if (!(psiFile instanceof Perl6File)) return false;
         final CaretModel caretModel = editor.getCaretModel();
         PsiElement element = psiFile.findElementAt(caretModel.getOffset() - 1);
+        if (element == null) return false;
         if (element.getNode().getElementType() == BAD_CHARACTER) return false;
         element = PsiTreeUtil.getParentOfType(element, Perl6Statement.class);
         if (element == null) return false;
