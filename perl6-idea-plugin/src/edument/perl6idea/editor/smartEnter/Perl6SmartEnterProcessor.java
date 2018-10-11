@@ -49,7 +49,6 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
                 offsetToJump = child.getTextOffset() + child.getTextLength();
 
             editor.getDocument().insertString(offsetToJump, ";");
-            editor.getCaretModel().moveToOffset(offsetToJump + 2);
             return true;
         }
     }
