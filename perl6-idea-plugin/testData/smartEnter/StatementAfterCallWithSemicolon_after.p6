@@ -1,1 +1,2 @@
-say 50;<caret>
+say 50;
+<caret>

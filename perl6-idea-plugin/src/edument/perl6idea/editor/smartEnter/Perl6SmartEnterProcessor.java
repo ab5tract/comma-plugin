@@ -18,72 +18,115 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
     @Override
     public boolean process(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile psiFile) {
         if (!(psiFile instanceof Perl6File)) return false;
+        // Get an element
         final CaretModel caretModel = editor.getCaretModel();
         PsiElement element = psiFile.findElementAt(caretModel.getOffset() - 1);
         if (element == null) return false;
+
+        // we will not do anything if the parser state is broken
         if (element.getNode().getElementType() == BAD_CHARACTER) return false;
-        element = PsiTreeUtil.getParentOfType(element, Perl6Statement.class);
-        if (element == null) return false;
-        boolean result = processEnter(element, editor);
-        if (result) {
-            EnterProcessor plain = new PlainEnterProcessor();
-            plain.doEnter(editor, psiFile, true);
-        }
-        return result;
+
+        // Get closest parent statement
+        Perl6Statement statement = PsiTreeUtil.getParentOfType(element, Perl6Statement.class);
+        if (statement == null) return false;
+
+        processEnter(statement, editor);
+        EnterProcessor plain = new PlainEnterProcessor();
+        plain.doEnter(editor, psiFile, true);
+
+        return true;
     }
 
-    private static boolean processEnter(PsiElement element, Editor editor) {
-        PsiElement child = element.getFirstChild();
-        if (child == null) return false;
-        if (child instanceof Perl6PackageDecl ||
-            (child instanceof Perl6ScopedDecl && !((Perl6ScopedDecl)child).getScope().equals("unit"))) {
-            return processPackageDeclaration(child, editor);
-        } else if (element.getLastChild().getNode().getElementType() == STATEMENT_TERMINATOR) {
-            return false;
+    private static void processEnter(Perl6Statement element, Editor editor) {
+        // Get a first node of Perl6Statement
+        PsiElement actualStatement = element.getFirstChild();
+
+        if (actualStatement == null) return;
+        PsiElement lastChildOfStatement = element.getLastChild();
+        PsiElement siblingStatement = element.getNextSibling();
+
+        if (lastChildOfStatement != null && lastChildOfStatement.getNode().getElementType() == STATEMENT_TERMINATOR ||
+            siblingStatement != null && siblingStatement.getNode().getElementType() == STATEMENT_TERMINATOR) {
+            // `;` is already added either as part of statement to complete or as a next node, just do Enter
+            return;
+        }
+
+        // If we have a: package || variable || control statement
+        // complete it with possible block
+        if (isBlockCompletable(actualStatement)) {
+            processPackageDeclaration(actualStatement, editor);
         } else {
             // Default handler for statements
             int offsetToJump;
-            if (child.getLastChild().getNode().getElementType() == UNV_WHITE_SPACE)
-                offsetToJump = child.getLastChild().getTextOffset();
+            // A temporary hack to get a bit nicer behavior (excessive whitespace cutting)
+            // but it is a job for formatter to make `foo;` from `foo ;`
+            PsiElement maybeWhiteSpace = actualStatement.getLastChild();
+            if (maybeWhiteSpace != null && maybeWhiteSpace.getNode().getElementType() == UNV_WHITE_SPACE)
+                offsetToJump = maybeWhiteSpace.getTextOffset();
             else
-                offsetToJump = child.getTextOffset() + child.getTextLength();
+                offsetToJump = element.getTextOffset() + element.getTextLength();
 
             editor.getDocument().insertString(offsetToJump, ";");
-            return true;
         }
     }
 
-    private static boolean processPackageDeclaration(PsiElement element, Editor editor) {
+    private static boolean isBlockCompletable(PsiElement child) {
+        return child instanceof Perl6PackageDecl ||
+               (child instanceof Perl6ScopedDecl && !((Perl6ScopedDecl)child).getScope().equals("unit"));
+    }
+
+    private static void processPackageDeclaration(PsiElement element, Editor editor) {
         PsiElement lastPiece = element.getLastChild();
+        if (lastPiece == null) return;
         // Depend on last piece, we know what we want complete
-        if (lastPiece instanceof Perl6PackageDecl) {
-            return processPackageDeclaration(lastPiece, editor);
+
+        // If it is a scoped declaration, LastChild == FirstChild and it is declaration, so recurse
+        if (isBlockCompletable(lastPiece)) {
+            processPackageDeclaration(lastPiece, editor);
+            return;
         }
+
+        // Remove trailing whitespace
+        int offsetToJump = -1;
         if (lastPiece.getNode().getElementType() == UNV_WHITE_SPACE) {
-            if (PsiTreeUtil.getChildrenOfType(element, Perl6Blockoid.class) == null) {
-                // Delete whitespace
-                int offsetToJump = lastPiece.getTextOffset();
-                lastPiece.delete();
-                editor.getDocument().insertString(offsetToJump, " {\n}\n");
-            }
-        } else if (lastPiece instanceof Perl6Trait ||
-                   lastPiece instanceof Perl6RoleSignature ||
-                   lastPiece.getNode().getElementType() == NAME) {
-            int offsetToJump = lastPiece.getTextOffset() + lastPiece.getTextLength();
+            // Delete whitespace
+            offsetToJump = lastPiece.getTextOffset();
+            PsiElement tempLastPiece = lastPiece.getPrevSibling();
+            lastPiece.delete();
+            lastPiece = tempLastPiece;
+        }
+
+        // If element precedes code block
+        if (lastPiece instanceof Perl6Trait ||
+            lastPiece instanceof Perl6RoleSignature ||
+            lastPiece.getNode().getElementType() == NAME) {
+            if (offsetToJump < 0)
+                offsetToJump = lastPiece.getTextOffset() + lastPiece.getTextLength();
             editor.getDocument().insertString(offsetToJump, " {\n}\n");
         } else if (lastPiece instanceof Perl6Blockoid) {
-            int offsetToJump = lastPiece.getTextOffset();
-            lastPiece.delete();
-            editor.getDocument().insertString(offsetToJump, "{\n}\n");
+            // If code block itself
+            processBlockInternals(lastPiece, editor);
         } else {
+            // Otherwise, just try to add `;` without duplication
             PsiElement maybeTerminator = element.getNextSibling();
             if (maybeTerminator == null || maybeTerminator.getNode().getElementType() != STATEMENT_TERMINATOR) {
-                int offsetToJump = lastPiece.getTextOffset() + lastPiece.getTextLength();
+                if (offsetToJump < 0)
+                    offsetToJump = lastPiece.getTextOffset() + lastPiece.getTextLength();
                 editor.getDocument().insertString(offsetToJump, ";");
-                return true;
             }
-            return false;
         }
-        return true;
+    }
+
+    private static void processBlockInternals(PsiElement piece, Editor editor) {
+        int length = piece.getTextLength();
+        if (length <= 2 || isBlockEmpty(piece, length)) {
+            int offset = piece.getTextOffset();
+            piece.delete();
+            editor.getDocument().insertString(offset, "{\n}\n");
+        }
+    }
+
+    private static boolean isBlockEmpty(PsiElement piece, int length) {
+        return piece.getText().substring(1, length - 1).replaceAll("\n", "").trim().isEmpty();
     }
 }
