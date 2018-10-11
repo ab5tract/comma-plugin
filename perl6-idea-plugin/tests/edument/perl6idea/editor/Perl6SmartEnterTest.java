@@ -41,23 +41,23 @@ public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testMultilineStatement() {
-       doTest();
+        doTest();
     }
 
     public void testMultilineStatementWithSemicolon() {
-       doTest();
+        doTest();
     }
 
     public void testClassAfterName() {
-       doTest();
+        doTest();
     }
 
     public void testPackageAfterName() {
-       doTest();
+        doTest();
     }
 
     public void testClassAfterTrait() {
-       doTest();
+        doTest();
     }
 
     public void testClassAfterWhiteSpace() {
@@ -65,19 +65,23 @@ public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testRoleAfterSignature() {
-       doTest();
+        doTest();
     }
 
     public void testClassAfterBadCharacter() {
-       doTest();
+        doTest();
     }
 
     public void testClassAfterSemiBlockoid() {
-       doTest();
+        doTest();
     }
 
     public void testClassAfterBlockoid() {
-       doTest();
+        doTest();
+    }
+
+    public void testScopedClass() {
+        doTest();
     }
 
     public void testUnit() {

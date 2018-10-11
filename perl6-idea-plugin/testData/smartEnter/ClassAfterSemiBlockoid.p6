@@ -1,1 +1,1 @@
-class Foo is Node {<caret>
+class Foo is Node {

@@ -1,3 +1,3 @@
 role Foo[Type] {
-<caret>
+    <caret>
 }
