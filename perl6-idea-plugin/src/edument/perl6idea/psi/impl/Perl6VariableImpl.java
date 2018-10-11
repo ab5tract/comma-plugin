@@ -4,6 +4,8 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.SearchScope;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
@@ -22,6 +24,12 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     @Override
     public PsiElement getVariableToken() {
         return findChildByType(Perl6TokenTypes.VARIABLE);
+    }
+
+    @NotNull
+    @Override
+    public SearchScope getUseScope() {
+        return new LocalSearchScope(this, getVariableName());
     }
 
     @Override
@@ -62,7 +70,7 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
             } else if (resolved instanceof Perl6ParameterVariable) {
                 Perl6ParameterVariable parameter = (Perl6ParameterVariable)resolved;
                 String type = parameter.getVariableType();
-                if (type != " ")
+                if (!type.equals(" "))
                     return type;
             }
         } else {
@@ -79,7 +87,7 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
             } else if (resolved instanceof Perl6ParameterVariable) {
                 Perl6ParameterVariable parameter = (Perl6ParameterVariable)resolved;
                 String type = parameter.getVariableType();
-                if (type == " ") {
+                if (type.equals(" ")) {
                     if (text.startsWith("@"))
                         return "List";
                     if (text.startsWith("%"))
