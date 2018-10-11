@@ -99,4 +99,49 @@ public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
     public void testWhitespaceIsNotCaptured() {
         doTest();
     }
+
+    public void testIfHandling() {
+        doTest();
+    }
+
+    public void testElseHandling() {
+        doTest();
+    }
+
+    public void testWith() {
+        doTest();
+    }
+
+    public void testOrWith() {
+        doTest();
+    }
+
+    public void testUnless() {
+        doTest();
+    }
+
+    public void testFor() {
+        doTest();
+    }
+
+    public void testFor2() {
+        doTest();
+    }
+
+    public void testGiven() {
+        doTest();
+    }
+
+    // FIXME Bug in formatter produces LTA braces indentation
+    //public void testGivenWhen() {
+    //    doTest();
+    //}
+
+    public void testLoopCondition() {
+        doTest();
+    }
+
+    public void testLoopOutside() {
+        doTest();
+    }
 }

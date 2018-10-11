@@ -83,6 +83,11 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         return child instanceof Perl6PackageDecl ||
                child instanceof Perl6RoutineDeclImpl ||
                child instanceof Perl6IfStatement ||
+               child instanceof Perl6UnlessStatement ||
+               child instanceof Perl6ForStatement ||
+               child instanceof Perl6GivenStatement ||
+               child instanceof Perl6WheneverStatement||
+               child instanceof Perl6LoopStatement||
                child instanceof Perl6ScopedDecl && !((Perl6ScopedDecl)child).getScope().equals("unit");
     }
 
@@ -152,7 +157,13 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
     }
 
     private static boolean controlStatementsCheck(PsiElement piece) {
-        return piece.getParent() instanceof Perl6IfStatement;
+        PsiElement pieceParent = piece.getParent();
+        return pieceParent instanceof Perl6IfStatement ||
+               pieceParent instanceof Perl6UnlessStatement ||
+               pieceParent instanceof Perl6GivenStatement ||
+               pieceParent instanceof Perl6WheneverStatement ||
+               pieceParent instanceof Perl6LoopStatement ||
+               pieceParent instanceof Perl6ForStatement;
     }
 
     private static void processBlockInternals(PsiElement piece, Editor editor) {
