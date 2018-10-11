@@ -1,0 +1,8 @@
+sub foo {
+    <caret>
+}
+
+
+
+
+

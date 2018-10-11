@@ -87,4 +87,16 @@ public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
     public void testUnit() {
         doTest();
     }
+
+    public void testRoutineSignature() {
+        doTest();
+    }
+
+    public void testRoutineOutsideSignature() {
+        doTest();
+    }
+
+    public void testWhitespaceIsNotCaptured() {
+        doTest();
+    }
 }
