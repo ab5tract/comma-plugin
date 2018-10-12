@@ -38,7 +38,7 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.InterpolatedEVALAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingRoleMethodAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MyScopedVariableExportedAnnotator"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.RoleDoesClassAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.IncomposableDoesAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MonitorUsageAnnotator"/>
     <intentionAction>
       <className>edument.perl6idea.intention.RangeIntentionFix</className>

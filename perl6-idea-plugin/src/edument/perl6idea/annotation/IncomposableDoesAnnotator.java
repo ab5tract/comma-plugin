@@ -11,7 +11,7 @@ import edument.perl6idea.psi.Perl6Trait;
 import edument.perl6idea.psi.Perl6TypeName;
 import org.jetbrains.annotations.NotNull;
 
-public class RoleDoesClassAnnotator implements Annotator {
+public class IncomposableDoesAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6Trait)) return;
