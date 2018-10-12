@@ -438,4 +438,10 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
                                   "package Foo <error descr=\"package cannot compose a role\">does A</error> <error descr\"package cannot inherit a class\">is A</error> {}");
         myFixture.checkHighlighting(false, true, false, false);
     }
+
+    public void testPackageDeclAlsoTraitAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "package Foo { also <error descr=\"package cannot compose a role\">does A</error> }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
 }

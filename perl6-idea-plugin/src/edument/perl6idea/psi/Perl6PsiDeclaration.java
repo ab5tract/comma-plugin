@@ -12,7 +12,19 @@ public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierO
     String getScope();
 
     default List<Perl6Trait> getTraits() {
-        return PsiTreeUtil.getChildrenOfTypeAsList(this, Perl6Trait.class);
+        List<Perl6Trait> traits = PsiTreeUtil.getChildrenOfTypeAsList(this, Perl6Trait.class);
+        Perl6StatementList list = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
+        if (list == null) return traits;
+        for (PsiElement statement : list.getChildren()) {
+            if (!(statement instanceof Perl6Statement)) continue;
+            PsiElement statementFirstChild = statement.getFirstChild();
+            if (statementFirstChild instanceof Perl6Also) {
+                Perl6Trait trait = ((Perl6Also)statementFirstChild).getTrait();
+                if (trait != null)
+                    traits.add(trait);
+            }
+        }
+        return traits;
     }
 
     @Nullable
