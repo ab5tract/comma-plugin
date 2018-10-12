@@ -100,9 +100,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
                 // Get original type of subset
                 decl = subset.getSubsetBaseType();
                 String newName = subset.getSubsetBaseTypeName();
-                if (newName != null) {
-                    name = newName; // If it is external type, update `name` value
-                }
+                name = newName != null ? newName : "Any";
             }
             if (decl != null) { // Not external type
                 return isSingle ?

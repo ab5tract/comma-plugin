@@ -671,4 +671,12 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.containsAll(Arrays.asList(".aaaa", ".bbbbbbb")));
     }
+
+    public void testCompletionOfSubsetUndefinedType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "subset Frame where * > 0; my Frame $frame; $frame.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.size() > 0);
+    }
 }
