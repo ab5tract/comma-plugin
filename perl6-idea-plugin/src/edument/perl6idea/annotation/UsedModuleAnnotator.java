@@ -18,7 +18,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UsedModuleAnnotator implements Annotator {
     @Override
@@ -53,7 +56,14 @@ public class UsedModuleAnnotator implements Annotator {
             boolean inDepends = false;
 
             for (Object dependency : depends) {
-                Set<String> provides = Perl6ModuleListFetcher.getProvidesByModuleAsync(element.getProject(), (String)dependency);
+                String[] parts = ((String)dependency).split("::");
+                List<String> symbolParts = new ArrayList<>();
+                for (String part : parts) {
+                    int index = part.indexOf(':');
+                    symbolParts.add(index == -1 ? part : part.substring(0, index));
+                }
+                String cleanedDependency = String.join("::", symbolParts);
+                Set<String> provides = Perl6ModuleListFetcher.getProvidesByModuleAsync(element.getProject(), cleanedDependency);
                 if (provides == null) return;
                 inDepends = provides.contains(element.getText());
                 if (inDepends) break;
