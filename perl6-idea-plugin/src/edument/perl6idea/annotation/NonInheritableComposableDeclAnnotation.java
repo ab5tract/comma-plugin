@@ -2,7 +2,6 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6Trait;
@@ -19,28 +18,15 @@ public class NonInheritableComposableDeclAnnotation implements Annotator {
         if (!kind.equals("package") && !kind.equals("module")) return;
 
         List<Perl6Trait> traits = decl.getTraits();
-        boolean compose = false;
-        boolean inherit = false;
-        for (int i = 0; i< traits.size(); i++) {
-            String modifier = traits.get(i).getTraitModifier();
+        String messageBase = decl.getPackageKind() + " cannot ";
+        for (Perl6Trait trait : traits) {
+            String modifier = trait.getTraitModifier();
             if (modifier.equals("does")) {
-                compose = true;
+                holder.createErrorAnnotation(trait, messageBase + "compose a role");
             }
             else if (modifier.equals("is")) {
-                inherit = true;
+                holder.createErrorAnnotation(trait, messageBase + "inherit a class");
             }
-        }
-        if (inherit || compose) {
-            String message = decl.getPackageKind() + " cannot ";
-            if (compose && inherit)
-                message += "compose a role or inherit a class";
-            else if (compose)
-                message += "compose a role";
-            else
-                message += "inherit a class";
-            holder.createErrorAnnotation(
-                new TextRange(decl.getTextOffset(), decl.getTextOffset() + decl.getPackageName().length()),
-                message);
         }
     }
 }

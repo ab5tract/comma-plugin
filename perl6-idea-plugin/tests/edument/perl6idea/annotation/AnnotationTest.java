@@ -405,37 +405,37 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
    public void testPackageDeclAnnotator3() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "module <error descr=\"module cannot compose a role\">Foo</error> does A {}");
+                                  "module Foo <error descr=\"module cannot compose a role\">does A</error> {}");
         myFixture.checkHighlighting(false, true, false, false);
     }
 
    public void testPackageDeclAnnotator4() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "module <error descr=\"module cannot inherit a class\">Foo</error> is A {}");
+                                  "module Foo <error descr=\"module cannot inherit a class\">is A</error> {}");
         myFixture.checkHighlighting(false, true, false, false);
     }
 
    public void testPackageDeclAnnotator5() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "module <error descr=\"module cannot compose a role or inherit a class\">Foo</error> does A is A {}");
+                                  "module Foo <error descr=\"module cannot compose a role\">does A</error> <error descr\"module cannot inherit a class\">is A</error> {}");
         myFixture.checkHighlighting(false, true, false, false);
     }
 
    public void testPackageDeclAnnotator6() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "package <error descr=\"package cannot compose a role\">Foo</error> does A {}");
+                                  "package Foo <error descr=\"package cannot compose a role\">does A</error> {}");
         myFixture.checkHighlighting(false, true, false, false);
     }
 
    public void testPackageDeclAnnotator7() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "package <error descr=\"package cannot inherit a class\">Foo</error> is A {}");
+                                  "package Foo <error descr=\"package cannot inherit a class\">is A</error> {}");
         myFixture.checkHighlighting(false, true, false, false);
     }
 
    public void testPackageDeclAnnotator8() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "package <error descr=\"package cannot compose a role or inherit a class\">Foo</error> does A is A {}");
+                                  "package Foo <error descr=\"package cannot compose a role\">does A</error> <error descr\"package cannot inherit a class\">is A</error> {}");
         myFixture.checkHighlighting(false, true, false, false);
     }
 }
