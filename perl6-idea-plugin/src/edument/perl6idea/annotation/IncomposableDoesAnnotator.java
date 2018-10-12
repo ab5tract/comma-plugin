@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.annotation.fix.ChangeDoesToIsFix;
+import edument.perl6idea.psi.Perl6Also;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6Trait;
 import edument.perl6idea.psi.Perl6TypeName;
@@ -14,13 +15,14 @@ import org.jetbrains.annotations.NotNull;
 public class IncomposableDoesAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6Trait)) return;
+        if (!(element instanceof Perl6Trait) && !(element instanceof Perl6Also)) return;
 
-        Perl6Trait trait = (Perl6Trait)element;
+        Perl6Trait trait = element instanceof Perl6Trait ? (Perl6Trait)element : ((Perl6Also)element).getTrait();
+        if (trait == null) return;
         if (!trait.getTraitModifier().equals("does")) return;
 
-        PsiElement declaration = trait.getParent();
-        if (!(declaration instanceof Perl6PackageDecl)) return;
+        PsiElement declaration = PsiTreeUtil.getParentOfType(trait, Perl6PackageDecl.class);
+        if (declaration == null) return;
 
         Perl6TypeName typeName = PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class);
         if (typeName == null) return;
