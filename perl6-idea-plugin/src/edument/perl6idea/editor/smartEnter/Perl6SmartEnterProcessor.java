@@ -43,15 +43,14 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
     private static void processEnter(Perl6Statement element, Editor editor, Project project) {
         // Get a first node of Perl6Statement
         PsiElement actualStatement = element.getFirstChild();
-        PsiElement lastChildOfStatement = element.getLastChild();
+        if (actualStatement == null) return;
 
+        PsiElement lastChildOfStatement = element.getLastChild();
         // In current version of the parser (2018.10), trailing PsiWhiteSpace and UNV_WHITE_SPACE
         // nodes are included as children of last statement, so we want to skip those
         while (lastChildOfStatement != null && (lastChildOfStatement instanceof PsiWhiteSpace ||
                                                 lastChildOfStatement.getNode().getElementType() == UNV_WHITE_SPACE))
             lastChildOfStatement = lastChildOfStatement.getPrevSibling();
-
-        if (actualStatement == null) return;
         PsiElement siblingStatement = element.getNextSibling();
 
         if (lastChildOfStatement != null && lastChildOfStatement.getNode().getElementType() == STATEMENT_TERMINATOR ||
@@ -63,7 +62,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         // If we have a: package || variable || control statement
         // complete it with possible block
         if (isBlockCompletable(actualStatement)) {
-            processPackageDeclaration(actualStatement, editor, project);
+            processStatement(actualStatement, editor, project);
         } else {
             // Default handler for statements
             int offsetToJump;
@@ -91,7 +90,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
                child instanceof Perl6ScopedDecl && !((Perl6ScopedDecl)child).getScope().equals("unit");
     }
 
-    private static void processPackageDeclaration(PsiElement element, Editor editor, Project project) {
+    private static void processStatement(PsiElement element, Editor editor, Project project) {
         PsiElement lastPiece = element.getLastChild();
 
         // In current version of the parser (2018.10), trailing PsiWhiteSpace and UNV_WHITE_SPACE
@@ -113,7 +112,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
 
         // If it is a scoped declaration, LastChild == FirstChild and it is declaration, so recurse
         if (isBlockCompletable(lastPiece)) {
-            processPackageDeclaration(lastPiece, editor, project);
+            processStatement(lastPiece, editor, project);
             return;
         }
 
