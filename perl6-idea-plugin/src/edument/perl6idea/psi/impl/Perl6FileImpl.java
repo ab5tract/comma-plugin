@@ -6,12 +6,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.meta.PsiMetaData;
-import com.intellij.psi.meta.PsiMetaOwner;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
-import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.*;
@@ -28,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Perl6FileImpl extends PsiFileBase implements Perl6File, PsiMetaOwner {
+public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     private static final Perl6Symbol[] UNIT_SYMBOLS = new Perl6Symbol[] {
         new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$?FILE"),
         new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$?LINE"),
@@ -196,14 +194,6 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File, PsiMetaOwne
             Perl6Symbol finishBlock = new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$=finish");
             collector.offerSymbol(finishBlock);
         }
-    }
-
-    @Override
-    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        String path = getContainingFile().getVirtualFile().getPath();
-        String choppedPath = path.substring(0, 4 + path.indexOf("lib"));
-        System.out.println(choppedPath + name.replaceAll("::", "/") + ".pm6");
-        return super.setName(choppedPath + name.replaceAll("::", "/") + ".pm6");
     }
 
     @Nullable

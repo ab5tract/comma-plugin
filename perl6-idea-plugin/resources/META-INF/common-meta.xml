@@ -62,6 +62,7 @@
     <enterHandlerDelegate implementation="edument.perl6idea.editor.Perl6EnterDelegate"/>
     <lang.findUsagesProvider language="Perl6" implementationClass="edument.perl6idea.findUsages.Perl6FindUsagesProvider"/>
     <lang.namesValidator language="Perl6" implementationClass="edument.perl6idea.rename.Perl6InputValidator"/>
+    <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6ModuleRenameProcessor"/>
     <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6PsiElementProcessor"/>
     <usageTypeProvider implementation="edument.perl6idea.findUsages.Perl6UsageTypeProvider"/>
   </extensions>
