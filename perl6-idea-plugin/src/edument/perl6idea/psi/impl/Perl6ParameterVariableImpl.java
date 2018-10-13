@@ -4,15 +4,14 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.meta.PsiMetaData;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
-import edument.perl6idea.psi.Perl6ElementFactory;
-import edument.perl6idea.psi.Perl6ParameterDefault;
-import edument.perl6idea.psi.Perl6ParameterVariable;
-import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
@@ -38,6 +37,13 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     public String getName() {
         PsiElement nameIdent = getNameIdentifier();
         return nameIdent != null ? nameIdent.getText() : "";
+    }
+
+    @NotNull
+    @Override
+    public SearchScope getUseScope() {
+        PsiElement parent = PsiTreeUtil.getParentOfType(this, Perl6RoutineDecl.class);
+        return new LocalSearchScope(parent, getName());
     }
 
     @Override

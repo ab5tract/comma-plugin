@@ -1,1 +1,1 @@
-my $f<caret>oo is export;
+our $f<caret>oo is export;

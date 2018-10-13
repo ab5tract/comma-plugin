@@ -1,10 +1,15 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
@@ -34,6 +39,18 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public PsiElement getNameIdentifier() {
         Perl6Variable varNode = getVariable();
         return varNode != null ? varNode.getVariableToken() : null;
+    }
+
+    @NotNull
+    @Override
+    public SearchScope getUseScope() {
+        String varScope = getScope();
+        if (varScope.equals("my") || varScope.equals("state")) {
+            Perl6StatementList parent = PsiTreeUtil.getParentOfType(this, Perl6StatementList.class);
+            if (parent != null)
+                return new LocalSearchScope(parent, getVariableName());
+        }
+        return super.getUseScope();
     }
 
     @Override
