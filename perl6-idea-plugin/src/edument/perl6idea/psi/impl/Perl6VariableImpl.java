@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.SearchScope;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
@@ -29,7 +30,11 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     @NotNull
     @Override
     public SearchScope getUseScope() {
-        return new LocalSearchScope(this, getVariableName());
+        PsiReference ref = getReference();
+        if (ref == null) return super.getUseScope();
+        PsiElement resolved = ref.resolve();
+        if (!(resolved instanceof Perl6VariableDecl)) return super.getUseScope();
+        return resolved.getUseScope();
     }
 
     @Override

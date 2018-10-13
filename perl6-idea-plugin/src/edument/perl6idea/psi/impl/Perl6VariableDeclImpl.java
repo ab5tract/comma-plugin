@@ -44,7 +44,13 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     @NotNull
     @Override
     public SearchScope getUseScope() {
-        return new LocalSearchScope(this, getVariableName());
+        String varScope = getScope();
+        if (varScope.equals("my") || varScope.equals("state")) {
+            Perl6StatementList parent = PsiTreeUtil.getParentOfType(this, Perl6StatementList.class);
+            if (parent != null)
+                return new LocalSearchScope(parent, getVariableName());
+        }
+        return super.getUseScope();
     }
 
     @Override
