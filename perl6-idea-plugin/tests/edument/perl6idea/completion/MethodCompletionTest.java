@@ -655,4 +655,28 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         assertNull(myFixture.getLookupElementStrings());
     }
+
+    public void testCompletionOfSubsetExternalType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "subset Frame of Backtrace::Frame; my Frame $frame; $frame.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".is-hidden", ".is-setting")));
+    }
+
+    public void testCompletionOfSubsetLocalType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Local { method aaaa {}; method bbbbbbb {}; }; subset Frame of Local; my Frame $frame; $frame.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".aaaa", ".bbbbbbb")));
+    }
+
+    public void testCompletionOfSubsetUndefinedType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "subset Frame where * > 0; my Frame $frame; $frame.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.size() > 0);
+    }
 }

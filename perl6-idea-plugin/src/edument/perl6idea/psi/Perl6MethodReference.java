@@ -91,7 +91,17 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
             packageName = enclosingPackage.getPackageName();
         }
         if (type != null) { // If we know that type, even as external
-            Perl6PackageDecl decl = (Perl6PackageDecl)type.getPsi();
+            PsiElement base = type.getPsi();
+            Perl6PackageDecl decl = null;
+            if (base instanceof Perl6PackageDecl)
+                decl = (Perl6PackageDecl)base;
+            else if (base instanceof Perl6Subset) {
+                Perl6Subset subset = (Perl6Subset)base;
+                // Get original type of subset
+                decl = subset.getSubsetBaseType();
+                String newName = subset.getSubsetBaseTypeName();
+                name = newName != null ? newName : "Any";
+            }
             if (decl != null) { // Not external type
                 return isSingle ?
                        Collections.singletonList(resolvePackageMethod(decl, call.getCallName(), kind, packageName)) :
