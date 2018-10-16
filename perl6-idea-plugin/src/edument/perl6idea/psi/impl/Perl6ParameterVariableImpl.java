@@ -43,7 +43,7 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     @Override
     public SearchScope getUseScope() {
         PsiElement parent = PsiTreeUtil.getParentOfType(this, Perl6RoutineDecl.class);
-        return new LocalSearchScope(parent, getName());
+        return parent != null ? new LocalSearchScope(parent, getName()) : super.getUseScope();
     }
 
     @Override
