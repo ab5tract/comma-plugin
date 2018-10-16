@@ -125,7 +125,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
             Path metaPath = getMETAFilePath(project);
             String content = new String(Files.readAllBytes(metaPath), CharsetToolkit.UTF8_CHARSET);
             JSONObject metaInfo = new JSONObject(content);
-            JSONObject providesSection = metaInfo.getJSONObject("provides");
+            JSONObject providesSection = metaInfo.has("provides") ? metaInfo.getJSONObject("provides") : new JSONObject();
             providesSection.put(moduleName, String.format("lib%s%s.pm6", "/", moduleName.replaceAll("::", "/")));
             metaInfo.put("provides", providesSection);
             writeCodeToPath(metaPath, Collections.singletonList(metaInfo.toString(4)));
