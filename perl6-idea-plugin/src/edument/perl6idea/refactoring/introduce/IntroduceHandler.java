@@ -44,7 +44,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         performAction(new IntroduceOperation(project, editor, file, null));
     }
 
-    private void performAction(IntroduceOperation operation) {
+    protected void performAction(IntroduceOperation operation) {
         PsiFile file = operation.getFile();
         if (!CommonRefactoringUtil.checkReadOnlyStatus(file))
             return;
@@ -147,7 +147,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         performActionOnElementOccurrences(operation);
     }
 
-    private void performActionOnElementOccurrences(IntroduceOperation operation) {
+    protected void performActionOnElementOccurrences(IntroduceOperation operation) {
         Editor editor = operation.getEditor();
         if (editor.getSettings().isVariableInplaceRenameEnabled()) {
             ensureName(operation);
@@ -221,7 +221,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         return null;
     }
 
-    private PsiElement performRefactoring(IntroduceOperation operation) {
+    protected PsiElement performRefactoring(IntroduceOperation operation) {
         PsiElement declaration = createDeclaration(operation);
         declaration = performReplace(declaration, operation);
         declaration = CodeInsightUtilCore.forcePsiPostprocessAndRestoreElement(declaration);
@@ -350,7 +350,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
 
     private static class Perl6InplaceVariableIntroducer extends InplaceVariableIntroducer<PsiElement> {
         public Perl6InplaceVariableIntroducer(PsiNamedElement occurrence, IntroduceOperation operation, List<PsiElement> occurrences) {
-            super(occurrence, operation.getEditor(), operation.getProject(), "Inroduce variable", occurrences.toArray(PsiElement.EMPTY_ARRAY), null);
+            super(occurrence, operation.getEditor(), operation.getProject(), "Introduce variable", occurrences.toArray(PsiElement.EMPTY_ARRAY), null);
         }
     }
 }
