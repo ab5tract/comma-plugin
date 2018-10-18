@@ -10,7 +10,9 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Variable {
     public Perl6VariableImpl(@NotNull ASTNode node) {
@@ -25,6 +27,12 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     @Override
     public PsiElement getVariableToken() {
         return findChildByType(Perl6TokenTypes.VARIABLE);
+    }
+
+    @Override
+    public String getName() {
+        PsiElement nameIdent = getNameIdentifier();
+        return nameIdent != null ? nameIdent.getText() : "";
     }
 
     @NotNull
@@ -102,5 +110,11 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         }
 
         return "Any";
+    }
+
+    @Nullable
+    @Override
+    public PsiElement getNameIdentifier() {
+        return getVariableToken();
     }
 }
