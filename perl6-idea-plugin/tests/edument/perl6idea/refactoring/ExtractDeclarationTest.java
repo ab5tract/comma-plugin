@@ -14,6 +14,13 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
         myFixture.checkResult("say pi; my $foo = 10 + 50;say $foo; say $foo;");
     }
 
+    public void testExpressionVariableExtractionFromCursor() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "foo(\"st<selection>ring-v</selection>alue\");");
+        Perl6IntroduceVariableHandler handler = new Perl6VariableExtractionHandlerMock(null, null, "$foo");
+        handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
+        myFixture.checkResult("my $foo = \"string-value\";foo($foo);");
+    }
+
     public void testExpressionConstantExtraction() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say pi; say 1<selection>0 + 5</selection>0; say 10 + 50;");
         Perl6ConstantExtractionHandlerMock handler = new Perl6ConstantExtractionHandlerMock(null, null, "$foo");
