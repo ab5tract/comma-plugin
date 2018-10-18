@@ -6,10 +6,10 @@ import edument.perl6idea.refactoring.introduce.IntroduceOperation;
 import edument.perl6idea.refactoring.introduce.IntroduceValidator;
 import edument.perl6idea.refactoring.introduce.variable.Perl6IntroduceVariableHandler;
 
-public class Perl6ExtractionMockHandler extends Perl6IntroduceVariableHandler {
+public class Perl6VariableExtractionHandlerMock extends Perl6IntroduceVariableHandler {
     private final String myName;
 
-    public Perl6ExtractionMockHandler(IntroduceValidator validator, String dialogTitle, String name) {
+    public Perl6VariableExtractionHandlerMock(IntroduceValidator validator, String dialogTitle, String name) {
         super(validator, dialogTitle);
         myName = name;
     }
