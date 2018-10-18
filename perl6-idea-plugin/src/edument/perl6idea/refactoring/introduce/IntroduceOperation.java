@@ -40,6 +40,10 @@ public class IntroduceOperation {
         return myEditor;
     }
 
+    public PsiElement getElement() {
+        return myElement;
+    }
+
     public void setElement(PsiElement element) {
         myElement = element;
     }
@@ -48,24 +52,28 @@ public class IntroduceOperation {
         return myProject;
     }
 
-    public PsiElement getElement() {
-        return myElement;
+    public PsiElement getInitializer() {
+        return myInitializer;
     }
 
     public void setInitializer(PsiElement initializer) {
         myInitializer = initializer;
     }
 
+    public List<PsiElement> getOccurrences() {
+        return myOccurrences;
+    }
+
     public void setOccurrences(List<PsiElement> occurrences) {
         myOccurrences = occurrences;
     }
 
-    public void setSuggestedNames(Collection<String> suggestedNames) {
-        mySuggestedNames = suggestedNames;
+    public Collection<String> getSuggestedNames() {
+        return mySuggestedNames;
     }
 
-    public List<PsiElement> getOccurrences() {
-        return myOccurrences;
+    public void setSuggestedNames(Collection<String> suggestedNames) {
+        mySuggestedNames = suggestedNames;
     }
 
     public void setReplaceAll(boolean replaceAll) {
@@ -76,16 +84,8 @@ public class IntroduceOperation {
         return myReplaceAll;
     }
 
-    public PsiElement getInitializer() {
-        return myInitializer;
-    }
-
     public String getName() {
         return myName;
-    }
-
-    public Collection<String> getSuggestedNames() {
-        return mySuggestedNames;
     }
 
     public void setName(String name) {
