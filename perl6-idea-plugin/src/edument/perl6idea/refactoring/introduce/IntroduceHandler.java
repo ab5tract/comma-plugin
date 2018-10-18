@@ -91,6 +91,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         element1 = PsiTreeUtil.findCommonParent(element1, element2);
         if (element1 == null) {
             showCannotPerformError(project, editor);
+            return;
         }
 
         operation.setElement(element1);
@@ -98,7 +99,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     }
 
     private void showCannotPerformError(Project project, Editor editor) {
-            CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract", myDialogTitle,
+            CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract this code", myDialogTitle,
                                                 "refactoring.extractMethod");
     }
 
@@ -139,7 +140,12 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     private void performActionOnElement(IntroduceOperation operation) {
         PsiElement element = operation.getElement();
         operation.setInitializer(element);
-        operation.setOccurrences(getOccurrences(element, PsiTreeUtil.getParentOfType(element, Perl6StatementList.class)));
+        List<PsiElement> occurrences = getOccurrences(element, PsiTreeUtil.getParentOfType(element, Perl6StatementList.class));
+        if (occurrences.size() == 0) {
+            showCannotPerformError(operation.getProject(), operation.getEditor());
+            return;
+        }
+        operation.setOccurrences(occurrences);
         operation.setSuggestedNames(getSuggestedNames(element));
         if (operation.getOccurrences().size() == 0) {
             operation.setReplaceAll(false);
