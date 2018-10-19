@@ -126,34 +126,46 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
 
     @Override
     public void reset() {
-        Path meta = Paths.get(myModule.getModuleFilePath()).resolveSibling("META6.json");
-        if (!Files.exists(meta)) {
-            String path = myModule.getProject().getBasePath();
-            if (path == null) return;
-            meta = Paths.get(path, "META6.json");
-            if (!Files.exists(meta)) return;
-        }
-        String jsonString;
-        try {
-            jsonString = new String(Files.readAllBytes(meta), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            return;
-        }
-        try {
-            myMetaProps = new JSONObject(jsonString);
-        } catch (JSONException e) {
-            return;
-        }
-        for (String field : keys) {
+        Path meta = getMetaPath();
+
+        if (meta == null || !Files.exists(meta)) {
+            createBackupMETA();
+        } else {
             try {
-                myMeta.put(field, myMetaProps.getString(field));
+                String jsonString = new String(Files.readAllBytes(meta), StandardCharsets.UTF_8);
+                myMetaProps = new JSONObject(jsonString);
+            } catch (IOException|JSONException e) {
+                createBackupMETA();
             }
-            catch (JSONException e) {
+        }
+
+        for (String field : keys) {
+            if (myMeta.containsKey(field))
+                myMeta.put(field, myMetaProps.getString(field));
+            else {
                 myMissingFields.add(field);
                 myMeta.put(field, MISSING_FIELD_MESSAGE);
             }
         }
         populateFields();
+    }
+
+    private void createBackupMETA() {
+        JSONObject jsonStub = Perl6ModuleBuilder.createStubMETAObject(myModule.getName());
+        Perl6ModuleBuilder.writeMetaFile(Perl6ModuleBuilder.getMETAFilePath(myModule.getProject()), jsonStub);
+        myMetaProps = jsonStub;
+    }
+
+    private Path getMetaPath() {
+        Path meta;
+        meta = Paths.get(myModule.getModuleFilePath()).resolveSibling("META6.json");
+        if (!Files.exists(meta)) {
+            String path = myModule.getProject().getBasePath();
+            if (path != null) {
+                meta = Paths.get(path, "META6.json");
+            }
+        }
+        return meta;
     }
 
     private void populateFields() {
