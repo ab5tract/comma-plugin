@@ -57,17 +57,19 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     @Override
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
+        String packageName = getPackageName();
+        if (packageName == null) return;
         if (collector.enclosingPackageKind() == null) {
             collector.setEnclosingPackageKind(getPackageKind());
         }
         if (collector.enclosingPackageName() == null) {
-            collector.setEnclosingPackageName(getPackageName());
+            collector.setEnclosingPackageName(packageName);
         }
         collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?PACKAGE"));
         if (collector.isSatisfied()) return;
         List<String> trusts = getTrusts();
         // If it is not first encountered package (enclosing one) and current package trusts
-        boolean isTrusted = !getPackageName().equals(collector.enclosingPackageName()) &&
+        boolean isTrusted = !packageName.equals(collector.enclosingPackageName()) &&
                             trusts.contains(collector.enclosingPackageName());
         contributeInternals(collector, isTrusted);
         if (collector.isSatisfied()) return;

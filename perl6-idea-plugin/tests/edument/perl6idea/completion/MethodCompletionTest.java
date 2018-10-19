@@ -679,4 +679,12 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.size() > 0);
     }
+
+    public void testPackageWithoutNameCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class { method b {}; method a { self.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
+    }
 }
