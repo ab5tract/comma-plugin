@@ -110,7 +110,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         if (stub != null)
             return stub.getRoutineName();
         PsiElement nameIdentifier = getNameIdentifier();
-        return nameIdentifier == null ? null : nameIdentifier.getText();
+        return nameIdentifier == null ? "<anon>" : nameIdentifier.getText();
     }
 
     @Override
@@ -187,6 +187,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     public static void offerRoutineSymbols(Perl6SymbolCollector collector, String name, Perl6RoutineDecl decl) {
+        if (decl.getRoutineName().equals("<anon>")) return;
         if (decl.getRoutineKind().equals("method") || decl.getRoutineKind().equals("submethod")) {
             // Do not contribute submethods if restricted
             if (decl.getRoutineKind().equals("submethod") && !collector.areInternalPartsCollected()) return;
@@ -197,7 +198,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
             if (!name.startsWith("!")) name = "." + name;
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, decl, name));
         } else {
-            if (name != null && (decl.getScope().equals("my") || decl.getScope().equals("our"))) {
+            if (decl.getScope().equals("my") || decl.getScope().equals("our")) {
                 collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, decl));
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
                                                                      decl, "&" + name));

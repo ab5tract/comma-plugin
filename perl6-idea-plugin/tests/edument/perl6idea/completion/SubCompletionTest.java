@@ -89,4 +89,11 @@ public class SubCompletionTest extends LightCodeInsightFixtureTestCase {
         assertTrue(vars.containsAll(Arrays.asList("is-approx", "is-deeply", "isa-ok")));
         assertEquals(4, vars.size());
     }
+
+    public void testAnonymousSubIsSafeToComplete() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub { f<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> subs = myFixture.getLookupElementStrings();
+        assertNotNull(subs);
+    }
 }
