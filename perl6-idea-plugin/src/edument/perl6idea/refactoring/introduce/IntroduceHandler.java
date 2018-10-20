@@ -23,10 +23,7 @@ import com.intellij.refactoring.introduce.inplace.OccurrencesChooser;
 import com.intellij.refactoring.listeners.RefactoringEventData;
 import com.intellij.refactoring.listeners.RefactoringEventListener;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
-import edument.perl6idea.psi.Perl6ElementFactory;
-import edument.perl6idea.psi.Perl6File;
-import edument.perl6idea.psi.Perl6Statement;
-import edument.perl6idea.psi.Perl6StatementList;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -112,7 +109,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         if ((elementAtCaret instanceof PsiWhiteSpace && offset == elementAtCaret.getTextOffset() || elementAtCaret == null) && offset > 0) {
             elementAtCaret = file.findElementAt(offset - 1);
         }
-        while (elementAtCaret != null && elementAtCaret.getClass().equals(LeafPsiElement.class)) {
+        while (elementAtCaret != null && !(elementAtCaret instanceof Perl6PsiElement)) {
             elementAtCaret = elementAtCaret.getParent();
         }
         if (elementAtCaret == null) {
