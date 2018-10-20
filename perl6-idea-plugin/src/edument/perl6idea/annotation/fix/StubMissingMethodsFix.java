@@ -58,6 +58,7 @@ public class StubMissingMethodsFix implements IntentionAction {
         for (String methodDef : myToImplement) {
             Perl6Statement methodDecl = Perl6ElementFactory.createStatementFromText(project, methodDef);
             list.getNode().addChild(methodDecl.getNode());
+            // FIXME A HACK, REMOVE WHEN FORMATTER DOES THAT FOR US
             list.getNode().addChild(new PsiWhiteSpaceImpl("\n"));
         }
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());

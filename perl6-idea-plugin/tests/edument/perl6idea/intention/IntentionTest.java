@@ -99,4 +99,13 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         myFixture.launchAction(intention);
         myFixture.checkResult("class C {}; role A is<caret> C {}");
     }
+
+    public void testPrivateMethodStubbing() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Bar { method a { self!k<caret>k; } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResultByFile("PrivateMethodStubbing.p6");
+    }
 }
