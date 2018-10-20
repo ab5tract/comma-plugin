@@ -108,4 +108,22 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         myFixture.launchAction(intention);
         myFixture.checkResultByFile("PrivateMethodStubbing.p6");
     }
+
+    public void testPrivateMethodStubbingWithoutEnclosingRoutine() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Bar { has $.foo = self!k<caret>k; } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { has $.foo = self!kk;method !kk() {}\n\n} }");
+    }
+
+    public void testPrivateMethodStubbingInNestedRoutines() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Bar { method a { sub foo { self!mm<caret>m; } } } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { method !mmm() {}\n\nmethod a { sub foo { self!mmm; } } } }");
+    }
 }
