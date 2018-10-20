@@ -14,6 +14,7 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
@@ -111,6 +112,14 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         if ((elementAtCaret instanceof PsiWhiteSpace && offset == elementAtCaret.getTextOffset() || elementAtCaret == null) && offset > 0) {
             elementAtCaret = file.findElementAt(offset - 1);
         }
+        while (elementAtCaret != null && elementAtCaret.getClass().equals(LeafPsiElement.class)) {
+            elementAtCaret = elementAtCaret.getParent();
+        }
+        if (elementAtCaret == null) {
+            showCannotPerformError(operation.getProject(), editor);
+            return false;
+        }
+
         if (!checkIntroduceContext(file, editor, elementAtCaret)) return true;
         final List<PsiElement> expressions = new ArrayList<>();
         while (elementAtCaret != null) {
@@ -210,6 +219,10 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             List<PsiElement> occurrences = operation.getOccurrences();
             Editor editor = operation.getEditor();
             PsiNamedElement occurrence = (PsiNamedElement)findOccurrenceUnderCaret(occurrences, editor);
+            if (occurrence == null) {
+                showCannotPerformError(operation.getProject(), operation.getEditor());
+                return;
+            }
             editor.getCaretModel().moveToOffset(occurrence.getTextRange().getStartOffset());
             final InplaceVariableIntroducer<PsiElement> introducer =
                 new Perl6InplaceVariableIntroducer(occurrence, operation, occurrences);
