@@ -139,10 +139,4 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
 
     public void testImportsExtractionFailing() {
     }
-
-    public void testForExtraction() {
-    }
-
-    public void testGatherExtraction() {
-    }
 }
