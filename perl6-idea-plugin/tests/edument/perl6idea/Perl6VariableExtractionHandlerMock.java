@@ -9,8 +9,8 @@ import edument.perl6idea.refactoring.introduce.variable.Perl6IntroduceVariableHa
 public class Perl6VariableExtractionHandlerMock extends Perl6IntroduceVariableHandler {
     private final String myName;
 
-    public Perl6VariableExtractionHandlerMock(IntroduceValidator validator, String dialogTitle, String name) {
-        super(validator, dialogTitle);
+    public Perl6VariableExtractionHandlerMock(IntroduceValidator validator, String name) {
+        super(validator, "Extract Mock");
         myName = name;
     }
 

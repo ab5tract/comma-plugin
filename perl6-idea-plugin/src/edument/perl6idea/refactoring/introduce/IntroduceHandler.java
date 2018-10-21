@@ -88,7 +88,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         }
 
         element1 = PsiTreeUtil.findCommonParent(element1, element2);
-        if (element1 == null) {
+        if (element1 == null || !isValidIntroduceContext(element1)) {
             showCannotPerformError(project, editor);
             return;
         }
@@ -98,7 +98,6 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     }
 
     private void showCannotPerformError(Project project, Editor editor) {
-        new Throwable().printStackTrace();
         CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract this code", myDialogTitle,
                                             "refactoring.extractMethod");
     }
@@ -116,7 +115,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         }
         if (elementAtCaret == null) {
             showCannotPerformError(operation.getProject(), editor);
-            return false;
+            return true;
         }
 
         if (!checkIntroduceContext(file, editor, elementAtCaret)) return true;
@@ -394,8 +393,14 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     }
 
     private static boolean isValidIntroduceContext(PsiElement element) {
-        // STUB
-        return true;
+        boolean invalid = element instanceof Perl6ImportStatement ||
+                          element instanceof Perl6RequireStatement ||
+                          element instanceof Perl6UseStatement ||
+                          element instanceof Perl6NeedStatement ||
+                          element instanceof Perl6ControlStatement ||
+                          element instanceof Perl6CatchStatement ||
+                          element instanceof Perl6Phaser;
+        return !invalid;
     }
 
     @Override

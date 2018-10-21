@@ -9,8 +9,8 @@ import edument.perl6idea.refactoring.introduce.constant.Perl6IntroduceConstantHa
 public class Perl6ConstantExtractionHandlerMock extends Perl6IntroduceConstantHandler {
     private final String myName;
 
-    public Perl6ConstantExtractionHandlerMock(IntroduceValidator validator, String dialogTitle, String name) {
-        super(validator, dialogTitle);
+    public Perl6ConstantExtractionHandlerMock(IntroduceValidator validator, String name) {
+        super(validator, "Extract mock");
         myName = name;
     }
 
