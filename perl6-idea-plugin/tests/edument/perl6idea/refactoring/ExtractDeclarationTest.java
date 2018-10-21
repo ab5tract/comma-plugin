@@ -146,10 +146,15 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>BEGIN { say 10; }</selection>");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () -> {
-                         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-                     });
+            handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
+        });
     }
 
     public void testImportsExtractionFailing() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use <selection>Foo::Bar</selection>;");
+        Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () -> {
+            handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
+        });
     }
 }
