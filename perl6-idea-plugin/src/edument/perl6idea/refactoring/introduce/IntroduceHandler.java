@@ -27,6 +27,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
+
 public abstract class IntroduceHandler implements RefactoringActionHandler {
     private final IntroduceValidator myValidator;
     private final String myDialogTitle;
@@ -60,11 +62,11 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         if (selectionModel.hasSelection()) {
             element1 = file.findElementAt(selectionModel.getSelectionStart());
             element2 = file.findElementAt(selectionModel.getSelectionEnd() - 1);
-            if (element1 instanceof PsiWhiteSpace) {
+            if (element1 instanceof PsiWhiteSpace || element1 != null && element1.getNode().getElementType() == UNV_WHITE_SPACE) {
                 int startOffset = element1.getTextRange().getEndOffset();
                 element1 = file.findElementAt(startOffset);
             }
-            if (element2 instanceof PsiWhiteSpace) {
+            if (element2 instanceof PsiWhiteSpace || element2 != null && element2.getNode().getElementType() == UNV_WHITE_SPACE) {
                 int endOffset = element2.getTextRange().getStartOffset();
                 element2 = file.findElementAt(endOffset - 1);
             }
@@ -258,7 +260,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         Project project = operation.getProject();
         return new WriteCommandAction<PsiElement>(project, expression.getContainingFile()) {
             @Override
-            protected void run(@NotNull Result<PsiElement> result) throws Throwable {
+            protected void run(@NotNull Result<PsiElement> result) {
                 try {
                     RefactoringEventData afterData = new RefactoringEventData();
                     afterData.addElement(declaration);
