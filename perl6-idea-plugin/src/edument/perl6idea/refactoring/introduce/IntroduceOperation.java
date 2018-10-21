@@ -23,6 +23,7 @@ public class IntroduceOperation {
     private PsiElement myInitializer;
     private List<PsiElement> myOccurrences = Collections.emptyList();
     private Collection<String> mySuggestedNames;
+    private boolean occurrencesReplaceable = true;
 
     public IntroduceOperation(Project project, Editor editor,
                               PsiFile file, String name) {
@@ -90,5 +91,13 @@ public class IntroduceOperation {
 
     public void setName(String name) {
         myName = name;
+    }
+
+    public boolean isOccurrencesReplaceable() {
+        return occurrencesReplaceable;
+    }
+
+    public void setOccurrencesReplaceable(boolean occurrencesReplaceable) {
+        this.occurrencesReplaceable = occurrencesReplaceable;
     }
 }

@@ -19,6 +19,7 @@ public class Perl6VariableExtractionHandlerMock extends Perl6IntroduceVariableHa
         operation.setName(myName);
         operation.setReplaceAll(true);
         PsiElement declaration = performRefactoring(operation);
+        removeLeftoverStatement(operation);
         Editor editor = operation.getEditor();
         editor.getCaretModel().moveToOffset(declaration.getTextRange().getEndOffset());
         editor.getSelectionModel().removeSelection();

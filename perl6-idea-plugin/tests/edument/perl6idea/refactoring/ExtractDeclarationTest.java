@@ -27,4 +27,36 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
         myFixture.checkResult("say pi; my constant $foo = 10 + 50;say $foo; say $foo;");
     }
+
+    public void testStatementVariableExtraction() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>(^10).roll</selection>;");
+        Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, null, "$foo");
+        handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
+        myFixture.checkResult("my $foo = (^10).roll;");
+    }
+
+    public void testStatementVariableExtractionFull() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>(^10).roll;</selection>");
+        Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, null, "$bar");
+        handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
+        myFixture.checkResult("my $bar = (^10).roll;");
+    }
+
+    public void testStatementConstantExtraction() {
+    }
+
+    public void testControlLikeStatementExtraction() {
+    }
+
+    public void testPhaserExtractionFailing() {
+    }
+
+    public void testImportsExtractionFailing() {
+    }
+
+    public void testForExtraction() {
+    }
+
+    public void testGatherExtraction() {
+    }
 }

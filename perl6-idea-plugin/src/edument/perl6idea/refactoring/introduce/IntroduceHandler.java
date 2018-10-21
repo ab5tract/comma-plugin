@@ -14,7 +14,6 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.*;
-import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
@@ -203,6 +202,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         }
 
         PsiElement declaration = performRefactoring(operation);
+        removeLeftoverStatement(operation);
         Editor editor = operation.getEditor();
         editor.getCaretModel().moveToOffset(declaration.getTextRange().getEndOffset());
         editor.getSelectionModel().removeSelection();
@@ -211,8 +211,8 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     protected abstract String getHelpId();
 
     private void performInplaceIntroduce(IntroduceOperation operation) {
-        PsiElement statement = performRefactoring(operation);
-        if (statement instanceof Perl6Statement) {
+        performRefactoring(operation);
+        if (operation.isOccurrencesReplaceable()) {
             List<PsiElement> occurrences = operation.getOccurrences();
             Editor editor = operation.getEditor();
             PsiNamedElement occurrence = (PsiNamedElement)findOccurrenceUnderCaret(occurrences, editor);
@@ -224,7 +224,16 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             final InplaceVariableIntroducer<PsiElement> introducer =
                 new Perl6InplaceVariableIntroducer(occurrence, operation, occurrences);
             introducer.performInplaceRefactoring(new LinkedHashSet<>(operation.getSuggestedNames()));
+        } else {
+            removeLeftoverStatement(operation);
         }
+    }
+
+    protected static void removeLeftoverStatement(IntroduceOperation operation) {
+        PsiElement initializer = operation.getInitializer();
+        Perl6Statement statement = PsiTreeUtil.getParentOfType(initializer, Perl6Statement.class, false);
+        if (statement != null)
+            WriteCommandAction.runWriteCommandAction(operation.getProject(), () -> statement.delete());
     }
 
     private static PsiElement findOccurrenceUnderCaret(List<PsiElement> occurrences, Editor editor) {
@@ -258,20 +267,27 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
                     result.setResult(addDeclaration(operation, declaration));
                     PsiElement newExpression = createExpression(project, operation.getName());
 
-                    if (operation.isReplaceAll()) {
-                        List<PsiElement> newOccurrences = new ArrayList<>();
-                        for (PsiElement occurrence : operation.getOccurrences()) {
-                            PsiElement replaced = replaceExpression(occurrence, newExpression, operation);
-                            if (replaced != null)
-                                newOccurrences.add(replaced);
+                    PsiElement operationElement = operation.getElement();
+                    boolean needsToBeReplaced = !(operationElement.getParent() instanceof Perl6Statement ||
+                                                  operationElement instanceof Perl6Statement);
+                    operation.setOccurrencesReplaceable(needsToBeReplaced);
+
+                    if (needsToBeReplaced) {
+                        if (operation.isReplaceAll()) {
+                            List<PsiElement> newOccurrences = new ArrayList<>();
+                            for (PsiElement occurrence : operation.getOccurrences()) {
+                                PsiElement replaced = replaceExpression(occurrence, newExpression, operation);
+                                if (replaced != null)
+                                    newOccurrences.add(replaced);
+                            }
+                            operation.setOccurrences(newOccurrences);
                         }
-                        operation.setOccurrences(newOccurrences);
+                        else {
+                            PsiElement replaced = replaceExpression(expression, newExpression, operation);
+                            operation.setOccurrences(Collections.singletonList(replaced));
+                        }
                     }
-                    else {
-                        PsiElement replaced = replaceExpression(expression, newExpression, operation);
-                        operation.setOccurrences(Collections.singletonList(replaced));
-                    }
-                    postRefactoring(operation.getElement());
+                    postRefactoring(operationElement);
                 } finally {
                     final RefactoringEventData afterData = new RefactoringEventData();
                     afterData.addElement(declaration);
@@ -303,7 +319,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
                                                PsiElement declaration,
                                                List<PsiElement> occurrences,
                                                Boolean all) {
-        PsiElement anchor = all ? findAnchor(occurrences) : PsiTreeUtil.getParentOfType(expression, Perl6Statement.class);
+        PsiElement anchor = all ? findAnchor(occurrences) : PsiTreeUtil.getParentOfType(expression, Perl6Statement.class, false);
         assert anchor != null;
         PsiElement parent = anchor.getParent();
         return parent.addBefore(declaration, anchor);
@@ -348,7 +364,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         occurrences.sort(Comparator.comparingInt(PsiElement::getTextOffset));
         PsiElement element = occurrences.get(0);
         if (element == null) return null;
-        return PsiTreeUtil.getParentOfType(element, Perl6Statement.class);
+        return PsiTreeUtil.getParentOfType(element, Perl6Statement.class, false);
     }
 
     private static boolean isValidIntroduceContext(PsiElement element) {
