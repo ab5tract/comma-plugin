@@ -98,8 +98,9 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     }
 
     private void showCannotPerformError(Project project, Editor editor) {
-            CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract this code", myDialogTitle,
-                                                "refactoring.extractMethod");
+        new Throwable().printStackTrace();
+        CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract this code", myDialogTitle,
+                                            "refactoring.extractMethod");
     }
 
     private boolean smartIntroduce(IntroduceOperation operation) {
@@ -270,8 +271,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
                     PsiElement newExpression = createExpression(project, operation.getName());
 
                     PsiElement operationElement = operation.getElement();
-                    boolean needsToBeReplaced = !(operationElement.getParent() instanceof Perl6Statement ||
-                                                  operationElement instanceof Perl6Statement);
+                    boolean needsToBeReplaced = !(operationElement.getParent() instanceof Perl6StatementList || operationElement.getParent().getParent() instanceof Perl6StatementList);
                     operation.setOccurrencesReplaceable(needsToBeReplaced);
 
                     if (needsToBeReplaced) {
@@ -321,10 +321,29 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
                                                PsiElement declaration,
                                                List<PsiElement> occurrences,
                                                Boolean all) {
-        PsiElement anchor = all ? findAnchor(occurrences) : PsiTreeUtil.getParentOfType(expression, Perl6Statement.class, false);
+        PsiElement anchor = all ? findAnchor(occurrences) : findTopmostStatementOfExpression(expression);
         assert anchor != null;
         PsiElement parent = anchor.getParent();
         return parent.addBefore(declaration, anchor);
+    }
+
+    @NotNull
+    private static PsiElement findTopmostStatementOfExpression(PsiElement expression) {
+        PsiElement anchor = expression;
+        do {
+            // It is possible that first element will be a statement already,
+            // so we are skipping it and making expression null
+            if (expression instanceof Perl6Statement) {
+                anchor = anchor.getParent();
+                expression = null;
+            } else {
+                Perl6Statement tempAnchor = PsiTreeUtil.getParentOfType(anchor, Perl6Statement.class);
+                if (tempAnchor == null)
+                    break;
+                anchor = tempAnchor;
+            }
+        } while (!(anchor.getParent() instanceof Perl6StatementList));
+        return anchor;
     }
 
     protected abstract PsiElement createDeclaration(IntroduceOperation operation);
@@ -366,7 +385,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         occurrences.sort(Comparator.comparingInt(PsiElement::getTextOffset));
         PsiElement element = occurrences.get(0);
         if (element == null) return null;
-        return PsiTreeUtil.getParentOfType(element, Perl6Statement.class, false);
+        return findTopmostStatementOfExpression(element);
     }
 
     private static boolean isValidIntroduceContext(PsiElement element) {

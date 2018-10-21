@@ -134,6 +134,13 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
         myFixture.checkResult("my $bar = do repeat { say 10 } until True;");
     }
 
+    public void testCorrectAnchorSelection() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 3 * (<selection>10 + 10</selection>);");
+        Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, null, "$bar");
+        handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
+        myFixture.checkResult("my $bar = 10 + 10;say 3 * ($bar);");
+    }
+
     public void testPhaserExtractionFailing() {
     }
 
