@@ -43,6 +43,10 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
     }
 
     public void testStatementConstantExtraction() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>(^10).roll;</selection>");
+        Perl6ConstantExtractionHandlerMock handler = new Perl6ConstantExtractionHandlerMock(null, null, "$bar");
+        handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
+        myFixture.checkResult("my constant $bar = (^10).roll;");
     }
 
     public void testControlLikeStatementExtraction() {

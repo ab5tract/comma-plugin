@@ -19,6 +19,7 @@ public class Perl6ConstantExtractionHandlerMock extends Perl6IntroduceConstantHa
         operation.setName(myName);
         operation.setReplaceAll(true);
         PsiElement declaration = performRefactoring(operation);
+        removeLeftoverStatement(operation);
         Editor editor = operation.getEditor();
         editor.getCaretModel().moveToOffset(declaration.getTextRange().getEndOffset());
         editor.getSelectionModel().removeSelection();
