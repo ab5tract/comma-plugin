@@ -695,4 +695,44 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.size() != 0);
     }
+
+    public void testReturnConstraint1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method b(--> A) {}; method a(--> A) { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
+    }
+
+    public void testReturnConstraint2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method b(--> A) {}; method a(--> A) { self.a.b.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
+    }
+
+    public void testReturnTrait1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method b returns A {}; method a returns A { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
+    }
+
+    public void testReturnTrait2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method b returns A {}; method a returns A { self.a.b.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
+    }
+
+    public void testMethodReturnTypeExternal() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method a returns A {}; method mmmmm {} }; A.a.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".mmmmm")));
+    }
 }
