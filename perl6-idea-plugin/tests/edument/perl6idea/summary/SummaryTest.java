@@ -70,5 +70,6 @@ public class SummaryTest extends LightCodeInsightFixtureTestCase {
         doTest("sub f<caret>oo(-- > Int) {}", "()");
         doTest("sub f<caret>oo(-->) {}", "()");
         doTest("sub f<caret>oo(Int $a) return A {}", "(Int $)");
+        doTest("sub f<caret>oo {}", "()");
     }
 }
