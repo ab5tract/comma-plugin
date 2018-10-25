@@ -92,7 +92,12 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         PsiElement value = infix.getNextSibling();
         while (value instanceof PsiWhiteSpace || (value != null && value.getNode().getElementType() == UNV_WHITE_SPACE))
             value = value.getNextSibling();
-        return value == null ? " " : ((Perl6PsiElement)value).inferType();
+        // Mu will be a basic type in this case
+        // because when used for e.g. method completion inference,
+        // it is better to assume default variable methods set is based on Mu
+        // then return e.g. empty string and getting no opportunity to neatly use it
+        // in case where type is not defined explicitly
+        return value == null ? "Mu" : ((Perl6PsiElement)value).inferType();
     }
 
     @Override
