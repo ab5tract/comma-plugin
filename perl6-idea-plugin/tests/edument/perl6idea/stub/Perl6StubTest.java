@@ -6,11 +6,16 @@ import com.intellij.psi.StubBuilder;
 import com.intellij.psi.impl.DebugUtil;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.testFramework.LightIdeaTestCase;
+import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.stub.*;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Perl6StubTest extends LightIdeaTestCase {
     private StubBuilder myBuilder;
@@ -174,6 +179,22 @@ public class Perl6StubTest extends LightIdeaTestCase {
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n");
         List childrenStubs = e.getChildrenStubs();
         assertEquals(3, childrenStubs.size());
+    }
+
+    public void testStubbedRoleUsageInComposition() {
+        StubElement e = doTest("role Base { method mmm {}; method bbb {}; }; class C does Base {};",
+                "Perl6FileStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
+                        "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
+                        "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
+                        "    TYPE_NAME:Perl6TypeNameStubImpl\n");
+        StubElement stub = (StubElement) e.getChildrenStubs().get(1);
+        Perl6PackageDecl decl = (Perl6PackageDecl) stub.getPsi();
+        Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
+        decl.contributeScopeSymbols(collector);
+        // FIXME
+        // collector.getVariants().stream().map(Perl6Symbol::getName).collect(Collectors.toList());
     }
 
     private StubElement doTest(String source, String expected) {
