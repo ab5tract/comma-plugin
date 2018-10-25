@@ -163,8 +163,6 @@ public class Perl6StubTest extends LightIdeaTestCase {
         Perl6VariableDeclStub variableDeclStub2 = (Perl6VariableDeclStub) childrenStubs.get(1);
         assertEquals("$.bar", variableDeclStub2.getVariableName());
         assertEquals("Int", variableDeclStub2.getVariableType());
-        // FIXME we are saving type absence as ` `, maybe something else is better like `Any`?
-        // FIXME probably should be nice to use stubs when infering a type
     }
 
     public void testVariableTrait() {
