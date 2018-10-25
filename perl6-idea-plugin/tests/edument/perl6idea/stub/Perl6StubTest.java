@@ -8,6 +8,7 @@ import com.intellij.psi.stubs.StubElement;
 import com.intellij.testFramework.LightIdeaTestCase;
 import edument.perl6idea.psi.stub.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,10 +43,16 @@ public class Perl6StubTest extends LightIdeaTestCase {
     }
 
     public void testEnum() {
-        doTest("enum Class <Wizard Crusader Priest>;",
+        StubElement e = doTest("enum Class <Wizard Crusader Priest>;",
                 "Perl6FileStubImpl\n" +
                         "  ENUM:Perl6EnumStubImpl\n");
-        // FIXME enum stub does not save anything
+        List childrenStubs = e.getChildrenStubs();
+        assertEquals(1, childrenStubs.size());
+        Perl6EnumStub enumStub = (Perl6EnumStub)childrenStubs.get(0);
+        assertEquals("Class", enumStub.getTypeName());
+        assertFalse(enumStub.isExported());
+        assertEquals("our", enumStub.getScope());
+        assertEquals(Arrays.asList("Wizard", "Crusader", "Priest"), enumStub.getEnumValues());
     }
 
     public void testRegex() {
