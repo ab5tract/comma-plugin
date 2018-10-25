@@ -50,9 +50,8 @@ public class Perl6SubsetStubElementType extends IStubElementType<Perl6SubsetStub
 
     @Override
     public boolean shouldCreateStub(ASTNode node) {
-        if (!(node instanceof Perl6Subset)) return false;
-        String name = ((Perl6Subset)node).getSubsetName();
-        return name != null;
+        String subsetName = ((Perl6Subset) node.getPsi()).getSubsetName();
+        return subsetName != null && !subsetName.equals("<anon>");
     }
 
     @Override
