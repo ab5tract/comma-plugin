@@ -9,6 +9,7 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.refactoring.rename.RenameDialog;
 import com.intellij.usageView.UsageViewUtil;
+import edument.perl6idea.psi.impl.Perl6FileImpl;
 
 public class Perl6RenameDialog extends RenameDialog {
     public Perl6RenameDialog(Project project, PsiElement element, PsiElement context, Editor editor) {
@@ -29,8 +30,8 @@ public class Perl6RenameDialog extends RenameDialog {
 
     private static String getPerl6Name(PsiElement myPsiElement) {
         PsiUtilCore.ensureValid(myPsiElement);
-        if (myPsiElement instanceof PsiFile)
-            return ((PsiFile)myPsiElement).getName();
+        if (myPsiElement instanceof Perl6FileImpl)
+            return ((Perl6FileImpl)myPsiElement).getEnclosingPerl6ModuleName();
         else if (myPsiElement instanceof PsiNamedElement)
             return ((PsiNamedElement)myPsiElement).getName();
         else

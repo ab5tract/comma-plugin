@@ -5,9 +5,11 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ArrayUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.*;
@@ -192,5 +194,37 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             Perl6Symbol finishBlock = new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$=finish");
             collector.offerSymbol(finishBlock);
         }
+    }
+
+    @Nullable
+    @Override
+    public PsiMetaData getMetaData() {
+        String name = getEnclosingPerl6ModuleName();
+        return new PsiMetaData() {
+            @Override
+            public PsiElement getDeclaration() {
+                return Perl6FileImpl.this;
+            }
+
+            @Override
+            public String getName(PsiElement context) {
+                return name;
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public void init(PsiElement element) {
+            }
+
+            @NotNull
+            @Override
+            public Object[] getDependences() {
+                return ArrayUtil.EMPTY_OBJECT_ARRAY;
+            }
+        };
     }
 }
