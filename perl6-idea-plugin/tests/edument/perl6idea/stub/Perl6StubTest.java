@@ -105,11 +105,15 @@ public class Perl6StubTest extends LightIdeaTestCase {
 
     public void testMyAndOurVarsAreNotStubbed() {
         doTest("my $foo; our $baz",
+                "Perl6FileStubImpl\n");
+        doTest("has $foo;",
                 "Perl6FileStubImpl\n" +
                         "  SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n" +
-                        "  SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n");
-        // FIXME maybe we shouldn't stub scopes without exported sub-element? Is possible?
-        // FIXME if stubs are primarily used to gather info from outer files, why do we not export `is export` vars?
+                        "    VARIABLE_DECLARATION:Perl6VariableDeclStubImpl\n");
+        doTest("our $bar is export = 10;",
+                "Perl6FileStubImpl\n" +
+                        "  SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n" +
+                        "    VARIABLE_DECLARATION:Perl6VariableDeclStubImpl\n");
     }
 
     public void testClassWithAttributesAndMethods() {
