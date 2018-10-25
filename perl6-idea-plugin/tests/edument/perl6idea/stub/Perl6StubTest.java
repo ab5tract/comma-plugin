@@ -72,7 +72,9 @@ public class Perl6StubTest extends LightIdeaTestCase {
                         "    TYPE_NAME:Perl6TypeNameStubImpl\n");
         List childrenStubs = e.getChildrenStubs();
         assertEquals(1, childrenStubs.size());
-        // FIXME subset stub does not save anything
+        Perl6SubsetStub stub = (Perl6SubsetStub) childrenStubs.get(0);
+        assertEquals("Alpha", stub.getTypeName());
+        assertEquals("Int", stub.getSubsetBaseTypeName());
     }
 
     public void testNeed() {
