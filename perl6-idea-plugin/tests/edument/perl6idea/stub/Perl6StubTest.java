@@ -1,0 +1,184 @@
+package edument.perl6idea.stub;
+
+import com.intellij.lang.FileASTNode;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.StubBuilder;
+import com.intellij.psi.impl.DebugUtil;
+import com.intellij.psi.stubs.StubElement;
+import com.intellij.testFramework.LightIdeaTestCase;
+import edument.perl6idea.psi.stub.*;
+
+import java.util.Collections;
+import java.util.List;
+
+public class Perl6StubTest extends LightIdeaTestCase {
+    private StubBuilder myBuilder;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        myBuilder = new Perl6FileStubBuilder();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        myBuilder = null;
+        super.tearDown();
+    }
+
+    public void testEmpty() {
+        doTest("",
+                "Perl6FileStubImpl\n");
+    }
+
+    public void testConstant() {
+        StubElement e = doTest("constant $foo = 5;",
+                "Perl6FileStubImpl\n" +
+                        "  CONSTANT:Perl6ConstantStubImpl\n");
+        List childrenStubs = e.getChildrenStubs();
+        assertEquals(1, childrenStubs.size());
+        Perl6ConstantStub stub = (Perl6ConstantStub) childrenStubs.get(0);
+        assertEquals("$foo", stub.getConstantName());
+    }
+
+    public void testEnum() {
+        doTest("enum Class <Wizard Crusader Priest>;",
+                "Perl6FileStubImpl\n" +
+                        "  ENUM:Perl6EnumStubImpl\n");
+        // FIXME enum stub does not save anything
+    }
+
+    public void testRegex() {
+        StubElement e = doTest("regex aa <1 2 3 4 5>",
+                "Perl6FileStubImpl\n" +
+                        "  REGEX_DECLARATION:Perl6RegexDeclStubImpl\n");
+        List childrenStubs = e.getChildrenStubs();
+        assertEquals(1, childrenStubs.size());
+        Perl6RegexDeclStub stub = (Perl6RegexDeclStub) childrenStubs.get(0);
+        assertEquals("aa", stub.getRegexName());
+    }
+
+    public void testSubset() {
+        StubElement e = doTest("subset Alpha of Int;",
+                "Perl6FileStubImpl\n" +
+                        "  SUBSET:Perl6SubsetStubImpl\n" +
+                        "    TYPE_NAME:Perl6TypeNameStubImpl\n");
+        List childrenStubs = e.getChildrenStubs();
+        assertEquals(1, childrenStubs.size());
+        // FIXME subset stub does not save anything
+    }
+
+    public void testNeed() {
+        StubElement e = doTest("need Foo::Bar; need Foo::Baz;",
+                "Perl6FileStubImpl\n" +
+                        "  NEED_STATEMENT:Perl6NeedStatementStubImpl\n" +
+                        "  NEED_STATEMENT:Perl6NeedStatementStubImpl\n");
+        List childrenStubs = e.getChildrenStubs();
+        assertEquals(2, childrenStubs.size());
+        Perl6NeedStatementStub stub1 = (Perl6NeedStatementStub) childrenStubs.get(0);
+        assertEquals(Collections.singletonList("Foo::Bar"), stub1.getModuleNames());
+        Perl6NeedStatementStub stub2 = (Perl6NeedStatementStub) childrenStubs.get(1);
+        assertEquals(Collections.singletonList("Foo::Baz"), stub2.getModuleNames());
+    }
+
+    public void testUse() {
+        StubElement e = doTest("use Foo::Bar; use Foo::Baz;",
+                "Perl6FileStubImpl\n" +
+                        "  USE_STATEMENT:Perl6UseStatementStubImpl\n" +
+                        "  USE_STATEMENT:Perl6UseStatementStubImpl\n");
+        List childrenStubs = e.getChildrenStubs();
+        assertEquals(2, childrenStubs.size());
+        Perl6UseStatementStub stub1 = (Perl6UseStatementStub) childrenStubs.get(0);
+        assertEquals("Foo::Bar", stub1.getModuleName());
+        Perl6UseStatementStub stub2 = (Perl6UseStatementStub) childrenStubs.get(1);
+        assertEquals("Foo::Baz", stub2.getModuleName());
+    }
+
+    public void testMyAndOurVarsAreNotStubbed() {
+        doTest("my $foo; our $baz",
+                "Perl6FileStubImpl\n" +
+                        "  SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n" +
+                        "  SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n");
+        // FIXME maybe we shouldn't stub scopes without exported sub-element? Is possible?
+        // FIXME if stubs are primarily used to gather info from outer files, why do we not export `is export` vars?
+    }
+
+    public void testClassWithAttributesAndMethods() {
+        StubElement e = doTest("class Foo { method mm {}; method !kk {}; has $!foo; has Int $.bar }",
+                "Perl6FileStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
+                        "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
+                        "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
+                        "    SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n" +
+                        "      VARIABLE_DECLARATION:Perl6VariableDeclStubImpl\n" +
+                        "    SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n" +
+                        "      TYPE_NAME:Perl6TypeNameStubImpl\n" +
+                        "      VARIABLE_DECLARATION:Perl6VariableDeclStubImpl\n");
+        List childrenStubs = e.getChildrenStubs();
+        assertEquals(1, childrenStubs.size());
+        assert childrenStubs.get(0) instanceof Perl6PackageDeclStub;
+        Perl6PackageDeclStub packageDeclStub = (Perl6PackageDeclStub) childrenStubs.get(0);
+        assertEquals("class", packageDeclStub.getPackageKind());
+        childrenStubs = packageDeclStub.getChildrenStubs();
+        assertEquals(childrenStubs.size(), 4);
+        Perl6RoutineDeclStub routine1 = (Perl6RoutineDeclStub) childrenStubs.get(0);
+        Perl6RoutineDeclStub routine2 = (Perl6RoutineDeclStub) childrenStubs.get(1);
+        assertFalse(routine1.isPrivate());
+        assertEquals("method", routine1.getRoutineKind());
+        assertEquals("mm", routine1.getRoutineName());
+        assertTrue(routine2.isPrivate());
+        assertEquals("method", routine2.getRoutineKind());
+        assertEquals("!kk", routine2.getRoutineName());
+
+        Perl6ScopedDeclStub scopedDeclStub1 = (Perl6ScopedDeclStub) childrenStubs.get(2);
+        Perl6ScopedDeclStub scopedDeclStub2 = (Perl6ScopedDeclStub) childrenStubs.get(3);
+
+        // Test of first attr
+        assertEquals("has", scopedDeclStub1.getScope());
+        childrenStubs = scopedDeclStub1.getChildrenStubs();
+        assertEquals(1, childrenStubs.size());
+        Perl6VariableDeclStub variableDeclStub1 = (Perl6VariableDeclStub) childrenStubs.get(0);
+        assertEquals("$!foo", variableDeclStub1.getVariableName());
+        assertEquals(" ", variableDeclStub1.getVariableType());
+
+        // Test of second attr
+        assertEquals("has", scopedDeclStub2.getScope());
+        childrenStubs = scopedDeclStub2.getChildrenStubs();
+        assertEquals(2, childrenStubs.size());
+        Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub) childrenStubs.get(0);
+        assertEquals("Int", typeNameStub.getTypeName());
+        Perl6VariableDeclStub variableDeclStub2 = (Perl6VariableDeclStub) childrenStubs.get(1);
+        assertEquals("$.bar", variableDeclStub2.getVariableName());
+        assertEquals("Int", variableDeclStub2.getVariableType());
+        // FIXME we are saving type absence as ` `, maybe something else is better like `Any`?
+        // FIXME probably should be nice to use stubs when infering a type
+    }
+
+    public void testVariableTrait() {
+        StubElement e = doTest("role One {}; class Two does One {}; class Three is Two {};",
+                "Perl6FileStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
+                        "    TYPE_NAME:Perl6TypeNameStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n");
+        List childrenStubs = e.getChildrenStubs();
+        assertEquals(3, childrenStubs.size());
+    }
+
+    private StubElement doTest(String source, String expected) {
+        PsiFile file = createLightFile("test.p6", source);
+        FileASTNode fileASTNode = file.getNode();
+        assertNotNull(fileASTNode);
+        assertFalse(fileASTNode.isParsed());
+
+        StubElement stubTree = myBuilder.buildStubTree(file);
+
+        file.getNode().getChildren(null); // force switch to AST
+        StubElement astBasedTree = myBuilder.buildStubTree(file);
+        assertTrue(fileASTNode.isParsed());
+
+        assertEquals(expected, DebugUtil.stubTreeToString(stubTree));
+        assertEquals(expected, DebugUtil.stubTreeToString(astBasedTree));
+        return stubTree;
+    }
+}
