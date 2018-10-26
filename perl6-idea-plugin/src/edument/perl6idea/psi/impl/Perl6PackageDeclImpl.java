@@ -1,11 +1,13 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.stubs.StubElement;
@@ -15,6 +17,9 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
+import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
+import edument.perl6idea.psi.stub.index.Perl6IndexableType;
+import edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
@@ -208,26 +213,6 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         boolean isGrammar = getPackageKind().equals("grammar");
 
         if (stub != null) {
-//            List<StubElement> children = stub.getChildrenStubs();
-//            for (StubElement child : children) {
-//                if (!(child instanceof Perl6TraitStub)) continue;
-//                Perl6TraitStub traitStub = (Perl6TraitStub)child;
-//                if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
-//                for (StubElement maybeType : traitStub.getChildrenStubs()) {
-                    // Check only type names
-//                    if (!(maybeType instanceof Perl6TypeNameStub)) continue;
-//                    Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub)maybeType;
-//                    Perl6TypeName psi = typeNameStub.getPsi();
-//                    if (psi == null) continue;
-//                    PsiReference ref = psi.getReference();
-//                    if (ref == null) continue;
-//                    PsiElement decl = ref.resolve();
-//                    if (decl != null) perl6PackageDecls.add(Pair.create(traitStub.getTraitModifier(), (Perl6PackageDecl)decl));
-//                    else externals.add(typeNameStub.getTypeName());
-//                    if ((typeNameStub).getTypeName().equals("Mu"))
-//                        isAny = false;
-//                }
-//            }
         } else {
             for (Perl6Trait trait : getTraits()) {
                 if (!(trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is"))) continue;
