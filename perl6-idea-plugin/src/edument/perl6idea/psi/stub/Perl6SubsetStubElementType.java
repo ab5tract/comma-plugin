@@ -25,7 +25,7 @@ public class Perl6SubsetStubElementType extends IStubElementType<Perl6SubsetStub
     @NotNull
     @Override
     public Perl6SubsetStub createStub(@NotNull Perl6Subset psi, StubElement parentStub) {
-        return new Perl6SubsetStubImpl(parentStub, psi.getSubsetName(), psi.isExported());
+        return new Perl6SubsetStubImpl(parentStub, psi.getSubsetName(), psi.isExported(), psi.getSubsetBaseTypeName());
     }
 
     @NotNull
@@ -38,6 +38,7 @@ public class Perl6SubsetStubElementType extends IStubElementType<Perl6SubsetStub
     public void serialize(@NotNull Perl6SubsetStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getTypeName());
         dataStream.writeBoolean(stub.isExported());
+        dataStream.writeName(stub.getSubsetBaseTypeName());
     }
 
     @NotNull
@@ -45,14 +46,14 @@ public class Perl6SubsetStubElementType extends IStubElementType<Perl6SubsetStub
     public Perl6SubsetStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef subsetNameRef = dataStream.readName();
         boolean exported = dataStream.readBoolean();
-        return new Perl6SubsetStubImpl(parentStub, subsetNameRef.getString(), exported);
+        StringRef subsetBaseRef = dataStream.readName();
+        return new Perl6SubsetStubImpl(parentStub, subsetNameRef.getString(), exported, subsetBaseRef.getString());
     }
 
     @Override
     public boolean shouldCreateStub(ASTNode node) {
-        if (!(node instanceof Perl6Subset)) return false;
-        String name = ((Perl6Subset)node).getSubsetName();
-        return name != null;
+        String subsetName = ((Perl6Subset) node.getPsi()).getSubsetName();
+        return subsetName != null && !subsetName.equals("<anon>");
     }
 
     @Override

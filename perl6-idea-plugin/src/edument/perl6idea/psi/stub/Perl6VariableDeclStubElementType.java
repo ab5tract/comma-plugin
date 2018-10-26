@@ -57,6 +57,9 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
 
     @Override
     public boolean shouldCreateStub(ASTNode node) {
-        return ((Perl6VariableDecl)node.getPsi()).getScope().equals("has");
+        Perl6VariableDecl variableDecl = (Perl6VariableDecl) node.getPsi();
+        String scope = variableDecl.getScope();
+        return scope.equals("has") ||
+                scope.equals("our") && variableDecl.isExported();
     }
 }

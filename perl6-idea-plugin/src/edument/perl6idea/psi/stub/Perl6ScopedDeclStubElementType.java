@@ -1,9 +1,14 @@
 package edument.perl6idea.psi.stub;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.*;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
+import edument.perl6idea.psi.Perl6PsiDeclaration;
 import edument.perl6idea.psi.Perl6ScopedDecl;
+import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.psi.impl.Perl6ScopedDeclImpl;
 import edument.perl6idea.psi.stub.impl.Perl6ScopedDeclStubImpl;
 import org.jetbrains.annotations.NotNull;
@@ -46,5 +51,18 @@ public class Perl6ScopedDeclStubElementType extends IStubElementType<Perl6Scoped
 
     @Override
     public void indexStub(@NotNull Perl6ScopedDeclStub stub, @NotNull IndexSink sink) {
+    }
+
+    @Override
+    public boolean shouldCreateStub(ASTNode node) {
+        PsiElement element = node.getPsi();
+        // Scope is either `has` for attribute or `our`, but with `is export` trait
+        if (!(element instanceof Perl6ScopedDecl)) return false;
+
+        Perl6ScopedDecl scopedDecl = (Perl6ScopedDecl) element;
+        if (scopedDecl.getScope().equals("has")) return true;
+        if (!scopedDecl.getScope().equals("our")) return false;
+        Perl6PsiDeclaration childDeclaration = PsiTreeUtil.getChildOfType(scopedDecl, Perl6PsiDeclaration.class);
+        return childDeclaration instanceof Perl6VariableDecl && childDeclaration.isExported();
     }
 }
