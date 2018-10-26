@@ -1,11 +1,18 @@
 package edument.perl6idea.stub;
 
 import com.intellij.lang.FileASTNode;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.StubBuilder;
 import com.intellij.psi.impl.DebugUtil;
+import com.intellij.psi.stubs.ObjectStubBase;
+import com.intellij.psi.stubs.ObjectStubTree;
 import com.intellij.psi.stubs.StubElement;
+import com.intellij.psi.stubs.StubTreeLoader;
 import com.intellij.testFramework.LightIdeaTestCase;
+import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
@@ -17,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Perl6StubTest extends LightIdeaTestCase {
+public class Perl6StubTest extends LightCodeInsightFixtureTestCase {
     private StubBuilder myBuilder;
 
     @Override
@@ -204,7 +211,7 @@ public class Perl6StubTest extends LightIdeaTestCase {
     }
 
     public void testStubbedRoleUsageInComposition() {
-        StubElement e = doTest("role Base { method mmm {}; method bbb {}; }; class C does Base { method ddd {}; };",
+        StubElement e = doTest("my role Base { method mmm {}; method bbb {}; }; class C does Base { method ddd {}; };",
                 "Perl6FileStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
                         "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
@@ -218,20 +225,19 @@ public class Perl6StubTest extends LightIdeaTestCase {
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
         decl.contributeScopeSymbols(collector);
         List<String> names = collector.getVariants().stream().map(Perl6Symbol::getName).collect(Collectors.toList());
-        assertTrue(names.contains(".ddd"));
+        assertTrue(names.containsAll(Arrays.asList(".ddd", ".mmm", ".bbb")));
     }
 
     private StubElement doTest(String source, String expected) {
-        PsiFile file = createLightFile("test.p6", source);
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, source);
+        PsiFile file = myFixture.getFile();
         FileASTNode fileASTNode = file.getNode();
         assertNotNull(fileASTNode);
-        assertFalse(fileASTNode.isParsed());
 
         StubElement stubTree = myBuilder.buildStubTree(file);
 
         file.getNode().getChildren(null); // force switch to AST
         StubElement astBasedTree = myBuilder.buildStubTree(file);
-        assertTrue(fileASTNode.isParsed());
 
         assertEquals(expected, DebugUtil.stubTreeToString(stubTree));
         assertEquals(expected, DebugUtil.stubTreeToString(astBasedTree));
