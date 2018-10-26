@@ -195,6 +195,14 @@ public class Perl6StubTest extends LightIdeaTestCase {
                         "    TRAIT:Perl6TraitStubImpl\n");
     }
 
+    public void testTrusts() {
+        StubElement e = doTest("class Two { trusts One; trusts Base; }",
+                "Perl6FileStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
+                        "    TYPE_NAME:Perl6TypeNameStubImpl\n" +
+                        "    TYPE_NAME:Perl6TypeNameStubImpl\n");
+    }
+
     public void testStubbedRoleUsageInComposition() {
         StubElement e = doTest("role Base { method mmm {}; method bbb {}; }; class C does Base {};",
                 "Perl6FileStubImpl\n" +
