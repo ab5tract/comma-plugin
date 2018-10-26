@@ -213,6 +213,26 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         boolean isGrammar = getPackageKind().equals("grammar");
 
         if (stub != null) {
+            List<StubElement> children = stub.getChildrenStubs();
+            for (StubElement child : children) {
+                if (!(child instanceof Perl6TraitStub)) continue;
+                Perl6TraitStub traitStub = (Perl6TraitStub)child;
+                if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
+                String name = traitStub.getTraitName();
+                Project project = getProject();
+                List<Perl6IndexableType> indexables = new ArrayList<>();
+                indexables.addAll(Perl6LexicalTypeStubIndex.getInstance().get(name, project,
+                        GlobalSearchScope.projectScope(project)));
+                indexables.addAll(Perl6GlobalTypeStubIndex.getInstance().get(name, project,
+                        GlobalSearchScope.projectScope(project)));
+                if (indexables.size() == 1) {
+                    Perl6PackageDecl decl = (Perl6PackageDecl) indexables.get(0);
+                    perl6PackageDecls.add(Pair.create(traitStub.getTraitModifier(), decl));
+                } else {
+                    externals.add(name);
+                }
+                isAny = !name.equals("Mu");
+            }
         } else {
             for (Perl6Trait trait : getTraits()) {
                 if (!(trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is"))) continue;
