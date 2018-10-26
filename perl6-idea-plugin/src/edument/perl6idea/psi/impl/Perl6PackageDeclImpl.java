@@ -208,26 +208,26 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         boolean isGrammar = getPackageKind().equals("grammar");
 
         if (stub != null) {
-            List<StubElement> children = stub.getChildrenStubs();
-            for (StubElement child : children) {
-                if (!(child instanceof Perl6TraitStub)) continue;
-                Perl6TraitStub traitStub = (Perl6TraitStub)child;
-                if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
-                for (StubElement maybeType : traitStub.getChildrenStubs()) {
+//            List<StubElement> children = stub.getChildrenStubs();
+//            for (StubElement child : children) {
+//                if (!(child instanceof Perl6TraitStub)) continue;
+//                Perl6TraitStub traitStub = (Perl6TraitStub)child;
+//                if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
+//                for (StubElement maybeType : traitStub.getChildrenStubs()) {
                     // Check only type names
-                    if (!(maybeType instanceof Perl6TypeNameStub)) continue;
-                    Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub)maybeType;
-                    Perl6TypeName psi = typeNameStub.getPsi();
-                    if (psi == null) continue;
-                    PsiReference ref = psi.getReference();
-                    if (ref == null) continue;
-                    PsiElement decl = ref.resolve();
-                    if (decl != null) perl6PackageDecls.add(Pair.create(traitStub.getTraitModifier(), (Perl6PackageDecl)decl));
-                    else externals.add(typeNameStub.getTypeName());
-                    if ((typeNameStub).getTypeName().equals("Mu"))
-                        isAny = false;
-                }
-            }
+//                    if (!(maybeType instanceof Perl6TypeNameStub)) continue;
+//                    Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub)maybeType;
+//                    Perl6TypeName psi = typeNameStub.getPsi();
+//                    if (psi == null) continue;
+//                    PsiReference ref = psi.getReference();
+//                    if (ref == null) continue;
+//                    PsiElement decl = ref.resolve();
+//                    if (decl != null) perl6PackageDecls.add(Pair.create(traitStub.getTraitModifier(), (Perl6PackageDecl)decl));
+//                    else externals.add(typeNameStub.getTypeName());
+//                    if ((typeNameStub).getTypeName().equals("Mu"))
+//                        isAny = false;
+//                }
+//            }
         } else {
             for (Perl6Trait trait : getTraits()) {
                 if (!(trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is"))) continue;

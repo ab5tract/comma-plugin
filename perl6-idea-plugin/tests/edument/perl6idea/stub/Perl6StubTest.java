@@ -204,20 +204,21 @@ public class Perl6StubTest extends LightIdeaTestCase {
     }
 
     public void testStubbedRoleUsageInComposition() {
-        StubElement e = doTest("role Base { method mmm {}; method bbb {}; }; class C does Base {};",
+        StubElement e = doTest("role Base { method mmm {}; method bbb {}; }; class C does Base { method ddd {}; };",
                 "Perl6FileStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
                         "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
                         "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
                         "    TRAIT:Perl6TraitStubImpl\n" +
-                        "      TYPE_NAME:Perl6TypeNameStubImpl\n");
+                        "      TYPE_NAME:Perl6TypeNameStubImpl\n" +
+                        "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n");
         StubElement stub = (StubElement) e.getChildrenStubs().get(1);
         Perl6PackageDecl decl = (Perl6PackageDecl) stub.getPsi();
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-        // decl.contributeScopeSymbols(collector);
-        // FIXME
-        // collector.getVariants().stream().map(Perl6Symbol::getName).collect(Collectors.toList());
+        decl.contributeScopeSymbols(collector);
+        List<String> names = collector.getVariants().stream().map(Perl6Symbol::getName).collect(Collectors.toList());
+        assertTrue(names.contains(".ddd"));
     }
 
     private StubElement doTest(String source, String expected) {
