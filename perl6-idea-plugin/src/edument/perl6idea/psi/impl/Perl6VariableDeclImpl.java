@@ -1,10 +1,7 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
@@ -82,7 +79,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (stub != null)
             return stub.getVariableType();
         PsiElement type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
-        if (type != null) return getCuttedName(type.getText());
+        if (type != null) return getCutName(type.getText());
         return resolveAssign();
     }
 
