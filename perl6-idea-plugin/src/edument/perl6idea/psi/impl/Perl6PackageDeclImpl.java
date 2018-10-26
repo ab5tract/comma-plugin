@@ -97,7 +97,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (stub != null) {
             stub.getChildrenStubs().stream()
                     .filter(s -> s instanceof Perl6TypeNameStub)
-                    .map(s -> trusts.add(((Perl6TypeNameStub)s).getTypeName()));
+                    .forEach(s -> trusts.add(((Perl6TypeNameStub)s).getTypeName()));
         } else {
             Perl6StatementList statementList = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
             if (statementList == null) return new ArrayList<>();
