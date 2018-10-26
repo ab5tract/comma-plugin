@@ -48,7 +48,7 @@ public class Perl6EnumImpl extends Perl6TypeStubBasedPsi<Perl6EnumStub> implemen
             if (text.length() < 3)
                 return values;
             text = text.substring(1, text.length()-1);
-            String[] result = text.split(" ");
+            String[] result = text.split("\\s+");
             values.addAll(Arrays.asList(result));
         }
         return values;
