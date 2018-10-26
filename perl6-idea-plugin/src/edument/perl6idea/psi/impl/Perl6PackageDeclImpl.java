@@ -20,10 +20,7 @@ import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.NAME;
 
@@ -91,11 +88,18 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     private List<String> getTrusts() {
         List<String> trusts = new ArrayList<>();
-        Perl6StatementList statementList = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
-        if (statementList == null) return new ArrayList<>();
-        for (PsiElement statement : statementList.getChildren()) {
-            if (statement.getFirstChild() instanceof Perl6Trusts)
-                trusts.add(((Perl6Trusts)statement.getFirstChild()).getTypeName());
+        Perl6PackageDeclStub stub = getStub();
+        if (stub != null) {
+            stub.getChildrenStubs().stream()
+                    .filter(s -> s instanceof Perl6TypeNameStub)
+                    .map(s -> trusts.add(((Perl6TypeNameStub)s).getTypeName()));
+        } else {
+            Perl6StatementList statementList = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
+            if (statementList == null) return new ArrayList<>();
+            for (PsiElement statement : statementList.getChildren()) {
+                if (statement.getFirstChild() instanceof Perl6Trusts)
+                    trusts.add(((Perl6Trusts) statement.getFirstChild()).getTypeName());
+            }
         }
         return trusts;
     }
