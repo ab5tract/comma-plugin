@@ -108,7 +108,7 @@ public class Perl6StubTest extends LightIdeaTestCase {
         assertEquals("Foo::Baz", stub2.getModuleName());
     }
 
-    public void testMyAndOurVarsAreNotStubbed() {
+    public void testVariableScopedDependantStubbing() {
         doTest("my $foo; our $baz",
                 "Perl6FileStubImpl\n");
         doTest("has $foo;",
@@ -118,7 +118,8 @@ public class Perl6StubTest extends LightIdeaTestCase {
         doTest("our $bar is export = 10;",
                 "Perl6FileStubImpl\n" +
                         "  SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n" +
-                        "    VARIABLE_DECLARATION:Perl6VariableDeclStubImpl\n");
+                        "    VARIABLE_DECLARATION:Perl6VariableDeclStubImpl\n" +
+                        "      TRAIT:Perl6TraitStubImpl\n");
     }
 
     public void testClassWithAttributesAndMethods() {
@@ -170,15 +171,28 @@ public class Perl6StubTest extends LightIdeaTestCase {
         assertEquals("Int", variableDeclStub2.getVariableType());
     }
 
-    public void testVariableTrait() {
+    public void testPackageTrait() {
         StubElement e = doTest("role One {}; class Two does One {}; class Three is Two {};",
                 "Perl6FileStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
-                        "    TYPE_NAME:Perl6TypeNameStubImpl\n" +
-                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n");
+                        "    TRAIT:Perl6TraitStubImpl\n" +
+                        "      TYPE_NAME:Perl6TypeNameStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
+                        "    TRAIT:Perl6TraitStubImpl\n");
         List childrenStubs = e.getChildrenStubs();
         assertEquals(3, childrenStubs.size());
+    }
+
+    public void testAlso() {
+        StubElement e = doTest("role One {}; class Base {}; class Two { also does One; also is Base; }",
+                "Perl6FileStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
+                        "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
+                        "    TRAIT:Perl6TraitStubImpl\n" +
+                        "      TYPE_NAME:Perl6TypeNameStubImpl\n" +
+                        "    TRAIT:Perl6TraitStubImpl\n");
     }
 
     public void testStubbedRoleUsageInComposition() {
@@ -188,11 +202,12 @@ public class Perl6StubTest extends LightIdeaTestCase {
                         "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
                         "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
-                        "    TYPE_NAME:Perl6TypeNameStubImpl\n");
+                        "    TRAIT:Perl6TraitStubImpl\n" +
+                        "      TYPE_NAME:Perl6TypeNameStubImpl\n");
         StubElement stub = (StubElement) e.getChildrenStubs().get(1);
         Perl6PackageDecl decl = (Perl6PackageDecl) stub.getPsi();
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-        decl.contributeScopeSymbols(collector);
+        // decl.contributeScopeSymbols(collector);
         // FIXME
         // collector.getVariants().stream().map(Perl6Symbol::getName).collect(Collectors.toList());
     }

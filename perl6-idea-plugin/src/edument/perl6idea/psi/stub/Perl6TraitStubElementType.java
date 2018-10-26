@@ -1,6 +1,7 @@
 package edument.perl6idea.psi.stub;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
@@ -54,8 +55,9 @@ public class Perl6TraitStubElementType extends IStubElementType<Perl6TraitStub, 
 
     @Override
     public boolean shouldCreateStub(ASTNode node) {
-        if (!(node instanceof Perl6Trait)) return false;
-        String modifier = ((Perl6Trait)node).getTraitModifier();
+        PsiElement psi = node.getPsi();
+        if (!(psi instanceof Perl6Trait)) return false;
+        String modifier = ((Perl6Trait)psi).getTraitModifier();
         return modifier.equals("does") || modifier.equals("is");
     }
 }
