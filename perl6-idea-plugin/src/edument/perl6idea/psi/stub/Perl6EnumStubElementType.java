@@ -47,7 +47,6 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
         for (String type : stub.getEnumValues()) {
             joiner.add(type);
         }
-        System.out.println(joiner.toString());
         dataStream.writeName(joiner.toString());
     }
 
