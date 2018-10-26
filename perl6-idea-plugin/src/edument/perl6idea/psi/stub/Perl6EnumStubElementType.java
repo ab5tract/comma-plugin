@@ -11,12 +11,11 @@ import edument.perl6idea.psi.stub.impl.Perl6EnumStubImpl;
 import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Perl6Enum> {
     public Perl6EnumStubElementType() {
@@ -44,7 +43,10 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
     public void serialize(@NotNull Perl6EnumStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getTypeName());
         dataStream.writeBoolean(stub.isExported());
-        dataStream.writeName(StringUtils.join(stub.getEnumValues(), "#"));
+        StringJoiner joiner = new StringJoiner("#");
+        stub.getEnumValues().stream().map(p -> joiner.add(p));
+        System.out.println(joiner.toString());
+        dataStream.writeName(joiner.toString());
     }
 
     @NotNull
