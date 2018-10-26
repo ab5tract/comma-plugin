@@ -44,7 +44,9 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
         dataStream.writeName(stub.getTypeName());
         dataStream.writeBoolean(stub.isExported());
         StringJoiner joiner = new StringJoiner("#");
-        stub.getEnumValues().stream().map(p -> joiner.add(p));
+        for (String type : stub.getEnumValues()) {
+            joiner.add(type);
+        }
         System.out.println(joiner.toString());
         dataStream.writeName(joiner.toString());
     }
