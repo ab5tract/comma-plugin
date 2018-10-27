@@ -1,10 +1,7 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
@@ -82,7 +79,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (stub != null)
             return stub.getVariableType();
         PsiElement type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
-        if (type != null) return getCuttedName(type.getText());
+        if (type != null) return getCutName(type.getText());
         return resolveAssign();
     }
 
@@ -92,7 +89,12 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         PsiElement value = infix.getNextSibling();
         while (value instanceof PsiWhiteSpace || (value != null && value.getNode().getElementType() == UNV_WHITE_SPACE))
             value = value.getNextSibling();
-        return value == null ? " " : ((Perl6PsiElement)value).inferType();
+        // Mu will be a basic type in this case
+        // because when used for e.g. method completion inference,
+        // it is better to assume default variable methods set is based on Mu
+        // then return e.g. empty string and getting no opportunity to neatly use it
+        // in case where type is not defined explicitly
+        return value == null ? "Mu" : ((Perl6PsiElement)value).inferType();
     }
 
     @Override

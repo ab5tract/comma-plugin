@@ -26,26 +26,28 @@ public class Perl6SubsetImpl extends Perl6TypeStubBasedPsi<Perl6SubsetStub> impl
 
     @Override
     public Perl6PackageDecl getSubsetBaseType() {
-        List<Perl6Trait> traits = getTraits();
-        for (Perl6Trait trait : traits) {
-            if (!trait.getTraitModifier().equals("of")) continue;
-            Perl6TypeName type = trait.getCompositionTypeName();
-            if (type == null) break; // Not yet typed
-            PsiReference ref = type.getReference();
-            if (ref == null) break; // Some extreme error if ref is null, break
-            PsiElement resolved = ref.resolve();
-            if (resolved == null) break; // If external type, break
-            return (Perl6PackageDecl)resolved;
-        }
-        return null;
+        Perl6Trait trait = findBaseTypeTrait();
+        if (trait == null) return null;
+        Perl6TypeName type = trait.getCompositionTypeName();
+        if (type == null) return null;
+        PsiReference ref = type.getReference();
+        if (ref == null) return null;
+        PsiElement resolved = ref.resolve();
+        if (resolved == null) return null;
+        return (Perl6PackageDecl)resolved;
     }
 
     @Override
     public String getSubsetBaseTypeName() {
+        Perl6Trait trait = findBaseTypeTrait();
+        return trait == null ? "Any" : trait.getTraitName();
+    }
+
+    private Perl6Trait findBaseTypeTrait() {
         List<Perl6Trait> traits = getTraits();
         for (Perl6Trait trait : traits) {
             if (!trait.getTraitModifier().equals("of")) continue;
-            return trait.getTraitName();
+            return trait;
         }
         return null;
     }

@@ -125,6 +125,7 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
 
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
+        if (getName() == null) return;
         collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, this));
         if (!collector.isSatisfied()) {
             T stub = getStub();

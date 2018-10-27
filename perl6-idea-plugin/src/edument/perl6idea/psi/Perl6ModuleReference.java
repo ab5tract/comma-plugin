@@ -5,6 +5,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.utils.Perl6ModuleListFetcher;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class Perl6ModuleReference extends PsiReferenceBase<Perl6PsiElement> {
+public class Perl6ModuleReference extends PsiReferenceBase<Perl6ModuleName> {
     public Perl6ModuleReference(@NotNull Perl6ModuleName moduleName) {
         super(moduleName, new TextRange(0, moduleName.getTextLength()));
     }
@@ -48,5 +49,11 @@ public class Perl6ModuleReference extends PsiReferenceBase<Perl6PsiElement> {
         reallyInThisProject.addAll(Perl6ModuleListFetcher.PREINSTALLED_MODULES);
         reallyInThisProject.addAll(Perl6ModuleListFetcher.PRAGMAS);
         return reallyInThisProject.toArray();
+    }
+
+    @Override
+    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+        Perl6ModuleName name = getElement();
+        return name.setName(newElementName);
     }
 }

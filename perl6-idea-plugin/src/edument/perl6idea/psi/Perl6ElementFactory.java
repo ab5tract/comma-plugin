@@ -27,6 +27,16 @@ public class Perl6ElementFactory {
         return base + joiner.toString() + ") {}";
     }
 
+    public static Perl6LongName createModuleName(Project project, String name) {
+        String text = getModuleNameText(name);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6LongName.class);
+    }
+
+    private static String getModuleNameText(String name) {
+        return "use " + name;
+    }
+
     public static Perl6LongName createPublicMethodCall(Project project, String name) {
         String text = getPublicMethodCallText(name);
         Perl6File dummyFile = createFile(project, text);
