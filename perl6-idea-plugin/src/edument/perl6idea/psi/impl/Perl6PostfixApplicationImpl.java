@@ -27,14 +27,14 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
         } else if (last instanceof Perl6MethodCall) {
             return tryToCalculateMethodReturnType((Perl6MethodCall)last);
         }
-        return "Any";
+        return "Mu";
     }
 
     private static String tryToCalculateMethodReturnType(Perl6MethodCall last) {
         PsiReference ref = last.getReference();
-        if (ref == null) return "Any";
+        if (ref == null) return "Mu";
         PsiElement resolved = ref.resolve();
-        if (resolved == null) return "Any";
+        if (resolved == null) return "Mu";
         Perl6RoutineDecl decl = (Perl6RoutineDecl)resolved;
         return decl.getReturnType();
     }
