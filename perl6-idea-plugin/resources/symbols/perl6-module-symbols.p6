@@ -18,15 +18,12 @@ EVAL "\{\n    @*ARGS[0] @*ARGS[1];\n" ~ Q:to/END/;
 sub describe-role(Mu \object) {
     for object, |object.^roles {
         say "!$_" for .^candidates[0].^private_method_table.keys;
-        for .^methods(:local) -> $m {
-            say "{$m.name} : {$m.returns // 'Mu'}";
-        }
+        say .name for .^methods(:local);
         say .name for .^attributes(:local);
     }
 }
 
 sub describe-class(Mu \object) {
-    use nqp;
     # Inner stuff of class: PRIVATE METHODS
     for object, |object.^parents -> $class { # From self and parents
         say "!$_" for $class.^private_method_table.keys;
@@ -35,13 +32,7 @@ sub describe-class(Mu \object) {
         say "!$_" for $role.^candidates[0].^private_method_table.keys;
     }
     # METHODS
-    for object.^methods(:local) -> $m {
-        if nqp::istype(nqp::decont($m), Method) != 0 {
-            say "{$m.name} : {$m.returns // 'Mu'}";
-        } else {
-            say "{$m.name} : Mu";
-        }
-    }
+    say .name for object.^methods;
     # ATTRIBUTES
     say .name for object.^attributes;
 }

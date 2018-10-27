@@ -1,7492 +1,7428 @@
-V:&fc
-C:Mu
-self : Mu
-sink : Mu
-ACCEPTS : Mu
-WHERE : Mu
-WHICH : Mu
-iterator : Mu
-split : Mu
-emit : Mu
-take : Mu
-return-rw : Mu
-return : Mu
-WHY : Mu
-set_why : Mu
-Bool : Mu
-so : Mu
-not : Mu
-defined : Mu
-new : Mu
-is-lazy : Mu
-CREATE : Mu
-bless : Mu
-BUILDALL : Mu
-BUILD_LEAST_DERIVED : Mu
-Numeric : Mu
-Real : Mu
-Str : Mu
-Stringy : Mu
-item : Mu
-say : Mu
-print : Mu
-put : Mu
-note : Mu
-gistseen : Mu
-gist : Mu
-perlseen : Mu
-perl : Mu
-DUMP : Mu
-DUMP-PIECES : Mu
-DUMP-OBJECT-ATTRS : Mu
-isa : Mu
-does : Mu
-can : Mu
-clone : Mu
-Capture : Mu
-dispatch:<var> : Mu
-dispatch:<::> : Mu
-dispatch:<!> : Mu
-dispatch:<.=> : Mu
-dispatch:<.?> : Mu
-dispatch:<.+> : Mu
-dispatch:<.*> : Mu
-dispatch:<hyper> : Mu
-WALK : Mu
-V:&infix:<...^>
-C:Match
-ast : Mu
-made : Mu
-STR : Mu
-MATCH : Mu
-CURSOR_NEXT : Mu
-CURSOR_OVERLAP : Mu
-CURSOR_MORE : Mu
-INTERPOLATE : Mu
-INTERPOLATE_ASSERTION : Mu
-CALL_SUBRULE : Mu
-DYNQUANT_LIMITS : Mu
-OTHERGRAMMAR : Mu
-INDMETHOD : Mu
-INDRULE : Mu
-RECURSE : Mu
-BUILD : Mu
-clone : Mu
-Bool : Mu
-prematch : Mu
-postmatch : Mu
-caps : Mu
-chunks : Mu
-alpha : Mu
-digit : Mu
-!protoregex_nfa : Mu
-!reduce : Mu
-punct : Mu
-graph : Mu
-cntrl : Mu
-!DYNQUANT_LIMITS : Mu
-!alt : Mu
-!protoregex : Mu
-!cursor_start_cur : Mu
-Num : Mu
-slangs : Mu
-pragma : Mu
-set_actions : Mu
-prune : Mu
-alnum : Mu
-same : Mu
-!DELEGATE_ACCEPTS : Mu
-!fresh_highexpect : Mu
-!cursor_next : Mu
-!clone_match_at : Mu
-!shared_type : Mu
-after : Mu
-before : Mu
-!protoregex_table : Mu
-!cursor_start : Mu
-!reduce_with_match : Mu
-!cursor_more : Mu
-!dba : Mu
-!LITERAL : Mu
-PRECURSOR : Mu
-pos : Mu
-xdigit : Mu
-!cursor_pos : Mu
-from : Mu
-!cursor_init : Mu
-at : Mu
-ws : Mu
-refine_slang : Mu
-!precompute_nfas : Mu
-!cursor_capture : Mu
-set_pragma : Mu
-snapshot_braid : Mu
-to : Mu
-!BACKREF : Mu
-!braid : Mu
-package : Mu
-set_package : Mu
-make : Mu
-!BACKREF-LATEST-CAPTURE : Mu
-lower : Mu
-!clear_highwater : Mu
-!cursor_push_cstack : Mu
-orig : Mu
-define_slang : Mu
-check_PACKAGE_oopsies : Mu
-print : Mu
-upper : Mu
-ident : Mu
-!highwater : Mu
-ww : Mu
-!cursor_start_all : Mu
-!cursor_fail : Mu
-target : Mu
-how : Mu
-set_how : Mu
-!dump_str : Mu
-set_braid : Mu
-!shared : Mu
-FAILGOAL : Mu
-space : Mu
-!highexpect : Mu
-chars : Mu
-!cursor_start_subcapture : Mu
-slang_grammar : Mu
-know_how : Mu
-actions : Mu
-wb : Mu
-!set_highexpect : Mu
-dump : Mu
-!cursor_start_fail : Mu
-slang_actions : Mu
-switch_to_slang : Mu
-grammar : Mu
-set_braid_from : Mu
-CAPHASH : Mu
-clone_braid_from : Mu
-check_LANG_oopsies : Mu
-blank : Mu
-!cursor_pass : Mu
-!alt_nfa : Mu
-CURSOR : Mu
-Str : Mu
-braid : Mu
-WHICH : Mu
-Numeric : Mu
-ACCEPTS : Mu
-perl : Mu
-gist : Mu
-BUILDALL : Mu
-D:ProtocolFamily::PF_UNIX
-D:ProtocolFamily::PF_MAX
-D:ProtocolFamily::PF_INET6
-D:ProtocolFamily::PF_INET
-D:ProtocolFamily::PF_LOCAL
-V:&postcircumfix:<{ }>
-V:&unival
-C:RatStr
-new : Mu
-succ : Mu
-pred : Mu
-Capture : Mu
-Rat : Mu
-ACCEPTS : Mu
-Numeric : Mu
-Real : Mu
-Str : Mu
-perl : Mu
-C:Perl
-BUILD : Mu
-VMnames : Mu
-DISTROnames : Mu
-KERNELnames : Mu
-Str : Mu
-gist : Mu
-compiler : Mu
-name : Mu
-auth : Mu
-version : Mu
-signature : Mu
-desc : Mu
-BUILDALL : Mu
-R:Iterable
-iterator : Mu
-item : Mu
-flat : Mu
-lazy-if : Mu
-lazy : Mu
-hyper : Mu
-race : Mu
-V:&infix:<div>
-C:Cool
-abs : Mu
-conj : Mu
-sqrt : Mu
-sign : Mu
-rand : Mu
-sin : Mu
-asin : Mu
-cos : Mu
-acos : Mu
-tan : Mu
-atan : Mu
-atan2 : Mu
-sec : Mu
-asec : Mu
-cosec : Mu
-acosec : Mu
-cotan : Mu
-acotan : Mu
-sinh : Mu
-asinh : Mu
-cosh : Mu
-acosh : Mu
-tanh : Mu
-atanh : Mu
-sech : Mu
-asech : Mu
-cosech : Mu
-acosech : Mu
-cotanh : Mu
-acotanh : Mu
-cis : Mu
-is-prime : Mu
-log : Mu
-exp : Mu
-round : Mu
-roots : Mu
-log10 : Mu
-unpolar : Mu
-floor : Mu
-ceiling : Mu
-truncate : Mu
-chars : Mu
-codes : Mu
-fmt : Mu
-uc : Mu
-lc : Mu
-tc : Mu
-fc : Mu
-tclc : Mu
-wordcase : Mu
-uniname : Mu
-uninames : Mu
-unival : Mu
-univals : Mu
-uniprop : Mu
-uniprop-int : Mu
-uniprop-bool : Mu
-uniprop-str : Mu
-uniprops : Mu
-unimatch : Mu
-chomp : Mu
-chop : Mu
-ord : Mu
-chr : Mu
-chrs : Mu
-ords : Mu
-flip : Mu
-trans : Mu
-starts-with : Mu
-ends-with : Mu
-substr : Mu
-substr-rw : Mu
-substr-eq : Mu
-contains : Mu
-indices : Mu
-index : Mu
-rindex : Mu
-split : Mu
-match : Mu
-comb : Mu
-lines : Mu
-words : Mu
-subst : Mu
-subst-mutate : Mu
-IO : Mu
-sprintf : Mu
-printf : Mu
-samecase : Mu
-path : Mu
-trim : Mu
-trim-leading : Mu
-trim-trailing : Mu
-EVAL : Mu
-Int : Mu
-UInt : Mu
-Num : Mu
-Rat : Mu
-FatRat : Mu
-Complex : Mu
-Real : Mu
-V:&atomic-add-fetch
-V:&categorize
-V:&callwith
-V:&chomp
-C:RaceSeq
-BUILD : Mu
-iterator : Mu
-grep : Mu
-map : Mu
-invert : Mu
-hyper : Mu
-race : Mu
-is-lazy : Mu
-sink : Mu
-lazy : Mu
-lazy-if : Mu
-fmt : Mu
-Numeric : Mu
-item : Mu
-cache : Mu
-flat : Mu
-serial : Mu
-Set : Mu
-List : Mu
-Slip : Mu
-AT-POS : Mu
-Array : Mu
-Bag : Mu
-EXISTS-POS : Mu
-list : Mu
-gist : Mu
-SetHash : Mu
-eager : Mu
-MixHash : Mu
-BagHash : Mu
-Str : Mu
-Stringy : Mu
-Mix : Mu
-configuration : Mu
-BUILDALL : Mu
-V:&trim-trailing
-V:&sprintf
-V:&atomic-fetch-inc
-V:&so
-V:&infix:<∪>
-V:&prefix:<+^>
-V:&substr
-V:&prefix:<⚛>
-V:&infix:<orelse>
-V:&one
-V:&index
-C:ObjAt
-new : Mu
-WHICH : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-C:Sub
-C:FatRat
-FatRat : Mu
-Rat : Mu
-sign : Mu
-abs : Mu
-acos : Mu
-ceiling : Mu
-sech : Mu
-atan2 : Mu
-log : Mu
-sinh : Mu
-is-prime : Mu
-atan : Mu
-round : Mu
-floor : Mu
-truncate : Mu
-new : Mu
-polymod : Mu
-base-repeating : Mu
-cis : Mu
-tanh : Mu
-tan : Mu
-Int : Mu
-conj : Mu
-asec : Mu
-acotanh : Mu
-Range : Mu
-unpolar : Mu
-rand : Mu
-nude : Mu
-cosech : Mu
-isNaN : Mu
-sec : Mu
-succ : Mu
-cos : Mu
-log10 : Mu
-cotanh : Mu
-acosech : Mu
-asin : Mu
-roots : Mu
-sin : Mu
-Num : Mu
-cosec : Mu
-norm : Mu
-base : Mu
-acosec : Mu
-asinh : Mu
-sqrt : Mu
-pred : Mu
-asech : Mu
-narrow : Mu
-Bridge : Mu
-cosh : Mu
-cotan : Mu
-acosh : Mu
-Complex : Mu
-exp : Mu
-acotan : Mu
-atanh : Mu
-perl : Mu
-WHICH : Mu
-Bool : Mu
-Str : Mu
-DUMP : Mu
-ACCEPTS : Mu
-gist : Mu
-Real : Mu
-Numeric : Mu
-numerator : Mu
-denominator : Mu
-BUILDALL : Mu
-V:&atanh
-C:Num
-Capture : Mu
-Num : Mu
-Bridge : Mu
-Range : Mu
-Int : Mu
-Rat : Mu
-FatRat : Mu
-succ : Mu
-pred : Mu
-isNaN : Mu
-abs : Mu
-log : Mu
-sqrt : Mu
-rand : Mu
-ceiling : Mu
-floor : Mu
-sin : Mu
-asin : Mu
-cos : Mu
-acos : Mu
-tan : Mu
-atan : Mu
-sec : Mu
-asec : Mu
-cosec : Mu
-acosec : Mu
-cotan : Mu
-acotan : Mu
-sinh : Mu
-asinh : Mu
-cosh : Mu
-acosh : Mu
-tanh : Mu
-atanh : Mu
-sech : Mu
-asech : Mu
-cosech : Mu
-acosech : Mu
-cotanh : Mu
-acotanh : Mu
-is-prime : Mu
-narrow : Mu
-exp : Mu
-Complex : Mu
-base : Mu
-log10 : Mu
-roots : Mu
-unpolar : Mu
-polymod : Mu
-cis : Mu
-conj : Mu
-atan2 : Mu
-truncate : Mu
-round : Mu
-sign : Mu
-WHICH : Mu
-Bool : Mu
-new : Mu
-perl : Mu
-Str : Mu
-Real : Mu
-Numeric : Mu
-gist : Mu
-ACCEPTS : Mu
-DUMP : Mu
-V:&atan
-V:&nextcallee
-V:&prefix:<^>
-V:&infix:<eqv>
-V:&nodemap
-C:Int
-new : Mu
-Capture : Mu
-Int : Mu
-Num : Mu
-Rat : Mu
-FatRat : Mu
-abs : Mu
-Bridge : Mu
-chr : Mu
-sqrt : Mu
-base : Mu
-polymod : Mu
-expmod : Mu
-is-prime : Mu
-floor : Mu
-ceiling : Mu
-round : Mu
-lsb : Mu
-msb : Mu
-narrow : Mu
-Range : Mu
-exp : Mu
-acotan : Mu
-Complex : Mu
-atanh : Mu
-asech : Mu
-pred : Mu
-acosh : Mu
-cosh : Mu
-cotan : Mu
-cosec : Mu
-asinh : Mu
-acosec : Mu
-cosech : Mu
-isNaN : Mu
-sec : Mu
-log10 : Mu
-cotanh : Mu
-acosech : Mu
-asin : Mu
-cos : Mu
-sin : Mu
-roots : Mu
-succ : Mu
-asec : Mu
-acotanh : Mu
-unpolar : Mu
-rand : Mu
-tanh : Mu
-cis : Mu
-tan : Mu
-conj : Mu
-log : Mu
-sinh : Mu
-atan : Mu
-atan2 : Mu
-truncate : Mu
-acos : Mu
-sign : Mu
-sech : Mu
-WHICH : Mu
-perl : Mu
-Bool : Mu
-Str : Mu
-Real : Mu
-DUMP : Mu
-Numeric : Mu
-gist : Mu
-ACCEPTS : Mu
-R:Sequence
-Numeric : Mu
-fmt : Mu
-V:&postfix:<i>
-C:Stash
-package_at_key : Mu
-merge-symbols : Mu
-AT-KEY : Mu
-gist : Mu
-Str : Mu
-V:&close
-V:&infix:<=:=>
-C:HyperSeq
-BUILD : Mu
-iterator : Mu
-grep : Mu
-map : Mu
-invert : Mu
-hyper : Mu
-race : Mu
-is-lazy : Mu
-sink : Mu
-flat : Mu
-cache : Mu
-item : Mu
-fmt : Mu
-Numeric : Mu
-lazy : Mu
-lazy-if : Mu
-serial : Mu
-Mix : Mu
-BagHash : Mu
-MixHash : Mu
-Stringy : Mu
-Str : Mu
-SetHash : Mu
-eager : Mu
-Bag : Mu
-list : Mu
-EXISTS-POS : Mu
-gist : Mu
-AT-POS : Mu
-Array : Mu
-List : Mu
-Set : Mu
-Slip : Mu
-configuration : Mu
-BUILDALL : Mu
-V:&infix:<andthen>
-V:&trait_mod:<hides>
-R:PositionalBindFailover
-cache : Mu
-iterator : Mu
-V:&return-rw
-V:&infix:<or>
-V:&infix:<..>
-V:&permutations
-R:IO
-C:IO::Path
-BUILD : Mu
-new : Mu
-is-absolute : Mu
-is-relative : Mu
-parts : Mu
-volume : Mu
-dirname : Mu
-basename : Mu
-extension : Mu
-Numeric : Mu
-sibling : Mu
-succ : Mu
-pred : Mu
-open : Mu
-watch : Mu
-absolute : Mu
-relative : Mu
-cleanup : Mu
-resolve : Mu
-parent : Mu
-child : Mu
-add : Mu
-chdir : Mu
-rename : True
-copy : True
-move : True
-chmod : True
-unlink : True
-symlink : True
-link : True
-mkdir : Mu
-rmdir : True
-dir : Mu
-slurp : Mu
-spurt : Mu
-lines : Mu
-comb : Mu
-split : Mu
-words : Mu
-e : Mu
-d : Mu
-f : Mu
-s : Mu
-l : Mu
-r : Mu
-w : Mu
-rw : Mu
-x : Mu
-rwx : Mu
-z : Mu
-modified : Mu
-accessed : Mu
-changed : Mu
-mode : Mu
-ACCEPTS : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-IO : Mu
-SPEC : Mu
-CWD : Mu
-path : Mu
-BUILDALL : Mu
-C:IO::Path::Unix
-new : Mu
-perl : Mu
-C:IO::Path::QNX
-new : Mu
-perl : Mu
-C:IO::Path::Cygwin
-new : Mu
-perl : Mu
-C:IO::Path::Win32
-new : Mu
-perl : Mu
-C:IO::Pipe
-TWEAK : Mu
-READ : Mu
-EOF : Mu
-WRITE : Mu
-flush : True
-close : Mu
-opened : Mu
-t : Mu
-native-descriptor : Mu
-IO : Mu
-path : Mu
-proc : Mu
-BUILDALL : Mu
-C:IO::ArgFiles
-C:IO::Handle
-TWEAK : Mu
-open : Mu
-out-buffer : Mu
-nl-in : Mu
-close : True
-eof : Mu
-EOF : Mu
-READ : Mu
-get : Mu
-getc : Mu
-comb : Mu
-split : Mu
-words : Mu
-lines : Mu
-read : Mu
-readchars : Mu
-seek : Mu
-tell : Mu
-write : True
-WRITE : True
-opened : Mu
-t : Mu
-lock : True
-unlock : True
-printf : Mu
-print : Mu
-put : Mu
-print-nl : True
-slurp-rest : Mu
-slurp : Mu
-spurt : Mu
-path : Mu
-IO : Mu
-flush : True
-encoding : Mu
-DESTROY : Mu
-native-descriptor : Mu
-Supply : Mu
-say : Mu
-Str : Mu
-gist : Mu
-chomp : Mu
-nl-out : Mu
-BUILDALL : Mu
-C:IO::CatHandle
-new : Mu
-next-handle : Mu
-handles : Mu
-chomp : Mu
-comb : Mu
-split : Mu
-get : Mu
-getc : Mu
-read : Mu
-readchars : Mu
-slurp : Mu
-slurp-rest : Mu
-DESTROY : Mu
-close : True
-encoding : Mu
-eof : Mu
-IO : Mu
-path : Mu
-opened : Mu
-lock : Mu
-nl-in : Mu
-seek : Mu
-tell : Mu
-t : Mu
-unlock : Mu
-native-descriptor : Mu
-open : Mu
-flush : Mu
-out-buffer : Mu
-print : Mu
-printf : Mu
-print-nl : Mu
-put : Mu
-say : Mu
-write : Mu
-WRITE : Mu
-READ : Mu
-EOF : Mu
-perl : Mu
-words : Mu
-lines : Mu
-Supply : Mu
-gist : Mu
-Str : Mu
-on-switch : Mu
-BUILDALL : Mu
-C:IO::Spec
-select : Mu
-C:IO::Spec::Unix
-canonpath : Mu
-dir-sep : Mu
-curdir : Mu
-updir : Mu
-curupdir : Mu
-rootdir : Mu
-devnull : Mu
-basename : Mu
-extension : Mu
-tmpdir : Mu
-is-absolute : Mu
-path : Mu
-splitpath : Mu
-split : Mu
-join : Mu
-catpath : Mu
-catdir : Mu
-splitdir : Mu
-catfile : Mu
-abs2rel : Mu
-rel2abs : Mu
-C:IO::Spec::Win32
-canonpath : Mu
-catdir : Mu
-dir-sep : Mu
-devnull : Mu
-rootdir : Mu
-splitdir : Mu
-basename : Mu
-tmpdir : Mu
-path : Mu
-is-absolute : Mu
-split : Mu
-join : Mu
-splitpath : Mu
-catpath : Mu
-rel2abs : Mu
-C:IO::Spec::Cygwin
-canonpath : Mu
-catdir : Mu
-is-absolute : Mu
-tmpdir : Mu
-abs2rel : Mu
-rel2abs : Mu
-splitpath : Mu
-catpath : Mu
-split : Mu
-join : Mu
-C:IO::Spec::QNX
-canonpath : Mu
-C:IO::Notification
-watch-path : Mu
-C:IO::Notification::Change
-IO : Mu
-gist : Mu
-path : Mu
-event : Mu
-BUILDALL : Mu
-R:IO::Socket
-recv : Mu
-read : Mu
-nl-in : Mu
-get : Mu
-lines : Mu
-print : True
-put : True
-write : True
-close : True
-native-descriptor : Mu
-C:IO::Socket::Async
-new : Mu
-print : Mu
-write : Mu
-close : True
-connect : Mu
-listen : Mu
-udp : Mu
-bind-udp : Mu
-print-to : Mu
-write-to : Mu
-Supply : Mu
-enc : Mu
-peer-host : Mu
-peer-port : Mu
-socket-host : Mu
-socket-port : Mu
-BUILDALL : Mu
-C:IO::Socket::Async::ListenSocket
-new : Mu
-socket-host : Mu
-socket-port : Mu
-BUILDALL : Mu
-C:IO::Socket::INET
-connect : Mu
-listen : Mu
-accept : Mu
-nl-in : Mu
-put : True
-recv : Mu
-native-descriptor : Mu
-close : True
-read : Mu
-write : True
-print : True
-get : Mu
-lines : Mu
-new : Mu
-host : Mu
-port : Mu
-localhost : Mu
-localport : Mu
-backlog : Mu
-listening : Mu
-family : Mu
-proto : Mu
-type : Mu
-encoding : Mu
-nl-out : Mu
-BUILDALL : Mu
-C:IO::Special
-new : Mu
-IO : Mu
-e : True
-d : False
-f : False
-s : 0
-l : False
-r : Mu
-w : Mu
-x : False
-modified : Mu
-accessed : Mu
-changed : Mu
-mode : Mu
-WHICH : Mu
-Str : Mu
-perl : Mu
-what : Mu
-BUILDALL : Mu
-C:ComplexStr
-new : Mu
-Capture : Mu
-Complex : Mu
-ACCEPTS : Mu
-Numeric : Mu
-Real : Mu
-Str : Mu
-perl : Mu
-C:Slang
-parse : Mu
-gist : Mu
-grammar : Mu
-actions : Mu
-BUILDALL : Mu
-V:&min
-V:&make
-D:Kept
-D:SIGCONT
-V:&set
-V:&sleep
-C:Nil
-new : Mu
-Numeric : Mu
-Str : Mu
-sink : Mu
-AT-POS : Mu
-AT-KEY : Mu
-BIND-POS : Mu
-BIND-KEY : Mu
-ASSIGN-POS : Mu
-ASSIGN-KEY : Mu
-STORE : Mu
-push : Mu
-append : Mu
-unshift : Mu
-prepend : Mu
-FALLBACK : Mu
-ords : Mu
-chrs : Mu
-chop : Mu
-chomp : Mu
-iterator : Mu
-Set : Mu
-SetHash : Mu
-Bag : Mu
-BagHash : Mu
-Mix : Mu
-MixHash : Mu
-gist : Mu
-V:&cosech
-V:&sort
-V:&infix:<==>
-V:&duckmap
-C:Str
-BUILD : Mu
-Capture : Mu
-Int : Mu
-Num : Mu
-chomp : Mu
-starts-with : Mu
-ends-with : Mu
-substr-eq : Mu
-contains : Mu
-indices : Mu
-index : Mu
-rindex : Mu
-pred : Mu
-succ : Mu
-comb : Mu
-match : Mu
-subst-mutate : Mu
-subst : Mu
-lines : Mu
-parse-base : Mu
-samecase : Mu
-samemark : Mu
-samespace : Mu
-word-by-word : Mu
-trim-leading : Mu
-trim-trailing : Mu
-trim : Mu
-words : Mu
-WORDS_AUTODEREF : Mu
-encode : Mu
-NFC : Mu
-NFD : Mu
-NFKC : Mu
-NFKD : Mu
-wordcase : Mu
-trans : Mu
-parse-names : Mu
-uniparse : Mu
-indent : Mu
-codes : Mu
-chars : Mu
-uc : Mu
-lc : Mu
-tc : Mu
-fc : Mu
-tclc : Mu
-flip : Mu
-ord : Mu
-WHY : Mu
-WHICH : Mu
-Bool : Mu
-Str : Mu
-Stringy : Mu
-DUMP : Mu
-ACCEPTS : Mu
-chop : Mu
-Numeric : Mu
-gist : Mu
-perl : Mu
-ords : Mu
-split : Mu
-substr : Mu
-substr-rw : Mu
-BUILDALL : Mu
-C:Str::CURSOR-ITERATOR
-new : Mu
-pull-one : Mu
-skip-one : Mu
-push-all : IterationEnd
-sink-all : IterationEnd
-is-lazy : False
-skip-at-least : Mu
-push-until-lazy : Mu
-skip-at-least-pull-one : Mu
-push-at-least : Mu
-push-exactly : Mu
-BUILDALL : Mu
-C:Str::POST-ITERATOR
-new : Mu
-pull-one : Mu
-skip-one : Mu
-push-all : IterationEnd
-is-lazy : False
-sink-all : IterationEnd
-skip-at-least-pull-one : Mu
-push-at-least : Mu
-push-until-lazy : Mu
-skip-at-least : Mu
-push-exactly : Mu
-BUILDALL : Mu
-V:&succeed
-V:&infix:<÷>
-V:&infix:<∉>
-V:&words
-C:HyperWhatever
-Capture : Mu
-new : Mu
-ACCEPTS : Mu
-perl : Mu
-V:&prefix:<|>
-V:&splice
-V:&infix:<ge>
-V:&callsame
-V:&postfix:<-->
-C:Grammar
-parse : Mu
-subparse : Mu
-parsefile : Mu
-V:&emit
-V:&uniprop-str
-V:&zip
-V:&round
-D:SIGTSTP
-V:&infix:<⊎>
-V:&asech
-C:Slip
-defined : Mu
-CALL-ME : Mu
-Slip : Mu
-perl : Mu
-List : Mu
-C:ValueObjAt
-V:&infix:<le>
-V:&end
-V:&prefix:<?>
-V:&log10
-V:&uninames
-C:Scalar
-<anon> : Mu
-<anon> : Mu
-new : Mu
-name : Mu
-of : Mu
-default : Mu
-dynamic : Mu
-WHICH : Mu
-BUILDALL : Mu
-V:&postfix:<ⁿ>
-V:&infix:«<=»
-V:&first
-V:&infix:«~>»
-V:&indir
-V:&tc
-D:FileRenamed
-V:&acosech
-D:SIGTTIN
-R:Distribution
-meta : Mu
-content : Mu
-new : Mu
-R:Distribution::Locally
-content : Mu
-C:Distribution::Path
-BUILD : Mu
-new : Mu
-meta : Mu
-perl : Mu
-content : Mu
-prefix : Mu
-BUILDALL : Mu
-C:Distribution::Resources
-BUILD : Mu
-from-precomp : Mu
-AT-KEY : Mu
-Str : Mu
-keyof : Mu
-of : Mu
-dist-id : Mu
-repo : Mu
-repo-name : Mu
-BUILDALL : Mu
-C:Distribution::Hash
-BUILD : Mu
-new : Mu
-meta : Mu
-perl : Mu
-content : Mu
-prefix : Mu
-BUILDALL : Mu
-C:Distribution::Resource
-IO : Mu
-platform-library-name : Mu
-absolute : Mu
-is-absolute : Mu
-relative : Mu
-is-relative : Mu
-parts : Mu
-volume : Mu
-dirname : Mu
-basename : Mu
-extension : Mu
-open : Mu
-resolve : Mu
-slurp : Mu
-lines : Mu
-comb : Mu
-split : Mu
-words : Mu
-copy : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-repo : Mu
-repo-name : Mu
-dist-id : Mu
-key : Mu
-BUILDALL : Mu
-V:&pop
-V:&atomic-fetch-dec
-V:&note
-V:&getc
-V:&wordcase
-D:Empty
-V:&infix:<⚛−=>
-V:&substr-rw
-C:array
-STORE : Mu
-BIND-POS : Mu
-DELETE-POS : Mu
-ASSIGN-POS : Mu
-shape : Mu
-Int : Mu
-eager : Mu
-flat : Mu
-list : Mu
-sink : Mu
-FLATTENABLE_LIST : Mu
-FLATTENABLE_HASH : Mu
-iterator : Mu
-out_of_range : Mu
-hyper : Mu
-race : Mu
-lazy : Mu
-lazy-if : Mu
-item : Mu
-new : Mu
-push : Mu
-append : Mu
-unshift : Mu
-prepend : Mu
-EXISTS-POS : Mu
-Bool : Mu
-Numeric : Mu
-Str : Mu
-elems : Mu
-end : Mu
-gist : Mu
-perl : Mu
-Mix : Mu
-MixHash : Mu
-Bag : Mu
-BagHash : Mu
-Set : Mu
-SetHash : Mu
-R:array::shaped3numarray
-R:array::shapedarray
-shape : Mu
-STORE : Mu
-R:array::shaped2strarray
-R:array::shaped2numarray
-R:array::shapedintarray
-iterator : Mu
-R:array::shapedstrarray
-iterator : Mu
-R:array::shaped1numarray
-iterator : Mu
-reverse : Mu
-rotate : Mu
-R:array::shaped1intarray
-iterator : Mu
-reverse : Mu
-rotate : Mu
-D:array::typedim2role
-R:array::shapednumarray
-iterator : Mu
-R:array::shaped3strarray
-R:array::shaped3intarray
-R:array::shaped1strarray
-iterator : Mu
-reverse : Mu
-rotate : Mu
-R:array::shaped2intarray
-D:PromiseStatus::Broken
-D:PromiseStatus::Kept
-D:PromiseStatus::Planned
-V:&infix:<...>
-V:&reduce
-V:&redo
-V:&infix:<+^>
-V:&infix:<~>
-D:Less
-C:Block
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-of : Mu
-returns : Mu
-add_phaser : Mu
-fire_if_phasers : Mu
-fire_phasers : Mu
-has-phasers : Mu
-has-phaser : Mu
-phasers : Mu
-WHY : Mu
-set_why : Mu
-pos : Mu
-perl : Mu
-BUILDALL : Mu
-D:SIGINT
-D:SIGIO
-R:Rational
-new : Mu
-nude : Mu
-Num : Mu
-floor : Mu
-ceiling : Mu
-Int : Mu
-Bridge : Mu
-Range : Mu
-isNaN : Mu
-is-prime : Mu
-base : Mu
-base-repeating : Mu
-succ : Mu
-pred : Mu
-norm : Mu
-narrow : Mu
-V:&infix:<⚛-=>
-C:Regex
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-ACCEPTS : Mu
-Bool : Mu
-gist : Mu
-perl : Mu
-BUILDALL : Mu
-V:&infix:<%%>
 C:Complex
-new : Mu
-reals : Mu
-isNaN : Mu
-coerce-to-real : Mu
-Num : Mu
-Int : Mu
-Rat : Mu
-FatRat : Mu
-Complex : Mu
-conj : Mu
-abs : Mu
-polar : Mu
-cis : Mu
-sqrt : Mu
-roots : Mu
-sin : Mu
-asin : Mu
-cos : Mu
-acos : Mu
-tan : Mu
-atan : Mu
-sec : Mu
-asec : Mu
-cosec : Mu
-acosec : Mu
-cotan : Mu
-acotan : Mu
-sinh : Mu
-asinh : Mu
-cosh : Mu
-acosh : Mu
-tanh : Mu
-atanh : Mu
-sech : Mu
-asech : Mu
-cosech : Mu
-acosech : Mu
-cotanh : Mu
-acotanh : Mu
-floor : Mu
-ceiling : Mu
-round : Mu
-truncate : Mu
-narrow : Mu
-log : Mu
-exp : Mu
-pred : Mu
-log10 : Mu
-succ : Mu
-WHICH : Mu
-Real : Mu
-Bool : Mu
-Str : Mu
-perl : Mu
-Numeric : Mu
-ACCEPTS : Mu
-gist : Mu
-DUMP : Mu
-re : Mu
-im : Mu
-BUILDALL : Mu
-V:&item
-D:SOCK_PACKET
-D:SIGKILL
-V:&univals
-D:CX
-C:CX::Done
-message : Mu
-C:CX::Redo
-message : Mu
-C:CX::Proceed
-message : Mu
-C:CX::Next
-message : Mu
-C:CX::Return
-message : Mu
-C:CX::Last
-message : Mu
-C:CX::Warn
-message : Mu
-BUILDALL : Mu
-C:CX::Take
-message : Mu
-C:CX::Succeed
-message : Mu
-C:CX::Emit
-message : Mu
-V:&all
-V:&infix:<->
-V:&prefix:<not>
-V:&infix:<⊈>
-V:&undefine
-V:&infix:<(&)>
-V:&uniprop-int
-D:SIGTHR
-V:&asin
-V:&dd
-D:SIGWINCH
-D:SIGFPE
-C:ThreadPoolScheduler
-BUILD : Mu
-queue : Mu
-cue : Mu
-loads : Mu
-usage : Mu
-handle_uncaught : Mu
-initial_threads : Mu
-max_threads : Mu
-uncaught_handler : Mu
-BUILDALL : Mu
-C:ThreadPoolScheduler::ThreadPoolAwaiter
-BUILD : Mu
-await : Mu
-await-all : Mu
-BUILDALL : Mu
-C:VM
-BUILD : Mu
-platform-library-name : Mu
-osname : Mu
-Str : Mu
-gist : Mu
-config : Mu
-prefix : Mu
-precomp-ext : Mu
-precomp-target : Mu
-name : Mu
-auth : Mu
-version : Mu
-signature : Mu
-desc : Mu
-BUILDALL : Mu
-V:&lastcall
-C:Hash
-clone : Mu
-STORE_AT_KEY : Mu
-STORE : Mu
-BIND-KEY : Mu
-name : Mu
-keyof : Mu
-of : Mu
-default : Mu
-dynamic : Mu
-push : Mu
-append : Mu
-classify-list : Mu
-categorize-list : Mu
-WHICH : Mu
-Hash : Mu
-Map : Mu
-AT-KEY : Mu
-ASSIGN-KEY : Mu
-DELETE-KEY : Mu
-perl : Mu
-gist : Mu
-DUMP : Mu
-BUILDALL : Mu
-V:&from-json
-C:Cancellation
-BUILD : Mu
-cancel : Mu
-cancelled : Mu
-BUILDALL : Mu
-D:SIGCHLD
-C:ForeignCode
-arity : Mu
-count : Mu
-signature : Mu
-name : Mu
-of : Mu
-returns : Mu
-Capture : Mu
-gist : Mu
-Str : Mu
-BUILDALL : Mu
-V:&infix:«(<)»
-V:&prompt
-V:&prefix:<++>
-V:&infix:<but>
-V:&infix:<+>
-V:&squish
-V:&expmod
-V:&infix:«+>»
-V:&infix:<?&>
-V:&infix:<=>
-C:DateTime
-new : Mu
-now : Mu
-clone : Mu
-Instant : Mu
-posix : Mu
-offset : Mu
-offset-in-minutes : Mu
-offset-in-hours : Mu
-hh-mm-ss : Mu
-later : Mu
-truncated-to : Mu
-whole-second : Mu
-in-timezone : Mu
-utc : Mu
-local : Mu
-Date : Mu
-DateTime : Mu
-day-of-month : Mu
-IO : Mu
-earlier : Mu
-week-year : Mu
-day-of-year : Mu
-day-of-week : Mu
-daycount : Mu
-is-leap-year : Mu
-days-in-month : Mu
-week-number : Mu
-yyyy-mm-dd : Mu
-week : Mu
-weekday-of-month : Mu
-perl : Mu
-Str : Mu
-gist : Mu
-hour : Mu
-minute : Mu
-second : Mu
-timezone : Mu
-year : Mu
-month : Mu
-day : Mu
-formatter : Mu
-BUILDALL : Mu
-V:&infix:<≅>
-V:&comb
-D:SIGVTALRM
-V:&values
+new
+reals
+isNaN
+coerce-to-real
+Num
+Int
+Rat
+FatRat
+Complex
+conj
+abs
+polar
+cis
+sqrt
+roots
+sin
+asin
+cos
+acos
+tan
+atan
+sec
+asec
+cosec
+acosec
+cotan
+acotan
+sinh
+asinh
+cosh
+acosh
+tanh
+atanh
+sech
+asech
+cosech
+acosech
+cotanh
+acotanh
+floor
+ceiling
+round
+truncate
+narrow
+succ
+exp
+pred
+log
+log10
+WHICH
+Real
+Bool
+Str
+perl
+Numeric
+ACCEPTS
+gist
+DUMP
+re
+im
+BUILDALL
+V:&nextsame
+V:&infix:<andthen>
+V:&prefix:<-->
+C:Backtrace
+AT-POS
+next-interesting-index
+outer-caller-idx
+nice
+first-none-setting-line
+concise
+full
+summary
+is-runtime
+new
+gist
+Str
+flat
+map
+first
+list
+BUILDALL
+C:Backtrace::Frame
+subtype
+package
+is-hidden
+is-routine
+is-setting
+new
+Str
+file
+line
+code
+subname
+BUILDALL
+V:&list
+V:&infix:«=>»
+C:Proc
+BUILD
+spawn
+shell
+status
+exitcode
+sink
+Numeric
+Bool
+in
+out
+err
+signal
+pid
+command
+BUILDALL
+C:Proc::Async
+new
+TWEAK
+stdout
+stderr
+Supply
+bind-stdin
+bind-stdout
+bind-stderr
+ready
+pid
+start
+print
+put
+say
+write
+close-stdin
+kill
+path
+args
+w
+enc
+translate-nl
+started
+BUILDALL
+C:Proc::Async::Pipe
+BUILD
+native-descriptor
+new
+BUILDALL
+V:&infix:<⊖>
+V:&end
+V:&substr-rw
+V:&infix:<⊇>
+V:&full-barrier
+V:&sqrt
 D:Pod
-C:Pod::Defn
-term : Mu
-BUILDALL : Mu
+C:Pod::Config
+type
+config
+BUILDALL
+C:Pod::FormattingCode
+type
+meta
+BUILDALL
 C:Pod::Block
-BUILD : Mu
-gist : Mu
-config : Mu
-contents : Mu
-BUILDALL : Mu
+BUILD
+gist
+config
+contents
+BUILDALL
 C:Pod::Block::Table
-caption : Mu
-headers : Mu
-BUILDALL : Mu
-C:Pod::Block::Code
-allowed : Mu
-BUILDALL : Mu
-C:Pod::Block::Comment
-C:Pod::Block::Named
-name : Mu
-BUILDALL : Mu
+caption
+headers
+BUILDALL
 C:Pod::Block::Declarator
-BUILD : Mu
-set_docee : Mu
-Str : Mu
-contents : Mu
-leading : Mu
-trailing : Mu
-_add_leading : Mu
-_add_trailing : Mu
-gist : Mu
-WHEREFORE : Mu
-BUILDALL : Mu
+BUILD
+set_docee
+Str
+contents
+leading
+trailing
+_add_leading
+_add_trailing
+gist
+WHEREFORE
+BUILDALL
+C:Pod::Block::Code
+allowed
+BUILDALL
+C:Pod::Block::Named
+name
+BUILDALL
+C:Pod::Block::Comment
 C:Pod::Block::Para
 C:Pod::Item
-level : Mu
-BUILDALL : Mu
-C:Pod::Raw
-target : Mu
-contents : Mu
-BUILDALL : Mu
-C:Pod::FormattingCode
-type : Mu
-meta : Mu
-BUILDALL : Mu
-C:Pod::Config
-type : Mu
-config : Mu
-BUILDALL : Mu
+level
+BUILDALL
 C:Pod::Heading
-level : Mu
-BUILDALL : Mu
-V:&to-json
-V:&infix:<===>
-V:&minmax
-V:&atomic-dec-fetch
-C:IterationBuffer
-clear : Mu
-elems : Mu
-push : Mu
-append : Mu
-AT-POS : Mu
-BIND-POS : Mu
-perl : Mu
-R:Associative
-of : Mu
-keyof : Mu
-D:SIGXCPU
-V:&defined
-V:&cotanh
-V:&die
-D:SIGSTKFLT
-V:&uniname
-V:&trait_mod:<is>
-V:&infix:«>»
-V:&msb
-C:utf16
-encoding : Mu
-bytes : Mu
-of : Mu
-reverse : Mu
-chars : Mu
-allocate : Mu
-unpack : Mu
-join : Mu
-Int : Mu
-subbuf : Mu
-Capture : Mu
-decode : Mu
-Numeric : Mu
-contents : Mu
-SAME : Mu
-COMPARE : Mu
-Str : Mu
-Stringy : Mu
-WHICH : Mu
-new : Mu
-EXISTS-POS : Mu
-AT-POS : Mu
-Bool : Mu
-elems : Mu
-list : Mu
-gist : Mu
-perl : Mu
-ACCEPTS : Mu
-V:&roots
-C:Channel
-BUILD : Mu
-send : Mu
-receive : Mu
-poll : Mu
-Capture : Mu
-iterator : Mu
-list : Mu
-get-await-handle : Mu
-close : Mu
-elems : Mu
-fail : Mu
-closed : Mu
-Supply : Mu
-BUILDALL : Mu
-C:MixHash
-total : Mu
-STORE : Mu
-clone : Mu
-grab : Mu
-pickpairs : Mu
-Int : Mu
-Baggy : Mu
-keyof : Mu
-Mixy : Mu
-RAW-HASH : Mu
-of : Mu
-roll : Mu
-pick : Mu
-SET-SELF : Mu
-classify-list : Mu
-kxxv : Mu
-categorize-list : Mu
-Real : Mu
-fmt : Mu
-Capture : Mu
-grabpairs : Mu
-default : 0
-Numeric : Mu
-new-from-pairs : Mu
-Num : Mu
-Setty : Mu
-AT-KEY : Mu
-new : Mu
-Mix : Mu
-MixHash : Mu
-iterator : Mu
-values : Mu
-kv : Mu
-hash : Mu
-Hash : Mu
-Set : Mu
-SetHash : Mu
-Bag : Mu
-BagHash : Mu
-gist : Mu
-list : Mu
-perl : Mu
-ACCEPTS : Mu
-EXISTS-KEY : Mu
-Str : Mu
-keys : Mu
-antipairs : Mu
-DELETE-KEY : Mu
-pairs : Mu
-Bool : Mu
-invert : Mu
-elems : Mu
-BUILDALL : Mu
-C:Submethod
-gist : Mu
-V:&prefix:<~>
-V:&chrs
-C:Attribute
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-compose : Mu
-apply_handles : Mu
-get_value : Mu
-set_value : Mu
-container : Mu
-readonly : Mu
-package : Mu
-inlined : Mu
-dimensions : Mu
-WHY : Mu
-set_why : Mu
-Str : Mu
-gist : Mu
-V:&infix:«<=>»
-V:&copy
-D:SIGBREAK
-V:&samecase
-C:Parameter
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-name : Mu
-usage-name : Mu
-sigil : Mu
-twigil : Mu
-modifier : Mu
-constraint_list : Mu
-constraints : Mu
-type : Mu
-named_names : Mu
-named : Mu
-positional : Mu
-slurpy : Mu
-optional : Mu
-raw : Mu
-capture : Mu
-rw : Mu
-onearg : Mu
-copy : Mu
-readonly : Mu
-invocant : Mu
-multi-invocant : Mu
-default : Mu
-type_captures : Mu
-sub_signature : Mu
-set_why : Mu
-set_default : Mu
-ACCEPTS : Mu
-perl : Mu
-BUILDALL : Mu
-D:Broken
-V:&open
-V:&prefix:<temp>
-V:&sleep-until
-D:SIGBUS
-V:&infix:<⊄>
-C:Proxy
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-V:&prefix:<!>
-V:&abs
-D:Bool::False
-D:Bool::True
-V:&sech
-V:&infix:<≽>
-C:Variable
-throw : Mu
-willdo : Mu
-native : Mu
-name : Mu
-scope : Mu
-var : Mu
-block : Mu
-slash : Mu
-BUILDALL : Mu
-V:&infix:<!=>
-V:&cos
-C:Compiler
-BUILD : Mu
-build-date : Mu
-verbose-config : Mu
-Str : Mu
-gist : Mu
-id : Mu
-release : Mu
-codename : Mu
-name : Mu
-auth : Mu
-version : Mu
-signature : Mu
-desc : Mu
-BUILDALL : Mu
-V:&lines
-D:False
-V:&infix:<+|>
-D:PF_LOCAL
-V:&postfix:<++>
-D:Signal::SIGCONT
-D:Signal::SIGTSTP
-D:Signal::SIGWINCH
-D:Signal::SIGTTIN
-D:Signal::SIGIO
-D:Signal::SIGTHR
-D:Signal::SIGKILL
-D:Signal::SIGINT
-D:Signal::SIGFPE
-D:Signal::SIGCHLD
-D:Signal::SIGTTOU
-D:Signal::SIGXCPU
-D:Signal::SIGVTALRM
-D:Signal::SIGBUS
-D:Signal::SIGSTKFLT
-D:Signal::SIGPIPE
-D:Signal::SIGBREAK
-D:Signal::SIGSTOP
-D:Signal::SIGXFSZ
-D:Signal::SIGSEGV
-D:Signal::SIGQUIT
-D:Signal::SIGABRT
-D:Signal::SIGSYS
-D:Signal::SIGUSR2
-D:Signal::SIGILL
-D:Signal::SIGPROF
-D:Signal::SIGEMT
-D:Signal::SIGHUP
-D:Signal::SIGURG
-D:Signal::SIGPWR
-D:Signal::SIGINFO
-D:Signal::SIGTRAP
-D:Signal::SIGALRM
-D:Signal::SIGTERM
-D:Signal::SIGUSR1
-V:&prefix:<−>
-R:NumericStringyEnumeration
-D:SIGPIPE
-V:&not
-V:&infix:<⊃>
-V:&chdir
-V:&prefix:<-->
-C:Supplier
-new : Mu
-BUILD : Mu
-emit : Mu
-done : Mu
-quit : Mu
-Supply : Mu
-unsanitized-supply : Mu
-BUILDALL : Mu
-C:Supplier::Preserving
-new : Mu
-R:PredictiveIterator
-count-only : Mu
-bool-only : Mu
-V:&infix:<mod>
-D:SIGTTOU
-V:&infix:<∘>
-V:&atomic-fetch-sub
-V:&print
-C:BagHash
-STORE : Mu
-total : Mu
-clone : Mu
-kxxv : Mu
-categorize-list : Mu
-classify-list : Mu
-SET-SELF : Mu
-Setty : Mu
-Num : Mu
-Numeric : Mu
-Real : Mu
-Capture : Mu
-new-from-pairs : Mu
-fmt : Mu
-grabpairs : Mu
-default : 0
-Mixy : Mu
-keyof : Mu
-Baggy : Mu
-pickpairs : Mu
-Int : Mu
-grab : Mu
-roll : Mu
-pick : Mu
-of : Mu
-RAW-HASH : Mu
-AT-KEY : Mu
-Bag : Mu
-BagHash : Mu
-Mix : Mu
-MixHash : Mu
-iterator : Mu
-values : Mu
-kv : Mu
-ACCEPTS : Mu
-DELETE-KEY : Mu
-EXISTS-KEY : Mu
-new : Mu
-keys : Mu
-antipairs : Mu
-invert : Mu
-elems : Mu
-Bool : Mu
-hash : Mu
-Hash : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-Set : Mu
-SetHash : Mu
-pairs : Mu
-list : Mu
-BUILDALL : Mu
-V:&infix:<≠>
-C:NFKC
-NFKC : Mu
-new : Mu
-V:&floor
-V:&atomic-sub-fetch
-V:&infix:<coll>
-V:&infix:«=>»
-V:&last
-V:&full-barrier
-V:&infix:<X>
-V:&proceed
-V:&elems
-V:&spurt
-V:&samemark
-V:&uniparse
-D:SOCK_RAW
-D:SIGABRT
-V:&infix:<⊅>
-D:UINT64_UPPER
-V:&infix:<(-)>
-D:SIGSEGV
-V:&infix:<=~=>
-V:&classify
-V:&asinh
-D:SIGQUIT
-V:&infix:<(+)>
-V:&acos
-V:&chop
-V:&infix:<∈>
-D:SOCK_MAX
-V:&infix:<&>
-D:PF_INET
-V:&sec
-V:&ords
-D:FileChanged
-V:&slurp
-C:Promise
-new : Mu
-BUILD : Mu
-vow : Mu
-kept : Mu
-keep : Mu
-broken : Mu
-break : Mu
-result : Mu
-cause : Mu
-then : Mu
-get-await-handle : Mu
-start : Mu
-in : Mu
-at : Mu
-anyof : Mu
-allof : Mu
-Bool : Mu
-Supply : Mu
-scheduler : Mu
-status : Mu
-BUILDALL : Mu
-C:utf8
-encoding : Mu
-SAME : Mu
-contents : Mu
-COMPARE : Mu
-subbuf : Mu
-Numeric : Mu
-Capture : Mu
-decode : Mu
-chars : Mu
-reverse : Mu
-allocate : Mu
-unpack : Mu
-join : Mu
-Int : Mu
-bytes : Mu
-of : Mu
-Str : Mu
-Stringy : Mu
-WHICH : Mu
-new : Mu
-EXISTS-POS : Mu
-AT-POS : Mu
-Bool : Mu
-elems : Mu
-list : Mu
-gist : Mu
-perl : Mu
-ACCEPTS : Mu
-V:&infix:«(<+)»
-V:&infix:«(>+)»
-V:&trim
-V:&get
-V:&tan
-V:&infix:<max>
-V:&atan2
-V:&cosh
-V:&infix:<⊇>
-C:Whatever
-Capture : Mu
-ACCEPTS : Mu
-perl : Mu
-Str : Mu
-V:&pick
-V:&none
-D:SIGSTOP
-V:&grep
-V:&infix:<lt>
-D:SIGXFSZ
-D:𝑒
-V:&infix:«+<»
-V:&infix:<?^>
-V:&infix:<×>
-V:&atomic-inc-fetch
-V:&uniprop
-C:Kernel
-BUILD : Mu
-name : Mu
-version : Mu
-release : Mu
-hardware : Mu
-arch : Mu
-archname : Mu
-bits : Mu
-signals : Mu
-signal : Mu
-cpu-cores : Mu
-cpu-usage : Mu
-Str : Mu
-gist : Mu
-auth : Mu
-signature : Mu
-desc : Mu
-BUILDALL : Mu
-V:&leave
-C:Failure
-DESTROY : Mu
-AT-POS : Mu
-AT-KEY : Mu
-defined : Mu
-handled : Mu
-Capture : Mu
-Int : Mu
-Num : Mu
-Numeric : Mu
-Set : Mu
-SetHash : Mu
-Bag : Mu
-BagHash : Mu
-Mix : Mu
-MixHash : Mu
-mess : Mu
-sink : Mu
-self : Mu
-CALL-ME : Mu
-FALLBACK : Mu
-STORE : Mu
-new : Mu
-Bool : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-exception : Mu
-backtrace : Mu
-BUILDALL : Mu
-C:Macro
+level
+BUILDALL
+C:Pod::Raw
+target
+contents
+BUILDALL
 R:SlippyIterator
-start-slip : Mu
-slip-one : Mu
-slip-all : Mu
-V:&prefix:<?^>
-V:&append
+start-slip
+slip-one
+slip-all
+D:ProtocolFamily::PF_INET6
+D:ProtocolFamily::PF_LOCAL
+D:ProtocolFamily::PF_INET
+D:ProtocolFamily::PF_UNIX
+D:ProtocolFamily::PF_MAX
+V:&cosech
+V:&tanh
+D:SeekFromBeginning
+V:&bag
+D:SIGSTKFLT
+V:&die
+V:&infix:<≠>
+R:SoftRoutine
+soft
+V:&done
+D:SIGURG
+V:&sinh
+V:&sign
+C:Cool
+abs
+conj
+sqrt
+sign
+rand
+sin
+asin
+cos
+acos
+tan
+atan
+atan2
+sec
+asec
+cosec
+acosec
+cotan
+acotan
+sinh
+asinh
+cosh
+acosh
+tanh
+atanh
+sech
+asech
+cosech
+acosech
+cotanh
+acotanh
+cis
+is-prime
+log
+exp
+round
+roots
+log10
+unpolar
+floor
+ceiling
+truncate
+chars
+codes
+fmt
+uc
+lc
+tc
+fc
+tclc
+wordcase
+uniname
+uninames
+unival
+univals
+uniprop
+uniprop-int
+uniprop-bool
+uniprop-str
+uniprops
+unimatch
+chomp
+chop
+ord
+chr
+chrs
+ords
+flip
+trans
+starts-with
+ends-with
+substr
+substr-rw
+substr-eq
+contains
+indices
+index
+rindex
+split
+match
+comb
+lines
+words
+subst
+subst-mutate
+IO
+sprintf
+printf
+samecase
+path
+trim
+trim-leading
+trim-trailing
+EVAL
+Int
+UInt
+Num
+Rat
+FatRat
+Complex
+Real
+V:&infix:<⊄>
+V:&infix:<div>
+V:&infix:«~>»
+V:&infix:<⊍>
+V:&infix:<or>
+V:&values
+V:&parse-base
+V:&chars
+V:&sec
+D:Inf
+V:&infix:<=>
+D:𝑒
+D:Same
+C:ComplexStr
+new
+Capture
+Complex
+ACCEPTS
+Numeric
+Real
+Str
+perl
+D:FileChanged
+C:ObjAt
+new
+WHICH
+Str
+gist
+perl
+C:Regex
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+ACCEPTS
+Bool
+gist
+perl
+BUILDALL
+C:Lock
+new
+lock
+unlock
+protect
+condition
+C:Lock::ConditionVariable
+new
+wait
+signal
+signal_all
+C:Lock::Async
+lock
+unlock
+protect
+protect-or-queue-on-recursion
+with-lock-hidden-from-recursion-check
+BUILDALL
+V:&put
+V:&infix:<(cont)>
+C:Slang
+parse
+gist
+grammar
+actions
+BUILDALL
+V:&cosh
+V:&log10
+V:&trait_mod:<of>
+C:RatStr
+new
+succ
+pred
+Capture
+Rat
+ACCEPTS
+Numeric
+Real
+Str
+perl
+V:&spurt
+V:&undefine
+V:&infix:<lt>
+V:&infix:<(.)>
+C:NFKD
+new
+NFKD
+V:&reverse
+V:&atan
+V:&uniname
+V:&infix:<⊂>
+V:&infix:<≥>
+V:&gethostname
+R:StringyEnumeration
+V:&infix:<|>
+C:Promise
+new
+BUILD
+vow
+kept
+keep
+broken
+break
+result
+cause
+then
+get-await-handle
+start
+in
+at
+anyof
+allof
+Bool
+Supply
+scheduler
+status
+BUILDALL
+V:&infix:<coll>
+D:CX
+C:CX::Take
+message
+C:CX::Return
+message
+C:CX::Done
+message
+C:CX::Warn
+message
+BUILDALL
+C:CX::Succeed
+message
+C:CX::Emit
+message
+C:CX::Proceed
+message
+C:CX::Next
+message
+C:CX::Redo
+message
+C:CX::Last
+message
+D:SOCK_RAW
+V:&defined
+V:&infix:«>=»
+V:&first
+V:&infix:<∖>
+V:&uniprop
+V:&trait_mod:<returns>
+V:&sleep-until
 V:&infix:«(>)»
-V:&deepmap
-V:&acotan
+D:pi
+V:&prefix:<++>
+C:Thread
+BUILD
+start
+run
+id
+finish
+join
+yield
+is-initial-thread
+usage
+Numeric
+Str
+gist
+app_lifetime
+name
+BUILDALL
+D:Thread::THREAD_ERROR
+V:&leave
+V:&uninames
+V:&succeed
+D:SOCK_PACKET
+V:&sleep-timer
+V:&infix:<⊆>
+D:SIGXFSZ
+V:&atomic-inc-fetch
+V:&infix:<lcm>
+V:&open
+D:More
+V:&chr
+V:&infix:<eqv>
+V:&max
+V:&pair
+V:&infix:<∪>
+V:&duckmap
+V:&infix:<~^>
+V:&roll
+C:Any
+EXISTS-KEY
+DELETE-KEY
+DELETE-POS
+cache
+list
+flat
+eager
+serial
+List
+Slip
+Array
+Seq
+hash
+Hash
+Map
+elems
+end
+keys
+kv
+values
+pairs
+antipairs
+invert
+splice
+pick
+roll
+match
+classify
+categorize
+reverse
+combinations
+permutations
+join
+nodemap
+duckmap
+deepmap
+tree
+push
+append
+unshift
+prepend
+EXISTS-POS
+AT-POS
+ZEN-POS
+ZEN-KEY
+ASSIGN-POS
+BIND-POS
+all
+any
+one
+none
+AT-KEY
+BIND-KEY
+ASSIGN-KEY
+FLATTENABLE_LIST
+FLATTENABLE_HASH
+Set
+SetHash
+Bag
+BagHash
+Mix
+MixHash
+Supply
+nl-out
+print-nl
+lazy-if
+sum
+ACCEPTS
+iterator
+map
+flatmap
+grep
+first
+min
+max
+minmax
+sort
+collate
+reduce
+produce
+unique
+repeated
+squish
+pairup
+toggle
+head
+tail
+skip
+minpairs
+maxpairs
+batch
+rotor
+R:Any::Grepper
+new
+is-lazy
+R:Setty
+new-from-pairs
+default
+elems
+total
+grab
+grabpairs
+pick
+pickpairs
+roll
+RAW-HASH
+V:&nextcallee
+V:&circumfix:<{ }>
+C:Kernel
+BUILD
+name
+version
+release
+hardware
+arch
+archname
+bits
+signals
+signal
+cpu-cores
+cpu-usage
+Str
+gist
+auth
+signature
+desc
+BUILDALL
+V:&univals
+V:&uniprop-bool
+V:&printf
+V:&lc
+V:&infix:<X>
+V:&zip
+V:&postcircumfix:<{; }>
+C:array
+STORE
+BIND-POS
+DELETE-POS
+ASSIGN-POS
+shape
+Int
+eager
+flat
+list
+sink
+FLATTENABLE_LIST
+FLATTENABLE_HASH
+iterator
+out_of_range
+item
+lazy-if
+lazy
+race
+hyper
+new
+push
+append
+unshift
+prepend
+EXISTS-POS
+Bool
+Numeric
+Str
+elems
+end
+gist
+perl
+Mix
+MixHash
+Bag
+BagHash
+Set
+SetHash
+R:array::shaped3strarray
+R:array::shaped1strarray
+iterator
+reverse
+rotate
+R:array::shaped1numarray
+iterator
+reverse
+rotate
+R:array::shaped2numarray
+R:array::shapednumarray
+iterator
+R:array::shapedintarray
+iterator
+R:array::shaped3numarray
+R:array::shaped2strarray
+D:array::typedim2role
+R:array::shaped2intarray
+R:array::shaped1intarray
+iterator
+reverse
+rotate
+R:array::shapedstrarray
+iterator
+R:array::shapedarray
+shape
+STORE
+R:array::shaped3intarray
+V:&infix:<...>
+D:Order::More
+D:Order::Less
+D:Order::Same
+C:Junction
+INFIX-TWO
+new
+defined
+CALL-ME
+sink
+THREAD
+AUTOTHREAD
+Bool
+ACCEPTS
+Str
+gist
+perl
+BUILDALL
+V:&sum
+V:&set
+D:SIGTRAP
+R:Iterator
+pull-one
+skip-one
+push-exactly
+push-at-least
+push-all
+push-until-lazy
+skip-at-least
+skip-at-least-pull-one
+sink-all
+is-lazy
+V:&trait_mod:<does>
+C:Hash
+clone
+BIND-KEY
+name
+keyof
+of
+default
+dynamic
+push
+append
+classify-list
+categorize-list
+WHICH
+Hash
+Map
+AT-KEY
+STORE_AT_KEY
+ASSIGN-KEY
+DELETE-KEY
+perl
+gist
+DUMP
+BUILDALL
+D:SIGEMT
+C:Tap
+BUILD
+close
+new
+BUILDALL
+V:&wordcase
+D:IterationEnd
 D:X
-R:X::Syntax
-D:X::Syntax::Regex
-C:X::Syntax::Regex::SpacesInBareRange
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::NonQuantifiable
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::SolitaryBacktrackControl
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::Unterminated
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::Adverb
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-adverb : Mu
-construct : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::QuantifierValue
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-inf : Mu
-non-numeric : Mu
-non-numeric-range : Mu
-empty-range : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::NullRegex
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::MalformedRange
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::Unspace
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-char : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::SolitaryQuantifier
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::UnrecognizedModifier
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-modifier : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Regex::Alias
-C:X::Syntax::Regex::Alias::LongName
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Regex::UnrecognizedMetachar
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-metachar : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Self
-C:X::Syntax::Self::WithoutObject
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Name
-C:X::Syntax::Name::Null
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::NonAssociative
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-left : Mu
-right : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Argument
-C:X::Syntax::Argument::MOPMacro
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-macro : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Perl5Var
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-name : Mu
-identifier-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Missing
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-what : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Type
-C:X::Syntax::Type::Adverb
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-adverb : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Confused
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-reason : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Coercer
-C:X::Syntax::Coercer::TooComplex
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::ParentAsHash
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-parent : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::VirtualCall
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-call : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Variable
-C:X::Syntax::Variable::Twigil
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-what : Mu
-twigil : Mu
-scope : Mu
-additional : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Variable::IndirectDeclaration
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Variable::ConflictingTypes
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-outer : Mu
-inner : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Variable::Numeric
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-what : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Variable::Initializer
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Variable::MissingInitializer
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-type : Mu
-implicit : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Variable::Match
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Variable::BadType
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-type : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Pod
-C:X::Syntax::Pod::BeginWithoutIdentifier
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Pod::BeginWithoutEnd
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-type : Mu
-spaces : Mu
-instead : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Number
-C:X::Syntax::Number::LiteralType
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-varname : Mu
-vartype : Mu
-value : Mu
-valuetype : Mu
-suggestiontype : Mu
-native : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Number::IllegalDecimal
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Number::RadixOutOfRange
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-radix : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::P5
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::CannotMeta
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-meta : Mu
-operator : Mu
-reason : Mu
-dba : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::NonListAssociative
-message : Mu
-C:X::Syntax::KeywordAsFunction
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-word : Mu
-needparens : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Augment
-C:X::Syntax::Augment::WithoutMonkeyTyping
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Augment::Illegal
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-package : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Augment::Adverb
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::AddCategorical
-C:X::Syntax::AddCategorical::TooManyParts
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-category : Mu
-needs : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::AddCategorical::TooFewParts
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-category : Mu
-needs : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Adverb
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-what : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::WithoutElse
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-keyword : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Term
-C:X::Syntax::Term::MissingInitializer
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Reserved
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-reserved : Mu
-instead : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::NegatedPair
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-key : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Extension
-C:X::Syntax::Extension::Category
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-category : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Extension::TooComplex
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Extension::SpecialForm
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-category : Mu
-opname : Mu
-hint : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Extension::Null
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::DuplicatedPrefix
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-prefixes : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::ConditionalOperator
-C:X::Syntax::ConditionalOperator::PrecedenceTooLoose
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-operator : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::ConditionalOperator::SecondPartGobbled
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::ConditionalOperator::SecondPartInvalid
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-second-part : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::UnlessElse
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-keyword : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Signature
-C:X::Syntax::Signature::InvocantNotAllowed
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Signature::InvocantMarker
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Syntax::Comment
-C:X::Syntax::Comment::Embedded
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::InfixInTermPosition
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-infix : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::NoSelf
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-variable : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Malformed
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-what : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::Malformed::Elsif
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-what : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Syntax::BlockGobbled
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-what : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::OutOfRange
-message : Mu
-what : Mu
-got : Mu
-range : Mu
-comment : Mu
-BUILDALL : Mu
-D:X::Set
-C:X::Set::Coerce
-message : Mu
-thing : Mu
-BUILDALL : Mu
-D:X::Augment
-C:X::Augment::NoSuchType
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-package-kind : Mu
-package : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Numeric
-C:X::Numeric::DivideByZero
-message : Mu
-using : Mu
-details : Mu
-numerator : Mu
-BUILDALL : Mu
-C:X::Numeric::Real
-C:X::Numeric::CannotConvert
-message : Mu
-target : Mu
-reason : Mu
-source : Mu
-BUILDALL : Mu
-C:X::Numeric::Underflow
-message : Mu
-C:X::Numeric::Confused
-message : Mu
-num : Mu
-base : Mu
-BUILDALL : Mu
-C:X::Numeric::Overflow
-message : Mu
-D:X::Proc
-C:X::Proc::Unsuccessful
-message : Mu
-proc : Mu
-BUILDALL : Mu
-R:X::Proc::Async
-C:X::Proc::Async::CharsOrBytes
-message : Mu
-handle : Mu
-proc : Mu
-BUILDALL : Mu
-C:X::Proc::Async::BindOrUse
-message : Mu
-handle : Mu
-use : Mu
-proc : Mu
-BUILDALL : Mu
-C:X::Proc::Async::AlreadyStarted
-message : Mu
-proc : Mu
-BUILDALL : Mu
-C:X::Proc::Async::TapBeforeSpawn
-message : Mu
-handle : Mu
-proc : Mu
-BUILDALL : Mu
-C:X::Proc::Async::OpenForWriting
-message : Mu
-method : Mu
-proc : Mu
-BUILDALL : Mu
-C:X::Proc::Async::MustBeStarted
-message : Mu
-method : Mu
-proc : Mu
-BUILDALL : Mu
-C:X::Proc::Async::SupplyOrStd
-message : Mu
-proc : Mu
-BUILDALL : Mu
-C:X::MultipleTypeSmiley
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Obsolete
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-old : Mu
-replacement : Mu
-when : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Backslash
-C:X::Backslash::UnrecognizedSequence
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-sequence : Mu
-suggestion : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Backslash::NonVariableDollar
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Buf
-C:X::Buf::AsStr
-message : Mu
-method : Mu
-BUILDALL : Mu
-C:X::Buf::Pack
-message : Mu
-directive : Mu
-BUILDALL : Mu
-C:X::Buf::Pack::NonASCII
-message : Mu
-char : Mu
-BUILDALL : Mu
+R:X::Temporal
+C:X::Temporal::InvalidFormat
+message
+invalid-str
+target
+format
+BUILDALL
+C:X::PhaserExceptions
+message
+gist
+exceptions
+BUILDALL
+D:X::Parameter
+C:X::Parameter::MultipleTypeConstraints
+message
+SET_FILE_LINE
+sorry_heading
+gist
+parameter
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Parameter::Twigil
+message
+SET_FILE_LINE
+sorry_heading
+gist
+parameter
+twigil
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Parameter::Placeholder
+message
+SET_FILE_LINE
+sorry_heading
+gist
+parameter
+right
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Parameter::AfterDefault
+message
+SET_FILE_LINE
+sorry_heading
+gist
+type
+modifier
+default
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Parameter::RW
+message
+got
+symbol
+BUILDALL
+C:X::Parameter::InvalidConcreteness
+message
+expected
+got
+routine
+param
+should-be-concrete
+param-is-invocant
+BUILDALL
+C:X::Parameter::Default
+message
+SET_FILE_LINE
+sorry_heading
+gist
+how
+parameter
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Parameter::Default::TypeCheck
+message
+SET_FILE_LINE
+sorry_heading
+gist
+got
+expected
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Parameter::WrongOrder
+message
+SET_FILE_LINE
+sorry_heading
+gist
+misplaced
+parameter
+after
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Parameter::TypedSlurpy
+message
+SET_FILE_LINE
+sorry_heading
+gist
+kind
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Parameter::InvalidType
+message
+SET_FILE_LINE
+sorry_heading
+gist
+typename
+suggestions
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Parameter::BadType
+message
+SET_FILE_LINE
+sorry_heading
+gist
+type
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::HyperWhatever
+C:X::HyperWhatever::Multiple
+message
+D:X::Invalid
+C:X::Invalid::ComputedValue
+message
+method
+name
+value
+reason
+BUILDALL
+C:X::Invalid::Value
+message
+method
+name
+value
+BUILDALL
+C:X::NYI
+message
+feature
+did-you-mean
+workaround
+BUILDALL
+C:X::NYI::BigInt
+message
+op
+big
+side
+BUILDALL
+C:X::NYI::Available
+available-str
+message
+available
+BUILDALL
+D:X::Supply
+D:X::Supply::Migrate
+C:X::Supply::Migrate::Needs
+message
+C:X::Supply::New
+message
+C:X::Supply::Combinator
+message
+combinator
+BUILDALL
 C:X::SecurityPolicy
 C:X::SecurityPolicy::Eval
-message : Mu
-Numeric : Mu
-from-slurpy : Mu
-payload : Mu
-BUILDALL : Mu
-C:X::WheneverOutOfScope
-message : Mu
-D:X::Does
-C:X::Does::TypeObject
-message : Mu
-type : Mu
-nameds : Mu
-BUILDALL : Mu
-C:X::PoisonedAlias
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-alias : Mu
-package-type : Mu
-package-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::ParametricConstant
-message : Mu
-C:X::Adverb
-message : Mu
-unexpected : Mu
-nogo : Mu
-what : Mu
-source : Mu
-BUILDALL : Mu
-D:X::Subscript
-C:X::Subscript::Negative
-message : Mu
-index : Mu
-type : Mu
-BUILDALL : Mu
-D:X::Declaration
-C:X::Declaration::OurScopeInRole
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-declaration : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Declaration::Scope
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-scope : Mu
-declaration : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Declaration::Scope::Multi
-message : Mu
-C:X::Experimental
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-feature : Mu
-use : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
+message
+Numeric
+from-slurpy
+payload
+BUILDALL
+D:X::Proc
+R:X::Proc::Async
+C:X::Proc::Async::MustBeStarted
+message
+method
+proc
+BUILDALL
+C:X::Proc::Async::SupplyOrStd
+message
+proc
+BUILDALL
+C:X::Proc::Async::CharsOrBytes
+message
+handle
+proc
+BUILDALL
+C:X::Proc::Async::TapBeforeSpawn
+message
+handle
+proc
+BUILDALL
+C:X::Proc::Async::OpenForWriting
+message
+method
+proc
+BUILDALL
+C:X::Proc::Async::BindOrUse
+message
+handle
+use
+proc
+BUILDALL
+C:X::Proc::Async::AlreadyStarted
+message
+proc
+BUILDALL
+C:X::Proc::Unsuccessful
+message
+proc
+BUILDALL
+D:X::Phaser
+C:X::Phaser::Multiple
+message
+SET_FILE_LINE
+sorry_heading
+gist
+block
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Phaser::PrePost
+message
+phaser
+condition
+BUILDALL
+D:X::Buf
+C:X::Buf::Pack
+message
+directive
+BUILDALL
+C:X::Buf::Pack::NonASCII
+message
+char
+BUILDALL
+C:X::Buf::AsStr
+message
+method
+BUILDALL
+R:X::Control
+D:X::EXPORTHOW
+C:X::EXPORTHOW::NothingToSupersede
+message
+SET_FILE_LINE
+sorry_heading
+gist
+declarator
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::EXPORTHOW::InvalidDirective
+message
+SET_FILE_LINE
+sorry_heading
+gist
+directive
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::EXPORTHOW::Conflict
+message
+SET_FILE_LINE
+sorry_heading
+gist
+declarator
+directive
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::IllegalDimensionInShape
+message
+dim
+BUILDALL
+C:X::IllegalOnFixedDimensionArray
+message
+operation
+BUILDALL
+C:X::NoDispatcher
+message
+redispatcher
+BUILDALL
+C:X::TypeCheck
+gotn
+expectedn
+priors
+message
+operation
+got
+expected
+BUILDALL
+C:X::TypeCheck::Return
+operation
+message
+C:X::TypeCheck::Argument
+message
+protoguilt
+arguments
+objname
+signature
+BUILDALL
+C:X::TypeCheck::Splice
+message
+SET_FILE_LINE
+sorry_heading
+gist
+action
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::TypeCheck::Binding
+operation
+message
+symbol
+BUILDALL
+C:X::TypeCheck::Binding::Parameter
+expectedn
+message
+parameter
+constraint
+BUILDALL
+C:X::TypeCheck::Assignment
+operation
+message
+symbol
+BUILDALL
+D:X::Package
+C:X::Package::UseLib
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Package::Stubbed
+message
+SET_FILE_LINE
+sorry_heading
+gist
+packages
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::NotEnoughDimensions
+message
+operation
+got-dimensions
+needed-dimensions
+BUILDALL
+D:X::Eval
+C:X::Eval::NoSuchLang
+message
+lang
+BUILDALL
 D:X::HyperRace
 R:X::HyperRace::Died
-C:X::TooManyDimensions
-message : Mu
-operation : Mu
-got-dimensions : Mu
-needed-dimensions : Mu
-BUILDALL : Mu
-D:X::Signature
-C:X::Signature::NameClash
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Signature::Placeholder
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-placeholder : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Method
-C:X::Method::NotFound
-message : Mu
-invocant : Mu
-method : Mu
-typename : Mu
-private : Mu
-BUILDALL : Mu
-D:X::Method::Private
-C:X::Method::Private::Unqualified
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-method : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Method::Private::Permission
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-method : Mu
-source-package : Mu
-calling-package : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Method::InvalidQualifier
-message : Mu
-method : Mu
-invocant : Mu
-qualifier-type : Mu
-BUILDALL : Mu
-R:X::MOP
-D:X::Composition
-C:X::Composition::NotComposable
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-target-name : Mu
-composer : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
 D:X::Lock
 D:X::Lock::ConditionVariable
 C:X::Lock::ConditionVariable::New
-message : Mu
+message
 D:X::Lock::Async
 C:X::Lock::Async::NotLocked
-message : Mu
-D:X::Inheritance
-C:X::Inheritance::SelfInherit
-message : Mu
-name : Mu
-BUILDALL : Mu
-C:X::Inheritance::Unsupported
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-child-typename : Mu
-parent : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Inheritance::NotComposed
-message : Mu
-child-name : Mu
-parent-name : Mu
-BUILDALL : Mu
-C:X::Inheritance::UnknownParent
-message : Mu
-child : Mu
-parent : Mu
-suggestions : Mu
-BUILDALL : Mu
-R:X::Encoding
-C:X::Encoding::AlreadyRegistered
-message : Mu
-name : Mu
-BUILDALL : Mu
-C:X::Encoding::Unknown
-message : Mu
-name : Mu
-BUILDALL : Mu
-D:X::Cannot
-C:X::Cannot::Capture
-message : Mu
-what : Mu
-BUILDALL : Mu
-C:X::Cannot::Lazy
-message : Mu
-action : Mu
-what : Mu
-BUILDALL : Mu
-C:X::Cannot::New
-message : Mu
-class : Mu
-BUILDALL : Mu
-C:X::Cannot::Empty
-message : Mu
-action : Mu
-what : Mu
-BUILDALL : Mu
-C:X::LibEmpty
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::StubCode
-message : Mu
-BUILDALL : Mu
-D:X::Seq
-C:X::Seq::Consumed
-message : Mu
-C:X::Seq::NotIndexable
-message : Mu
-D:X::Package
-C:X::Package::UseLib
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-what : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Package::Stubbed
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-packages : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::IllegalOnFixedDimensionArray
-message : Mu
-operation : Mu
-BUILDALL : Mu
-D:X::Range
-C:X::Range::InvalidArg
-message : Mu
-got : Mu
-BUILDALL : Mu
-D:X::Value
-C:X::Value::Dynamic
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-what : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::TypeCheck
-gotn : Mu
-expectedn : Mu
-priors : Mu
-message : Mu
-operation : Mu
-got : Mu
-expected : Mu
-BUILDALL : Mu
-C:X::TypeCheck::Argument
-message : Mu
-protoguilt : Mu
-arguments : Mu
-objname : Mu
-signature : Mu
-BUILDALL : Mu
-C:X::TypeCheck::Assignment
-operation : Mu
-message : Mu
-symbol : Mu
-BUILDALL : Mu
-C:X::TypeCheck::Binding
-operation : Mu
-message : Mu
-symbol : Mu
-BUILDALL : Mu
-C:X::TypeCheck::Binding::Parameter
-expectedn : Mu
-message : Mu
-parameter : Mu
-constraint : Mu
-BUILDALL : Mu
-C:X::TypeCheck::Splice
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-action : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::TypeCheck::Return
-operation : Mu
-message : Mu
-D:X::Supply
-C:X::Supply::New
-message : Mu
-D:X::Supply::Migrate
-C:X::Supply::Migrate::Needs
-message : Mu
-C:X::Supply::Combinator
-message : Mu
-combinator : Mu
-BUILDALL : Mu
-D:X::CompUnit
-C:X::CompUnit::UnsatisfiedDependency
-message : Mu
-specification : Mu
-BUILDALL : Mu
-D:X::Import
-C:X::Import::NoSuchTag
-message : Mu
-source-package : Mu
-tag : Mu
-BUILDALL : Mu
-C:X::Import::OnlystarProto
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-symbols : Mu
-source-package-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Import::Positional
-message : Mu
-source-package : Mu
-BUILDALL : Mu
-C:X::Import::MissingSymbols
-message : Mu
-from : Mu
-missing : Mu
-BUILDALL : Mu
-C:X::Import::Redeclaration
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-symbols : Mu
-source-package-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::NotParametric
-message : Mu
-type : Mu
-BUILDALL : Mu
-D:X::Routine
-C:X::Routine::Unwrap
-message : Mu
-R:X::Control
-D:X::Language
-C:X::Language::Unsupported
-message : Mu
-version : Mu
-BUILDALL : Mu
-D:X::Eval
-C:X::Eval::NoSuchLang
-message : Mu
-lang : Mu
-BUILDALL : Mu
-D:X::Placeholder
-C:X::Placeholder::Block
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-placeholder : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Placeholder::Attribute
-message : Mu
-C:X::Placeholder::NonPlaceholder
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-variable_name : Mu
-placeholder : Mu
-decl : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Placeholder::Mainline
-message : Mu
-C:X::Bind
-message : Mu
-target : Mu
-BUILDALL : Mu
-C:X::Bind::ZenSlice
-message : Mu
-C:X::Bind::NativeType
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Bind::Slice
-message : Mu
-type : Mu
-BUILDALL : Mu
-D:X::Dynamic
-C:X::Dynamic::Postdeclaration
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-symbol : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Dynamic::Package
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-symbol : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Dynamic::NotFound
-message : Mu
-name : Mu
-BUILDALL : Mu
-D:X::HyperWhatever
-C:X::HyperWhatever::Multiple
-message : Mu
-C:X::Undeclared
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-what : Mu
-symbol : Mu
-suggestions : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Undeclared::Symbols
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-post_types : Mu
-unk_types : Mu
-unk_routines : Mu
-routine_suggestion : Mu
-type_suggestion : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::TooLateForREPR
-message : Mu
-type : Mu
-BUILDALL : Mu
-D:X::Hash
-D:X::Hash::Store
-C:X::Hash::Store::OddNumber
-message : Mu
-found : Mu
-last : Mu
-BUILDALL : Mu
-D:X::Constructor
-C:X::Constructor::Positional
-message : Mu
-type : Mu
-BUILDALL : Mu
-R:X::Temporal
-C:X::Temporal::InvalidFormat
-message : Mu
-invalid-str : Mu
-target : Mu
-format : Mu
-BUILDALL : Mu
-D:X::Assignment
-C:X::Assignment::ArrayShapeMismatch
-message : Mu
-target-shape : Mu
-source-shape : Mu
-BUILDALL : Mu
-C:X::Assignment::ToShaped
-message : Mu
-shape : Mu
-BUILDALL : Mu
-C:X::Assignment::RO
-message : Mu
-typename : Mu
-value : Mu
-BUILDALL : Mu
-C:X::Assignment::RO::Comp
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-variable : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Pairup
-C:X::Pairup::OddNumber
-message : Mu
-D:X::Mixin
-C:X::Mixin::NotComposable
-message : Mu
-target : Mu
-rolish : Mu
-BUILDALL : Mu
+message
 D:X::Match
 C:X::Match::Bool
-message : Mu
-type : Mu
-BUILDALL : Mu
-C:X::InvalidType
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-typename : Mu
-suggestions : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
+message
+type
+BUILDALL
+D:X::Pragma
+C:X::Pragma::OnlyOne
+message
+name
+BUILDALL
+C:X::Pragma::NoArgs
+message
+name
+BUILDALL
+C:X::Pragma::CannotWhat
+message
+what
+name
+BUILDALL
+C:X::Pragma::UnknownArg
+message
+name
+arg
+BUILDALL
+C:X::Pragma::CannotPrecomp
+message
+what
+BUILDALL
+C:X::Pragma::MustOneOf
+message
+name
+alternatives
+BUILDALL
+D:X::Placeholder
+C:X::Placeholder::NonPlaceholder
+message
+SET_FILE_LINE
+sorry_heading
+gist
+variable_name
+placeholder
+decl
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Placeholder::Mainline
+message
+C:X::Placeholder::Block
+message
+SET_FILE_LINE
+sorry_heading
+gist
+placeholder
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Placeholder::Attribute
+message
+C:X::NoSuchSymbol
+message
+symbol
+BUILDALL
+D:X::Await
+R:X::Await::Died
+D:X::Constructor
+C:X::Constructor::Positional
+message
+type
+BUILDALL
+D:X::Import
+C:X::Import::NoSuchTag
+message
+source-package
+tag
+BUILDALL
+C:X::Import::Positional
+message
+source-package
+BUILDALL
+C:X::Import::OnlystarProto
+message
+SET_FILE_LINE
+sorry_heading
+gist
+symbols
+source-package-name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Import::MissingSymbols
+message
+from
+missing
+BUILDALL
+C:X::Import::Redeclaration
+message
+SET_FILE_LINE
+sorry_heading
+gist
+symbols
+source-package-name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::InvalidTypeSmiley
+message
+SET_FILE_LINE
+sorry_heading
+gist
+name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Set
+C:X::Set::Coerce
+message
+thing
+BUILDALL
+R:X::Pod
 C:X::ControlFlow
-backtrace : Mu
-message : Mu
-illegal : Mu
-enclosing : Mu
-BUILDALL : Mu
+backtrace
+message
+illegal
+enclosing
+BUILDALL
 C:X::ControlFlow::Return
-BUILD : Mu
-illegal : Mu
-enclosing : Mu
-message : Mu
-out-of-dynamic-scope : Mu
-BUILDALL : Mu
-D:X::Str
-D:X::Str::Subst
-C:X::Str::Subst::Adverb
-message : Mu
-name : Mu
-got : Mu
-BUILDALL : Mu
-D:X::Str::Match
-C:X::Str::Match::x
-message : Mu
-got : Mu
-BUILDALL : Mu
-D:X::Str::Trans
-C:X::Str::Trans::IllegalKey
-message : Mu
-key : Mu
-BUILDALL : Mu
-C:X::Str::Trans::InvalidArg
-message : Mu
-got : Mu
-BUILDALL : Mu
-C:X::Str::InvalidCharName
-message : Mu
-name : Mu
-BUILDALL : Mu
-D:X::Str::Sprintf
-D:X::Str::Sprintf::Directives
-C:X::Str::Sprintf::Directives::BadType
-message : Mu
-type : Mu
-directive : Mu
-BUILDALL : Mu
-C:X::Str::Sprintf::Directives::Count
-message : Mu
-args-used : Mu
-args-have : Mu
-BUILDALL : Mu
-C:X::Str::Sprintf::Directives::Unsupported
-message : Mu
-directive : Mu
-sequence : Mu
-BUILDALL : Mu
-C:X::Str::Numeric
-source-indicator : Mu
-message : Mu
-source : Mu
-pos : Mu
-reason : Mu
-BUILDALL : Mu
-D:X::Sequence
-C:X::Sequence::Deduction
-message : Mu
-from : Mu
-BUILDALL : Mu
-D:X::Phaser
-C:X::Phaser::PrePost
-message : Mu
-phaser : Mu
-condition : Mu
-BUILDALL : Mu
-C:X::Phaser::Multiple
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-block : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
+BUILD
+illegal
+enclosing
+message
+out-of-dynamic-scope
+BUILDALL
+D:X::DateTime
+C:X::DateTime::TimezoneClash
+message
+C:X::DateTime::InvalidDeltaUnit
+message
+unit
+BUILDALL
+D:X::Export
+C:X::Export::NameClash
+message
+SET_FILE_LINE
+sorry_heading
+gist
+symbol
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Mixin
+C:X::Mixin::NotComposable
+message
+target
+rolish
+BUILDALL
+C:X::MustBeParametric
+message
+type
+BUILDALL
+D:X::NQP
+C:X::NQP::NotFound
+message
+op
+BUILDALL
+D:X::Cannot
+C:X::Cannot::Capture
+message
+what
+BUILDALL
+C:X::Cannot::New
+message
+class
+BUILDALL
+C:X::Cannot::Lazy
+message
+action
+what
+BUILDALL
+C:X::Cannot::Empty
+message
+action
+what
+BUILDALL
+R:X::Encoding
+C:X::Encoding::Unknown
+message
+name
+BUILDALL
+C:X::Encoding::AlreadyRegistered
+message
+name
+BUILDALL
+C:X::Exhausted
+message
+what
+reason
+BUILDALL
+C:X::Worry
+C:X::Worry::P5
+C:X::Worry::P5::BackReference
+message
+C:X::Worry::P5::Reference
+message
+C:X::Worry::P5::LeadingZero
+message
+value
+BUILDALL
+D:X::Worry::Precedence
+C:X::Worry::Precedence::Range
+message
+action
+BUILDALL
+C:X::Undeclared
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+symbol
+suggestions
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Undeclared::Symbols
+message
+SET_FILE_LINE
+sorry_heading
+gist
+post_types
+unk_types
+unk_routines
+routine_suggestion
+type_suggestion
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::StubCode
+message
+BUILDALL
+D:X::PseudoPackage
+C:X::PseudoPackage::InDeclaration
+message
+SET_FILE_LINE
+sorry_heading
+gist
+pseudo-package
+action
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::AdHoc
+message
+Numeric
+from-slurpy
+payload
+BUILDALL
+D:X::Augment
+C:X::Augment::NoSuchType
+message
+SET_FILE_LINE
+sorry_heading
+gist
+package-kind
+package
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+R:X::IO
+C:X::IO::Rmdir
+message
+path
+os-error
+BUILDALL
+C:X::IO::Move
+message
+from
+to
+os-error
+BUILDALL
+C:X::IO::Directory
+message
+path
+trying
+use
+os-error
+BUILDALL
+C:X::IO::Lock
+message
+lock-type
+os-error
+BUILDALL
+C:X::IO::Mkdir
+message
+path
+mode
+os-error
+BUILDALL
+C:X::IO::Chmod
+message
+path
+mode
+os-error
+BUILDALL
+C:X::IO::Rename
+message
+from
+to
+os-error
+BUILDALL
+C:X::IO::BinaryMode
+message
+trying
+os-error
+BUILDALL
+C:X::IO::Unknown
+message
+trying
+os-error
+BUILDALL
+C:X::IO::Link
+message
+target
+name
+os-error
+BUILDALL
+C:X::IO::Flush
+message
+os-error
+BUILDALL
+C:X::IO::Dir
+message
+path
+os-error
+BUILDALL
+C:X::IO::Chdir
+message
+path
+os-error
+BUILDALL
+C:X::IO::Unlink
+message
+path
+os-error
+BUILDALL
+C:X::IO::Symlink
+message
+target
+name
+os-error
+BUILDALL
+C:X::IO::NotAFile
+message
+path
+trying
+os-error
+BUILDALL
+C:X::IO::DoesNotExist
+message
+path
+trying
+os-error
+BUILDALL
+C:X::IO::Cwd
+message
+os-error
+BUILDALL
+C:X::IO::Resolve
+message
+path
+os-error
+BUILDALL
+C:X::IO::Null
+message
+os-error
+BUILDALL
+C:X::IO::NotAChild
+message
+path
+child
+os-error
+BUILDALL
+C:X::IO::Copy
+message
+from
+to
+os-error
+BUILDALL
+C:X::IO::BinaryAndEncoding
+message
+os-error
+BUILDALL
+C:X::LibNone
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Signature
+C:X::Signature::Placeholder
+message
+SET_FILE_LINE
+sorry_heading
+gist
+placeholder
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Signature::NameClash
+message
+SET_FILE_LINE
+sorry_heading
+gist
+name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Attribute
+C:X::Attribute::Required
+message
+name
+why
+BUILDALL
+C:X::Attribute::Regex
+message
+C:X::Attribute::Package
+message
+SET_FILE_LINE
+sorry_heading
+gist
+package-kind
+name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Attribute::Scope
+C:X::Attribute::Scope::Package
+message
+SET_FILE_LINE
+sorry_heading
+gist
+scope
+allowed
+disallowed
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Attribute::Undeclared
+message
+package-kind
+package-name
+BUILDALL
+C:X::Attribute::NoPackage
+message
+SET_FILE_LINE
+sorry_heading
+gist
+name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Dynamic
+C:X::Dynamic::Package
+message
+SET_FILE_LINE
+sorry_heading
+gist
+symbol
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Dynamic::NotFound
+message
+name
+BUILDALL
+C:X::Dynamic::Postdeclaration
+message
+SET_FILE_LINE
+sorry_heading
+gist
+symbol
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::InvalidType
+message
+SET_FILE_LINE
+sorry_heading
+gist
+typename
+suggestions
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Multi
+C:X::Multi::NoMatch
+message
+dispatcher
+capture
+BUILDALL
+C:X::Multi::Ambiguous
+message
+dispatcher
+ambiguous
+capture
+BUILDALL
+C:X::WheneverOutOfScope
+message
+C:X::TooManyDimensions
+message
+operation
+got-dimensions
+needed-dimensions
+BUILDALL
+D:X::Promise
+C:X::Promise::Vowed
+message
+promise
+BUILDALL
+R:X::Promise::Broken
+C:X::Promise::CauseOnlyValidOnBroken
+message
+promise
+status
+BUILDALL
+C:X::Promise::Combinator
+message
+combinator
+BUILDALL
+C:X::PoisonedAlias
+message
+SET_FILE_LINE
+sorry_heading
+gist
+alias
+package-type
+package-name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Obsolete
+message
+SET_FILE_LINE
+sorry_heading
+gist
+old
+replacement
+when
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::NotParametric
+message
+type
+BUILDALL
+R:X::Comp
+sorry_heading
+SET_FILE_LINE
+C:X::Comp::WheneverOutOfScope
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Comp::NYI
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Comp::BeginTime
+message
+SET_FILE_LINE
+sorry_heading
+gist
+use-case
+exception
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Comp::FailGoal
+is-compile-time
+message
+SET_FILE_LINE
+sorry_heading
+gist
+dba
+goal
+line-real
+filename
+pos
+line
+column
+modules
+pre
+post
+highexpect
+BUILDALL
+D:X::Comp::Trait
+C:X::Comp::Trait::Scope
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Comp::Trait::Unknown
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Comp::Trait::NotOnNative
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Comp::Group
+is-compile-time
+message
+gist
+panic
+sorrows
+worries
+BUILDALL
+C:X::Comp::AdHoc
+is-compile-time
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+pre
+post
+highexpect
+BUILDALL
+D:X::HyperOp
+C:X::HyperOp::Infinite
+message
+operator
+side
+BUILDALL
+C:X::HyperOp::NonDWIM
+message
+operator
+left-elems
+right-elems
+recursing
+BUILDALL
+D:X::Subscript
+C:X::Subscript::Negative
+message
+index
+type
+BUILDALL
+D:X::Seq
+C:X::Seq::Consumed
+message
+C:X::Seq::NotIndexable
+message
+D:X::Numeric
+C:X::Numeric::Overflow
+message
+C:X::Numeric::Real
+C:X::Numeric::Underflow
+message
+C:X::Numeric::DivideByZero
+message
+using
+details
+numerator
+BUILDALL
+C:X::Numeric::Confused
+message
+num
+base
+BUILDALL
+C:X::Numeric::CannotConvert
+message
+target
+reason
+source
+BUILDALL
+D:X::Backslash
+C:X::Backslash::NonVariableDollar
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Backslash::UnrecognizedSequence
+message
+SET_FILE_LINE
+sorry_heading
+gist
+sequence
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Bind
+message
+target
+BUILDALL
+C:X::Bind::Slice
+message
+type
+BUILDALL
+C:X::Bind::ZenSlice
+message
+C:X::Bind::NativeType
+message
+SET_FILE_LINE
+sorry_heading
+gist
+name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Experimental
+message
+SET_FILE_LINE
+sorry_heading
+gist
+feature
+use
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Method
+C:X::Method::NotFound
+message
+invocant
+method
+typename
+private
+BUILDALL
+D:X::Method::Private
+C:X::Method::Private::Unqualified
+message
+SET_FILE_LINE
+sorry_heading
+gist
+method
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Method::Private::Permission
+message
+SET_FILE_LINE
+sorry_heading
+gist
+method
+source-package
+calling-package
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Method::InvalidQualifier
+message
+method
+invocant
+qualifier-type
+BUILDALL
+D:X::Trait
+C:X::Trait::Invalid
+message
+type
+subtype
+declaring
+name
+BUILDALL
+C:X::Trait::Scope
+message
+type
+subtype
+declaring
+scope
+supported
+BUILDALL
+C:X::Trait::Unknown
+message
+type
+subtype
+declaring
+BUILDALL
+C:X::Trait::NotOnNative
+message
+type
+subtype
+native
+BUILDALL
+D:X::Routine
+C:X::Routine::Unwrap
+message
+D:X::Anon
+C:X::Anon::Augment
+message
+SET_FILE_LINE
+sorry_heading
+gist
+package-kind
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Anon::Multi
+message
+SET_FILE_LINE
+sorry_heading
+gist
+multiness
+routine-type
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::UnitScope
+C:X::UnitScope::Invalid
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+where
+suggestion
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::UnitScope::TooLate
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Range
+C:X::Range::InvalidArg
+message
+got
+BUILDALL
+C:X::Adverb
+message
+unexpected
+nogo
+what
+source
+BUILDALL
+D:X::Channel
+C:X::Channel::SendOnClosed
+message
+channel
+BUILDALL
+C:X::Channel::ReceiveOnClosed
+message
+channel
+BUILDALL
+R:X::MOP
+C:X::MultipleTypeSmiley
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Value
+C:X::Value::Dynamic
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+R:X::OS
+message
+D:X::Declaration
+C:X::Declaration::OurScopeInRole
+message
+SET_FILE_LINE
+sorry_heading
+gist
+declaration
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Declaration::Scope
+message
+SET_FILE_LINE
+sorry_heading
+gist
+scope
+declaration
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Declaration::Scope::Multi
+message
+C:X::LibEmpty
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::TooLateForREPR
+message
+type
+BUILDALL
 D:X::Role
 D:X::Role::Parametric
 C:X::Role::Parametric::NoSuchCandidate
-message : Mu
-role : Mu
-BUILDALL : Mu
+message
+role
+BUILDALL
 C:X::Role::Initialization
-message : Mu
-role : Mu
-BUILDALL : Mu
-C:X::Redeclaration
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-symbol : Mu
-postfix : Mu
-what : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Redeclaration::Outer
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-symbol : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Exhausted
-message : Mu
-what : Mu
-reason : Mu
-BUILDALL : Mu
-R:X::IO
-C:X::IO::Symlink
-message : Mu
-target : Mu
-name : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Link
-message : Mu
-target : Mu
-name : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Cwd
-message : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Chmod
-message : Mu
-path : Mu
-mode : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Rename
-message : Mu
-from : Mu
-to : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::NotAFile
-message : Mu
-path : Mu
-trying : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Directory
-message : Mu
-path : Mu
-trying : Mu
-use : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::BinaryAndEncoding
-message : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Move
-message : Mu
-from : Mu
-to : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Mkdir
-message : Mu
-path : Mu
-mode : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Rmdir
-message : Mu
-path : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Dir
-message : Mu
-path : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::BinaryMode
-message : Mu
-trying : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Chdir
-message : Mu
-path : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Null
-message : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Resolve
-message : Mu
-path : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::NotAChild
-message : Mu
-path : Mu
-child : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Lock
-message : Mu
-lock-type : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Unknown
-message : Mu
-trying : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Copy
-message : Mu
-from : Mu
-to : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Flush
-message : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::DoesNotExist
-message : Mu
-path : Mu
-trying : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::IO::Unlink
-message : Mu
-path : Mu
-os-error : Mu
-BUILDALL : Mu
-C:X::PhaserExceptions
-message : Mu
-gist : Mu
-exceptions : Mu
-BUILDALL : Mu
-D:X::UnitScope
-C:X::UnitScope::TooLate
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-what : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::UnitScope::Invalid
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-what : Mu
-where : Mu
-suggestion : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::PseudoPackage
-C:X::PseudoPackage::InDeclaration
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-pseudo-package : Mu
-action : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Promise
-C:X::Promise::Combinator
-message : Mu
-combinator : Mu
-BUILDALL : Mu
-C:X::Promise::Vowed
-message : Mu
-promise : Mu
-BUILDALL : Mu
-R:X::Promise::Broken
-C:X::Promise::CauseOnlyValidOnBroken
-message : Mu
-promise : Mu
-status : Mu
-BUILDALL : Mu
-D:X::HyperOp
-C:X::HyperOp::Infinite
-message : Mu
-operator : Mu
-side : Mu
-BUILDALL : Mu
-C:X::HyperOp::NonDWIM
-message : Mu
-operator : Mu
-left-elems : Mu
-right-elems : Mu
-recursing : Mu
-BUILDALL : Mu
-D:X::Await
-R:X::Await::Died
-D:X::Pragma
-C:X::Pragma::UnknownArg
-message : Mu
-name : Mu
-arg : Mu
-BUILDALL : Mu
-C:X::Pragma::MustOneOf
-message : Mu
-name : Mu
-alternatives : Mu
-BUILDALL : Mu
-C:X::Pragma::CannotWhat
-message : Mu
-what : Mu
-name : Mu
-BUILDALL : Mu
-C:X::Pragma::OnlyOne
-message : Mu
-name : Mu
-BUILDALL : Mu
-C:X::Pragma::NoArgs
-message : Mu
-name : Mu
-BUILDALL : Mu
-C:X::Pragma::CannotPrecomp
-message : Mu
-what : Mu
-BUILDALL : Mu
-D:X::Trait
-C:X::Trait::Scope
-message : Mu
-type : Mu
-subtype : Mu
-declaring : Mu
-scope : Mu
-supported : Mu
-BUILDALL : Mu
-C:X::Trait::NotOnNative
-message : Mu
-type : Mu
-subtype : Mu
-native : Mu
-BUILDALL : Mu
-C:X::Trait::Unknown
-message : Mu
-type : Mu
-subtype : Mu
-declaring : Mu
-BUILDALL : Mu
-C:X::Trait::Invalid
-message : Mu
-type : Mu
-subtype : Mu
-declaring : Mu
-name : Mu
-BUILDALL : Mu
-C:X::NYI
-message : Mu
-feature : Mu
-did-you-mean : Mu
-workaround : Mu
-BUILDALL : Mu
-C:X::NYI::BigInt
-message : Mu
-op : Mu
-big : Mu
-side : Mu
-BUILDALL : Mu
-C:X::NYI::Available
-available-str : Mu
-message : Mu
-available : Mu
-BUILDALL : Mu
-C:X::NoDispatcher
-message : Mu
-redispatcher : Mu
-BUILDALL : Mu
-D:X::Localizer
-C:X::Localizer::NoContainer
-message : Mu
-localizer : Mu
-BUILDALL : Mu
-D:X::Invalid
-C:X::Invalid::Value
-message : Mu
-method : Mu
-name : Mu
-value : Mu
-BUILDALL : Mu
-C:X::Invalid::ComputedValue
-message : Mu
-method : Mu
-name : Mu
-value : Mu
-reason : Mu
-BUILDALL : Mu
+message
+role
+BUILDALL
+D:X::Does
+C:X::Does::TypeObject
+message
+type
+nameds
+BUILDALL
+D:X::Hash
+D:X::Hash::Store
+C:X::Hash::Store::OddNumber
+message
+found
+last
+BUILDALL
 C:X::Item
-message : Mu
-aggregate : Mu
-index : Mu
-BUILDALL : Mu
-C:X::Worry
-D:X::Worry::Precedence
-C:X::Worry::Precedence::Range
-message : Mu
-action : Mu
-BUILDALL : Mu
-C:X::Worry::P5
-C:X::Worry::P5::BackReference
-message : Mu
-C:X::Worry::P5::Reference
-message : Mu
-C:X::Worry::P5::LeadingZero
-message : Mu
-value : Mu
-BUILDALL : Mu
-D:X::Multi
-C:X::Multi::NoMatch
-message : Mu
-dispatcher : Mu
-capture : Mu
-BUILDALL : Mu
-C:X::Multi::Ambiguous
-message : Mu
-dispatcher : Mu
-ambiguous : Mu
-capture : Mu
-BUILDALL : Mu
-R:X::Pod
-C:X::NotEnoughDimensions
-message : Mu
-operation : Mu
-got-dimensions : Mu
-needed-dimensions : Mu
-BUILDALL : Mu
-C:X::AdHoc
-message : Mu
-Numeric : Mu
-from-slurpy : Mu
-payload : Mu
-BUILDALL : Mu
-C:X::LibNone
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Channel
-C:X::Channel::ReceiveOnClosed
-message : Mu
-channel : Mu
-BUILDALL : Mu
-C:X::Channel::SendOnClosed
-message : Mu
-channel : Mu
-BUILDALL : Mu
-D:X::Attribute
-C:X::Attribute::Required
-message : Mu
-name : Mu
-why : Mu
-BUILDALL : Mu
-C:X::Attribute::Undeclared
-message : Mu
-package-kind : Mu
-package-name : Mu
-BUILDALL : Mu
-C:X::Attribute::Regex
-message : Mu
-C:X::Attribute::NoPackage
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Attribute::Package
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-package-kind : Mu
-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Attribute::Scope
-C:X::Attribute::Scope::Package
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-scope : Mu
-allowed : Mu
-disallowed : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::DateTime
-C:X::DateTime::InvalidDeltaUnit
-message : Mu
-unit : Mu
-BUILDALL : Mu
-C:X::DateTime::TimezoneClash
-message : Mu
-D:X::Parameter
-C:X::Parameter::Twigil
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-parameter : Mu
-twigil : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Parameter::RW
-message : Mu
-got : Mu
-symbol : Mu
-BUILDALL : Mu
-C:X::Parameter::InvalidConcreteness
-message : Mu
-expected : Mu
-got : Mu
-routine : Mu
-param : Mu
-should-be-concrete : Mu
-param-is-invocant : Mu
-BUILDALL : Mu
-C:X::Parameter::AfterDefault
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-type : Mu
-modifier : Mu
-default : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Parameter::MultipleTypeConstraints
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-parameter : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Parameter::WrongOrder
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-misplaced : Mu
-parameter : Mu
-after : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Parameter::TypedSlurpy
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-kind : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Parameter::Default
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-how : Mu
-parameter : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Parameter::Default::TypeCheck
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-got : Mu
-expected : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Parameter::InvalidType
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-typename : Mu
-suggestions : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Parameter::BadType
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-type : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Parameter::Placeholder
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-parameter : Mu
-right : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-R:X::OS
-message : Mu
-C:X::NoSuchSymbol
-message : Mu
-symbol : Mu
-BUILDALL : Mu
-D:X::Anon
-C:X::Anon::Augment
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-package-kind : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Anon::Multi
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-multiness : Mu
-routine-type : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::NQP
-C:X::NQP::NotFound
-message : Mu
-op : Mu
-BUILDALL : Mu
-C:X::MustBeParametric
-message : Mu
-type : Mu
-BUILDALL : Mu
-C:X::InvalidTypeSmiley
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-name : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Immutable
-message : Mu
-typename : Mu
-method : Mu
-BUILDALL : Mu
+message
+aggregate
+index
+BUILDALL
+R:X::Syntax
+C:X::Syntax::Missing
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Extension
+C:X::Syntax::Extension::TooComplex
+message
+SET_FILE_LINE
+sorry_heading
+gist
+name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Extension::SpecialForm
+message
+SET_FILE_LINE
+sorry_heading
+gist
+category
+opname
+hint
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Extension::Category
+message
+SET_FILE_LINE
+sorry_heading
+gist
+category
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Extension::Null
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::VirtualCall
+message
+SET_FILE_LINE
+sorry_heading
+gist
+call
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Perl5Var
+message
+SET_FILE_LINE
+sorry_heading
+gist
+name
+identifier-name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::NonAssociative
+message
+SET_FILE_LINE
+sorry_heading
+gist
+left
+right
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::InfixInTermPosition
+message
+SET_FILE_LINE
+sorry_heading
+gist
+infix
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Argument
+C:X::Syntax::Argument::MOPMacro
+message
+SET_FILE_LINE
+sorry_heading
+gist
+macro
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Regex
+C:X::Syntax::Regex::SolitaryQuantifier
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::NullRegex
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Regex::Alias
+C:X::Syntax::Regex::Alias::LongName
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::SolitaryBacktrackControl
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::Unterminated
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::Adverb
+message
+SET_FILE_LINE
+sorry_heading
+gist
+adverb
+construct
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::Unspace
+message
+SET_FILE_LINE
+sorry_heading
+gist
+char
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::UnrecognizedMetachar
+message
+SET_FILE_LINE
+sorry_heading
+gist
+metachar
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::SpacesInBareRange
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::MalformedRange
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::NonQuantifiable
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::UnrecognizedModifier
+message
+SET_FILE_LINE
+sorry_heading
+gist
+modifier
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Regex::QuantifierValue
+message
+SET_FILE_LINE
+sorry_heading
+gist
+inf
+non-numeric
+non-numeric-range
+empty-range
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::CannotMeta
+message
+SET_FILE_LINE
+sorry_heading
+gist
+meta
+operator
+reason
+dba
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Type
+C:X::Syntax::Type::Adverb
+message
+SET_FILE_LINE
+sorry_heading
+gist
+adverb
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Malformed
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Malformed::Elsif
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Adverb
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Self
+C:X::Syntax::Self::WithoutObject
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Reserved
+message
+SET_FILE_LINE
+sorry_heading
+gist
+reserved
+instead
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Pod
+C:X::Syntax::Pod::BeginWithoutIdentifier
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Pod::BeginWithoutEnd
+message
+SET_FILE_LINE
+sorry_heading
+gist
+type
+spaces
+instead
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::NoSelf
+message
+SET_FILE_LINE
+sorry_heading
+gist
+variable
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::DuplicatedPrefix
+message
+SET_FILE_LINE
+sorry_heading
+gist
+prefixes
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Variable
+C:X::Syntax::Variable::Numeric
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Variable::ConflictingTypes
+message
+SET_FILE_LINE
+sorry_heading
+gist
+outer
+inner
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Variable::Match
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Variable::Twigil
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+twigil
+scope
+additional
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Variable::MissingInitializer
+message
+SET_FILE_LINE
+sorry_heading
+gist
+type
+implicit
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Variable::Initializer
+message
+SET_FILE_LINE
+sorry_heading
+gist
+name
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Variable::IndirectDeclaration
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Variable::BadType
+message
+SET_FILE_LINE
+sorry_heading
+gist
+type
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Term
+C:X::Syntax::Term::MissingInitializer
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::P5
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Coercer
+C:X::Syntax::Coercer::TooComplex
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::NegatedPair
+message
+SET_FILE_LINE
+sorry_heading
+gist
+key
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::ConditionalOperator
+C:X::Syntax::ConditionalOperator::SecondPartInvalid
+message
+SET_FILE_LINE
+sorry_heading
+gist
+second-part
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::ConditionalOperator::SecondPartGobbled
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::ConditionalOperator::PrecedenceTooLoose
+message
+SET_FILE_LINE
+sorry_heading
+gist
+operator
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Comment
+C:X::Syntax::Comment::Embedded
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::BlockGobbled
+message
+SET_FILE_LINE
+sorry_heading
+gist
+what
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Augment
+C:X::Syntax::Augment::Illegal
+message
+SET_FILE_LINE
+sorry_heading
+gist
+package
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Augment::WithoutMonkeyTyping
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Augment::Adverb
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::AddCategorical
+C:X::Syntax::AddCategorical::TooFewParts
+message
+SET_FILE_LINE
+sorry_heading
+gist
+category
+needs
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::AddCategorical::TooManyParts
+message
+SET_FILE_LINE
+sorry_heading
+gist
+category
+needs
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::WithoutElse
+message
+SET_FILE_LINE
+sorry_heading
+gist
+keyword
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::UnlessElse
+message
+SET_FILE_LINE
+sorry_heading
+gist
+keyword
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Signature
+C:X::Syntax::Signature::InvocantMarker
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Signature::InvocantNotAllowed
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Syntax::Number
+C:X::Syntax::Number::IllegalDecimal
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Number::RadixOutOfRange
+message
+SET_FILE_LINE
+sorry_heading
+gist
+radix
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Number::LiteralType
+message
+SET_FILE_LINE
+sorry_heading
+gist
+varname
+vartype
+value
+valuetype
+suggestiontype
+native
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::NonListAssociative
+message
+D:X::Syntax::Name
+C:X::Syntax::Name::Null
+message
+SET_FILE_LINE
+sorry_heading
+gist
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::KeywordAsFunction
+message
+SET_FILE_LINE
+sorry_heading
+gist
+word
+needparens
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Syntax::Confused
+message
+SET_FILE_LINE
+sorry_heading
+gist
+reason
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Sequence
+C:X::Sequence::Deduction
+message
+from
+BUILDALL
 D:X::Caller
 C:X::Caller::NotDynamic
-message : Mu
-symbol : Mu
-BUILDALL : Mu
-D:X::EXPORTHOW
-C:X::EXPORTHOW::NothingToSupersede
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-declarator : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::EXPORTHOW::InvalidDirective
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-directive : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::EXPORTHOW::Conflict
-message : Mu
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-declarator : Mu
-directive : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-R:X::Comp
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-C:X::Comp::AdHoc
-is-compile-time : True
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:X::Comp::Trait
-C:X::Comp::Trait::NotOnNative
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Comp::Trait::Scope
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Comp::Trait::Unknown
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Comp::NYI
-sorry_heading : Mu
-SET_FILE_LINE : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Comp::BeginTime
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-use-case : Mu
-exception : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Comp::WheneverOutOfScope
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Comp::FailGoal
-is-compile-time : True
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-dba : Mu
-goal : Mu
-line-real : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-C:X::Comp::Group
-is-compile-time : True
-message : Mu
-gist : Mu
-panic : Mu
-sorrows : Mu
-worries : Mu
-BUILDALL : Mu
-C:X::IllegalDimensionInShape
-message : Mu
-dim : Mu
-BUILDALL : Mu
-D:X::Export
-C:X::Export::NameClash
-message : Mu
-SET_FILE_LINE : Mu
-sorry_heading : Mu
-gist : Mu
-symbol : Mu
-filename : Mu
-pos : Mu
-line : Mu
-column : Mu
-modules : Mu
-is-compile-time : Mu
-pre : Mu
-post : Mu
-highexpect : Mu
-BUILDALL : Mu
-D:π
-C:Backtrace
-AT-POS : Mu
-next-interesting-index : Mu
-outer-caller-idx : Mu
-nice : Mu
-first-none-setting-line : Mu
-concise : Mu
-full : Mu
-summary : Mu
-is-runtime : Mu
-new : Mu
-gist : Mu
-Str : Mu
-flat : Mu
-map : Mu
-first : Mu
-list : Mu
-BUILDALL : Mu
-C:Backtrace::Frame
-subtype : Mu
-package : Mu
-is-hidden : Mu
-is-routine : Mu
-is-setting : Mu
-new : Mu
-Str : Mu
-file : Mu
-line : Mu
-code : Mu
-subname : Mu
-BUILDALL : Mu
-D:FileChangeEvent::FileChanged
-D:FileChangeEvent::FileRenamed
-V:&slip
-V:&infix:<(cont)>
-C:Collation
-gist : Mu
-set : Mu
-check : Mu
-primary : Mu
-secondary : Mu
-tertiary : Mu
-quaternary : Mu
-collation-level : Mu
-BUILDALL : Mu
-D:Metamodel
-C:Metamodel::Primitives
-create_type : Mu
-set_package : Mu
-install_method_cache : Mu
-configure_type_checking : Mu
-configure_destroy : Mu
-compose_type : Mu
-rebless : Mu
-is_type : Mu
-V:&acosec
-C:IntStr
-new : Mu
-Int : Mu
-ACCEPTS : Mu
-Numeric : Mu
-Real : Mu
-Str : Mu
-perl : Mu
-V:&infix:<&&>
-D:SIGUSR2
-C:Cursor
-ast : Mu
-made : Mu
-STR : Mu
-MATCH : Mu
-CURSOR_NEXT : Mu
-CURSOR_OVERLAP : Mu
-CURSOR_MORE : Mu
-INTERPOLATE : Mu
-INTERPOLATE_ASSERTION : Mu
-CALL_SUBRULE : Mu
-DYNQUANT_LIMITS : Mu
-OTHERGRAMMAR : Mu
-INDMETHOD : Mu
-INDRULE : Mu
-RECURSE : Mu
-BUILD : Mu
-clone : Mu
-Bool : Mu
-prematch : Mu
-postmatch : Mu
-caps : Mu
-chunks : Mu
-alpha : Mu
-digit : Mu
-!protoregex_nfa : Mu
-!reduce : Mu
-punct : Mu
-graph : Mu
-cntrl : Mu
-!DYNQUANT_LIMITS : Mu
-!alt : Mu
-!protoregex : Mu
-!cursor_start_cur : Mu
-Num : Mu
-slangs : Mu
-pragma : Mu
-set_actions : Mu
-prune : Mu
-alnum : Mu
-same : Mu
-!DELEGATE_ACCEPTS : Mu
-!fresh_highexpect : Mu
-!cursor_next : Mu
-!clone_match_at : Mu
-!shared_type : Mu
-after : Mu
-before : Mu
-!protoregex_table : Mu
-!cursor_start : Mu
-!reduce_with_match : Mu
-!cursor_more : Mu
-!dba : Mu
-!LITERAL : Mu
-PRECURSOR : Mu
-pos : Mu
-xdigit : Mu
-!cursor_pos : Mu
-from : Mu
-!cursor_init : Mu
-at : Mu
-ws : Mu
-refine_slang : Mu
-!precompute_nfas : Mu
-!cursor_capture : Mu
-set_pragma : Mu
-snapshot_braid : Mu
-to : Mu
-!BACKREF : Mu
-!braid : Mu
-package : Mu
-set_package : Mu
-make : Mu
-!BACKREF-LATEST-CAPTURE : Mu
-lower : Mu
-!clear_highwater : Mu
-!cursor_push_cstack : Mu
-orig : Mu
-define_slang : Mu
-check_PACKAGE_oopsies : Mu
-print : Mu
-upper : Mu
-ident : Mu
-!highwater : Mu
-ww : Mu
-!cursor_start_all : Mu
-!cursor_fail : Mu
-target : Mu
-how : Mu
-set_how : Mu
-!dump_str : Mu
-set_braid : Mu
-!shared : Mu
-FAILGOAL : Mu
-space : Mu
-!highexpect : Mu
-chars : Mu
-!cursor_start_subcapture : Mu
-slang_grammar : Mu
-know_how : Mu
-actions : Mu
-wb : Mu
-!set_highexpect : Mu
-dump : Mu
-!cursor_start_fail : Mu
-slang_actions : Mu
-switch_to_slang : Mu
-grammar : Mu
-set_braid_from : Mu
-CAPHASH : Mu
-clone_braid_from : Mu
-check_LANG_oopsies : Mu
-blank : Mu
-!cursor_pass : Mu
-!alt_nfa : Mu
-CURSOR : Mu
-Str : Mu
-braid : Mu
-WHICH : Mu
-Numeric : Mu
-ACCEPTS : Mu
-perl : Mu
-gist : Mu
-BUILDALL : Mu
-C:List
-from-iterator : Mu
-from-slurpy : Mu
-from-slurpy-onearg : Mu
-from-slurpy-flat : Mu
-new : Mu
-to : Mu
-from : Mu
-sum : Mu
-fmt : Mu
-ASSIGN-POS : Mu
-BIND-POS : Mu
-reification-target : Mu
-iterator : Mu
-sink : Mu
-STORE : Mu
-eager : Mu
-Capture : Mu
-FLATTENABLE_LIST : Mu
-FLATTENABLE_HASH : Mu
-CALL-ME : Mu
-pick : Mu
-roll : Mu
-reverse : Mu
-rotate : Mu
-combinations : Mu
-permutations : Mu
-join : Mu
-push : Mu
-append : Mu
-unshift : Mu
-prepend : Mu
-shift : Mu
-pop : Mu
-hyper : Mu
-of : Mu
-race : Mu
-flat : Mu
-lazy : Mu
-lazy-if : Mu
-item : Mu
-Bool : Mu
-Int : Mu
-end : Mu
-Numeric : Mu
-Str : Mu
-elems : Mu
-AT-POS : Mu
-EXISTS-POS : Mu
-ACCEPTS : Mu
-list : Mu
-values : Mu
-keys : Mu
-kv : Mu
-pairs : Mu
-antipairs : Mu
-invert : Mu
-gist : Mu
-perl : Mu
-List : Mu
-Slip : Mu
-Array : Mu
-Supply : Mu
-is-lazy : Mu
-sort : Mu
-tail : Mu
-chrs : Mu
-BagHash : Mu
-MixHash : Mu
-Mix : Mu
-Set : Mu
-SetHash : Mu
-Bag : Mu
-BUILDALL : Mu
-C:List::Reifier
-reify-at-least : Mu
-reify-until-lazy : Mu
-reify-all : Mu
-fully-reified : Mu
-is-lazy : Mu
-BUILDALL : Mu
-D:SIGEMT
-V:&split
-V:&infix:<**>
-V:&trait_mod:<does>
-V:&reverse
-V:&prefix:<++⚛>
-V:&term:<time>
-D:More
-V:&prepend
-V:&chars
-V:&bag
-V:&infix:<o>
-V:&unique
-V:&infix:<leg>
-C:CurrentThreadScheduler
-handle_uncaught : Mu
-cue : Mu
-loads : 0
-uncaught_handler : Mu
-BUILDALL : Mu
-V:&truncate
-R:Dateish
-IO : Mu
-is-leap-year : Mu
-days-in-month : Mu
-daycount : Mu
-day-of-month : Mu
-day-of-week : Mu
-week : Mu
-week-year : Mu
-week-number : Mu
-weekday-of-month : Mu
-day-of-year : Mu
-yyyy-mm-dd : Mu
-earlier : Mu
-V:&infix:<(|)>
-V:&rename
-V:&take
-V:&roll
-V:&srand
-V:&infix:<!~~>
-V:&pairs
-V:&atomic-fetch
-V:&uniprops
-V:&produce
-V:&infix:<eq>
-V:&signal
-D:SIGILL
-D:pi
-V:&list
-D:SIGPROF
-V:&infix:<minmax>
-V:&infix:<⊉>
-D:SOCK_STREAM
-V:&gethostname
-V:&asec
-V:&log
-R:Positional
-of : Mu
-C:Exception
-backtrace : Mu
-vault-backtrace : Mu
-reset-backtrace : Mu
-throw : Mu
-rethrow : Mu
-resume : True
-die : Mu
-fail : Mu
-is-compile-time : False
-Str : Mu
-gist : Mu
-BUILDALL : Mu
-R:Iterator
-pull-one : Mu
-skip-one : Mu
-push-exactly : Mu
-push-at-least : Mu
-push-all : IterationEnd
-push-until-lazy : Mu
-skip-at-least : Mu
-skip-at-least-pull-one : Mu
-sink-all : IterationEnd
-is-lazy : False
-V:&EVAL
-V:&postcircumfix:<{; }>
-V:&infix:<^>
-V:&infix:«>=»
-V:&sin
-C:Junction
-INFIX-TWO : Mu
-new : Mu
-defined : Mu
-CALL-ME : Mu
-sink : Mu
-THREAD : Mu
-AUTOTHREAD : Mu
-Bool : Mu
-ACCEPTS : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-BUILDALL : Mu
-C:Any
-EXISTS-KEY : Mu
-DELETE-KEY : Mu
-DELETE-POS : Mu
-cache : Mu
-list : Mu
-flat : Mu
-eager : Mu
-serial : Mu
-List : Mu
-Slip : Mu
-Array : Mu
-Seq : Mu
-hash : Mu
-Hash : Mu
-Map : Mu
-elems : Mu
-end : Mu
-keys : Mu
-kv : Mu
-values : Mu
-pairs : Mu
-antipairs : Mu
-invert : Mu
-splice : Mu
-pick : Mu
-roll : Mu
-match : Mu
-classify : Mu
-categorize : Mu
-reverse : Mu
-combinations : Mu
-permutations : Mu
-join : Mu
-nodemap : Mu
-duckmap : Mu
-deepmap : Mu
-tree : Mu
-push : Mu
-append : Mu
-unshift : Mu
-prepend : Mu
-EXISTS-POS : Mu
-AT-POS : Mu
-ZEN-POS : Mu
-ZEN-KEY : Mu
-ASSIGN-POS : Mu
-BIND-POS : Mu
-all : Mu
-any : Mu
-one : Mu
-none : Mu
-AT-KEY : Mu
-BIND-KEY : Mu
-ASSIGN-KEY : Mu
-FLATTENABLE_LIST : Mu
-FLATTENABLE_HASH : Mu
-Set : Mu
-SetHash : Mu
-Bag : Mu
-BagHash : Mu
-Mix : Mu
-MixHash : Mu
-Supply : Mu
-nl-out : Mu
-print-nl : Mu
-lazy-if : Mu
-sum : Mu
-ACCEPTS : Mu
-iterator : Mu
-map : Mu
-flatmap : Mu
-grep : Mu
-first : Mu
-min : Mu
-max : Mu
-minmax : Mu
-sort : Mu
-collate : Mu
-reduce : Mu
-produce : Mu
-unique : Mu
-repeated : Mu
-squish : Mu
-pairup : Mu
-toggle : Mu
-head : Mu
-tail : Mu
-skip : Mu
-minpairs : Mu
-maxpairs : Mu
-batch : Mu
-rotor : Mu
-R:Any::Grepper
-new : Mu
-is-lazy : Mu
-C:Any::Repeated-As
-new : Mu
-pull-one : Mu
-push-all : IterationEnd
-is-lazy : Mu
-sink-all : IterationEnd
-push-at-least : Mu
-skip-at-least-pull-one : Mu
-push-until-lazy : Mu
-skip-at-least : Mu
-skip-one : Mu
-push-exactly : Mu
-BUILDALL : Mu
-V:&nextsame
-V:&await
-V:&callframe
-V:&link
-V:&gist
-C:WhateverCode
-pos : Mu
-C:Version
-Capture : Mu
-parts : Mu
-plus : Mu
-new : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-ACCEPTS : Mu
-WHICH : Mu
-BUILDALL : Mu
-V:&goto
-R:Awaitable
-get-await-handle : Mu
-R:Awaitable::Handle
-already-success : Mu
-already-failure : Mu
-subscribe-awaiter : Mu
-D:tau
-V:&atomic-fetch-add
-C:SetHash
-iterator : Mu
-clone : Mu
-STORE : Mu
-Mixy : Mu
-keyof : Mu
-Baggy : Mu
-Int : Mu
-grab : Mu
-pickpairs : Mu
-total : Mu
-elems : Mu
-pick : Mu
-roll : Mu
-of : Mu
-RAW-HASH : Mu
-SET-SELF : Mu
-Num : Mu
-Setty : Mu
-Capture : Mu
-Real : Mu
-new-from-pairs : Mu
-Numeric : Mu
-fmt : Mu
-grabpairs : Mu
-default : False
-kv : Mu
-values : Mu
-Set : Mu
-SetHash : Mu
-AT-KEY : Mu
-DELETE-KEY : Mu
-new : Mu
-keys : Mu
-antipairs : Mu
-minpairs : Mu
-maxpairs : Mu
-Bool : Mu
-hash : Mu
-Hash : Mu
-ACCEPTS : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-EXISTS-KEY : Mu
-Bag : Mu
-BagHash : Mu
-Mix : Mu
-MixHash : Mu
-list : Mu
-pairs : Mu
-BUILDALL : Mu
-V:&say
-R:Mixy
-new-from-pairs : Mu
-D:PROCESS
-D:SIGSYS
-R:Scheduler
-handle_uncaught : Mu
-cue : Mu
-loads : Mu
-D:Order::Same
-D:Order::More
-D:Order::Less
-V:&circumfix:<[ ]>
-V:&infix:<⊆>
-V:&uniprop-bool
-V:&warn
-V:&shell
-V:&is-prime
-V:&cotan
-V:&infix:<~|>
-D:SOCK_SEQPACKET
-V:&infix:<^^>
-R:Tappable
-tap : Mu
-live : Mu
-serial : Mu
-sane : Mu
-V:&cosec
-V:&term:<now>
-C:Instant
-SET-SELF : Mu
-new : Mu
-from-posix : Mu
-to-posix : Mu
-Bridge : Mu
-Num : Mu
-Rat : Mu
-Int : Mu
-narrow : Mu
-Date : Mu
-DateTime : Mu
-Instant : Mu
-cosec : Mu
-base : Mu
-sqrt : Mu
-asinh : Mu
-acosec : Mu
-isNaN : Mu
-cosech : Mu
-sec : Mu
-roots : Mu
-cotanh : Mu
-acosech : Mu
-cos : Mu
-asin : Mu
-sin : Mu
-log10 : Mu
-succ : Mu
-Complex : Mu
-acotan : Mu
-atanh : Mu
-exp : Mu
-asech : Mu
-pred : Mu
-cosh : Mu
-cotan : Mu
-acosh : Mu
-log : Mu
-sinh : Mu
-atan : Mu
-atan2 : Mu
-round : Mu
-floor : Mu
-truncate : Mu
-acos : Mu
-ceiling : Mu
-abs : Mu
-sign : Mu
-sech : Mu
-asec : Mu
-acotanh : Mu
-unpolar : Mu
-rand : Mu
-FatRat : Mu
-polymod : Mu
-cis : Mu
-tan : Mu
-tanh : Mu
-conj : Mu
-Str : Mu
-perl : Mu
-Real : Mu
-Numeric : Mu
-gist : Mu
-ACCEPTS : Mu
-Bool : Mu
-DUMP : Mu
-tai : Mu
-BUILDALL : Mu
-V:&infix:«(>=)»
-V:&unlink
-V:&infix:<≥>
-R:Signally
-D:Inf
-V:&infix:«<»
-V:&infix:<+&>
-C:StrDistance
-BUILD : Mu
-Bool : Mu
-ACCEPTS : Mu
-Numeric : Mu
-Str : Mu
-Int : Mu
-before : Mu
-after : Mu
-BUILDALL : Mu
-V:&infix:«(<=)»
-V:&mix
-C:NFD
-new : Mu
-NFD : Mu
-R:Numeric
-log : Mu
-log10 : Mu
-exp : Mu
-roots : Mu
-FatRat : Mu
-succ : Mu
-pred : Mu
-D:SIGPWR
-V:&infix:<−>
-R:HardRoutine
-soft : False
-V:&dir
-V:&return
-C:Set
-iterator : Mu
-STORE : Mu
-Int : Mu
-total : Mu
-grab : Mu
-pickpairs : Mu
-Mixy : Mu
-Baggy : Mu
-keyof : Mu
-RAW-HASH : Mu
-of : Mu
-elems : Mu
-pick : Mu
-roll : Mu
-SET-SELF : Mu
-fmt : Mu
-Real : Mu
-Capture : Mu
-Numeric : Mu
-new-from-pairs : Mu
-default : False
-grabpairs : Mu
-Num : Mu
-Setty : Mu
-WHICH : Mu
-kv : Mu
-values : Mu
-Set : Mu
-SetHash : Mu
-AT-KEY : Mu
-ASSIGN-KEY : Mu
-DELETE-KEY : Mu
-new : Mu
-keys : Mu
-antipairs : Mu
-minpairs : Mu
-maxpairs : Mu
-Bool : Mu
-hash : Mu
-Hash : Mu
-ACCEPTS : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-EXISTS-KEY : Mu
-Bag : Mu
-BagHash : Mu
-Mix : Mu
-MixHash : Mu
-pairs : Mu
-list : Mu
-BUILDALL : Mu
-V:&infix:<after>
-V:&infix:<⊍>
-V:&infix:<gcd>
-C:AST
-BUILD : Mu
-incarnate : Mu
-evaluate_unquotes : Mu
-is_quasi_ast : Mu
-Str : Mu
-BUILDALL : Mu
-V:&infix:<unicmp>
-R:Stringy
-D:SeekFromEnd
-V:&sleep-timer
-V:&infix:<||>
-C:NFC
-new : Mu
-NFC : Mu
-V:&flip
-D:SIGHUP
-D:Exceptions
-C:Exceptions::JSON
-process : Mu
-V:&roundrobin
-V:&infix:<lcm>
-D:SOCK_RDM
-D:SocketType::SOCK_MAX
-D:SocketType::SOCK_RAW
-D:SocketType::SOCK_PACKET
-D:SocketType::SOCK_DGRAM
-D:SocketType::SOCK_RDM
-D:SocketType::SOCK_STREAM
-D:SocketType::SOCK_SEQPACKET
-C:Pair
-new : Mu
-Pair : Mu
-antipair : Mu
-freeze : Mu
-iterator : Mu
-fmt : Mu
-FLATTENABLE_LIST : Mu
-FLATTENABLE_HASH : Mu
-of : Mu
-keyof : Mu
-clone : Mu
-WHICH : Mu
-ACCEPTS : Mu
-keys : Mu
-kv : Mu
-values : Mu
-pairs : Mu
-antipairs : Mu
-invert : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-AT-KEY : Mu
-EXISTS-KEY : Mu
-key : Mu
-value : Mu
-BUILDALL : Mu
-R:QuantHash
-SET-SELF : Mu
-Int : Mu
-Num : Mu
-Numeric : Mu
-Real : Mu
-Capture : Mu
-fmt : Mu
-Setty : Mu
-Baggy : Mu
-Mixy : Mu
-V:&kv
-V:&join
-V:&prefix:<--⚛>
-V:&rindex
-V:&infix:<notandthen>
-V:&exp
-V:&subbuf-rw
-C:Uni
-new : Mu
-list : Mu
-Uni : Mu
-NFC : Mu
-NFD : Mu
-NFKC : Mu
-NFKD : Mu
-codes : Mu
-elems : Mu
-Numeric : Mu
-Int : Mu
-of : Mu
-Str : Mu
-Bool : Mu
-EXISTS-POS : Mu
-AT-POS : Mu
-gist : Mu
-perl : Mu
-V:&lsb
-V:&repeated
-V:&move
-D:SIGURG
-V:&infix:<∋>
-C:Date
-new : Mu
-new-from-daycount : Mu
-today : Mu
-truncated-to : Mu
-later : Mu
-clone : Mu
-succ : Mu
-pred : Mu
-DateTime : Mu
-Date : Mu
-week-number : Mu
-yyyy-mm-dd : Mu
-weekday-of-month : Mu
-week : Mu
-days-in-month : Mu
-is-leap-year : Mu
-daycount : Mu
-week-year : Mu
-earlier : Mu
-day-of-year : Mu
-day-of-week : Mu
-day-of-month : Mu
-IO : Mu
-WHICH : Mu
-perl : Mu
-ACCEPTS : Mu
-Str : Mu
-gist : Mu
-year : Mu
-month : Mu
-day : Mu
-formatter : Mu
-BUILDALL : Mu
-V:&infix:«~<»
-R:Buf
-pop : Mu
-shift : Mu
-reallocate : Mu
-splice : Mu
-push : Mu
-append : Mu
-unshift : Mu
-prepend : Mu
-subbuf-rw : Mu
-V:&run
-C:Proc
-BUILD : Mu
-spawn : Mu
-shell : Mu
-status : Mu
-exitcode : Mu
-sink : Mu
-Numeric : Mu
-Bool : Mu
-in : Mu
-out : Mu
-err : Mu
-signal : Mu
-pid : Mu
-command : Mu
-BUILDALL : Mu
-C:Proc::Async
-new : Mu
-TWEAK : Mu
-stdout : Mu
-stderr : Mu
-Supply : Mu
-bind-stdin : Mu
-bind-stdout : Mu
-bind-stderr : Mu
-ready : Mu
-pid : Mu
-start : Mu
-print : Mu
-put : Mu
-say : Mu
-write : Mu
-close-stdin : Mu
-kill : Mu
-path : Mu
-args : Mu
-w : Mu
-enc : Mu
-translate-nl : Mu
-started : Mu
-BUILDALL : Mu
-C:Proc::Async::Pipe
-BUILD : Mu
-native-descriptor : Mu
-new : Mu
-BUILDALL : Mu
-R:Awaiter
-await : Mu
-await-all : Mu
-C:Awaiter::Blocking
-await : Mu
-await-all : Mu
-V:&infix:<min>
-V:&infix:<//>
-V:&parse-names
-V:&exit
-C:Bag
-total : Mu
-STORE : Mu
-classify-list : Mu
-categorize-list : Mu
-pickpairs : Mu
-Int : Mu
-grab : Mu
-keyof : Mu
-Mixy : Mu
-Baggy : Mu
-RAW-HASH : Mu
-of : Mu
-pick : Mu
-roll : Mu
-SET-SELF : Mu
-kxxv : Mu
-fmt : Mu
-Capture : Mu
-Real : Mu
-Numeric : Mu
-new-from-pairs : Mu
-default : 0
-grabpairs : Mu
-Setty : Mu
-Num : Mu
-WHICH : Mu
-DELETE-KEY : Mu
-Bag : Mu
-BagHash : Mu
-Mix : Mu
-MixHash : Mu
-ACCEPTS : Mu
-AT-KEY : Mu
-EXISTS-KEY : Mu
-new : Mu
-iterator : Mu
-keys : Mu
-kv : Mu
-values : Mu
-antipairs : Mu
-invert : Mu
-elems : Mu
-Bool : Mu
-hash : Mu
-Hash : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-Set : Mu
-SetHash : Mu
-list : Mu
-pairs : Mu
-BUILDALL : Mu
-V:&infix:<xx>
-D:PROTO_TCP
-V:&infix:<before>
-V:&infix:<and>
-C:Capture
-from-args : Mu
-BUILD : Mu
-hash : Mu
-list : Mu
-elems : Mu
-Capture : Mu
-FLATTENABLE_LIST : Mu
-FLATTENABLE_HASH : Mu
-WHICH : Mu
-AT-KEY : Mu
-AT-POS : Mu
-EXISTS-KEY : Mu
-Str : Mu
-gist : Mu
-perl : Mu
-Bool : Mu
-Numeric : Mu
-keys : Mu
-kv : Mu
-values : Mu
-pairs : Mu
-antipairs : Mu
-BUILDALL : Mu
-C:JSONException
-message : Mu
-text : Mu
-BUILDALL : Mu
-C:Code
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-arity : Mu
-count : Mu
-signature : Mu
-prec : Mu
-outer : Mu
-static_id : Mu
-file : Mu
-line : Mu
-assuming : Mu
-of : Mu
-Capture : Mu
-returns : Mu
-ACCEPTS : Mu
-Str : Mu
-new : Mu
-perl : Mu
-BUILDALL : Mu
+message
+symbol
+BUILDALL
+D:X::CompUnit
+C:X::CompUnit::UnsatisfiedDependency
+message
+specification
+BUILDALL
+D:X::Inheritance
+C:X::Inheritance::SelfInherit
+message
+name
+BUILDALL
+C:X::Inheritance::NotComposed
+message
+child-name
+parent-name
+BUILDALL
+C:X::Inheritance::UnknownParent
+message
+child
+parent
+suggestions
+BUILDALL
+C:X::Inheritance::Unsupported
+message
+SET_FILE_LINE
+sorry_heading
+gist
+child-typename
+parent
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Language
+C:X::Language::Unsupported
+message
+version
+BUILDALL
+D:X::Str
+D:X::Str::Subst
+C:X::Str::Subst::Adverb
+message
+name
+got
+BUILDALL
+C:X::Str::Numeric
+source-indicator
+message
+source
+pos
+reason
+BUILDALL
+D:X::Str::Match
+C:X::Str::Match::x
+message
+got
+BUILDALL
+D:X::Str::Sprintf
+D:X::Str::Sprintf::Directives
+C:X::Str::Sprintf::Directives::Count
+message
+args-used
+args-have
+BUILDALL
+C:X::Str::Sprintf::Directives::Unsupported
+message
+directive
+sequence
+BUILDALL
+C:X::Str::Sprintf::Directives::BadType
+message
+type
+directive
+BUILDALL
+D:X::Str::Trans
+C:X::Str::Trans::InvalidArg
+message
+got
+BUILDALL
+C:X::Str::Trans::IllegalKey
+message
+key
+BUILDALL
+C:X::Str::InvalidCharName
+message
+name
+BUILDALL
+C:X::Redeclaration
+message
+SET_FILE_LINE
+sorry_heading
+gist
+symbol
+postfix
+what
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Redeclaration::Outer
+message
+SET_FILE_LINE
+sorry_heading
+gist
+symbol
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+D:X::Pairup
+C:X::Pairup::OddNumber
+message
+C:X::OutOfRange
+message
+what
+got
+range
+comment
+BUILDALL
+D:X::Assignment
+C:X::Assignment::ArrayShapeMismatch
+message
+target-shape
+source-shape
+BUILDALL
+C:X::Assignment::RO
+message
+typename
+value
+BUILDALL
+C:X::Assignment::RO::Comp
+message
+SET_FILE_LINE
+sorry_heading
+gist
+variable
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Assignment::ToShaped
+message
+shape
+BUILDALL
+D:X::Composition
+C:X::Composition::NotComposable
+message
+SET_FILE_LINE
+sorry_heading
+gist
+target-name
+composer
+filename
+pos
+line
+column
+modules
+is-compile-time
+pre
+post
+highexpect
+BUILDALL
+C:X::Immutable
+message
+typename
+method
+BUILDALL
+D:X::Localizer
+C:X::Localizer::NoContainer
+message
+localizer
+BUILDALL
+D:SIGSTOP
 V:&infix:<~&>
-V:&infix:<^..>
-V:&indices
-V:&postfix:<⚛-->
-C:Supply
-new : Mu
-BUILD : Mu
-Capture : Mu
-live : Mu
-serial : Mu
-Tappable : Mu
-tap : Mu
-act : Mu
-on-demand : Mu
-from-list : Mu
-interval : Mu
-serialize : Mu
-sanitize : Mu
-on-close : Mu
-map : Mu
-grep : Mu
-schedule-on : Mu
-start : Mu
-stable : Mu
-delayed : Mu
-do : Mu
-flat : Mu
-merge : Mu
-reduce : Mu
-produce : Mu
-migrate : Mu
-classify : Mu
-categorize : Mu
-Channel : Mu
-Seq : Mu
-Promise : Mu
-wait : Mu
-get-await-handle : Mu
-unique : Mu
-squish : Mu
-batch : Mu
-lines : Mu
-words : Mu
-elems : Mu
-head : Mu
-tail : Mu
-skip : Mu
-min : Mu
-max : Mu
-minmax : Mu
-grab : Mu
-reverse : Mu
-zip : Mu
-zip-latest : Mu
-throttle : Mu
-share : Mu
-Supply : Mu
-list : Mu
-rotor : Mu
-sort : Mu
-BUILDALL : Mu
-D:PROTO_UDP
-D:SIGALRM
-R:SoftRoutine
-soft : True
-R:Enumeration
-enums : Mu
-pair : Mu
-CALL-ME : Mu
-pred : Mu
-succ : Mu
-C:Label
-new : Mu
-name : Mu
-goto : Mu
-leave : Mu
-Int : Mu
-next : Mu
-redo : Mu
-last : Mu
-gist : Mu
-BUILDALL : Mu
-V:&infix:<(elem)>
-C:Deprecation
-report : Mu
-WHICH : Mu
-file : Mu
-type : Mu
-package : Mu
-name : Mu
-alternative : Mu
-callsites : Mu
-from : Mu
-removed : Mu
-BUILDALL : Mu
-D:Same
-V:&cas
-R:Blob
-allocate : Mu
-Capture : Mu
-Numeric : Mu
-Int : Mu
-bytes : Mu
-chars : Mu
-decode : Mu
-subbuf : Mu
-reverse : Mu
-COMPARE : Mu
-SAME : Mu
-join : Mu
-unpack : Mu
-contents : Mu
-encoding : Mu
-D:IterationEnd
-V:&prefix:<->
-D:NaN
-V:&pair
-V:&done
-C:Range
-new : Mu
-excludes-min : Mu
-excludes-max : Mu
-infinite : Mu
-is-int : Mu
-elems : Mu
-iterator : Mu
-flat : Mu
-reverse : Mu
-first : Mu
-bounds : Mu
-int-bounds : Mu
-fmt : Mu
-ASSIGN-POS : Mu
-roll : Mu
-pick : Mu
-Capture : Mu
-push : Mu
-append : Mu
-unshift : Mu
-prepend : Mu
-shift : Mu
-pop : Mu
-sum : Mu
-rand : Mu
-in-range : Mu
-lazy : Mu
-lazy-if : Mu
-item : Mu
-hyper : Mu
-race : Mu
-of : Mu
-is-lazy : Mu
-WHICH : Mu
-EXISTS-POS : Mu
-list : Mu
-Str : Mu
-ACCEPTS : Mu
-AT-POS : Mu
-perl : Mu
-Numeric : Mu
-minmax : Mu
-SetHash : Mu
-Bag : Mu
-Set : Mu
-Mix : Mu
-BagHash : Mu
-MixHash : Mu
-min : Mu
-max : Mu
-BUILDALL : Mu
-V:&cross
-V:&fail
-R:NumericEnumeration
-V:&infix:<Z>
-V:&postfix:<⚛++>
-V:&infix:<,>
-V:&cache
-V:&infix:<⚛=>
-V:&trait_mod:<handles>
-C:CompUnit
-new : Mu
-unit : Mu
-WHICH : Mu
-Str : Mu
-gist : Mu
-from : Mu
-short-name : Mu
-version : Mu
-auth : Mu
-repo : Mu
-repo-id : Mu
-handle : Mu
-precompiled : Mu
-distribution : Mu
-BUILDALL : Mu
-C:CompUnit::Loader
-load-source-file : Mu
-load-source : Mu
-load-precompilation-file : Mu
-load-precompilation : Mu
-R:CompUnit::PrecompilationRepository
-try-load : Mu
-load : Mu
-may-precomp : Mu
-D:CompUnit::PrecompilationRepository::None
-C:CompUnit::PrecompilationRepository::Default
-try-load : Mu
-load : Mu
-precompile : Mu
-may-precomp : Mu
-store : Mu
-BUILDALL : Mu
-C:CompUnit::DependencySpecification
-Str : Mu
-short-name : Mu
-source-line-number : Mu
-from : Mu
-version-matcher : Mu
-auth-matcher : Mu
-api-matcher : Mu
-BUILDALL : Mu
-R:CompUnit::PrecompilationUnit
-id : Mu
-path : Mu
-modified : Mu
-dependencies : Mu
-bytecode : Mu
-checksum : Mu
-source-checksum : Mu
-bytecode-handle : Mu
-close : Mu
-is-up-to-date : Mu
-C:CompUnit::PrecompilationUnit::File
-BUILD : Mu
-modified : Mu
-dependencies : Mu
-bytecode : Mu
-bytecode-handle : Mu
-source-checksum : Mu
-checksum : Mu
-Str : Mu
-close : Mu
-save-to : Mu
-is-up-to-date : Mu
-id : Mu
-path : Mu
-BUILDALL : Mu
-R:CompUnit::Repository
-need : Mu
-resolve : Mu
-load : Mu
-loaded : Mu
-id : Mu
-precomp-store : Mu
-precomp-repository : Mu
-repo-chain : Mu
-C:CompUnit::Repository::Distribution
-BUILD : Mu
-new : Mu
-meta : Mu
-Str : Mu
-id : Mu
-<anon> : Mu
-BUILDALL : Mu
-C:CompUnit::Repository::NQP
-need : Mu
-loaded : Mu
-id : Mu
-path-spec : Mu
-precomp-store : Mu
-repo-chain : Mu
-precomp-repository : Mu
-load : Mu
-resolve : Mu
-gist : Mu
-next-repo : Mu
-BUILDALL : Mu
-C:CompUnit::Repository::Spec
-from-string : Mu
-short-id : Mu
-options : Mu
-path : Mu
-Str : Mu
-BUILDALL : Mu
-C:CompUnit::Repository::Installation
-BUILD : Mu
-writeable-path : Mu
-can-install : Mu
-name : Mu
-upgrade-repository : Mu
-install : Mu
-uninstall : Mu
-script : Mu
-files : Mu
-resolve : Mu
-need : Mu
-resource : Mu
-id : Mu
-short-id : Mu
-loaded : Mu
-distribution : Mu
-installed : Mu
-precomp-store : Mu
-precomp-repository : Mu
-repo-chain : Mu
-load : Mu
-source-file : Mu
-prefix : Mu
-new : Mu
-path-spec : Mu
-perl : Mu
-gist : Mu
-Str : Mu
-WHICH : Mu
-next-repo : Mu
-BUILDALL : Mu
-R:CompUnit::Repository::Installable
-install : Mu
-can-install : Mu
-installed : Mu
-C:CompUnit::Repository::AbsolutePath
-need : Mu
-load : Mu
-loaded : Mu
-id : Mu
-path-spec : Mu
-precomp-store : Mu
-resolve : Mu
-precomp-repository : Mu
-repo-chain : Mu
-gist : Mu
-next-repo : Mu
-BUILDALL : Mu
-C:CompUnit::Repository::FileSystem
-id : Mu
-resolve : Mu
-need : Mu
-load : Mu
-short-id : Mu
-loaded : Mu
-files : Mu
-resource : Mu
-precomp-store : Mu
-precomp-repository : Mu
-new : Mu
-path-spec : Mu
-prefix : Mu
-source-file : Mu
-repo-chain : Mu
-gist : Mu
-perl : Mu
-Str : Mu
-WHICH : Mu
-next-repo : Mu
-BUILDALL : Mu
-R:CompUnit::Repository::Locally
-new : Mu
-path-spec : Mu
-source-file : Mu
-prefix : Mu
-id : Mu
-short-id : Mu
-C:CompUnit::Repository::Unknown
-need : Mu
-loaded : Mu
-id : Mu
-Str : Mu
-precomp-repository : Mu
-repo-chain : Mu
-resolve : Mu
-load : Mu
-precomp-store : Mu
-path-spec : Mu
-short-name : Mu
-next-repo : Mu
-BUILDALL : Mu
-C:CompUnit::Repository::Perl5
-need : Mu
-loaded : Mu
-id : Mu
-path-spec : Mu
-precomp-store : Mu
-repo-chain : Mu
-precomp-repository : Mu
-resolve : Mu
-load : Mu
-gist : Mu
-next-repo : Mu
-BUILDALL : Mu
-C:CompUnit::Handle
-ctxsave : Mu
-from-unit : Mu
-export-sub : Mu
-export-package : Mu
-export-how-package : Mu
-globalish-package : Mu
-unit : Mu
-new : Mu
-BUILDALL : Mu
-C:CompUnit::PrecompilationId
-new : Mu
-new-from-string : Mu
-new-without-check : Mu
-Str : Mu
-IO : Mu
-substr : Mu
-id : Mu
-BUILDALL : Mu
-C:CompUnit::RepositoryRegistry
-repository-for-spec : Mu
-setup-repositories : Mu
-use-repository : Mu
-repository-for-name : Mu
-register-name : Mu
-name-for-repository : Mu
-file-for-spec : Mu
-run-script : Mu
-head : Mu
-resolve-unknown-repos : Mu
-resolve_repossession_conflicts : Mu
-R:CompUnit::PrecompilationDependency
-id : Mu
-src : Mu
-spec : Mu
-checksum : Mu
-Str : Mu
-serialize : Mu
-deserialize : Mu
-C:CompUnit::PrecompilationDependency::File
-source-name : Mu
-deserialize : Mu
-spec : Mu
-serialize : Mu
-Str : Mu
-id : Mu
-src : Mu
-checksum : Mu
-BUILDALL : Mu
-R:CompUnit::PrecompilationStore
-new-unit : Mu
-load-unit : Mu
-load-repo-id : Mu
-store-file : Mu
-store-unit : Mu
-store-repo-id : Mu
-delete : Mu
-delete-by-compiler : Mu
-C:CompUnit::PrecompilationStore::File
-BUILD : Mu
-new-unit : Mu
-path : Mu
-unlock : Mu
-load-unit : Mu
-load-repo-id : Mu
-remove-from-cache : Mu
-destination : Mu
-store-file : Mu
-store-unit : Mu
-store-repo-id : Mu
-delete : Mu
-delete-by-compiler : Mu
-prefix : Mu
-BUILDALL : Mu
-V:&max
-V:&flat
-V:&trait_mod:<will>
-V:&infix:<…^>
-C:NumStr
-new : Mu
-Num : Mu
-ACCEPTS : Mu
-Numeric : Mu
-Real : Mu
-Str : Mu
-perl : Mu
-V:&ord
-V:&samewith
-V:&unimatch
-R:Systemic
-BUILD : Mu
-Str : Mu
-D:Planned
-V:&atomic-assign
-C:Duration
-new : Mu
-Bridge : Mu
-Num : Mu
-Rat : Mu
-narrow : Mu
-cosec : Mu
-base : Mu
-asinh : Mu
-acosec : Mu
-sqrt : Mu
-cosech : Mu
-isNaN : Mu
-sec : Mu
-cotanh : Mu
-log10 : Mu
-acosech : Mu
-cos : Mu
-sin : Mu
-roots : Mu
-asin : Mu
-succ : Mu
-exp : Mu
-acotan : Mu
-Complex : Mu
-atanh : Mu
-asech : Mu
-pred : Mu
-acosh : Mu
-cosh : Mu
-cotan : Mu
-log : Mu
-sinh : Mu
-atan2 : Mu
-atan : Mu
-truncate : Mu
-round : Mu
-floor : Mu
-acos : Mu
-ceiling : Mu
-sign : Mu
-abs : Mu
-sech : Mu
-asec : Mu
-unpolar : Mu
-FatRat : Mu
-acotanh : Mu
-rand : Mu
-polymod : Mu
-cis : Mu
-Int : Mu
-tanh : Mu
-tan : Mu
-conj : Mu
-Str : Mu
-perl : Mu
-Real : Mu
-ACCEPTS : Mu
-gist : Mu
-Numeric : Mu
-Bool : Mu
-DUMP : Mu
-tai : Mu
-BUILDALL : Mu
-C:Map
-new : Mu
-elems : Mu
-IterationBuffer : Mu
-List : Mu
-iterator : Mu
-list : Mu
-STORE : Mu
-Capture : Mu
-FLATTENABLE_LIST : Mu
-FLATTENABLE_HASH : Mu
-fmt : Mu
-hash : Mu
-clone : Mu
-lazy-if : Mu
-lazy : Mu
-item : Mu
-keyof : Mu
-hyper : Mu
-of : Mu
-race : Mu
-flat : Mu
-WHICH : Mu
-Map : Mu
-Hash : Mu
-Bool : Mu
-Int : Mu
-Numeric : Mu
-Str : Mu
-head : Mu
-sort : Mu
-ACCEPTS : Mu
-EXISTS-KEY : Mu
-gist : Mu
-perl : Mu
-pairs : Mu
-keys : Mu
-values : Mu
-kv : Mu
-antipairs : Mu
-invert : Mu
-AT-KEY : Mu
-ASSIGN-KEY : Mu
-roll : Mu
-pick : Mu
-Set : Mu
-SetHash : Mu
-Bag : Mu
-BagHash : Mu
-Mix : Mu
-MixHash : Mu
-BUILDALL : Mu
-D:i
-V:&infix:<gt>
-D:SIGINFO
-C:Distro
-BUILD : Mu
-cur-sep : Mu
-Str : Mu
-gist : Mu
-release : Mu
-is-win : Mu
-path-sep : Mu
-name : Mu
-auth : Mu
-version : Mu
-signature : Mu
-desc : Mu
-BUILDALL : Mu
-C:CallFrame
-SET-SELF : Mu
-new : Mu
-line : Mu
-file : Mu
-code : Mu
-callframe : Mu
-annotations : Mu
-gist : Mu
-my : Mu
-BUILDALL : Mu
-V:&infix:<∖>
-V:&infix:<ne>
-C:Thread
-BUILD : Mu
-start : Mu
-run : Mu
-id : Mu
-finish : Mu
-join : Mu
-yield : Mu
-is-initial-thread : Mu
-usage : Mu
-Numeric : Mu
-Str : Mu
-gist : Mu
-app_lifetime : Mu
-name : Mu
-BUILDALL : Mu
-D:Thread::THREAD_ERROR
-V:&tanh
-V:&infix:<⚛+=>
-V:&tclc
-V:&infix:<~~>
-V:&infix:<..^>
-V:&infix:</>
-V:&sum
-V:&prefix:<+>
-V:&uc
-V:&infix:<⊖>
-V:&infix:<x>
-V:&infix:<*>
-C:HyperConfiguration
-TWEAK : Mu
-batch : Mu
-degree : Mu
-BUILDALL : Mu
-V:&postcircumfix:<[ ]>
-D:True
-V:&ceiling
-D:e
-D:SIGTRAP
-C:Tap
-BUILD : Mu
-close : True
-new : Mu
-BUILDALL : Mu
-V:&nextwith
-V:&chmod
-V:&shift
-D:PF_MAX
-R:Baggy
-new-from-pairs : Mu
-kxxv : Mu
-default : 0
-grabpairs : Mu
-pickpairs : Mu
-grab : Mu
-pick : Mu
-roll : Mu
-classify-list : Mu
-categorize-list : Mu
-RAW-HASH : Mu
-V:&infix:<(.)>
-V:&any
-C:PseudoStash
-new : Mu
-WHICH : Mu
-BIND-KEY : Mu
-EXISTS-KEY : Mu
-AT-KEY : Mu
-ASSIGN-KEY : Mu
-BUILDALL : Mu
-C:Routine
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-onlystar : Mu
-candidates : Mu
-cando : Mu
-multi : Mu
-soft : Mu
-wrap : Mu
-unwrap : Mu
-yada : Mu
-package : Mu
-leave : Mu
-gist : Mu
-perl : Mu
-BUILDALL : Mu
-V:&acotanh
-D:PF_INET6
-V:&infix:<~^>
-V:&infix:<xor>
-V:&sqrt
-D:SOCK_DGRAM
-C:Rat
-Rat : Mu
-FatRat : Mu
-norm : Mu
-base : Mu
-sqrt : Mu
-acosec : Mu
-asinh : Mu
-Num : Mu
-cosec : Mu
-succ : Mu
-acosech : Mu
-cotanh : Mu
-log10 : Mu
-asin : Mu
-sin : Mu
-cos : Mu
-roots : Mu
-sec : Mu
-isNaN : Mu
-cosech : Mu
-nude : Mu
-exp : Mu
-atanh : Mu
-Complex : Mu
-acotan : Mu
-Bridge : Mu
-acosh : Mu
-cosh : Mu
-cotan : Mu
-pred : Mu
-asech : Mu
-narrow : Mu
-floor : Mu
-round : Mu
-new : Mu
-truncate : Mu
-is-prime : Mu
-atan2 : Mu
-atan : Mu
-sinh : Mu
-log : Mu
-sech : Mu
-acos : Mu
-abs : Mu
-sign : Mu
-ceiling : Mu
-Range : Mu
-acotanh : Mu
-rand : Mu
-unpolar : Mu
-asec : Mu
-conj : Mu
-Int : Mu
-base-repeating : Mu
-polymod : Mu
-cis : Mu
-tan : Mu
-tanh : Mu
-perl : Mu
-WHICH : Mu
-Bool : Mu
-Str : Mu
-gist : Mu
-ACCEPTS : Mu
-Numeric : Mu
-Real : Mu
-DUMP : Mu
-numerator : Mu
-denominator : Mu
-BUILDALL : Mu
-V:&infix:<cmp>
-V:&chr
-V:&trim-leading
+C:IntStr
+new
+Int
+ACCEPTS
+Numeric
+Real
+Str
+perl
 D:SeekFromCurrent
-D:ProtocolType::PROTO_UDP
-D:ProtocolType::PROTO_TCP
-V:&parse-base
-V:&postcircumfix:<[; ]>
-V:&keys
-V:&symlink
-C:Method
-gist : Mu
-V:&put
-V:&prefix:<~^>
-V:&circumfix:<{ }>
-R:Encoding
-name : Mu
-alternative-names : Mu
-encoder : Mu
-decoder : Mu
-R:Encoding::Encoder
-encode-chars : Mu
-C:Encoding::Encoder::Builtin
-new : Mu
-encode-chars : Mu
-BUILDALL : Mu
-C:Encoding::Encoder::TranslateNewlineWrapper
-new : Mu
-encode-chars : Mu
-BUILDALL : Mu
-C:Encoding::Registry
-register : Mu
-find : Mu
-R:Encoding::Decoder
-add-bytes : Mu
-consume-available-chars : Mu
-consume-all-chars : Mu
-consume-exactly-chars : Mu
-set-line-separators : Mu
-consume-line-chars : Mu
-is-empty : Mu
-bytes-available : Mu
-consume-exactly-bytes : Mu
-C:Encoding::Decoder::Builtin
-new : Mu
-add-bytes : Mu
-consume-available-chars : Mu
-consume-all-chars : Mu
-consume-exactly-chars : Mu
-set-line-separators : Mu
-consume-line-chars : Mu
-is-empty : Mu
-bytes-available : Mu
-consume-exactly-bytes : Mu
-C:Encoding::Builtin
-new : Mu
-SET-SELF : Mu
-alternative-names : Mu
-decoder : Mu
-encoder : Mu
-name : Mu
-BUILDALL : Mu
-V:&infix:<∌>
-C:Lock
-new : Mu
-lock : Mu
-unlock : Mu
-protect : Mu
-condition : Mu
-C:Lock::Async
-lock : Mu
-unlock : Mu
-protect : Mu
-protect-or-queue-on-recursion : Mu
-with-lock-hidden-from-recursion-check : Mu
-BUILDALL : Mu
-C:Lock::ConditionVariable
-new : Mu
-wait : Mu
-signal : Mu
-signal_all : Mu
-V:&trait_mod:<returns>
-R:Callable
-of : Mu
-returns : Mu
-Capture : Mu
-C:Signature
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-<anon> : Mu
-Capture : Mu
-arity : Mu
-count : Mu
-params : Mu
-ACCEPTS : Mu
-perl : Mu
-gist : Mu
-BUILDALL : Mu
-V:&infix:<^..^>
-V:&unpolar
-D:SeekFromBeginning
-V:&infix:<?|>
-V:&printf
-D:SIGTERM
-V:&rmdir
-V:&map
-V:&infix:<…>
-V:&sinh
-R:Setty
-new-from-pairs : Mu
-default : False
-elems : Mu
-total : Mu
-grab : Mu
-grabpairs : Mu
-pick : Mu
-pickpairs : Mu
-roll : Mu
-RAW-HASH : Mu
-V:&rotate
-V:&mkdir
-V:&unshift
-C:Array
-iterator : Mu
-from-iterator : Mu
-new : Mu
-STORE : Mu
-reification-target : Mu
-FLATTENABLE_LIST : Mu
-shape : Mu
-pop : Mu
-shift : Mu
-grab : Mu
-GRAB_ONE : Mu
-name : Mu
-of : Mu
-default : Mu
-dynamic : Mu
-clone : Mu
-Slip : Mu
-flat : Mu
-List : Mu
-AT-POS : Mu
-ASSIGN-POS : Mu
-BIND-POS : Mu
-DELETE-POS : Mu
-push : Mu
-append : Mu
-unshift : Mu
-prepend : Mu
-splice : Mu
-tail : Mu
-perl : Mu
-WHICH : Mu
-BUILDALL : Mu
-V:&rand
-C:Semaphore
-new : Mu
-acquire : Mu
-try_acquire : Mu
-release : Mu
-V:&infix:<≤>
-V:&infix:<%>
+V:&infix:«(>=)»
+V:&infix:<÷>
+V:&trait_mod:<is>
+V:&sin
+V:&index
+V:&term:<now>
+R:Baggy
+new-from-pairs
+kxxv
+default
+grabpairs
+pickpairs
+grab
+pick
+roll
+classify-list
+categorize-list
+RAW-HASH
+V:&cache
+D:PF_LOCAL
+V:&infix:<?^>
+R:Universal
+BUILD
+Str
+C:Set
+iterator
+clone
+STORE
+of
+SET-SELF
+keyof
+Int
+Capture
+Numeric
+grabpairs
+pick
+roll
+Real
+new-from-pairs
+pickpairs
+Num
+fmt
+default
+RAW-HASH
+total
+grab
+elems
+WHICH
+kv
+values
+Set
+SetHash
+AT-KEY
+ASSIGN-KEY
+DELETE-KEY
+new
+keys
+antipairs
+minpairs
+maxpairs
+Bool
+hash
+Hash
+ACCEPTS
+Str
+gist
+perl
+EXISTS-KEY
+Bag
+BagHash
+Mix
+MixHash
+pairs
+list
+BUILDALL
+C:Grammar
+parse
+subparse
+parsefile
+C:List
+from-iterator
+from-slurpy
+from-slurpy-onearg
+from-slurpy-flat
+new
+to
+from
+sum
+fmt
+ASSIGN-POS
+BIND-POS
+reification-target
+iterator
+sink
+STORE
+eager
+Capture
+FLATTENABLE_LIST
+FLATTENABLE_HASH
+CALL-ME
+pick
+roll
+reverse
+rotate
+combinations
+permutations
+join
+push
+append
+unshift
+prepend
+shift
+pop
+of
+item
+lazy-if
+lazy
+flat
+race
+hyper
+Bool
+Int
+end
+Numeric
+Str
+elems
+AT-POS
+EXISTS-POS
+ACCEPTS
+list
+values
+keys
+kv
+pairs
+antipairs
+invert
+gist
+perl
+List
+Slip
+Array
+Supply
+is-lazy
+sort
+tail
+chrs
+Set
+Bag
+SetHash
+MixHash
+BagHash
+Mix
+BUILDALL
+C:List::Reifier
+reify-at-least
+reify-until-lazy
+reify-all
+fully-reified
+is-lazy
+BUILDALL
+V:&infix:«(<+)»
+V:&infix:<&>
+V:&postcircumfix:<{ }>
+C:AST
+BUILD
+incarnate
+evaluate_unquotes
+is_quasi_ast
+Str
+BUILDALL
+V:&trait_mod:<will>
+V:&flat
+V:&infix:<...^>
+V:&lsb
+V:&chmod
+V:&infix:<does>
+C:JSONException
+message
+text
+BUILDALL
+D:SIGTSTP
+V:&atanh
+V:&log
 V:&push
-D:PF_UNIX
+V:&from-json
+C:Num
+Capture
+Num
+Bridge
+Range
+Int
+Rat
+FatRat
+succ
+pred
+isNaN
+abs
+log
+sqrt
+rand
+ceiling
+floor
+sin
+asin
+cos
+acos
+tan
+atan
+sec
+asec
+cosec
+acosec
+cotan
+acotan
+sinh
+asinh
+cosh
+acosh
+tanh
+atanh
+sech
+asech
+cosech
+acosech
+cotanh
+acotanh
+is-prime
+narrow
+Complex
+round
+cis
+sign
+polymod
+unpolar
+truncate
+roots
+exp
+atan2
+conj
+log10
+base
+WHICH
+Bool
+new
+perl
+Str
+Real
+ACCEPTS
+DUMP
+Numeric
+gist
+C:StrDistance
+BUILD
+Bool
+ACCEPTS
+Numeric
+Str
+Int
+before
+after
+BUILDALL
+V:&infix:«<»
+V:&uniprop-str
+V:&infix:<,>
+D:FileRenamed
+V:&callsame
+V:&print
+D:SIGABRT
+V:&rotate
+V:&infix:<||>
+C:Compiler
+BUILD
+build-date
+verbose-config
+Str
+gist
+id
+release
+codename
+name
+auth
+version
+signature
+desc
+BUILDALL
+C:Distro
+BUILD
+cur-sep
+Str
+gist
+release
+is-win
+path-sep
+name
+auth
+version
+signature
+desc
+BUILDALL
+V:&infix:«+<»
+C:Match
+ast
+made
+STR
+MATCH
+CURSOR_NEXT
+CURSOR_OVERLAP
+CURSOR_MORE
+INTERPOLATE
+INTERPOLATE_ASSERTION
+CALL_SUBRULE
+DYNQUANT_LIMITS
+OTHERGRAMMAR
+INDMETHOD
+INDRULE
+RECURSE
+BUILD
+clone
+Bool
+prematch
+postmatch
+caps
+chunks
+digit
+upper
+before
+!highexpect
+orig
+chars
+slangs
+set_how
+know_how
+!set_highexpect
+!alt_nfa
+!reduce_with_match
+!cursor_pos
+!cursor_start_subcapture
+check_PACKAGE_oopsies
+punct
+space
+!cursor_start_fail
+set_pragma
+set_braid_from
+!cursor_init
+graph
+alnum
+!dba
+!cursor_pass
+switch_to_slang
+how
+braid
+prune
+blank
+!DELEGATE_ACCEPTS
+!cursor_push_cstack
+pos
+actions
+at
+!alt
+package
+FAILGOAL
+ident
+!shared
+!cursor_next
+from
+slang_actions
+check_LANG_oopsies
+pragma
+!cursor_start_cur
+cntrl
+!BACKREF
+!reduce
+!clone_match_at
+to
+snapshot_braid
+lower
+ws
+!protoregex_nfa
+dump
+!dump_str
+ww
+same
+!BACKREF-LATEST-CAPTURE
+!cursor_fail
+!fresh_highexpect
+!protoregex_table
+clone_braid_from
+after
+!precompute_nfas
+refine_slang
+!cursor_start
+wb
+!DYNQUANT_LIMITS
+!clear_highwater
+!protoregex
+!braid
+!shared_type
+CURSOR
+make
+!cursor_start_all
+xdigit
+Str
+Num
+define_slang
+set_braid
+CAPHASH
+print
+alpha
+!LITERAL
+!highwater
+!cursor_more
+target
+PRECURSOR
+slang_grammar
+grammar
+set_package
+!cursor_capture
+set_actions
+WHICH
+Numeric
+ACCEPTS
+perl
+gist
+BUILDALL
+V:&tan
+V:&infix:<=~=>
+V:&all
+V:&splice
+V:&infix:<∈>
+V:&infix:<⊉>
+V:&samecase
+V:&postfix:<ⁿ>
+D:SocketType::SOCK_RAW
+D:SocketType::SOCK_DGRAM
+D:SocketType::SOCK_STREAM
+D:SocketType::SOCK_RDM
+D:SocketType::SOCK_MAX
+D:SocketType::SOCK_SEQPACKET
+D:SocketType::SOCK_PACKET
+V:&chop
+V:&one
+C:utf8
+encoding
+of
+allocate
+bytes
+chars
+decode
+reverse
+join
+Int
+subbuf
+COMPARE
+Capture
+Numeric
+contents
+SAME
+unpack
+Str
+Stringy
+WHICH
+new
+EXISTS-POS
+AT-POS
+Bool
+elems
+list
+gist
+perl
+V:&infix:<^..>
+V:&infix:«(<=)»
+V:&roundrobin
+V:&say
+V:&tclc
+V:&infix:<⊅>
+V:&run
+V:&prefix:<?>
+V:&dd
+D:PROCESS
+V:&infix:<&&>
+V:&close
+V:&infix:<⊃>
+V:&awaiterator
+D:SIGTHR
+V:&infix:<^>
+V:&pick
+C:NFD
+new
+NFD
+D:SOCK_STREAM
+V:&ord
+V:&return
+V:&infix:<before>
+V:&prefix:<not>
 V:&next
-V:&infix:<∩>
-V:&trait_mod:<of>
-V:&sign
-V:&hash
+V:&infix:<minmax>
+V:&prefix:<^>
+V:&infix:«(<)»
+C:Perl
+BUILD
+VMnames
+DISTROnames
+KERNELnames
+Str
+gist
+compiler
+name
+auth
+version
+signature
+desc
+BUILDALL
+D:SIGIO
+V:&prefix:<−>
+C:Signature
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+Capture
+arity
+count
+params
+ACCEPTS
+perl
+gist
+BUILDALL
+V:&infix:<(^)>
+V:&infix:<∘>
+R:Iterable
+iterator
+item
+flat
+lazy-if
+lazy
+hyper
+race
+C:Map
+new
+elems
+IterationBuffer
+List
+iterator
+list
+STORE
+STORE_AT_KEY
+Capture
+FLATTENABLE_LIST
+FLATTENABLE_HASH
+fmt
+hash
+clone
+of
+keyof
+item
+lazy-if
+lazy
+flat
+race
+hyper
+WHICH
+Map
+Hash
+Bool
+Int
+Numeric
+Str
+head
+sort
+ACCEPTS
+EXISTS-KEY
+gist
+perl
+pairs
+keys
+values
+kv
+antipairs
+invert
+AT-KEY
+roll
+pick
+Set
+SetHash
+Bag
+BagHash
+Mix
+MixHash
+BUILDALL
+V:&samemark
+V:&prefix:<~>
+C:CallFrame
+SET-SELF
+new
+line
+file
+code
+callframe
+annotations
+gist
+my
+BUILDALL
+C:Duration
+new
+Bridge
+Num
+Rat
+narrow
+asinh
+Complex
+FatRat
+succ
+cosec
+cosh
+tanh
+asech
+round
+abs
+rand
+cis
+pred
+sign
+cos
+acos
+ceiling
+sec
+cotan
+log
+polymod
+sin
+asin
+atan
+unpolar
+truncate
+roots
+sqrt
+sinh
+sech
+tan
+asec
+acosec
+acotan
+Int
+exp
+atan2
+floor
+acosech
+cosech
+atanh
+conj
+log10
+base
+acotanh
+cotanh
+isNaN
+acosh
+Str
+perl
+Real
+ACCEPTS
+DUMP
+Numeric
+gist
+Bool
+tai
+BUILDALL
+D:SIGBUS
+V:&prefix:<++⚛>
+V:&prefix:<+^>
+V:&categorize
+C:HyperSeq
+BUILD
+iterator
+grep
+map
+invert
+hyper
+race
+is-lazy
+sink
+item
+lazy-if
+lazy
+Numeric
+flat
+fmt
+cache
+serial
+Set
+Bag
+AT-POS
+Slip
+SetHash
+eager
+Array
+MixHash
+list
+EXISTS-POS
+Stringy
+BagHash
+Str
+gist
+List
+Mix
+configuration
+BUILDALL
+V:&infix:<max>
+D:SIGUSR2
+R:Blob
+allocate
+Capture
+Numeric
+Int
+bytes
+chars
+decode
+subbuf
+reverse
+COMPARE
+SAME
+join
+unpack
+contents
+encoding
+V:&return-rw
+V:&warn
+V:&chrs
+V:&infix:<but>
+C:Scalar
+<anon>
+<anon>
+new
+name
+of
+default
+dynamic
+WHICH
+BUILDALL
+C:Date
+new
+new-from-daycount
+today
+truncated-to
+later
+clone
+succ
+pred
+DateTime
+Date
+is-leap-year
+week
+yyyy-mm-dd
+weekday-of-month
+days-in-month
+week-number
+earlier
+day-of-month
+IO
+day-of-week
+week-year
+day-of-year
+daycount
+WHICH
+perl
+ACCEPTS
+Str
+gist
+year
+month
+day
+formatter
+BUILDALL
+V:&val
+D:SIGINT
+V:&prefix:<~^>
+C:Supply
+new
+BUILD
+Capture
+live
+serial
+Tappable
+tap
+act
+on-demand
+from-list
+interval
+serialize
+sanitize
+on-close
+map
+grep
+schedule-on
+start
+stable
+delayed
+do
+flat
+merge
+reduce
+produce
+migrate
+classify
+categorize
+Channel
+Seq
+Promise
+wait
+get-await-handle
+unique
+squish
+batch
+lines
+words
+elems
+head
+tail
+skip
+min
+max
+minmax
+grab
+reverse
+zip
+zip-latest
+throttle
+share
+Supply
+list
+rotor
+sort
+BUILDALL
+V:&unlink
+D:Planned
+D:π
+V:&infix:<~~>
+D:PF_UNIX
+V:&produce
+D:NaN
+V:&atomic-fetch-add
+V:&infix:<×>
+V:&sech
+D:Empty
+R:Callable
+of
+returns
+Capture
+V:&infix:<(&)>
+V:&infix:<⚛=>
+V:&infix:</>
+V:&atomic-sub-fetch
+C:HyperConfiguration
+TWEAK
+batch
+degree
+BUILDALL
+C:Cursor
+ast
+made
+STR
+MATCH
+CURSOR_NEXT
+CURSOR_OVERLAP
+CURSOR_MORE
+INTERPOLATE
+INTERPOLATE_ASSERTION
+CALL_SUBRULE
+DYNQUANT_LIMITS
+OTHERGRAMMAR
+INDMETHOD
+INDRULE
+RECURSE
+BUILD
+clone
+Bool
+prematch
+postmatch
+caps
+chunks
+digit
+upper
+before
+!highexpect
+orig
+chars
+slangs
+set_how
+know_how
+!set_highexpect
+!alt_nfa
+!reduce_with_match
+!cursor_pos
+!cursor_start_subcapture
+check_PACKAGE_oopsies
+punct
+space
+!cursor_start_fail
+set_pragma
+set_braid_from
+!cursor_init
+graph
+alnum
+!dba
+!cursor_pass
+switch_to_slang
+how
+braid
+prune
+blank
+!DELEGATE_ACCEPTS
+!cursor_push_cstack
+pos
+actions
+at
+!alt
+package
+FAILGOAL
+ident
+!shared
+!cursor_next
+from
+slang_actions
+check_LANG_oopsies
+pragma
+!cursor_start_cur
+cntrl
+!BACKREF
+!reduce
+!clone_match_at
+to
+snapshot_braid
+lower
+ws
+!protoregex_nfa
+dump
+!dump_str
+ww
+same
+!BACKREF-LATEST-CAPTURE
+!cursor_fail
+!fresh_highexpect
+!protoregex_table
+clone_braid_from
+after
+!precompute_nfas
+refine_slang
+!cursor_start
+wb
+!DYNQUANT_LIMITS
+!clear_highwater
+!protoregex
+!braid
+!shared_type
+CURSOR
+make
+!cursor_start_all
+xdigit
+Str
+Num
+define_slang
+set_braid
+CAPHASH
+print
+alpha
+!LITERAL
+!highwater
+!cursor_more
+target
+PRECURSOR
+slang_grammar
+grammar
+set_package
+!cursor_capture
+set_actions
+WHICH
+Numeric
+ACCEPTS
+perl
+gist
+BUILDALL
+D:SIGPIPE
+V:&infix:«+>»
+R:Positional
+of
+C:Block
+<anon>
+<anon>
+<anon>
+of
+returns
+add_phaser
+fire_if_phasers
+fire_phasers
+has-phasers
+has-phaser
+phasers
+WHY
+set_why
+pos
+perl
+BUILDALL
+C:Variable
+throw
+willdo
+native
+name
+scope
+var
+block
+slash
+BUILDALL
+C:Uni
+new
+list
+Uni
+NFC
+NFD
+NFKC
+NFKD
+codes
+elems
+Numeric
+Int
+of
+Str
+Bool
+EXISTS-POS
+AT-POS
+gist
+perl
+V:&trim-trailing
+D:SIGPWR
+C:Label
+new
+name
+goto
+leave
+Int
+next
+redo
+last
+gist
+BUILDALL
+V:&min
+V:&atomic-dec-fetch
+V:&not
+V:&infix:<Z>
+D:SIGILL
+V:&asinh
+V:&lines
+D:SIGTERM
+C:Slip
+defined
+CALL-ME
+Slip
+perl
+List
+D:UINT64_UPPER
+V:&chdir
+V:&deepmap
+V:&is-prime
+C:ValueObjAt
+V:&sleep
+V:&nextwith
+V:&permutations
+D:SOCK_SEQPACKET
+V:&infix:«<=»
+V:&infix:<->
+R:Stringy
+C:Macro
+V:&infix:<after>
+V:&pairs
+V:&copy
+R:Signally
+D:tau
+V:&term:<time>
+V:&shell
+D:τ
+V:&floor
+C:Failure
+DESTROY
+AT-POS
+AT-KEY
+defined
+handled
+Capture
+Int
+Num
+Numeric
+Set
+SetHash
+Bag
+BagHash
+Mix
+MixHash
+mess
+sink
+self
+CALL-ME
+FALLBACK
+STORE
+new
+Bool
+Str
+gist
+perl
+exception
+backtrace
+BUILDALL
+V:&expmod
+V:&infix:<−>
+V:&rindex
+V:&postcircumfix:<[ ]>
+V:&mix
+V:&uniprop-int
+C:Pair
+new
+Pair
+antipair
+freeze
+iterator
+fmt
+FLATTENABLE_LIST
+FLATTENABLE_HASH
+of
+keyof
+clone
+WHICH
+ACCEPTS
+keys
+kv
+values
+pairs
+antipairs
+invert
+Str
+gist
+perl
+AT-KEY
+EXISTS-KEY
+key
+value
+BUILDALL
+C:Sub
+D:SIGSEGV
+V:&infix:<leg>
+V:&infix:<!=>
+D:SOCK_RDM
+D:SeekType::SeekFromEnd
 D:SeekType::SeekFromBeginning
 D:SeekType::SeekFromCurrent
-D:SeekType::SeekFromEnd
-V:&infix:<(^)>
-V:&combinations
-V:&val
-R:StringyEnumeration
-V:&infix:<⊂>
-V:&infix:<|>
+D:SIGINFO
+R:Associative
+of
+keyof
+V:&infix:<!~~>
+V:&shift
 D:SIGUSR1
-V:&infix:<does>
-C:NFKD
-new : Mu
-NFKD : Mu
-D:τ
-V:&acosh
-C:Seq
-new : Mu
-new-consumed : Mu
-iterator : Mu
-Capture : Mu
-elems : Mu
-Numeric : Mu
-Int : Mu
-Bool : Mu
-join : Mu
-sink : Mu
-from-loop : Mu
-lazy : Mu
-lazy-if : Mu
-fmt : Mu
-item : Mu
-cache : Mu
-hyper : Mu
-race : Mu
-flat : Mu
-is-lazy : Mu
-Seq : Mu
-perl : Mu
-ACCEPTS : Mu
-BagHash : Mu
-MixHash : Mu
-Stringy : Mu
-Str : Mu
-Mix : Mu
-Array : Mu
-AT-POS : Mu
-Slip : Mu
-Set : Mu
-List : Mu
-SetHash : Mu
-eager : Mu
-list : Mu
-Bag : Mu
-EXISTS-POS : Mu
-gist : Mu
-BUILDALL : Mu
-V:&lc
-V:&infix:<≼>
-V:&prefix:<so>
-C:utf32
-encoding : Mu
-join : Mu
-Int : Mu
-unpack : Mu
-chars : Mu
-reverse : Mu
-allocate : Mu
-of : Mu
-bytes : Mu
-SAME : Mu
-contents : Mu
-COMPARE : Mu
-decode : Mu
-Capture : Mu
-Numeric : Mu
-subbuf : Mu
-Str : Mu
-Stringy : Mu
-WHICH : Mu
-new : Mu
-EXISTS-POS : Mu
-AT-POS : Mu
-Bool : Mu
-elems : Mu
-list : Mu
-gist : Mu
-perl : Mu
-ACCEPTS : Mu
-V:&circumfix:<:{ }>
-V:&prefix:<let>
-V:&trait_mod:<trusts>
+V:&abs
+V:&so
+D:PF_INET6
+V:&infix:<?|>
+D:SIGWINCH
+V:&infix:<%%>
+C:Channel
+BUILD
+send
+receive
+poll
+Capture
+iterator
+list
+get-await-handle
+close
+elems
+fail
+closed
+Supply
+BUILDALL
+V:&infix:<xor>
+V:&exp
+C:ForeignCode
+arity
+count
+signature
+name
+of
+Capture
+returns
+gist
+Str
+BUILDALL
+C:Mu
+self
+sink
+ACCEPTS
+WHERE
+WHICH
+iterator
+split
+emit
+take
+return-rw
+return
+WHY
+set_why
+Bool
+so
+not
+defined
+new
+is-lazy
+CREATE
+bless
+BUILDALL
+BUILD_LEAST_DERIVED
+Numeric
+Real
+Str
+Stringy
+item
+say
+print
+put
+note
+gistseen
+gist
+perlseen
+perl
+DUMP
+DUMP-PIECES
+DUMP-OBJECT-ATTRS
+isa
+does
+can
+clone
+Capture
+dispatch:<var>
+dispatch:<::>
+dispatch:<!>
+dispatch:<.=>
+dispatch:<.?>
+dispatch:<.+>
+dispatch:<.*>
+dispatch:<hyper>
+WALK
+V:&join
+V:&prefix:<|>
+C:CurrentThreadScheduler
+handle_uncaught
+cue
+loads
+uncaught_handler
+BUILDALL
+V:&chomp
+V:&trait_mod:<handles>
+C:ThreadPoolScheduler
+BUILD
+queue
+cue
+loads
+usage
+handle_uncaught
+initial_threads
+max_threads
+uncaught_handler
+BUILDALL
+C:ThreadPoolScheduler::ThreadPoolAwaiter
+BUILD
+await
+await-all
+BUILDALL
+C:Int
+new
+Capture
+Int
+Num
+Rat
+FatRat
+abs
+Bridge
+chr
+sqrt
+base
+polymod
+expmod
+is-prime
+floor
+ceiling
+round
+lsb
+msb
+narrow
+Range
+asinh
+Complex
+succ
+cosec
+cosh
+tanh
+asech
+rand
+cis
+pred
+sign
+cos
+acos
+sec
+cotan
+log
+sin
+asin
+atan
+unpolar
+truncate
+roots
+sinh
+sech
+tan
+asec
+acosec
+acotan
+exp
+atan2
+acosech
+cosech
+atanh
+conj
+log10
+acotanh
+cotanh
+isNaN
+acosh
+WHICH
+perl
+Bool
+Str
+Real
+ACCEPTS
+DUMP
+Numeric
+gist
+C:Stash
+package_at_key
+merge-symbols
+AT-KEY
+gist
+Str
+C:CompUnit
+new
+unit
+WHICH
+Str
+gist
+from
+short-name
+version
+auth
+repo
+repo-id
+handle
+precompiled
+distribution
+BUILDALL
+R:CompUnit::PrecompilationDependency
+id
+src
+spec
+checksum
+Str
+serialize
+deserialize
+C:CompUnit::PrecompilationDependency::File
+source-name
+deserialize
+spec
+serialize
+Str
+id
+src
+checksum
+BUILDALL
+C:CompUnit::Handle
+ctxsave
+from-unit
+export-sub
+export-package
+export-how-package
+globalish-package
+unit
+new
+BUILDALL
+R:CompUnit::PrecompilationStore
+new-unit
+load-unit
+load-repo-id
+store-file
+store-unit
+store-repo-id
+delete
+delete-by-compiler
+C:CompUnit::PrecompilationStore::File
+BUILD
+new-unit
+path
+unlock
+load-unit
+load-repo-id
+remove-from-cache
+destination
+store-file
+store-unit
+store-repo-id
+delete
+delete-by-compiler
+prefix
+BUILDALL
+R:CompUnit::Repository
+need
+resolve
+load
+loaded
+id
+precomp-store
+precomp-repository
+repo-chain
+C:CompUnit::Repository::Distribution
+BUILD
+new
+meta
+Str
+id
+<anon>
+BUILDALL
+R:CompUnit::Repository::Installable
+install
+can-install
+installed
+C:CompUnit::Repository::FileSystem
+id
+resolve
+need
+load
+short-id
+loaded
+files
+resource
+precomp-store
+precomp-repository
+path-spec
+source-file
+prefix
+repo-chain
+new
+perl
+WHICH
+Str
+gist
+next-repo
+BUILDALL
+C:CompUnit::Repository::Perl5
+need
+loaded
+id
+path-spec
+precomp-repository
+load
+precomp-store
+resolve
+repo-chain
+gist
+next-repo
+BUILDALL
+C:CompUnit::Repository::NQP
+need
+loaded
+id
+path-spec
+precomp-repository
+load
+precomp-store
+resolve
+repo-chain
+gist
+next-repo
+BUILDALL
+C:CompUnit::Repository::AbsolutePath
+need
+load
+loaded
+id
+path-spec
+precomp-repository
+precomp-store
+resolve
+repo-chain
+gist
+next-repo
+BUILDALL
+C:CompUnit::Repository::Unknown
+need
+loaded
+id
+Str
+precomp-repository
+load
+precomp-store
+resolve
+repo-chain
+path-spec
+short-name
+next-repo
+BUILDALL
+R:CompUnit::Repository::Locally
+new
+path-spec
+source-file
+prefix
+id
+short-id
+C:CompUnit::Repository::Installation
+BUILD
+writeable-path
+can-install
+name
+upgrade-repository
+install
+uninstall
+script
+files
+resolve
+need
+resource
+id
+short-id
+loaded
+distribution
+installed
+precomp-store
+precomp-repository
+path-spec
+load
+source-file
+prefix
+repo-chain
+new
+perl
+WHICH
+Str
+gist
+next-repo
+BUILDALL
+C:CompUnit::Repository::Spec
+from-string
+short-id
+options
+path
+Str
+BUILDALL
+C:CompUnit::PrecompilationId
+new
+new-from-string
+new-without-check
+Str
+IO
+substr
+id
+BUILDALL
+C:CompUnit::Loader
+load-source-file
+load-source
+load-precompilation-file
+load-precompilation
+C:CompUnit::RepositoryRegistry
+repository-for-spec
+setup-repositories
+use-repository
+repository-for-name
+register-name
+name-for-repository
+file-for-spec
+run-script
+head
+resolve-unknown-repos
+resolve_repossession_conflicts
+R:CompUnit::PrecompilationUnit
+id
+path
+modified
+dependencies
+bytecode
+checksum
+source-checksum
+bytecode-handle
+close
+is-up-to-date
+C:CompUnit::PrecompilationUnit::File
+BUILD
+modified
+dependencies
+bytecode
+bytecode-handle
+source-checksum
+checksum
+Str
+close
+save-to
+is-up-to-date
+id
+path
+BUILDALL
+R:CompUnit::PrecompilationRepository
+try-load
+load
+may-precomp
+D:CompUnit::PrecompilationRepository::None
+C:CompUnit::PrecompilationRepository::Default
+try-load
+load
+precompile
+may-precomp
+store
+BUILDALL
+C:CompUnit::DependencySpecification
+Str
+short-name
+source-line-number
+from
+version-matcher
+auth-matcher
+api-matcher
+BUILDALL
+R:NumericStringyEnumeration
+V:&infix:<*>
+C:Parameter
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+name
+usage-name
+sigil
+twigil
+modifier
+constraint_list
+constraints
+type
+named_names
+named
+positional
+slurpy
+optional
+raw
+capture
+rw
+onearg
+copy
+readonly
+invocant
+multi-invocant
+default
+type_captures
+sub_signature
+set_why
+set_default
+ACCEPTS
+perl
+BUILDALL
+V:&lastcall
+V:&atan2
+V:&sprintf
+C:Capture
+from-args
+BUILD
+hash
+list
+elems
+Capture
+FLATTENABLE_LIST
+FLATTENABLE_HASH
+WHICH
+AT-KEY
+AT-POS
+EXISTS-KEY
+Str
+gist
+perl
+Bool
+Numeric
+keys
+kv
+values
+pairs
+antipairs
+BUILDALL
+C:utf16
+encoding
+of
+allocate
+bytes
+chars
+decode
+reverse
+join
+Int
+subbuf
+COMPARE
+Capture
+Numeric
+contents
+SAME
+unpack
+Str
+Stringy
+WHICH
+new
+EXISTS-POS
+AT-POS
+Bool
+elems
+list
+gist
+perl
+V:&hash
+D:SIGFPE
+V:&uniprops
+V:&trim
+D:PF_INET
+D:ProtocolType::PROTO_TCP
+D:ProtocolType::PROTO_UDP
+V:&infix:<and>
 V:&cis
-C:Mix
-STORE : Mu
-total : Mu
-classify-list : Mu
-categorize-list : Mu
-Capture : Mu
-default : 0
-Real : Mu
-fmt : Mu
-new-from-pairs : Mu
-grabpairs : Mu
-Numeric : Mu
-Setty : Mu
-Num : Mu
-SET-SELF : Mu
-kxxv : Mu
-RAW-HASH : Mu
-of : Mu
-pick : Mu
-roll : Mu
-grab : Mu
-Int : Mu
-pickpairs : Mu
-keyof : Mu
-Mixy : Mu
-Baggy : Mu
-DELETE-KEY : Mu
-WHICH : Mu
-Mix : Mu
-MixHash : Mu
-hash : Mu
-Hash : Mu
-Set : Mu
-SetHash : Mu
-Bag : Mu
-BagHash : Mu
-elems : Mu
-new : Mu
-invert : Mu
-pairs : Mu
-Bool : Mu
-values : Mu
-antipairs : Mu
-Str : Mu
-keys : Mu
-iterator : Mu
-ACCEPTS : Mu
-list : Mu
-perl : Mu
-gist : Mu
-EXISTS-KEY : Mu
-AT-KEY : Mu
-kv : Mu
-BUILDALL : Mu
+R:Enumeration
+enums
+pair
+CALL-ME
+pred
+succ
+V:&minmax
+V:&squish
+D:e
+V:&infix:<~|>
+V:&item
+V:&parse-names
+D:SIGVTALRM
+D:Kept
+V:&postfix:<⚛++>
+R:QuantHash
+SET-SELF
+Int
+Num
+Numeric
+Real
+Capture
+fmt
+V:&classify
+V:&atomic-assign
+V:&infix:<+^>
+R:Numeric
+log
+log10
+exp
+roots
+FatRat
+succ
+pred
+V:&infix:<..^>
+D:SIGALRM
+C:Range
+new
+excludes-min
+excludes-max
+infinite
+is-int
+elems
+iterator
+flat
+reverse
+first
+bounds
+int-bounds
+fmt
+ASSIGN-POS
+roll
+pick
+Capture
+push
+append
+unshift
+prepend
+shift
+pop
+sum
+rand
+in-range
+of
+item
+lazy-if
+lazy
+race
+hyper
+is-lazy
+WHICH
+EXISTS-POS
+list
+Str
+ACCEPTS
+AT-POS
+perl
+Numeric
+minmax
+Set
+Bag
+SetHash
+MixHash
+BagHash
+Mix
+min
+max
+BUILDALL
+V:&unshift
+C:Rat
+Rat
+FatRat
+asinh
+Complex
+succ
+nude
+cosec
+cosh
+tanh
+asech
+round
+cis
+rand
+abs
+acos
+cos
+sign
+pred
+ceiling
+polymod
+log
+cotan
+sec
+is-prime
+unpolar
+atan
+asin
+sin
+narrow
+truncate
+REDUCE-ME
+new
+sech
+sinh
+sqrt
+roots
+Range
+base-repeating
+acosec
+asec
+tan
+acotan
+norm
+Int
+exp
+atan2
+Bridge
+floor
+acosech
+cosech
+atanh
+conj
+log10
+acotanh
+cotanh
+base
+Num
+acosh
+isNaN
+perl
+WHICH
+Bool
+Str
+ACCEPTS
+DUMP
+Numeric
+Real
+gist
+numerator
+denominator
+BUILDALL
+V:&infix:<===>
+R:Systemic
+BUILD
+Str
+D:SIGXCPU
+V:&postfix:<⚛-->
+V:&prefix:<?^>
+V:&truncate
+V:&asech
+V:&infix:«(>+)»
+D:SIGKILL
+D:SIGTTIN
+V:&srand
+V:&comb
+C:IterationBuffer
+clear
+elems
+push
+append
+AT-POS
+BIND-POS
+perl
+V:&EVAL
+V:&infix:<ne>
+V:&acotan
+D:i
+V:&infix:<≼>
+V:&atomic-fetch-inc
+V:&flip
+V:&elems
+V:&note
+V:&rand
+V:&infix:<gt>
+R:Encoding
+name
+alternative-names
+encoder
+decoder
+C:Encoding::Builtin
+new
+SET-SELF
+alternative-names
+decoder
+encoder
+name
+BUILDALL
+R:Encoding::Encoder
+encode-chars
+C:Encoding::Encoder::Builtin
+new
+encode-chars
+BUILDALL
+C:Encoding::Encoder::TranslateNewlineWrapper
+new
+encode-chars
+BUILDALL
+R:Encoding::Decoder
+add-bytes
+consume-available-chars
+consume-all-chars
+consume-exactly-chars
+set-line-separators
+consume-line-chars
+is-empty
+bytes-available
+consume-exactly-bytes
+C:Encoding::Decoder::Builtin
+new
+add-bytes
+consume-available-chars
+consume-all-chars
+consume-exactly-chars
+set-line-separators
+consume-line-chars
+is-empty
+bytes-available
+consume-exactly-bytes
+C:Encoding::Registry
+register
+find
+V:&combinations
+V:&infix:<?&>
+C:Array
+iterator
+from-iterator
+new
+STORE
+reification-target
+FLATTENABLE_LIST
+shape
+pop
+shift
+grab
+GRAB_ONE
+name
+of
+default
+dynamic
+clone
+Slip
+flat
+List
+AT-POS
+ASSIGN-POS
+BIND-POS
+DELETE-POS
+push
+append
+unshift
+prepend
+splice
+tail
+perl
+WHICH
+BUILDALL
+D:Array::dim2role
+R:Awaitable
+get-await-handle
+R:Awaitable::Handle
+already-success
+already-failure
+subscribe-awaiter
+V:&infix:<≤>
+V:&subbuf-rw
+D:SOCK_DGRAM
+V:&atomic-fetch
+V:&last
+V:&infix:<^^>
+D:SIGTTOU
+V:&goto
+V:&infix:<ge>
+C:Supplier
+new
+BUILD
+emit
+done
+quit
+Supply
+unsanitized-supply
+BUILDALL
+C:Supplier::Preserving
+new
+V:&indir
+V:&postcircumfix:<[; ]>
+V:&infix:<∋>
+V:&uniparse
+V:&infix:<…>
+V:&ords
+C:PseudoStash
+new
+BIND-KEY
+EXISTS-KEY
+AT-KEY
+BUILDALL
+V:&infix:<∉>
+V:&ceiling
+R:Buf
+pop
+shift
+reallocate
+splice
+push
+append
+unshift
+prepend
+subbuf-rw
+V:&roots
+V:&repeated
+R:Dateish
+IO
+is-leap-year
+days-in-month
+daycount
+day-of-month
+day-of-week
+week
+week-year
+week-number
+weekday-of-month
+day-of-year
+yyyy-mm-dd
+earlier
+D:SIGCHLD
+V:&asec
+V:&trait_mod:<trusts>
+D:SIGQUIT
+D:Broken
+V:&acosech
+C:MixHash
+total
+STORE
+clone
+of
+SET-SELF
+keyof
+Int
+Capture
+Numeric
+grabpairs
+pick
+roll
+categorize-list
+Real
+pickpairs
+new-from-pairs
+Num
+fmt
+default
+classify-list
+RAW-HASH
+kxxv
+grab
+AT-KEY
+new
+Mix
+MixHash
+iterator
+values
+kv
+hash
+Hash
+Set
+SetHash
+Bag
+BagHash
+ACCEPTS
+perl
+EXISTS-KEY
+list
+pairs
+DELETE-KEY
+keys
+Str
+invert
+antipairs
+gist
+Bool
+elems
+BUILDALL
+V:&infix:<~>
+V:&append
+V:&substr
+V:&to-json
+V:&split
 V:&take-rw
+V:&postfix:<++>
+V:&trim-leading
+C:VM
+BUILD
+platform-library-name
+osname
+Str
+gist
+config
+prefix
+precomp-ext
+precomp-target
+name
+auth
+version
+signature
+desc
+BUILDALL
+C:RaceSeq
+BUILD
+iterator
+grep
+map
+invert
+hyper
+race
+is-lazy
+sink
+item
+lazy-if
+lazy
+Numeric
+flat
+fmt
+cache
+serial
+Set
+Bag
+AT-POS
+Slip
+SetHash
+eager
+Array
+MixHash
+list
+EXISTS-POS
+Stringy
+BagHash
+Str
+gist
+List
+Mix
+configuration
+BUILDALL
+V:&cotanh
+C:WhateverCode
+pos
+C:Seq
+new
+new-consumed
+iterator
+Capture
+elems
+Numeric
+Int
+Bool
+join
+sink
+from-loop
+item
+lazy-if
+lazy
+flat
+race
+fmt
+cache
+hyper
+is-lazy
+Seq
+perl
+Set
+Bag
+AT-POS
+Slip
+SetHash
+eager
+Array
+MixHash
+list
+EXISTS-POS
+Stringy
+BagHash
+Str
+gist
+List
+Mix
+BUILDALL
 C:REPL
-new : Mu
-init : Mu
-teardown : Mu
-repl-eval : Mu
-interactive_prompt : Mu
-repl-loop : Mu
-ctxsave : Mu
-input-incomplete : Mu
-input-toplevel-control : Mu
-repl-print : Mu
-history-file : Mu
-completions-for-line : Mu
-extract-last-word : Mu
-update-completions : Mu
-compiler : Mu
-BUILDALL : Mu
+new
+init
+teardown
+repl-eval
+interactive_prompt
+repl-loop
+ctxsave
+input-incomplete
+input-toplevel-control
+repl-print
+history-file
+completions-for-line
+update-completions
+extract-last-word
+compiler
+BUILDALL
+V:&atomic-fetch-sub
+C:Routine
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+onlystar
+candidates
+cando
+multi
+soft
+wrap
+unwrap
+yada
+package
+leave
+perl
+BUILDALL
+V:&getc
+D:PromiseStatus::Kept
+D:PromiseStatus::Planned
+D:PromiseStatus::Broken
+V:&msb
+V:&atomic-fetch-dec
+V:&infix:<+&>
+V:&acosec
+C:Proxy
+<anon>
+<anon>
+<anon>
+C:Nil
+new
+Numeric
+Str
+sink
+AT-POS
+AT-KEY
+BIND-POS
+BIND-KEY
+ASSIGN-POS
+ASSIGN-KEY
+STORE
+push
+append
+unshift
+prepend
+FALLBACK
+ords
+chrs
+chop
+chomp
+iterator
+Set
+SetHash
+Bag
+BagHash
+Mix
+MixHash
+gist
+R:Awaiter
+await
+await-all
+C:Awaiter::Blocking
+await
+await-all
+V:&infix:<le>
+R:Tappable
+tap
+live
+serial
+sane
+V:&circumfix:<[ ]>
+V:&infix:<min>
+V:&postfix:<i>
+V:&infix:<(-)>
+V:&sort
+V:&map
+V:&prompt
+V:&prefix:<--⚛>
+V:&acosh
+V:&prefix:<+>
+C:Exception
+backtrace
+vault-backtrace
+reset-backtrace
+throw
+rethrow
+resume
+die
+fail
+is-compile-time
+Str
+gist
+BUILDALL
+C:NumStr
+new
+Num
+ACCEPTS
+Numeric
+Real
+Str
+perl
+V:&infix:<⊎>
+D:SIGSYS
+V:&infix:<⚛+=>
+V:&grep
+V:&prefix:<⚛>
+D:SIGPROF
+V:&infix:<mod>
+V:&prefix:<->
+V:&uc
+V:&proceed
+D:PROTO_UDP
+V:&rename
+V:&infix:<⊈>
+V:&infix:<cmp>
+V:&slip
+V:&infix:<(elem)>
+V:&infix:<unicmp>
+C:utf32
+encoding
+of
+allocate
+bytes
+chars
+decode
+reverse
+join
+Int
+subbuf
+COMPARE
+Capture
+Numeric
+contents
+SAME
+unpack
+Str
+Stringy
+WHICH
+new
+EXISTS-POS
+AT-POS
+Bool
+elems
+list
+gist
+perl
+V:&await
+D:FileChangeEvent::FileChanged
+D:FileChangeEvent::FileRenamed
+R:HardRoutine
+soft
+D:Bool::False
+D:Bool::True
+V:&keys
+V:&get
+V:&slurp
+C:Str
+BUILD
+Capture
+Int
+Num
+chomp
+starts-with
+ends-with
+substr-eq
+contains
+indices
+index
+rindex
+pred
+succ
+comb
+match
+subst-mutate
+subst
+lines
+parse-base
+samecase
+samemark
+samespace
+word-by-word
+trim-leading
+trim-trailing
+trim
+words
+encode
+NFC
+NFD
+NFKC
+NFKD
+wordcase
+trans
+parse-names
+uniparse
+indent
+codes
+chars
+uc
+lc
+tc
+fc
+tclc
+flip
+ord
+WHY
+WHICH
+Bool
+Str
+Stringy
+DUMP
+ACCEPTS
+chop
+Numeric
+gist
+perl
+ords
+split
+substr
+substr-rw
+BUILDALL
+C:Str::CURSOR-ITERATOR
+new
+pull-one
+skip-one
+push-all
+sink-all
+is-lazy
+push-exactly
+push-at-least
+skip-at-least
+skip-at-least-pull-one
+push-until-lazy
+BUILDALL
+C:Str::POST-ITERATOR
+new
+pull-one
+skip-one
+push-all
+sink-all
+is-lazy
+push-exactly
+push-at-least
+skip-at-least
+skip-at-least-pull-one
+push-until-lazy
+BUILDALL
+V:&prefix:<temp>
+V:&prefix:<so>
+R:Rational
+new
+nude
+Num
+floor
+ceiling
+Int
+Bridge
+Range
+isNaN
+is-prime
+base
+base-repeating
+succ
+pred
+norm
+narrow
+REDUCE-ME
+V:&unival
+C:HyperWhatever
+Capture
+new
+ACCEPTS
+perl
+V:&redo
+V:&infix:<eq>
+C:Mix
+STORE
+total
+clone
+classify-list
+categorize-list
+of
+SET-SELF
+keyof
+Int
+Capture
+Numeric
+grabpairs
+pick
+roll
+Real
+pickpairs
+new-from-pairs
+Num
+fmt
+default
+RAW-HASH
+kxxv
+grab
+DELETE-KEY
+WHICH
+Mix
+MixHash
+hash
+Hash
+Set
+SetHash
+Bag
+BagHash
+kv
+iterator
+ACCEPTS
+perl
+EXISTS-KEY
+list
+pairs
+keys
+Str
+invert
+antipairs
+AT-KEY
+gist
+values
+new
+Bool
+elems
+BUILDALL
+C:Collation
+gist
+set
+check
+primary
+secondary
+tertiary
+quaternary
+collation-level
+BUILDALL
+V:&unpolar
+V:&infix:<=:=>
+C:Deprecation
+report
+WHICH
+file
+type
+package
+name
+alternative
+callsites
+from
+removed
+BUILDALL
+V:&none
+V:&cos
+V:&samewith
+D:SOCK_MAX
+V:&infix:«>»
+V:&infix:<x>
+D:SIGHUP
+C:Attribute
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+compose
+apply_handles
+get_value
+set_value
+container
+readonly
+package
+inlined
+dimensions
+WHY
+set_why
+Str
+gist
+C:Submethod
+gist
+V:&infix:<gcd>
+V:&infix:<..>
+V:&infix:<∌>
+V:&emit
+V:&prefix:<let>
+V:&infix:<xx>
+V:&infix:<//>
+C:NFKC
+NFKC
+new
+V:&make
+V:&rmdir
+V:&mkdir
+V:&infix:<≽>
+R:Scheduler
+handle_uncaught
+cue
+loads
+C:Semaphore
+new
+acquire
+try_acquire
+release
+V:&infix:<%>
+V:&infix:<o>
+V:&any
+D:Metamodel
+C:Metamodel::Primitives
+create_type
+set_package
+install_method_cache
+configure_type_checking
+configure_destroy
+compose_type
+rebless
+is_type
+C:NFC
+new
+NFC
+V:&round
+V:&infix:<(|)>
 R:Real
-Rat : Mu
-abs : Mu
-sign : Mu
-conj : Mu
-sqrt : Mu
-rand : Mu
-sin : Mu
-asin : Mu
-cos : Mu
-acos : Mu
-tan : Mu
-atan : Mu
-atan2 : Mu
-sec : Mu
-asec : Mu
-cosec : Mu
-acosec : Mu
-cotan : Mu
-acotan : Mu
-sinh : Mu
-asinh : Mu
-cosh : Mu
-acosh : Mu
-tanh : Mu
-atanh : Mu
-sech : Mu
-asech : Mu
-cosech : Mu
-acosech : Mu
-cotanh : Mu
-acotanh : Mu
-floor : Mu
-ceiling : Mu
-round : Mu
-unpolar : Mu
-cis : Mu
-Complex : Mu
-log : Mu
-exp : Mu
-truncate : Mu
-isNaN : Mu
-polymod : Mu
-base : Mu
-Bridge : Mu
-Int : Mu
-Num : Mu
+Rat
+abs
+sign
+conj
+sqrt
+rand
+sin
+asin
+cos
+acos
+tan
+atan
+atan2
+sec
+asec
+cosec
+acosec
+cotan
+acotan
+sinh
+asinh
+cosh
+acosh
+tanh
+atanh
+sech
+asech
+cosech
+acosech
+cotanh
+acotanh
+floor
+ceiling
+round
+unpolar
+cis
+Complex
+log
+exp
+truncate
+isNaN
+polymod
+base
+Bridge
+Int
+Num
+V:&gist
+V:&infix:<(+)>
+V:&atomic-add-fetch
+C:Instant
+SET-SELF
+new
+from-posix
+to-posix
+Bridge
+Num
+Rat
+Int
+narrow
+Date
+DateTime
+Instant
+asinh
+Complex
+FatRat
+succ
+cosec
+cosh
+tanh
+asech
+round
+abs
+rand
+cis
+pred
+sign
+cos
+acos
+ceiling
+sec
+cotan
+log
+polymod
+sin
+asin
+atan
+unpolar
+truncate
+roots
+sqrt
+sinh
+sech
+tan
+asec
+acosec
+acotan
+exp
+atan2
+floor
+acosech
+cosech
+atanh
+conj
+log10
+base
+acotanh
+cotanh
+isNaN
+acosh
+Str
+perl
+Real
+ACCEPTS
+DUMP
+Numeric
+gist
+Bool
+tai
+BUILDALL
+V:&unique
+C:DateTime
+new
+now
+clone
+Instant
+posix
+offset
+offset-in-minutes
+offset-in-hours
+hh-mm-ss
+later
+truncated-to
+whole-second
+in-timezone
+utc
+local
+Date
+DateTime
+is-leap-year
+week
+yyyy-mm-dd
+weekday-of-month
+days-in-month
+week-number
+earlier
+day-of-month
+IO
+day-of-week
+week-year
+day-of-year
+daycount
+perl
+Str
+gist
+hour
+minute
+second
+timezone
+year
+month
+day
+formatter
+BUILDALL
+V:&infix:<==>
+V:&tc
+V:&prepend
+C:Whatever
+Capture
+ACCEPTS
+perl
+Str
+D:True
+R:IO
+C:IO::Handle
+TWEAK
+open
+out-buffer
+nl-in
+close
+eof
+eof-internal
+read-internal
+get
+getc
+comb
+split
+words
+lines
+read
+readchars
+seek
+tell
+write
+write-internal
+opened
+t
+lock
+unlock
+printf
+print
+put
+print-nl
+slurp-rest
+slurp
+spurt
+path
+IO
+flush
+encoding
+DESTROY
+native-descriptor
+Supply
+say
+Str
+gist
+chomp
+nl-out
+BUILDALL
+R:IO::Socket
+recv
+read
+nl-in
+get
+lines
+print
+put
+write
+close
+native-descriptor
+C:IO::Socket::INET
+connect
+listen
+accept
+recv
+read
+nl-in
+native-descriptor
+get
+put
+print
+write
+close
+lines
+new
+host
+port
+localhost
+localport
+backlog
+listening
+family
+proto
+type
+encoding
+nl-out
+BUILDALL
+C:IO::Socket::Async
+new
+print
+write
+close
+connect
+listen
+udp
+bind-udp
+print-to
+write-to
+Supply
+enc
+peer-host
+peer-port
+socket-host
+socket-port
+BUILDALL
+C:IO::Path
+BUILD
+new
+is-absolute
+is-relative
+parts
+volume
+dirname
+basename
+extension
+Numeric
+sibling
+succ
+pred
+open
+watch
+absolute
+relative
+cleanup
+resolve
+parent
+child
+add
+chdir
+rename
+copy
+move
+chmod
+unlink
+symlink
+link
+mkdir
+rmdir
+dir
+slurp
+spurt
+lines
+comb
+split
+words
+e
+d
+f
+s
+l
+r
+w
+rw
+x
+rwx
+z
+modified
+accessed
+changed
+mode
+ACCEPTS
+Str
+gist
+perl
+IO
+SPEC
+CWD
+path
+BUILDALL
+C:IO::Path::Win32
+new
+perl
+C:IO::Path::QNX
+new
+perl
+C:IO::Path::Unix
+new
+perl
+C:IO::Path::Cygwin
+new
+perl
+C:IO::Pipe
+TWEAK
+read-internal
+eof-internal
+write-internal
+flush
+close
+opened
+t
+native-descriptor
+IO
+path
+proc
+BUILDALL
+C:IO::ArgFiles
+C:IO::Special
+new
+IO
+e
+d
+f
+s
+l
+r
+w
+x
+modified
+accessed
+changed
+mode
+WHICH
+Str
+perl
+what
+BUILDALL
+C:IO::CatHandle
+new
+next-handle
+handles
+chomp
+comb
+split
+get
+getc
+read
+readchars
+slurp
+slurp-rest
+DESTROY
+close
+encoding
+eof
+IO
+path
+opened
+lock
+nl-in
+seek
+tell
+t
+unlock
+native-descriptor
+open
+flush
+out-buffer
+print
+printf
+print-nl
+put
+say
+write
+perl
+words
+lines
+Supply
+gist
+Str
+on-switch
+BUILDALL
+C:IO::Spec
+select
+C:IO::Spec::Win32
+canonpath
+catdir
+dir-sep
+devnull
+rootdir
+splitdir
+basename
+tmpdir
+path
+is-absolute
+split
+join
+splitpath
+catpath
+rel2abs
+C:IO::Spec::QNX
+canonpath
+C:IO::Spec::Unix
+canonpath
+dir-sep
+curdir
+updir
+curupdir
+rootdir
+devnull
+basename
+extension
+tmpdir
+is-absolute
+path
+splitpath
+split
+join
+catpath
+catdir
+splitdir
+catfile
+abs2rel
+rel2abs
+C:IO::Spec::Cygwin
+canonpath
+catdir
+is-absolute
+tmpdir
+abs2rel
+rel2abs
+splitpath
+catpath
+split
+join
+C:IO::Notification
+watch-path
+C:IO::Notification::Change
+IO
+gist
+path
+event
+BUILDALL
+V:&signal
+V:&infix:<…^>
+R:NumericEnumeration
+C:Bag
+total
+STORE
+clone
+classify-list
+categorize-list
+of
+SET-SELF
+keyof
+Int
+Capture
+Numeric
+grabpairs
+pick
+roll
+Real
+new-from-pairs
+pickpairs
+Num
+fmt
+default
+RAW-HASH
+kxxv
+grab
+WHICH
+DELETE-KEY
+Bag
+BagHash
+Mix
+MixHash
+ACCEPTS
+AT-KEY
+EXISTS-KEY
+new
+iterator
+keys
+kv
+values
+antipairs
+invert
+elems
+Bool
+hash
+Hash
+Str
+gist
+perl
+Set
+SetHash
+pairs
+list
+BUILDALL
+V:&reduce
+V:&fc
+V:&callframe
+D:Signal::SIGXFSZ
+D:Signal::SIGVTALRM
+D:Signal::SIGTTIN
+D:Signal::SIGSEGV
+D:Signal::SIGINT
+D:Signal::SIGURG
+D:Signal::SIGTHR
+D:Signal::SIGFPE
+D:Signal::SIGWINCH
+D:Signal::SIGTTOU
+D:Signal::SIGTSTP
+D:Signal::SIGILL
+D:Signal::SIGCHLD
+D:Signal::SIGBREAK
+D:Signal::SIGALRM
+D:Signal::SIGTRAP
+D:Signal::SIGTERM
+D:Signal::SIGPIPE
+D:Signal::SIGBUS
+D:Signal::SIGSYS
+D:Signal::SIGQUIT
+D:Signal::SIGINFO
+D:Signal::SIGXCPU
+D:Signal::SIGUSR2
+D:Signal::SIGUSR1
+D:Signal::SIGPWR
+D:Signal::SIGPROF
+D:Signal::SIGEMT
+D:Signal::SIGCONT
+D:Signal::SIGSTOP
+D:Signal::SIGSTKFLT
+D:Signal::SIGKILL
+D:Signal::SIGIO
+D:Signal::SIGHUP
+D:Signal::SIGABRT
+D:Less
+V:&cotan
+V:&cosec
+V:&asin
+V:&trait_mod:<hides>
+D:Exceptions
+C:Exceptions::JSON
+process
+V:&dir
+V:&infix:<+>
+V:&unimatch
+D:EmptySeq
+C:Cancellation
+BUILD
+cancel
+cancelled
+BUILDALL
+C:FatRat
+FatRat
+Rat
+asinh
+Complex
+succ
+nude
+cosec
+cosh
+tanh
+asech
+round
+cis
+rand
+abs
+acos
+cos
+sign
+pred
+ceiling
+polymod
+log
+cotan
+sec
+is-prime
+unpolar
+atan
+asin
+sin
+narrow
+truncate
+REDUCE-ME
+new
+sech
+sinh
+sqrt
+roots
+Range
+base-repeating
+acosec
+asec
+tan
+acotan
+norm
+Int
+exp
+atan2
+Bridge
+floor
+acosech
+cosech
+atanh
+conj
+log10
+acotanh
+cotanh
+base
+Num
+acosh
+isNaN
+perl
+WHICH
+Bool
+Str
+ACCEPTS
+DUMP
+Numeric
+Real
+gist
+numerator
+denominator
+BUILDALL
+C:BagHash
+STORE
+total
+clone
+of
+SET-SELF
+keyof
+Int
+Capture
+Numeric
+grabpairs
+pick
+roll
+categorize-list
+Real
+new-from-pairs
+pickpairs
+Num
+fmt
+default
+classify-list
+RAW-HASH
+kxxv
+grab
+AT-KEY
+Bag
+BagHash
+Mix
+MixHash
+iterator
+values
+kv
+ACCEPTS
+DELETE-KEY
+EXISTS-KEY
+new
+keys
+antipairs
+invert
+elems
+Bool
+hash
+Hash
+Str
+gist
+perl
+Set
+SetHash
+pairs
+list
+BUILDALL
+V:&infix:<≅>
+C:Version
+Capture
+parts
+plus
+new
+Str
+gist
+perl
+ACCEPTS
+WHICH
+BUILDALL
+V:&infix:<⚛−=>
+D:PROTO_TCP
+V:&link
+V:&infix:<∩>
+V:&nodemap
+V:&infix:<^..^>
+R:Mixy
+new-from-pairs
+D:False
+V:&kv
+V:&symlink
+V:&infix:«<=>»
+V:&acotanh
+R:PositionalBindFailover
+cache
+iterator
+C:Code
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+<anon>
+arity
+count
+signature
+prec
+outer
+static_id
+file
+line
+assuming
+of
+Capture
+returns
+ACCEPTS
+Str
+new
+perl
+BUILDALL
+C:SetHash
+iterator
+clone
+STORE
+of
+SET-SELF
+keyof
+Int
+Capture
+Numeric
+grabpairs
+pick
+roll
+Real
+new-from-pairs
+pickpairs
+Num
+fmt
+default
+RAW-HASH
+total
+grab
+elems
+kv
+values
+Set
+SetHash
+AT-KEY
+DELETE-KEY
+new
+keys
+antipairs
+minpairs
+maxpairs
+Bool
+hash
+Hash
+ACCEPTS
+Str
+gist
+perl
+EXISTS-KEY
+Bag
+BagHash
+Mix
+MixHash
+pairs
+list
+BUILDALL
+V:&callwith
+V:&words
+D:SIGCONT
+V:&indices
+V:&infix:<notandthen>
+V:&infix:<+|>
+R:Distribution
+meta
+content
+new
+C:Distribution::Path
+BUILD
+new
+meta
+perl
+content
+prefix
+BUILDALL
+C:Distribution::Resources
+BUILD
+from-precomp
+AT-KEY
+Str
+of
+keyof
+dist-id
+repo
+repo-name
+BUILDALL
+R:Distribution::Locally
+content
+C:Distribution::Hash
+BUILD
+new
+meta
+perl
+content
+prefix
+BUILDALL
+C:Distribution::Resource
+IO
+platform-library-name
+Str
+gist
+perl
+absolute
+is-absolute
+relative
+is-relative
+parts
+volume
+dirname
+basename
+extension
+open
+resolve
+slurp
+lines
+comb
+split
+words
+copy
+repo
+repo-name
+dist-id
+key
+BUILDALL
+V:&prefix:<!>
+V:&acos
+C:Method
+gist
+V:&cas
+V:&infix:<**>
+D:SIGBREAK
+V:&pop
+V:&fail
+V:&postfix:<-->
+V:&exit
+V:&infix:«~<»
+V:&take
+D:SeekFromEnd
+V:&circumfix:<:{ }>
+R:Sequence
+Numeric
+fmt
+V:&cross
+D:PF_MAX
+V:&move
+V:&infix:<⚛-=>
+V:&infix:<orelse>
