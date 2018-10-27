@@ -123,7 +123,8 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         while (elementAtCaret != null) {
             if (elementAtCaret instanceof Perl6Statement || elementAtCaret instanceof Perl6File)
                 break;
-            expressions.add(elementAtCaret);
+            if (elementAtCaret instanceof P6Extractable)
+                expressions.add(elementAtCaret);
             elementAtCaret = elementAtCaret.getParent();
         }
 

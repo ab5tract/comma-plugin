@@ -8,7 +8,7 @@ import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 
 public interface Perl6PackageDecl extends Perl6PsiScope, Perl6PsiDeclaration,
                                           StubBasedPsiElement<Perl6PackageDeclStub>,
-                                          Perl6IndexableType, PsiNamedElement {
+                                          Perl6IndexableType, PsiNamedElement, P6Extractable {
     String getPackageKind();
     String getPackageName();
     void contributeNestedPackagesWithPrefix(Perl6SymbolCollector collector, String prefix);
