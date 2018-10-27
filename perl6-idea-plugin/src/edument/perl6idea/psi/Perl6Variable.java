@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.PsiNamedElement;
 
-public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner {
+public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, P6Extractable {
 
     PsiElement getVariableToken();
 
