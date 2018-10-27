@@ -248,7 +248,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         if (occurrences.isEmpty()) return null;
         int offset = editor.getCaretModel().getOffset();
         for (PsiElement occurrence : occurrences) {
-            if (occurrence != null && occurrence.getTextRange().contains(offset - 1))
+            if (occurrence != null && occurrence.getTextRange().containsOffset(offset))
                 return occurrence;
         }
         return null;
