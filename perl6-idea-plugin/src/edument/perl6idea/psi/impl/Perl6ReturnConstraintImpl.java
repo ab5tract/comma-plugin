@@ -18,6 +18,6 @@ public class Perl6ReturnConstraintImpl extends ASTWrapperPsiElement implements P
     @Override
     public String getReturnType() {
         PsiElement typeName = findChildByType(TYPE_NAME);
-        return typeName == null ? null : typeName.getText();
+        return typeName == null ? "Mu" : typeName.getText();
     }
 }
