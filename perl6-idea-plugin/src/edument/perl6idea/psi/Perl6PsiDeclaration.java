@@ -40,7 +40,7 @@ public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierO
         return findTrait("is", "export") != null;
     }
 
-    default String getCuttedName(String text) {
+    default String getCutName(String text) {
         // Chop off possible parenthesis or smileys
         int index = text.indexOf('(');
         if (index != -1)

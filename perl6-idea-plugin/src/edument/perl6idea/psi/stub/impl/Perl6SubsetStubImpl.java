@@ -10,11 +10,13 @@ import edument.perl6idea.psi.stub.Perl6SubsetStub;
 public class Perl6SubsetStubImpl extends StubBase<Perl6Subset> implements Perl6SubsetStub {
     private String subsetName;
     private boolean isExported;
+    private String baseTypeName;
 
-    public Perl6SubsetStubImpl(StubElement stub, String name, boolean exported) {
+    public Perl6SubsetStubImpl(StubElement stub, String name, boolean exported, String typeName) {
         super(stub, Perl6ElementTypes.SUBSET);
-        this.subsetName = name;
+        subsetName = name;
         isExported = exported;
+        baseTypeName = typeName;
     }
 
     @Override
@@ -32,5 +34,10 @@ public class Perl6SubsetStubImpl extends StubBase<Perl6Subset> implements Perl6S
     @Override
     public boolean isExported() {
         return isExported;
+    }
+
+    @Override
+    public String getSubsetBaseTypeName() {
+        return baseTypeName;
     }
 }

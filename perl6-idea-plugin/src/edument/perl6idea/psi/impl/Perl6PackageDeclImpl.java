@@ -1,11 +1,13 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.stubs.StubElement;
@@ -15,15 +17,15 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
+import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
+import edument.perl6idea.psi.stub.index.Perl6IndexableType;
+import edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.NAME;
 
@@ -57,17 +59,19 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     @Override
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
+        String packageName = getPackageName();
+        if (packageName == null) return;
         if (collector.enclosingPackageKind() == null) {
             collector.setEnclosingPackageKind(getPackageKind());
         }
         if (collector.enclosingPackageName() == null) {
-            collector.setEnclosingPackageName(getPackageName());
+            collector.setEnclosingPackageName(packageName);
         }
         collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, "$?PACKAGE"));
         if (collector.isSatisfied()) return;
         List<String> trusts = getTrusts();
         // If it is not first encountered package (enclosing one) and current package trusts
-        boolean isTrusted = !getPackageName().equals(collector.enclosingPackageName()) &&
+        boolean isTrusted = !packageName.equals(collector.enclosingPackageName()) &&
                             trusts.contains(collector.enclosingPackageName());
         contributeInternals(collector, isTrusted);
         if (collector.isSatisfied()) return;
@@ -89,11 +93,18 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     private List<String> getTrusts() {
         List<String> trusts = new ArrayList<>();
-        Perl6StatementList statementList = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
-        if (statementList == null) return new ArrayList<>();
-        for (PsiElement statement : statementList.getChildren()) {
-            if (statement.getFirstChild() instanceof Perl6Trusts)
-                trusts.add(((Perl6Trusts)statement.getFirstChild()).getTypeName());
+        Perl6PackageDeclStub stub = getStub();
+        if (stub != null) {
+            stub.getChildrenStubs().stream()
+                    .filter(s -> s instanceof Perl6TypeNameStub)
+                    .forEach(s -> trusts.add(((Perl6TypeNameStub)s).getTypeName()));
+        } else {
+            Perl6StatementList statementList = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
+            if (statementList == null) return new ArrayList<>();
+            for (PsiElement statement : statementList.getChildren()) {
+                if (statement.getFirstChild() instanceof Perl6Trusts)
+                    trusts.add(((Perl6Trusts) statement.getFirstChild()).getTypeName());
+            }
         }
         return trusts;
     }
@@ -207,20 +218,20 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 if (!(child instanceof Perl6TraitStub)) continue;
                 Perl6TraitStub traitStub = (Perl6TraitStub)child;
                 if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
-                for (StubElement maybeType : traitStub.getChildrenStubs()) {
-                    // Check only type names
-                    if (!(maybeType instanceof Perl6TypeNameStub)) continue;
-                    Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub)maybeType;
-                    Perl6TypeName psi = typeNameStub.getPsi();
-                    if (psi == null) continue;
-                    PsiReference ref = psi.getReference();
-                    if (ref == null) continue;
-                    PsiElement decl = ref.resolve();
-                    if (decl != null) perl6PackageDecls.add(Pair.create(traitStub.getTraitModifier(), (Perl6PackageDecl)decl));
-                    else externals.add(typeNameStub.getTypeName());
-                    if ((typeNameStub).getTypeName().equals("Mu"))
-                        isAny = false;
+                String name = traitStub.getTraitName();
+                Project project = getProject();
+                List<Perl6IndexableType> indexables = new ArrayList<>();
+                indexables.addAll(Perl6LexicalTypeStubIndex.getInstance().get(name, project,
+                        GlobalSearchScope.projectScope(project)));
+                indexables.addAll(Perl6GlobalTypeStubIndex.getInstance().get(name, project,
+                        GlobalSearchScope.projectScope(project)));
+                if (indexables.size() == 1) {
+                    Perl6PackageDecl decl = (Perl6PackageDecl) indexables.get(0);
+                    perl6PackageDecls.add(Pair.create(traitStub.getTraitModifier(), decl));
+                } else {
+                    externals.add(name);
                 }
+                isAny = !name.equals("Mu");
             }
         } else {
             for (Perl6Trait trait : getTraits()) {

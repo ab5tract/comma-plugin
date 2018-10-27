@@ -21,7 +21,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class UsedModuleAnnotator implements Annotator {
     @Override
@@ -29,9 +28,12 @@ public class UsedModuleAnnotator implements Annotator {
         if (!(element instanceof Perl6ModuleName))
             return;
 
-        if (Perl6ModuleListFetcher.PREINSTALLED_MODULES.contains(element.getText()))
+        String moduleName = element.getText();
+        // We don't need to annotate late-bound modules
+        if (moduleName.startsWith("::")) return;
+        if (Perl6ModuleListFetcher.PREINSTALLED_MODULES.contains(moduleName))
             return;
-        if (Perl6ModuleListFetcher.PRAGMAS.contains(element.getText()))
+        if (Perl6ModuleListFetcher.PRAGMAS.contains(moduleName))
             return;
 
         Project project = element.getProject();
@@ -65,14 +67,14 @@ public class UsedModuleAnnotator implements Annotator {
                 String cleanedDependency = String.join("::", symbolParts);
                 Set<String> provides = Perl6ModuleListFetcher.getProvidesByModuleAsync(element.getProject(), cleanedDependency);
                 if (provides == null) return;
-                inDepends = provides.contains(element.getText());
+                inDepends = provides.contains(moduleName);
                 if (inDepends) break;
             }
 
             if (!inDepends) {
                 holder
-                    .createErrorAnnotation(element, String.format("Cannot find %s based on dependencies from META6.json", element.getText()))
-                    .registerFix(new MissingModuleFix(project, element.getText()));
+                    .createErrorAnnotation(element, String.format("Cannot find %s based on dependencies from META6.json", moduleName))
+                    .registerFix(new MissingModuleFix(project, moduleName));
 
             }
         }
