@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -14,6 +15,10 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+
+import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class StubMissingPrivateMethodFix implements IntentionAction {
     private final String myName;
@@ -65,19 +70,74 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         } while (true);
 
         PsiElement anchor = decl != null ? PsiTreeUtil.getParentOfType(decl, Perl6Statement.class) : list.getLastChild();
-        PsiElement newMethod = Perl6ElementFactory.createPrivateMethod(project, myName);
+
+        List<String> parameters = new ArrayList<>();
+        PsiElement infixArgumentList = PsiTreeUtil.getChildOfType(myCall, Perl6InfixApplication.class);
+        if (infixArgumentList != null)
+            populateParameters(parameters, infixArgumentList.getChildren());
+
+        PsiElement newMethod = Perl6ElementFactory.createPrivateMethod(project, myName, parameters);
         anchor = anchor == null ? null : anchor.getNextSibling();
         if (anchor == null) {
             list.getNode().addChild(new PsiWhiteSpaceImpl("\n"));
             list.getNode().addChild(newMethod.getNode());
         } else {
-            anchor = anchor.getNextSibling();
             addPossibleNewline(list, anchor);
             list.getNode().addChild(newMethod.getNode(), anchor.getNode());
             list.getNode().addChild(new PsiWhiteSpaceImpl("\n"), anchor.getNode());
         }
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
         CodeStyleManager.getInstance(project).reformat(list);
+    }
+
+    private static void populateParameters(List<String> parameters, PsiElement[] children) {
+        for (PsiElement arg : children) {
+            if (arg instanceof PsiWhiteSpace ||
+                arg.getNode().getElementType() == UNV_WHITE_SPACE ||
+                arg instanceof Perl6Infix) continue;
+            if (arg instanceof Perl6Variable)
+                parameters.add(((Perl6Variable)arg).getVariableName());
+            else if (arg instanceof Perl6PostfixApplication && arg.getLastChild() instanceof Perl6MethodCall)
+                parameters.add("$" + ((Perl6MethodCall)arg.getLastChild()).getCallName().substring(1));
+            else if (arg instanceof Perl6SubCall && arg.getFirstChild() instanceof Perl6SubCallName)
+                parameters.add("$" + ((Perl6SubCallName)arg.getFirstChild()).getCallName());
+            else if (arg instanceof Perl6FatArrow)
+                parameters.add("$" + arg.getFirstChild().getText());
+            else if (arg instanceof Perl6ArrayComposer || arg instanceof Perl6ParenthesizedExpr)
+                parameters.add("@p");
+            else
+                parameters.add("$p");
+        }
+        resolveConflicts(parameters);
+    }
+
+    private static void resolveConflicts(List<String> parameters) {
+        Set<String> set = new HashSet<>(parameters);
+        // If there are no duplicates, do nothing
+        if (set.size() == parameters.size()) return;
+        // Else rename it
+        Map<String, Integer> firstOccurrences = new HashMap<>();
+        Map<String, Integer> counter = new HashMap<>();
+        String param;
+        for (int i = 0; i < parameters.size(); i++) {
+            param = parameters.get(i);
+            if (counter.containsKey(param)) {
+                // We already saw this one more than twice
+                int value = counter.get(param);
+                int nextIndex = value + 1;
+                parameters.set(i, param + nextIndex);
+                counter.put(param, nextIndex);
+            } else if (firstOccurrences.containsKey(param)) {
+                // We seen it once, but not twice
+                int firstOccurrenceIndex = firstOccurrences.get(param);
+                parameters.set(firstOccurrenceIndex, param + 1);
+                parameters.set(i, param + 2);
+                counter.put(param, 1);
+            } else {
+                // We have not seen it yet
+                firstOccurrences.put(param, i);
+            }
+        }
     }
 
     //FIXME A HACK ADDED TO BACK UP FORMATTER THAT DOES NOT HANDLE IT YET

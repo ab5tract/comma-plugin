@@ -6,19 +6,25 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
+import java.util.List;
+import java.util.StringJoiner;
+
 public class Perl6ElementFactory {
     public static Perl6Statement createStatementFromText(Project project, String def) {
         return PsiTreeUtil.findChildOfType(createFile(project, def), Perl6Statement.class);
     }
 
-    public static PsiElement createPrivateMethod(Project project, String name) {
-        String text = getPrivateMethodText(name);
+    public static PsiElement createPrivateMethod(Project project, String name, List<String> params) {
+        String text = getPrivateMethodText(name, params);
         Perl6File dummyFile = createFile(project, text);
         return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
     }
 
-    private static String getPrivateMethodText(String name) {
-        return String.format("method %s() {}", name);
+    private static String getPrivateMethodText(String name, List<String> params) {
+        String base = "method " + name + "(";
+        StringJoiner joiner = new StringJoiner(", ");
+        params.forEach(joiner::add);
+        return base + joiner.toString() + ") {}";
     }
 
     public static Perl6LongName createPublicMethodCall(Project project, String name) {
