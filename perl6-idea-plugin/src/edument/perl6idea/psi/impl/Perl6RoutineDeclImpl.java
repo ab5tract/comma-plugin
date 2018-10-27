@@ -18,6 +18,7 @@ import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCKOID;
@@ -95,7 +96,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
     @Override
     public Perl6Signature getSignatureNode() {
-        return findChildByClass(Perl6SignatureImpl.class);
+        return findChildByClass(Perl6Signature.class);
     }
 
     @Nullable
