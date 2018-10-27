@@ -735,4 +735,20 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.containsAll(Arrays.asList(".a", ".mmmmm")));
     }
+
+    public void testMethodReturnTypeWithParentheses() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method a(Int $foo) returns A { A.new; }; method mmmmm {} }; A.a(42).<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".mmmmm")));
+    }
+
+    public void testSubReturnType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { method mmmm(--> C) { } }; sub foo(--> C) { C.new }; foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".mmmmm"));
+    }
 }
