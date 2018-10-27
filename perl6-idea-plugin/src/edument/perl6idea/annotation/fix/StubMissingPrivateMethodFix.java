@@ -66,9 +66,16 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
 
         PsiElement anchor = decl != null ? PsiTreeUtil.getParentOfType(decl, Perl6Statement.class) : list.getLastChild();
         PsiElement newMethod = Perl6ElementFactory.createPrivateMethod(project, myName);
-        list.getNode().addChild(newMethod.getNode(), anchor.getNode());
-        addPossibleNewline(list, anchor);
-        list.getNode().addChild(new PsiWhiteSpaceImpl("\n"), anchor.getNode());
+        anchor = anchor == null ? null : anchor.getNextSibling();
+        if (anchor == null) {
+            list.getNode().addChild(new PsiWhiteSpaceImpl("\n"));
+            list.getNode().addChild(newMethod.getNode());
+        } else {
+            anchor = anchor.getNextSibling();
+            addPossibleNewline(list, anchor);
+            list.getNode().addChild(newMethod.getNode(), anchor.getNode());
+            list.getNode().addChild(new PsiWhiteSpaceImpl("\n"), anchor.getNode());
+        }
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
         CodeStyleManager.getInstance(project).reformat(list);
     }

@@ -106,7 +106,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         IntentionAction intention = myFixture.findSingleIntention("Create");
         assertNotNull(intention);
         myFixture.launchAction(intention);
-        myFixture.checkResultByFile("PrivateMethodStubbing.p6");
+        myFixture.checkResultByFile("PrivateMethodStubbing.p6", true);
     }
 
     public void testPrivateMethodStubbingWithoutEnclosingRoutine() {
@@ -115,7 +115,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         IntentionAction intention = myFixture.findSingleIntention("Create");
         assertNotNull(intention);
         myFixture.launchAction(intention);
-        myFixture.checkResult("class Bar { has $.foo = self!kk;method !kk() {}\n\n} }");
+        myFixture.checkResult("class Bar { has $.foo = self!kk;\nmethod !kk() {}} }", true);
     }
 
     public void testPrivateMethodStubbingInNestedRoutines() {
@@ -124,6 +124,6 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         IntentionAction intention = myFixture.findSingleIntention("Create");
         assertNotNull(intention);
         myFixture.launchAction(intention);
-        myFixture.checkResult("class Bar { method !mmm() {}\n\nmethod a { sub foo { self!mmm; } } } }");
+        myFixture.checkResult("class Bar { method a { sub foo { self!mmm; } }\nmethod !mmm() {}} }", true);
     }
 }

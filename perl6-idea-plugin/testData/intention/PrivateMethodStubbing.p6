@@ -1,3 +1,2 @@
-class Bar { method !kk() {}
-
-method a { self!kk; } }
+class Bar { method a { self!kk; }
+method !kk() {}}
