@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.introduce.inplace.InplaceVariableIntroducer;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
@@ -19,9 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static edument.perl6idea.parsing.Perl6TokenTypes.PARENTHESES_CLOSE;
-import static edument.perl6idea.parsing.Perl6TokenTypes.PARENTHESES_OPEN;
-import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
+import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 public class StubMissingPrivateMethodFix implements IntentionAction {
     private final String myName;
@@ -93,12 +92,13 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         while (parameters.size() == 0) {
             if (possibleArg == null || possibleArg.getNode().getElementType() == PARENTHESES_CLOSE)
                 break;
-            if (possibleArg.getNode().getElementType() == PARENTHESES_OPEN) {
+            IElementType elementType = possibleArg.getNode().getElementType();
+            if (elementType == PARENTHESES_OPEN || elementType == INVOCANT_MARKER) {
                 openParenIsPassed = true;
             }
             else if (openParenIsPassed &&
                      !(possibleArg instanceof PsiWhiteSpace) &&
-                     possibleArg.getNode().getElementType() != UNV_WHITE_SPACE) {
+                     elementType != UNV_WHITE_SPACE) {
                 populateParameters(parameters, new PsiElement[]{possibleArg});
                 break;
             }
