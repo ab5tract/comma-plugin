@@ -1,23 +1,26 @@
 package edument.perl6idea.annotation.fix;
 
 import com.intellij.codeInsight.intention.IntentionAction;
+import com.intellij.codeInsight.template.TemplateBuilder;
+import com.intellij.codeInsight.template.TemplateBuilderImpl;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.refactoring.introduce.inplace.InplaceVariableIntroducer;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static edument.perl6idea.parsing.Perl6TokenTypes.PARENTHESES_CLOSE;
+import static edument.perl6idea.parsing.Perl6TokenTypes.PARENTHESES_OPEN;
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class StubMissingPrivateMethodFix implements IntentionAction {
@@ -72,9 +75,35 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         PsiElement anchor = decl != null ? PsiTreeUtil.getParentOfType(decl, Perl6Statement.class) : list.getLastChild();
 
         List<String> parameters = new ArrayList<>();
+        // There are more than 1 parameter, so infix
         PsiElement infixArgumentList = PsiTreeUtil.getChildOfType(myCall, Perl6InfixApplication.class);
         if (infixArgumentList != null)
             populateParameters(parameters, infixArgumentList.getChildren());
+        // There might be only one parameter
+        PsiElement possibleArg = PsiTreeUtil.getChildOfType(myCall, Perl6LongName.class);
+
+        boolean openParenIsPassed = false;
+        /* We iterate over children of call
+        * Skip all elements until it's open parentheses
+        * When it's done, set flag to true and continue
+        * Between open paren and actual arg might be white space, skip those
+        * It's useless to search if there are no sibling left, or it's closing paren,
+        * or there are no name yet (possibleArg is null right from the start)
+        */
+        while (parameters.size() == 0) {
+            if (possibleArg == null || possibleArg.getNode().getElementType() == PARENTHESES_CLOSE)
+                break;
+            if (possibleArg.getNode().getElementType() == PARENTHESES_OPEN) {
+                openParenIsPassed = true;
+            }
+            else if (openParenIsPassed &&
+                     !(possibleArg instanceof PsiWhiteSpace) &&
+                     possibleArg.getNode().getElementType() != UNV_WHITE_SPACE) {
+                populateParameters(parameters, new PsiElement[]{possibleArg});
+                break;
+            }
+            possibleArg = possibleArg.getNextSibling();
+        }
 
         PsiElement newMethod = Perl6ElementFactory.createPrivateMethod(project, myName, parameters);
         anchor = anchor == null ? null : anchor.getNextSibling();
@@ -88,6 +117,16 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         }
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
         CodeStyleManager.getInstance(project).reformat(list);
+        allowRename(newMethod, editor);
+    }
+
+    private static void allowRename(PsiElement newMethod, Editor editor) {
+        Collection<Perl6ParameterVariable> children = PsiTreeUtil.findChildrenOfType(newMethod, Perl6ParameterVariable.class);
+        TemplateBuilder builder = new TemplateBuilderImpl(newMethod);
+        for (Perl6ParameterVariable var : children) {
+            builder.replaceElement(var, var.getName());
+        }
+        builder.run(editor, true);
     }
 
     private static void populateParameters(List<String> parameters, PsiElement[] children) {
