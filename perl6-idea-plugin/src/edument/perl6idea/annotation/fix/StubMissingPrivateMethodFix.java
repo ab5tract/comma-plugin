@@ -102,7 +102,7 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
             else if (arg instanceof Perl6SubCall && arg.getFirstChild() instanceof Perl6SubCallName)
                 parameters.add("$" + ((Perl6SubCallName)arg.getFirstChild()).getCallName());
             else if (arg instanceof Perl6FatArrow)
-                parameters.add("$" + arg.getFirstChild().getText());
+                parameters.add(":$" + arg.getFirstChild().getText());
             else if (arg instanceof Perl6ArrayComposer || arg instanceof Perl6ParenthesizedExpr)
                 parameters.add("@p");
             else
