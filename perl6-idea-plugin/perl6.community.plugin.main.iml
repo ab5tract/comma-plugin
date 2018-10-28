@@ -64,5 +64,6 @@
     <orderEntry type="library" name="http-client" level="project" />
     <orderEntry type="library" name="com.miglayout:miglayout-swing:5.1" level="project" />
     <orderEntry type="library" name="gson" level="project" />
+    <orderEntry type="module" module-name="intellij.java.impl" />
   </component>
 </module>
