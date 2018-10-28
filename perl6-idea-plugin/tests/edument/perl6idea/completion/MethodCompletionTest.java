@@ -749,6 +749,23 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
                                   "class C { method mmmm(--> C) { } }; sub foo(--> C) { C.new }; foo.<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
-        assertTrue(methods.contains(".mmmmm"));
+        assertTrue(methods.contains(".mmmm"));
+    }
+
+    public void testNoExceptionForOf() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { method mmmm() of C { } }; C.mmmm.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".mmmm"));
+    }
+
+    public void testReturnTypeNotSpecified() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class C { method mmmm { } }; C.mmmm.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        System.out.println(methods);
+//        assertTrue(methods.contains(".mmmm"));
     }
 }

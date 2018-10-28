@@ -23,9 +23,9 @@ public interface Perl6SignatureHolder {
         if (retTrait != null) return retTrait;
 
         Perl6Signature signature = getSignatureNode();
-        if (signature == null) return "Mu";
+        if (signature == null) return null;
         Perl6ReturnConstraint constraint = PsiTreeUtil.getChildOfType(signature, Perl6ReturnConstraint.class);
-        if (constraint == null) return "Mu";
+        if (constraint == null) return null;
         return constraint.getReturnType();
     }
 }

@@ -56,10 +56,14 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
             return new Caller("self", null);
 
         if (prev == null) // .foo
-            return new Caller("Any", null);
+            return new Caller("Mu", null);
 
-        if (prev instanceof Perl6PsiElement)
-            return new Caller(((Perl6PsiElement)prev).inferType(), prev);
+        if (prev instanceof Perl6PsiElement) {
+            Perl6PsiElement element = (Perl6PsiElement) prev;
+            String type = element.inferType();
+            type = type == null ? "Mu" : type;
+            return new Caller(type, prev);
+        }
         else
             return null;
     }

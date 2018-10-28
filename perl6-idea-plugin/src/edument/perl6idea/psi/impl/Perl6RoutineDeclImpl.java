@@ -71,15 +71,20 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public String getReturnsTrait() {
         Perl6RoutineDeclStub stub = getStub();
         if (stub != null)
-            for (StubElement s : stub.getChildrenStubs())
-                if (s instanceof Perl6TraitStub &&
-                    ((Perl6TraitStub)s).getTraitModifier().equals("returns"))
+            for (StubElement s : stub.getChildrenStubs()) {
+                if (!(s instanceof Perl6TraitStub)) continue;
+                Perl6TraitStub traitStub = (Perl6TraitStub)s;
+                String modifier = traitStub.getTraitModifier();
+                if (modifier.equals("returns") ||
+                    modifier.equals("of"))
                     return ((Perl6TraitStub)s).getTraitName();
-
+            }
         Collection<Perl6Trait> traits = PsiTreeUtil.findChildrenOfType(this, Perl6Trait.class);
-        for (Perl6Trait trait : traits)
-            if (trait.getTraitModifier().equals("returns"))
+        for (Perl6Trait trait : traits) {
+            String modifier = trait.getTraitModifier();
+            if (modifier.equals("returns") || modifier.equals("of"))
                 return trait.getTraitName();
+        }
         return null;
     }
 
