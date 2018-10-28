@@ -64,6 +64,7 @@ public class SummaryTest extends LightCodeInsightFixtureTestCase {
     public void testReturn() {
         doTest("sub f<caret>oo(Int $x --> Int) {}", "(Int $ --> Int)");
         doTest("sub f<caret>oo(Int $x) returns Int {}", "(Int $ --> Int)");
+        doTest("sub f<caret>oo(Int $x) of Int {}", "(Int $ --> Int)");
     }
 
     public void testInvalidCases() {
