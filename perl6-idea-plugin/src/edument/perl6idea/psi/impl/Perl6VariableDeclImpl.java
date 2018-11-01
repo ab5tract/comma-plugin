@@ -82,7 +82,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
                 return variableType;
         }
         PsiElement type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
-        if (type != null) return getCuttedName(type.getText());
+        if (type != null) return getCutName(type.getText());
         String assignBasedType = resolveAssign();
         if (assignBasedType != null) return assignBasedType;
         return inferBySigil();
