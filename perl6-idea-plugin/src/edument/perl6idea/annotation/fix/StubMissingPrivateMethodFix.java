@@ -105,6 +105,7 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
             possibleArg = possibleArg.getNextSibling();
         }
 
+        parameters = moveNamedsAfterPositionals(parameters);
         PsiElement newMethod = Perl6ElementFactory.createPrivateMethod(project, myName, parameters);
         anchor = anchor == null ? null : anchor.getNextSibling();
         if (anchor == null) {
@@ -203,6 +204,20 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
                 firstOccurrences.put(param, i);
             }
         }
+    }
+
+    private List<String> moveNamedsAfterPositionals(List<String> parameters) {
+        List<String> result = new ArrayList<>();
+        List<String> namedParams = new ArrayList<>();
+        for (String param : parameters) {
+            if (param.startsWith(":")) {
+                namedParams.add(param);
+            } else {
+                result.add(param);
+            }
+        }
+        result.addAll(namedParams);
+        return result;
     }
 
     //FIXME A HACK ADDED TO BACK UP FORMATTER THAT DOES NOT HANDLE IT YET
