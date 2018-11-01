@@ -144,10 +144,36 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
                 parameters.add(":$" + arg.getFirstChild().getText());
             else if (arg instanceof Perl6ArrayComposer || arg instanceof Perl6ParenthesizedExpr)
                 parameters.add("@p");
+            else if (arg instanceof Perl6ColonPair)
+                parameters.add(processColonpair(arg));
             else
                 parameters.add("$p");
         }
         resolveConflicts(parameters);
+    }
+
+    private static String processColonpair(PsiElement arg) {
+        String colonpair = arg.getText();
+        if (colonpair.startsWith(":$") ||
+            colonpair.startsWith(":@") ||
+            colonpair.startsWith(":%") ||
+            colonpair.startsWith(":&")) {
+            if (colonpair.length() >= 3 && colonpair.charAt(2) != '<') {
+                return colonpair;
+            } else {
+                return ":$" + colonpair.substring(3, colonpair.length() - 1);
+            }
+        } else {
+            PsiElement child = arg.getLastChild();
+            if (child != null && child.getNode().getElementType() == COLON_PAIR) {
+                return ":$" + child.getText();
+            } else if (child instanceof Perl6ParenthesizedExpr) {
+                PsiElement name = child.getPrevSibling();
+                if (name != null)
+                    return ":$" + name.getText();
+            }
+        }
+        return "$p";
     }
 
     private static void resolveConflicts(List<String> parameters) {

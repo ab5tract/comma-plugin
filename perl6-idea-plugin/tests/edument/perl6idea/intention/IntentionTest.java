@@ -162,4 +162,13 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         myFixture.launchAction(intention);
         myFixture.checkResult("class Bar { method a { sub foo { self!mmm: 1; } }\nmethod !mmm($p) {}} }", true);
     }
+
+    public void testPrivateMethodStubbingSignatureGenerationForNamedParameters() {
+                myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Bar { method a { my $a; my $b;  self!mm<caret>m(:$a, :b($b), :42c, :d, :!e, :$<f>); } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { method a { my $a; my $b;  self!mmm(:$a, :b($b), :42c, :d, :!e, :$<f>); }\nmethod !mmm(:$a, :$b, :$c, :$d, :$e, :$f) {}}", true);
+    }
 }
