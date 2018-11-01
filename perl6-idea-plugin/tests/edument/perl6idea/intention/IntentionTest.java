@@ -133,7 +133,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         IntentionAction intention = myFixture.findSingleIntention("Create");
         assertNotNull(intention);
         myFixture.launchAction(intention);
-        myFixture.checkResult("class Bar { method a { sub foo { my $var; my $bar; self!mmm(1, 1, [1], (2), named => 1, double => 2, double => 2, foo, foo(1), Bar.value(), $var, $bar); } }\nmethod !mmm($p1, $p2, @p1, @p2, :$named, :$double1, :$double2, $foo1, $foo2, $value, $var, $bar) {}} }", true);
+        myFixture.checkResult("class Bar { method a { sub foo { my $var; my $bar; self!mmm(1, 1, [1], (2), named => 1, double => 2, double => 2, foo, foo(1), Bar.value(), $var, $bar); } }\nmethod !mmm($p1, $p2, @p1, @p2, $foo1, $foo2, $value, $var, $bar, :$named, :$double1, :$double2) {}} }", true);
     }
 
     public void testPrivateMethodStubbingSignatureGenerationForSingleArg() {
