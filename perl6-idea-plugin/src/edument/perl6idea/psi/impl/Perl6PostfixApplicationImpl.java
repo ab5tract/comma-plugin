@@ -4,10 +4,7 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import edument.perl6idea.psi.Perl6MethodCall;
-import edument.perl6idea.psi.Perl6PostfixApplication;
-import edument.perl6idea.psi.Perl6RoutineDecl;
-import edument.perl6idea.psi.Perl6TypeName;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements Perl6PostfixApplication {
@@ -27,7 +24,7 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
         } else if (last instanceof Perl6MethodCall) {
             return tryToCalculateMethodReturnType((Perl6MethodCall)last);
         }
-        return "Mu";
+        return null;
     }
 
     private static String tryToCalculateMethodReturnType(Perl6MethodCall last) {
@@ -35,7 +32,11 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
         if (ref == null) return "Mu";
         PsiElement resolved = ref.resolve();
         if (resolved == null) return "Mu";
-        Perl6RoutineDecl decl = (Perl6RoutineDecl)resolved;
-        return decl.getReturnType();
+        if (resolved instanceof Perl6RoutineDecl) {
+            return ((Perl6RoutineDecl) resolved).getReturnType();
+        } else if (resolved instanceof Perl6VariableDecl) {
+            return ((Perl6VariableDecl) resolved).inferType();
+        }
+        return null;
     }
 }

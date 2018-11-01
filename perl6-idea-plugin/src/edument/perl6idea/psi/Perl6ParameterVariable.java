@@ -5,5 +5,4 @@ import com.intellij.psi.meta.PsiMetaOwner;
 
 public interface Perl6ParameterVariable extends Perl6PsiDeclaration, PsiNamedElement, PsiMetaOwner {
     String summary();
-    String getVariableType();
 }

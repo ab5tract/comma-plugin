@@ -774,4 +774,55 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.containsAll(Arrays.asList("!mmmm", "!bbbb")));
     }
+
+    public void testAttributeTypeUsageAsCallReturn() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has C $.left; method mmm(--> C) { $.left.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".mmm", ".left")));
+    }
+
+    public void testTypedAttributeTypeUsageAsCallReturn() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has C $.left; method mmm(--> C) { self.left.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        assertNoThrowable(() -> {
+            List<String> methods = myFixture.getLookupElementStrings();
+            assertTrue(methods.contains(".left"));
+        });
+    }
+
+    public void testTypelessAttributeInference() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has $.a; method mmm(--> C) { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertFalse(methods.contains(".STORE_AT_KEY"));
+        assertFalse(methods.contains(".returns"));
+    }
+
+    public void testTypelessArrayAttributeInference() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has @.a; method mmm(--> C) { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".FLATTENABLE_LIST"));
+    }
+
+    public void testTypelessHashAttributeInference() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has %.a; method mmm(--> C) { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".STORE_AT_KEY"));
+    }
+
+    public void testTypelessCallableAttributeInference() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has &.a; method mmm(--> C) { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".returns"));
+    }
 }
