@@ -148,4 +148,13 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
         assertNotNull(decl);
         assertEquals(19, decl.getTextOffset());
     }
+
+    public void testEnumType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "enum Foos <Foo1 Foo2>; my Fo<caret>o1 $foo;");
+        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
+        Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
+        PsiElement decl = var.getReference().resolve();
+        assertNotNull(decl);
+        assertEquals(5, decl.getTextOffset());
+    }
 }

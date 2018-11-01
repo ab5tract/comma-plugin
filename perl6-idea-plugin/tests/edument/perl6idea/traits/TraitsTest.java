@@ -14,12 +14,10 @@ public class TraitsTest extends LightCodeInsightFixtureTestCase {
         PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset()).getParent();
         assertNotNull(usage);
         assertTrue(usage instanceof Perl6PackageDecl);
-        if (usage instanceof Perl6PackageDecl) {
-            List<Perl6Trait> traits = ((Perl6PackageDecl)usage).getTraits();
-            assertTrue(traits.size() != 0);
-            assertEquals("is", traits.get(0).getTraitModifier());
-            assertEquals("export", traits.get(0).getTraitName());
-        }
+        List<Perl6Trait> traits = ((Perl6PackageDecl)usage).getTraits();
+        assertTrue(traits.size() != 0);
+        assertEquals("is", traits.get(0).getTraitModifier());
+        assertEquals("export", traits.get(0).getTraitName());
     }
 
     public void testDoesTraitData() {
@@ -27,11 +25,9 @@ public class TraitsTest extends LightCodeInsightFixtureTestCase {
         PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset()).getParent();
         assertNotNull(usage);
         assertTrue(usage instanceof Perl6PackageDecl);
-        if (usage instanceof Perl6PackageDecl) {
-            List<Perl6Trait> traits = ((Perl6PackageDecl)usage).getTraits();
-            assertTrue(traits.size() != 0);
-            assertEquals("does", traits.get(0).getTraitModifier());
-            assertEquals("Bar", traits.get(0).getTraitName());
-        }
+        List<Perl6Trait> traits = ((Perl6PackageDecl)usage).getTraits();
+        assertTrue(traits.size() != 0);
+        assertEquals("does", traits.get(0).getTraitModifier());
+        assertEquals("Bar", traits.get(0).getTraitName());
     }
 }

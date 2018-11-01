@@ -7,6 +7,36 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
 public class Perl6ElementFactory {
+    public static PsiElement createConstantAssignment(Project project, String name, String code) {
+        String text = getConstantAssignmentText(name, code);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
+    }
+
+    private static String getConstantAssignmentText(String name, String code) {
+        return String.format("my constant %s = %s;", name, code);
+    }
+
+    public static PsiElement createVariableAssignment(Project project, String name, String code, boolean control) {
+        String text = getVariableAssignmentText(name, code, control);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
+    }
+
+    private static String getVariableAssignmentText(String name, String code, boolean control) {
+        return String.format(control ? "my %s = do %s;" : "my %s = %s;", name, code);
+    }
+
+    public static Perl6LongName createModuleName(Project project, String name) {
+        String text = getModuleNameText(name);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6LongName.class);
+    }
+
+    private static String getModuleNameText(String name) {
+        return "use " + name;
+    }
+
     public static Perl6LongName createPublicMethodCall(Project project, String name) {
         String text = getPublicMethodText(name);
         Perl6File dummyFile = createFile(project, text);
