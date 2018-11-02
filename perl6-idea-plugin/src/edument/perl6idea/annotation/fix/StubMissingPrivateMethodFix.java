@@ -198,7 +198,7 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
                 int firstOccurrenceIndex = firstOccurrences.get(param);
                 parameters.set(firstOccurrenceIndex, param + 1);
                 parameters.set(i, param + 2);
-                counter.put(param, 1);
+                counter.put(param, 2);
             } else {
                 // We have not seen it yet
                 firstOccurrences.put(param, i);
