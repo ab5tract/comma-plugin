@@ -1,9 +1,7 @@
 package edument.perl6idea.psi;
 
-import com.intellij.lang.ASTNode;
-
-import static edument.perl6idea.parsing.Perl6ElementTypes.RETURN_CONSTRAINT;
-import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
+import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.Nullable;
 
 public interface Perl6SignatureHolder {
     String getSignature();
@@ -12,27 +10,22 @@ public interface Perl6SignatureHolder {
 
     default String summarySignature() {
         Perl6Signature signature = getSignatureNode();
-        String retTrait = null;
-        String retConstraint = null;
+        String returnType = getReturnType();
+        if (signature != null)
+            return signature.summary(returnType);
 
-        if (signature == null) {
-            retTrait = getReturnsTrait();
-            if (retTrait != null) return "(--> " + retTrait + ")";
-            return "()";
-        }
+        return returnType != null ? "(--> " + returnType + ")" : "()";
+    }
 
-        ASTNode constr = signature.getNode().findChildByType(RETURN_CONSTRAINT);
-        if (constr != null) {
-            ASTNode type = constr.getPsi().getNode().findChildByType(TYPE_NAME);
-            if (type != null)
-                retConstraint = type.getText();
-        } else
-            retTrait = getReturnsTrait();
+    @Nullable
+    default String getReturnType() {
+        String retTrait = getReturnsTrait();
+        if (retTrait != null) return retTrait;
 
-        return retTrait != null ?
-                signature.summary(retTrait) :
-                retConstraint != null ?
-                        signature.summary(retConstraint) :
-                        signature.summary("");
+        Perl6Signature signature = getSignatureNode();
+        if (signature == null) return null;
+        Perl6ReturnConstraint constraint = PsiTreeUtil.getChildOfType(signature, Perl6ReturnConstraint.class);
+        if (constraint == null) return null;
+        return constraint.getReturnType();
     }
 }

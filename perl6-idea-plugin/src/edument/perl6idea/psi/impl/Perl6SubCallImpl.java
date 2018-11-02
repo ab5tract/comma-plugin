@@ -3,8 +3,10 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6ElementFactory;
+import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6SubCall;
 import edument.perl6idea.psi.Perl6SubCallName;
 import org.jetbrains.annotations.NotNull;
@@ -22,5 +24,17 @@ public class Perl6SubCallImpl extends ASTWrapperPsiElement implements Perl6SubCa
         ASTNode newKeyNode = call.getNode();
         getNode().replaceChild(keyNode, newKeyNode);
         return this;
+    }
+
+    @Override
+    public String inferType() {
+        PsiElement name = getFirstChild();
+        if (!(name instanceof Perl6SubCallName)) return "Mu";
+        PsiReference ref = name.getReference();
+        if (ref == null) return "Mu";
+        PsiElement resolved = ref.resolve();
+        if (resolved == null) return "Mu";
+        Perl6RoutineDecl decl = (Perl6RoutineDecl)resolved;
+        return decl.getReturnType();
     }
 }

@@ -695,4 +695,134 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.size() != 0);
     }
+
+    public void testReturnConstraint1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method b(--> A) {}; method a(--> A) { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
+    }
+
+    public void testReturnConstraint2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method b(--> A) {}; method a(--> A) { self.a.b.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
+    }
+
+    public void testReturnTrait1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method b returns A {}; method a returns A { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
+    }
+
+    public void testReturnTrait2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method b returns A {}; method a returns A { self.a.b.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".b")));
+    }
+
+    public void testMethodReturnTypeExternal() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method a returns A {}; method mmmmm {} }; A.a.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".mmmmm")));
+    }
+
+    public void testMethodReturnTypeWithParentheses() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { method a(Int $foo) returns A { A.new; }; method mmmmm {} }; A.a(42).<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".a", ".mmmmm")));
+    }
+
+    public void testSubReturnType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { method mmmm(--> C) { } }; sub foo(--> C) { C.new }; foo.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".mmmm"));
+    }
+
+    public void testNoExceptionForOf() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { method mmmm() of C { } }; C.mmmm.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".mmmm"));
+    }
+
+    public void testReturnTypeNotSpecified() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class C { method mmmm { } }; C.mmmm.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        assertNoThrowable(() -> myFixture.getLookupElementStrings());
+    }
+
+    public void testPrivateMethodReturnType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { method !bbbb {}; method !mmmm(--> C) { self!<caret> } }; >");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList("!mmmm", "!bbbb")));
+    }
+
+    public void testAttributeTypeUsageAsCallReturn() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has C $.left; method mmm(--> C) { $.left.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".mmm", ".left")));
+    }
+
+    public void testTypedAttributeTypeUsageAsCallReturn() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has C $.left; method mmm(--> C) { self.left.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        assertNoThrowable(() -> {
+            List<String> methods = myFixture.getLookupElementStrings();
+            assertTrue(methods.contains(".left"));
+        });
+    }
+
+    public void testTypelessAttributeInference() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has $.a; method mmm(--> C) { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertFalse(methods.contains(".STORE_AT_KEY"));
+        assertFalse(methods.contains(".returns"));
+    }
+
+    public void testTypelessArrayAttributeInference() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has @.a; method mmm(--> C) { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".FLATTENABLE_LIST"));
+    }
+
+    public void testTypelessHashAttributeInference() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has %.a; method mmm(--> C) { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".STORE_AT_KEY"));
+    }
+
+    public void testTypelessCallableAttributeInference() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C { has &.a; method mmm(--> C) { self.a.<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.contains(".returns"));
+    }
 }

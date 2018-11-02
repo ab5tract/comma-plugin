@@ -165,7 +165,7 @@ public class Perl6StubTest extends LightCodeInsightFixtureTestCase {
         assertEquals(1, childrenStubs.size());
         Perl6VariableDeclStub variableDeclStub1 = (Perl6VariableDeclStub) childrenStubs.get(0);
         assertEquals("$!foo", variableDeclStub1.getVariableName());
-        assertEquals(" ", variableDeclStub1.getVariableType());
+        assertNull(variableDeclStub1.getVariableType());
 
         // Test of second attr
         assertEquals("has", scopedDeclStub2.getScope());
