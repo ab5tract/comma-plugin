@@ -68,7 +68,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
 
     public void testRoleMethodsStubbing() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "role R { method foo($a) {...}; method bar($a) {...} };\nclass C d<caret>oes R {\n}");
+                "role R { method foo($a) {...}; method bar($a) {...} };\nclass C d<caret>oes R {\n}");
         IntentionAction intention = myFixture.findSingleIntention("Stub");
         assertNotNull(intention);
         myFixture.launchAction(intention);
@@ -77,7 +77,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
 
     public void testRecursiveRoleMethodsStubbing() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "role R0 { method base {...} }; role R does R0 { method foo($a) {...}; method bar($a) {...} };\nclass C<caret> does R {\n}");
+                "role R0 { method base {...} }; role R does R0 { method foo($a) {...}; method bar($a) {...} };\nclass C<caret> does R {\n}");
         IntentionAction intention = myFixture.findSingleIntention("Stub");
         assertNotNull(intention);
         myFixture.launchAction(intention);
@@ -98,5 +98,95 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         assertNotNull(intention);
         myFixture.launchAction(intention);
         myFixture.checkResult("class C {}; role A is<caret> C {}");
+    }
+
+    public void testPrivateMethodStubbing() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Bar { method a { self!k<caret>k; } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResultByFile("PrivateMethodStubbing.p6", true);
+    }
+
+    public void testPrivateMethodStubbingWithoutEnclosingRoutine() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Bar { has $.foo = self!k<caret>k; } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { has $.foo = self!kk;\nmethod !kk() {}} }", true);
+    }
+
+    public void testPrivateMethodStubbingInNestedRoutines() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Bar { method a { sub foo { self!mm<caret>m; } } } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { method a { sub foo { self!mmm; } }\nmethod !mmm() {}} }", true);
+    }
+
+    public void testPrivateMethodStubbingSignatureGeneration() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Bar { method a { sub foo { my $var; my $bar; self!mm<caret>m(1, 1, [1], (2), named => 1, double => 2, double => 2, foo, foo(1), Bar.value(), $var, $bar); } } } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { method a { sub foo { my $var; my $bar; self!mmm(1, 1, [1], (2), named => 1, double => 2, double => 2, foo, foo(1), Bar.value(), $var, $bar); } }\nmethod !mmm($p1, $p2, @p1, @p2, $foo1, $foo2, $value, $var, $bar, :$named, :$double1, :$double2) {}} }", true);
+    }
+
+    public void testPrivateMethodStubbingSignatureGenerationForSingleArg() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Bar { method a { sub foo { self!mm<caret>m(1); } } } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { method a { sub foo { self!mmm(1); } }\nmethod !mmm($p) {}} }", true);
+    }
+
+    public void testPrivateMethodStubbingSignatureGenerationColonpair() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Bar { method a { sub foo { self!mm<caret>m: 1, 2; } } } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { method a { sub foo { self!mmm: 1, 2; } }\nmethod !mmm($p1, $p2) {}} }", true);
+    }
+
+    public void testPrivateMethodStubbingSignatureGenerationForSingleArgColonpair() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Bar { method a { sub foo { self!mm<caret>m: 1; } } } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { method a { sub foo { self!mmm: 1; } }\nmethod !mmm($p) {}} }", true);
+    }
+
+    public void testPrivateMethodStubbingSignatureGenerationForNamedParameters() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Bar { method a { my $a; my $b;  self!mm<caret>m(:$a, :b($b), :42c, :d, :!e, :$<f>); } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { method a { my $a; my $b;  self!mmm(:$a, :b($b), :42c, :d, :!e, :$<f>); }\nmethod !mmm(:$a, :$b, :$c, :$d, :$e, :$f) {}}", true);
+    }
+
+    public void testOrderOfNamedVariablesInCallIsFixed() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Bar { method a { self!mm<caret>m(:42c, 1, 2); } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { method a { self!mmm(:42c, 1, 2); }\nmethod !mmm($p1, $p2, :$c) {}}", true);
+    }
+
+    public void testConflictResolutionAfterMoveSolved() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Bar { method a { self!f<caret>oo(1, 2, c => 3, d => 4, 5); } }");
+        IntentionAction intention = myFixture.findSingleIntention("Create");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("class Bar { method a { self!foo(1, 2, c => 3, d => 4, 5); }\nmethod !foo($p1, $p2, $p3, :$c, :$d) {}}", true);
     }
 }

@@ -155,6 +155,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public PsiMetaData getMetaData() {
         PsiElement decl = this;
         String un_dashed_name = getName();
+        if (un_dashed_name == null) return null;
         // Chop off everything before last `-` symbol
         un_dashed_name = un_dashed_name.substring(un_dashed_name.lastIndexOf('-') + 1);
         String final_un_dashed_name = un_dashed_name;
