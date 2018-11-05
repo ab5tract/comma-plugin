@@ -53,6 +53,12 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
                     && LARGE_BLOCK.contains(child.getTreeParent().getElementType())) {
                 childBlock = new Perl6LargeBlockoidBlock(child, null, null, mySettings);
             }
+            else if (child.getElementType() == STATEMENT) {
+                childBlock = new Perl6StatementBlock(child, null, null, mySettings);
+            }
+            else if (child.getElementType() == STATEMENT_TERMINATOR && child.getText().equals(";")) {
+                childBlock = new Perl6StatementTerminatorBlock(child, null, null, mySettings);
+            }
             else if (child.getElementType() != STATEMENT_LIST) {
                 Boolean childIsStatementContinuation = null;
                 if (isStatementContinuation != null && isStatementContinuation)
