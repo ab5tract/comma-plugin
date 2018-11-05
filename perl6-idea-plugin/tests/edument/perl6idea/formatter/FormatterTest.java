@@ -1,9 +1,15 @@
 package edument.perl6idea.formatter;
 
+import com.intellij.ide.DataManager;
+import com.intellij.openapi.actionSystem.IdeActions;
+import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
+import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
 public class FormatterTest extends LightCodeInsightFixtureTestCase {
     @Override
@@ -39,5 +45,19 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
             codeStyleManager.reformatText(file, 0, file.getTextLength());
         });
         myFixture.checkResultByFile("grammar-basic.out.p6");
+    }
+
+    public void testContinuationAfterBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "{\n\n}<caret>");
+
+        CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
+            @Override
+            public void run() {
+                EditorActionManager actionManager = EditorActionManager.getInstance();
+                EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
+                actionHandler.execute(getEditor(), DataManager.getInstance().getDataContext());
+            }
+        }, "", null);
+        myFixture.checkResult("{\n\n}\n<caret>");
     }
 }
