@@ -7,9 +7,12 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import edument.perl6idea.annotation.fix.AddUnitDeclaratorQuickFix;
+import edument.perl6idea.annotation.fix.RemoveUnitDeclaratorQuickFix;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
+
+import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class MissingUnitKeywordAnnotator implements Annotator {
     @Override
@@ -21,17 +24,25 @@ public class MissingUnitKeywordAnnotator implements Annotator {
         if (ref.getParent() != null && ref.getParent() instanceof Perl6ScopedDecl) {
             Perl6ScopedDecl scopedDeclarator = (Perl6ScopedDecl)ref.getParent();
 
-            if (scopedDeclarator.getFirstChild().getNode().getElementType() != Perl6TokenTypes.SCOPE_DECLARATOR) return;
+            PsiElement firstChild = scopedDeclarator.getFirstChild();
+            if (firstChild.getNode().getElementType() != Perl6TokenTypes.SCOPE_DECLARATOR) return;
 
-            if (scopedDeclarator.getFirstChild().getText().equals("unit")) {
-                    PsiElement maybeBlockoid = ref.getLastChild();
+            if (firstChild.getText().equals("unit")) {
+                PsiElement maybeBlockoid = ref.getLastChild();
 
-                    while (maybeBlockoid instanceof PsiWhiteSpace) {
-                        maybeBlockoid = maybeBlockoid.getPrevSibling();
-                    }
+                while (maybeBlockoid instanceof PsiWhiteSpace ||
+                        maybeBlockoid != null && maybeBlockoid.getNode().getElementType() == UNV_WHITE_SPACE) {
+                    maybeBlockoid = maybeBlockoid.getPrevSibling();
+                }
 
                     if (maybeBlockoid instanceof Perl6Blockoid) {
-                        holder.createErrorAnnotation(scopedDeclarator.getFirstChild(), "Cannot use 'unit' with block form of declaration");
+                        int textOffset = firstChild.getTextOffset();
+                        int textOffset1 = ref.getTextOffset();
+                        int length = ref.getPackageName().length();
+                        holder.createErrorAnnotation(
+                                new TextRange(textOffset, textOffset1 + length),
+                                "Cannot use 'unit' with block form of declaration")
+                              .registerFix(new RemoveUnitDeclaratorQuickFix(textOffset, ref));
                     }
             }
         }
@@ -41,9 +52,11 @@ public class MissingUnitKeywordAnnotator implements Annotator {
              * separator if we can find it.
              */
             PsiElement maybeStatementTerminator = ref.getLastChild().getPrevSibling();
-            while (maybeStatementTerminator instanceof PsiWhiteSpace) {
+            while (maybeStatementTerminator instanceof PsiWhiteSpace ||
+                    maybeStatementTerminator != null && maybeStatementTerminator.getNode().getElementType() == UNV_WHITE_SPACE) {
                 maybeStatementTerminator = maybeStatementTerminator.getPrevSibling();
             }
+
             if (maybeStatementTerminator == null) return;
             ASTNode node = maybeStatementTerminator.getNode();
             if (node.getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR) {
@@ -52,17 +65,11 @@ public class MissingUnitKeywordAnnotator implements Annotator {
                 if (packageDeclarator.getNode().getElementType() == Perl6TokenTypes.PACKAGE_DECLARATOR) {
                     declaratorType = packageDeclarator.getText();
                 }
-                if (declaratorType != null) {
-                    holder.createErrorAnnotation(maybeStatementTerminator,
-                            String.format(
-                                    "Semicolon form of '%s' without 'unit' is illegal.", declaratorType))
-                            .registerFix(new AddUnitDeclaratorQuickFix(), new TextRange(ref.getTextOffset(), maybeStatementTerminator.getTextOffset() + 1));
-                }
-                else {
-                    holder.createErrorAnnotation(maybeStatementTerminator,
-                                    "Semicolon form of package declaration without 'unit' is illegal.")
-                            .registerFix(new AddUnitDeclaratorQuickFix(), new TextRange(ref.getTextOffset(), maybeStatementTerminator.getTextOffset() + 1));
-                }
+                String errorMessage = declaratorType == null ?
+                                      "Semicolon form of package declaration without 'unit' is illegal." :
+                                      String.format("Semicolon form of '%s' without 'unit' is illegal.", declaratorType);
+
+                holder.createErrorAnnotation(ref, errorMessage).registerFix(new AddUnitDeclaratorQuickFix(ref));
             }
         }
     }

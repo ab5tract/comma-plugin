@@ -100,6 +100,22 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResult("class C {}; role A is<caret> C {}");
     }
 
+    public void testUnitPrependingForNamedClass() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo {}; class C<caret>;");
+        IntentionAction intention = myFixture.findSingleIntention("Add missing");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("sub foo {}; unit class C;");
+    }
+
+    public void testUnitRemovalForDefinedGrammar() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo {}; unit gra<caret>mmar A {};");
+        IntentionAction intention = myFixture.findSingleIntention("Remove 'unit'");
+        assertNotNull(intention);
+        myFixture.launchAction(intention);
+        myFixture.checkResult("sub foo {}; grammar A {};");
+    }
+
     public void testPrivateMethodStubbing() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                 "class Bar { method a { self!k<caret>k; } }");
