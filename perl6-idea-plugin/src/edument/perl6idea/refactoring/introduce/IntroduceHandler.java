@@ -14,6 +14,7 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.*;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
@@ -179,6 +180,9 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         } else {
             performIntroduceWithDialog(operation);
         }
+        Perl6StatementList list = PsiTreeUtil.getNonStrictParentOfType(operation.getElement(), Perl6StatementList.class);
+        if (list != null)
+            CodeStyleManager.getInstance(operation.getProject()).reformat(list);
     }
 
     protected static void ensureName(IntroduceOperation operation) {
