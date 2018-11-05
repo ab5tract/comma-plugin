@@ -25,6 +25,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             UNV_WHITE_SPACE, WHITE_SPACE,
             VERTICAL_WHITE_SPACE, UNSP_WHITE_SPACE
     );
+    private TokenSet LARGE_BLOCK = TokenSet.create(PACKAGE_DECLARATION, ROUTINE_DECLARATION);
 
     Perl6Block(ASTNode node, Wrap wrap, Alignment align, CodeStyleSettings settings) {
         super(node, wrap, align);
@@ -48,7 +49,11 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             if (WHITESPACES.contains(child.getElementType()))
                 continue;
             Perl6Block childBlock;
-            if (child.getElementType() != STATEMENT_LIST) {
+            if (child.getElementType() == BLOCKOID
+                    && LARGE_BLOCK.contains(child.getTreeParent().getElementType())) {
+                childBlock = new Perl6LargeBlockoidBlock(child, null, null, mySettings);
+            }
+            else if (child.getElementType() != STATEMENT_LIST) {
                 Boolean childIsStatementContinuation = null;
                 if (isStatementContinuation != null && isStatementContinuation)
                     childIsStatementContinuation = false;
