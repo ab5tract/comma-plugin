@@ -220,7 +220,6 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         return result;
     }
 
-    //FIXME A HACK ADDED TO BACK UP FORMATTER THAT DOES NOT HANDLE IT YET
     private static void addPossibleNewline(Perl6StatementList list, PsiElement anchor) {
         list.getNode().addChild(new PsiWhiteSpaceImpl("\n"), anchor.getNode());
     }
