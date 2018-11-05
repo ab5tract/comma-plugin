@@ -117,7 +117,7 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
             list.getNode().addChild(new PsiWhiteSpaceImpl("\n"), anchor.getNode());
         }
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
-        CodeStyleManager.getInstance(project).reformat(list);
+        CodeStyleManager.getInstance(project).reformat(file);
         allowRename(newMethod, editor);
     }
 
@@ -220,7 +220,6 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         return result;
     }
 
-    //FIXME A HACK ADDED TO BACK UP FORMATTER THAT DOES NOT HANDLE IT YET
     private static void addPossibleNewline(Perl6StatementList list, PsiElement anchor) {
         list.getNode().addChild(new PsiWhiteSpaceImpl("\n"), anchor.getNode());
     }
