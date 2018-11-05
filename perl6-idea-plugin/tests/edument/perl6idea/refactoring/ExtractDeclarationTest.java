@@ -54,7 +54,7 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>if True { say 10 } else { say 'no' }   </selection>");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $bar = do if True { say 10 } else { say 'no' }   ;\n");
+        myFixture.checkResult("my $bar = do if True { say 10 } else { say 'no' };\n");
     }
 
     public void testIfStatementExtraction() {
