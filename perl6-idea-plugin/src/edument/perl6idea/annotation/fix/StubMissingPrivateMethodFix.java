@@ -117,7 +117,7 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
             list.getNode().addChild(new PsiWhiteSpaceImpl("\n"), anchor.getNode());
         }
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
-        CodeStyleManager.getInstance(project).reformat(list);
+        CodeStyleManager.getInstance(project).reformat(file);
         allowRename(newMethod, editor);
     }
 
