@@ -70,4 +70,14 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
         });
         myFixture.checkResultByFile("space-before-semi.out.p6");
     }
+
+    public void testMultilineHashFormatting() {
+        myFixture.configureByFiles("hash.in.p6");
+        WriteCommandAction.runWriteCommandAction(null, () -> {
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
+            PsiFile file = myFixture.getFile();
+            codeStyleManager.reformatText(file, 0, file.getTextLength());
+        });
+        myFixture.checkResultByFile("hash.out.p6");
+    }
 }
