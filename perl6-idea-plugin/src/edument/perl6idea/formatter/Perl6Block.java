@@ -47,15 +47,19 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         for (ASTNode child = getNode().getFirstChildNode(); child != null; child = child.getTreeNext()) {
             if (WHITESPACES.contains(child.getElementType()))
                 continue;
-            Boolean childIsStatementContinuation = null;
+            Perl6Block childBlock;
             if (child.getElementType() != STATEMENT_LIST) {
+                Boolean childIsStatementContinuation = null;
                 if (isStatementContinuation != null && isStatementContinuation)
                     childIsStatementContinuation = false;
                 else if (nodeInStatementContinuation(child))
                     childIsStatementContinuation = true;
+                childBlock = new Perl6Block(child, null, null, mySettings,
+                                           childIsStatementContinuation);
             }
-            final Perl6Block childBlock = new Perl6Block(child, null, null, mySettings,
-                    childIsStatementContinuation);
+            else {
+                childBlock = new Perl6StatementListBlock(child, null, null, mySettings);
+            }
             childBlock.setParent(this);
             children.add(childBlock);
         }
