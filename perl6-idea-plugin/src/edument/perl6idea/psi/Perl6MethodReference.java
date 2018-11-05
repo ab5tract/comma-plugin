@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.SELF;
 
-public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
+public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
     public Perl6MethodReference(Perl6MethodCallImpl call) {
         super(call, new TextRange(0, call.getCallName().length()));
     }
@@ -28,7 +28,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     @Nullable
     @Override
     public PsiElement resolve() {
-        Perl6MethodCall call = (Perl6MethodCall)getElement();
+        Perl6MethodCall call = getElement();
         List<Perl6Symbol> method = getMethodsForType(call, getCallerType(call), true);
         if (method.size() != 0) {
             return method.get(0) == null ? null : method.get(0).getPsi();
@@ -38,7 +38,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        Perl6MethodCall call = (Perl6MethodCall)getElement();
+        Perl6MethodCall call = getElement();
         List<String> methods = getMethodsForType(call, getCallerType(call), false);
         if (call.getCallOperator().equals("!"))
             methods = methods.stream().filter(name -> name.startsWith("!")).collect(Collectors.toList());
@@ -56,10 +56,14 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
             return new Caller("self", null);
 
         if (prev == null) // .foo
-            return new Caller("Any", null);
+            return new Caller("Mu", null);
 
-        if (prev instanceof Perl6PsiElement)
-            return new Caller(((Perl6PsiElement)prev).inferType(), prev);
+        if (prev instanceof Perl6PsiElement) {
+            Perl6PsiElement element = (Perl6PsiElement) prev;
+            String type = element.inferType();
+            type = type == null ? "Mu" : type;
+            return new Caller(type, prev);
+        }
         else
             return null;
     }
@@ -199,7 +203,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6PsiElement> {
     @Override
     public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
         PsiElement resolved = resolve();
-        Perl6MethodCall call = (Perl6MethodCall)myElement;
+        Perl6MethodCall call = myElement;
         if (resolved instanceof Perl6LongName && !call.getCallName().startsWith("!"))
             throw new IncorrectOperationException("Rename for non-private methods is not yet supported");
         return call.setName(newElementName);

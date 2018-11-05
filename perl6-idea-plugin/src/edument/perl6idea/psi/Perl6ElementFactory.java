@@ -6,7 +6,20 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
+import java.util.List;
+import java.util.StringJoiner;
+
 public class Perl6ElementFactory {
+    public static Perl6Statement createStatementFromText(Project project, String def) {
+        return PsiTreeUtil.findChildOfType(createFile(project, def), Perl6Statement.class);
+    }
+
+    public static PsiElement createPrivateMethod(Project project, String name, List<String> params) {
+        String text = getPrivateMethodText(name, params);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
+    }
+
     public static PsiElement createConstantAssignment(Project project, String name, String code) {
         String text = getConstantAssignmentText(name, code);
         Perl6File dummyFile = createFile(project, text);
@@ -21,6 +34,13 @@ public class Perl6ElementFactory {
         String text = getVariableAssignmentText(name, code, control);
         Perl6File dummyFile = createFile(project, text);
         return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
+    }
+
+    private static String getPrivateMethodText(String name, List<String> params) {
+        String base = "method " + name + "(";
+        StringJoiner joiner = new StringJoiner(", ");
+        params.forEach(joiner::add);
+        return base + joiner.toString() + ") {}";
     }
 
     private static String getVariableAssignmentText(String name, String code, boolean control) {
@@ -38,12 +58,12 @@ public class Perl6ElementFactory {
     }
 
     public static Perl6LongName createPublicMethodCall(Project project, String name) {
-        String text = getPublicMethodText(name);
+        String text = getPublicMethodCallText(name);
         Perl6File dummyFile = createFile(project, text);
         return PsiTreeUtil.findChildOfType(dummyFile, Perl6LongName.class);
     }
 
-    private static String getPublicMethodText(String name) {
+    private static String getPublicMethodCallText(String name) {
         return "self." + name;
     }
 
@@ -90,12 +110,12 @@ public class Perl6ElementFactory {
     }
 
     public static Perl6LongName createPrivateMethodCall(Project project, String name) {
-        String text = getPrivateMethodText(name);
+        String text = getPrivateMethodCallText(name);
         Perl6File dummyFile = createFile(project, text);
         return PsiTreeUtil.findChildOfType(dummyFile, Perl6LongName.class);
     }
 
-    private static String getPrivateMethodText(String name) {
+    private static String getPrivateMethodCallText(String name) {
         return String.format("class Dummy { method %s {} }", name);
     }
 

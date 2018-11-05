@@ -74,27 +74,35 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
-    public String getVariableType() {
+    public String inferType() {
         Perl6VariableDeclStub stub = getStub();
-        if (stub != null)
-            return stub.getVariableType();
+        if (stub != null) {
+            String variableType = stub.getVariableType();
+            if (variableType != null)
+                return variableType;
+        }
         PsiElement type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
         if (type != null) return getCutName(type.getText());
-        return resolveAssign();
+        String assignBasedType = resolveAssign();
+        if (assignBasedType != null) return assignBasedType;
+        return inferBySigil();
+    }
+
+    private String inferBySigil() {
+        Perl6Variable variable = PsiTreeUtil.getChildOfType(this, Perl6Variable.class);
+        if (variable != null) {
+            return variable.getTypeBySigil(variable.getText(), this);
+        }
+        return null;
     }
 
     private String resolveAssign() {
         PsiElement infix = PsiTreeUtil.getChildOfType(this, Perl6InfixImpl.class);
-        if (infix == null || !infix.getText().equals("=")) return " ";
+        if (infix == null || !infix.getText().equals("=")) return null;
         PsiElement value = infix.getNextSibling();
         while (value instanceof PsiWhiteSpace || (value != null && value.getNode().getElementType() == UNV_WHITE_SPACE))
             value = value.getNextSibling();
-        // Mu will be a basic type in this case
-        // because when used for e.g. method completion inference,
-        // it is better to assume default variable methods set is based on Mu
-        // then return e.g. empty string and getting no opportunity to neatly use it
-        // in case where type is not defined explicitly
-        return value == null ? "Mu" : ((Perl6PsiElement)value).inferType();
+        return value == null ? null : ((Perl6PsiElement)value).inferType();
     }
 
     @Override

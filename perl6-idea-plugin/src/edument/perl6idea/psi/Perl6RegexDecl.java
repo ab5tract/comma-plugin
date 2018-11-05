@@ -8,5 +8,4 @@ public interface Perl6RegexDecl extends Perl6PsiScope, Perl6PsiDeclaration,
                                         Perl6SignatureHolder {
     String getRegexKind();
     String getRegexName();
-    String getSignature();
 }

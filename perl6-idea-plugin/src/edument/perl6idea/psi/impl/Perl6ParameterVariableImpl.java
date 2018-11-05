@@ -76,9 +76,9 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     }
 
     @Override
-    public String getVariableType() {
+    public String inferType() {
         PsiElement type = PsiTreeUtil.findSiblingBackward(this, TYPE_NAME, null);
-        if (type == null) return " ";
+        if (type == null) return null;
         return getCutName(type.getText());
     }
 
