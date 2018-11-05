@@ -14,6 +14,7 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.*;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
@@ -276,6 +277,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
                     PsiElement newExpression = createExpression(project, operation.getName());
 
                     PsiElement operationElement = operation.getElement();
+                    PsiElement list = PsiTreeUtil.getNonStrictParentOfType(operationElement, Perl6StatementList.class);
                     boolean needsToBeReplaced = !(operationElement.getParent() instanceof Perl6StatementList || operationElement.getParent().getParent() instanceof Perl6StatementList);
                     operation.setOccurrencesReplaceable(needsToBeReplaced);
 
@@ -294,7 +296,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
                             operation.setOccurrences(Collections.singletonList(replaced));
                         }
                     }
-                    postRefactoring(operationElement);
+                    postRefactoring(list, operation);
                 } finally {
                     final RefactoringEventData afterData = new RefactoringEventData();
                     afterData.addElement(declaration);
@@ -305,7 +307,14 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         }.execute().getResultObject();
     }
 
-    protected void postRefactoring(PsiElement element) {}
+    protected void postRefactoring(PsiElement statementList, IntroduceOperation operation) {
+        if (statementList != null) {
+            WriteCommandAction.runWriteCommandAction(operation.getProject(), () -> {
+                PsiDocumentManager.getInstance(operation.getProject()).doPostponedOperationsAndUnblockDocument(operation.getEditor().getDocument());
+                CodeStyleManager.getInstance(operation.getProject()).reformat(statementList);
+            });
+        }
+    }
 
     private static PsiElement replaceExpression(PsiElement expression, PsiElement newExpression, IntroduceOperation operation) {
         return expression.replace(newExpression);
