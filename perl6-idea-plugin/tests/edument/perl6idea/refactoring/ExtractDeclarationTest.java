@@ -12,7 +12,7 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say pi; say 1<selection>0 + 5</selection>0; say 10 + 50;");
         Perl6IntroduceVariableHandler handler = new Perl6VariableExtractionHandlerMock(null,  "$foo");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("say pi;\nmy $foo = 10 + 50;\nsay $foo; say $foo;");
+        myFixture.checkResult("say pi;\nmy $foo = 10 + 50;\nsay $foo;\nsay $foo;");
     }
 
     public void testExpressionVariableExtractionFromCursor() {
@@ -26,7 +26,7 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say pi; say 1<selection>0 + 5</selection>0; say 10 + 50;");
         Perl6ConstantExtractionHandlerMock handler = new Perl6ConstantExtractionHandlerMock(null, "$foo");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("say pi;\nmy constant $foo = 10 + 50;\nsay $foo; say $foo;");
+        myFixture.checkResult("say pi;\nmy constant $foo = 10 + 50;\nsay $foo;\nsay $foo;");
     }
 
     public void testStatementVariableExtraction() {
