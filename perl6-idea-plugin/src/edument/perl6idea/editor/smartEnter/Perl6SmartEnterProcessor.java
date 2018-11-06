@@ -3,9 +3,14 @@ package edument.perl6idea.editor.smartEnter;
 import com.intellij.codeInsight.editorActions.smartEnter.EnterProcessor;
 import com.intellij.codeInsight.editorActions.smartEnter.PlainEnterProcessor;
 import com.intellij.codeInsight.editorActions.smartEnter.SmartEnterProcessor;
+import com.intellij.ide.DataManager;
+import com.intellij.openapi.actionSystem.IdeActions;
+import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
+import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
@@ -39,6 +44,11 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         EnterProcessor plain = new PlainEnterProcessor();
         plain.doEnter(editor, psiFile, true);
         CodeStyleManager.getInstance(project).reformat(statement);
+        CommandProcessor.getInstance().executeCommand(project, () -> {
+            EditorActionManager actionManager = EditorActionManager.getInstance();
+            EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_MOVE_LINE_END);
+            actionHandler.execute(editor, DataManager.getInstance().getDataContext());
+        }, "", null);
         return true;
     }
 
