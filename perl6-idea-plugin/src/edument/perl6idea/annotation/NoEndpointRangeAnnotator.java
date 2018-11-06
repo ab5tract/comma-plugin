@@ -3,6 +3,7 @@ package edument.perl6idea.annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiWhiteSpace;
 import edument.perl6idea.annotation.fix.NoEndPointRangeFix;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,7 @@ public class NoEndpointRangeAnnotator implements Annotator {
         if (!(element instanceof Perl6Infix)) return;
         if (!element.getText().equals("..")) return;
         PsiElement next = element.getNextSibling();
-        while (next != null && next.getNode().getElementType() == UNV_WHITE_SPACE)
+        while (next != null && next.getNode().getElementType() == UNV_WHITE_SPACE || next instanceof PsiWhiteSpace)
             next = next.getNextSibling();
         if (next instanceof Perl6Whatever ||
             next instanceof Perl6IntLiteral ||
