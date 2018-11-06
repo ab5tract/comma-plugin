@@ -11,6 +11,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.impl.Perl6RoutineDeclImpl;
@@ -37,6 +38,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         processEnter(statement, editor, project);
         EnterProcessor plain = new PlainEnterProcessor();
         plain.doEnter(editor, psiFile, true);
+        CodeStyleManager.getInstance(project).reformat(statement);
         return true;
     }
 
