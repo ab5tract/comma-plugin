@@ -192,4 +192,5 @@ public interface Perl6TokenTypes {
     IElementType WHATEVER = new Perl6ElementType("WHATEVER");
     IElementType WHERE_CONSTRAINT = new Perl6ElementType("WHERE_CONSTRAINT");
     IElementType WHITE_SPACE = TokenType.WHITE_SPACE;
+    IElementType WS_OUTSIDE_LIST = new Perl6ElementType("WS_OUTSIDE_LIST");
 }
