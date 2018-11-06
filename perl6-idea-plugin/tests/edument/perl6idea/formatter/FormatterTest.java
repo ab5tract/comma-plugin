@@ -47,17 +47,12 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("grammar-basic.out.p6");
     }
 
-
     public void testContinuationAfterBlock() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "{\n\n}<caret>");
-
-        CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-            @Override
-            public void run() {
-                EditorActionManager actionManager = EditorActionManager.getInstance();
-                EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
-                actionHandler.execute(getEditor(), DataManager.getInstance().getDataContext());
-            }
+        CommandProcessor.getInstance().executeCommand(getProject(), () -> {
+            EditorActionManager actionManager = EditorActionManager.getInstance();
+            EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
+            actionHandler.execute(getEditor(), null, DataManager.getInstance().getDataContextFromFocus().getResult());
         }, "", null);
         myFixture.checkResult("{\n\n}\n<caret>");
     }
@@ -100,5 +95,36 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
             codeStyleManager.reformatText(file, 0, file.getTextLength());
         });
         myFixture.checkResultByFile("hash.out.p6");
+    }
+
+    /* Would be ideal to get this one to work also. */
+    /*public void testMultilineHashWithMultilineValueFormatting() {
+        myFixture.configureByFiles("hash-multiline-values.in.p6");
+        WriteCommandAction.runWriteCommandAction(null, () -> {
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
+            PsiFile file = myFixture.getFile();
+            codeStyleManager.reformatText(file, 0, file.getTextLength());
+        });
+        myFixture.checkResultByFile("hash-multiline-values.out.p6");
+    }*/
+
+    public void testMultilineArrayFormatting() {
+        myFixture.configureByFiles("array.in.p6");
+        WriteCommandAction.runWriteCommandAction(null, () -> {
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
+            PsiFile file = myFixture.getFile();
+            codeStyleManager.reformatText(file, 0, file.getTextLength());
+        });
+        myFixture.checkResultByFile("array.out.p6");
+    }
+
+    public void testTrailingCommaInArrayAndHashFormatting() {
+        myFixture.configureByFiles("trailing-comma.in.p6");
+        WriteCommandAction.runWriteCommandAction(null, () -> {
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
+            PsiFile file = myFixture.getFile();
+            codeStyleManager.reformatText(file, 0, file.getTextLength());
+        });
+        myFixture.checkResultByFile("trailing-comma.out.p6");
     }
 }

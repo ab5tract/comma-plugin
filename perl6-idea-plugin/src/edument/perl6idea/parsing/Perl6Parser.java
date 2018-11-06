@@ -115,12 +115,19 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean EXPR_2_alt_6(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_quant_6(PsiBuilder builder, OPP opp) {
+        if (!(this.ws_258(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean EXPR_2_alt_7(PsiBuilder builder, OPP opp) {
         opp.startPostfixes();
         return true;
     }
 
-    private boolean EXPR_2_quant_7(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_quant_8(PsiBuilder builder, OPP opp) {
         if (!(this.postfixish_114(builder))) {
             return false;
         }
@@ -128,45 +135,45 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean EXPR_2_alt_8(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_alt_9(PsiBuilder builder, OPP opp) {
         if (!(this.nextterm_81(builder))) {
             return false;
         }
         opp.startPostfixes();
         while (true) {
-            PsiBuilder.Marker quantMarker8;;
-            quantMarker8 = builder.mark();
-            if (this.EXPR_2_quant_7(builder, opp)) {
-                quantMarker8.drop();
+            PsiBuilder.Marker quantMarker9;;
+            quantMarker9 = builder.mark();
+            if (this.EXPR_2_quant_8(builder, opp)) {
+                quantMarker9.drop();
             } else {
-                quantMarker8.rollbackTo();
+                quantMarker9.rollbackTo();
                 break;
             }
         }
         return true;
     }
 
-    private boolean EXPR_2_alt_9(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_alt_10(PsiBuilder builder, OPP opp) {
         opp.endPrefixes();
-        PsiBuilder.Marker altMarker9;
-        altMarker9 = builder.mark();
-        if (this.EXPR_2_alt_8(builder, opp)) {
-            altMarker9.drop();
+        PsiBuilder.Marker altMarker10;
+        altMarker10 = builder.mark();
+        if (this.EXPR_2_alt_9(builder, opp)) {
+            altMarker10.drop();
         } else {
-            altMarker9.rollbackTo();
-            PsiBuilder.Marker altMarker7;;
-            altMarker7 = builder.mark();
-            if (this.EXPR_2_alt_6(builder, opp)) {
-                altMarker7.drop();
+            altMarker10.rollbackTo();
+            PsiBuilder.Marker altMarker8;;
+            altMarker8 = builder.mark();
+            if (this.EXPR_2_alt_7(builder, opp)) {
+                altMarker8.drop();
             } else {
-                altMarker7.rollbackTo();
+                altMarker8.rollbackTo();
                 return false;
             }
         }
         return true;
     }
 
-    private boolean EXPR_2_quant_10(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_quant_11(PsiBuilder builder, OPP opp) {
         if (!(this.prefixish_118(builder))) {
             return false;
         }
@@ -174,12 +181,12 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean EXPR_2_alt_11(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_alt_12(PsiBuilder builder, OPP opp) {
         opp.startPostfixes();
         return true;
     }
 
-    private boolean EXPR_2_quant_12(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_quant_13(PsiBuilder builder, OPP opp) {
         if (!(this.postfixish_114(builder))) {
             return false;
         }
@@ -187,76 +194,76 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean EXPR_2_alt_13(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_alt_14(PsiBuilder builder, OPP opp) {
         if (!(this.nextterm_81(builder))) {
             return false;
         }
         opp.startPostfixes();
         while (true) {
-            PsiBuilder.Marker quantMarker14;;
-            quantMarker14 = builder.mark();
-            if (this.EXPR_2_quant_12(builder, opp)) {
-                quantMarker14.drop();
+            PsiBuilder.Marker quantMarker15;;
+            quantMarker15 = builder.mark();
+            if (this.EXPR_2_quant_13(builder, opp)) {
+                quantMarker15.drop();
             } else {
-                quantMarker14.rollbackTo();
+                quantMarker15.rollbackTo();
                 break;
-            }
-        }
-        return true;
-    }
-
-    private boolean EXPR_2_alt_14(PsiBuilder builder, OPP opp) {
-        PsiBuilder.Marker quantMarker11;
-        quantMarker11 = builder.mark();
-        if (this.EXPR_2_quant_10(builder, opp)) {
-            quantMarker11.drop();
-        } else {
-            quantMarker11.rollbackTo();
-            return false;
-        }
-        while (true) {
-            PsiBuilder.Marker quantMarker12;;
-            quantMarker12 = builder.mark();
-            if (this.EXPR_2_quant_10(builder, opp)) {
-                quantMarker12.drop();
-            } else {
-                quantMarker12.rollbackTo();
-                break;
-            }
-        }
-        opp.endPrefixes();
-        PsiBuilder.Marker altMarker15;
-        altMarker15 = builder.mark();
-        if (this.EXPR_2_alt_13(builder, opp)) {
-            altMarker15.drop();
-        } else {
-            altMarker15.rollbackTo();
-            PsiBuilder.Marker altMarker13;;
-            altMarker13 = builder.mark();
-            if (this.EXPR_2_alt_11(builder, opp)) {
-                altMarker13.drop();
-            } else {
-                altMarker13.rollbackTo();
-                return false;
             }
         }
         return true;
     }
 
     private boolean EXPR_2_alt_15(PsiBuilder builder, OPP opp) {
-        opp.startPrefixes();
+        PsiBuilder.Marker quantMarker12;
+        quantMarker12 = builder.mark();
+        if (this.EXPR_2_quant_11(builder, opp)) {
+            quantMarker12.drop();
+        } else {
+            quantMarker12.rollbackTo();
+            return false;
+        }
+        while (true) {
+            PsiBuilder.Marker quantMarker13;;
+            quantMarker13 = builder.mark();
+            if (this.EXPR_2_quant_11(builder, opp)) {
+                quantMarker13.drop();
+            } else {
+                quantMarker13.rollbackTo();
+                break;
+            }
+        }
+        opp.endPrefixes();
         PsiBuilder.Marker altMarker16;
         altMarker16 = builder.mark();
         if (this.EXPR_2_alt_14(builder, opp)) {
             altMarker16.drop();
         } else {
             altMarker16.rollbackTo();
-            PsiBuilder.Marker altMarker10;;
-            altMarker10 = builder.mark();
-            if (this.EXPR_2_alt_9(builder, opp)) {
-                altMarker10.drop();
+            PsiBuilder.Marker altMarker14;;
+            altMarker14 = builder.mark();
+            if (this.EXPR_2_alt_12(builder, opp)) {
+                altMarker14.drop();
             } else {
-                altMarker10.rollbackTo();
+                altMarker14.rollbackTo();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean EXPR_2_alt_16(PsiBuilder builder, OPP opp) {
+        opp.startPrefixes();
+        PsiBuilder.Marker altMarker17;
+        altMarker17 = builder.mark();
+        if (this.EXPR_2_alt_15(builder, opp)) {
+            altMarker17.drop();
+        } else {
+            altMarker17.rollbackTo();
+            PsiBuilder.Marker altMarker11;;
+            altMarker11 = builder.mark();
+            if (this.EXPR_2_alt_10(builder, opp)) {
+                altMarker11.drop();
+            } else {
+                altMarker11.rollbackTo();
                 return false;
             }
         }
@@ -264,7 +271,7 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean EXPR_2_alt_16(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_alt_17(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == Perl6TokenTypes.FAKE_INFIX) {
             builder.advanceLexer();
         } else {
@@ -273,7 +280,7 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean EXPR_2_quant_17(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_quant_18(PsiBuilder builder, OPP opp) {
         if (!(this.ws_258(builder))) {
             return false;
         }
@@ -282,32 +289,36 @@ public class Perl6Parser implements PsiParser {
             return false;
         }
         opp.endInfix();
-        if (!(this.ws_258(builder))) {
-            return false;
-        }
-        PsiBuilder.Marker altMarker18;
-        altMarker18 = builder.mark();
-        if (this.EXPR_2_alt_16(builder, opp)) {
-            altMarker18.drop();
+        PsiBuilder.Marker quantMarker7;
+        quantMarker7 = builder.mark();
+        if (this.EXPR_2_quant_6(builder, opp)) {
+            quantMarker7.drop();
         } else {
-            altMarker18.rollbackTo();
-            PsiBuilder.Marker altMarker17;;
-            altMarker17 = builder.mark();
-            if (this.EXPR_2_alt_15(builder, opp)) {
-                altMarker17.drop();
+            quantMarker7.rollbackTo();
+        }
+        PsiBuilder.Marker altMarker19;
+        altMarker19 = builder.mark();
+        if (this.EXPR_2_alt_17(builder, opp)) {
+            altMarker19.drop();
+        } else {
+            altMarker19.rollbackTo();
+            PsiBuilder.Marker altMarker18;;
+            altMarker18 = builder.mark();
+            if (this.EXPR_2_alt_16(builder, opp)) {
+                altMarker18.drop();
             } else {
-                altMarker17.rollbackTo();
+                altMarker18.rollbackTo();
                 return false;
             }
         }
         return true;
     }
 
-    private boolean EXPR_2_alt_18(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_alt_19(PsiBuilder builder, OPP opp) {
         return true;
     }
 
-    private boolean EXPR_2_alt_19(PsiBuilder builder, OPP opp) {
+    private boolean EXPR_2_alt_20(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == Perl6TokenTypes.END_OF_EXPR) {
             builder.advanceLexer();
         } else {
@@ -349,28 +360,28 @@ public class Perl6Parser implements PsiParser {
         }
         opp.endPostfixes();
         while (true) {
-            PsiBuilder.Marker quantMarker19;;
-            quantMarker19 = builder.mark();
-            if (this.EXPR_2_quant_17(builder, opp)) {
-                quantMarker19.drop();
+            PsiBuilder.Marker quantMarker20;;
+            quantMarker20 = builder.mark();
+            if (this.EXPR_2_quant_18(builder, opp)) {
+                quantMarker20.drop();
             } else {
-                quantMarker19.rollbackTo();
+                quantMarker20.rollbackTo();
                 break;
             }
         }
         opp.endExpr();
-        PsiBuilder.Marker altMarker21;
-        altMarker21 = builder.mark();
-        if (this.EXPR_2_alt_19(builder, opp)) {
-            altMarker21.drop();
+        PsiBuilder.Marker altMarker22;
+        altMarker22 = builder.mark();
+        if (this.EXPR_2_alt_20(builder, opp)) {
+            altMarker22.drop();
         } else {
-            altMarker21.rollbackTo();
-            PsiBuilder.Marker altMarker20;;
-            altMarker20 = builder.mark();
-            if (this.EXPR_2_alt_18(builder, opp)) {
-                altMarker20.drop();
+            altMarker22.rollbackTo();
+            PsiBuilder.Marker altMarker21;;
+            altMarker21 = builder.mark();
+            if (this.EXPR_2_alt_19(builder, opp)) {
+                altMarker21.drop();
             } else {
-                altMarker20.rollbackTo();
+                altMarker21.rollbackTo();
                 return false;
             }
         }
