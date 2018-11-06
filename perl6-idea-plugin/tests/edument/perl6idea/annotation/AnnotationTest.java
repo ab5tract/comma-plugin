@@ -220,6 +220,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(true, false, true, false);
     }
 
+    public void testRangeWithNewlineIsCompleted() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "0\n..\n1");
+        myFixture.checkHighlighting(true, false, true, false);
+    }
+
     public void testNullRegexAnnotator1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"Empty regex is not allowed\">//</error>;");
         myFixture.checkHighlighting(false, false, true, true);
