@@ -68,6 +68,7 @@
     <usageTypeProvider implementation="edument.perl6idea.findUsages.Perl6UsageTypeProvider"/>
     <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
     <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6RefactoringSupportProvider"/>
+    <enterBetweenBracesDelegate language="Perl6" implementationClass="edument.perl6idea.editor.Perl6EnterBetweenBracesDelegate"/>
   </extensions>
 
   <actions>
