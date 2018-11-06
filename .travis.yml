@@ -22,6 +22,9 @@ before_script:
 script:
 - (cd perl6-idea-plugin/tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
 - (cd perl6-idea-plugin && ./gradlew test)
+- (cd perl6-idea-plugin/tools/symbol-script-module && zef install .)
+- (cd perl6-idea-plugin/tools/symbol-script-module && perl6 symbol-script-test.p6)
+- (cd perl6-idea-plugin/tools/symbol-script-module && perl6 test-harness-test.p6)
 after_success:
 - (cd perl6-idea-plugin && ./gradlew buildPlugin)
 deploy:
