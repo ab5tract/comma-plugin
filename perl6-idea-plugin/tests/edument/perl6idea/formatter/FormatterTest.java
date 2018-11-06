@@ -49,14 +49,10 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
 
     public void testContinuationAfterBlock() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "{\n\n}<caret>");
-
-        CommandProcessor.getInstance().executeCommand(getProject(), new Runnable() {
-            @Override
-            public void run() {
-                EditorActionManager actionManager = EditorActionManager.getInstance();
-                EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
-                actionHandler.execute(getEditor(), DataManager.getInstance().getDataContext());
-            }
+        CommandProcessor.getInstance().executeCommand(getProject(), () -> {
+            EditorActionManager actionManager = EditorActionManager.getInstance();
+            EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
+            actionHandler.execute(getEditor(), null, DataManager.getInstance().getDataContextFromFocus().getResult());
         }, "", null);
         myFixture.checkResult("{\n\n}\n<caret>");
     }
