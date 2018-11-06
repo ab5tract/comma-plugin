@@ -43,7 +43,11 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         processEnter(statement, editor, project);
         EnterProcessor plain = new PlainEnterProcessor();
         plain.doEnter(editor, psiFile, true);
-        CodeStyleManager.getInstance(project).reformat(statement);
+
+        int oldLine = editor.getDocument().getLineNumber(editor.getCaretModel().getOffset());
+        CodeStyleManager.getInstance(project).reformat(psiFile);
+        editor.getCaretModel().moveToOffset(editor.getDocument().getLineStartOffset(oldLine));
+
         CommandProcessor.getInstance().executeCommand(project, () -> {
             EditorActionManager actionManager = EditorActionManager.getInstance();
             EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_MOVE_LINE_END);
@@ -152,7 +156,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
             lastPiece.getNode().getElementType() == NAME) {
             if (offsetToJump < 0)
                 offsetToJump = lastPiece.getTextOffset() + lastPiece.getTextLength();
-            editor.getDocument().insertString(offsetToJump, " {\n}\n");
+            editor.getDocument().insertString(offsetToJump, " {\n}");
         } else if (lastPiece instanceof Perl6Blockoid) {
             // If code block itself
             processBlockInternals(lastPiece, editor);
@@ -182,7 +186,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         if (length <= 2 || isBlockEmpty(piece, length)) {
             int offset = piece.getTextOffset();
             piece.delete();
-            editor.getDocument().insertString(offset, "{\n}\n");
+            editor.getDocument().insertString(offset, "{\n}");
         }
     }
 
