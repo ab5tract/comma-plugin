@@ -25,7 +25,7 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
     @NotNull
     @Override
     public Perl6VariableDeclStub createStub(@NotNull Perl6VariableDecl psi, StubElement parentStub) {
-        return new Perl6VariableDeclStubImpl(parentStub, psi.getVariableName(), psi.getVariableType(), psi.isExported());
+        return new Perl6VariableDeclStubImpl(parentStub, psi.getVariableName(), psi.inferType(), psi.isExported());
     }
 
     @NotNull
@@ -46,8 +46,9 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
     public Perl6VariableDeclStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef variableNameRef = dataStream.readName();
         StringRef variableTypeRef = dataStream.readName();
+        String type = variableTypeRef == null ? null : variableTypeRef.getString();
         boolean exported = dataStream.readBoolean();
-        return new Perl6VariableDeclStubImpl(parentStub, variableNameRef.getString(), variableTypeRef.getString(), exported);
+        return new Perl6VariableDeclStubImpl(parentStub, variableNameRef.getString(), type, exported);
     }
 
     @Override
@@ -57,6 +58,9 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
 
     @Override
     public boolean shouldCreateStub(ASTNode node) {
-        return ((Perl6VariableDecl)node.getPsi()).getScope().equals("has");
+        Perl6VariableDecl variableDecl = (Perl6VariableDecl) node.getPsi();
+        String scope = variableDecl.getScope();
+        return scope.equals("has") ||
+                scope.equals("our") && variableDecl.isExported();
     }
 }

@@ -29,6 +29,7 @@ public class Perl6ScopedDeclImpl extends StubBasedPsiElementBase<Perl6ScopedDecl
         if (text.startsWith("our")) return "our";
         if (text.startsWith("augment")) return "augment";
         if (text.startsWith("unit")) return "unit";
+        if (text.startsWith("state")) return "state";
         return "";
     }
 

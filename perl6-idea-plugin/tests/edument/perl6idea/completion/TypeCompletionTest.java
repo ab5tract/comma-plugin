@@ -126,4 +126,11 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
             "Interesting::InterNested::InterDeeper", "InterNested", "InterNested::InterDeeper", "InterLexical")));
         assertFalse(vars.contains("Interested::InterLexical"));
     }
+
+    public void testAnonymousClassIsSafeToComplete() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my class { -<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> types = myFixture.getLookupElementStrings();
+        assertNotNull(types);
+    }
 }

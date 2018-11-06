@@ -5,6 +5,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
@@ -36,6 +38,18 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         return varNode != null ? varNode.getVariableToken() : null;
     }
 
+    @NotNull
+    @Override
+    public SearchScope getUseScope() {
+        String varScope = getScope();
+        if (varScope.equals("my") || varScope.equals("state")) {
+            Perl6StatementList parent = PsiTreeUtil.getParentOfType(this, Perl6StatementList.class);
+            if (parent != null)
+                return new LocalSearchScope(parent, getVariableName());
+        }
+        return super.getUseScope();
+    }
+
     @Override
     public String getName() {
         Perl6VariableDeclStub stub = getStub();
@@ -60,22 +74,35 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
-    public String getVariableType() {
+    public String inferType() {
         Perl6VariableDeclStub stub = getStub();
-        if (stub != null)
-            return stub.getVariableType();
+        if (stub != null) {
+            String variableType = stub.getVariableType();
+            if (variableType != null)
+                return variableType;
+        }
         PsiElement type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
-        if (type != null) return getCuttedName(type.getText());
-        return resolveAssign();
+        if (type != null) return getCutName(type.getText());
+        String assignBasedType = resolveAssign();
+        if (assignBasedType != null) return assignBasedType;
+        return inferBySigil();
+    }
+
+    private String inferBySigil() {
+        Perl6Variable variable = PsiTreeUtil.getChildOfType(this, Perl6Variable.class);
+        if (variable != null) {
+            return variable.getTypeBySigil(variable.getText(), this);
+        }
+        return null;
     }
 
     private String resolveAssign() {
         PsiElement infix = PsiTreeUtil.getChildOfType(this, Perl6InfixImpl.class);
-        if (infix == null || !infix.getText().equals("=")) return " ";
+        if (infix == null || !infix.getText().equals("=")) return null;
         PsiElement value = infix.getNextSibling();
         while (value instanceof PsiWhiteSpace || (value != null && value.getNode().getElementType() == UNV_WHITE_SPACE))
             value = value.getNextSibling();
-        return value == null ? " " : ((Perl6PsiElement)value).inferType();
+        return value == null ? null : ((Perl6PsiElement)value).inferType();
     }
 
     @Override

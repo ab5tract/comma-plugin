@@ -5,13 +5,12 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import edument.perl6idea.psi.Perl6File;
+import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6StatementList;
@@ -51,14 +50,14 @@ public class StubMissingMethodsFix implements IntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
         Perl6StatementList list = PsiTreeUtil.findChildOfType(myDecl, Perl6StatementList.class);
+        if (list == null) {
+            CommonRefactoringUtil.showErrorHint(project, editor, "Cannot stub methods without package body",
+                                                "Stubbing role methods", null);
+            return;
+        }
         for (String methodDef : myToImplement) {
-            // FIXME Replace with Perl6ElementFactory when it merged into master
-            String filename = "dummy." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
-            Perl6File dummyFile = (Perl6File)PsiFileFactory
-                .getInstance(project)
-                .createFileFromText(filename, Perl6ScriptFileType.INSTANCE, methodDef);
-            Perl6Statement stubbedMethodDecl = PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
-            list.getNode().addChild(stubbedMethodDecl.getNode());
+            Perl6Statement methodDecl = Perl6ElementFactory.createStatementFromText(project, methodDef);
+            list.getNode().addChild(methodDecl.getNode());
             list.getNode().addChild(new PsiWhiteSpaceImpl("\n"));
         }
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());

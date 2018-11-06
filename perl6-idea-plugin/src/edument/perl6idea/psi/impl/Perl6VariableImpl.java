@@ -4,10 +4,15 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.SearchScope;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Variable {
     public Perl6VariableImpl(@NotNull ASTNode node) {
@@ -22,6 +27,22 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     @Override
     public PsiElement getVariableToken() {
         return findChildByType(Perl6TokenTypes.VARIABLE);
+    }
+
+    @Override
+    public String getName() {
+        PsiElement nameIdent = getNameIdentifier();
+        return nameIdent != null ? nameIdent.getText() : "";
+    }
+
+    @NotNull
+    @Override
+    public SearchScope getUseScope() {
+        PsiReference ref = getReference();
+        if (ref == null) return super.getUseScope();
+        PsiElement resolved = ref.resolve();
+        if (!(resolved instanceof Perl6VariableDecl)) return super.getUseScope();
+        return resolved.getUseScope();
     }
 
     @Override
@@ -52,42 +73,43 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         PsiReference ref = getReference();
         if (ref == null) return "Any";
         PsiElement resolved = ref.resolve();
-        // Handle $ case
-        if (text.startsWith("$")) {
-            if (resolved instanceof Perl6VariableDecl) {
-                Perl6VariableDecl decl = (Perl6VariableDecl)resolved;
-                String type = decl.getVariableType();
-                if (!type.equals(" "))
-                    return type;
-            } else if (resolved instanceof Perl6ParameterVariable) {
-                Perl6ParameterVariable parameter = (Perl6ParameterVariable)resolved;
-                String type = parameter.getVariableType();
-                if (type != " ")
-                    return type;
-            }
-        } else {
-            if (resolved instanceof Perl6VariableDecl) {
-                Perl6VariableDecl decl = (Perl6VariableDecl)resolved;
-                String type = decl.getVariableType();
-                if (type.equals(" ")) {
-                    // Untyped @% variable
-                    if (text.startsWith("@"))
-                        return "Array";
-                    if (text.startsWith("%"))
-                        return "Hash";
-                }
-            } else if (resolved instanceof Perl6ParameterVariable) {
-                Perl6ParameterVariable parameter = (Perl6ParameterVariable)resolved;
-                String type = parameter.getVariableType();
-                if (type == " ") {
-                    if (text.startsWith("@"))
-                        return "List";
-                    if (text.startsWith("%"))
-                        return "Map";
-                }
-            }
+        if (resolved instanceof Perl6VariableDecl) {
+            String type = ((Perl6VariableDecl) resolved).inferType();
+            if (type != null) return type;
+        } else if (resolved instanceof Perl6ParameterVariable) {
+            String type = ((Perl6ParameterVariable) resolved).inferType();
+            if (type != null)
+                return type;
         }
+        // Handle $ case
+        String type = getTypeBySigil(text, resolved);
+        return type == null ? "Any" : type;
+    }
 
-        return "Any";
+    @Override
+    @Nullable
+    public String getTypeBySigil(String text, PsiElement resolved) {
+        if (resolved == null || resolved instanceof Perl6VariableDecl) {
+            if (text.startsWith("@"))
+                return "Array";
+            else if (text.startsWith("%"))
+                return "Hash";
+            else if (text.startsWith("&"))
+                return "Callable";
+        } else if (resolved instanceof Perl6ParameterVariable) {
+            if (text.startsWith("@"))
+                return "List";
+            else if (text.startsWith("%"))
+                return "Map";
+            else if (text.startsWith("&"))
+                return "Callable";
+        }
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public PsiElement getNameIdentifier() {
+        return getVariableToken();
     }
 }

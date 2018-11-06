@@ -1,5 +1,7 @@
 package edument.perl6idea.psi.stub;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
@@ -10,6 +12,10 @@ import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringJoiner;
 
 public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Perl6Enum> {
     public Perl6EnumStubElementType() {
@@ -24,7 +30,7 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
     @NotNull
     @Override
     public Perl6EnumStub createStub(@NotNull Perl6Enum psi, StubElement parentStub) {
-        return new Perl6EnumStubImpl(parentStub, psi.getEnumName(), psi.isExported());
+        return new Perl6EnumStubImpl(parentStub, psi.getEnumName(), psi.isExported(), psi.getEnumValues());
     }
 
     @NotNull
@@ -37,6 +43,11 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
     public void serialize(@NotNull Perl6EnumStub stub, @NotNull StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getTypeName());
         dataStream.writeBoolean(stub.isExported());
+        StringJoiner joiner = new StringJoiner("#");
+        for (String type : stub.getEnumValues()) {
+            joiner.add(type);
+        }
+        dataStream.writeName(joiner.toString());
     }
 
     @NotNull
@@ -44,7 +55,9 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
     public Perl6EnumStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef enumNameRef = dataStream.readName();
         boolean exported = dataStream.readBoolean();
-        return new Perl6EnumStubImpl(parentStub, enumNameRef.getString(), exported);
+        StringRef values = dataStream.readName();
+        List<String> enumValues = new ArrayList(Arrays.asList(values.getString().split("#")));
+        return new Perl6EnumStubImpl(parentStub, enumNameRef.getString(), exported, enumValues);
     }
 
     @Override
@@ -58,5 +71,11 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
             if (lexicalName != null)
                 sink.occurrence(Perl6StubIndexKeys.LEXICAL_TYPES, lexicalName);
         }
+    }
+
+    @Override
+    public boolean shouldCreateStub(ASTNode node) {
+        PsiElement psi = node.getPsi();
+        return psi instanceof Perl6Enum && ((Perl6Enum) psi).getEnumName() != null;
     }
 }

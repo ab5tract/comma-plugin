@@ -25,7 +25,8 @@ public class NoEndpointRangeAnnotator implements Annotator {
             next instanceof Perl6Variable ||
             next instanceof Perl6ParenthesizedExpr ||
             next instanceof Perl6InfixApplication ||
-            next instanceof Perl6StrLiteral)
+            next instanceof Perl6StrLiteral ||
+            next instanceof Perl6PrefixApplication)
             return;
         holder.createErrorAnnotation(element, "The range operator must have a second argument")
               .registerFix(new NoEndPointRangeFix(element.getTextOffset() + element.getTextLength()));

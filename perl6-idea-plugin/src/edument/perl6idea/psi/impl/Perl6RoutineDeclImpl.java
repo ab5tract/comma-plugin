@@ -18,6 +18,7 @@ import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCKOID;
@@ -70,15 +71,20 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public String getReturnsTrait() {
         Perl6RoutineDeclStub stub = getStub();
         if (stub != null)
-            for (StubElement s : stub.getChildrenStubs())
-                if (s instanceof Perl6TraitStub &&
-                    ((Perl6TraitStub)s).getTraitModifier().equals("returns"))
+            for (StubElement s : stub.getChildrenStubs()) {
+                if (!(s instanceof Perl6TraitStub)) continue;
+                Perl6TraitStub traitStub = (Perl6TraitStub)s;
+                String modifier = traitStub.getTraitModifier();
+                if (modifier.equals("returns") ||
+                    modifier.equals("of"))
                     return ((Perl6TraitStub)s).getTraitName();
-
+            }
         Collection<Perl6Trait> traits = PsiTreeUtil.findChildrenOfType(this, Perl6Trait.class);
-        for (Perl6Trait trait : traits)
-            if (trait.getTraitModifier().equals("returns"))
+        for (Perl6Trait trait : traits) {
+            String modifier = trait.getTraitModifier();
+            if (modifier.equals("returns") || modifier.equals("of"))
                 return trait.getTraitName();
+        }
         return null;
     }
 
@@ -95,7 +101,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
     @Override
     public Perl6Signature getSignatureNode() {
-        return findChildByClass(Perl6SignatureImpl.class);
+        return findChildByClass(Perl6Signature.class);
     }
 
     @Nullable
@@ -110,7 +116,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         if (stub != null)
             return stub.getRoutineName();
         PsiElement nameIdentifier = getNameIdentifier();
-        return nameIdentifier == null ? null : nameIdentifier.getText();
+        return nameIdentifier == null ? "<anon>" : nameIdentifier.getText();
     }
 
     @Override
@@ -155,6 +161,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public PsiMetaData getMetaData() {
         PsiElement decl = this;
         String un_dashed_name = getName();
+        if (un_dashed_name == null) return null;
         // Chop off everything before last `-` symbol
         un_dashed_name = un_dashed_name.substring(un_dashed_name.lastIndexOf('-') + 1);
         String final_un_dashed_name = un_dashed_name;
@@ -187,6 +194,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     public static void offerRoutineSymbols(Perl6SymbolCollector collector, String name, Perl6RoutineDecl decl) {
+        if (decl.getRoutineName().equals("<anon>")) return;
         if (decl.getRoutineKind().equals("method") || decl.getRoutineKind().equals("submethod")) {
             // Do not contribute submethods if restricted
             if (decl.getRoutineKind().equals("submethod") && !collector.areInternalPartsCollected()) return;
@@ -197,7 +205,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
             if (!name.startsWith("!")) name = "." + name;
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, decl, name));
         } else {
-            if (name != null && (decl.getScope().equals("my") || decl.getScope().equals("our"))) {
+            if (decl.getScope().equals("my") || decl.getScope().equals("our")) {
                 collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, decl));
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
                                                                      decl, "&" + name));

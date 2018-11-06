@@ -125,7 +125,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
             Path metaPath = getMETAFilePath(project);
             String content = new String(Files.readAllBytes(metaPath), CharsetToolkit.UTF8_CHARSET);
             JSONObject metaInfo = new JSONObject(content);
-            JSONObject providesSection = metaInfo.getJSONObject("provides");
+            JSONObject providesSection = metaInfo.has("provides") ? metaInfo.getJSONObject("provides") : new JSONObject();
             providesSection.put(moduleName, String.format("lib%s%s.pm6", "/", moduleName.replaceAll("::", "/")));
             metaInfo.put("provides", providesSection);
             writeCodeToPath(metaPath, Collections.singletonList(metaInfo.toString(4)));
@@ -143,18 +143,23 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 .put(moduleName, String.format("lib%s%s.pm6", "/", moduleName.replaceAll("::", "/")));
         if (entryPointName != null)
             providesSection.put(entryPointName, String.format("bin%s%s", "/", entryPointName));
-        JSONObject metaJson = new JSONObject()
-                .put("perl", "6.*")
-                .put("name", moduleName)
-                .put("version", "0.1")
-                .put("description", "Write me!")
-                .put("authors", new JSONArray())
-                .put("license", "Choose me!")
-                .put("depends", new JSONArray())
-                .put("provides", providesSection)
-                .put("resources", new JSONArray())
-                .put("source-url", "Write me!");
+        JSONObject metaJson = createStubMETAObject(moduleName);
+        metaJson.put("provides", providesSection);
         writeCodeToPath(getMETAFilePath(project), Collections.singletonList(metaJson.toString(4)));
+    }
+
+    public static JSONObject createStubMETAObject(String moduleName) {
+        return new JSONObject()
+                    .put("perl", "6.*")
+                    .put("name", moduleName)
+                    .put("version", "0.1")
+                    .put("description", "Write me!")
+                    .put("authors", new JSONArray())
+                    .put("license", "Choose me!")
+                    .put("depends", new JSONArray())
+                    .put("provides", new JSONArray())
+                    .put("resources", new JSONArray())
+                    .put("source-url", "Write me!");
     }
 
     public static Path getMETAFilePath(Project project) {

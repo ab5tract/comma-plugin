@@ -3,10 +3,14 @@ package edument.perl6idea.formatter;
 import com.intellij.formatting.*;
 import com.intellij.formatting.templateLanguages.BlockWithParent;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiStatement;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +29,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             UNV_WHITE_SPACE, WHITE_SPACE,
             VERTICAL_WHITE_SPACE, UNSP_WHITE_SPACE
     );
+    private TokenSet LARGE_BLOCK = TokenSet.create(PACKAGE_DECLARATION, ROUTINE_DECLARATION);
 
     Perl6Block(ASTNode node, Wrap wrap, Alignment align, CodeStyleSettings settings) {
         super(node, wrap, align);
@@ -47,15 +52,29 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         for (ASTNode child = getNode().getFirstChildNode(); child != null; child = child.getTreeNext()) {
             if (WHITESPACES.contains(child.getElementType()))
                 continue;
-            Boolean childIsStatementContinuation = null;
-            if (child.getElementType() != STATEMENT_LIST) {
+            Perl6Block childBlock;
+            if (child.getElementType() == BLOCKOID
+                    && LARGE_BLOCK.contains(child.getTreeParent().getElementType())) {
+                childBlock = new Perl6LargeBlockoidBlock(child, null, null, mySettings);
+            }
+            else if (child.getElementType() == STATEMENT) {
+                childBlock = new Perl6StatementBlock(child, null, null, mySettings);
+            }
+            else if (child.getElementType() == STATEMENT_TERMINATOR && child.getText().equals(";")) {
+                childBlock = new Perl6StatementTerminatorBlock(child, null, null, mySettings);
+            }
+            else if (child.getElementType() != STATEMENT_LIST) {
+                Boolean childIsStatementContinuation = null;
                 if (isStatementContinuation != null && isStatementContinuation)
                     childIsStatementContinuation = false;
                 else if (nodeInStatementContinuation(child))
                     childIsStatementContinuation = true;
+                childBlock = new Perl6Block(child, null, null, mySettings,
+                                           childIsStatementContinuation);
             }
-            final Perl6Block childBlock = new Perl6Block(child, null, null, mySettings,
-                    childIsStatementContinuation);
+            else {
+                childBlock = new Perl6StatementListBlock(child, null, null, mySettings);
+            }
             childBlock.setParent(this);
             children.add(childBlock);
         }
@@ -85,6 +104,32 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     private static boolean nodeInStatementContinuation(ASTNode startNode) {
         ASTNode curNode = startNode;
+
+        /* Check if we're in a hash literal, which we won't treat as a continuation if
+         * at statement level. */
+        Perl6Blockoid maybeBlockoid = PsiTreeUtil.getParentOfType(startNode.getPsi(), Perl6Blockoid.class);
+        if (maybeBlockoid != null) {
+            if (maybeBlockoid.getParent() instanceof Perl6BlockOrHash
+                    && maybeBlockoid.getChildren().length > 0) {
+                PsiElement hopefullyStatementList = maybeBlockoid.getChildren()[0];
+                if (hopefullyStatementList instanceof Perl6StatementList
+                        && hopefullyStatementList.getChildren().length > 0) {
+                    PsiElement hopefullyStatement = hopefullyStatementList.getChildren()[0];
+                    if (hopefullyStatement instanceof Perl6Statement
+                            && hopefullyStatementList.getChildren().length > 0) {
+                        PsiElement hopefullyInfix = hopefullyStatement.getChildren()[0];
+                        if (hopefullyInfix instanceof Perl6InfixApplication &&
+                                hopefullyInfix.getChildren().length >= 2 &&
+                                hopefullyInfix.getChildren()[1].getText().equals(",")) {
+                             PsiElement hopefullyPairish = hopefullyInfix.getChildren()[0];
+                             if (hopefullyPairish instanceof Perl6FatArrow || hopefullyPairish instanceof Perl6ColonPair)
+                                 return false;
+                        }
+                    }
+                }
+            }
+        }
+
         while (curNode != null && curNode.getElementType() != BLOCKOID) {
             IElementType elementType = curNode.getElementType();
             if (elementType == IF_STATEMENT || elementType == HEREDOC)
@@ -98,6 +143,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         }
         return false;
     }
+
 
     private static final Set<IElementType> NOT_CONTINUATIONY = new HashSet<>(Arrays.asList(
         FILE, STATEMENT_LIST, IF_STATEMENT, PACKAGE_DECLARATION
@@ -113,12 +159,35 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         else if (isStatementContinuation != null && isStatementContinuation) {
             return new ChildAttributes(Indent.getNoneIndent(), null);
         }
-        else if (NOT_CONTINUATIONY.contains(elementType)) {
+        else if (NOT_CONTINUATIONY.contains(elementType) || isInHashLiteral(myNode)) {
             return new ChildAttributes(Indent.getNoneIndent(), null);
         }
         else {
             return new ChildAttributes(Indent.getContinuationWithoutFirstIndent(), null);
         }
+    }
+
+    private boolean isInHashLiteral(ASTNode node) {
+        PsiElement psi = node.getPsi();
+        // Should be infix:<,> and first element should be hash-like.
+        if (psi instanceof Perl6InfixApplication && psi.getChildren().length >= 2 &&
+                psi.getChildren()[1].getText().equals(",")) {
+            PsiElement hopefullyPairish = psi.getChildren()[0];
+            if (hopefullyPairish instanceof Perl6FatArrow || hopefullyPairish instanceof Perl6ColonPair) {
+                // Matches here, but check the parents are as expected.
+                PsiElement hopefullyStatement = psi.getParent();
+                if (hopefullyStatement instanceof Perl6Statement) {
+                    PsiElement hopefullyStatementList = hopefullyStatement.getParent();
+                    if (hopefullyStatementList instanceof Perl6StatementList) {
+                        PsiElement hopefullyBlockoid = hopefullyStatementList.getParent();
+                        if (hopefullyBlockoid instanceof Perl6Blockoid)
+                            if (hopefullyBlockoid.getParent() instanceof Perl6BlockOrHash)
+                                return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Override

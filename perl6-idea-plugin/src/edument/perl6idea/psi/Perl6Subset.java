@@ -7,4 +7,6 @@ import edument.perl6idea.psi.stub.index.Perl6IndexableType;
 public interface Perl6Subset extends Perl6PsiDeclaration, StubBasedPsiElement<Perl6SubsetStub>,
                                      Perl6IndexableType {
     String getSubsetName();
+    Perl6PackageDecl getSubsetBaseType();
+    String getSubsetBaseTypeName();
 }

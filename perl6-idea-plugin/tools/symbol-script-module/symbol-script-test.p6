@@ -2,7 +2,7 @@ use Test;
 
 plan *;
 
-constant $MODULE-SCRIPT = 'perl6-module-symbols.p6';
+constant $MODULE-SCRIPT = '../../resources/symbols/perl6-module-symbols.p6';
 
 subtest {
     my $proc = run $*EXECUTABLE, $MODULE-SCRIPT, 'use', 'NativeCall', :out;
@@ -27,5 +27,11 @@ subtest {
         like $output, /'NativeCall::EXPORT::ALL::Pointer'/;
     }, 'Various symbols to access Pointer are exported';
 }, 'Module script test';
+
+subtest {
+    my $proc = run $*EXECUTABLE, $MODULE-SCRIPT, 'use', 'SymbolScriptModule', :out;
+    my $output = $proc.out.slurp(:close);
+    like $output, /'V:$test-variable'/, 'Module variable is exported';
+}
 
 done-testing;

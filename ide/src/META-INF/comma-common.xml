@@ -38,8 +38,9 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.InterpolatedEVALAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingRoleMethodAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MyScopedVariableExportedAnnotator"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.RoleDoesClassAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.IncomposableDoesAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MonitorUsageAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NonInheritableComposableDeclAnnotation"/>
     <intentionAction>
       <className>edument.perl6idea.intention.RangeIntentionFix</className>
       <category>Range</category>
@@ -62,10 +63,12 @@
     <enterHandlerDelegate implementation="edument.perl6idea.editor.Perl6EnterDelegate"/>
     <lang.findUsagesProvider language="Perl6" implementationClass="edument.perl6idea.findUsages.Perl6FindUsagesProvider"/>
     <lang.namesValidator language="Perl6" implementationClass="edument.perl6idea.rename.Perl6InputValidator"/>
+    <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6ModuleRenameProcessor"/>
     <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6PsiElementProcessor"/>
     <usageTypeProvider implementation="edument.perl6idea.findUsages.Perl6UsageTypeProvider"/>
     <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
     <lang.smartEnterProcessor language="Perl6" implementationClass="edument.perl6idea.editor.smartEnter.Perl6SmartEnterProcessor"/>
+    <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6RefactoringSupportProvider"/>
   </extensions>
 
   <actions>

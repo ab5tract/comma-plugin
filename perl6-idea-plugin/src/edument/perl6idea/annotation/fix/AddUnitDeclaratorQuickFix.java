@@ -1,4 +1,3 @@
-// Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.annotation.fix;
 
 import com.intellij.codeInsight.intention.IntentionAction;
@@ -18,55 +17,28 @@ import edument.perl6idea.psi.Perl6PackageDecl;
 import org.jetbrains.annotations.Nls;import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class AddUnitDeclaratorQuickFix extends PsiElementBaseIntentionAction implements IntentionAction {
-    @Override
-    public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement psiElement) throws IncorrectOperationException {
-        PsiElement ourParent = psiElement.getParent();
-        int offset = ourParent.getTextOffset();
+public class AddUnitDeclaratorQuickFix implements IntentionAction {
+    private final Perl6PackageDecl packageElement;
 
-        new WriteCommandAction.Simple(project) {
-            @Override
-            protected void run() throws Throwable {
-                try {
-                    FileEditorManager.getInstance(project).openFile(ourParent.getContainingFile().getVirtualFile(), true);
-                    final Editor editor1 = FileEditorManager.getInstance(project).getSelectedTextEditor();
-                    final Document document = editor1.getDocument();
-                    document.insertString(offset, "unit ");
-                }
-                catch (Exception e) {
-                    int bar = 1;
-                }
-            }
-        }.execute();
+    public AddUnitDeclaratorQuickFix(Perl6PackageDecl ref) {
+        this.packageElement = ref;
     }
 
     @Override
-    public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement psiElement) {
-        if (psiElement.getNode().getElementType() != Perl6TokenTypes.STATEMENT_TERMINATOR) {
-            return false;
-        }
-        if (!(psiElement.getParent() instanceof Perl6PackageDecl)) {
-            return false;
-        }
+    public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+        String packageKind = packageElement.getPackageKind();
+        int textOffset = packageElement.getTextOffset() - (packageKind == null ? 0 : packageKind.length() + 1);
+        editor.getDocument().insertString(textOffset, "unit ");
+    }
+
+    @Override
+    public boolean startInWriteAction() {
         return true;
     }
 
-    protected boolean checkFile(@Nullable PsiFile file) {
-        if (file == null) {
-            return false;
-        } else {
-            PsiManager manager = file.getManager();
-            if (manager == null) {
-                return false;
-            }
-            if (manager.isInProject(file)) {
-                return true;
-            }
-            if (ScratchFileService.isInScratchRoot(file.getVirtualFile())) {
-                return true;
-            }
-            return false;
-        }
+    @Override
+    public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
+        return true;
     }
 
     @Nls
@@ -76,6 +48,7 @@ public class AddUnitDeclaratorQuickFix extends PsiElementBaseIntentionAction imp
         return "Perl 6";
     }
 
+    @NotNull
     @Override
     public String getText() {
         return "Add missing 'unit' scope declaration";
