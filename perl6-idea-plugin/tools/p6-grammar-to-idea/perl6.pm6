@@ -3518,7 +3518,7 @@ grammar MAIN {
             <.infixish('')>
             <.opp-end-infix>
             { $*SUB_PREC = '' }
-            <.ws>
+            [<!before <.ws> <[\]})]>> <.ws>]?
 
             [
             || <?{ $*FAKE }> <.start-token('FAKE_INFIX')> <?> <.end-token('FAKE_INFIX')>
