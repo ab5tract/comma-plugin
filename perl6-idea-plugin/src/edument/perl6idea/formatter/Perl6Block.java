@@ -99,6 +99,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if ((myNode.getElementType() == STATEMENT_LIST || myNode.getElementType() == REGEX)
             && myNode.getTreeParent().getElementType() == BLOCKOID)
             return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
+        if (myNode.getElementType() == SEMI_LIST && myNode.getTreeParent().getElementType() == ARRAY_COMPOSER)
+            return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
         if (isStatementContinuation != null && isStatementContinuation)
             return Indent.getContinuationWithoutFirstIndent();
         return Indent.getNoneIndent();
