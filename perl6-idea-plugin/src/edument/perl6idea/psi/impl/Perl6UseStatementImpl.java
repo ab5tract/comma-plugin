@@ -2,6 +2,7 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -35,6 +36,10 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
         String name = getModuleName();
         if (name != null) {
             Project project = getProject();
+
+            // We cannot contribute based on stubs when indexing is in progress
+            if (DumbService.isDumb(getProject())) return;
+
             Collection<Perl6File> found = ProjectModulesStubIndex.getInstance()
                     .get(name, project, GlobalSearchScope.projectScope(project));
             if (found.size() > 0) {
