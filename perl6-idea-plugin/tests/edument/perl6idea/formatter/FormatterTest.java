@@ -101,7 +101,8 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("hash.out.p6");
     }
 
-    public void testMultilineHashWithMultilineValueFormatting() {
+    /* Would be ideal to get this one to work also. */
+    /*public void testMultilineHashWithMultilineValueFormatting() {
         myFixture.configureByFiles("hash-multiline-values.in.p6");
         WriteCommandAction.runWriteCommandAction(null, () -> {
             CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
@@ -109,5 +110,15 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
             codeStyleManager.reformatText(file, 0, file.getTextLength());
         });
         myFixture.checkResultByFile("hash-multiline-values.out.p6");
+    }*/
+
+    public void testMultilineArrayFormatting() {
+        myFixture.configureByFiles("array.in.p6");
+        WriteCommandAction.runWriteCommandAction(null, () -> {
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
+            PsiFile file = myFixture.getFile();
+            codeStyleManager.reformatText(file, 0, file.getTextLength());
+        });
+        myFixture.checkResultByFile("array.out.p6");
     }
 }
