@@ -132,10 +132,9 @@ public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
         doTest();
     }
 
-    // FIXME Bug in formatter produces LTA braces indentation
-    //public void testGivenWhen() {
-    //    doTest();
-    //}
+    public void testGivenWhen() {
+        doTest();
+    }
 
     public void testLoopCondition() {
         doTest();
