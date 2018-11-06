@@ -47,7 +47,6 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("grammar-basic.out.p6");
     }
 
-
     public void testContinuationAfterBlock() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "{\n\n}<caret>");
 
@@ -100,5 +99,15 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
             codeStyleManager.reformatText(file, 0, file.getTextLength());
         });
         myFixture.checkResultByFile("hash.out.p6");
+    }
+
+    public void testMultilineHashWithMultilineValueFormatting() {
+        myFixture.configureByFiles("hash-multiline-values.in.p6");
+        WriteCommandAction.runWriteCommandAction(null, () -> {
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
+            PsiFile file = myFixture.getFile();
+            codeStyleManager.reformatText(file, 0, file.getTextLength());
+        });
+        myFixture.checkResultByFile("hash-multiline-values.out.p6");
     }
 }

@@ -10,6 +10,8 @@ import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.parsing.Perl6ElementTypes;
+import edument.perl6idea.parsing.Perl6OPPElementTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -105,25 +107,29 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     private static boolean nodeInStatementContinuation(ASTNode startNode) {
         ASTNode curNode = startNode;
 
-        /* Check if we're in a hash literal, which we won't treat as a continuation if
-         * at statement level. */
-        Perl6Blockoid maybeBlockoid = PsiTreeUtil.getParentOfType(startNode.getPsi(), Perl6Blockoid.class);
-        if (maybeBlockoid != null) {
-            if (maybeBlockoid.getParent() instanceof Perl6BlockOrHash
+        /* Check if we're in a hash literal, which we won't treat as a
+        * continuation if at statement level. */
+        if (startNode.getElementType() == Perl6OPPElementTypes.INFIX_APPLICATION ||
+                startNode.getElementType() == FATARROW ||
+                startNode.getElementType() == Perl6ElementTypes.COLON_PAIR) {
+            Perl6Blockoid maybeBlockoid = PsiTreeUtil.getParentOfType(startNode.getPsi(), Perl6Blockoid.class);
+            if (maybeBlockoid != null) {
+                if (maybeBlockoid.getParent() instanceof Perl6BlockOrHash
                     && maybeBlockoid.getChildren().length > 0) {
-                PsiElement hopefullyStatementList = maybeBlockoid.getChildren()[0];
-                if (hopefullyStatementList instanceof Perl6StatementList
+                    PsiElement hopefullyStatementList = maybeBlockoid.getChildren()[0];
+                    if (hopefullyStatementList instanceof Perl6StatementList
                         && hopefullyStatementList.getChildren().length > 0) {
-                    PsiElement hopefullyStatement = hopefullyStatementList.getChildren()[0];
-                    if (hopefullyStatement instanceof Perl6Statement
+                        PsiElement hopefullyStatement = hopefullyStatementList.getChildren()[0];
+                        if (hopefullyStatement instanceof Perl6Statement
                             && hopefullyStatementList.getChildren().length > 0) {
-                        PsiElement hopefullyInfix = hopefullyStatement.getChildren()[0];
-                        if (hopefullyInfix instanceof Perl6InfixApplication &&
+                            PsiElement hopefullyInfix = hopefullyStatement.getChildren()[0];
+                            if (hopefullyInfix instanceof Perl6InfixApplication &&
                                 hopefullyInfix.getChildren().length >= 2 &&
                                 hopefullyInfix.getChildren()[1].getText().equals(",")) {
-                             PsiElement hopefullyPairish = hopefullyInfix.getChildren()[0];
-                             if (hopefullyPairish instanceof Perl6FatArrow || hopefullyPairish instanceof Perl6ColonPair)
-                                 return false;
+                                PsiElement hopefullyPairish = hopefullyInfix.getChildren()[0];
+                                if (hopefullyPairish instanceof Perl6FatArrow || hopefullyPairish instanceof Perl6ColonPair)
+                                    return false;
+                            }
                         }
                     }
                 }
