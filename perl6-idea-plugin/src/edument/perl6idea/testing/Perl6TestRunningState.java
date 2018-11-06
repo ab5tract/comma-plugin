@@ -34,12 +34,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Perl6TestRunningState extends CommandLineState {
+    private final Perl6TestRunConfiguration runConfiguration;
     boolean isDebugging;
     private List<String> command = new ArrayList<>();
 
     public Perl6TestRunningState(ExecutionEnvironment environment, boolean debug) {
         super(environment);
         isDebugging = debug;
+        runConfiguration = (Perl6TestRunConfiguration)getEnvironment().getRunProfile();
     }
 
     @Override
@@ -84,11 +86,13 @@ public class Perl6TestRunningState extends CommandLineState {
         }
         File script = Perl6CommandLine.getResourceAsFile(this,"testing/perl6-test-harness.p6");
         if (script == null) throw new ExecutionException("Bundled resources are corrupted");
-        return Perl6CommandLine.pushFile(
-          Perl6CommandLine.getCustomPerl6CommandLine(
+        GeneralCommandLine cmd = Perl6CommandLine.getCustomPerl6CommandLine(
             command,
-            getEnvironment().getProject().getBasePath()),
-          script);
+            getEnvironment().getProject().getBasePath());
+        cmd.addParameter(script.getAbsolutePath());
+        cmd.withEnvironment("TEST_JOBS", String.valueOf(runConfiguration.getParallelismDegree()));
+        cmd.addParameter("-Ilib");
+        return cmd;
     }
 
     static class Perl6TestConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {
