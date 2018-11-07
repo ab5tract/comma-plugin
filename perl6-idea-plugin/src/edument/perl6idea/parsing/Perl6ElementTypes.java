@@ -31,6 +31,7 @@ public interface Perl6ElementTypes {
     IElementType CAPTURE = new Perl6ElementType("CAPTURE");
     IElementType CATCH_STATEMENT = new Perl6ElementType("CATCH_STATEMENT");
     IElementType COLON_PAIR = new Perl6ElementType("COLON_PAIR");
+    IElementType COMMENT = new Perl6ElementType("COMMENT");
     IElementType COMPLEX_LITERAL = new Perl6ElementType("COMPLEX_LITERAL");
     IElementType CONTEXTUALIZER = new Perl6ElementType("CONTEXTUALIZER");
     IElementType CONTROL_STATEMENT = new Perl6ElementType("CONTROL_STATEMENT");

@@ -127,4 +127,14 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
         });
         myFixture.checkResultByFile("trailing-comma.out.p6");
     }
+
+    public void testCommentsNotBrokenByFormatting() {
+        myFixture.configureByFiles("comments-left-intact.in.p6");
+        WriteCommandAction.runWriteCommandAction(null, () -> {
+            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
+            PsiFile file = myFixture.getFile();
+            codeStyleManager.reformatText(file, 0, file.getTextLength());
+        });
+        myFixture.checkResultByFile("comments-left-intact.out.p6");
+    }
 }

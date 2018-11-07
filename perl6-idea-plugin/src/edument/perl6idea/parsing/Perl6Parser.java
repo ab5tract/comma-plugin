@@ -6662,6 +6662,8 @@ public class Perl6Parser implements PsiParser {
     private boolean multilinecomment_77(PsiBuilder builder) {
         OPP opp;
         opp = null;
+        PsiBuilder.Marker marker1;
+        marker1 = builder.mark();
         String tt1;
         tt1 = builder.getTokenText();
         if (((builder.getTokenType()) == Perl6TokenTypes.COMMENT_STARTER) && (tt1.equals("#`"))) {
@@ -6677,13 +6679,14 @@ public class Perl6Parser implements PsiParser {
         if (!(this.multilinecommentnibbler_78(builder))) {
             return false;
         }
-        PsiBuilder.Marker quantMarker1;
-        quantMarker1 = builder.mark();
+        PsiBuilder.Marker quantMarker2;
+        quantMarker2 = builder.mark();
         if (this.multilinecomment_77_quant_1(builder, opp)) {
-            quantMarker1.drop();
+            quantMarker2.drop();
         } else {
-            quantMarker1.rollbackTo();
+            quantMarker2.rollbackTo();
         }
+        marker1.done(Perl6ElementTypes.COMMENT);
         return true;
     }
 
@@ -8695,6 +8698,8 @@ public class Perl6Parser implements PsiParser {
     private boolean plaincomment_97(PsiBuilder builder) {
         OPP opp;
         opp = null;
+        PsiBuilder.Marker marker1;
+        marker1 = builder.mark();
         String tt1;
         tt1 = builder.getTokenText();
         if (((builder.getTokenType()) == Perl6TokenTypes.COMMENT_STARTER) && (tt1.equals("#"))) {
@@ -8707,6 +8712,7 @@ public class Perl6Parser implements PsiParser {
         } else {
             return false;
         }
+        marker1.done(Perl6ElementTypes.COMMENT);
         return true;
     }
 
