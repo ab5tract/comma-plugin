@@ -1,5 +1,6 @@
 package edument.perl6idea.module;
 
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.roots.ModuleRootModel;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
 import com.intellij.util.ui.ColumnInfo;
@@ -39,7 +40,6 @@ public class DependenciesTableModel extends ListTableModel<Perl6DependencyTableI
       };
     private ModuleConfigurationState myState;
     private Set<Perl6DependencyTableItem> myInitialSet = new HashSet<>();
-    private String myMetaPath;
 
     public DependenciesTableModel(ModuleConfigurationState state) {
         super(new Perl6DependencyTableItemColumnInfo(), SCOPE_COLUMN_INFO);
@@ -52,27 +52,25 @@ public class DependenciesTableModel extends ListTableModel<Perl6DependencyTableI
     }
 
     public void init() {
-        if (myMetaPath == null)
-            myMetaPath = getModel().getModule().getModuleFilePath();
-        JSONObject parsedJson = Perl6ModuleBuilder.getMetaJsonFromModulePath(myMetaPath);
-        if (parsedJson == null) return;
-        JSONArray depends = getJsonField(parsedJson, "depends");
-        JSONArray test_depends = getJsonField(parsedJson,"test-depends");
-        JSONArray build_depends = getJsonField(parsedJson,"build-depends");
+        Module module = myState.getRootModel().getModule();
+        Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
+        List<String> depends = metaData.getDepends();
+        List<String> testDepends = metaData.getTestDepends();
+        List<String> buildDepends = metaData.getBuildDepends();
 
         List<Perl6DependencyTableItem> items = new ArrayList<>();
 
-        for (int i = 0; i < depends.length(); i++) {
-            items.add(new Perl6DependencyTableItem(depends.getString(i), Perl6DependencyScope.DEPENDS));
-            myInitialSet.add(new Perl6DependencyTableItem(depends.getString(i), Perl6DependencyScope.DEPENDS));
+        for (String depend : depends) {
+            items.add(new Perl6DependencyTableItem(depend, Perl6DependencyScope.DEPENDS));
+            myInitialSet.add(new Perl6DependencyTableItem(depend, Perl6DependencyScope.DEPENDS));
         }
-        for (int i = 0; i < test_depends.length(); i++) {
-            items.add(new Perl6DependencyTableItem(test_depends.getString(i), Perl6DependencyScope.TEST_DEPENDS));
-            myInitialSet.add(new Perl6DependencyTableItem(test_depends.getString(i), Perl6DependencyScope.TEST_DEPENDS));
+        for (String testDepend : testDepends) {
+            items.add(new Perl6DependencyTableItem(testDepend, Perl6DependencyScope.TEST_DEPENDS));
+            myInitialSet.add(new Perl6DependencyTableItem(testDepend, Perl6DependencyScope.TEST_DEPENDS));
         }
-        for (int i = 0; i < build_depends.length(); i++) {
-            items.add(new Perl6DependencyTableItem(build_depends.getString(i), Perl6DependencyScope.BUILD_DEPENDS));
-            myInitialSet.add(new Perl6DependencyTableItem(build_depends.getString(i), Perl6DependencyScope.BUILD_DEPENDS));
+        for (String buildDepend : buildDepends) {
+            items.add(new Perl6DependencyTableItem(buildDepend, Perl6DependencyScope.BUILD_DEPENDS));
+            myInitialSet.add(new Perl6DependencyTableItem(buildDepend, Perl6DependencyScope.BUILD_DEPENDS));
         }
 
         setItems(items);
@@ -85,18 +83,6 @@ public class DependenciesTableModel extends ListTableModel<Perl6DependencyTableI
 
     public boolean isModified() {
         return !(myInitialSet.containsAll(getItems()) && getItems().containsAll(myInitialSet));
-    }
-
-    private static JSONArray getJsonField(JSONObject jsonString, String key) {
-        try {
-            return jsonString.getJSONArray(key);
-        } catch (JSONException e) {
-            return new JSONArray();
-        }
-    }
-
-    private ModuleRootModel getModel() {
-        return myState.getRootModel();
     }
 
     private static class Perl6DependencyTableItemColumnInfo extends ColumnInfo<Perl6DependencyTableItem, Perl6DependencyTableItem> {
