@@ -100,13 +100,18 @@ public class NewModuleAction extends AnAction {
     }
 
     public String processNavigatable(Module module, PsiDirectory psiDirectory) {
-        VirtualFile sourceRoot = ProjectFileIndex.getInstance(module.getProject()).getSourceRootForFile(psiDirectory.getVirtualFile());
-        if (sourceRoot == null) return "";
-        myBaseDir = sourceRoot.getPath();
+        if (myBaseDir == null) {
+            VirtualFile sourceRoot = ProjectFileIndex.getInstance(module.getProject()).getSourceRootForFile(psiDirectory.getVirtualFile());
+            if (sourceRoot == null) { // It might be a location outside of source roots, so just set it
+                myBaseDir = psiDirectory.getVirtualFile().getPath();
+            } else {
+                myBaseDir = sourceRoot.getPath();
+            }
+        }
         List<String> parts = new ArrayList<>();
         while (true) {
             if (psiDirectory != null &&
-                Paths.get(psiDirectory.getVirtualFile().getPath()).startsWith(Paths.get(sourceRoot.getPath()))) {
+                Paths.get(psiDirectory.getVirtualFile().getPath()).startsWith(Paths.get(myBaseDir))) {
                 parts.add(psiDirectory.getName());
                 psiDirectory = psiDirectory.getParentDirectory();
             } else {
