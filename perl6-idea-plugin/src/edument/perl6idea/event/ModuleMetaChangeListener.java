@@ -75,7 +75,9 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
                 continue;
             }
 
-            LocalFileSystem.getInstance().refresh(false);
+            ApplicationManager.getApplication().invokeLater(() -> {
+                LocalFileSystem.getInstance().refresh(false);
+            });
         }
     }
 
