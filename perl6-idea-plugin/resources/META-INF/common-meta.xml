@@ -85,9 +85,14 @@
     </action>
 
   </actions>
-  <application-components>
+
+  <module-components>
+    <component>
+      <implementation-class>edument.perl6idea.module.Perl6MetaDataComponent</implementation-class>
+    </component>
     <component>
       <implementation-class>edument.perl6idea.event.ModuleMetaChangeListener</implementation-class>
     </component>
-  </application-components>
+  </module-components>
+
 </idea-plugin>
