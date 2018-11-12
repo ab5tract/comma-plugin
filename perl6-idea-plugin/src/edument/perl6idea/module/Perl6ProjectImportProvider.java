@@ -21,7 +21,8 @@ public class Perl6ProjectImportProvider extends ProjectImportProvider {
 
     @Override
     protected boolean canImportFromFile(VirtualFile file) {
-        return file.getName().equals("META6.json");
+        String fileName = file.getName();
+        return fileName.equals("META6.json") || fileName.equals("META.info");
     }
 
     @Override
