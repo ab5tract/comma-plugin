@@ -36,7 +36,8 @@ public class Perl6Lexer extends LexerBase {
             if (lastResPos != -1) {
                 stack = resumePoints.get(lastResPos).resume(buffer);
                 lastTokenStart = stack.tokenStart;
-                advance();
+                while (stack.tokenStart < startOffset)
+                    advance();
                 return;
             }
         }
