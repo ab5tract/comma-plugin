@@ -49,11 +49,16 @@ public class Perl6Lexer extends LexerBase {
         advance();
     }
 
+    /* This is something of a cheat: the only state that means anything to us is 0, so we
+     * make sure that we never re-use any other state, to avoid confusing the lexer
+     * resumption. */
+    private int freshState = 1;
+
     @Override
     public int getState() {
         return stack.cursors.isEmpty() || stack.token == Perl6TokenTypes.STATEMENT_TERMINATOR
                ? 0
-               : stack.peek().pos;
+               : freshState++;
     }
 
     @Nullable
