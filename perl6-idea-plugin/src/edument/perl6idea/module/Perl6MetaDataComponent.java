@@ -1,6 +1,7 @@
 package edument.perl6idea.module;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
@@ -8,6 +9,7 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.sun.glass.ui.Application;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +29,7 @@ import java.util.stream.Collectors;
 
 public class Perl6MetaDataComponent implements ModuleComponent {
     private final Module myModule;
-    private Path myPath = null;
+    private VirtualFile myMetaFile = null;
     private JSONObject myMeta = null;
     private JSONObject myProvides = null;
     private String name = null;
@@ -50,11 +52,10 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                     notifyMissingMETA();
                     return;
                 }
-                Path path = Paths.get(metaFile.getPath());
                 try {
-                    String content = new String(Files.readAllBytes(path), CharsetToolkit.UTF8_CHARSET);
+                    String content = new String(metaFile.contentsToByteArray(), CharsetToolkit.UTF8_CHARSET);
                     myMeta = new JSONObject(content);
-                    myPath = path;
+                    myMetaFile = metaFile;
                     populateCache();
                 }
                 catch (IOException e) {
@@ -163,7 +164,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         saveFile();
     }
 
-    public String normalizeDepends(String name) {
+    private String normalizeDepends(String name) {
         String[] parts = name.split("::");
         List<String> symbolParts = new ArrayList<>();
         for (String part : parts) {
@@ -186,17 +187,15 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 JSONObject meta = getStubMetaObject();
-                Path pathToMeta = Files.write(Paths.get(finalFirstRoot.getParent().getPath(), "META6.json"),
-                                              Collections.singletonList(meta.toString(4)),
-                                              CharsetToolkit.UTF8_CHARSET);
-                LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
-                VirtualFile metaFile = localFileSystem.refreshAndFindFileByPath(pathToMeta.toString());
+                VirtualFile parent = finalFirstRoot.getParent();
+                VirtualFile metaFile = parent.createChildData(this, "META6.json");
+                WriteAction.run(() -> metaFile.setBinaryContent(meta.toString(4).getBytes(CharsetToolkit.UTF8_CHARSET)));
 
                 myMeta = meta;
-                myPath = pathToMeta;
+                myMetaFile = metaFile;
                 populateCache();
 
-                if (metaFile != null && shouldOpenEditor)
+                if (shouldOpenEditor)
                     FileEditorManager.getInstance(myModule.getProject()).openFile(metaFile, true);
             }
             catch (IOException e) {
@@ -297,7 +296,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     }
 
     private void saveFile() {
-        if (myMeta == null) return;
+        if (myMetaFile == null || myMeta == null) return;
         myMeta.put("name", name);
         myMeta.put("description", description);
         myMeta.put("version", version);
@@ -306,9 +305,10 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         myMeta.put("depends", new JSONArray(myDepends));
         myMeta.put("test-depends", new JSONArray(myTestDepends));
         myMeta.put("build-depends", new JSONArray(myBuildDepends));
+        myMeta.put("provides", myProvides);
         String json = myMeta.toString(4);
         try {
-            Files.write(myPath, Collections.singletonList(json), StandardCharsets.UTF_8);
+            WriteAction.run(() -> myMetaFile.setBinaryContent(json.getBytes(CharsetToolkit.UTF8_CHARSET)));
         }
         catch (IOException e) {
             // Just ignore exceptions on save,
