@@ -6,34 +6,60 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class Perl6Lexer extends LexerBase {
     private CursorStack stack;
-    private List<CursorStack> resumePoints;
+    private SortedMap<Integer, CursorStack> resumePoints;
     private int lastTokenStart;
 
     @Override
     public void start(@NotNull CharSequence buffer, int startOffset, int endOffset, int initialState) {
-        if (initialState == 0) {
-            resumePoints = new ArrayList<>();
-            stack = new CursorStack(buffer);
-            stack.push(new MAINBraid().initialize(stack));
-            lastTokenStart = 0;
-            advance();
-        } else {
-            int resumeIndex = initialState - 1;
-            stack = resumePoints.get(resumeIndex).resume(buffer);
-            while (resumePoints.size() >= resumeIndex)
-                resumePoints.remove(resumePoints.size() - 1);
-            lastTokenStart = stack.tokenStart;
-            advance();
+        /* Resume at the last statement end, if possible. */
+        if (startOffset != 0) {
+            int lastResPos = -1;
+            boolean delete = false;
+            for (Integer resPos : new ArrayList<>(resumePoints.keySet()))
+                if (delete) {
+                    resumePoints.remove(resPos);
+                }
+                else {
+                    if (resPos >= startOffset) {
+                        resumePoints.remove(resPos);
+                        delete = true;
+                    }
+                    else {
+                        lastResPos = resPos;
+                    }
+                }
+            if (lastResPos != -1) {
+                stack = resumePoints.get(lastResPos).resume(buffer);
+                lastTokenStart = stack.tokenStart;
+                while (stack.tokenStart < startOffset)
+                    advance();
+                return;
+            }
         }
+
+        /* Not possible to resume; go from the start. */
+        resumePoints = new TreeMap<>();
+        stack = new CursorStack(buffer);
+        stack.push(new MAINBraid().initialize(stack));
+        lastTokenStart = 0;
+        advance();
     }
+
+    /* This is something of a cheat: the only state that means anything to us is 0, so we
+     * make sure that we never re-use any other state, to avoid confusing the lexer
+     * resumption. */
+    private int freshState = 1;
 
     @Override
     public int getState() {
-        return resumePoints.size();
+        return stack.cursors.isEmpty() || stack.token == Perl6TokenTypes.STATEMENT_TERMINATOR
+               ? 0
+               : freshState++;
     }
 
     @Nullable
@@ -84,7 +110,8 @@ public class Perl6Lexer extends LexerBase {
                             stack.target.subSequence(stack.tokenStart, lastTokenStart) + "'");
                     else
                         lastTokenStart = stack.tokenStart;
-                    resumePoints.add(stack.snapshot());
+                    if (stack.token == Perl6TokenTypes.STATEMENT_TERMINATOR)
+                        resumePoints.put(stack.peek().pos, stack.snapshot());
                     return;
                 default:
                     stack.push(stack.peek().start(outcome));
