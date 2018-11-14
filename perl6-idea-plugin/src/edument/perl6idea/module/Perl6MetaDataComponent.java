@@ -71,7 +71,9 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                                 @Override
                                 public void actionPerformed(AnActionEvent event) {
                                     try {
-                                        finalMetaFile.rename(this, "META6.json");
+                                        WriteAction.run(
+                                            () -> finalMetaFile.rename(this, "META6.json")
+                                        );
                                     }
                                     catch (IOException ex) {
                                         Notifications.Bus.notify(
