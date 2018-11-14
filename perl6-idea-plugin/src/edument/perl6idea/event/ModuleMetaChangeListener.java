@@ -3,6 +3,7 @@ package edument.perl6idea.event;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -17,6 +18,9 @@ import edument.perl6idea.module.Perl6MetaDataComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -25,10 +29,12 @@ import java.util.regex.Pattern;
 public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListener {
     private final MessageBusConnection conn;
     private final Perl6MetaDataComponent myMetaData;
+    private final Module myModule;
 
     public ModuleMetaChangeListener(Module module) {
         conn = ApplicationManager.getApplication().getMessageBus().connect();
         myMetaData = module.getComponent(Perl6MetaDataComponent.class);
+        myModule = module;
     }
 
     @Nullable
@@ -55,11 +61,9 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
                 !file.isDirectory() && !(Objects.equals(file.getExtension(), Perl6ModuleFileType.INSTANCE.getDefaultExtension())))
                 continue;
 
-            // TODO Handle directories, not only files
-
             if (event instanceof VFileDeleteEvent) {
                 if (file.isDirectory())
-                    System.out.println("Directory is deleted");
+                    processDirectoryDelete(event);
                 else
                     processFileDelete(event);
             }
@@ -67,7 +71,7 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
                      Objects.equals(((VFilePropertyChangeEvent)event).getPropertyName(), VirtualFile.PROP_NAME) ||
                      event instanceof VFileMoveEvent) {
                 if (file.isDirectory())
-                    System.out.println("Directory is moved or renamed");
+                    processDirectoryMoveAndRename(event);
                 else
                     processFileMoveAndRename(event);
             } else {
@@ -78,6 +82,31 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
             ApplicationManager.getApplication().invokeLater(() -> {
                 LocalFileSystem.getInstance().refresh(false);
             });
+        }
+    }
+
+    private void processDirectoryMoveAndRename(VFileEvent event) {
+
+    }
+
+    private void processDirectoryDelete(VFileEvent event) {
+        Path path = Paths.get(event.getPath());
+        VirtualFile[] contentRoots = ModuleRootManager.getInstance(myModule).getContentRoots();
+        for (VirtualFile root : contentRoots) {
+            Path rootPath = Paths.get(root.getPath());
+            if (!path.startsWith(rootPath)) continue;
+            String prefix = path.subpath(rootPath.getNameCount(), path.getNameCount()).toString();
+            // It might look like "lib/Foo/Bar" based on where root is
+            if (prefix.startsWith("lib"))
+                prefix = prefix.substring(4);
+            prefix = prefix.replaceAll("/", "::")
+                           .replaceAll("\\\\", "::") + "::";
+            Collection<String> names = myMetaData.getProvidedNames();
+            for (String name : names) {
+                if (name.startsWith(prefix)) {
+                    myMetaData.removeNamespaceToProvides(name);
+                }
+            }
         }
     }
 
