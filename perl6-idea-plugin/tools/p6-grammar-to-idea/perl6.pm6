@@ -860,7 +860,7 @@ grammar MAIN {
                     ]?
                 ]?
                 [<.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')>]?
-                <.ws>
+                <.ws>?
             ]?
         ]?
         <.block>?
