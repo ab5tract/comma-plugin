@@ -51,16 +51,6 @@ public class ModuleCompletionTest extends LightPlatformCodeInsightFixtureTestCas
         PsiDirectory insideTests = new PsiDirectoryImpl(psiManager, t);
         assertEmpty(newModuleAction.processNavigatable(myModule, insideTests));
         assertTrue(newModuleAction.getBaseDir().equals(baseDir1));
-        this.removeLeftovers(lib, foo, t);
-    }
-
-    private void removeLeftovers(VirtualFile... files) {
-        ApplicationManager.getApplication().runWriteAction(() -> {
-                    try {
-                        for (VirtualFile file : files)
-                            file.delete(this);
-                    } catch (IOException ignore) {}
-                });
     }
 
     private VirtualFile getOrCreateDirectory(VirtualFile base, String name) {
