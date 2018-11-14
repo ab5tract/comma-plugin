@@ -41,7 +41,7 @@ public class NewActionsTest extends LightPlatformCodeInsightFixtureTestCase {
         Perl6MetaDataComponent metaData = myModule.getComponent(Perl6MetaDataComponent.class);
         String basePath = Paths.get(getProject().getBasePath(), "lib").toString();
         VirtualFile libVirtualFile = VirtualFileManager.getInstance().findFileByUrl("temp:///lib");
-        Perl6ModuleBuilder.stubModule(metaData, basePath, "Foo::Bar", true, false, libVirtualFile);
+        Perl6ModuleBuilder.stubModule(metaData, basePath, "Foo::Bar", true, false, libVirtualFile.getParent());
         assertExists(Paths.get(basePath, "Foo", "Bar.pm6").toFile());
 
         VirtualFile meta = libVirtualFile.getParent().findChild("META6.json");
