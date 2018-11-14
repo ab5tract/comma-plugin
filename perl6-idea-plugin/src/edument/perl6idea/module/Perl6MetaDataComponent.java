@@ -1,136 +1,153 @@
 package edument.perl6idea.module;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.vfs.CharsetToolkit;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.sun.glass.ui.Application;
+import com.intellij.openapi.vfs.*;
+import com.intellij.util.Function;
+import edument.perl6idea.Perl6Icons;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class Perl6MetaDataComponent implements ModuleComponent {
     private final Module myModule;
     private VirtualFile myMetaFile = null;
     private JSONObject myMeta = null;
-    private JSONObject myProvides = null;
-    private String name = null;
-    private String description = null;
-    private String version = null;
-    private String auth = null;
-    private String license = null;
-    private List<String> myDepends = new ArrayList<>();
-    private List<String> myTestDepends = new ArrayList<>();
-    private List<String> myBuildDepends = new ArrayList<>();
 
     public Perl6MetaDataComponent(Module module) {
+        VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
+            @Override
+            public void contentsChanged(@NotNull VirtualFileEvent event) {
+                if (!event.isFromSave() ||
+                    !(event.getFileName().equals("META6.json") ||
+                      event.getFileName().equals("META.list"))) return;
+                try {
+                    myMeta = checkMetaSanity();
+                    saveFile();
+                }
+                catch (Perl6MetaException e) {
+                    if (e.myFix != null)
+                        notifyMetaIssue(e.getMessage(), NotificationType.ERROR, e.myFix);
+                    else
+                        notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
+                }
+            }
+        });
         myModule = module;
         VirtualFile[] contentRoots = ModuleRootManager.getInstance(module).getContentRoots();
         for (VirtualFile root : contentRoots) {
-            boolean hasLib = root.findChild("lib") != null;
-            if (hasLib) {
-                VirtualFile metaFile = root.findChild("META6.json");
+            boolean isLibRoot = root.getName().equals("lib");
+            boolean hasLibRoot = root.findChild("lib") != null;
+            if (isLibRoot || hasLibRoot) {
+                VirtualFile metaFile = getMetaFromContentRoot(root, hasLibRoot, "META6.json");
+                // Try to search by obsolete 'META.info' name and warn about it if present
+                if (metaFile == null) {
+                    metaFile = getMetaFromContentRoot(root, hasLibRoot, "META.info");
+                    if (metaFile != null) {
+                        VirtualFile finalMetaFile = metaFile;
+                        notifyMetaIssue(
+                            "Obsolete 'META.info' file name is used instead of 'META6.json'",
+                            NotificationType.ERROR,
+                            new AnAction("Rename to META6.json") {
+                                @Override
+                                public void actionPerformed(AnActionEvent event) {
+                                    try {
+                                        finalMetaFile.rename(this, "META6.json");
+                                    }
+                                    catch (IOException ex) {
+                                        Notifications.Bus.notify(
+                                            new Notification(
+                                                "Perl 6 meta error","Perl 6 META error",
+                                                "Could not rename META file: " + ex.getMessage(),
+                                                NotificationType.ERROR));
+                                    }
+                                }
+                            });
+                    }
+                }
+
+                // If everything fails, notify about META absence
+                // and suggest to stub it
                 if (metaFile == null) {
                     notifyMissingMETA();
                     return;
                 }
                 try {
-                    String content = new String(metaFile.contentsToByteArray(), CharsetToolkit.UTF8_CHARSET);
-                    myMeta = new JSONObject(content);
                     myMetaFile = metaFile;
-                    populateCache();
+                    myMeta = checkMetaSanity();
                 }
-                catch (IOException e) {
-                    notifyMetaIssue(e);
-                    return;
-                }
-                catch (JSONException e) {
-                    notifyBrokenMeta(e);
-                    return;
+                catch (Perl6MetaException e) {
+                    notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
                 }
             }
         }
     }
 
-    private void populateCache() {
-        // Provides
-        if (myMeta.has("provides")) {
-            Object provides = myMeta.get("provides");
-            if (provides instanceof JSONObject)
-                this.myProvides = (JSONObject)provides;
-        }
-
-        // Depends
-        if (myMeta.has("depends")) {
-            Object depends = myMeta.get("depends");
-            if (depends instanceof JSONArray)
-                ((JSONArray)depends).toList().stream().filter(d -> d instanceof String).map(d -> (String)d).forEach(myDepends::add);
-        }
-        // Test Depends
-        if (myMeta.has("test-depends")) {
-            Object testDepends = myMeta.get("test-depends");
-            if (testDepends instanceof JSONArray)
-                ((JSONArray)testDepends).toList().stream().filter(d -> d instanceof String).map(d -> (String)d).forEach(myTestDepends::add);
-        }
-        // Build Depends
-        if (myMeta.has("build-depends")) {
-            Object buildDepends = myMeta.get("build-depends");
-            if (buildDepends instanceof JSONArray)
-                ((JSONArray)buildDepends).toList().stream().filter(d -> d instanceof String).map(d -> (String)d).forEach(myBuildDepends::add);
-        }
-
-        // Name
-        if (myMeta.has("name")) {
-            Object name = myMeta.get("name");
-            if (name instanceof String)
-                this.name = (String)name;
-        }
-        // Description
-        if (myMeta.has("description")) {
-            Object description = myMeta.get("description");
-            if (description instanceof String)
-                this.description = (String)description;
-        }
-        // Version
-        if (myMeta.has("version")) {
-            Object version = myMeta.get("version");
-            if (version instanceof String)
-                this.version = (String)version;
-        }
-        // Auth
-        if (myMeta.has("auth")) {
-            Object auth = myMeta.get("auth");
-            if (auth instanceof String)
-                this.auth = (String)auth;
-        }
-        // License
-        if (myMeta.has("license")) {
-            Object license = myMeta.get("license");
-            if (license instanceof String)
-                this.license = (String)license;
-        }
+    @Nullable
+    private static VirtualFile getMetaFromContentRoot(VirtualFile root, boolean hasLibRoot, String name) {
+        return hasLibRoot ? root.findChild(name) : root.getParent().findChild(name);
     }
 
-    public boolean isMetadataFile(String path) {
-        return path.equals("META6.json") || path.equals("META.info");
+    private JSONObject checkMetaSanity() throws Perl6MetaException {
+        if (myMetaFile.exists()) {
+            try {
+                String content = new String(myMetaFile.contentsToByteArray(), CharsetToolkit.UTF8_CHARSET);
+                return checkMetaSanity(new JSONObject(content));
+            }
+            catch (IOException|JSONException e) {
+                notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
+            }
+        }
+        return null;
+    }
+
+    /* Enforces number of rules for meta to check on start and every saving */
+    public static JSONObject checkMetaSanity(JSONObject meta) throws Perl6MetaException {
+        checkParameter(meta, "name", v -> v instanceof String, "string");
+        checkParameter(meta, "description", v -> v instanceof String, "string");
+        checkParameter(meta, "version", v -> v instanceof String, "string");
+        checkParameter(meta, "auth", v -> v instanceof String, "string");
+        checkParameter(meta, "license", v -> v instanceof String, "string");
+
+        checkParameter(meta, "depends", v ->
+            v instanceof JSONArray && ((JSONArray)v).toList().stream().allMatch(iv -> iv instanceof String), "string array");
+        checkParameter(meta, "test-depends", v ->
+            v instanceof JSONArray && ((JSONArray)v).toList().stream().allMatch(iv -> iv instanceof String), "string array");
+        checkParameter(meta, "build-depends", v ->
+            v instanceof JSONArray && ((JSONArray)v).toList().stream().allMatch(iv -> iv instanceof String), "string array");
+
+        checkParameter(meta, "provides", v ->
+            v instanceof JSONObject && ((JSONObject)v).toMap().values().stream().allMatch(iv -> iv instanceof String), "provides object");
+        return meta;
+    }
+
+    private static void checkParameter(JSONObject meta, String name,
+                                       Function<Object, Boolean> check, String className) throws Perl6MetaException {
+        if (!meta.has(name) || !check.fun(meta.get(name))) {
+            throw new Perl6MetaException(
+                meta.has(name) ?
+                String.format("Value of '%s' field is not a %s", name, className) :
+                String.format("'%s' field is not present", name));
+        }
     }
 
     public boolean isMetaDataExist() {
@@ -138,33 +155,62 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     }
 
     public List<String> getDepends() {
-        return myDepends.stream().map(this::normalizeDepends).collect(Collectors.toList());
+        return getDependsInternal("depends");
     }
 
-    public void setDepends(List<String> depends) {
-        myDepends = depends;
+    public void addDepends(String name) {
+        if (!isMetaDataExist()) return;
+        JSONArray depends = myMeta.getJSONArray("depends");
+        depends.put(name);
+        myMeta.put("depends", depends);
         saveFile();
     }
 
     public List<String> getTestDepends() {
-        return myTestDepends.stream().map(this::normalizeDepends).collect(Collectors.toList());
-    }
-
-    public void setTestDepends(List<String> testDepends) {
-        myTestDepends = testDepends;
-        saveFile();
+        return getDependsInternal("test-depends");
     }
 
     public List<String> getBuildDepends() {
-        return myBuildDepends.stream().map(this::normalizeDepends).collect(Collectors.toList());
+        return getDependsInternal("build-depends");
+    }
+
+    private List<String> getDependsInternal(String key) {
+        if (!isMetaDataExist()) return new ArrayList<>();
+        JSONArray depends = (JSONArray)myMeta.get(key);
+        List<String> result = new ArrayList<>();
+        depends.toList().forEach(o -> result.add(normalizeDepends((String)o)));
+        return result;
+    }
+
+    public void setDepends(List<String> depends) {
+        setDependsInternal("depends", depends);
+    }
+
+    public void setTestDepends(List<String> testDepends) {
+        setDependsInternal("test-depends", testDepends);
     }
 
     public void setBuildDepends(List<String> buildDepends) {
-        myBuildDepends = buildDepends;
+        setDependsInternal("build-depends", buildDepends);
+    }
+
+    private void setDependsInternal(String key, List<String> buildDepends) {
+        if (!isMetaDataExist()) return;
+        myMeta.put(key, new JSONArray(buildDepends));
         saveFile();
     }
 
-    private String normalizeDepends(String name) {
+    public Collection<String> getProvidedNames() {
+        if (!isMetaDataExist()) return new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        Object provides = myMeta.get("provides");
+        for (Object value : ((JSONObject)provides).toMap().keySet()) {
+            names.add((String)value);
+        }
+        return names;
+    }
+
+    private static String normalizeDepends(String name) {
         String[] parts = name.split("::");
         List<String> symbolParts = new ArrayList<>();
         for (String part : parts) {
@@ -178,8 +224,17 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     public void createStubMetaFile(VirtualFile firstRoot, boolean shouldOpenEditor) throws IOException {
         if (firstRoot == null)
             firstRoot = calculateMetaParent();
-        if (firstRoot == null)
-            throw new IOException("No parent present.");
+        if (firstRoot == null) {
+            VirtualFile file = FileChooser.chooseFile(
+                FileChooserDescriptorFactory.createSingleFolderDescriptor(),
+                myModule.getProject(), myModule.getProject().getBaseDir());
+            if (file == null) {
+                notifyMetaIssue("Directory was not selected, meta file creation is canceled", NotificationType.INFORMATION);
+                return;
+            } else {
+                firstRoot = file;
+            }
+        }
 
         AtomicReference<IOException> ex = new AtomicReference<>();
         ex.set(null);
@@ -187,13 +242,11 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 JSONObject meta = getStubMetaObject();
-                VirtualFile parent = finalFirstRoot.getParent();
-                VirtualFile metaFile = parent.createChildData(this, "META6.json");
+                VirtualFile metaFile = finalFirstRoot.createChildData(this, "META6.json");
                 WriteAction.run(() -> metaFile.setBinaryContent(meta.toString(4).getBytes(CharsetToolkit.UTF8_CHARSET)));
 
                 myMeta = meta;
                 myMetaFile = metaFile;
-                populateCache();
 
                 if (shouldOpenEditor)
                     FileEditorManager.getInstance(myModule.getProject()).openFile(metaFile, true);
@@ -219,119 +272,144 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     private JSONObject getStubMetaObject() {
         return new JSONObject()
-        .put("perl", "6.*")
-        .put("name", myModule.getName())
-        .put("version", "0.1")
-        .put("description", "Write me!")
-        .put("authors", new JSONArray())
-        .put("license", "Choose me!")
-        .put("depends", new JSONArray())
-        .put("provides", new JSONObject())
-        .put("resources", new JSONArray())
-        .put("source-url", "Write me!");
+            .put("perl", "6.*")
+            .put("name", myModule.getName())
+            .put("version", "0.1")
+            .put("description", "Write me!")
+            .put("auth", "Write me!")
+            .put("license", "Write me!")
+            .put("depends", new JSONArray())
+            .put("test-depends", new JSONArray())
+            .put("build-depends", new JSONArray())
+            .put("provides", new JSONObject())
+            .put("resources", new JSONArray())
+            .put("source-url", "Write me!");
     }
 
     public void addNamespaceToProvides(String name, String path) {
-        if (myProvides != null) {
-            myProvides.put(name, path);
-            saveFile();
-        }
+        if (!isMetaDataExist()) return;
+        JSONObject provides = myMeta.getJSONObject("provides");
+        provides.put(name, path);
+        myMeta.put("provides", provides);
+        saveFile();
     }
 
     public void removeNamespaceToProvides(String name) {
-        if (myProvides != null) {
-            myProvides.remove(name);
-            saveFile();
-        }
+        if (!isMetaDataExist()) return;
+        JSONObject provides = myMeta.getJSONObject("provides");
+        provides.remove(name);
+        myMeta.put("provides", provides);
+        saveFile();
     }
 
     @Nullable
     public String getName() {
-        return name;
+        return isMetaDataExist() ? myMeta.getString("name") : null;
     }
 
     public void setName(String name) {
-        this.name = name;
-        saveFile();
+        myMeta.put("name", name); saveFile();
     }
 
     @Nullable
     public String getDescription() {
-        return description;
+        return isMetaDataExist() ? myMeta.getString("description") : null;
     }
 
     public void setDescription(String description) {
-        this.description = description;
-        saveFile();
+        myMeta.put("description", description); saveFile();
     }
 
     @Nullable
     public String getVersion() {
-        return version;
+        return isMetaDataExist() ? myMeta.getString("version") : null;
     }
 
     public void setVersion(String version) {
-        this.version = version;
-        saveFile();
+        myMeta.put("version", version); saveFile();
     }
 
     @Nullable
     public String getAuth() {
-        return auth;
+        return isMetaDataExist() ? myMeta.getString("auth") : null;
     }
 
     public void setAuth(String auth) {
-        this.auth = auth;
-        saveFile();
+        myMeta.put("auth", auth); saveFile();
     }
 
     @Nullable
     public String getLicense() {
-        return license;
+        return isMetaDataExist() ? myMeta.getString("license") : null;
     }
 
     public void setLicense(String license) {
-        this.license = license;
-        saveFile();
+        myMeta.put("license", license); saveFile();
     }
 
     private void saveFile() {
         if (myMetaFile == null || myMeta == null) return;
-        myMeta.put("name", name);
-        myMeta.put("description", description);
-        myMeta.put("version", version);
-        myMeta.put("auth", auth);
-        myMeta.put("license", license);
-        myMeta.put("depends", new JSONArray(myDepends));
-        myMeta.put("test-depends", new JSONArray(myTestDepends));
-        myMeta.put("build-depends", new JSONArray(myBuildDepends));
-        myMeta.put("provides", myProvides);
         String json = myMeta.toString(4);
         try {
             WriteAction.run(() -> myMetaFile.setBinaryContent(json.getBytes(CharsetToolkit.UTF8_CHARSET)));
         }
         catch (IOException e) {
-            // Just ignore exceptions on save,
-            // what we could notify about is
-            // done in constructor
-            return;
+            notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
         }
     }
 
-    private void notifyBrokenMeta(JSONException e) {
-
-    }
-
-    private void notifyMetaIssue(IOException e) {
-
+    private void notifyMetaIssue(String message, NotificationType type, AnAction... actions) {
+        Notification notification = new Notification(
+            "Perl 6 meta error", Perl6Icons.CAMELIA,
+            "Perl 6 meta error", "",
+            message, type, null);
+        if (myMetaFile != null) {
+            notification.addAction(new AnAction("Open META6.json") {
+                @Override
+                public void actionPerformed(AnActionEvent e) {
+                    FileEditorManager.getInstance(myModule.getProject()).openFile(myMetaFile, true);
+                }
+            });
+        }
+        for (AnAction action : actions) {
+            notification.addAction(action);
+        }
+        Notifications.Bus.notify(notification);
     }
 
     private void notifyMissingMETA() {
-
+        Notification notification = new Notification(
+            "Perl 6 meta error", Perl6Icons.CAMELIA,
+            "Perl 6 meta file is missing", "",
+            "'META.info' nor 'META6.json' files seem to be present in this module.",
+            NotificationType.WARNING, null);
+        notification.addAction(new AnAction("Stub and open META6.json file") {
+            @Override
+            public void actionPerformed(AnActionEvent e) {
+                try {
+                    createStubMetaFile(null, true);
+                }
+                catch (IOException e1) {
+                    Notifications.Bus.notify(new Notification(
+                        "Perl 6 meta error", Perl6Icons.CAMELIA,
+                        "META6.json error", "Error has occurred during META6.json file creation",
+                        e1.getMessage(), NotificationType.ERROR, null));
+                }
+            }
+        });
+        Notifications.Bus.notify(notification);
     }
 
-    public void addDepends(String name) {
-        myDepends.add(name);
-        saveFile();
+    private static class Perl6MetaException extends Exception {
+        public final AnAction myFix;
+
+        public Perl6MetaException(String message) {
+            this(message, null);
+        }
+
+        public Perl6MetaException(String message, AnAction fix) {
+            super(message);
+            myFix = fix;
+        }
     }
 }
