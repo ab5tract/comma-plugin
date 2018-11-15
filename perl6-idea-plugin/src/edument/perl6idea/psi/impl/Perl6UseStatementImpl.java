@@ -17,6 +17,7 @@ import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -87,6 +88,7 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
         }
     }
 
+    @Nullable
     @Override
     public String getModuleName() {
         Perl6UseStatementStub stub = getStub();

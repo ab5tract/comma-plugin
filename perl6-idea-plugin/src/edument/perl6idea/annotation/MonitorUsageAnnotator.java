@@ -9,6 +9,8 @@ import edument.perl6idea.annotation.fix.AddMonitorModuleFix;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class MonitorUsageAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
@@ -29,7 +31,7 @@ public class MonitorUsageAnnotator implements Annotator {
                 for (PsiElement child : statement.getChildren()) {
                     if (!(child instanceof Perl6UseStatement)) continue;
                     String moduleName = ((Perl6UseStatement)child).getModuleName();
-                    if (moduleName.equals("OO::Monitors"))
+                    if (Objects.equals(moduleName, "OO::Monitors"))
                         return;
                 }
             }
