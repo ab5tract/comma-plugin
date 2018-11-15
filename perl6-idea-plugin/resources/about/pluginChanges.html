@@ -3,32 +3,29 @@
 <h2>2018.11.0</h2>
 
 <ul>
-    <li>Annotate a class that fails to implement stubbed role methods, and provide
-        a fix that stubs those methods inside of the class (this is especially handy
-        when using roles as an interface, and want to implement it in many classes)</li>
-    <li>Annotate use of does trait with a class, and offer a fix to use is trait
-        instead</li>
-    <li>Annotate use of the export trait on a my-scoped variable as an error, and
-        propose to switch to our scope</li>
-    <li>Annotate use of monitor without having used OO::Monitors as an error, and
-        provide a fix to add that use statement and update META6.json if needed</li>
-    <li>Complete methods from Cursor when writing a method in a grammar</li>
-    <li>Offer multi methods in auto-complete</li>
-    <li>Parse, highlight, and brace-match multiline comments</li>
-    <li>Fix a performance regression on reference resolution and auto-complete that
-        was particularly noticeable in larger projects</li>
-    <li>When completing the rule call syntax, offer methods in the current grammar
-        (for example, if a grammar contains a panic method, calling it from a rule
-        will now auto-complete and reference resolve)</li>
-    <li>Fix Find Usages for a rule in a regex when the cursor is placed on its name</li>
-    <li>Fix incorrect error annotation about wrong parameter order when a normal positional
-        parameter came after a positional parameter constrained on type only</li>
-    <li>When annotating a call to an undeclared private method, only mark the method
-        name, not its arguments</li>
-    <li>Fix bogus triggering of undeclarable variable error</li>
-    <li>Make sure module name field gets focus in the dialog to add a module
-        dependency</li>
-    <li>Fix incorrect sigspace indication on unquoted literals</li>
-    <li>Pass Perl 6 options when running under the debugger</li>
-    <li>Fix an exception related to modules resolution which occurred on Windows</li>
+    <li>Improve performance of editing larger files.</li>
+    <li>Pressing <code>Enter</code> inside of <code>[]</code> square brackets now creates indent the same way as <code>()</code> and <code>{}</code> do.</li>
+    <li>Tests can be run in parallel now. The number of tests to run at the same time defaults to <code>1</code> and can be changed using the <code>Run configuration</code> editor.</li>
+    <li>Improve code formatter to handle blocks, hash literals, array literals and spaces around semicolon better.</li>
+    <li>Make rename refactoring in-place for routine parameters and local variables declared with <code>state</code> and <code>my</code> declarators.</li>
+    <li>Make rename refactoring work on module names. Applying rename refactoring invoked from local module usage or renaming a Perl 6 module file will result in appropriate file system changes (renaming from <code>Foo</code> to <code>Foo::Bar</code> will create the new directory if needed, renaming from <code>Foo::Bar</code> to <code>Foo</code> will remove one if no other modules use that prefix). All references in <code>require</code> and <code>use</code> statements will be updated.</li>
+    <li>Add the Extract Variable and Extract Constant refactoring, which can extract both expressions and statements. It supports choosing of the appropriate sub-expression, in-place renaming of the new variable or constant introduced, and replacing of existing occurrences of the expression usage.</li>
+    <li>Add a quickfix to the unknown private method call annotation, which stubs a private method. Signature parameters of a the new stubbed method are inferred based on call arguments, and can be in-place renamed afterwards.</li>
+    <li>Fix new module creation on Windows.</li>
+    <li>Fix an annotation that has warned about usage of a package when module in in <code>depends</code> section of <code>META6.json</code> had adverbs, for example, false warning on <code>use JSON::Schema</code> when <code>META6.json</code> had <code>JSON::Schema:ver&lt;0.1&gt;</code> in the <code>depends</code> section.</li>
+    <li>Improve an annotation that warns about the use of the <code>does</code> trait with a <code>class</code>: now it supports the <code>does</code> trait applied with the <code>also</code> declarator, and also annotates the trait instead of the package name and works with all types of packages.</li>
+    <li>Complete methods on <code>subset</code>, using its base type provided with the <code>of</code> trait or defaulting to <code>Any</code>.</li>
+    <li>Fix an exception which occurred when the <code>provides</code> section was missing in <code>META6.json</code> file.</li>
+    <li>Fix an exception on completion of a method inside of an anonymous package (class, role, etc).</li>
+    <li>Fix an exception on completion of a module name of require statement.</li>
+    <li>Fix an annotation that has warned about range ending in a prefixed expression as unfinished.</li>
+    <li>Do not annotate usage of late-bound modules.</li>
+    <li>Fix completion inside of an anonymous subroutine.</li>
+    <li>Complete methods of the resulting value type of a subroutine or method call, when the return type is explicitly set in signature.</li>
+    <li>Offer values of <code>enum</code> in scope for auto-completion and resolution of enum value names.</li>
+    <li>Fix potential completion and reference resolution problems with <code>subset</code> types.</li>
+    <li>Fix redundant <code>unit</code> keyword in defined package declaration and missing <code>unit</code> keyword in undefined package declaration annotator.</li>
+    <li>Fix an exception that could occur during internal indexing.</li>
+    <li>Fix an annotation that has warned about absence of an endpoint in a range when range definition was multiline.</li>
+    <li>Fix parser misbehavior that could occur when typing a <code>loop</code> statement in some cases.</li>
 </ul>
