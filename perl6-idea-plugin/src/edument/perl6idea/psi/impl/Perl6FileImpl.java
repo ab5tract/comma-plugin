@@ -200,6 +200,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     @Override
     public PsiMetaData getMetaData() {
         String name = getEnclosingPerl6ModuleName();
+        if (name == null)
+            name = getName();
+        String finalName = name;
         return new PsiMetaData() {
             @Override
             public PsiElement getDeclaration() {
@@ -208,12 +211,12 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
             @Override
             public String getName(PsiElement context) {
-                return name;
+                return finalName;
             }
 
             @Override
             public String getName() {
-                return name;
+                return finalName;
             }
 
             @Override
