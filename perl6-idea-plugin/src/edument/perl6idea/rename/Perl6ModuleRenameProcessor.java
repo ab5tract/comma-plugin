@@ -1,6 +1,9 @@
 package edument.perl6idea.rename;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
@@ -25,7 +28,18 @@ import java.util.List;
 public class Perl6ModuleRenameProcessor extends RenamePsiElementProcessor {
     @Override
     public boolean canProcessElement(@NotNull PsiElement element) {
-        return element instanceof Perl6File;
+        if (!(element instanceof Perl6File)) return false;
+        Perl6File file = (Perl6File)element;
+        Module module = ModuleUtilCore.findModuleForFile(file);
+        if (module == null) return false;
+        VirtualFile[] roots = ModuleRootManager.getInstance(module).getContentRoots();
+        for (VirtualFile root : roots) {
+            if (root.getName().equals("lib") &&
+                file.getVirtualFile().getPath().startsWith(root.getPath())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
