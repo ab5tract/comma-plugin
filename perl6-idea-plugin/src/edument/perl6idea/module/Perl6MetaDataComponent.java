@@ -45,10 +45,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                     saveFile();
                 }
                 catch (Perl6MetaException e) {
-                    if (e.myFix != null)
-                        notifyMetaIssue(e.getMessage(), NotificationType.ERROR, e.myFix);
-                    else
-                        notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
+                    notifyMetaIssue(e.getMessage(), NotificationType.ERROR, e.myFix);
                 }
             }
         });
@@ -72,7 +69,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 myMeta = checkMetaSanity();
             }
             catch (Perl6MetaException e) {
-                notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
+                notifyMetaIssue(e.getMessage(), NotificationType.ERROR, e.myFix);
             }
         }
     }
@@ -372,6 +369,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             });
         }
         for (AnAction action : actions) {
+            if (action == null) continue;
             notification.addAction(new AnAction(action.getTemplatePresentation().getText()) {
                 @Override
                 public void actionPerformed(AnActionEvent e) {
