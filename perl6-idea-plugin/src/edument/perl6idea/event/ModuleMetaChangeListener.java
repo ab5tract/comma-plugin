@@ -171,8 +171,8 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
     }
 
     private Path getRootPath() {
-        VirtualFile[] contentRoots = ModuleRootManager.getInstance(myModule).getSourceRoots();
-        for (VirtualFile root : contentRoots) {
+        VirtualFile[] sourceRoots = ModuleRootManager.getInstance(myModule).getSourceRoots();
+        for (VirtualFile root : sourceRoots) {
             if (root.getName().equals("lib")) return Paths.get(root.getPath());
         }
         return null;

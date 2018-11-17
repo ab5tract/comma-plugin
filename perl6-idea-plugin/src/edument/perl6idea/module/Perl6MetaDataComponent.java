@@ -53,60 +53,56 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             }
         });
         myModule = module;
-        VirtualFile[] contentRoots = ModuleRootManager.getInstance(module).getContentRoots();
-        for (VirtualFile root : contentRoots) {
-            boolean isLibRoot = root.getName().equals("lib");
-            boolean hasLibRoot = root.findChild("lib") != null;
-            if (isLibRoot || hasLibRoot) {
-                VirtualFile metaFile = getMetaFromContentRoot(root, hasLibRoot, "META6.json");
-                // Try to search by obsolete 'META.info' name and warn about it if present
-                if (metaFile == null) {
-                    metaFile = getMetaFromContentRoot(root, hasLibRoot, "META.info");
-                    if (metaFile != null) {
-                        VirtualFile finalMetaFile = metaFile;
-                        notifyMetaIssue(
-                            "Obsolete 'META.info' file name is used instead of 'META6.json'",
-                            NotificationType.ERROR,
-                            new AnAction("Rename to META6.json") {
-                                @Override
-                                public void actionPerformed(AnActionEvent event) {
-                                    try {
-                                        WriteAction.run(
-                                            () -> finalMetaFile.rename(this, "META6.json")
-                                        );
-                                    }
-                                    catch (IOException ex) {
-                                        Notifications.Bus.notify(
-                                            new Notification(
-                                                "Perl 6 meta error","Perl 6 META error",
-                                                "Could not rename META file: " + ex.getMessage(),
-                                                NotificationType.ERROR));
-                                    }
-                                }
-                            });
-                    }
-                }
+        VirtualFile metaParent = calculateMetaParent();
+        if (metaParent == null) return;
 
-                // If everything fails, notify about META absence
-                // and suggest to stub it
-                if (metaFile == null) {
-                    notifyMissingMETA();
-                    return;
-                }
-                try {
-                    myMetaFile = metaFile;
-                    myMeta = checkMetaSanity();
-                }
-                catch (Perl6MetaException e) {
-                    notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
-                }
+        VirtualFile metaFile = metaParent.findChild("META6.json");
+        // Try to search by obsolete 'META.info' name and warn about it if present
+        if (metaFile == null) {
+            metaFile = checkOldMetaFile(metaParent);
+
+            // If everything fails, notify about META absence
+            // and suggest to stub it
+            if (metaFile == null) {
+                notifyMissingMETA();
+                return;
+            }
+            try {
+                myMetaFile = metaFile;
+                myMeta = checkMetaSanity();
+            }
+            catch (Perl6MetaException e) {
+                notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
             }
         }
     }
 
-    @Nullable
-    private static VirtualFile getMetaFromContentRoot(VirtualFile root, boolean hasLibRoot, String name) {
-        return hasLibRoot ? root.findChild(name) : root.getParent().findChild(name);
+    private VirtualFile checkOldMetaFile(VirtualFile metaParent) {
+        VirtualFile metaFile;
+        metaFile = metaParent.findChild("META.info");
+        if (metaFile != null) {
+            notifyMetaIssue(
+                "Obsolete 'META.info' file name is used instead of 'META6.json'",
+                NotificationType.ERROR,
+                new AnAction("Rename to META6.json") {
+                    @Override
+                    public void actionPerformed(AnActionEvent event) {
+                        try {
+                            WriteAction.run(
+                                () -> metaFile.rename(this, "META6.json")
+                            );
+                        }
+                        catch (IOException ex) {
+                            Notifications.Bus.notify(
+                                new Notification(
+                                    "Perl 6 meta error","Perl 6 META error",
+                                    "Could not rename META file: " + ex.getMessage(),
+                                    NotificationType.ERROR));
+                        }
+                    }
+                });
+        }
+        return metaFile;
     }
 
     private JSONObject checkMetaSanity() throws Perl6MetaException {
@@ -264,8 +260,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     }
 
     private VirtualFile calculateMetaParent() {
-        VirtualFile[] contentRoots = ModuleRootManager.getInstance(myModule).getSourceRoots();
-        for (VirtualFile root : contentRoots) {
+        VirtualFile[] sourceRoots = ModuleRootManager.getInstance(myModule).getSourceRoots();
+        for (VirtualFile root : sourceRoots) {
             if (!root.getName().equals("lib")) continue;
             return root.getParent();
         }
