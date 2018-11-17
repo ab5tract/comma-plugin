@@ -89,6 +89,7 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
                 ContentEntry entry = rootModel.addContentEntry(contentRoot);
                 addSourceDirectory("lib", contentRoot, entry);
                 addSourceDirectory("t", contentRoot, entry);
+                addSourceDirectory("bin", contentRoot, entry);
                 manager.commit();
                 rootModel.commit();
             });
