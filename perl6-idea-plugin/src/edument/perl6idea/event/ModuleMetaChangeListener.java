@@ -4,9 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
@@ -20,9 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,28 +82,100 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
     }
 
     private void processDirectoryMoveAndRename(VFileEvent event) {
+        Path libPath = getRootPath();
+        if (libPath == null) return;
 
+        if (event instanceof VFileMoveEvent) {
+            processDirectoryMove((VFileMoveEvent)event, libPath);
+        } else if (event instanceof VFilePropertyChangeEvent) {
+            processDirectoryRename((VFilePropertyChangeEvent)event, libPath);
+        }
+    }
+
+    private void processDirectoryRename(VFilePropertyChangeEvent event, Path libPath) {
+        String oldName = (String)event.getOldValue();
+        String newName = (String)event.getNewValue();
+        String stringNewPath = event.getPath();
+        Path eventPath = Paths.get(stringNewPath);
+        if (!eventPath.startsWith(libPath)) return;
+        Path oldPath = Paths.get(stringNewPath.substring(0, stringNewPath.length() - newName.length()), oldName);
+
+        String newPrefix = calculateModulePrefix(libPath, eventPath);
+        String oldPrefix = calculateModulePrefix(libPath, oldPath);
+        for (String name : myMetaData.getProvidedNames()) {
+            if (name.startsWith(oldPrefix)) {
+                myMetaData.removeNamespaceToProvides(name);
+                myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length(), name.length()));
+            }
+        }
+    }
+
+    private void processDirectoryMove(VFileMoveEvent event, Path libPath) {
+        String directoryName = event.getFile().getName();
+        Path oldPath = Paths.get(event.getOldParent().getPath(), directoryName);
+        Path newPath = Paths.get(event.getNewParent().getPath(), directoryName);
+        boolean isFromLib  = oldPath.startsWith(libPath);
+        boolean isToLib    = newPath.startsWith(libPath);
+
+        if (isFromLib && isToLib) {
+            String oldPrefix = calculateModulePrefix(libPath, oldPath);
+            String newPrefix = calculateModulePrefix(libPath, newPath);
+
+            for (String name : myMetaData.getProvidedNames()) {
+                if (name.startsWith(oldPrefix)) {
+                    myMetaData.removeNamespaceToProvides(name);
+                    myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length(), name.length()));
+                }
+            }
+        } else if (isToLib) {
+            VirtualFile file = event.getFile();
+            VfsUtilCore.visitChildrenRecursively(file, new VirtualFileVisitor<Object>() {
+                @Override
+                public boolean visitFile(@NotNull VirtualFile file) {
+                    if (!file.isDirectory() && Objects.equals(file.getExtension(), Perl6ModuleFileType.INSTANCE.getDefaultExtension())) {
+                        myMetaData.addNamespaceToProvides(calculateModuleName(file.getPath()));
+                    }
+                    return true;
+                }
+            });
+        } else if (isFromLib) {
+            String oldPrefix = calculateModulePrefix(libPath, oldPath);
+            for (String name : myMetaData.getProvidedNames())
+                if (name.startsWith(oldPrefix))
+                    myMetaData.removeNamespaceToProvides(name);
+        }
     }
 
     private void processDirectoryDelete(VFileEvent event) {
         Path path = Paths.get(event.getPath());
-        VirtualFile[] contentRoots = ModuleRootManager.getInstance(myModule).getContentRoots();
-        for (VirtualFile root : contentRoots) {
-            Path rootPath = Paths.get(root.getPath());
-            if (!path.startsWith(rootPath)) continue;
-            String prefix = path.subpath(rootPath.getNameCount(), path.getNameCount()).toString();
-            // It might look like "lib/Foo/Bar" based on where root is
-            if (prefix.startsWith("lib"))
-                prefix = prefix.substring(4);
-            prefix = prefix.replaceAll("/", "::")
-                           .replaceAll("\\\\", "::") + "::";
-            Collection<String> names = myMetaData.getProvidedNames();
-            for (String name : names) {
-                if (name.startsWith(prefix)) {
-                    myMetaData.removeNamespaceToProvides(name);
-                }
+        Path libPath = getRootPath();
+        if (libPath == null) return;
+        if (!path.startsWith(libPath)) return;
+        String prefix = calculateModulePrefix(libPath, path);
+        for (String name : myMetaData.getProvidedNames()) {
+            if (name.startsWith(prefix)) {
+                myMetaData.removeNamespaceToProvides(name);
             }
         }
+    }
+
+    private static String calculateModulePrefix(Path base, Path eventDirectoryPath) {
+        Path subpath = eventDirectoryPath.subpath(
+            base.getNameCount(),
+            eventDirectoryPath.getNameCount());
+        StringJoiner joiner = new StringJoiner("::");
+        for (Path part : subpath) {
+            joiner.add(part.toString());
+        }
+        return joiner.toString() + "::";
+    }
+
+    private Path getRootPath() {
+        VirtualFile[] contentRoots = ModuleRootManager.getInstance(myModule).getSourceRoots();
+        for (VirtualFile root : contentRoots) {
+            if (root.getName().equals("lib")) return Paths.get(root.getPath());
+        }
+        return null;
     }
 
     private void processFileMoveAndRename(VFileEvent event) {
@@ -129,8 +197,7 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
     private void updateMeta(String oldName, String newName) {
         myMetaData.removeNamespaceToProvides(oldName);
         if (newName != null) {
-            String libBasedModulePath = String.format("lib/%s.pm6", newName.replaceAll("::", "/"));
-            myMetaData.addNamespaceToProvides(newName, libBasedModulePath);
+            myMetaData.addNamespaceToProvides(newName);
         }
     }
 

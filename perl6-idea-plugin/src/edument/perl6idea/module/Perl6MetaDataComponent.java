@@ -288,10 +288,11 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             .put("source-url", "Write me!");
     }
 
-    public void addNamespaceToProvides(String name, String path) {
+    public void addNamespaceToProvides(String name) {
         if (!isMetaDataExist()) return;
+        String libBasedModulePath = String.format("lib/%s.pm6", name.replaceAll("::", "/"));
         JSONObject provides = myMeta.getJSONObject("provides");
-        provides.put(name, path);
+        provides.put(name, libBasedModulePath);
         myMeta.put("provides", provides);
         saveFile();
     }
