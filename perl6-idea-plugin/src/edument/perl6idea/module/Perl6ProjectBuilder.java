@@ -87,9 +87,9 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
                 Module module = manager.newModule(name, Perl6ModuleType.getInstance().getId());
                 ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
                 ContentEntry entry = rootModel.addContentEntry(contentRoot);
-                addSourceDirectory("lib", contentRoot, entry);
-                addSourceDirectory("t", contentRoot, entry);
-                addSourceDirectory("bin", contentRoot, entry);
+                addSourceDirectory("lib", contentRoot, entry, false);
+                addSourceDirectory("bin", contentRoot, entry, false);
+                addSourceDirectory("t", contentRoot, entry, true);
                 manager.commit();
                 rootModel.commit();
             });
@@ -100,9 +100,9 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
         return result;
     }
 
-    private static void addSourceDirectory(String name, VirtualFile contentRoot, ContentEntry entry) {
+    private static void addSourceDirectory(String name, VirtualFile contentRoot, ContentEntry entry, boolean isTest) {
         VirtualFile child = contentRoot.findChild(name);
         if (child != null && isEqualOrAncestor(entry.getUrl(), child.getUrl()))
-            entry.addSourceFolder(child, false);
+            entry.addSourceFolder(child, isTest);
     }
 }
