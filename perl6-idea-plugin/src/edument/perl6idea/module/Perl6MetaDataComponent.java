@@ -367,11 +367,18 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 @Override
                 public void actionPerformed(AnActionEvent e) {
                     FileEditorManager.getInstance(myModule.getProject()).openFile(myMetaFile, true);
+                    notification.expire();
                 }
             });
         }
         for (AnAction action : actions) {
-            notification.addAction(action);
+            notification.addAction(new AnAction(action.getTemplatePresentation().getText()) {
+                @Override
+                public void actionPerformed(AnActionEvent e) {
+                    notification.expire();
+                    action.actionPerformed(e);
+                }
+            });
         }
         Notifications.Bus.notify(notification);
     }
@@ -386,6 +393,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             @Override
             public void actionPerformed(AnActionEvent e) {
                 try {
+                    notification.expire();
                     createStubMetaFile(null, true);
                 }
                 catch (IOException e1) {
