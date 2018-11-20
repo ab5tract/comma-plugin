@@ -40,13 +40,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 if (!event.isFromSave() ||
                     !(event.getFileName().equals("META6.json") ||
                       event.getFileName().equals("META.list"))) return;
-                try {
-                    myMeta = checkMetaSanity();
-                    saveFile();
-                }
-                catch (Perl6MetaException e) {
-                    notifyMetaIssue(e.getMessage(), NotificationType.ERROR, e.myFix);
-                }
+                myMeta = checkMetaSanity();
+                saveFile();
             }
         });
         myModule = module;
@@ -64,13 +59,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 notifyMissingMETA();
                 return;
             }
-            try {
                 myMetaFile = metaFile;
                 myMeta = checkMetaSanity();
-            }
-            catch (Perl6MetaException e) {
-                notifyMetaIssue(e.getMessage(), NotificationType.ERROR, e.myFix);
-            }
         }
     }
 
@@ -102,21 +92,26 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         return metaFile;
     }
 
-    private JSONObject checkMetaSanity() throws Perl6MetaException {
+    private JSONObject checkMetaSanity() {
+        JSONObject meta = null;
         if (myMetaFile.exists()) {
             try {
                 String content = new String(myMetaFile.contentsToByteArray(), CharsetToolkit.UTF8_CHARSET);
-                return checkMetaSanity(new JSONObject(content));
+                meta = new JSONObject(content);
+                checkMetaSanity(meta);
             }
-            catch (IOException|JSONException e) {
-                notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
+            catch (IOException|JSONException|Perl6MetaException e) {
+                if (e instanceof Perl6MetaException)
+                    notifyMetaIssue(e.getMessage(), NotificationType.ERROR, ((Perl6MetaException)e).myFix);
+                else
+                    notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
             }
         }
-        return null;
+        return meta;
     }
 
     /* Enforces number of rules for meta to check on start and every saving */
-    public static JSONObject checkMetaSanity(JSONObject meta) throws Perl6MetaException {
+    public static void checkMetaSanity(JSONObject meta) throws Perl6MetaException {
         checkParameter(meta, "name", v -> v instanceof String, "string");
         checkParameter(meta, "description", v -> v instanceof String, "string");
         checkParameter(meta, "version", v -> v instanceof String, "string");
@@ -132,7 +127,6 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
         checkParameter(meta, "provides", v ->
             v instanceof JSONObject && ((JSONObject)v).toMap().values().stream().allMatch(iv -> iv instanceof String), "provides object");
-        return meta;
     }
 
     private static void checkParameter(JSONObject meta, String name,
@@ -143,6 +137,11 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 String.format("Value of '%s' field is not a %s", name, className) :
                 String.format("'%s' field is not present", name));
         }
+    }
+
+    public void triggerMetaBuild(@NotNull VirtualFile metaFile) {
+        myMetaFile = metaFile;
+        myMeta = checkMetaSanity();
     }
 
     public boolean isMetaDataExist() {
@@ -300,7 +299,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     @Nullable
     public String getName() {
-        return isMetaDataExist() ? myMeta.getString("name") : null;
+        return isMetaDataExist() && myMeta.has("name") ? myMeta.getString("name") : null;
     }
 
     public void setName(String name) {
@@ -309,7 +308,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     @Nullable
     public String getDescription() {
-        return isMetaDataExist() ? myMeta.getString("description") : null;
+        return isMetaDataExist() && myMeta.has("description") ? myMeta.getString("description") : null;
     }
 
     public void setDescription(String description) {
@@ -318,7 +317,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     @Nullable
     public String getVersion() {
-        return isMetaDataExist() ? myMeta.getString("version") : null;
+        return isMetaDataExist() && myMeta.has("version") ? myMeta.getString("version") : null;
     }
 
     public void setVersion(String version) {
@@ -327,7 +326,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     @Nullable
     public String getAuth() {
-        return isMetaDataExist() ? myMeta.getString("auth") : null;
+        return isMetaDataExist() && myMeta.has("auth") ? myMeta.getString("auth") : null;
     }
 
     public void setAuth(String auth) {
@@ -336,7 +335,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     @Nullable
     public String getLicense() {
-        return isMetaDataExist() ? myMeta.getString("license") : null;
+        return isMetaDataExist() && myMeta.has("license") ? myMeta.getString("license") : null;
     }
 
     public void setLicense(String license) {
