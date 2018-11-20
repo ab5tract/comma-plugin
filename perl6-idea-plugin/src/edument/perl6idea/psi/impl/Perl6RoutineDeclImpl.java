@@ -120,7 +120,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         if (!isPrivate() && getRoutineKind().equals("method"))
-            throw new IncorrectOperationException("Rename for non-private messages is not yet supported");
+            throw new IncorrectOperationException("Rename for non-private methods is not yet supported");
         Perl6LongName newLongName =
             Perl6ElementFactory.createPrivateMethodCall(getProject(), name);
         Perl6LongName longName = findChildByClass(Perl6LongName.class);

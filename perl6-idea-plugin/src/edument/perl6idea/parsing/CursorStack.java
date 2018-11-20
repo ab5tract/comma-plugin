@@ -70,6 +70,8 @@ public class CursorStack {
         snapped.tokenStart = this.tokenStart;
         snapped.args = this.args;
         snapped.markers = new HashMap<>(this.markers);
+        snapped.heredocs = new ArrayList<>(this.heredocs);
+        snapped.heredocDelimStart = this.heredocDelimStart;
         return snapped;
     }
 
@@ -80,6 +82,8 @@ public class CursorStack {
         res.tokenStart = this.tokenStart;
         res.args = this.args;
         res.markers = new HashMap<>(this.markers);
+        res.heredocs = new ArrayList<>(this.heredocs);
+        res.heredocDelimStart = this.heredocDelimStart;
         return res;
     }
 

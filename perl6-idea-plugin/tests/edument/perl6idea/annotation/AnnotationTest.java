@@ -479,4 +479,9 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
                                   "package Foo { also <error descr=\"package cannot compose a role\">does A</error> }");
         myFixture.checkHighlighting(false, true, false, false);
     }
+
+    public void testMonitorAnnotatorOnEmptyNameCase() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use v6.d.PREVIEW; monitor <error descr=\"Cannot use monitor type package without OO::Monitors module being included\">Bar</error> {}");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
 }

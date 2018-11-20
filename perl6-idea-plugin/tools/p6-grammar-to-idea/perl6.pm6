@@ -233,6 +233,7 @@ grammar MAIN {
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
         :my $*DELIM = '';
+        <.start-element('COMMENT')>
         <.start-token('COMMENT_STARTER')>
         '#`'
         <.end-token('COMMENT_STARTER')>
@@ -246,6 +247,7 @@ grammar MAIN {
             <.stopper>
             <.end-token('COMMENT_QUOTE_CLOSE')>
         ]?
+        <.end-element('COMMENT')>
     }
 
     token multiline-comment-nibbler {
@@ -262,13 +264,15 @@ grammar MAIN {
     }
 
     token plain-comment {
+        <.start-element('COMMENT')>
         <.start-token('COMMENT_STARTER')>
         '#'
         <.end-token('COMMENT_STARTER')>
         <.start-token('COMMENT')>
         \N*
         <.end-token('COMMENT')>
-}
+        <.end-element('COMMENT')>
+    }
 
     token pod_content_toplevel {
         <.pod_block>
@@ -856,7 +860,7 @@ grammar MAIN {
                     ]?
                 ]?
                 [<.start-token('PARENTHESES_CLOSE')> ')' <.end-token('PARENTHESES_CLOSE')>]?
-                <.ws>
+                <.ws>?
             ]?
         ]?
         <.block>?
