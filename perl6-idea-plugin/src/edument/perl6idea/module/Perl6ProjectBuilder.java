@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
                 VirtualFile contentRoot = lfs.findFileByPath(FileUtil.toSystemIndependentName(getFileToImport()));
                 if (contentRoot == null) return;
                 ModifiableModuleModel manager = ModuleManager.getInstance(project).getModifiableModel();
-                String name = contentRoot.getPath() + "/" + project.getName() + ".iml";
+                String name = Paths.get(contentRoot.getPath(), project.getName() + ".iml").toString();
                 Module module = manager.newModule(name, Perl6ModuleType.getInstance().getId());
                 ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
                 ContentEntry entry = rootModel.addContentEntry(contentRoot);
