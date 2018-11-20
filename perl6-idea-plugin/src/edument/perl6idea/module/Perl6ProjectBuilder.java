@@ -7,10 +7,13 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
+import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -93,6 +96,15 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
                 addSourceDirectory("t", contentRoot, entry, true);
                 manager.commit();
                 rootModel.commit();
+                Perl6SdkType perl6SdkType = Perl6SdkType.getInstance();
+                String homePath = perl6SdkType.suggestHomePath();
+                if (homePath != null) {
+                    Sdk sdk = SdkConfigurationUtil.findOrCreateSdk((o1, o2) -> {
+                        // TODO Write real Sdk version comparator
+                        return 1;
+                    }, perl6SdkType);
+                    ProjectRootManager.getInstance(project).setProjectSdk(sdk);
+                }
             });
         }
         catch (Exception e) {
