@@ -80,7 +80,7 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
         try {
             WriteAction.run(() -> {
                 final LocalFileSystem lfs = LocalFileSystem.getInstance();
-                VirtualFile contentRoot = lfs.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(getFileToImport()));
+                VirtualFile contentRoot = lfs.findFileByPath(FileUtil.toSystemIndependentName(getFileToImport()));
                 if (contentRoot == null) return;
                 ModifiableModuleModel manager = ModuleManager.getInstance(project).getModifiableModel();
                 String name = contentRoot.getPath() + "/" + project.getName() + ".iml";

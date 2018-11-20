@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class Perl6ProjectImportProvider extends ProjectImportProvider {
-    protected Perl6ProjectImportProvider() {
+    public Perl6ProjectImportProvider() {
         super(new Perl6ProjectBuilder());
     }
 
