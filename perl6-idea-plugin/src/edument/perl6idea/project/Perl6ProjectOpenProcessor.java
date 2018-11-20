@@ -34,7 +34,8 @@ public class Perl6ProjectOpenProcessor extends ProjectOpenProcessorBase<Perl6Pro
     @Override
     protected boolean doQuickImport(VirtualFile file, WizardContext wizardContext) {
         try {
-            getBuilder().setFileToImport(file.getParent().getPath());
+            String pathToImport = file.getParent().getPath();
+            getBuilder().setFileToImport(pathToImport);
             JSONObject object = new JSONObject(new String(file.contentsToByteArray(), CharsetToolkit.UTF8_CHARSET));
             if (object.has("name")) {
                 Object value = object.get("name");
