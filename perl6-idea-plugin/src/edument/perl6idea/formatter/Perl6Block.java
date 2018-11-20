@@ -4,13 +4,10 @@ import com.intellij.formatting.*;
 import com.intellij.formatting.templateLanguages.BlockWithParent;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiStatement;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6OPPElementTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -200,14 +197,12 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
                         if (hopefullyBlockoid.getParent() instanceof Perl6BlockOrHash) {
                             // Could be a hash, just check first child.
                             PsiElement hopefullyPairish = psi.getChildren()[0];
-                            if (hopefullyPairish instanceof Perl6FatArrow || hopefullyPairish instanceof Perl6ColonPair)
-                                return true;
+                            return hopefullyPairish instanceof Perl6FatArrow || hopefullyPairish instanceof Perl6ColonPair;
                         }
                     }
                 }
                 else if (statementHolder instanceof Perl6SemiList) {
-                    if (statementHolder.getParent() instanceof Perl6ArrayComposer)
-                        return true;
+                    return statementHolder.getParent() instanceof Perl6ArrayComposer;
                 }
             }
         }

@@ -2,13 +2,11 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 public class Perl6ParenthesizedExprImpl extends ASTWrapperPsiElement implements Perl6ParenthesizedExpr {

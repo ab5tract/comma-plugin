@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Perl6RunCommandLineState extends CommandLineState {
-    protected List<String> command = new LinkedList<>();;
+    protected List<String> command = new LinkedList<>();
     protected Perl6RunConfiguration runConfiguration;
 
     protected Perl6RunCommandLineState(ExecutionEnvironment environment) throws ExecutionException {

@@ -193,8 +193,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         } else {
             decl.contributeSymbols(collector);
         }
-        if (collector.isSatisfied()) return true;
-        return false;
+        return collector.isSatisfied();
     }
 
     @Override
@@ -438,8 +437,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         PsiElement nameElement = Perl6ElementFactory
             .createTypeDeclarationName(getProject(), name);
         ASTNode keyNode = findChildByType(NAME);
-        ASTNode newKeyNode = nameElement.getNode();
-        getNode().replaceChild(keyNode, newKeyNode);
+        if (keyNode != null) {
+            ASTNode newKeyNode = nameElement.getNode();
+            getNode().replaceChild(keyNode, newKeyNode);
+        }
         return this;
     }
 }

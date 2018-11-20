@@ -62,8 +62,10 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
         Perl6Variable variable =
             Perl6ElementFactory.createVariable(getProject(), prefix + name);
         PsiElement keyNode = findChildByFilter(TokenSet.create(Perl6TokenTypes.VARIABLE));
-        ASTNode newKeyNode = variable.getNode();
-        getNode().replaceChild(keyNode.getNode(), newKeyNode);
+        if (keyNode != null) {
+            ASTNode newKeyNode = variable.getNode();
+            getNode().replaceChild(keyNode.getNode(), newKeyNode);
+        }
         return this;
     }
 

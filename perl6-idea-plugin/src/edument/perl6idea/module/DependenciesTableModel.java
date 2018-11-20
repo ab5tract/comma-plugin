@@ -1,15 +1,11 @@
 package edument.perl6idea.module;
 
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.roots.ModuleRootModel;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ItemRemovable;
 import com.intellij.util.ui.ListTableModel;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.*;
 

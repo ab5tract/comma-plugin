@@ -25,9 +25,12 @@ public class Perl6IsTraitNameImpl extends ASTWrapperPsiElement implements Perl6I
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         Perl6LongName type = Perl6ElementFactory
             .createIsTraitName(getProject(), name);
-        ASTNode keyNode = findChildByClass(Perl6LongName.class).getNode();
-        ASTNode newKeyNode = type.getNode();
-        getNode().replaceChild(keyNode, newKeyNode);
+        Perl6LongName longName = findChildByClass(Perl6LongName.class);
+        if (longName != null) {
+            ASTNode keyNode = longName.getNode();
+            ASTNode newKeyNode = type.getNode();
+            getNode().replaceChild(keyNode, newKeyNode);
+        }
         return this;
     }
 }

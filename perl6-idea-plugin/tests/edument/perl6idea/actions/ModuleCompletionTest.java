@@ -9,7 +9,6 @@ import com.intellij.psi.impl.file.PsiDirectoryImpl;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import edument.perl6idea.Perl6LightProjectDescriptor;
-import edument.perl6idea.module.Perl6MetaDataComponent;
 
 import java.io.IOException;
 import java.nio.file.Paths;

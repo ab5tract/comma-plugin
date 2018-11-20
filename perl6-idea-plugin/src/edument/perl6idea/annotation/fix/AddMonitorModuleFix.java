@@ -5,20 +5,11 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.module.Perl6MetaDataComponent;
-import edument.perl6idea.module.Perl6ModuleBuilder;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class AddMonitorModuleFix implements IntentionAction {
     @Nls

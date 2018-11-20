@@ -2,7 +2,6 @@ package edument.perl6idea.psi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
-import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.Nullable;
 
 public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, P6Extractable {

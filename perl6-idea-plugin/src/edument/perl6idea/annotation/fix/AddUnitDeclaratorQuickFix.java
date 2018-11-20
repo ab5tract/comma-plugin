@@ -1,21 +1,12 @@
 package edument.perl6idea.annotation.fix;
 
 import com.intellij.codeInsight.intention.IntentionAction;
-import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction;
-import com.intellij.ide.scratch.ScratchFileService;
-import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import org.jetbrains.annotations.Nls;import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class AddUnitDeclaratorQuickFix implements IntentionAction {
     private final Perl6PackageDecl packageElement;

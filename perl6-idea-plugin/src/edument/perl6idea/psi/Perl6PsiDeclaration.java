@@ -58,17 +58,17 @@ public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierO
             return null;
 
         // Walk up any enclosing packages.
-        String globalName = getName();
+        StringBuilder globalName = new StringBuilder(getName());
         PsiElement outer = getParent();
         while (outer != null && !(outer instanceof Perl6File)) {
             if (outer instanceof Perl6PackageDecl) {
                 Perl6PackageDecl pkg = (Perl6PackageDecl)outer;
                 if (pkg.getScope().equals("my"))
                     return null;
-                globalName = pkg.getName() + "::" + globalName;
+                globalName.insert(0, pkg.getName() + "::");
             }
             outer = outer.getParent();
         }
-        return globalName;
+        return globalName.toString();
     }
 }

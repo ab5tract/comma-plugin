@@ -18,7 +18,6 @@ import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCKOID;
@@ -95,8 +94,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         PsiElement statementList = PsiTreeUtil.getChildOfType(blockoid, Perl6StatementList.class);
         if (statementList == null || statementList.getChildren().length != 1) return false;
         PsiElement[] statement = statementList.getChildren()[0].getChildren();
-        if (statement.length != 0 && statement[0] instanceof Perl6StubCode) return true;
-        return false;
+        return statement.length != 0 && statement[0] instanceof Perl6StubCode;
     }
 
     @Override
@@ -123,11 +121,14 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         if (!isPrivate() && getRoutineKind().equals("method"))
             throw new IncorrectOperationException("Rename for non-private messages is not yet supported");
-        Perl6LongName longName =
+        Perl6LongName newLongName =
             Perl6ElementFactory.createPrivateMethodCall(getProject(), name);
-        ASTNode keyNode = findChildByClass(Perl6LongName.class).getNode();
-        ASTNode newKeyNode = longName.getNode();
-        getNode().replaceChild(keyNode, newKeyNode);
+        Perl6LongName longName = findChildByClass(Perl6LongName.class);
+        if (longName != null) {
+            ASTNode keyNode = longName.getNode();
+            ASTNode newKeyNode = newLongName.getNode();
+            getNode().replaceChild(keyNode, newKeyNode);
+        }
         return this;
     }
 

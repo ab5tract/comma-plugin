@@ -94,8 +94,7 @@ public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurabl
     @Override
     public boolean isModified() {
         if (!getProjectName().equals(myProject.getName())) return true;
-        if (myProjectSdkConfigurable.isModified()) return true;
-        return false;
+        return myProjectSdkConfigurable.isModified();
     }
 
     @Override

@@ -15,20 +15,25 @@ public class PodFormatAnnotator implements Annotator {
         if (psiElement instanceof PodFormatted) {
             PodFormatted formatted = (PodFormatted)psiElement;
             String formatCode = formatted.getFormatCode();
-            if (formatCode.equals("B")) {
-                Annotation ann = annotationHolder.createAnnotation(HighlightSeverity.INFORMATION,
-                    formatted.getFormattedTextRange(), null);
-                ann.setTextAttributes(Perl6Highlighter.POD_TEXT_BOLD);
-            }
-            else if (formatCode.equals("I")) {
-                Annotation ann = annotationHolder.createAnnotation(HighlightSeverity.INFORMATION,
-                    formatted.getFormattedTextRange(), null);
-                ann.setTextAttributes(Perl6Highlighter.POD_TEXT_ITALIC);
-            }
-            else if (formatCode.equals("U")) {
-                Annotation ann = annotationHolder.createAnnotation(HighlightSeverity.INFORMATION,
-                    formatted.getFormattedTextRange(), null);
-                ann.setTextAttributes(Perl6Highlighter.POD_TEXT_UNDERLINE);
+            switch (formatCode) {
+                case "B": {
+                    Annotation ann = annotationHolder.createAnnotation(HighlightSeverity.INFORMATION,
+                            formatted.getFormattedTextRange(), null);
+                    ann.setTextAttributes(Perl6Highlighter.POD_TEXT_BOLD);
+                    break;
+                }
+                case "I": {
+                    Annotation ann = annotationHolder.createAnnotation(HighlightSeverity.INFORMATION,
+                            formatted.getFormattedTextRange(), null);
+                    ann.setTextAttributes(Perl6Highlighter.POD_TEXT_ITALIC);
+                    break;
+                }
+                case "U": {
+                    Annotation ann = annotationHolder.createAnnotation(HighlightSeverity.INFORMATION,
+                            formatted.getFormattedTextRange(), null);
+                    ann.setTextAttributes(Perl6Highlighter.POD_TEXT_UNDERLINE);
+                    break;
+                }
             }
         }
     }
