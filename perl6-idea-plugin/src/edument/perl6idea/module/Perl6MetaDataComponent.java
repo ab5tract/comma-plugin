@@ -59,9 +59,9 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 notifyMissingMETA();
                 return;
             }
-                myMetaFile = metaFile;
-                myMeta = checkMetaSanity();
         }
+        myMetaFile = metaFile;
+        myMeta = checkMetaSanity();
     }
 
     private VirtualFile checkOldMetaFile(VirtualFile metaParent) {
@@ -111,7 +111,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     }
 
     /* Enforces number of rules for meta to check on start and every saving */
-    public static void checkMetaSanity(JSONObject meta) throws Perl6MetaException {
+    private static void checkMetaSanity(JSONObject meta) throws Perl6MetaException {
         checkParameter(meta, "name", v -> v instanceof String, "string");
         checkParameter(meta, "description", v -> v instanceof String, "string");
         checkParameter(meta, "version", v -> v instanceof String, "string");
@@ -148,31 +148,52 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         return myMeta != null;
     }
 
-    public List<String> getDepends() {
-        return getDependsInternal("depends");
+    public void addDepends(String name) {
+        addDependsInternal("depends", name);
     }
 
-    public void addDepends(String name) {
-        if (!isMetaDataExist()) return;
-        JSONArray depends = myMeta.getJSONArray("depends");
-        depends.put(name);
-        myMeta.put("depends", depends);
+    public void addTestDepends(String name) {
+        addDependsInternal("test-depends", name);
+    }
+
+    public void addBuildDepends(String name) {
+        addDependsInternal("build-depends", name);
+    }
+
+    private void addDependsInternal(String key, String name) {
+        if (!isMetaDataExist() || !myMeta.has(key)) return;
+        Object depends = myMeta.has(key) ? myMeta.get(key) : new JSONArray();
+        if (!(depends instanceof JSONArray)) return;
+        JSONArray dependsArray = (JSONArray)depends;
+        dependsArray.put(name);
+        myMeta.put("depends", dependsArray);
         saveFile();
     }
 
-    public List<String> getTestDepends() {
-        return getDependsInternal("test-depends");
+    public List<String> getDepends(boolean normalize) {
+        return getDependsInternal("depends", normalize);
     }
 
-    public List<String> getBuildDepends() {
-        return getDependsInternal("build-depends");
+
+    public List<String> getTestDepends(boolean normalize) {
+        return getDependsInternal("test-depends", normalize);
     }
 
-    private List<String> getDependsInternal(String key) {
+    public List<String> getBuildDepends(boolean normalize) {
+        return getDependsInternal("build-depends", normalize);
+    }
+
+    private List<String> getDependsInternal(String key, boolean normalize) {
         if (!isMetaDataExist()) return new ArrayList<>();
-        JSONArray depends = (JSONArray)myMeta.get(key);
+        if (!myMeta.has(key)) return new ArrayList<>();
+        Object depends = myMeta.get(key);
+        if (!(depends instanceof JSONArray)) return new ArrayList<>();
+        JSONArray dependsArray = (JSONArray)depends;
         List<String> result = new ArrayList<>();
-        depends.toList().forEach(o -> result.add(normalizeDepends((String)o)));
+        if (normalize)
+            dependsArray.toList().forEach(o -> result.add(normalizeDepends((String)o)));
+        else
+            dependsArray.toList().forEach(o -> result.add((String)o));
         return result;
     }
 

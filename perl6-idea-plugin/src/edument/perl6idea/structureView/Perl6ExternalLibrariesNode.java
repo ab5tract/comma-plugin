@@ -30,9 +30,9 @@ public class Perl6ExternalLibrariesNode extends ExternalLibrariesNode {
         Module[] projectModules = ModuleManager.getInstance(myProject).getModules();
         for (Module module : projectModules) {
             Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
-            metaData.getDepends().forEach(name -> addName(name, c));
-            metaData.getBuildDepends().forEach(name -> addName(name, c));
-            metaData.getTestDepends().forEach(name -> addName(name, c));
+            metaData.getDepends(false).forEach(name -> addName(name, c));
+            metaData.getBuildDepends(false).forEach(name -> addName(name, c));
+            metaData.getTestDepends(false).forEach(name -> addName(name, c));
         }
         return c;
     }

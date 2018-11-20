@@ -51,7 +51,7 @@ public class UsedModuleAnnotator implements Annotator {
         if (resolved != null) return;
 
         boolean isProvided = false;
-        for (String dependency : metaData.getDepends()) {
+        for (String dependency : metaData.getDepends(true)) {
             Set<String> provides = Perl6ModuleListFetcher.getProvidesByModuleAsync(element.getProject(), dependency);
             if (provides == null) return;
             isProvided = provides.contains(moduleName);
