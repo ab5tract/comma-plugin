@@ -44,6 +44,6 @@ public class Perl6ProjectImportProvider extends ProjectImportProvider {
     @Nullable
     @Language("HTML")
     public String getFileSample() {
-        return "<b>Perl 6</b> project file (META6.json)";
+        return "<b>Perl 6</b> project file (META6.json or META.info)";
     }
 }
