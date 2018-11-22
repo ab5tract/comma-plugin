@@ -14,7 +14,7 @@ grammar MAIN {
         || [
                # Try to recover from excess closing }
                <.start-token('BAD_CHARACTER')> '}' <.end-token('BAD_CHARACTER')>
-               <.ws>
+               <.ws>?
                <.statementlist>
            ]*
            <.bogus_end>?
@@ -881,7 +881,7 @@ grammar MAIN {
             || <.module_name>
             ]
             [
-                <.ws>
+                <.ws>?
                 [
                     <.start-token('INFIX')>
                     ','
@@ -1744,7 +1744,7 @@ grammar MAIN {
                <!before [<.sigil> || <[\\(]> || 'sub' || 'method' ||
                          'regex' || 'token' || 'rule' ||
                          'multi' || 'proto' || 'only']>
-               <.typename> <.ws>
+               <.typename> <.ws>?
            ]+
            <.multi_declarator>?
         || <.multi_declarator>
@@ -1837,7 +1837,7 @@ grammar MAIN {
                ]?
             ]+
         ]?
-        <.ws>
+        <.ws>?
         <.trait>*
         [ <.ws> <.post_constraint>* ]?
     }
@@ -2244,7 +2244,7 @@ grammar MAIN {
     }
 
     token trait {
-        <.trait_mod> <.ws>
+        <.trait_mod> <.ws>?
     }
 
     token trait_mod {
