@@ -1,5 +1,6 @@
 package edument.perl6idea.annotation.fix;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.module.Module;
@@ -44,6 +45,7 @@ public class MissingModuleFix implements IntentionAction {
         if (module == null) throw new IncorrectOperationException("Cannot be used in files outside of a module");
         Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
         metaData.addDepends(moduleName);
+        DaemonCodeAnalyzer.getInstance(project).restart(file);
     }
 
     @Override
