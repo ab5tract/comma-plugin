@@ -122,10 +122,6 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
         checkParameter(meta, "depends", v ->
             v instanceof JSONArray && ((JSONArray)v).toList().stream().allMatch(iv -> iv instanceof String), "string array");
-        checkParameter(meta, "test-depends", v ->
-            v instanceof JSONArray && ((JSONArray)v).toList().stream().allMatch(iv -> iv instanceof String), "string array");
-        checkParameter(meta, "build-depends", v ->
-            v instanceof JSONArray && ((JSONArray)v).toList().stream().allMatch(iv -> iv instanceof String), "string array");
 
         checkParameter(meta, "provides", v ->
             v instanceof JSONObject && ((JSONObject)v).toMap().values().stream().allMatch(iv -> iv instanceof String), "provides object");
