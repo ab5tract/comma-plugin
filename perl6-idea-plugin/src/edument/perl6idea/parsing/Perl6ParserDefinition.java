@@ -71,6 +71,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new Perl6BlockImpl(astNode);
         if (type == Perl6ElementTypes.BLOCKOID)
             return new Perl6BlockoidImpl(astNode);
+        if (type == Perl6ElementTypes.COMMENT)
+            return new Perl6CommentImpl(astNode);
         if (type == Perl6ElementTypes.IF_STATEMENT)
             return new Perl6IfStatementImpl(astNode);
         if (type == Perl6ElementTypes.UNLESS_STATEMENT)

@@ -12,12 +12,23 @@ while @todo {
 
 @test-files .= sort;
 
-for @test-files {
-    my $proc = run $*EXECUTABLE, @args, $_, :out, :merge;
-    my $output = $proc.out.slurp: :close;
-    say $output;
-    LEAVE {
-        say "===={$_.Str}";
-        $*OUT.flush;
+react {
+    my $jobs = %*ENV<TEST_JOBS> // $*KERNEL.cpu-cores;
+    run-a-test-file for ^$jobs;
+
+    sub run-a-test-file {
+        with @test-files.shift -> $file {
+            my $proc = Proc::Async.new($*EXECUTABLE, @args, $file);
+            my $output;
+            whenever $proc {
+                $output ~= $_;
+            }
+            whenever $proc.start -> $exit {
+                say $output;
+                say "====$file";
+                $*OUT.flush;
+                run-a-test-file;
+            }
+        }
     }
 }
