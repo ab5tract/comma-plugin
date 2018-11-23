@@ -76,7 +76,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 new AnAction(String.format("Rename to %s", META6_JSON_NAME)) {
                     @Override
                     public void actionPerformed(AnActionEvent event) {
-                        ApplicationManager.getApplication().invokeLater(
+                        ApplicationManager.getApplication().invokeAndWait(
                             () -> WriteAction.run(() -> {
                                 try {
                                     metaFile.rename(this, META6_JSON_NAME);
@@ -366,7 +366,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     private void saveFile() {
         if (myMetaFile == null || myMeta == null) return;
         String json = myMeta.toString(4);
-        ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(
+        ApplicationManager.getApplication().invokeAndWait(() -> WriteAction.run(
             () -> {
                 try {
                     myMetaFile.setBinaryContent(json.getBytes(CharsetToolkit.UTF8_CHARSET));
