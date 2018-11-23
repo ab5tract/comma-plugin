@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Perl6MetaDataComponent implements ModuleComponent {
+    public static final String META6_JSON_NAME = "META6.json";
+    public static final String META_OBSOLETE_NAME = "META.info";
     private final Module myModule;
     private VirtualFile myMetaFile = null;
     private JSONObject myMeta = null;
@@ -38,8 +40,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             @Override
             public void contentsChanged(@NotNull VirtualFileEvent event) {
                 if (!event.isFromSave() ||
-                    !(event.getFileName().equals("META6.json") ||
-                      event.getFileName().equals("META.list"))) return;
+                    !(event.getFileName().equals(META6_JSON_NAME) ||
+                      event.getFileName().equals(META_OBSOLETE_NAME))) return;
                 myMeta = checkMetaSanity();
                 saveFile();
             }
@@ -48,7 +50,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         VirtualFile metaParent = calculateMetaParent();
         if (metaParent == null) return;
 
-        VirtualFile metaFile = metaParent.findChild("META6.json");
+        VirtualFile metaFile = metaParent.findChild(META6_JSON_NAME);
         // Try to search by obsolete 'META.info' name and warn about it if present
         if (metaFile == null) {
             metaFile = checkOldMetaFile(metaParent);
@@ -66,17 +68,17 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     private VirtualFile checkOldMetaFile(VirtualFile metaParent) {
         VirtualFile metaFile;
-        metaFile = metaParent.findChild("META.info");
+        metaFile = metaParent.findChild(META_OBSOLETE_NAME);
         if (metaFile != null) {
             notifyMetaIssue(
-                "Obsolete 'META.info' file name is used instead of 'META6.json'",
+                String.format("Obsolete '%s' file name is used instead of '%s'", META_OBSOLETE_NAME, META6_JSON_NAME),
                 NotificationType.ERROR,
-                new AnAction("Rename to META6.json") {
+                new AnAction(String.format("Rename to %s", META6_JSON_NAME)) {
                     @Override
                     public void actionPerformed(AnActionEvent event) {
                         try {
                             WriteAction.run(
-                                () -> metaFile.rename(this, "META6.json")
+                                () -> metaFile.rename(this, META6_JSON_NAME)
                             );
                         }
                         catch (IOException ex) {
@@ -257,7 +259,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 JSONObject meta = getStubMetaObject();
-                VirtualFile metaFile = finalFirstRoot.createChildData(this, "META6.json");
+                VirtualFile metaFile = finalFirstRoot.createChildData(this, META6_JSON_NAME);
                 WriteAction.run(() -> metaFile.setBinaryContent(meta.toString(4).getBytes(CharsetToolkit.UTF8_CHARSET)));
 
                 myMeta = meta;
@@ -380,7 +382,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             "Perl 6 meta error", "",
             message, type, null);
         if (myMetaFile != null) {
-            notification.addAction(new AnAction("Open META6.json") {
+            notification.addAction(new AnAction(String.format("Open %s", META6_JSON_NAME)) {
                 @Override
                 public void actionPerformed(AnActionEvent e) {
                     FileEditorManager.getInstance(myModule.getProject()).openFile(myMetaFile, true);
@@ -405,9 +407,9 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         Notification notification = new Notification(
             "Perl 6 meta error", Perl6Icons.CAMELIA,
             "Perl 6 meta file is missing", "",
-            "'META.info' nor 'META6.json' files seem to be present in this module.",
+            String.format("'%s' nor '%s' files seem to be present in this module.", null, META6_JSON_NAME),
             NotificationType.WARNING, null);
-        notification.addAction(new AnAction("Stub and open META6.json file") {
+        notification.addAction(new AnAction(String.format("Stub and open %s file", META6_JSON_NAME)) {
             @Override
             public void actionPerformed(AnActionEvent e) {
                 try {
@@ -417,7 +419,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 catch (IOException e1) {
                     Notifications.Bus.notify(new Notification(
                         "Perl 6 meta error", Perl6Icons.CAMELIA,
-                        "META6.json error", "Error has occurred during META6.json file creation",
+                        String.format("%s error", META6_JSON_NAME),
+                        String.format("Error has occurred during %s file creation", META6_JSON_NAME),
                         e1.getMessage(), NotificationType.ERROR, null));
                 }
             }
