@@ -254,7 +254,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         AtomicReference<IOException> ex = new AtomicReference<>();
         ex.set(null);
         VirtualFile finalFirstRoot = firstRoot;
-        ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(() -> {
+        ApplicationManager.getApplication().invokeAndWait(() -> WriteAction.run(() -> {
             try {
                 JSONObject meta = getStubMetaObject();
                 VirtualFile metaFile = finalFirstRoot.createChildData(this, META6_JSON_NAME);
