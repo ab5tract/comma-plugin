@@ -1,5 +1,6 @@
 package edument.perl6idea.event;
 
+import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
@@ -75,7 +76,11 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
                 continue;
             }
 
-            ApplicationManager.getApplication().invokeLater(() -> LocalFileSystem.getInstance().refresh(false));
+            ApplicationManager.getApplication().invokeLater(
+                () -> {
+                    ProjectView.getInstance(myModule.getProject()).refresh();
+                    LocalFileSystem.getInstance().refresh(false);
+                });
         }
     }
 

@@ -1,5 +1,6 @@
 package edument.perl6idea.actions;
 
+import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -89,8 +90,10 @@ public class NewModuleAction extends AnAction {
             String modulePath = Perl6ModuleBuilder.stubModule(metaData, myBaseDir,
                                                               moduleName, !metaData.isMetaDataExist(), true, null);
             VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(modulePath).toFile());
-            if (moduleFile != null)
+            if (moduleFile != null) {
+                ProjectView.getInstance(project).refresh();
                 FileEditorManager.getInstance(project).openFile(moduleFile, true);
+            }
             else
                 LOG.warn("File was not created");
         }
