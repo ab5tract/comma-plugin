@@ -143,4 +143,12 @@ public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
     public void testLoopOutside() {
         doTest();
     }
+
+    public void testInsideOfBlock() {
+        doTest();
+    }
+
+    public void testLoopInsideOfBlock() {
+        doTest();
+    }
 }

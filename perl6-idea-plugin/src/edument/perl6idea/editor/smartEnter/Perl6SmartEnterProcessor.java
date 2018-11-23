@@ -51,7 +51,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         CommandProcessor.getInstance().executeCommand(project, () -> {
             EditorActionManager actionManager = EditorActionManager.getInstance();
             EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_MOVE_LINE_END);
-            actionHandler.execute(editor, DataManager.getInstance().getDataContext());
+            actionHandler.execute(editor, caretModel.getCurrentCaret(), DataManager.getInstance().getDataContextFromFocus().getResult());
         }, "", null);
         return true;
     }
@@ -156,6 +156,9 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
             lastPiece.getNode().getElementType() == NAME) {
             if (offsetToJump < 0)
                 offsetToJump = lastPiece.getTextOffset() + lastPiece.getTextLength();
+            PsiWhiteSpace whiteSpace = getInnermostRightmostChild(lastPiece);
+            if (whiteSpace != null)
+                offsetToJump -= whiteSpace.getTextLength();
             editor.getDocument().insertString(offsetToJump, " {\n}");
         } else if (lastPiece instanceof Perl6Blockoid) {
             // If code block itself
@@ -169,6 +172,16 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
                 editor.getDocument().insertString(offsetToJump, ";");
             }
         }
+    }
+
+    private static PsiWhiteSpace getInnermostRightmostChild(PsiElement piece) {
+        PsiElement lastChild = piece;
+        while (lastChild != null) {
+            lastChild = lastChild.getLastChild();
+            if (lastChild instanceof PsiWhiteSpace)
+                return (PsiWhiteSpace)lastChild;
+        }
+        return null;
     }
 
     private static boolean controlStatementsCheck(PsiElement piece) {
