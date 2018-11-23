@@ -76,18 +76,20 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 new AnAction(String.format("Rename to %s", META6_JSON_NAME)) {
                     @Override
                     public void actionPerformed(AnActionEvent event) {
-                        try {
-                            WriteAction.run(
-                                () -> metaFile.rename(this, META6_JSON_NAME)
-                            );
-                        }
-                        catch (IOException ex) {
-                            Notifications.Bus.notify(
-                                new Notification(
-                                    "Perl 6 meta error","Perl 6 META error",
-                                    "Could not rename META file: " + ex.getMessage(),
-                                    NotificationType.ERROR));
-                        }
+                        ApplicationManager.getApplication().invokeLater(
+                            () -> WriteAction.run(() -> {
+                                try {
+                                    metaFile.rename(this, META6_JSON_NAME);
+                                }
+                                catch (IOException ex) {
+                                    Notifications.Bus.notify(
+                                        new Notification(
+                                            "Perl 6 meta error", "Perl 6 META error",
+                                            "Could not rename META file: " + ex.getMessage(),
+                                            NotificationType.ERROR));
+                                }
+                            })
+                        );
                     }
                 });
         }
@@ -252,11 +254,11 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         AtomicReference<IOException> ex = new AtomicReference<>();
         ex.set(null);
         VirtualFile finalFirstRoot = firstRoot;
-        ApplicationManager.getApplication().runWriteAction(() -> {
+        ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(() -> {
             try {
                 JSONObject meta = getStubMetaObject();
                 VirtualFile metaFile = finalFirstRoot.createChildData(this, META6_JSON_NAME);
-                WriteAction.run(() -> metaFile.setBinaryContent(meta.toString(4).getBytes(CharsetToolkit.UTF8_CHARSET)));
+                metaFile.setBinaryContent(meta.toString(4).getBytes(CharsetToolkit.UTF8_CHARSET));
 
                 myMeta = meta;
                 myMetaFile = metaFile;
@@ -267,7 +269,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             catch (IOException e) {
                 ex.set(e);
             }
-        });
+        }));
         IOException ioException = ex.get();
         if (ioException != null) {
             throw ioException;
@@ -364,12 +366,16 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     private void saveFile() {
         if (myMetaFile == null || myMeta == null) return;
         String json = myMeta.toString(4);
-        try {
-            WriteAction.run(() -> myMetaFile.setBinaryContent(json.getBytes(CharsetToolkit.UTF8_CHARSET)));
-        }
-        catch (IOException e) {
-            notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
-        }
+        ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(
+            () -> {
+                try {
+                    myMetaFile.setBinaryContent(json.getBytes(CharsetToolkit.UTF8_CHARSET));
+                }
+                catch (IOException e) {
+                    notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
+                }
+            }
+        ));
     }
 
     private void notifyMetaIssue(String message, NotificationType type, AnAction... actions) {
