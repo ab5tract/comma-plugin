@@ -43,15 +43,17 @@ public class Perl6StatementMover extends StatementUpDownMover {
             // It is a multi-line statement and we're in the middle of it
             PsiElement tempRange = skipEmpty(down ? rangeElement2.getNextSibling() : rangeElement1.getPrevSibling(), down);
             if (tempRange == null) {
-                // It is first element in the block and we are moving up, so need to jump out
-                // Firstly, get parent statement for this block, then set ranges
-                PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Blockoid.class);
-                setInfo(info, rangeElement1, blockStatement == null ? rangeElement1 : blockStatement.getFirstChild());
-            } else if (tempRange instanceof PsiWhiteSpace) {
-                // It seems to be last element of block, so we need to jump and move next
-                tempRange = tempRange.getParent().getNextSibling();
-                // We check it for null, because it may be last statement in the file, so no sibling
-                setInfo(info, rangeElement1, tempRange != null ? tempRange : rangeElement1);
+                if (!down) {
+                    // It is first element in the block and we are moving up, so need to jump out
+                    // Firstly, get parent statement for this block, then set ranges
+                    PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Blockoid.class);
+                    setInfo(info, rangeElement1, blockStatement == null ? rangeElement1 : blockStatement.getFirstChild());
+                } else {
+                    // It seems to be last element of block and we are moving down, so we need to jump and move down
+                    tempRange = rangeElement2.getParent().getNextSibling();
+                    // We check it for null, because it may be last statement in the file, so no sibling
+                    setInfo(info, rangeElement1, tempRange != null ? tempRange : rangeElement1);
+                }
             } else {
                 setInfo(info, rangeElement1, tempRange);
             }
@@ -71,11 +73,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
             // If we are moving block from its first line into "insides", switch it with next list-level statement
             if (down) {
                 PsiElement next = skipEmpty(rangeElement1.getNextSibling(), true);
-                if (next != null && (!(next instanceof PsiWhiteSpace)) && !next.getNode().getElementType().equals(UNV_WHITE_SPACE)) {
-                    setInfo(info, rangeElement1, next);
-                } else {
-                    setInfo(info, rangeElement1, rangeElement1);
-                }
+                setInfo(info, rangeElement1, next == null ? rangeElement1 : next);
             } else {
                 PsiElement prev = skipEmpty(rangeElement1.getPrevSibling(), false);
                 if (prev == null) {
@@ -227,7 +225,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
         PsiElement temp = node;
         while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE)))
             temp = toRight ? temp.getNextSibling() : temp.getPrevSibling();
-        return temp == null ? node : temp;
+        return temp;
     }
 
     @Override

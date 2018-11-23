@@ -466,8 +466,13 @@ grammar MAIN {
     ## Top-level structure
 
     token statementlist {
-        [<.ws> || $]
+        [
+            <?before [\s+ '}']>
+            <.start-token('WS_OUTSIDE_LIST')> <?> <.end-token('WS_OUTSIDE_LIST')>
+            <.ws>
+        ]?
         <.start-element('STATEMENT_LIST')>
+        [<.ws> || $]
         [
             <!before $ || <[\)\]\}]> >
             <.start-element('STATEMENT')>

@@ -18250,18 +18250,23 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean statementlist_217_alt_1(PsiBuilder builder, OPP opp) {
-        return true;
-    }
-
-    private boolean statementlist_217_alt_2(PsiBuilder builder, OPP opp) {
+    private boolean statementlist_217_quant_1(PsiBuilder builder, OPP opp) {
+        if ((builder.getTokenType()) == Perl6TokenTypes.WS_OUTSIDE_LIST) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
         if (!(this.ws_258(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean statementlist_217_quant_3(PsiBuilder builder, OPP opp) {
+    private boolean statementlist_217_alt_2(PsiBuilder builder, OPP opp) {
+        return true;
+    }
+
+    private boolean statementlist_217_alt_3(PsiBuilder builder, OPP opp) {
         if (!(this.ws_258(builder))) {
             return false;
         }
@@ -18269,21 +18274,28 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean statementlist_217_quant_4(PsiBuilder builder, OPP opp) {
-        PsiBuilder.Marker marker4;
-        marker4 = builder.mark();
+        if (!(this.ws_258(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean statementlist_217_quant_5(PsiBuilder builder, OPP opp) {
+        PsiBuilder.Marker marker5;
+        marker5 = builder.mark();
         if (!(this.statement_175(builder))) {
             return false;
         }
         if (!(this.eat_terminator_42(builder))) {
             return false;
         }
-        marker4.done(Perl6ElementTypes.STATEMENT);
-        PsiBuilder.Marker quantMarker5;
-        quantMarker5 = builder.mark();
-        if (this.statementlist_217_quant_3(builder, opp)) {
-            quantMarker5.drop();
+        marker5.done(Perl6ElementTypes.STATEMENT);
+        PsiBuilder.Marker quantMarker6;
+        quantMarker6 = builder.mark();
+        if (this.statementlist_217_quant_4(builder, opp)) {
+            quantMarker6.drop();
         } else {
-            quantMarker5.rollbackTo();
+            quantMarker6.rollbackTo();
         }
         return true;
     }
@@ -18291,34 +18303,41 @@ public class Perl6Parser implements PsiParser {
     private boolean statementlist_217(PsiBuilder builder) {
         OPP opp;
         opp = null;
-        PsiBuilder.Marker altMarker2;
-        altMarker2 = builder.mark();
-        if (this.statementlist_217_alt_2(builder, opp)) {
-            altMarker2.drop();
+        PsiBuilder.Marker quantMarker1;
+        quantMarker1 = builder.mark();
+        if (this.statementlist_217_quant_1(builder, opp)) {
+            quantMarker1.drop();
         } else {
-            altMarker2.rollbackTo();
-            PsiBuilder.Marker altMarker1;;
-            altMarker1 = builder.mark();
-            if (this.statementlist_217_alt_1(builder, opp)) {
-                altMarker1.drop();
+            quantMarker1.rollbackTo();
+        }
+        PsiBuilder.Marker marker2;
+        marker2 = builder.mark();
+        PsiBuilder.Marker altMarker4;
+        altMarker4 = builder.mark();
+        if (this.statementlist_217_alt_3(builder, opp)) {
+            altMarker4.drop();
+        } else {
+            altMarker4.rollbackTo();
+            PsiBuilder.Marker altMarker3;;
+            altMarker3 = builder.mark();
+            if (this.statementlist_217_alt_2(builder, opp)) {
+                altMarker3.drop();
             } else {
-                altMarker1.rollbackTo();
+                altMarker3.rollbackTo();
                 return false;
             }
         }
-        PsiBuilder.Marker marker3;
-        marker3 = builder.mark();
         while (true) {
-            PsiBuilder.Marker quantMarker6;;
-            quantMarker6 = builder.mark();
-            if (this.statementlist_217_quant_4(builder, opp)) {
-                quantMarker6.drop();
+            PsiBuilder.Marker quantMarker7;;
+            quantMarker7 = builder.mark();
+            if (this.statementlist_217_quant_5(builder, opp)) {
+                quantMarker7.drop();
             } else {
-                quantMarker6.rollbackTo();
+                quantMarker7.rollbackTo();
                 break;
             }
         }
-        marker3.done(Perl6ElementTypes.STATEMENT_LIST);
+        marker2.done(Perl6ElementTypes.STATEMENT_LIST);
         return true;
     }
 
