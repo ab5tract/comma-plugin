@@ -5,6 +5,7 @@ import com.intellij.execution.testframework.TestConsoleProperties;
 import com.intellij.execution.testframework.sm.ServiceMessageBuilder;
 import com.intellij.execution.testframework.sm.runner.OutputToGeneralTestEventsConverter;
 import com.intellij.openapi.util.Key;
+import com.intellij.util.ArrayUtil;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.tap4j.consumer.TapConsumer;
@@ -17,9 +18,11 @@ import org.tap4j.util.StatusValues;
 import java.text.ParseException;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEventsConverter {
+    public static final Pattern EXPECTED_GOT_PATTERN = Pattern.compile("expected: (.+?)\ngot: (.+?)\n");
     private final String myBaseUrl;
     @NotNull
     private TapConsumer myConsumer;
@@ -185,20 +188,38 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
                     .addAttribute("message", String.format("%s %s", testName, testResult.getDirective().getReason())).toString();
             handleMessageSend(testIgnored);
         } else if (!hasSubtests && testResult.getStatus() == StatusValues.NOT_OK) {
-            StringBuilder errorMessage = new StringBuilder(testResult.getDescription() + "\n");
+            StringBuilder errorMessageBuilder = new StringBuilder(testResult.getDescription() + "\n");
             for (Comment comment : testResult.getComments()) {
-                errorMessage.append(comment.getText()).append("\n");
+                errorMessageBuilder.append(comment.getText()).append("\n");
             }
-            String testFailed = ServiceMessageBuilder.testFailed(testName)
-                    .addAttribute("error", "true")
-                    .addAttribute("message", errorMessage.toString())
-                                                  .toString();
-            handleMessageSend(testFailed);
+
+            String errorMessage = errorMessageBuilder.toString();
+            String[] expectedAndActual = checkIfComparsionFailure(errorMessage);
+
+            ServiceMessageBuilder testFailed = ServiceMessageBuilder
+                .testFailed(testName)
+                .addAttribute("error", "true")
+                .addAttribute("message", errorMessage);
+            if (expectedAndActual.length != 0) {
+                testFailed
+                    .addAttribute("type", "comparisonFailure")
+                    .addAttribute("expected", expectedAndActual[0])
+                    .addAttribute("actual", expectedAndActual[1]);
+            }
+            handleMessageSend(testFailed.toString());
         }
         if (hasSubtests)
             handleMessageSend(ServiceMessageBuilder.testSuiteFinished(testName).toString());
         else
             handleMessageSend(ServiceMessageBuilder.testFinished(testName).toString());
+    }
+
+    private static String[] checkIfComparsionFailure(String message) {
+        Matcher matcher = EXPECTED_GOT_PATTERN.matcher(message);
+        if (matcher.find()) {
+            return new String[]{matcher.group(1), matcher.group(2)};
+        }
+        return ArrayUtil.EMPTY_STRING_ARRAY;
     }
 
     private void handleMessageSend(String message) throws ParseException {
