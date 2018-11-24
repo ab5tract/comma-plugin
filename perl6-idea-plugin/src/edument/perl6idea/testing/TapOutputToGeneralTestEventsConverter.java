@@ -10,15 +10,14 @@ import org.jetbrains.annotations.NotNull;
 import org.tap4j.consumer.TapConsumer;
 import org.tap4j.consumer.TapConsumerException;
 import org.tap4j.consumer.TapConsumerFactory;
-import org.tap4j.model.Comment;
-import org.tap4j.model.Directive;
-import org.tap4j.model.TestResult;
-import org.tap4j.model.TestSet;
+import org.tap4j.model.*;
 import org.tap4j.util.DirectiveValues;
 import org.tap4j.util.StatusValues;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEventsConverter {
     private final String myBaseUrl;
@@ -70,7 +69,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             try {
                 set = myConsumer.load(currentTap);
                 processTestsCount(set);
-                processSingleSuite(set.getTestResults());
+                processSingleSuite(set.getTapLines());
             } catch (TapConsumerException e) {
                 processBreakage();
             }
@@ -88,9 +87,67 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         handleMessageSend(ServiceMessageBuilder.testFinished(name).toString());
     }
 
-    private void processSingleSuite(List<TestResult> results) throws ParseException {
-        for (TestResult result : results)
-            processSingleTest(result);
+    private void processSingleSuite(List<TapElement> results) throws ParseException {
+        // Apparently, Team City test protocol does not allow us
+        // to send more than 1 `stdOutput` message, so we need to collect
+        // all in a single string. `StringJoinger` here gives us neater
+        // handling of `\n` between lines and uses fast StringBuilder internally
+        StringJoiner stdOut = new StringJoiner("\n");
+
+        // We calculate what TestElement is last (if there is one)
+        // to later attach to it not only preceding text, but also following
+        int lastTestIndex = -1;
+        for (int i = 0, size = results.size(); i < size; i++) {
+            TapElement res = results.get(i);
+            if (res instanceof TestResult) {
+                lastTestIndex = i;
+            }
+        }
+
+        // We iterate though test suite here,
+        // if iterated one is not last, we append possible
+        // stdout output to it, but if we are at last one,
+        // we break, because we want to collect all text output
+        // that comes after it.
+        TestResult savedLastTest = null;
+        for (int i = 0, size = results.size(); i < size; i++) {
+            TapElement result = results.get(i);
+
+            if (i == lastTestIndex) {
+                savedLastTest = (TestResult)result;
+                break;
+            }
+
+            if (result instanceof TestResult) {
+                processSingleTest((TestResult)result, (stdOut.length() == 0) ? null : stdOut.toString() + "\n");
+                stdOut = new StringJoiner("\n");
+            }
+            else if (result instanceof Text) {
+                stdOut.add(((Text)result).getValue());
+            }
+        }
+
+        /* Here we possibly can have:
+         * `saveLastTest` can be null or not, depending on if there are any tests at all
+         * `stdOut` can be empty or not, depending on if there is an output before last test
+         * If we have no tests at all, but all `stdOut`, then create a dummy one and post it
+         * If we have last test and it is a last element in `results` array, just send it with possible `stdOut`
+         * If we have last test and it is not a last element, collect all output lines after it and send
+         */
+
+        if (savedLastTest == null && stdOut.length() != 0) {
+            // Create a dummy test to contain output,
+            // because testSuite cannot have an output sent
+            savedLastTest = new TestResult(StatusValues.OK, 0);
+            savedLastTest.setDescription("Output");
+        }
+        if (lastTestIndex != results.size() - 1) {
+            // Following output is present
+            for (int i = lastTestIndex + 1, size = results.size(); i < size; i++) {
+                stdOut.add(((Text)results.get(i)).getValue());
+            }
+        }
+        processSingleTest(savedLastTest, (stdOut.length() == 0) ? null : stdOut.toString() + "\n");
     }
 
     private void processTestsCount(TestSet set) throws ParseException {
@@ -99,35 +156,41 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         handleMessageSend(message);
     }
 
-    private void processSingleTest(TestResult testResult) throws ParseException {
+    private void processSingleTest(TestResult testResult, String stdOut) throws ParseException {
         String testName = String.format("%d %s", testResult.getTestNumber(), testResult.getDescription());
         Directive directive = testResult.getDirective();
         boolean hasSubtests = testResult.getSubtest() != null;
         if (hasSubtests) {
             handleMessageSend(ServiceMessageBuilder.testSuiteStarted(testName).toString());
             for (TestResult sub : testResult.getSubtest().getTestResults())
-                processSingleTest(sub);
-        } else
+                processSingleTest(sub, null);
+        } else {
             handleMessageSend(ServiceMessageBuilder.testStarted(testName).toString());
+            if (stdOut != null) {
+                ServiceMessageBuilder testStdOut = ServiceMessageBuilder.testStdOut(testName);
+                testStdOut.addAttribute("out", stdOut);
+                handleMessageSend(testStdOut.toString());
+            }
+        }
 
         //noinspection StatementWithEmptyBody
         if (!hasSubtests && testResult.getStatus() == StatusValues.OK &&
             testResult.getDirective() == null) {
         } else if (!hasSubtests && ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP) ||
                    (directive != null && directive.getDirectiveValue() == DirectiveValues.TODO))) {
-            String message = ServiceMessageBuilder.testIgnored(testName)
+            String testIgnored = ServiceMessageBuilder.testIgnored(testName)
                     .addAttribute("message", String.format("%s %s", testName, testResult.getDirective().getReason())).toString();
-            handleMessageSend(message);
+            handleMessageSend(testIgnored);
         } else if (!hasSubtests && testResult.getStatus() == StatusValues.NOT_OK) {
             StringBuilder errorMessage = new StringBuilder(testResult.getDescription() + "\n");
             for (Comment comment : testResult.getComments()) {
                 errorMessage.append(comment.getText()).append("\n");
             }
-            String message = ServiceMessageBuilder.testFailed(testName)
+            String testFailed = ServiceMessageBuilder.testFailed(testName)
                     .addAttribute("error", "true")
                     .addAttribute("message", errorMessage.toString())
                                                   .toString();
-            handleMessageSend(message);
+            handleMessageSend(testFailed);
         }
         if (hasSubtests)
             handleMessageSend(ServiceMessageBuilder.testSuiteFinished(testName).toString());
