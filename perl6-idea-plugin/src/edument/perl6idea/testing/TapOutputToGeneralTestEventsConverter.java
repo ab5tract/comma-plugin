@@ -144,7 +144,9 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         if (lastTestIndex != -1 && lastTestIndex != results.size() - 1) {
             // last test is present && more output follows after it
             for (int i = lastTestIndex + 1, size = results.size(); i < size; i++) {
-                stdOut.add(((Text)results.get(i)).getValue());
+                TapElement result = results.get(i);
+                if (result instanceof Text)
+                    stdOut.add(((Text)results.get(i)).getValue());
             }
         }
         processSingleTest(savedLastTest, (stdOut.length() == 0) ? null : stdOut.toString() + "\n");
