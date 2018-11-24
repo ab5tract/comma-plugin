@@ -149,7 +149,8 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
                     stdOut.add(((Text)results.get(i)).getValue());
             }
         }
-        processSingleTest(savedLastTest, (stdOut.length() == 0) ? null : stdOut.toString() + "\n");
+        if (savedLastTest != null)
+            processSingleTest(savedLastTest, (stdOut.length() == 0) ? null : stdOut.toString() + "\n");
     }
 
     private void processTestsCount(TestSet set) throws ParseException {
