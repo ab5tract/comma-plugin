@@ -21,15 +21,19 @@ import java.text.ParseException;
 import java.util.List;
 
 public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEventsConverter {
+    private final String myBaseUrl;
     @NotNull
     private TapConsumer myConsumer;
     private String currentTap = "";
     private ServiceMessageVisitor myVisitor;
     private String currentFile = "";
 
-    public TapOutputToGeneralTestEventsConverter(@NotNull String testFrameworkName, @NotNull TestConsoleProperties consoleProperties) {
+    public TapOutputToGeneralTestEventsConverter(@NotNull String testFrameworkName,
+                                                 @NotNull TestConsoleProperties consoleProperties,
+                                                 String url) {
         super(testFrameworkName, consoleProperties);
         myConsumer = TapConsumerFactory.makeTap13YamlConsumer();
+        myBaseUrl = url;
     }
 
     @Override
@@ -42,7 +46,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
         if (outputType == ProcessOutputTypes.STDOUT || outputType == ProcessOutputTypes.STDERR) {
             if (text.startsWith("====")) {
-                currentFile = text.substring(4);
+                currentFile = text.substring(4, text.length() - 1);
                 if (!currentTap.isEmpty())
                     processTapOutput();
             } else {
@@ -58,7 +62,11 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
     private void processTapOutput() throws ParseException {
         if (!currentTap.isEmpty()) {
             TestSet set;
-            super.processServiceMessages(ServiceMessageBuilder.testSuiteStarted(currentFile).toString(), ProcessOutputTypes.STDOUT, myVisitor);
+            String testSuiteStarted = ServiceMessageBuilder
+                .testSuiteStarted(currentFile)
+                .addAttribute("locationHint", myBaseUrl + "/" + currentFile)
+                .toString();
+            handleMessageSend(testSuiteStarted);
             try {
                 set = myConsumer.load(currentTap);
                 processTestsCount(set);
@@ -66,7 +74,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             } catch (TapConsumerException e) {
                 processBreakage();
             }
-            super.processServiceMessages(ServiceMessageBuilder.testSuiteFinished(currentFile).toString(), ProcessOutputTypes.STDOUT, myVisitor);
+            handleMessageSend(ServiceMessageBuilder.testSuiteFinished(currentFile).toString());
             currentTap = "";
         }
     }
