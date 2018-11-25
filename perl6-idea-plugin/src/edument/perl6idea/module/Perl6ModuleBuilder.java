@@ -75,7 +75,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                     break;
                 case PERL6_MODULE:
                     if (moduleLibraryPath.endsWith("lib"))
-                        stubModule(project, moduleLibraryPath, this.moduleName, null, true);
+                        stubModule(project, moduleLibraryPath, this.moduleName, null, true, "Empty");
                     if (moduleLibraryPath.endsWith("t"))
                         stubTest(moduleLibraryPath,
                                 "00-sanity.t",
@@ -83,7 +83,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                     break;
                 case PERL6_APPLICATION:
                     if (moduleLibraryPath.endsWith("lib"))
-                        stubModule(project, moduleLibraryPath, this.moduleName, this.entryPointName, true);
+                        stubModule(project, moduleLibraryPath, this.moduleName, this.entryPointName, true, "Empty");
                     if (moduleLibraryPath.endsWith("bin"))
                         stubEntryPoint(moduleLibraryPath);
                     if (moduleLibraryPath.endsWith("t"))
@@ -104,7 +104,12 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         writeCodeToPath(entryPath, lines);
     }
 
-    public static String stubModule(Project project, String moduleLibraryPath, String moduleName, @Nullable String entryPointName, boolean firstModule) {
+    public static String stubModule(Project project,
+                                    String moduleLibraryPath,
+                                    String moduleName,
+                                    @Nullable String entryPointName,
+                                    boolean firstModule,
+                                    String type) {
         if (firstModule) {
             writeMetaFile(project, moduleName, entryPointName);
         } else {
@@ -116,8 +121,26 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         }
         String modulePath = Paths.get(moduleLibraryPath, (moduleName.split("::"))) + ".pm6";
         new File(modulePath).getParentFile().mkdirs();
-        writeCodeToPath(Paths.get(modulePath), Collections.singletonList(""));
+        writeCodeToPath(Paths.get(modulePath), getModuleCodeByType(type, moduleName));
         return modulePath;
+    }
+
+    private static List<String> getModuleCodeByType(String type, String name) {
+        switch (type) {
+            case "Class": {
+                return Arrays.asList(String.format("class %s {", name), "", "}");
+            }
+            case "Role": {
+                return Arrays.asList(String.format("role %s {", name), "", "}");
+            }
+            case "Grammar": {
+                return Arrays.asList(String.format("grammar %s {", name), "", "}");
+            }
+            case "Module": {
+                return Arrays.asList(String.format("module %s {", name), "", "}");
+            }
+        }
+        return Collections.singletonList("");
     }
 
     private static void addModuleToMetaFile(Project project, String moduleName) {
