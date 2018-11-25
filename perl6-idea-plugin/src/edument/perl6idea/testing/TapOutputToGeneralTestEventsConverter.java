@@ -194,7 +194,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             }
 
             String errorMessage = errorMessageBuilder.toString();
-            String[] expectedAndActual = checkIfComparsionFailure(errorMessage);
+            String[] expectedAndActual = checkIfComparisonFailure(errorMessage);
 
             ServiceMessageBuilder testFailed = ServiceMessageBuilder
                 .testFailed(testName)
@@ -214,7 +214,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             handleMessageSend(ServiceMessageBuilder.testFinished(testName).toString());
     }
 
-    private static String[] checkIfComparsionFailure(String message) {
+    private static String[] checkIfComparisonFailure(String message) {
         Matcher matcher = EXPECTED_GOT_PATTERN.matcher(message);
         if (matcher.find()) {
             return new String[]{matcher.group(1), matcher.group(2)};
