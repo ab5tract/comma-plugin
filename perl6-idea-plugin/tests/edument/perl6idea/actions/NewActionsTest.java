@@ -21,13 +21,13 @@ public class NewActionsTest extends LightPlatformCodeInsightFixtureTestCase {
     public void testNewModuleAction() {
         Project p = getProject();
         String basePath = p.getBasePath();
-        Perl6ModuleBuilder.stubModule(p, basePath, "Foo::Bar", null, true);
+        Perl6ModuleBuilder.stubModule(p, basePath, "Foo::Bar", null, true, "Empty");
         assertExists(Paths.get(basePath, "Foo", "Bar.pm6").toFile());
-        Perl6ModuleBuilder.stubModule(p, Paths.get(basePath, "lib").toString(), "Foo::Bar", null, true);
+        Perl6ModuleBuilder.stubModule(p, Paths.get(basePath, "lib").toString(), "Foo::Bar", null, true, "Empty");
         assertExists(Paths.get(basePath, "lib", "Foo", "Bar.pm6").toFile());
         assertExists(Paths.get(basePath, "META6.json").toFile());
         checkMETA(basePath,"Foo::Bar", "Foo/Bar.pm6");
-        Perl6ModuleBuilder.stubModule(p, Paths.get(basePath, "lib").toString(), "Foo::Baz", null, false);
+        Perl6ModuleBuilder.stubModule(p, Paths.get(basePath, "lib").toString(), "Foo::Baz", null, false, "Empty");
         assertExists(Paths.get(basePath, "lib", "Foo", "Baz.pm6").toFile());
         checkMETA(basePath,"Foo::Bar", "Foo/Bar.pm6");
         checkMETA(basePath, "Foo::Baz", "Foo/Baz.pm6");
