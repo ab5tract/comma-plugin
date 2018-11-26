@@ -51,9 +51,12 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
         } else {
             call = Perl6ElementFactory.createPublicMethodCall(getProject(), choppedName);
         }
-        ASTNode keyNode = findChildByClass(Perl6LongName.class).getNode();
-        ASTNode newKeyNode = call.getNode();
-        getNode().replaceChild(keyNode, newKeyNode);
+        Perl6LongName longName = findChildByClass(Perl6LongName.class);
+        if (longName != null) {
+            ASTNode keyNode = longName.getNode();
+            ASTNode newKeyNode = call.getNode();
+            getNode().replaceChild(keyNode, newKeyNode);
+        }
         return this;
     }
 }

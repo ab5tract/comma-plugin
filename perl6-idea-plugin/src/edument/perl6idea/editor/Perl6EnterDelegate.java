@@ -8,7 +8,6 @@ import com.intellij.openapi.util.Ref;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.PodPreComment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

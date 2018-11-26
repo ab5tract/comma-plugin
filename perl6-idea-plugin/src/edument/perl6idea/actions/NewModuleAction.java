@@ -1,62 +1,76 @@
 package edument.perl6idea.actions;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.SystemInfo;
-import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
+import edument.perl6idea.module.Perl6MetaDataComponent;
 import edument.perl6idea.module.Perl6ModuleBuilder;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class NewModuleAction extends AnAction {
     private static final Logger LOG = Logger.getInstance(NewModuleAction.class);
     private String myBaseDir;
 
     @Override
+    public void update(AnActionEvent e) {
+        final DataContext dataContext = e.getDataContext();
+        final Presentation presentation = e.getPresentation();
+        final boolean enabled = isAvailable(dataContext);
+        presentation.setVisible(enabled);
+        presentation.setEnabled(enabled);
+    }
+
+    private static boolean isAvailable(DataContext dataContext) {
+        final Project project = CommonDataKeys.PROJECT.getData(dataContext);
+        final Object navigatable = CommonDataKeys.NAVIGATABLE.getData(dataContext);
+        return project != null && (navigatable instanceof PsiDirectory ||
+                                   navigatable instanceof PsiFile);
+    }
+
+    @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(CommonDataKeys.PROJECT);
         if (project == null) return;
 
-        myBaseDir = project.getBaseDir().getCanonicalPath();
-        if (myBaseDir == null)
-            throw new IllegalStateException("Cannot create a module without a project base directory!");
-        myBaseDir = Paths.get(myBaseDir, "lib").toString();
-
         Object navigatable = e.getData(CommonDataKeys.NAVIGATABLE);
-        String modulePrefix = null;
-        if (navigatable != null) {
-            PsiDirectory psiDirectory = null;
-            if (navigatable instanceof PsiDirectory) {
-                psiDirectory = (PsiDirectory) navigatable;
-            } else if (navigatable instanceof PsiFile) {
-                psiDirectory = ((PsiFile) navigatable).getParent();
-            }
-            modulePrefix = processNavigatable(psiDirectory);
+        PsiDirectory psiDirectory = null;
+        if (navigatable instanceof PsiDirectory) {
+            psiDirectory = (PsiDirectory)navigatable;
         }
+        else if (navigatable instanceof PsiFile) {
+            psiDirectory = ((PsiFile)navigatable).getParent();
+        }
+        if (psiDirectory == null)
+            throw new IllegalStateException(
+                "Cannot create a module in this location, try an ordinary IDEA module directory or a file inside of desired directory");
+
+        Module module = ModuleUtilCore.findModuleForFile(psiDirectory.getVirtualFile(), project);
+        if (module == null)
+            throw new IllegalStateException("Cannot create a module in this IDEA module");
+        String modulePrefix = processNavigatable(module, psiDirectory);
+        Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
 
         NewModuleDialog dialog = new NewModuleDialog(project, false, modulePrefix);
         boolean isOk = dialog.showAndGet();
         // User cancelled action
         if (!isOk) return;
-
         String moduleName = dialog.getModuleName();
-        String type = dialog.getModuleType();
-        Path meta = Perl6ModuleBuilder.getMETAFilePath(project);
-        boolean metaExists = meta != null && Files.exists(meta);
-
-        String modulePath = Perl6ModuleBuilder.stubModule(project, myBaseDir,
-                                                          moduleName, null,
-                                                          !metaExists, type);
+        String moduleType = dialog.getModuleType();
+        String modulePath = Perl6ModuleBuilder.stubModule(
+            metaData, myBaseDir, moduleName, !metaData.isMetaDataExist(),
+            true, null, moduleType);
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(modulePath).toFile());
         if (moduleFile != null)
             FileEditorManager.getInstance(project).openFile(moduleFile, true);
@@ -64,30 +78,28 @@ public class NewModuleAction extends AnAction {
             LOG.warn("File was not created");
     }
 
-    public String processNavigatable(PsiDirectory psiDirectory) {
-        if (psiDirectory != null) {
-            String path = psiDirectory.getVirtualFile().getPath();
-            // On windows, myBaseDir has canonical path, while `path` is not OS-indenendent
-            // It does not work if call `getCanonicalPath` for psiDirectory
-            String tempBaseDir = myBaseDir;
-            if (SystemInfo.isWindows) {
-                tempBaseDir = tempBaseDir.replaceAll("\\\\", "/") + "/";
+    public String processNavigatable(Module module, PsiDirectory psiDirectory) {
+        VirtualFile sourceRoot = ProjectFileIndex.getInstance(module.getProject()).getSourceRootForFile(psiDirectory.getVirtualFile());
+        if (sourceRoot == null) { // It might be a location outside of source roots, so just set it
+            myBaseDir = psiDirectory.getVirtualFile().getPath();
+        } else {
+            myBaseDir = sourceRoot.getPath();
+        }
+        List<String> parts = new ArrayList<>();
+        while (true) {
+            if (psiDirectory != null &&
+                Paths.get(psiDirectory.getVirtualFile().getPath()).startsWith(Paths.get(myBaseDir))) {
+                parts.add(psiDirectory.getName());
+                psiDirectory = psiDirectory.getParentDirectory();
             } else {
-                tempBaseDir += "/";
-            }
-            if (path.startsWith(tempBaseDir)) {
-                // Get full path, cut off its prefix up to "lib" directory, split it by `\` or `/` symbols,
-                // then join pieces with `::` as delimiter
-                String cuttedPath = String.join("::", path.substring(tempBaseDir.length()).split("[/\\\\]"));
-                // if it's linux, we have `/` as first symbol, so because of previous line,
-                // we have `::Foo` now. In this case, trim it
-                // and add `::` postfix, so user has `Foo::`, not `Foo` pre-filled
-                return StringUtil.trimStart(cuttedPath, "::") + "::";
-            } else {
-                myBaseDir = path;
+                break;
             }
         }
-        return null;
+        Collections.reverse(parts);
+        String prefix = String.join("::", parts.subList(1, parts.size()));
+        if (!prefix.isEmpty())
+            prefix += "::";
+        return prefix;
     }
 
     public String getBaseDir() {

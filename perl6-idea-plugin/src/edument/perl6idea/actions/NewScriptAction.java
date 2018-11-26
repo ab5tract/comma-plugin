@@ -1,8 +1,6 @@
 package edument.perl6idea.actions;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidator;
@@ -15,6 +13,21 @@ import edument.perl6idea.module.Perl6ModuleBuilder;
 import edument.perl6idea.utils.Patterns;
 
 public class NewScriptAction extends AnAction {
+    @Override
+    public void update(AnActionEvent e) {
+        final DataContext dataContext = e.getDataContext();
+        final Presentation presentation = e.getPresentation();
+        final boolean enabled = isAvailable(dataContext);
+        presentation.setVisible(enabled);
+        presentation.setEnabled(enabled);
+    }
+
+    private static boolean isAvailable(DataContext dataContext) {
+        final Project project = CommonDataKeys.PROJECT.getData(dataContext);
+        final Object navigatable = CommonDataKeys.NAVIGATABLE.getData(dataContext);
+        return project != null && (navigatable instanceof PsiDirectory ||
+                                   navigatable instanceof PsiFile);
+    }
 
     @Override
     public void actionPerformed(AnActionEvent e) {

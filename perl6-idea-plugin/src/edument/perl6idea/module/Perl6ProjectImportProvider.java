@@ -15,13 +15,14 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class Perl6ProjectImportProvider extends ProjectImportProvider {
-    protected Perl6ProjectImportProvider() {
+    public Perl6ProjectImportProvider() {
         super(new Perl6ProjectBuilder());
     }
 
     @Override
     protected boolean canImportFromFile(VirtualFile file) {
-        return file.getName().equals("META6.json");
+        String fileName = file.getName();
+        return fileName.equals("META6.json") || fileName.equals("META.info");
     }
 
     @Override
@@ -43,6 +44,6 @@ public class Perl6ProjectImportProvider extends ProjectImportProvider {
     @Nullable
     @Language("HTML")
     public String getFileSample() {
-        return "<b>Perl 6</b> project file (META6.json)";
+        return "<b>Perl 6</b> project file (META6.json or META.info)";
     }
 }

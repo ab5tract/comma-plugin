@@ -2,20 +2,14 @@ package edument.perl6idea.annotation.fix;
 
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.module.Perl6ModuleBuilder;
+import edument.perl6idea.module.Perl6MetaDataComponent;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class AddMonitorModuleFix implements IntentionAction {
     @Nls
@@ -34,33 +28,16 @@ public class AddMonitorModuleFix implements IntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return true;
+        return ModuleUtilCore.findModuleForFile(file) != null;
     }
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
         editor.getDocument().insertString(0, "use OO::Monitors;\n");
-        Path pathToMeta = Perl6ModuleBuilder.getMETAFilePath(project);
-        if (pathToMeta == null) return;
-        String jsonString;
-        try {
-            jsonString = new String(Files.readAllBytes(pathToMeta), CharsetToolkit.UTF8_CHARSET);
-        } catch (IOException |JSONException e) {
-            // TODO Warn a user with a popup?
-            return;
-        }
-        JSONObject object = new JSONObject(jsonString);
-        JSONArray depends = object.has("depends") ?
-                            object.getJSONArray("depends") :
-                            new JSONArray();
-        for (Object item : depends) {
-            // Check if it is already present
-            if (item.toString().equals("OO::Monitors"))
-                return;
-        }
-        depends.put("OO::Monitors");
-        object.put("depends", depends);
-        Perl6ModuleBuilder.writeMetaFile(pathToMeta, object);
+        Module module = ModuleUtilCore.findModuleForFile(file);
+        assert module != null;
+        Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
+        metaData.addDepends("OO::Monitors");
     }
 
     @Override

@@ -22,9 +22,8 @@ public class Perl6ProjectStructureProvider implements TreeStructureProvider {
         // Remove .precomp directories
         list.removeIf(f -> {
             if (!(f instanceof ProjectViewNode)) return false;
-            VirtualFile file = ((ProjectViewNode)f).getVirtualFile();
-            if (file == null) return false;
-            return file.getName().equals(".precomp");
+            VirtualFile file = ((ProjectViewNode) f).getVirtualFile();
+            return file != null && file.getName().equals(".precomp");
         });
         list.removeIf(p -> p instanceof ExternalLibrariesNode);
 

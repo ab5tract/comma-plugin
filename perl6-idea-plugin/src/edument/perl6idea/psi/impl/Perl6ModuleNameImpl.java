@@ -25,9 +25,12 @@ public class Perl6ModuleNameImpl extends ASTWrapperPsiElement implements Perl6Mo
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         Perl6LongName moduleName = Perl6ElementFactory
             .createModuleName(getProject(), name);
-        ASTNode keyNode = findChildByClass(Perl6LongName.class).getNode();
-        ASTNode newKeyNode = moduleName.getNode();
-        getNode().replaceChild(keyNode, newKeyNode);
+        Perl6LongName longName = findChildByClass(Perl6LongName.class);
+        if (longName != null) {
+            ASTNode keyNode = longName.getNode();
+            ASTNode newKeyNode = moduleName.getNode();
+            getNode().replaceChild(keyNode, newKeyNode);
+        }
         return this;
     }
 }

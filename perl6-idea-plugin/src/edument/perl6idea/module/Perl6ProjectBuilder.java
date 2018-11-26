@@ -5,12 +5,16 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.ModifiableModuleModel;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
+import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -23,6 +27,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,17 +87,42 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
         try {
             WriteAction.run(() -> {
                 final LocalFileSystem lfs = LocalFileSystem.getInstance();
-                VirtualFile contentRoot = lfs.refreshAndFindFileByPath(FileUtil.toSystemIndependentName(getFileToImport()));
+                String metaParentDirectory = Paths.get(getFileToImport()).toString();
+                String path = FileUtil.toSystemIndependentName(metaParentDirectory);
+                VirtualFile contentRoot = lfs.findFileByPath(
+                    path);
                 if (contentRoot == null) return;
                 ModifiableModuleModel manager = ModuleManager.getInstance(project).getModifiableModel();
-                String name = contentRoot.getPath() + "/" + project.getName() + ".iml";
+                String name = Paths.get(contentRoot.getPath(), project.getName() + ".iml").toString();
                 Module module = manager.newModule(name, Perl6ModuleType.getInstance().getId());
                 ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
                 ContentEntry entry = rootModel.addContentEntry(contentRoot);
-                addSourceDirectory("lib", contentRoot, entry);
-                addSourceDirectory("t", contentRoot, entry);
+                addSourceDirectory("lib", contentRoot, entry, false);
+                addSourceDirectory("bin", contentRoot, entry, false);
+                addSourceDirectory("t", contentRoot, entry, true);
                 manager.commit();
                 rootModel.commit();
+                Perl6SdkType perl6SdkType = Perl6SdkType.getInstance();
+                String homePath = perl6SdkType.suggestHomePath();
+                if (homePath != null) {
+                    Sdk sdk = SdkConfigurationUtil.findOrCreateSdk((o1, o2) -> {
+                        // TODO Write real Sdk version comparator
+                        return 1;
+                    }, perl6SdkType);
+                    ProjectRootManager.getInstance(project).setProjectSdk(sdk);
+                }
+                // Perl6ProjectOpenProcessor and Perl6ImportProvider would not call a project builder
+                // without either `META6.json` or `META.list` present
+                Path metaPath = Paths.get(getFileToImport(), "META6.json");
+                if (!Files.exists(metaPath))
+                    metaPath = Paths.get(getFileToImport(), "META.list");
+                VirtualFile metaFile = lfs.findFileByPath(metaPath.toString());
+                if (metaFile != null) {
+                    Module firstModule = ModuleUtilCore.findModuleForFile(metaFile, project);
+                    if (firstModule == null) return;
+                    Perl6MetaDataComponent component = firstModule.getComponent(Perl6MetaDataComponent.class);
+                    component.triggerMetaBuild(metaFile);
+                }
             });
         }
         catch (Exception e) {
@@ -99,9 +131,9 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
         return result;
     }
 
-    private static void addSourceDirectory(String name, VirtualFile contentRoot, ContentEntry entry) {
+    private static void addSourceDirectory(String name, VirtualFile contentRoot, ContentEntry entry, boolean isTest) {
         VirtualFile child = contentRoot.findChild(name);
         if (child != null && isEqualOrAncestor(entry.getUrl(), child.getUrl()))
-            entry.addSourceFolder(child, false);
+            entry.addSourceFolder(child, isTest);
     }
 }

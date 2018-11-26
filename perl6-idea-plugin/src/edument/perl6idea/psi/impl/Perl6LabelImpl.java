@@ -24,7 +24,8 @@ public class Perl6LabelImpl extends ASTWrapperPsiElement implements Perl6Label {
 
     @Override
     public String getName() {
-        return getNameIdentifier().getText();
+        PsiElement nameIdentifier = getNameIdentifier();
+        return nameIdentifier == null ? null : nameIdentifier.getText();
     }
 
     @Nullable

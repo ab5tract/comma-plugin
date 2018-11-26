@@ -260,21 +260,11 @@ public class Perl6SdkType extends SdkType {
     }
 
     public List<Perl6Symbol> getNamesForUse(Project project, String name) {
-        List<Perl6Symbol> cached = useNameCache.get(name);
-        if (cached == null) {
-            cached = loadModuleSymbols(project, "use", name);
-            useNameCache.put(name, cached);
-        }
-        return cached;
+        return useNameCache.computeIfAbsent(name, n -> loadModuleSymbols(project, "use", n));
     }
 
     public List<Perl6Symbol> getNamesForNeed(Project project, String name) {
-        List<Perl6Symbol> cached = needNameCache.get(name);
-        if (cached == null) {
-            cached = loadModuleSymbols(project, "need", name);
-            needNameCache.put(name, cached);
-        }
-        return cached;
+        return needNameCache.computeIfAbsent(name, n -> loadModuleSymbols(project, "need", n));
     }
 
     public void invalidateCaches() {
@@ -285,11 +275,14 @@ public class Perl6SdkType extends SdkType {
 
     private List<Perl6Symbol> loadModuleSymbols(Project project, String directive, String name) {
         String homePath = getSdkHomeByProject(project);
+        File moduleSymbols = Perl6CommandLine.getResourceAsFile(this,"symbols/perl6-module-symbols.p6");
         if (homePath == null) {
             LOG.warn(new ExecutionException("SDK path is not set"));
             return new ArrayList<>();
+        } else if (moduleSymbols == null) {
+            LOG.warn(new ExecutionException("Necessary distribution file is missing"));
+            return new ArrayList<>();
         }
-        File moduleSymbols = Perl6CommandLine.getResourceAsFile(this,"symbols/perl6-module-symbols.p6");
         GeneralCommandLine cmd = Perl6CommandLine.getPerl6CommandLine(
             System.getProperty("java.io.tmpdir"),
             homePath);

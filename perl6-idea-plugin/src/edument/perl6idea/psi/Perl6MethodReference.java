@@ -46,7 +46,8 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
     }
 
     private static Caller getCallerType(Perl6MethodCall call) {
-        if (call.findElementAt(0) != null && call.findElementAt(0).getNode().getElementType() == SELF)
+        PsiElement firstElement = call.findElementAt(0);
+        if (firstElement != null && firstElement.getNode().getElementType() == SELF)
             return new Caller("self", null);
 
         // Based on previous element decide what type methods we want
@@ -126,7 +127,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
         for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", element).methods())
             collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
-        return collector.getVariants().stream().map(s -> s.getName()).collect(Collectors.toList());
+        return collector.getVariants().stream().map(Perl6Symbol::getName).collect(Collectors.toList());
     }
 
     private static List<String> tryToCompleteExternalTypeMethods(String name, Perl6PsiElement element) {
@@ -145,7 +146,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
             }
             if (element instanceof Perl6File) {
                 ((Perl6File)element).contributeScopeSymbols(collector);
-                break outer;
+                break;
             }
             element = (Perl6PsiElement)element.getParent();
         }

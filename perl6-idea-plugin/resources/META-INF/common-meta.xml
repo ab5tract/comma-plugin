@@ -68,6 +68,7 @@
     <usageTypeProvider implementation="edument.perl6idea.findUsages.Perl6UsageTypeProvider"/>
     <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6RefactoringSupportProvider"/>
     <enterBetweenBracesDelegate language="Perl6" implementationClass="edument.perl6idea.editor.Perl6EnterBetweenBracesDelegate"/>
+    <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
   </extensions>
 
   <actions>
@@ -85,9 +86,14 @@
     </action>
 
   </actions>
-  <application-components>
+
+  <module-components>
+    <component>
+      <implementation-class>edument.perl6idea.module.Perl6MetaDataComponent</implementation-class>
+    </component>
     <component>
       <implementation-class>edument.perl6idea.event.ModuleMetaChangeListener</implementation-class>
     </component>
-  </application-components>
+  </module-components>
+
 </idea-plugin>

@@ -8,7 +8,6 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6EnumStub;
 import edument.perl6idea.psi.stub.Perl6EnumStubElementType;
 import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
-import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static edument.perl6idea.parsing.Perl6ElementTypes.SEMI_LIST;
 import static edument.perl6idea.parsing.Perl6ElementTypes.STRING_LITERAL;
 import static edument.perl6idea.parsing.Perl6TokenTypes.PAIR_KEY;
 

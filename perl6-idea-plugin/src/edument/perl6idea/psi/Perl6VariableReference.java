@@ -65,8 +65,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
             if (name.charAt(0) == '&')
                 return true;
             char twigil = name.charAt(1);
-            if (twigil == '!' || twigil == '.')
-                return true;
+            return twigil == '!' || twigil == '.';
         }
 
         return false;

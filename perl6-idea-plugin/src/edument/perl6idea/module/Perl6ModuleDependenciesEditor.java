@@ -7,12 +7,11 @@ import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
 import com.intellij.openapi.roots.ui.configuration.ModuleElementsEditor;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.swing.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Perl6ModuleDependenciesEditor extends ModuleElementsEditor implements ModuleRootListener {
     private Perl6DependenciesPanelImpl myPanel;
@@ -35,27 +34,31 @@ public class Perl6ModuleDependenciesEditor extends ModuleElementsEditor implemen
 
     @Override
     public void apply() throws ConfigurationException {
-        JSONObject meta = Perl6ModuleBuilder.getMetaJsonFromModulePath(getState().getRootModel().getModule().getModuleFilePath());
-        if (meta == null) throw new ConfigurationException("META6.json file does not exist");
-        JSONArray depends       = new JSONArray();
-        JSONArray test_depends  = new JSONArray();
-        JSONArray build_depends = new JSONArray();
+        Perl6MetaDataComponent metaData = getState().getRootModel().getModule().getComponent(Perl6MetaDataComponent.class);
+        if (!metaData.isMetaDataExist()) {
+            try {
+                metaData.createStubMetaFile(null, false);
+            }
+            catch (IOException e) {
+                throw new ConfigurationException("Cannot create META6.json file");
+            }
+        }
+        List<String> depends      = new ArrayList<>();
+        List<String> testDepends  = new ArrayList<>();
+        List<String> buildDepends = new ArrayList<>();
         for (Perl6DependencyTableItem item : myPanel.getModel().getItems()) {
             switch (item.getScope()) {
                 case DEPENDS:
-                    depends.put(item.getEntry()); break;
+                    depends.add(item.getEntry()); break;
                 case TEST_DEPENDS:
-                    test_depends.put(item.getEntry()); break;
+                    testDepends.add(item.getEntry()); break;
                 case BUILD_DEPENDS:
-                    build_depends.put(item.getEntry()); break;
+                    buildDepends.add(item.getEntry()); break;
             }
         }
-        meta.put("depends", depends);
-        meta.put("test-depends", test_depends);
-        meta.put("build-depends", build_depends);
-        Path path = Paths.get(getState().getRootModel().getModule().getModuleFilePath())
-                         .resolveSibling("META6.json");
-        Perl6ModuleBuilder.writeMetaFile(path, meta);
+        metaData.setDepends(depends);
+        metaData.setTestDepends(testDepends);
+        metaData.setBuildDepends(buildDepends);
         myPanel.getModel().saveState();
     }
 

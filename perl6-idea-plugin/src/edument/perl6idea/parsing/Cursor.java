@@ -434,7 +434,7 @@ public abstract class Cursor<TCursor extends Cursor> {
 
     public boolean interpolate(String variableName) {
         Object found = stack.findDynamicVariable(variableName);
-        return found == null ? false : literal(found.toString());
+        return found != null && literal(found.toString());
     }
 
     public Object getDynamicVariable(String name) {

@@ -1,16 +1,10 @@
 package edument.perl6idea.stub;
 
 import com.intellij.lang.FileASTNode;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.StubBuilder;
 import com.intellij.psi.impl.DebugUtil;
-import com.intellij.psi.stubs.ObjectStubBase;
-import com.intellij.psi.stubs.ObjectStubTree;
 import com.intellij.psi.stubs.StubElement;
-import com.intellij.psi.stubs.StubTreeLoader;
-import com.intellij.testFramework.LightIdeaTestCase;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6PackageDecl;

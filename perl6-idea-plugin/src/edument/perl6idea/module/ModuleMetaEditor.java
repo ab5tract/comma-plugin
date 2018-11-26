@@ -8,17 +8,10 @@ import com.intellij.util.ArrayUtil;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -38,7 +31,6 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
       "name", "version", "auth", "description", "license"
     };
     private Set<String> myMissingFields = new HashSet<>();
-    private JSONObject myMetaProps;
     private Set<String> myEmptyFields = new HashSet<>();
 
     public ModuleMetaEditor(ModuleConfigurationState state) {
@@ -126,46 +118,23 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
 
     @Override
     public void reset() {
-        Path meta = getMetaPath();
-
-        if (meta == null || !Files.exists(meta)) {
-            createBackupMETA();
+        Perl6MetaDataComponent metaData = myModule.getComponent(Perl6MetaDataComponent.class);
+        if (metaData.isMetaDataExist()) {
+            String name = metaData.getName();
+            myMeta.put("name", name == null ? MISSING_FIELD_MESSAGE : name);
+            String description = metaData.getDescription();
+            myMeta.put("description", description == null ? MISSING_FIELD_MESSAGE : description);
+            String version = metaData.getVersion();
+            myMeta.put("version", version == null ? MISSING_FIELD_MESSAGE : version);
+            String auth = metaData.getAuth();
+            myMeta.put("auth", auth == null ? MISSING_FIELD_MESSAGE : auth);
+            String license = metaData.getLicense();
+            myMeta.put("license", license == null ? MISSING_FIELD_MESSAGE : license);
         } else {
-            try {
-                String jsonString = new String(Files.readAllBytes(meta), StandardCharsets.UTF_8);
-                myMetaProps = new JSONObject(jsonString);
-            } catch (IOException|JSONException e) {
-                createBackupMETA();
-            }
-        }
-
-        for (String field : keys) {
-            if (myMeta.containsKey(field))
-                myMeta.put(field, myMetaProps.getString(field));
-            else {
-                myMissingFields.add(field);
-                myMeta.put(field, MISSING_FIELD_MESSAGE);
-            }
+            for (String key : keys)
+                myMeta.put(key, MISSING_FIELD_MESSAGE);
         }
         populateFields();
-    }
-
-    private void createBackupMETA() {
-        JSONObject jsonStub = Perl6ModuleBuilder.createStubMETAObject(myModule.getName());
-        Perl6ModuleBuilder.writeMetaFile(Perl6ModuleBuilder.getMETAFilePath(myModule.getProject()), jsonStub);
-        myMetaProps = jsonStub;
-    }
-
-    private Path getMetaPath() {
-        Path meta;
-        meta = Paths.get(myModule.getModuleFilePath()).resolveSibling("META6.json");
-        if (!Files.exists(meta)) {
-            String path = myModule.getProject().getBasePath();
-            if (path != null) {
-                meta = Paths.get(path, "META6.json");
-            }
-        }
-        return meta;
     }
 
     private void populateFields() {
@@ -206,12 +175,11 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     }
 
     private void saveFields() {
-        myMetaProps.put("name", myNameField.getText());
-        myMetaProps.put("description", myDescriptionField.getText());
-        myMetaProps.put("auth", myAuthField.getText());
-        myMetaProps.put("version", myVersionField.getText());
-        myMetaProps.put("license", myLicenseField.getText());
-        Path path = Paths.get(myModule.getModuleFilePath()).resolveSibling("META6.json");
-        Perl6ModuleBuilder.writeMetaFile(path, myMetaProps);
+        Perl6MetaDataComponent metaData = myModule.getComponent(Perl6MetaDataComponent.class);
+        metaData.setName(myNameField.getText());
+        metaData.setDescription(myDescriptionField.getText());
+        metaData.setAuth(myAuthField.getText());
+        metaData.setVersion(myVersionField.getText());
+        metaData.setLicense(myLicenseField.getText());
     }
 }

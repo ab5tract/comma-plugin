@@ -20,9 +20,12 @@ public class Perl6SubCallImpl extends ASTWrapperPsiElement implements Perl6SubCa
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         Perl6SubCallName call =
             Perl6ElementFactory.createSubCallName(getProject(), name);
-        ASTNode keyNode = findChildByClass(Perl6SubCallName.class).getNode();
-        ASTNode newKeyNode = call.getNode();
-        getNode().replaceChild(keyNode, newKeyNode);
+        Perl6SubCallName callName = findChildByClass(Perl6SubCallName.class);
+        if (callName != null) {
+            ASTNode keyNode = callName.getNode();
+            ASTNode newKeyNode = call.getNode();
+            getNode().replaceChild(keyNode, newKeyNode);
+        }
         return this;
     }
 

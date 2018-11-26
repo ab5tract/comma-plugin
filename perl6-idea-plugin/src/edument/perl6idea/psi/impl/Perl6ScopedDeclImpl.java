@@ -3,7 +3,6 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.IStubElementType;
-import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 import org.jetbrains.annotations.NotNull;
