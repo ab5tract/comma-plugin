@@ -7,7 +7,6 @@ import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6LightProjectDescriptor;
-import edument.perl6idea.module.Perl6MetaDataComponent;
 import edument.perl6idea.module.Perl6ModuleBuilder;
 import org.jetbrains.annotations.SystemIndependent;
 

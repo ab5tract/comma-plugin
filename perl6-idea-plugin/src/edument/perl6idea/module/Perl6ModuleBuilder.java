@@ -68,25 +68,16 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                     break;
                 case PERL6_MODULE:
                     if (sourcePath.endsWith("lib")) {
-                        try {
-                            stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot);
-                        }
-                        catch (IOException ex) {
-                            LOG.warn(ex);
-                        }
+                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot, "Empty");
                     }
                     if (sourcePath.endsWith("t"))
                         stubTest(sourcePath, "00-sanity.t",
                                  Collections.singletonList(moduleName));
                     break;
                 case PERL6_APPLICATION:
-                    if (sourcePath.endsWith("lib"))
-                        try {
-                            stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot);
-                        }
-                        catch (IOException ex) {
-                            LOG.warn(ex);
-                        }
+                    if (sourcePath.endsWith("lib")) {
+                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot, "Empty");
+                    }
                     if (sourcePath.endsWith("bin"))
                         stubEntryPoint(sourcePath);
                     if (sourcePath.endsWith("t"))
@@ -109,16 +100,39 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
 
     public static String stubModule(Perl6MetaDataComponent metaData, String moduleLibraryPath,
                                     String moduleName, boolean firstModule, boolean shouldOpenEditor,
-                                    VirtualFile root) throws IOException {
+                                    VirtualFile root, String type) {
         if (firstModule) {
-            metaData.createStubMetaFile(root, shouldOpenEditor);
+            try {
+                metaData.createStubMetaFile(root, shouldOpenEditor);
+            }
+            catch (IOException e) {
+                LOG.warn(e);
+            }
         }
         if (moduleLibraryPath.endsWith("lib"))
             metaData.addNamespaceToProvides(moduleName);
         String modulePath = Paths.get(moduleLibraryPath, moduleName.split("::")) + ".pm6";
         new File(modulePath).getParentFile().mkdirs();
-        writeCodeToPath(Paths.get(modulePath), Collections.singletonList(""));
+        writeCodeToPath(Paths.get(modulePath), getModuleCodeByType(type, moduleName));
         return modulePath;
+    }
+
+    private static List<String> getModuleCodeByType(String type, String name) {
+        switch (type) {
+            case "Class": {
+                return Arrays.asList(String.format("class %s {", name), "", "}");
+            }
+            case "Role": {
+                return Arrays.asList(String.format("role %s {", name), "", "}");
+            }
+            case "Grammar": {
+                return Arrays.asList(String.format("grammar %s {", name), "", "}");
+            }
+            case "Module": {
+                return Arrays.asList(String.format("module %s {", name), "", "}");
+            }
+        }
+        return Collections.singletonList("");
     }
 
     public static String stubTest(String testDirectoryPath, String fileName, List<String> imports) {

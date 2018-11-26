@@ -53,7 +53,7 @@ public class Perl6TestRunningState extends CommandLineState {
         return new DefaultExecutionResult(consoleView, processHandler);
     }
 
-    private static ConsoleView createConsole(@NotNull ExecutionEnvironment env) {
+    private ConsoleView createConsole(@NotNull ExecutionEnvironment env) {
         final Perl6TestRunConfiguration runConfiguration = (Perl6TestRunConfiguration) env.getRunProfile();
         final TestConsoleProperties testConsoleProperties = new Perl6TestConsoleProperties(runConfiguration, env);
         final ConsoleView consoleView = SMTestRunnerConnectionUtil.createConsole("Perl 6 tests", testConsoleProperties);
@@ -95,14 +95,14 @@ public class Perl6TestRunningState extends CommandLineState {
         return cmd;
     }
 
-    static class Perl6TestConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {
+    class Perl6TestConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {
         Perl6TestConsoleProperties(RunConfiguration runConfiguration, ExecutionEnvironment env) {
             super(runConfiguration, "PERL6_TEST_CONFIGURATION", env.getExecutor());
         }
 
         @Override
         public OutputToGeneralTestEventsConverter createTestEventsConverter(@NotNull String testFrameworkName, @NotNull TestConsoleProperties consoleProperties) {
-            return new TapOutputToGeneralTestEventsConverter(testFrameworkName, consoleProperties);
+            return new TapOutputToGeneralTestEventsConverter(testFrameworkName, consoleProperties, getProject().getBaseDir().getUrl());
         }
     }
 }
