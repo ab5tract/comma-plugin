@@ -68,7 +68,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                     break;
                 case PERL6_MODULE:
                     if (sourcePath.endsWith("lib")) {
-                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot, "Empty");
+                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty");
                     }
                     if (sourcePath.endsWith("t"))
                         stubTest(sourcePath, "00-sanity.t",
@@ -76,7 +76,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                     break;
                 case PERL6_APPLICATION:
                     if (sourcePath.endsWith("lib")) {
-                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot, "Empty");
+                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty");
                     }
                     if (sourcePath.endsWith("bin"))
                         stubEntryPoint(sourcePath);
