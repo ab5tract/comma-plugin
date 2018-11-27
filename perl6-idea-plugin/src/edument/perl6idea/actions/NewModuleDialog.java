@@ -12,6 +12,7 @@ public class NewModuleDialog extends DialogWrapper {
     private JTextField moduleNameField;
     private JComboBox<String> moduleTypeComboBox;
     private JPanel myPanel;
+    private JCheckBox myIsUnitScopedCheckBox;
 
     protected NewModuleDialog(@Nullable Project project,
                               boolean canBeParent,
@@ -48,5 +49,9 @@ public class NewModuleDialog extends DialogWrapper {
 
     public String getModuleType() {
         return (String)moduleTypeComboBox.getSelectedItem();
+    }
+
+    public boolean isUnitModule() {
+        return myIsUnitScopedCheckBox.isSelected();
     }
 }

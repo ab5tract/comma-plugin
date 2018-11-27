@@ -1,8 +1,17 @@
 package edument.perl6idea.actions;
 
+import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.CaretModel;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
+import com.intellij.openapi.editor.actionSystem.EditorActionManager;
+import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
@@ -68,12 +77,32 @@ public class NewModuleAction extends AnAction {
         if (!isOk) return;
         String moduleName = dialog.getModuleName();
         String moduleType = dialog.getModuleType();
+        boolean isUnitScoped = dialog.isUnitModule();
         String modulePath = Perl6ModuleBuilder.stubModule(
             metaData, myBaseDir, moduleName, !metaData.isMetaDataExist(),
-            true, null, moduleType);
+            true, null, moduleType, isUnitScoped);
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(modulePath).toFile());
-        if (moduleFile != null)
-            FileEditorManager.getInstance(project).openFile(moduleFile, true);
+        if (moduleFile != null) {
+            OpenFileDescriptor descriptor = new OpenFileDescriptor(project, moduleFile);
+            descriptor.navigate(true);
+            Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+            if (editor != null) {
+                int textLength = editor.getDocument().getTextLength();
+                int offset = isUnitScoped ?
+                             textLength :    // In unit scoped we don't need to indent
+                             textLength - 3; // Magic 3 here is: `\n`, `}` and `\n` again to get into newly created block
+                // For `empty` case we will get `-3` here, so reset it
+                if (offset < 0) offset = 0;
+                CaretModel caretModel = editor.getCaretModel();
+                caretModel.moveToOffset(offset);
+
+                CommandProcessor.getInstance().executeCommand(project, () -> {
+                    EditorActionManager actionManager = EditorActionManager.getInstance();
+                    EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_MOVE_LINE_END);
+                    actionHandler.execute(editor, caretModel.getCurrentCaret(), DataManager.getInstance().getDataContextFromFocus().getResult());
+                }, "", null);
+            }
+        }
         else
             LOG.warn("File was not created");
     }
