@@ -25,6 +25,12 @@ public class NewModuleDialog extends DialogWrapper {
 
     @Nullable
     @Override
+    public JComponent getPreferredFocusedComponent() {
+        return moduleNameField;
+    }
+
+    @Nullable
+    @Override
     protected ValidationInfo doValidate() {
         boolean isCorrectModuleName = moduleNameField.getText().matches(Patterns.MODULE_PATTERN);
         if (isCorrectModuleName)
