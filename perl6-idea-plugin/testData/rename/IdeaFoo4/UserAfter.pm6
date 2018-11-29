@@ -1,0 +1,1 @@
+use IdeaFoo4::BaseModule;

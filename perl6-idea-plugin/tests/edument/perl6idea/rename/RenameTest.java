@@ -153,4 +153,11 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("IdeaFoo3/Base.pm6", "IdeaFoo3/BaseAfter.pm6", true);
         myFixture.checkResultByFile("IdeaFoo3/User.pm6", "IdeaFoo3/UserAfter.pm6", true);
     }
+
+    public void testModuleRename() {
+        myFixture.configureByFiles("IdeaFoo4/User.pm6", "IdeaFoo4/Base.pm6");
+        myFixture.renameElementAtCaret("IdeaFoo4::BaseModule");
+        myFixture.checkResultByFile("IdeaFoo4/BaseModule.pm6", "IdeaFoo4/Base.pm6",true);
+        myFixture.checkResultByFile("IdeaFoo4/User.pm6", "IdeaFoo4/UserAfter.pm6",true);
+    }
 }
