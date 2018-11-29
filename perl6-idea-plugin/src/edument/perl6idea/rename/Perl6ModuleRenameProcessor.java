@@ -32,7 +32,7 @@ public class Perl6ModuleRenameProcessor extends RenamePsiElementProcessor {
         Perl6File file = (Perl6File)element;
         Module module = ModuleUtilCore.findModuleForFile(file);
         if (module == null) return false;
-        VirtualFile[] roots = ModuleRootManager.getInstance(module).getContentRoots();
+        VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots();
         for (VirtualFile root : roots) {
             if (root.getName().equals("lib") &&
                 file.getVirtualFile().getPath().startsWith(root.getPath())) {
