@@ -160,4 +160,18 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("IdeaFoo4/BaseModule.pm6", "IdeaFoo4/Base.pm6",true);
         myFixture.checkResultByFile("IdeaFoo4/User.pm6", "IdeaFoo4/UserAfter.pm6",true);
     }
+
+    public void testModuleRenameWithPathGrow() {
+        myFixture.configureByFiles("IdeaFoo4/User.pm6", "IdeaFoo4/Base.pm6");
+        myFixture.renameElementAtCaret("IdeaFoo4::BaseModule::More");
+        myFixture.checkResultByFile("IdeaFoo4/BaseModule/More.pm6", "IdeaFoo4/Base.pm6",true);
+        myFixture.checkResultByFile("IdeaFoo4/User.pm6", "IdeaFoo4/UserAfterGrow.pm6",true);
+    }
+
+    public void testModuleRenameWithPathShrink() {
+        myFixture.configureByFiles("IdeaFoo4/User.pm6", "IdeaFoo4/Base.pm6");
+        myFixture.renameElementAtCaret("IdeaFoo4");
+        myFixture.checkResultByFile("IdeaFoo4.pm6", "IdeaFoo4/Base.pm6",true);
+        myFixture.checkResultByFile("IdeaFoo4/User.pm6", "IdeaFoo4/UserAfterShrink.pm6",true);
+    }
 }
