@@ -1,5 +1,7 @@
 package edument.perl6idea.psi.symbols;
 
+import java.util.Objects;
+
 public class Perl6SingleResolutionSymbolCollector extends Perl6PackageConstrainedSymbolCollector {
     private Perl6Symbol result = null;
     private String wantedName;
@@ -14,8 +16,10 @@ public class Perl6SingleResolutionSymbolCollector extends Perl6PackageConstraine
     public void offerSymbol(Perl6Symbol symbol) {
         if (!acceptablyScoped(symbol))
             return;
-        if (result == null && symbol.getKind() == wantedKind &&
-            symbol.getName() != null && symbol.getName().equals(wantedName))
+        if (result == null &&
+            symbol != null &&
+            Objects.equals(symbol.getKind(), wantedKind) &&
+            Objects.equals(symbol.getName(), wantedName))
             result = symbol;
     }
 
