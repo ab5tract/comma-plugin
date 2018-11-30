@@ -168,8 +168,10 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         boolean hasSubtests = testResult.getSubtest() != null;
         if (hasSubtests) {
             handleMessageSend(ServiceMessageBuilder.testSuiteStarted(testName).toString());
-            for (TestResult sub : testResult.getSubtest().getTestResults())
-                processSingleTest(sub, null);
+            for (TestResult sub : testResult.getSubtest().getTestResults()) {
+                processSingleTest(sub, stdOut);
+                stdOut = null;
+            }
         } else {
             handleMessageSend(ServiceMessageBuilder.testStarted(testName).toString());
             if (stdOut != null) {
