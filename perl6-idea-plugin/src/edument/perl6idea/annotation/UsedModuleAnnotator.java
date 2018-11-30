@@ -42,6 +42,7 @@ public class UsedModuleAnnotator implements Annotator {
             Set<String> provides = Perl6ModuleListFetcher.getProvidesByModuleAsync(element.getProject(), dependency);
             if (provides == null) return;
             isProvided = provides.contains(moduleName);
+            if (isProvided) break;
         }
         if (!isProvided)
             holder

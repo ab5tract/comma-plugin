@@ -68,7 +68,8 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                     break;
                 case PERL6_MODULE:
                     if (sourcePath.endsWith("lib")) {
-                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot, "Empty");
+                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty",
+                                   false);
                     }
                     if (sourcePath.endsWith("t"))
                         stubTest(sourcePath, "00-sanity.t",
@@ -76,7 +77,8 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                     break;
                 case PERL6_APPLICATION:
                     if (sourcePath.endsWith("lib")) {
-                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot, "Empty");
+                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty",
+                                   false);
                     }
                     if (sourcePath.endsWith("bin"))
                         stubEntryPoint(sourcePath);
@@ -100,7 +102,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
 
     public static String stubModule(Perl6MetaDataComponent metaData, String moduleLibraryPath,
                                     String moduleName, boolean firstModule, boolean shouldOpenEditor,
-                                    VirtualFile root, String type) {
+                                    VirtualFile root, String type, boolean isUnitScoped) {
         if (firstModule) {
             try {
                 metaData.createStubMetaFile(root, shouldOpenEditor);
@@ -109,27 +111,47 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 LOG.warn(e);
             }
         }
-        if (moduleLibraryPath.endsWith("lib"))
-            metaData.addNamespaceToProvides(moduleName);
+        if (moduleLibraryPath.endsWith("lib")) {
+            ApplicationManager.getApplication().invokeLater(() -> {
+                metaData.addNamespaceToProvides(moduleName);
+            });
+        }
         String modulePath = Paths.get(moduleLibraryPath, moduleName.split("::")) + ".pm6";
         new File(modulePath).getParentFile().mkdirs();
-        writeCodeToPath(Paths.get(modulePath), getModuleCodeByType(type, moduleName));
+        writeCodeToPath(Paths.get(modulePath), getModuleCodeByType(type, moduleName, isUnitScoped));
         return modulePath;
     }
 
-    private static List<String> getModuleCodeByType(String type, String name) {
-        switch (type) {
-            case "Class": {
-                return Arrays.asList(String.format("class %s {", name), "", "}");
+    private static List<String> getModuleCodeByType(String type, String name, boolean isUnitScoped) {
+        if (isUnitScoped) {
+            switch (type) {
+                case "Class": {
+                    return Arrays.asList(String.format("unit class %s;", name), "");
+                }
+                case "Role": {
+                    return Arrays.asList(String.format("unit role %s;", name), "");
+                }
+                case "Grammar": {
+                    return Arrays.asList(String.format("unit grammar %s;", name), "");
+                }
+                case "Module": {
+                    return Arrays.asList(String.format("unit module %s;", name), "");
+                }
             }
-            case "Role": {
-                return Arrays.asList(String.format("role %s {", name), "", "}");
-            }
-            case "Grammar": {
-                return Arrays.asList(String.format("grammar %s {", name), "", "}");
-            }
-            case "Module": {
-                return Arrays.asList(String.format("module %s {", name), "", "}");
+        } else {
+            switch (type) {
+                case "Class": {
+                    return Arrays.asList(String.format("class %s {", name), "", "}");
+                }
+                case "Role": {
+                    return Arrays.asList(String.format("role %s {", name), "", "}");
+                }
+                case "Grammar": {
+                    return Arrays.asList(String.format("grammar %s {", name), "", "}");
+                }
+                case "Module": {
+                    return Arrays.asList(String.format("module %s {", name), "", "}");
+                }
             }
         }
         return Collections.singletonList("");
