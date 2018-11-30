@@ -111,8 +111,11 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 LOG.warn(e);
             }
         }
-        if (moduleLibraryPath.endsWith("lib"))
-            metaData.addNamespaceToProvides(moduleName);
+        if (moduleLibraryPath.endsWith("lib")) {
+            ApplicationManager.getApplication().invokeLater(() -> {
+                metaData.addNamespaceToProvides(moduleName);
+            });
+        }
         String modulePath = Paths.get(moduleLibraryPath, moduleName.split("::")) + ".pm6";
         new File(modulePath).getParentFile().mkdirs();
         writeCodeToPath(Paths.get(modulePath), getModuleCodeByType(type, moduleName, isUnitScoped));
