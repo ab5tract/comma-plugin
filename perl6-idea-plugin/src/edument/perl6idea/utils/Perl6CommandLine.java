@@ -120,8 +120,10 @@ public class Perl6CommandLine {
     public static List<String> populateDebugCommandLine(Project project, int debugPort) {
         List<String> command = new ArrayList<>();
         Perl6SdkType projectSdk = Perl6SdkType.getInstance();
-        Map<String, String> moarBuildConfiguration = projectSdk.
-            getMoarBuildConfiguration(project);
+        Map<String, String> moarBuildConfiguration = projectSdk.getMoarBuildConfiguration(project);
+        if (moarBuildConfiguration == null) {
+            return null;
+        }
         String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", "");
         command.add(prefix + "/bin/moar");
         command.add("--debug-port=" + debugPort);
