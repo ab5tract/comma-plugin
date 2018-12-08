@@ -216,7 +216,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
 
     private void performInplaceIntroduce(IntroduceOperation operation) {
         PsiElement element = performRefactoring(operation);
-        Perl6VariableDecl declaration = PsiTreeUtil.findChildOfType(element, Perl6VariableDecl.class);
+        PsiElement declaration = PsiTreeUtil.findChildOfAnyType(element, Perl6VariableDecl.class, Perl6Constant.class);
         if (element == null || declaration == null) {
             showCannotPerformError(operation.getProject(), operation.getEditor());
             return;
@@ -231,7 +231,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             }
             editor.getCaretModel().moveToOffset(occurrence.getTextRange().getStartOffset());
             final InplaceVariableIntroducer<PsiElement> introducer =
-                new Perl6InplaceVariableIntroducer(declaration, operation, occurrences);
+                new Perl6InplaceVariableIntroducer((PsiNamedElement)declaration, operation, occurrences);
             introducer.performInplaceRefactoring(new LinkedHashSet<>(operation.getSuggestedNames()));
         } else {
             removeLeftoverStatement(operation);
