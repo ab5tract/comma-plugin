@@ -28,6 +28,12 @@ public class Perl6RefactoringSupportProvider extends RefactoringSupportProvider 
         return new Perl6IntroduceConstantHandler(null, "Extract Constant");
     }
 
+    @Nullable
+    @Override
+    public RefactoringActionHandler getExtractMethodHandler() {
+        return new Perl6ExtractMethodHandler();
+    }
+
     @Override
     public boolean isInplaceIntroduceAvailable(@NotNull PsiElement element, PsiElement context) {
         return true;
