@@ -104,7 +104,7 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         }
 
         parameters = moveNamedsAfterPositionals(parameters);
-        PsiElement newMethod = Perl6ElementFactory.createPrivateMethod(project, myName, parameters);
+        PsiElement newMethod = Perl6ElementFactory.createMethod(project, myName, parameters);
         anchor = anchor == null ? null : anchor.getNextSibling();
         if (anchor == null) {
             list.getNode().addChild(new PsiWhiteSpaceImpl("\n"));

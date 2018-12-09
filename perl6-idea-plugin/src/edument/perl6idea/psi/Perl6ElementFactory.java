@@ -14,10 +14,17 @@ public class Perl6ElementFactory {
         return PsiTreeUtil.findChildOfType(createFile(project, def), Perl6Statement.class);
     }
 
-    public static PsiElement createPrivateMethod(Project project, String name, List<String> params) {
-        String text = getPrivateMethodText(name, params);
+    public static PsiElement createMethod(Project project, String name, List<String> params) {
+        String text = getMethodText(name, params);
         Perl6File dummyFile = createFile(project, text);
         return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
+    }
+
+    private static String getMethodText(String name, List<String> params) {
+        String base = "method " + name + "(";
+        StringJoiner joiner = new StringJoiner(", ");
+        params.forEach(joiner::add);
+        return base + joiner.toString() + ") {}";
     }
 
     public static PsiElement createConstantAssignment(Project project, String name, String code) {
@@ -34,13 +41,6 @@ public class Perl6ElementFactory {
         String text = getVariableAssignmentText(name, code, control);
         Perl6File dummyFile = createFile(project, text);
         return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
-    }
-
-    private static String getPrivateMethodText(String name, List<String> params) {
-        String base = "method " + name + "(";
-        StringJoiner joiner = new StringJoiner(", ");
-        params.forEach(joiner::add);
-        return base + joiner.toString() + ") {}";
     }
 
     private static String getVariableAssignmentText(String name, String code, boolean control) {
