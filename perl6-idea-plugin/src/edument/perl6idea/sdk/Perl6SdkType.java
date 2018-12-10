@@ -176,7 +176,6 @@ public class Perl6SdkType extends SdkType {
         if (moarBuildConfig != null) return moarBuildConfig;
         String perl6path = getSdkHomeByProject(project);
         if (perl6path == null) {
-            LOG.error("getMoarBuildConfiguration is called without Perl 6 SDK set, cannot use debug features");
             return null;
         }
 

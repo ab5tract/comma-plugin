@@ -31,16 +31,10 @@ public class Perl6StackFrameDescriptor {
     }
 
     public String getPresentableName() {
-        if (name.isEmpty()) {
-            return String.format("%s:%s",
-                                 !file.getPath().isEmpty() ? file.getPath() : bytecodeFile,
-                                 line);
-        } else {
-            return String.format("%s:%s (%s) (%s)",
-                                 name, line,
-                                 !file.getPath().isEmpty() ? file.getPath() : bytecodeFile,
-                                 type);
-        }
+        String base = String.format(
+            "%s:%s (%s)", name, line,
+            !file.getPath().isEmpty() ? file.getPath() : bytecodeFile);
+        return type.isEmpty() ? base : String.format("%s (%s)", base, type);
     }
 
     public int getLine() {
