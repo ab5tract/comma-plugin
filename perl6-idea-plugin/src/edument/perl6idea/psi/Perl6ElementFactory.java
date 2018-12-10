@@ -6,11 +6,16 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
 public class Perl6ElementFactory {
     public static PsiElement createRoutine(Project project, String name, List<String> params) {
+        return createRoutine(project, name, params, new ArrayList<>());
+    }
+
+    public static PsiElement createRoutine(Project project, String name, List<String> params, List<String> contents) {
         String text = getRoutineText(name, params);
         Perl6File dummyFile = createFile(project, text);
         return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
@@ -28,16 +33,25 @@ public class Perl6ElementFactory {
     }
 
     public static PsiElement createMethod(Project project, String name, List<String> params) {
-        String text = getMethodText(name, params);
+        return createMethod(project, name, params, new ArrayList<>());
+    }
+
+    public static PsiElement createMethod(Project project, String name, List<String> params, List<String> statements) {
+        String text = getMethodText(name, params, statements);
         Perl6File dummyFile = createFile(project, text);
         return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
     }
 
-    private static String getMethodText(String name, List<String> params) {
+    private static String getMethodText(String name, List<String> params, List<String> statements) {
         String base = "method " + name + "(";
         StringJoiner joiner = new StringJoiner(", ");
         params.forEach(joiner::add);
-        return base + joiner.toString() + ") {}";
+        String body = "{";
+        for (String line : statements) {
+            body += "\n" + line + "\n";
+        }
+        body += "}";
+        return base + joiner.toString() + ") " + body;
     }
 
     public static PsiElement createConstantAssignment(Project project, String name, String code) {

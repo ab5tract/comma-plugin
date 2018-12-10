@@ -3,6 +3,7 @@ package edument.perl6idea.refactoring;
 import com.intellij.lang.ContextAwareActionHandler;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
@@ -16,15 +17,19 @@ import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, ContextAwareActionHandler {
     public static final String TITLE = "Code Block Extraction";
     private final Perl6CodeBlockType myCodeBlockType;
+    private Perl6StatementList myParentElement;
+    private PsiElement[] myCodeBlockContent;
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;
@@ -127,34 +132,84 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     private void invokeOnElements(Project project, Editor editor, PsiFile file, PsiElement[] elements) {
-        // Get necessary data: name
-        // TODO more things
-        Perl6ExtractMethodDialog dialog = new Perl6ExtractMethodDialog(project, TITLE, myCodeBlockType);
-        boolean isOk = dialog.showAndGet();
-        if (!isOk) return;
-        String name = dialog.getName();
-        // 1 Firstly, we need to know what element will be a holder for new code block
-        // 2 If possible, select an appropriate anchor, before one our code block will be inserted
+        // Firstly, we need to know what element will be a holder for new code block
+        PsiElement commonParent = PsiTreeUtil.findCommonParent(elements);
+        Perl6StatementList list = PsiTreeUtil.getNonStrictParentOfType(commonParent, Perl6StatementList.class);
+        List<Perl6StatementList> scopes = new ArrayList<>();
+        while (list != null) {
+            scopes.add(list);
+            list = PsiTreeUtil.getParentOfType(list, Perl6StatementList.class);
+        }
+
+        IntroduceTargetChooser.showChooser(editor, scopes, new Pass<Perl6StatementList>() {
+            @Override
+            public void pass(Perl6StatementList list) {
+                getDataAndCreateMethod(project, editor, list, elements);
+            }
+        }, psi -> psi.getText(), "Creation scope");
     }
 
-    private static PsiElement calculateAnchor(Project project, Editor editor, PsiElement[] elements) {
-        PsiElement commonParent = PsiTreeUtil.findCommonParent(elements);
-        if (commonParent == null) {
-            CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract this code", TITLE,
-                                                "refactoring.extractMethod");
-            return null;
+    private void getDataAndCreateMethod(Project project,
+                                        Editor editor,
+                                        Perl6StatementList list,
+                                        PsiElement[] elements) {
+        myParentElement = list;
+        myCodeBlockContent = elements;
+        TransactionGuard.getInstance().submitTransactionAndWait(() -> {
+            Perl6ExtractMethodDialog dialog = new Perl6ExtractMethodDialog(project, TITLE, myCodeBlockType) {
+                @Override
+                protected void doAction() {
+                        executeMethodCreation(project, editor, getName());
+                }
+            };
+            dialog.show();
+        });
+    }
+
+    private void executeMethodCreation(Project project, Editor editor, String name) {
+        Perl6StatementList parent = myParentElement;
+        PsiElement beforeAnchor = calculateBeforeAnchor(parent, editor);
+        if (beforeAnchor == null) return;
+
+        List<String> contents = new ArrayList<>();
+        for (PsiElement line : myCodeBlockContent) {
+            if (line instanceof Perl6Statement) {
+                contents.add(line.getText());
+            }
         }
-        PsiElement parent = PsiTreeUtil.getNonStrictParentOfType(commonParent, Perl6RoutineDecl.class, Perl6PackageDecl.class, Perl6File.class);
-        if (parent == null) {
-            CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract this code", TITLE,
-                                                "refactoring.extractMethod");
-            return null;
+        PsiElement newBlock = Objects.equals(myCodeBlockType, Perl6CodeBlockType.ROUTINE) ?
+                              Perl6ElementFactory.createRoutine(editor.getProject(), name, new ArrayList<>(), contents) :
+                              Perl6ElementFactory.createMethod(editor.getProject(), name, new ArrayList<>(), contents);
+        Perl6StatementList statements = PsiTreeUtil.findChildOfType(newBlock, Perl6StatementList.class);
+        if (statements == null) {
+            reportError(editor);
+            return;
         }
-        if (parent instanceof Perl6File) {
-            return elements[0];
-        } else {
-            return null;
-        }
+
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            parent.getNode().addChild(newBlock.getNode(), beforeAnchor.getNode());
+            for (PsiElement el : myCodeBlockContent) {
+                el.delete();
+            }
+        });
+    }
+
+    private PsiElement calculateBeforeAnchor(Perl6StatementList parent, Editor editor) {
+        PsiElement commonParent = PsiTreeUtil.findCommonParent(myCodeBlockContent);
+        if (commonParent == null) return reportError(editor);
+
+        // If created in the same block, before first element will be an anchor already
+        if (parent == commonParent) return myCodeBlockContent[0];
+
+        // TODO
+        return myCodeBlockContent[0];
+    }
+
+    @Nullable
+    private static PsiElement reportError(Editor editor) {
+        CommonRefactoringUtil.showErrorHint(editor.getProject(), editor, "Cannot extract this code", TITLE,
+                                            "refactoring.extractMethod");
+        return null;
     }
 
     @Override
