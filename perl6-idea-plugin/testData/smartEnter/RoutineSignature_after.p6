@@ -1,0 +1,3 @@
+sub foo($bar) {
+    <caret>
+}
