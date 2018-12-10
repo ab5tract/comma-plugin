@@ -10,6 +10,19 @@ import java.util.List;
 import java.util.StringJoiner;
 
 public class Perl6ElementFactory {
+    public static PsiElement createRoutine(Project project, String name, List<String> params) {
+        String text = getRoutineText(name, params);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
+    }
+
+    private static String getRoutineText(String name, List<String> params) {
+        String base = "sub " + name + "(";
+        StringJoiner joiner = new StringJoiner(", ");
+        params.forEach(joiner::add);
+        return base + joiner.toString() + ") {}";
+    }
+
     public static Perl6Statement createStatementFromText(Project project, String def) {
         return PsiTreeUtil.findChildOfType(createFile(project, def), Perl6Statement.class);
     }

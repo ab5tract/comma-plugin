@@ -3,29 +3,33 @@ package edument.perl6idea.refactoring;
 import com.intellij.lang.ContextAwareActionHandler;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.*;
-import com.intellij.psi.util.PsiExpressionTrimRenderer;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
-import edument.perl6idea.psi.P6Extractable;
-import edument.perl6idea.psi.Perl6PsiElement;
-import edument.perl6idea.psi.Perl6Statement;
-import edument.perl6idea.psi.Perl6StatementList;
+import com.intellij.refactoring.util.CommonRefactoringUtil;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
-public class Perl6ExtractMethodHandler implements RefactoringActionHandler, ContextAwareActionHandler {
+public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, ContextAwareActionHandler {
+    public static final String TITLE = "Code Block Extraction";
+    private final Perl6CodeBlockType myCodeBlockType;
+
+    public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
+        myCodeBlockType = type;
+    }
+
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file, DataContext dataContext) {
         final Pass<PsiElement[]> callback = new Pass<PsiElement[]>() {
@@ -36,11 +40,11 @@ public class Perl6ExtractMethodHandler implements RefactoringActionHandler, Cont
         selectAndPass(project, editor, file, callback);
     }
 
-    private void selectAndPass(Project project, Editor editor, PsiFile file, Pass<PsiElement[]> callback) {
+    private static void selectAndPass(Project project, Editor editor, PsiFile file, Pass<PsiElement[]> callback) {
         editor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
         if (!editor.getSelectionModel().hasSelection()) {
             final int offset = editor.getCaretModel().getOffset();
-            final List<Perl6PsiElement> expressions = collectExpressions(file, editor, offset);
+            final List<Perl6PsiElement> expressions = collectExpressions(file, offset);
             PsiDocumentManager.getInstance(project).commitAllDocuments();
             if (expressions.isEmpty()) {
                 // TODO Throw an exception here
@@ -60,13 +64,12 @@ public class Perl6ExtractMethodHandler implements RefactoringActionHandler, Cont
         callback.pass(getElements(project, editor, file));
     }
 
-    private PsiElement[] getElements(Project project, Editor editor, PsiFile file) {
+    private static PsiElement[] getElements(Project project, Editor editor, PsiFile file) {
         SelectionModel selectionModel = editor.getSelectionModel();
         PsiElement startLeaf = file.findElementAt(selectionModel.getSelectionStart());
         PsiElement endLeaf = file.findElementAt(selectionModel.getSelectionEnd());
         PsiElement start = PsiTreeUtil.getNonStrictParentOfType(skipSpaces(startLeaf, true), Perl6Statement.class);
         PsiElement end = PsiTreeUtil.getNonStrictParentOfType(skipSpaces(endLeaf, false), Perl6Statement.class);
-        PsiElement[] emptyArray = PsiElement.EMPTY_ARRAY;
 
         if (start == null || end == null) {
             if (end != null)
@@ -74,7 +77,7 @@ public class Perl6ExtractMethodHandler implements RefactoringActionHandler, Cont
             else if (start != null)
                 return new PsiElement[]{start};
             else {
-                return emptyArray;
+                return PsiElement.EMPTY_ARRAY;
             }
         }
 
@@ -93,26 +96,19 @@ public class Perl6ExtractMethodHandler implements RefactoringActionHandler, Cont
         return elements.toArray(PsiElement.EMPTY_ARRAY);
     }
 
-    private PsiElement skipSpaces(PsiElement type, boolean moveToLeft) {
-        if (type == null) return null;
-        if (moveToLeft) {
-            while (type != null && type.getNode().getElementType() == UNV_WHITE_SPACE) {
-                type = type.getNextSibling();
-            }
-        } else {
-            while (type instanceof PsiWhiteSpace) {
-                type = type.getPrevSibling();
-            }
-        }
-        return type;
+    private static PsiElement skipSpaces(PsiElement node, boolean toRight) {
+        PsiElement temp = node;
+        while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE)))
+            temp = toRight ? temp.getNextSibling() : temp.getPrevSibling();
+        return temp;
     }
 
     @NotNull
-    private List<Perl6PsiElement> collectExpressions(PsiFile file, Editor editor, int offset) {
+    private static List<Perl6PsiElement> collectExpressions(PsiFile file, int offset) {
         List<Perl6PsiElement> exprs = new ArrayList<>();
         PsiElement element = file.findElementAt(offset);
         while (!(element instanceof Perl6StatementList) && element != null) {
-            if (element instanceof P6Extractable)
+            if (element instanceof P6Extractable && element instanceof Perl6PsiElement)
                 exprs.add((Perl6PsiElement)element);
             element = element.getParent();
         }
@@ -131,7 +127,34 @@ public class Perl6ExtractMethodHandler implements RefactoringActionHandler, Cont
     }
 
     private void invokeOnElements(Project project, Editor editor, PsiFile file, PsiElement[] elements) {
+        // Get necessary data: name
+        // TODO more things
+        Perl6ExtractMethodDialog dialog = new Perl6ExtractMethodDialog(project, TITLE, myCodeBlockType);
+        boolean isOk = dialog.showAndGet();
+        if (!isOk) return;
+        String name = dialog.getName();
+        // 1 Firstly, we need to know what element will be a holder for new code block
+        // 2 If possible, select an appropriate anchor, before one our code block will be inserted
+    }
 
+    private static PsiElement calculateAnchor(Project project, Editor editor, PsiElement[] elements) {
+        PsiElement commonParent = PsiTreeUtil.findCommonParent(elements);
+        if (commonParent == null) {
+            CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract this code", TITLE,
+                                                "refactoring.extractMethod");
+            return null;
+        }
+        PsiElement parent = PsiTreeUtil.getNonStrictParentOfType(commonParent, Perl6RoutineDecl.class, Perl6PackageDecl.class, Perl6File.class);
+        if (parent == null) {
+            CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract this code", TITLE,
+                                                "refactoring.extractMethod");
+            return null;
+        }
+        if (parent instanceof Perl6File) {
+            return elements[0];
+        } else {
+            return null;
+        }
     }
 
     @Override

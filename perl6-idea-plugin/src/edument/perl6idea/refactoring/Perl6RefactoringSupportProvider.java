@@ -31,7 +31,7 @@ public class Perl6RefactoringSupportProvider extends RefactoringSupportProvider 
     @Nullable
     @Override
     public RefactoringActionHandler getExtractMethodHandler() {
-        return new Perl6ExtractMethodHandler();
+        return new Perl6ExtractCodeBlockHandler(Perl6CodeBlockType.METHOD);
     }
 
     @Override
