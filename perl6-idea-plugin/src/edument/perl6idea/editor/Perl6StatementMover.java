@@ -11,6 +11,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
@@ -41,7 +42,8 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
         if (rangeElement1.equals(rangeElement2)) {
             // It is a multi-line statement and we're in the middle of it
-            PsiElement tempRange = skipEmpty(down ? rangeElement2.getNextSibling() : rangeElement1.getPrevSibling(), down);
+            PsiElement node = down ? rangeElement2.getNextSibling() : rangeElement1.getPrevSibling();
+            PsiElement tempRange = Perl6PsiUtil.skipSpaces(node, down);
             if (tempRange == null) {
                 if (!down) {
                     // It is first element in the block and we are moving up, so need to jump out
@@ -72,10 +74,10 @@ public class Perl6StatementMover extends StatementUpDownMover {
         } else if (PsiTreeUtil.isAncestor(rangeElement1, rangeElement2, true)) {
             // If we are moving block from its first line into "insides", switch it with next list-level statement
             if (down) {
-                PsiElement next = skipEmpty(rangeElement1.getNextSibling(), true);
+                PsiElement next = Perl6PsiUtil.skipSpaces(rangeElement1.getNextSibling(), true);
                 setInfo(info, rangeElement1, next == null ? rangeElement1 : next);
             } else {
-                PsiElement prev = skipEmpty(rangeElement1.getPrevSibling(), false);
+                PsiElement prev = Perl6PsiUtil.skipSpaces(rangeElement1.getPrevSibling(), false);
                 if (prev == null) {
                     PsiElement blockStatement = PsiTreeUtil.getParentOfType(rangeElement2, Perl6Blockoid.class);
                     PsiElement outerBlock = PsiTreeUtil.getParentOfType(blockStatement, Perl6Blockoid.class);
@@ -127,12 +129,12 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
         LineRange range1 = null;
         LineRange range2 = null;
-        PsiElement heredoc1 = skipEmpty(rangeElement1.getNextSibling(), true);
-        PsiElement heredoc2 = skipEmpty(rangeElement2.getNextSibling(), true);
+        PsiElement heredoc1 = Perl6PsiUtil.skipSpaces(rangeElement1.getNextSibling(), true);
+        PsiElement heredoc2 = Perl6PsiUtil.skipSpaces(rangeElement2.getNextSibling(), true);
 
         if (rangeElement2 instanceof Perl6Heredoc) {
             range1 = new LineRange(rangeElement1, rangeElement2);
-            rangeElement2 = skipEmpty(rangeElement2.getNextSibling(), true);
+            rangeElement2 = Perl6PsiUtil.skipSpaces(rangeElement2.getNextSibling(), true);
         }
 
         if (heredoc1 instanceof Perl6Heredoc)
@@ -147,13 +149,13 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
         if (range1 == null)
             range1 = rangeElement1.getFirstChild() != null
-                     ? new LineRange(skipEmpty(rangeElement1.getFirstChild(), true),
-                                     skipEmpty(rangeElement1.getLastChild(), false))
+                     ? new LineRange(Perl6PsiUtil.skipSpaces(rangeElement1.getFirstChild(), true),
+                                     Perl6PsiUtil.skipSpaces(rangeElement1.getLastChild(), false))
                      : new LineRange(rangeElement1);
         if (range2 == null)
             range2 = rangeElement2.getFirstChild() != null
-                     ? new LineRange(skipEmpty(rangeElement2.getFirstChild(), true),
-                                     skipEmpty(rangeElement2.getLastChild(), false))
+                     ? new LineRange(Perl6PsiUtil.skipSpaces(rangeElement2.getFirstChild(), true),
+                                     Perl6PsiUtil.skipSpaces(rangeElement2.getLastChild(), false))
                      : new LineRange(rangeElement2);
 
         if (rangeElement1 == rangeElement2 || // If heuristic is wrong
@@ -167,15 +169,15 @@ public class Perl6StatementMover extends StatementUpDownMover {
 
     private boolean checkHeredocEdgeCases(MoveInfo info, PsiElement element1) {
         // Handle all cases where the cursor is inside of heredoc part
-        boolean isHeredoc = skipEmpty(element1.getNextSibling(), true) instanceof Perl6Heredoc;
+        boolean isHeredoc = Perl6PsiUtil.skipSpaces(element1.getNextSibling(), true) instanceof Perl6Heredoc;
         if (isHeredoc) {
             PsiElement neighbour = down ?
-                                   skipEmpty(element1.getNextSibling(), true) :
-                                   skipEmpty(element1.getPrevSibling(), false);
+                                   Perl6PsiUtil.skipSpaces(element1.getNextSibling(), true) :
+                                   Perl6PsiUtil.skipSpaces(element1.getPrevSibling(), false);
             if (down && neighbour instanceof Perl6Heredoc) {
                 // If we're moving down, for first iteration we return known heredoc
                 // but we are checking if we have a statement _after_ that
-                neighbour = skipEmpty(neighbour.getNextSibling(), true);
+                neighbour = Perl6PsiUtil.skipSpaces(neighbour.getNextSibling(), true);
             }
             if (!(neighbour instanceof Perl6Statement)) {
                 LineRange range = new LineRange(element1);
@@ -207,25 +209,18 @@ public class Perl6StatementMover extends StatementUpDownMover {
             }
             element = el;
         } else {
-            element = skipEmpty(psiFile.findElementAt(getLineStartSafeOffset(document, startOffset)), true);
+            element = Perl6PsiUtil.skipSpaces(psiFile.findElementAt(getLineStartSafeOffset(document, startOffset)), true);
         }
         if (element == null) return null;
         if (element.getNode().getElementType() == STRING_LITERAL_CHAR || element.getNode().getElementType() == STRING_LITERAL_QUOTE_CLOSE) {
             PsiElement heredoc = element.getParent();
             if (heredoc instanceof Perl6Heredoc)
-                return skipEmpty(heredoc.getPrevSibling(), false);
+                return Perl6PsiUtil.skipSpaces(heredoc.getPrevSibling(), false);
         }
         if (element instanceof Perl6StatementList &&
             element.getParent() instanceof Perl6Blockoid && element.getFirstChild() != null)
             element = element.getFirstChild();
         return element instanceof Perl6Statement ? element : PsiTreeUtil.getParentOfType(element, Perl6Statement.class);
-    }
-
-    private static PsiElement skipEmpty(PsiElement node, boolean toRight) {
-        PsiElement temp = node;
-        while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE)))
-            temp = toRight ? temp.getNextSibling() : temp.getPrevSibling();
-        return temp;
     }
 
     @Override

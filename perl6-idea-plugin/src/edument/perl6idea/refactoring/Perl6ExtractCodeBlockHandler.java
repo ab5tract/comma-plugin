@@ -13,20 +13,18 @@ import com.intellij.openapi.util.Pass;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, ContextAwareActionHandler {
     public static final String TITLE = "Code Block Extraction";
@@ -36,6 +34,17 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;
+    }
+
+    @Override
+    public void invoke(@NotNull Project project, @NotNull PsiElement[] elements, DataContext dataContext) {
+        if (dataContext != null) {
+            final PsiFile file = CommonDataKeys.PSI_FILE.getData(dataContext);
+            final Editor editor = CommonDataKeys.EDITOR.getData(dataContext);
+            if (file != null && editor != null) {
+                invokeOnElements(project, editor, file, elements);
+            }
+        }
     }
 
     @Override
@@ -76,8 +85,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         SelectionModel selectionModel = editor.getSelectionModel();
         PsiElement startLeaf = file.findElementAt(selectionModel.getSelectionStart());
         PsiElement endLeaf = file.findElementAt(selectionModel.getSelectionEnd());
-        PsiElement start = PsiTreeUtil.getNonStrictParentOfType(skipSpaces(startLeaf, true), Perl6Statement.class);
-        PsiElement end = PsiTreeUtil.getNonStrictParentOfType(skipSpaces(endLeaf, false), Perl6Statement.class);
+        PsiElement start = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(startLeaf, true), Perl6Statement.class);
+        PsiElement end = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(endLeaf, false), Perl6Statement.class);
 
         if (start == null || end == null) {
             if (end != null)
@@ -104,13 +113,6 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         return elements.toArray(PsiElement.EMPTY_ARRAY);
     }
 
-    private static PsiElement skipSpaces(PsiElement node, boolean toRight) {
-        PsiElement temp = node;
-        while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE)))
-            temp = toRight ? temp.getNextSibling() : temp.getPrevSibling();
-        return temp;
-    }
-
     @NotNull
     private static List<Perl6PsiElement> collectExpressions(PsiFile file, int offset) {
         List<Perl6PsiElement> exprs = new ArrayList<>();
@@ -121,17 +123,6 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             element = element.getParent();
         }
         return exprs;
-    }
-
-    @Override
-    public void invoke(@NotNull Project project, @NotNull PsiElement[] elements, DataContext dataContext) {
-        if (dataContext != null) {
-            final PsiFile file = CommonDataKeys.PSI_FILE.getData(dataContext);
-            final Editor editor = CommonDataKeys.EDITOR.getData(dataContext);
-            if (file != null && editor != null) {
-                invokeOnElements(project, editor, file, elements);
-            }
-        }
     }
 
     private void invokeOnElements(Project project, Editor editor, PsiFile file, PsiElement[] elements) {
