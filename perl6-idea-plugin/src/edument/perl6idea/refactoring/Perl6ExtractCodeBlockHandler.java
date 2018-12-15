@@ -10,7 +10,10 @@ import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pass;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
@@ -183,6 +186,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         Perl6StatementList statements = PsiTreeUtil.findChildOfType(newBlock, Perl6StatementList.class);
         if (statements == null) {
             reportError(editor);
+
             return;
         }
 
