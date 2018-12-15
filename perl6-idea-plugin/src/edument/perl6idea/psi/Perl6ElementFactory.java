@@ -5,53 +5,42 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import edument.perl6idea.refactoring.Perl6CodeBlockType;
+import edument.perl6idea.refactoring.Perl6ExtractCodeBlockHandler;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
 public class Perl6ElementFactory {
-    public static PsiElement createRoutine(Project project, String name, List<String> params) {
-        return createRoutine(project, name, params, new ArrayList<>());
-    }
-
-    public static PsiElement createRoutine(Project project, String name, List<String> params, List<String> contents) {
-        String text = getRoutineText(name, params);
+    public static PsiElement createNamedCodeBlock(Project project,
+                                                  Perl6ExtractCodeBlockHandler.NewCodeBlockData data,
+                                                  List<String> contents) {
+        String text = getNamedCodeBlockText(data, contents);
         Perl6File dummyFile = createFile(project, text);
         return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
     }
 
-    private static String getRoutineText(String name, List<String> params) {
-        String base = "sub " + name + "(";
-        StringJoiner joiner = new StringJoiner(", ");
-        params.forEach(joiner::add);
-        return base + joiner.toString() + ") {}";
+    private static String getNamedCodeBlockText(Perl6ExtractCodeBlockHandler.NewCodeBlockData data,
+                                                List<String> contents) {
+        String base = "%s %s(%s)";
+        StringJoiner signatureJoiner = new StringJoiner(", ");
+        Arrays.stream(data.signatureParts).forEachOrdered(signatureJoiner::add);
+        String signature = signatureJoiner.toString();
+        if (!data.returnType.isEmpty())
+            signature += " --> " + data.returnType;
+
+        String type = data.type == Perl6CodeBlockType.ROUTINE ? "sub" : "method";
+        String baseFilled = String.format(base, type, data.name, signature);
+
+        StringJoiner bodyJoiner = new StringJoiner("");
+        contents.forEach(bodyJoiner::add);
+
+        return String.format("%s {\n%s\n}", baseFilled, bodyJoiner.toString());
     }
 
     public static Perl6Statement createStatementFromText(Project project, String def) {
         return PsiTreeUtil.findChildOfType(createFile(project, def), Perl6Statement.class);
-    }
-
-    public static PsiElement createMethod(Project project, String name, List<String> params) {
-        return createMethod(project, name, params, new ArrayList<>());
-    }
-
-    public static PsiElement createMethod(Project project, String name, List<String> params, List<String> statements) {
-        String text = getMethodText(name, params, statements);
-        Perl6File dummyFile = createFile(project, text);
-        return PsiTreeUtil.findChildOfType(dummyFile, Perl6Statement.class);
-    }
-
-    private static String getMethodText(String name, List<String> params, List<String> statements) {
-        String base = "method " + name + "(";
-        StringJoiner joiner = new StringJoiner(", ");
-        params.forEach(joiner::add);
-        String body = "{";
-        for (String line : statements) {
-            body += "\n" + line + "\n";
-        }
-        body += "}";
-        return base + joiner.toString() + ") " + body;
     }
 
     public static PsiElement createConstantAssignment(Project project, String name, String code) {

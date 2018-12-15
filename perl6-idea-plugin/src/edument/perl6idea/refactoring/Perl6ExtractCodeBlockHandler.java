@@ -6,31 +6,30 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pass;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
+import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, ContextAwareActionHandler {
     public static final String TITLE = "Code Block Extraction";
     private final Perl6CodeBlockType myCodeBlockType;
-    private Perl6StatementList myParentElement;
-    private PsiElement[] myCodeBlockContent;
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;
@@ -39,49 +38,57 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     @Override
     public void invoke(@NotNull Project project, @NotNull PsiElement[] elements, DataContext dataContext) {
         if (dataContext != null) {
-            final PsiFile file = CommonDataKeys.PSI_FILE.getData(dataContext);
             final Editor editor = CommonDataKeys.EDITOR.getData(dataContext);
+            final PsiFile file = CommonDataKeys.PSI_FILE.getData(dataContext);
             if (file != null && editor != null) {
-                invokeOnElements(project, editor, file, elements);
+                invoke(project, editor, file, elements);
             }
         }
     }
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file, DataContext dataContext) {
-        final Pass<PsiElement[]> callback = new Pass<PsiElement[]>() {
-            public void pass(final PsiElement[] selectedValue) {
-                invokeOnElements(project, editor, file, selectedValue);
-            }
-        };
-        selectAndPass(project, editor, file, callback);
+        invoke(project, editor, file, getStatementsToExtract(file, editor));
     }
 
-    private static void selectAndPass(Project project, Editor editor, PsiFile file, Pass<PsiElement[]> callback) {
-        editor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
-        if (!editor.getSelectionModel().hasSelection()) {
-            final int offset = editor.getCaretModel().getOffset();
-            final List<Perl6PsiElement> expressions = collectExpressions(file, offset);
-            PsiDocumentManager.getInstance(project).commitAllDocuments();
-            if (expressions.isEmpty()) {
-                // TODO Throw an exception here
-            } else if (expressions.size() == 1) {
-                callback.pass(new PsiElement[]{expressions.get(0)});
-                return;
-            } else {
-                IntroduceTargetChooser.showChooser(editor, expressions, new Pass<Perl6PsiElement>() {
-                    @Override
-                    public void pass(Perl6PsiElement perl6PsiElement) {
-                        callback.pass(new PsiElement[]{perl6PsiElement});
-                    }
-                }, psi -> psi.getText());
-                return;
+    protected void invoke(@NotNull Project project, Editor editor, PsiFile file, PsiElement[] elements) {
+        // Gets a parent scope for new block according to callback-based API
+        List<Perl6StatementList> scopes = getPossibleScopes(elements);
+        IntroduceTargetChooser.showChooser(editor, scopes, new Pass<Perl6StatementList>() {
+            @Override
+            public void pass(Perl6StatementList list) {
+                invoke(project, editor, file, list, elements);
             }
+        }, psi -> psi.getText(), "Select creation scope");
+    }
+
+    protected void invoke(@NotNull Project project, Editor editor, PsiFile file, PsiElement parentScope, PsiElement[] elements) {
+        if (elements.length == 0 || parentScope == null) {
+            reportError(project, editor);
+            return;
         }
-        callback.pass(getElements(project, editor, file));
+
+        /* Anchor represents an element, that will be a next to created one or null,
+         * if no such anchor is possible, e.g. when a method is added after last one in a class */
+        PsiElement anchor = getAnchor(parentScope, elements);
+
+        NewCodeBlockData newCodeBlockData = getNewBlockData(project);
+        // If user cancelled action or exception occurred
+        if (newCodeBlockData == null) return;
+        List<String> contents = Arrays.stream(elements).map(p -> p.getText()).collect(Collectors.toList());
+        PsiElement newBlock = createNewBlock(project, newCodeBlockData, contents);
+        insertNewCodeBlock(project, parentScope, newBlock, anchor, elements);
     }
 
-    private static PsiElement[] getElements(Project project, Editor editor, PsiFile file) {
+    protected static PsiElement[] getStatementsToExtract(PsiFile file, Editor editor) {
+        if (editor.getSelectionModel().hasSelection()) {
+            return getElementsFromSelection(file, editor);
+        } else {
+            return getElementsFromCaret(file, editor);
+        }
+    }
+
+    private static PsiElement[] getElementsFromSelection(PsiFile file, Editor editor) {
         SelectionModel selectionModel = editor.getSelectionModel();
         PsiElement startLeaf = file.findElementAt(selectionModel.getSelectionStart());
         PsiElement endLeaf = file.findElementAt(selectionModel.getSelectionEnd());
@@ -89,10 +96,12 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         PsiElement end = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(endLeaf, false), Perl6Statement.class);
 
         if (start == null || end == null) {
-            if (end != null)
+            if (end != null) {
                 return new PsiElement[]{end};
-            else if (start != null)
+            }
+            else if (start != null) {
                 return new PsiElement[]{start};
+            }
             else {
                 return PsiElement.EMPTY_ARRAY;
             }
@@ -100,7 +109,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
         if (PsiTreeUtil.isAncestor(start, end, true)) {
             return new PsiElement[]{start};
-        } else if (PsiTreeUtil.isAncestor(end, start, true)) {
+        }
+        else if (PsiTreeUtil.isAncestor(end, start, true)) {
             return new PsiElement[]{end};
         }
 
@@ -113,98 +123,98 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         return elements.toArray(PsiElement.EMPTY_ARRAY);
     }
 
-    @NotNull
-    private static List<Perl6PsiElement> collectExpressions(PsiFile file, int offset) {
-        List<Perl6PsiElement> exprs = new ArrayList<>();
+    private static PsiElement[] getElementsFromCaret(PsiFile file, Editor editor) {
+        int offset = editor.getCaretModel().getOffset();
+        List<PsiElement> exprs = new ArrayList<>();
         PsiElement element = file.findElementAt(offset);
-        while (!(element instanceof Perl6StatementList) && element != null) {
-            if (element instanceof P6Extractable && element instanceof Perl6PsiElement)
-                exprs.add((Perl6PsiElement)element);
+        while (element != null && !(element instanceof Perl6StatementList)) {
+            if (element instanceof P6Extractable)
+                exprs.add(element);
             element = element.getParent();
         }
-        return exprs;
+        return exprs.toArray(PsiElement.EMPTY_ARRAY);
     }
 
-    private void invokeOnElements(Project project, Editor editor, PsiFile file, PsiElement[] elements) {
-        // Firstly, we need to know what element will be a holder for new code block
+    protected List<Perl6StatementList> getPossibleScopes(PsiElement[] elements) {
         PsiElement commonParent = PsiTreeUtil.findCommonParent(elements);
         Perl6StatementList list = PsiTreeUtil.getNonStrictParentOfType(commonParent, Perl6StatementList.class);
+        if (list == null) {
+            return null;
+        }
         List<Perl6StatementList> scopes = new ArrayList<>();
         while (list != null) {
             scopes.add(list);
             list = PsiTreeUtil.getParentOfType(list, Perl6StatementList.class);
         }
-
-        IntroduceTargetChooser.showChooser(editor, scopes, new Pass<Perl6StatementList>() {
-            @Override
-            public void pass(Perl6StatementList list) {
-                getDataAndCreateMethod(project, editor, list, elements);
-            }
-        }, psi -> psi.getText(), "Creation scope");
+        return scopes;
     }
 
-    private void getDataAndCreateMethod(Project project,
-                                        Editor editor,
-                                        Perl6StatementList list,
-                                        PsiElement[] elements) {
-        myParentElement = list;
-        myCodeBlockContent = elements;
+    protected PsiElement getAnchor(PsiElement parentToCreateAt, PsiElement[] elements) {
+        PsiElement commonParent = PsiTreeUtil.findCommonParent(elements);
+        if (parentToCreateAt == commonParent) return elements[0];
+        // TODO
+        return elements[0];
+    }
+
+    protected NewCodeBlockData getNewBlockData(Project project) {
+        CompletableFuture<NewCodeBlockData> futureData = new CompletableFuture<>();
         TransactionGuard.getInstance().submitTransactionAndWait(() -> {
             Perl6ExtractMethodDialog dialog = new Perl6ExtractMethodDialog(project, TITLE, myCodeBlockType) {
                 @Override
                 protected void doAction() {
-                        executeMethodCreation(project, editor, getName());
+                    NewCodeBlockData data = new NewCodeBlockData();
+                    data.scope = getScope();
+                    data.type = myCodeBlockType;
+                    data.name = getName();
+                    data.returnType = getReturnType();
+                    // TODO signature parts
+                    data.signatureParts = ArrayUtil.EMPTY_STRING_ARRAY;
+                    futureData.complete(data);
+                    closeOKAction();
+                }
+
+                @Override
+                public void doCancelAction() {
+                    futureData.complete(null);
+                    close(1);
                 }
             };
             dialog.show();
         });
+        try {
+            return futureData.get();
+        }
+        catch (InterruptedException|ExecutionException e) {
+            return null;
+        }
     }
 
-    private void executeMethodCreation(Project project, Editor editor, String name) {
-        Perl6StatementList parent = myParentElement;
-        PsiElement beforeAnchor = calculateBeforeAnchor(parent, editor);
-        if (beforeAnchor == null) return;
+    protected PsiElement createNewBlock(Project project, NewCodeBlockData data, List<String> contents) {
+        return Perl6ElementFactory.createNamedCodeBlock(project, data, contents);
+    }
 
-        List<String> contents = new ArrayList<>();
-        for (PsiElement line : myCodeBlockContent) {
-            if (line instanceof Perl6Statement) {
-                contents.add(line.getText());
-            }
-        }
-        PsiElement newBlock = Objects.equals(myCodeBlockType, Perl6CodeBlockType.ROUTINE) ?
-                              Perl6ElementFactory.createRoutine(editor.getProject(), name, new ArrayList<>(), contents) :
-                              Perl6ElementFactory.createMethod(editor.getProject(), name, new ArrayList<>(), contents);
-        Perl6StatementList statements = PsiTreeUtil.findChildOfType(newBlock, Perl6StatementList.class);
-        if (statements == null) {
-            reportError(editor);
-
-            return;
-        }
-
+    protected void insertNewCodeBlock(Project project, PsiElement parent,
+                                      PsiElement newBlock, PsiElement anchor,
+                                      PsiElement[] elements) {
         WriteCommandAction.runWriteCommandAction(project, () -> {
-            parent.getNode().addChild(newBlock.getNode(), beforeAnchor.getNode());
-            for (PsiElement el : myCodeBlockContent) {
-                el.delete();
+            parent.getNode().addChild(newBlock.getNode(), anchor.getNode());
+            for (PsiElement el : elements) {
+                if (el.isValid())
+                    el.delete();
             }
         });
     }
 
-    private PsiElement calculateBeforeAnchor(Perl6StatementList parent, Editor editor) {
-        PsiElement commonParent = PsiTreeUtil.findCommonParent(myCodeBlockContent);
-        if (commonParent == null) return reportError(editor);
-
-        // If created in the same block, before first element will be an anchor already
-        if (parent == commonParent) return myCodeBlockContent[0];
-
-        // TODO
-        return myCodeBlockContent[0];
+    public static class NewCodeBlockData {
+        public Perl6CodeBlockType type;
+        public String scope = "";
+        public String name;
+        public String returnType = "";
+        public String[] signatureParts = ArrayUtil.EMPTY_STRING_ARRAY;
     }
 
-    @Nullable
-    private static PsiElement reportError(Editor editor) {
-        CommonRefactoringUtil.showErrorHint(editor.getProject(), editor, "Cannot extract this code", TITLE,
-                                            "refactoring.extractMethod");
-        return null;
+    private static void reportError(Project project, Editor editor) {
+        CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract code", TITLE, null);
     }
 
     @Override
