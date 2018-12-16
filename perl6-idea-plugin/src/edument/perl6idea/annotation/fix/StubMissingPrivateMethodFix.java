@@ -106,9 +106,10 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         }
 
         parameters = moveNamedsAfterPositionals(parameters);
-        Perl6ExtractCodeBlockHandler.NewCodeBlockData data = new Perl6ExtractCodeBlockHandler.NewCodeBlockData();
-        data.name = myName;
-        data.type = Perl6CodeBlockType.PRIVATEMETHOD;
+        Perl6ExtractCodeBlockHandler.NewCodeBlockData data =
+                new Perl6ExtractCodeBlockHandler.NewCodeBlockData(
+                        Perl6CodeBlockType.PRIVATEMETHOD, "",
+                        myName, "", parameters.toArray(new String[0]));
         PsiElement newMethod = Perl6ElementFactory.createNamedCodeBlock(project, data, new ArrayList<>());
         anchor = anchor == null ? null : anchor.getNextSibling();
         if (anchor == null) {
