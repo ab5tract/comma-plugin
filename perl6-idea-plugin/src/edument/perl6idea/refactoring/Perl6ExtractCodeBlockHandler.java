@@ -59,7 +59,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             public void pass(Perl6StatementList list) {
                 invoke(project, editor, file, list, elements);
             }
-        }, psi -> psi.getText(), "Select creation scope");
+        }, PsiElement::getText, "Select creation scope");
     }
 
     protected void invoke(@NotNull Project project, Editor editor, PsiFile file, PsiElement parentScope, PsiElement[] elements) {
@@ -162,13 +162,12 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             Perl6ExtractMethodDialog dialog = new Perl6ExtractMethodDialog(project, TITLE, myCodeBlockType) {
                 @Override
                 protected void doAction() {
-                    NewCodeBlockData data = new NewCodeBlockData();
-                    data.scope = getScope();
-                    data.type = myCodeBlockType;
-                    data.name = getName();
-                    data.returnType = getReturnType();
+                    NewCodeBlockData data = new NewCodeBlockData(
+                            myCodeBlockType, getScope(),
+                            getName(), getReturnType(),
+                            ArrayUtil.EMPTY_STRING_ARRAY
+                    );
                     // TODO signature parts
-                    data.signatureParts = ArrayUtil.EMPTY_STRING_ARRAY;
                     futureData.complete(data);
                     closeOKAction();
                 }
@@ -211,6 +210,21 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         public String name;
         public String returnType = "";
         public String[] signatureParts = ArrayUtil.EMPTY_STRING_ARRAY;
+
+        public NewCodeBlockData(Perl6CodeBlockType type, String name) {
+            this.type = type;
+            this.name = name;
+        }
+
+        public NewCodeBlockData(Perl6CodeBlockType type, String scope,
+                                String name, String returnType,
+                                String[] signatureParts) {
+            this.type = type;
+            this.scope = scope;
+            this.name = name;
+            this.returnType = returnType;
+            this.signatureParts = signatureParts;
+        }
     }
 
     private static void reportError(Project project, Editor editor) {
