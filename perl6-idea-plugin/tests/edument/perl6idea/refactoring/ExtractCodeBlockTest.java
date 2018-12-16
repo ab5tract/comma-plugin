@@ -6,8 +6,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.util.Function;
+import com.intellij.util.Producer;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6StatementList;
 import org.jetbrains.annotations.NotNull;
@@ -19,13 +21,29 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     }
 
     public void testTopFileSubroutineExtraction() {
-        doTest((a) -> PsiTreeUtil.getParentOfType(myFixture.getElementAtCaret(), Perl6StatementList.class),
+        doTest(this::getClosestListBySelection,
                 "foo-bar", Perl6CodeBlockType.ROUTINE);
     }
 
-    private void doTest(Function<Void, Perl6StatementList> getScope, String name, Perl6CodeBlockType type) {
+    private Perl6StatementList getClosestListBySelection() {
+        return PsiTreeUtil.getParentOfType(myFixture.getElementAtCaret(), Perl6StatementList.class);
+    }
+
+    public void testTopFileMethodImpossible() {
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () -> {
+            doTest(this::getClosestListBySelection,
+                    "foo-bar", Perl6CodeBlockType.METHOD);
+        });
+    }
+
+//    public void testInClassMethodExtraction() {
+//        doTest(this::getClosestListBySelection,
+//                "foo-bar", Perl6CodeBlockType.METHOD);
+//    }
+
+    private void doTest(Producer<Perl6StatementList> getScope, String name, Perl6CodeBlockType type) {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
-        Perl6StatementList scope = getScope.fun(null);
+        Perl6StatementList scope = getScope.produce();
         Perl6ExtractCodeBlockHandlerMock handler = new Perl6ExtractCodeBlockHandlerMock(type, scope, name);
         handler.invoke(myFixture.getProject(), myFixture.getEditor(), myFixture.getFile(), (DataContext) null);
         myFixture.checkResultByFile(getTestName(true) + ".p6");

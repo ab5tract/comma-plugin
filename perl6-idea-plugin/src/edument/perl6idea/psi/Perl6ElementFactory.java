@@ -73,16 +73,6 @@ public class Perl6ElementFactory {
         return "use " + name;
     }
 
-    public static Perl6LongName createPublicMethodCall(Project project, String name) {
-        String text = getPublicMethodCallText(name);
-        Perl6File dummyFile = createFile(project, text);
-        return PsiTreeUtil.findChildOfType(dummyFile, Perl6LongName.class);
-    }
-
-    private static String getPublicMethodCallText(String name) {
-        return "self." + name;
-    }
-
     public static PsiElement createTypeDeclarationName(Project project, String name) {
         String text = getTypeDeclarationText(name);
         Perl6File dummyFile = createFile(project, text);
@@ -123,6 +113,16 @@ public class Perl6ElementFactory {
 
     private static String getSubroutineText(String name) {
         return name;
+    }
+
+    public static Perl6LongName createPublicMethodCall(Project project, String name) {
+        String text = getPublicMethodCallText(name);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6LongName.class);
+    }
+
+    private static String getPublicMethodCallText(String name) {
+        return "self." + name;
     }
 
     public static Perl6LongName createPrivateMethodCall(Project project, String name) {

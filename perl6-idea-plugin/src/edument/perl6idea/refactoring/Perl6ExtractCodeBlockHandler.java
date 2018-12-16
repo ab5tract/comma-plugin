@@ -63,10 +63,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     protected void invoke(@NotNull Project project, Editor editor, PsiFile file, PsiElement parentScope, PsiElement[] elements) {
-        if (elements.length == 0 || parentScope == null) {
-            reportError(project, editor);
-            return;
-        }
+        if (checkElementsSanity(project, editor, parentScope, elements)) return;
+        if (checkMethodSanity(project, editor, parentScope)) return;
 
         /* Anchor represents an element, that will be a next to created one or null,
          * if no such anchor is possible, e.g. when a method is added after last one in a class */
@@ -77,7 +75,35 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         if (newCodeBlockData == null) return;
         List<String> contents = Arrays.stream(elements).map(p -> p.getText()).collect(Collectors.toList());
         PsiElement newBlock = createNewBlock(project, newCodeBlockData, contents);
-        insertNewCodeBlock(project, parentScope, newBlock, anchor, elements);
+        insertNewCodeBlock(project, parentScope, newBlock, anchor);
+        replaceStatementsWithCall(newCodeBlockData, elements);
+    }
+
+    private boolean checkElementsSanity(@NotNull Project project, Editor editor, PsiElement parentScope, PsiElement[] elements) {
+        if (elements.length == 0 || parentScope == null) {
+            reportError(project, editor, "Cannot extract code");
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkMethodSanity(@NotNull Project project, Editor editor, PsiElement parentScope) {
+        // Check if method outside of class creation
+        if (myCodeBlockType == Perl6CodeBlockType.METHOD || myCodeBlockType == Perl6CodeBlockType.PRIVATEMETHOD) {
+            PsiElement classPresent = PsiTreeUtil.getParentOfType(parentScope,
+                    Perl6File.class, Perl6RoutineDecl.class, Perl6PackageDecl.class);
+            if (!(classPresent instanceof Perl6PackageDecl)) {
+                reportError(project, editor, "Cannot extract a method outside of class, monitor, grammar or role");
+                return true;
+            }
+            String kind = ((Perl6PackageDecl) classPresent).getPackageKind();
+            if (kind == null || !kind.equals("class") && !kind.equals("role") &&
+                    !kind.equals("grammar") && !kind.equals("monitor")) {
+                reportError(project, editor, "Cannot extract a method into " + kind);
+                return true;
+            }
+        }
+        return false;
     }
 
     protected static PsiElement[] getStatementsToExtract(PsiFile file, Editor editor) {
@@ -193,15 +219,19 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     protected void insertNewCodeBlock(Project project, PsiElement parent,
-                                      PsiElement newBlock, PsiElement anchor,
-                                      PsiElement[] elements) {
+                                      PsiElement newBlock, PsiElement anchor) {
         WriteCommandAction.runWriteCommandAction(project, () -> {
             parent.getNode().addChild(newBlock.getNode(), anchor.getNode());
-            for (PsiElement el : elements) {
-                if (el.isValid())
-                    el.delete();
-            }
         });
+    }
+
+    protected void replaceStatementsWithCall(NewCodeBlockData data, PsiElement[] elements) {
+        // TODO Create a caller
+        // Delete present statements
+        for (PsiElement el : elements) {
+            if (el.isValid())
+                el.delete();
+        }
     }
 
     public static class NewCodeBlockData {
@@ -227,8 +257,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         }
     }
 
-    private static void reportError(Project project, Editor editor) {
-        CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract code", TITLE, null);
+    private static void reportError(Project project, Editor editor, String message) {
+        CommonRefactoringUtil.showErrorHint(project, editor, message, TITLE, null);
     }
 
     @Override
