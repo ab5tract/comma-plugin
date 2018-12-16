@@ -52,6 +52,13 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("SubroutinesAfter.pm6");
     }
 
+    public void testRenameOfSubFromCallUppercase() {
+        myFixture.configureByFile("Subroutines.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(47);
+        myFixture.renameElementAtCaret("Renamed-sub");
+        myFixture.checkResultByFile("SubroutinesUppercaseAfter.pm6");
+    }
+
     public void testRenameOfSubFromIndirectName() {
         myFixture.configureByFile("Subroutines.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(71);
@@ -64,6 +71,13 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.getEditor().getCaretModel().moveToOffset(10);
         myFixture.renameElementAtCaret("FooNewType");
         myFixture.checkResultByFile("TypeAfter.pm6");
+    }
+
+    public void testRenameOfTypeFromDeclarationIntoLowercase() {
+        myFixture.configureByFile("Type.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(10);
+        myFixture.renameElementAtCaret("fooNewType");
+        myFixture.checkResultByFile("TypeAfterLowercase.pm6");
     }
 
     public void testRenameOfTypeFromUsage() {

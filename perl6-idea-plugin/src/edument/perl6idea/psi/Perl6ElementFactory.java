@@ -87,7 +87,20 @@ public class Perl6ElementFactory {
     }
 
     private static String getTypeNameText(String name) {
-        return name;
+        // right now if type is lowercase, it will be parsed as a routine name,
+        // so cheat with a trait
+        return String.format("class A is %s;", name);
+    }
+
+    public static Perl6LongName createMethodCallName(Project project, String name) {
+        String choppedName = name.startsWith("!") ? name.substring(1) : name;
+        return produceElement(project, getMethodCallNameText(choppedName), Perl6LongName.class);
+    }
+
+    private static String getMethodCallNameText(String name) {
+        // Private and non-private methods has the same element type for name,
+        // so private ones will work with `.` call op too
+        return String.format("self.%s;", name);
     }
 
     public static Perl6SubCallName createSubCallName(Project project, String name) {
@@ -95,23 +108,10 @@ public class Perl6ElementFactory {
     }
 
     private static String getSubroutineText(String name) {
-        return name;
-    }
-
-    public static Perl6LongName createPublicMethodCall(Project project, String name) {
-        return produceElement(project, getPublicMethodCallText(name), Perl6LongName.class);
-    }
-
-    private static String getPublicMethodCallText(String name) {
-        return "self." + name;
-    }
-
-    public static Perl6LongName createPrivateMethodCall(Project project, String name) {
-        return produceElement(project, getPrivateMethodCallText(name), Perl6LongName.class);
-    }
-
-    private static String getPrivateMethodCallText(String name) {
-        return String.format("class Dummy { method %s {} }", name);
+        // We need explicit pair of `()`, because without it
+        // possible subroutines with first capital letter are parsed
+        // as a type, not as a routine call
+        return String.format("%s();", name);
     }
 
     public static Perl6Variable createVariable(Project project, String name) {
