@@ -484,4 +484,39 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use v6.d.PREVIEW; monitor <error descr=\"Cannot use monitor type package without OO::Monitors module being included\">Bar</error> {}");
         myFixture.checkHighlighting(false, true, false, false);
     }
+
+    public void testCompletelyFineReturn() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo() { return 42 }");
+        myFixture.checkHighlighting(false, false, false, false);
+    }
+
+    public void testReturnOutsideOfRoutineListOp() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 42; <error descr=\"Return outside of routine\">return 100</error>;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testReturnOutsideOfRoutineFunctionCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 42; <error descr=\"Return outside of routine\">return(100)</error>;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testReturnInStartBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await start { <error descr=\"Cannot use return to produce a result in a start block\">return 100</error>; }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testReturnInSupplyBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $s = supply { <error descr=\"Cannot use return to exit a supply block\">return 100</error>; }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testReturnInReactBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "react { <error descr=\"Cannot use return to exit a react block\">return 100</error>; }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testReturnInWheneverBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "react { whenever Supply.interval(1) { <error descr=\"Cannot use return in a whenever block\">return 100</error>; } }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
 }
