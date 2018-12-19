@@ -12,7 +12,9 @@ my constant %BUILTIN-RULES := set 'start-token', 'end-token', 'start-element', '
                                   'opp-start-expr', 'opp-start-infix', 'opp-end-infix',
                                   'opp-end-expr', 'opp-start-prefixes', 'opp-push-prefix',
                                   'opp-end-prefixes', 'opp-start-postfixes',
-                                  'opp-push-postfix', 'opp-end-postfixes';
+                                  'opp-push-postfix', 'opp-end-postfixes',
+                                  'scope-push', 'scope-pop', 'start-symbol',
+                                  'end-symbol';
 
 multi sub sanity-check(Braids $braids) is export {
     my @*ERRORS;

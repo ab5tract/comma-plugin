@@ -636,6 +636,14 @@ public abstract class Cursor<TCursor extends Cursor> {
                 isValueTruthy(getDynamicVariable("$*FAKE")));
     }
 
+    public void scopePush() {
+        stack.symbols.add(new HashMap<>());
+    }
+
+    public void scopePop() {
+        stack.symbols.remove(stack.symbols.size() - 1);
+    }
+
     public abstract int runRule();
 
     public abstract TCursor createInstance();

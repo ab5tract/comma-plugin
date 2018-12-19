@@ -245,6 +245,12 @@ my class GrammarCompiler {
             when /^ 'opp-'/ {
                 # Other OPP calls are only important to the parser
             }
+            when 'scope-push' {
+                $append-to.push: this-call 'scopePush';
+            }
+            when 'scope-pop' {
+                $append-to.push: this-call 'scopePop';
+            }
             when 'alpha' {
                 $append-to.push: unless(this-call('alphaChar'), [backtrack()]);
             }

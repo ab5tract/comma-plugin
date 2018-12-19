@@ -1,11 +1,13 @@
 package edument.perl6idea.parsing;
 
 import com.intellij.psi.tree.IElementType;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Represents a stack of Cursor objects, the top one being the current one in use.
@@ -35,6 +37,9 @@ public class CursorStack {
 
     /* If we're in a lookahed or not. */
     public int inLookahead = 0;
+
+    /* The current stack of scopes, for tracking parse-sensitive symbols. */
+    public List<Map<String, Perl6SymbolKind>> symbols = new ArrayList<>();
 
     public CursorStack(CharSequence target) {
         this.target = target;
@@ -72,6 +77,7 @@ public class CursorStack {
         snapped.markers = new HashMap<>(this.markers);
         snapped.heredocs = new ArrayList<>(this.heredocs);
         snapped.heredocDelimStart = this.heredocDelimStart;
+        snapped.symbols = symbols.stream().map(st -> new HashMap<>(st)).collect(Collectors.toList());
         return snapped;
     }
 
@@ -84,6 +90,7 @@ public class CursorStack {
         res.markers = new HashMap<>(this.markers);
         res.heredocs = new ArrayList<>(this.heredocs);
         res.heredocDelimStart = this.heredocDelimStart;
+        res.symbols = this.symbols.stream().map(st -> new HashMap<>(st)).collect(Collectors.toList());
         return res;
     }
 

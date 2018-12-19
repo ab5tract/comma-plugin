@@ -595,14 +595,18 @@ grammar MAIN {
            <.end-token('LAMBDA')>
            :my $*GOAL = '{';
            <.ws>
+           <.scope-push>
            <.start-element('SIGNATURE')>
            <.signature>
            <.end-element('SIGNATURE')>
            <.blockoid>?
+           <.scope-pop>
            <.end-element('POINTY_BLOCK')>
         || <?[{]>
            <.start-element('BLOCK')>
+           <.scope-push>
            <.blockoid>
+           <.scope-pop>
            <.end-element('BLOCK')>
         || <.start-token('MISSING_BLOCK')> <?> <.end-token('MISSING_BLOCK')>
     }
@@ -611,7 +615,9 @@ grammar MAIN {
 
     token block {
         <.start-element('BLOCK')>
+        <.scope-push>
         <.blockoid>
+        <.scope-pop>
         <.end-element('BLOCK')>
     }
 
@@ -1875,6 +1881,7 @@ grammar MAIN {
         <.ws>
         <.routine_name>?
         <.ws>
+        <.scope-push>
         [
             <.start-element('SIGNATURE')>
             <.start-token('PARENTHESES_OPEN')>
@@ -1897,6 +1904,7 @@ grammar MAIN {
         # Allow for body not written yet
         || <?>
         ]
+        <.scope-pop>
     }
 
     token method_def {
@@ -1904,6 +1912,7 @@ grammar MAIN {
         <.ws>
         <.method_name>?
         <.ws>
+        <.scope-push>
         [
             <.start-element('SIGNATURE')>
             <.start-token('PARENTHESES_OPEN')>
@@ -1926,6 +1935,7 @@ grammar MAIN {
         # Allow for body not written yet
         || <?>
         ]
+        <.scope-pop>
     }
 
     token onlystar {
@@ -2372,6 +2382,7 @@ grammar MAIN {
         <.ws>
         <.routine_name>?
         <.ws>
+        <.scope-push>
         [
             <.start-element('SIGNATURE')>
             <.start-token('PARENTHESES_OPEN')>
@@ -2408,6 +2419,7 @@ grammar MAIN {
             ]?
             <.end-element('BLOCKOID')>
         ]?
+        <.scope-pop>
     }
 
     token type_declarator {
@@ -2562,6 +2574,7 @@ grammar MAIN {
         ]?
         { $*IN_DECL = '' }
         <.trait>*
+        <.scope-push>
         [
         || <?[{]> <.blockoid>
         || <?[;]>
@@ -2572,6 +2585,7 @@ grammar MAIN {
            <.statementlist>?
         || <?>
         ]
+        <.scope-pop>
     }
 
     # XXX Hack
@@ -3457,7 +3471,7 @@ grammar MAIN {
            <.end-element('ARRAY_COMPOSER')>
         || <?[{]>
            <.start-token('BARE_BLOCK')> <?> <.end-token('BARE_BLOCK')>
-           <.start-element('BLOCK_OR_HASH')> <.blockoid> <.end-element('BLOCK_OR_HASH')>
+           <.start-element('BLOCK_OR_HASH')> <.scope-push> <.blockoid> <.scope-pop> <.end-element('BLOCK_OR_HASH')>
         || <.start-element('STRING_LITERAL')>
            <.start-token('STRING_LITERAL_QUOTE_OPEN')>
            '<<'

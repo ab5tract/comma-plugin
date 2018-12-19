@@ -6990,6 +6990,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
+                this.scopePush();
                 this.setArgs();
                 this.state = 4;
                 return 131;
@@ -7027,6 +7028,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 7:
+                this.scopePop();
                 this.bsCommit(12);
                 this.state = 12;
                 continue;
@@ -7040,6 +7042,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
+                this.scopePush();
                 this.setArgs();
                 this.state = 9;
                 return 54;
@@ -7054,6 +7057,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
+                this.scopePop();
                 this.bsCommit(12);
                 this.state = 12;
                 continue;
@@ -7115,6 +7119,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
+                this.scopePush();
                 this.setArgs();
                 this.state = 1;
                 return 54;
@@ -7129,6 +7134,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
+                this.scopePop();
                 return -1;
 
             }
@@ -16927,6 +16933,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
+                this.scopePush();
                 this.bsMark(12);
                 this.state = 6;
                 break;
@@ -17078,6 +17085,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 23:
+                this.scopePop();
                 return -1;
 
             }
@@ -17142,6 +17150,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
+                this.scopePush();
                 this.bsMark(12);
                 this.state = 6;
                 break;
@@ -17293,6 +17302,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 23:
+                this.scopePop();
                 return -1;
 
             }
@@ -20518,6 +20528,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
+                this.scopePush();
                 this.bsMark(12);
                 this.state = 6;
                 break;
@@ -20780,6 +20791,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 35:
+                this.scopePop();
                 return -1;
 
             }
@@ -22108,6 +22120,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 19:
+                this.scopePush();
                 this.bsFailMark(28);
                 this.bsMark(21);
                 if (!(this.lookahead(442))) {
@@ -22202,6 +22215,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 28:
+                this.scopePop();
                 return -1;
 
             }
@@ -30286,6 +30300,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 return -3;
 
             case 13:
+                this.scopePush();
                 this.setArgs();
                 this.state = 14;
                 return 54;
@@ -30300,6 +30315,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
+                this.scopePop();
                 this.bsCommit(39);
                 this.state = 39;
                 continue;
