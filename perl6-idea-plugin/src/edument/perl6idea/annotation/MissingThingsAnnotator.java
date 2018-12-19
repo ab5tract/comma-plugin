@@ -19,6 +19,12 @@ public class MissingThingsAnnotator implements Annotator {
     private static final TokenSet T_ARRAY_INDEX_CLOSE = TokenSet.create(Perl6TokenTypes.ARRAY_INDEX_BRACKET_CLOSE);
     private static final TokenSet T_BLOCK_OPEN = TokenSet.create(Perl6TokenTypes.BLOCK_CURLY_BRACKET_OPEN);
     private static final TokenSet T_BLOCK_CLOSE = TokenSet.create(Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE);
+    private static final TokenSet T_RX_GROUP_OPEN = TokenSet.create(Perl6TokenTypes.REGEX_GROUP_BRACKET_OPEN);
+    private static final TokenSet T_RX_GROUP_CLOSE = TokenSet.create(Perl6TokenTypes.REGEX_GROUP_BRACKET_CLOSE);
+    private static final TokenSet T_RX_ASS_OPEN = TokenSet.create(Perl6TokenTypes.REGEX_ASSERTION_ANGLE_OPEN);
+    private static final TokenSet T_RX_ASS_CLOSE = TokenSet.create(Perl6TokenTypes.REGEX_ASSERTION_ANGLE_CLOSE);
+    private static final TokenSet T_RX_CAP_OPEN = TokenSet.create(Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_OPEN);
+    private static final TokenSet T_RX_CAP_CLOSE = TokenSet.create(Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_CLOSE);
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
@@ -55,6 +61,27 @@ public class MissingThingsAnnotator implements Annotator {
             ASTNode[] closer = check.getNode().getChildren(T_BLOCK_CLOSE);
             if (opener.length > 0 && closer.length == 0)
                 holder.createErrorAnnotation(opener[0], "Missing closing }");
+        }
+        else if (element instanceof Perl6RegexGroup) {
+            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
+            ASTNode[] opener = check.getNode().getChildren(T_RX_GROUP_OPEN);
+            ASTNode[] closer = check.getNode().getChildren(T_RX_GROUP_CLOSE);
+            if (opener.length > 0 && closer.length == 0)
+                holder.createErrorAnnotation(opener[0], "Missing closing ]");
+        }
+        else if (element instanceof Perl6RegexAssertion) {
+            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
+            ASTNode[] opener = check.getNode().getChildren(T_RX_ASS_OPEN);
+            ASTNode[] closer = check.getNode().getChildren(T_RX_ASS_CLOSE);
+            if (opener.length > 0 && closer.length == 0)
+                holder.createErrorAnnotation(opener[0], "Missing closing >");
+        }
+        else if (element instanceof Perl6RegexCapturePositional) {
+            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
+            ASTNode[] opener = check.getNode().getChildren(T_RX_CAP_OPEN);
+            ASTNode[] closer = check.getNode().getChildren(T_RX_CAP_CLOSE);
+            if (opener.length > 0 && closer.length == 0)
+                holder.createErrorAnnotation(opener[0], "Missing closing )");
         }
     }
 }

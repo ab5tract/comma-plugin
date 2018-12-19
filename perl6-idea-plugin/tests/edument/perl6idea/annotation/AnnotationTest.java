@@ -569,4 +569,19 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo <error descr=\"Missing closing }\">{</error> say 42;");
         myFixture.checkHighlighting(false, true, false, false);
     }
+
+    public void testMissingClosingRegexGroup() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 'xxx' ~~ /a <error descr=\"Missing closing ]\">[</error> b | c /;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingRegexAssertion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 'xxx' ~~ /a <error descr=\"Missing closing >\"><</error>ident /;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingRegexCapture() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 'xxx' ~~ /a <error descr=\"Missing closing )\">(</error> b | c /;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
 }
