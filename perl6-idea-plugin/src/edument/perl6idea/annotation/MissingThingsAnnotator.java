@@ -13,6 +13,10 @@ import org.jetbrains.annotations.NotNull;
 public class MissingThingsAnnotator implements Annotator {
     private static final TokenSet T_PAREN_OPEN = TokenSet.create(Perl6TokenTypes.PARENTHESES_OPEN);
     private static final TokenSet T_PAREN_CLOSE = TokenSet.create(Perl6TokenTypes.PARENTHESES_CLOSE);
+    private static final TokenSet T_ARRAY_COMP_OPEN = TokenSet.create(Perl6TokenTypes.ARRAY_COMPOSER_OPEN);
+    private static final TokenSet T_ARRAY_COMP_CLOSE = TokenSet.create(Perl6TokenTypes.ARRAY_COMPOSER_CLOSE);
+    private static final TokenSet T_ARRAY_INDEX_OPEN = TokenSet.create(Perl6TokenTypes.ARRAY_INDEX_BRACKET_OPEN);
+    private static final TokenSet T_ARRAY_INDEX_CLOSE = TokenSet.create(Perl6TokenTypes.ARRAY_INDEX_BRACKET_CLOSE);
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
@@ -28,6 +32,20 @@ public class MissingThingsAnnotator implements Annotator {
             ASTNode[] closer = check.getNode().getChildren(T_PAREN_CLOSE);
             if (opener.length > 0 && closer.length == 0)
                 holder.createErrorAnnotation(opener[0], "Missing closing )");
+        }
+        else if (element instanceof Perl6ArrayComposer) {
+            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
+            ASTNode[] opener = check.getNode().getChildren(T_ARRAY_COMP_OPEN);
+            ASTNode[] closer = check.getNode().getChildren(T_ARRAY_COMP_CLOSE);
+            if (opener.length > 0 && closer.length == 0)
+                holder.createErrorAnnotation(opener[0], "Missing closing ]");
+        }
+        else if (element instanceof  Perl6ArrayIndex) {
+            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
+            ASTNode[] opener = check.getNode().getChildren(T_ARRAY_INDEX_OPEN);
+            ASTNode[] closer = check.getNode().getChildren(T_ARRAY_INDEX_CLOSE);
+            if (opener.length > 0 && closer.length == 0)
+                holder.createErrorAnnotation(opener[0], "Missing closing ]");
         }
     }
 }

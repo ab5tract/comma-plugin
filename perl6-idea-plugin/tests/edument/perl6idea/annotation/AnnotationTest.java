@@ -554,4 +554,14 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = { .say }; $a<error descr=\"Missing closing )\">(</error>42");
         myFixture.checkHighlighting(false, true, false, false);
     }
+
+    public void testMissingClosingArrayComposer() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <error descr=\"Missing closing ]\">[</error>1,2,3");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingArrayIndexer() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = 1,2,3; say @a<error descr=\"Missing closing ]\">[</error>1;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
 }
