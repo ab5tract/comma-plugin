@@ -14,6 +14,10 @@
     <lang.formatter language="Perl6" implementationClass="edument.perl6idea.formatter.Perl6FormattingModelBuilder"/>
     <lang.braceMatcher language="Perl6" implementationClass="edument.perl6idea.editor.Perl6BraceMatcher"/>
     <lang.psiStructureViewFactory language="Perl6" implementationClass="edument.perl6idea.structureView.Perl6StructureViewFactory"/>
+    <declarationRangeHandler key="edument.perl6idea.psi.Perl6PackageDecl"
+                             implementationClass="edument.perl6idea.structureView.PackageDeclarationRangeHandler"/>
+    <declarationRangeHandler key="edument.perl6idea.psi.Perl6RoutineDecl"
+                             implementationClass="edument.perl6idea.structureView.RoutineDeclarationRangeHandler"/>
     <lang.commenter language="Perl6" implementationClass="edument.perl6idea.editor.Perl6Commenter"/>
     <lang.foldingBuilder language="Perl6" implementationClass="edument.perl6idea.editor.Perl6FoldingBuilder"/>
     <typedHandler implementation="edument.perl6idea.editor.SigilCompletionAutoPopupHandler"/>
