@@ -423,7 +423,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     public void testSigspaceAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "grammar G { rule foo { abc<info desc=\"Implicit <.ws> call\"> </info>def<info desc=\"Implicit <.ws> call\"> </info>} }");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting(false, true, false, true);
     }
 
     public void testPackageDeclAnnotator1() {
@@ -562,6 +562,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testMissingClosingArrayIndexer() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = 1,2,3; say @a<error descr=\"Missing closing ]\">[</error>1;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingBlockoid() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo <error descr=\"Missing closing }\">{</error> say 42;");
         myFixture.checkHighlighting(false, true, false, false);
     }
 }
