@@ -101,6 +101,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
                child instanceof Perl6UnlessStatement ||
                child instanceof Perl6ForStatement ||
                child instanceof Perl6GivenStatement ||
+               child instanceof Perl6WhenStatement||
                child instanceof Perl6WheneverStatement||
                child instanceof Perl6LoopStatement||
                child instanceof Perl6ScopedDecl && !((Perl6ScopedDecl)child).getScope().equals("unit");
@@ -189,7 +190,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         return pieceParent instanceof Perl6IfStatement ||
                pieceParent instanceof Perl6UnlessStatement ||
                pieceParent instanceof Perl6GivenStatement ||
-               pieceParent instanceof Perl6WheneverStatement ||
+               pieceParent instanceof Perl6WhenStatement ||
                pieceParent instanceof Perl6LoopStatement ||
                pieceParent instanceof Perl6ForStatement;
     }
