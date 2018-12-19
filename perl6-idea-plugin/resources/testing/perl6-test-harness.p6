@@ -26,7 +26,7 @@ react {
             whenever $proc.start -> $exit {
                 say $output;
                 say "====$file";
-                $*OUT.flush;
+                try $*OUT.flush;
                 run-a-test-file;
             }
         }
