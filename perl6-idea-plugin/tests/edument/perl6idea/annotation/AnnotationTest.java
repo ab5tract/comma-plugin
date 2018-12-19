@@ -519,4 +519,39 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "react { whenever Supply.interval(1) { <error descr=\"Cannot use return in a whenever block\">return 100</error>; } }");
         myFixture.checkHighlighting(false, true, false, false);
     }
+
+    public void testMissingClosingParenFunctionCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say<error descr=\"Missing closing )\">(</error>42;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenMethodCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$*OUT.say<error descr=\"Missing closing )\">(</error>42");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenExpression() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Missing closing )\">(</error>42 + (4 * 3);");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenLoop() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "loop <error descr=\"Missing closing )\">(</error>my $i = 0; $i < 10; $i++ { }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenVarDecl() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my <error descr=\"Missing closing )\">(</error>$x, $y");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenSignature() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo<error descr=\"Missing closing )\">(</error>$x, { }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = { .say }; $a<error descr=\"Missing closing )\">(</error>42");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
 }
