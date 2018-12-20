@@ -2318,6 +2318,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
             case 0:
                 this.checkArgs(0);
                 this.startToken(Perl6TokenTypes.TERM);
+                this.startSymbol();
                 this.setArgs();
                 this.state = 1;
                 return 4;
@@ -2332,6 +2333,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
+                this.endSymbol("term");
                 this.state = 2;
                 return -3;
 

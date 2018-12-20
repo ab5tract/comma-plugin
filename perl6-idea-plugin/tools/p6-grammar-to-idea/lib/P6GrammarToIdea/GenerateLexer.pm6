@@ -251,6 +251,20 @@ my class GrammarCompiler {
             when 'scope-pop' {
                 $append-to.push: this-call 'scopePop';
             }
+            when 'start-symbol' {
+                $append-to.push: this-call 'startSymbol';
+            }
+            when 'end-symbol' {
+                unless $rule.args.elems == 1 && $rule.args[0] ~~ StrValue {
+                    die "end-symbol must be called with a single string argument";
+                }
+                my $sym-type = $rule.args[0].value;
+                my constant @valid-types = <term type routine>;
+                unless $sym-type eq any(@valid-types) {
+                    die "end-symbol argument must be one of @valid-types.join(", ")";
+                }
+                $append-to.push: this-call 'endSymbol', str-lit($sym-type);
+            }
             when 'alpha' {
                 $append-to.push: unless(this-call('alphaChar'), [backtrack()]);
             }

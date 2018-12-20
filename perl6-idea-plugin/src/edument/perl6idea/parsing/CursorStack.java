@@ -41,6 +41,10 @@ public class CursorStack {
     /* The current stack of scopes, for tracking parse-sensitive symbols. */
     public List<Map<String, Perl6SymbolKind>> symbols = new ArrayList<>();
 
+    /* Start of current symbol being parsed, for later registration in the
+     * symbol type.  */
+    public int symbolStart = -1;
+
     public CursorStack(CharSequence target) {
         this.target = target;
     }

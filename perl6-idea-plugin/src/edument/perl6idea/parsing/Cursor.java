@@ -1,6 +1,7 @@
 package edument.perl6idea.parsing;
 
 import com.intellij.psi.tree.IElementType;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -642,6 +643,19 @@ public abstract class Cursor<TCursor extends Cursor> {
 
     public void scopePop() {
         stack.symbols.remove(stack.symbols.size() - 1);
+    }
+
+    public void startSymbol() {
+        stack.symbolStart = pos;
+    }
+
+    public void endSymbol(String type) {
+        String symbol = stack.target.subSequence(stack.symbolStart, pos).toString();
+        Map<String, Perl6SymbolKind> st = stack.symbols.get(stack.symbols.size() - 1);
+        if (type.equals("term") || type.equals("type"))
+            st.put(symbol, Perl6SymbolKind.TypeOrConstant);
+        else if (type.equals("routine"))
+            st.put(symbol, Perl6SymbolKind.Routine);
     }
 
     public abstract int runRule();

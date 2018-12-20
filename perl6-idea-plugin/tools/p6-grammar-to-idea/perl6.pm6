@@ -59,7 +59,9 @@ grammar MAIN {
     token defterm {
         <.start-element('TERM_DEFINITION')>
         <.start-token('TERM')>
+        <.start-symbol>
         <.identifier>
+        <.end-symbol('term')>
         <.end-token('TERM')>
         <.end-element('TERM_DEFINITION')>
     }
