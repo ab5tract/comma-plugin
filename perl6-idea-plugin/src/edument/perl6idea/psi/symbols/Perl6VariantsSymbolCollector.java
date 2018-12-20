@@ -1,15 +1,13 @@
 package edument.perl6idea.psi.symbols;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-public class Perl6VariantsSymbolCollector extends Perl6PackageConstrainedSymbolCollector{
-    private Perl6SymbolKind wantedKind;
+public class Perl6VariantsSymbolCollector extends Perl6PackageConstrainedSymbolCollector {
+    private Set<Perl6SymbolKind> wantedKinds;
     private Map<String, Perl6Symbol> seen = new HashMap<>();
 
-    public Perl6VariantsSymbolCollector(Perl6SymbolKind wantedKind) {
-        this.wantedKind = wantedKind;
+    public Perl6VariantsSymbolCollector(Perl6SymbolKind... wantedKinds) {
+        this.wantedKinds = new HashSet<>(Arrays.asList(wantedKinds));
     }
 
     @Override
@@ -17,7 +15,7 @@ public class Perl6VariantsSymbolCollector extends Perl6PackageConstrainedSymbolC
         if (!acceptablyScoped(symbol))
             return;
         String name = symbol.getName();
-        if (symbol.getKind() == wantedKind && !seen.containsKey(name))
+        if (wantedKinds.contains(symbol.getKind()) && !seen.containsKey(name))
             seen.put(name, symbol);
     }
 
