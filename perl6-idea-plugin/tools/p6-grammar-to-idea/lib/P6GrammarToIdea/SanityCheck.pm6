@@ -14,7 +14,7 @@ my constant %BUILTIN-RULES := set 'start-token', 'end-token', 'start-element', '
                                   'opp-end-prefixes', 'opp-start-postfixes',
                                   'opp-push-postfix', 'opp-end-postfixes',
                                   'scope-push', 'scope-pop', 'start-symbol',
-                                  'end-symbol';
+                                  'end-symbol', 'is-name';
 
 multi sub sanity-check(Braids $braids) is export {
     my @*ERRORS;

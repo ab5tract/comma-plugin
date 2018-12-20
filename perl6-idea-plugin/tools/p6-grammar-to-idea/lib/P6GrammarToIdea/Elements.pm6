@@ -15,7 +15,7 @@ use P6GrammarToIdea::AST;
 my constant %IGNORE-NAMES = set 'alpha', 'ww', 'MARKER', 'MARKED', 'peek-delimiters',
                                 'bracket-ending', 'start-queue-heredoc', 'has-heredoc',
                                 'end-queue-heredoc', 'dequeue-heredoc', 'scope-push',
-                                'scope-pop', 'start-symbol', 'end-symbol';
+                                'scope-pop', 'start-symbol', 'end-symbol', 'is-name';
 
 role ParseNode is export {}
 

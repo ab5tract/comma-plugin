@@ -265,6 +265,9 @@ my class GrammarCompiler {
                 }
                 $append-to.push: this-call 'endSymbol', str-lit($sym-type);
             }
+            when 'is-name' {
+                $append-to.push: unless(this-call('isName'), [backtrack()]);
+            }
             when 'alpha' {
                 $append-to.push: unless(this-call('alphaChar'), [backtrack()]);
             }
