@@ -13,10 +13,7 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
-import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
-import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +31,9 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     @Nullable
     @Override
     public PsiElement getNameIdentifier() {
+        Perl6TermDefinition term = getTerm();
+        if (term != null)
+            return term;
         Perl6Variable varNode = getVariable();
         return varNode != null ? varNode.getVariableToken() : null;
     }
@@ -119,7 +119,11 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public void contributeSymbols(Perl6SymbolCollector collector) {
         String name = getName();
         if (name != null && name.length() > 1) {
-            offerVariableSymbols(collector, name, this);
+            Perl6TermDefinition defterm = getTerm();
+            if (defterm != null)
+                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, this));
+            else
+                offerVariableSymbols(collector, name, this);
         }
     }
 
@@ -128,12 +132,14 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public PsiMetaData getMetaData() {
         PsiElement decl = this;
         String desigilname = getName();
-        // Chop off sigil, if it's not sigil-only name
-        if (desigilname != null && desigilname.length() > 1)
-            desigilname = desigilname.substring(1);
-        // Chop off twigil if any
-        if (desigilname != null && desigilname.length() >= 2 && !Character.isLetter(desigilname.charAt(0)))
-            desigilname = desigilname.substring(1);
+        if (getTerm() == null) {
+            // Chop off sigil, if it's not sigil-only name
+            if (desigilname != null && desigilname.length() > 1)
+                desigilname = desigilname.substring(1);
+            // Chop off twigil if any
+            if (desigilname != null && desigilname.length() >= 2 && !Character.isLetter(desigilname.charAt(0)))
+                desigilname = desigilname.substring(1);
+        }
         String finaldesigilname = desigilname;
         return new PsiMetaData() {
             @Override
@@ -204,5 +210,9 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
     private Perl6Variable getVariable() {
         return findChildByClass(Perl6Variable.class);
+    }
+
+    private Perl6TermDefinition getTerm() {
+        return findChildByClass(Perl6TermDefinition.class);
     }
 }
