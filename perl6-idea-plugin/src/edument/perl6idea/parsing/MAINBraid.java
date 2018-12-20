@@ -1877,6 +1877,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*LEFTSIGIL", "");
                 this.declareDynamicVariable("$*IN_META", "");
                 this.declareDynamicVariable("$*IN_REDUCE", 0);
+                this.scopePush();
                 this.setArgs();
                 this.state = 1;
                 return 43;
@@ -1993,6 +1994,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 13:
+                this.scopePop();
                 return -1;
 
             }

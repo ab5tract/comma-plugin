@@ -8,6 +8,7 @@ grammar MAIN {
         :my $*LEFTSIGIL = '';
         :my $*IN_META = '';
         :my $*IN_REDUCE = 0;
+        <.scope-push>
         <.statementlist>
         [
         || $
@@ -19,6 +20,7 @@ grammar MAIN {
            ]*
            <.bogus_end>?
         ]
+        <.scope-pop>
     }
 
     token bogus_end {
