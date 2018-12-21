@@ -409,7 +409,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         Notification notification = new Notification(
             "Perl 6 meta error", Perl6Icons.CAMELIA,
             "Perl 6 meta file is missing", "",
-            String.format("'%s' nor '%s' files seem to be present in this module.", null, META6_JSON_NAME),
+            String.format("'%s' nor '%s' files seem to be present in this module.", META_OBSOLETE_NAME, META6_JSON_NAME),
             NotificationType.WARNING, null);
         notification.addAction(new AnAction(String.format("Stub and open %s file", META6_JSON_NAME)) {
             @Override
