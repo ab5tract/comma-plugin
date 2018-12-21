@@ -5,8 +5,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import edument.perl6idea.refactoring.NewCodeBlockData;
 import edument.perl6idea.refactoring.Perl6CodeBlockType;
-import edument.perl6idea.refactoring.Perl6ExtractCodeBlockHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,12 +15,12 @@ import java.util.StringJoiner;
 
 public class Perl6ElementFactory {
     public static Perl6Statement createNamedCodeBlock(Project project,
-                                                  Perl6ExtractCodeBlockHandler.NewCodeBlockData data,
+                                                  NewCodeBlockData data,
                                                   List<String> contents) {
         return produceElement(project, getNamedCodeBlockText(data, contents), Perl6Statement.class);
     }
 
-    private static String getNamedCodeBlockText(Perl6ExtractCodeBlockHandler.NewCodeBlockData data,
+    private static String getNamedCodeBlockText(NewCodeBlockData data,
                                                 List<String> contents) {
         String base = "%s %s(%s)";
         StringJoiner signatureJoiner = new StringJoiner(", ");
@@ -93,14 +94,11 @@ public class Perl6ElementFactory {
     }
 
     public static Perl6LongName createMethodCallName(Project project, String name) {
-        String choppedName = name.startsWith("!") ? name.substring(1) : name;
-        return produceElement(project, getMethodCallNameText(choppedName), Perl6LongName.class);
+        return produceElement(project, getMethodCallNameText(name), Perl6LongName.class);
     }
 
     private static String getMethodCallNameText(String name) {
-        // Private and non-private methods has the same element type for name,
-        // so private ones will work with `.` call op too
-        return String.format("self.%s;", name);
+        return name.startsWith("!") ? "class { method " + name + " {} }" : "self." + name;
     }
 
     public static Perl6SubCallName createSubCallName(Project project, String name) {
@@ -125,7 +123,23 @@ public class Perl6ElementFactory {
         return name;
     }
 
-    private static <T extends PsiElement> T produceElement(Project project, String text, Class<T> clazz) {
+    public static Perl6Statement createSubCall(Project project, NewCodeBlockData data) {
+        return produceElement(project, getSubCallText(data), Perl6Statement.class);
+    }
+
+    private static String getSubCallText(NewCodeBlockData data) {
+        return String.format("%s();", data.name);
+    }
+
+    public static PsiElement createMethodCall(Project project, NewCodeBlockData data) {
+        return produceElement(project, getMethodCallText(data), Perl6Statement.class);
+    }
+
+    private static String getMethodCallText(NewCodeBlockData data) {
+        return String.format("self%s%s;", data.isPrivateMethod ? "." : "!", data.name);
+    }
+
+    private static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {
         String filename = "dummy." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
         Perl6File dummyFile = (Perl6File) PsiFileFactory.getInstance(project)
                 .createFileFromText(filename, Perl6ScriptFileType.INSTANCE, text);

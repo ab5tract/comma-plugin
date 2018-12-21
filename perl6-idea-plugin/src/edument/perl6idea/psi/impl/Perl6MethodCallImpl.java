@@ -41,6 +41,8 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
+        if (name.startsWith("!"))
+            name = name.substring(1);
         Perl6LongName call = Perl6ElementFactory.createMethodCallName(getProject(), name);
         Perl6LongName longName = findChildByClass(Perl6LongName.class);
         if (longName != null) {

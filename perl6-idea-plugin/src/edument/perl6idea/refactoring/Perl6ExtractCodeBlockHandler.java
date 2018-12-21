@@ -10,7 +10,9 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
@@ -76,7 +78,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         List<String> contents = Arrays.stream(elements).map(p -> p.getText()).collect(Collectors.toList());
         PsiElement newBlock = createNewBlock(project, newCodeBlockData, contents);
         insertNewCodeBlock(project, parentScope, newBlock, anchor);
-        replaceStatementsWithCall(newCodeBlockData, elements);
+        replaceStatementsWithCall(project, newCodeBlockData, parentScope, elements);
     }
 
     private boolean checkElementsSanity(@NotNull Project project, Editor editor, PsiElement parentScope, PsiElement[] elements) {
@@ -90,18 +92,26 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     private boolean checkMethodSanity(@NotNull Project project, Editor editor, PsiElement parentScope) {
         // Check if method outside of class creation
         if (myCodeBlockType == Perl6CodeBlockType.METHOD || myCodeBlockType == Perl6CodeBlockType.PRIVATEMETHOD) {
-            PsiElement classPresent = PsiTreeUtil.getParentOfType(parentScope,
+            PsiElement wrapper = PsiTreeUtil.getParentOfType(parentScope,
                     Perl6File.class, Perl6RoutineDecl.class, Perl6PackageDecl.class);
-            if (!(classPresent instanceof Perl6PackageDecl)) {
+            if (wrapper instanceof Perl6PackageDecl) {
+                String kind = ((Perl6PackageDecl) wrapper).getPackageKind();
+                if (kind == null || !kind.equals("class") && !kind.equals("role") &&
+                    !kind.equals("grammar") && !kind.equals("monitor")) {
+                    reportError(project, editor, "Cannot extract a method into " + kind);
+                    return true;
+                }
+            } else if (wrapper instanceof Perl6RoutineDecl) {
+                String kind = ((Perl6RoutineDecl)wrapper).getRoutineKind();
+                if (kind == null || !kind.equals("method")) {
+                    reportError(project, editor, "Cannot extract a method into " + kind);
+                    return true;
+                }
+            } else {
                 reportError(project, editor, "Cannot extract a method outside of class, monitor, grammar or role");
                 return true;
             }
-            String kind = ((Perl6PackageDecl) classPresent).getPackageKind();
-            if (kind == null || !kind.equals("class") && !kind.equals("role") &&
-                    !kind.equals("grammar") && !kind.equals("monitor")) {
-                reportError(project, editor, "Cannot extract a method into " + kind);
-                return true;
-            }
+
         }
         return false;
     }
@@ -221,40 +231,25 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     protected void insertNewCodeBlock(Project project, PsiElement parent,
                                       PsiElement newBlock, PsiElement anchor) {
         WriteCommandAction.runWriteCommandAction(project, () -> {
-            parent.getNode().addChild(newBlock.getNode(), anchor.getNode());
+            parent.addBefore(newBlock, anchor);
         });
     }
 
-    protected void replaceStatementsWithCall(NewCodeBlockData data, PsiElement[] elements) {
-        // TODO Create a caller
-        // Delete present statements
-        for (PsiElement el : elements) {
-            if (el.isValid())
-                el.delete();
-        }
-    }
-
-    public static class NewCodeBlockData {
-        public Perl6CodeBlockType type;
-        public String scope = "";
-        public String name;
-        public String returnType = "";
-        public String[] signatureParts = ArrayUtil.EMPTY_STRING_ARRAY;
-
-        public NewCodeBlockData(Perl6CodeBlockType type, String name) {
-            this.type = type;
-            this.name = name;
+    protected void replaceStatementsWithCall(Project project, NewCodeBlockData data, PsiElement parentScope, PsiElement[] elements) {
+        PsiElement call;
+        if (data.type == Perl6CodeBlockType.ROUTINE) {
+            call = Perl6ElementFactory.createSubCall(parentScope.getProject(), data);
+        } else {
+            call = Perl6ElementFactory.createMethodCall(parentScope.getProject(), data);
         }
 
-        public NewCodeBlockData(Perl6CodeBlockType type, String scope,
-                                String name, String returnType,
-                                String[] signatureParts) {
-            this.type = type;
-            this.scope = scope;
-            this.name = name;
-            this.returnType = returnType;
-            this.signatureParts = signatureParts;
-        }
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            PsiElement nextAnchor = elements[elements.length - 1].getNextSibling();
+            // Delete present statements
+            parentScope.deleteChildRange(elements[0], elements[elements.length - 1]);
+            // Insert a call
+            parentScope.addBefore(call, nextAnchor);
+        });
     }
 
     private static void reportError(Project project, Editor editor, String message) {
