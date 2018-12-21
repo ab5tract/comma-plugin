@@ -8,9 +8,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
-import com.intellij.util.Function;
 import com.intellij.util.Producer;
-import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6StatementList;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,25 +19,25 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     }
 
     public void testTopFileSubroutineExtraction() {
-        doTest(this::getClosestListBySelection,
+        doTest(() -> getClosestListBySelection("say 1"),
                 "foo-bar", Perl6CodeBlockType.ROUTINE);
     }
 
-    private Perl6StatementList getClosestListBySelection() {
-        return PsiTreeUtil.getParentOfType(myFixture.getElementAtCaret(), Perl6StatementList.class);
+    private Perl6StatementList getClosestListBySelection(String text) {
+        return myFixture.findElementByText(text, Perl6StatementList.class);
     }
 
     public void testTopFileMethodImpossible() {
         assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () -> {
-            doTest(this::getClosestListBySelection,
+            doTest(() -> getClosestListBySelection("say 1"),
                     "foo-bar", Perl6CodeBlockType.METHOD);
         });
     }
 
-//    public void testInClassMethodExtraction() {
-//        doTest(this::getClosestListBySelection,
-//                "foo-bar", Perl6CodeBlockType.METHOD);
-//    }
+    public void testInClassMethodExtraction() {
+        doTest(() -> getClosestListBySelection("foo"),
+                "foo-bar", Perl6CodeBlockType.METHOD);
+    }
 
     private void doTest(Producer<Perl6StatementList> getScope, String name, Perl6CodeBlockType type) {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
