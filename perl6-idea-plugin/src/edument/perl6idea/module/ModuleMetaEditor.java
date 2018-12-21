@@ -1,5 +1,7 @@
 package edument.perl6idea.module;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleConfigurationEditor;
 import com.intellij.openapi.options.ConfigurationException;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -171,15 +174,25 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
             throw new ConfigurationException(
               "Empty fields: " +
               String.join(", ", ArrayUtil.toStringArray(myEmptyFields)));
-        saveFields();
+        try {
+            saveFields();
+        }
+        catch (IOException e) {
+            throw new ConfigurationException(e.getMessage());
+        }
     }
 
-    private void saveFields() {
+    private void saveFields() throws IOException {
         Perl6MetaDataComponent metaData = myModule.getComponent(Perl6MetaDataComponent.class);
-        metaData.setName(myNameField.getText());
-        metaData.setDescription(myDescriptionField.getText());
-        metaData.setAuth(myAuthField.getText());
-        metaData.setVersion(myVersionField.getText());
-        metaData.setLicense(myLicenseField.getText());
+        if (!metaData.isMetaDataExist()) {
+            metaData.createStubMetaFile(null, false);
+        }
+        ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(() -> {
+            metaData.setName(myNameField.getText());
+            metaData.setDescription(myDescriptionField.getText());
+            metaData.setAuth(myAuthField.getText());
+            metaData.setVersion(myVersionField.getText());
+            metaData.setLicense(myLicenseField.getText());
+        }));
     }
 }
