@@ -100,9 +100,10 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         PsiElement infix = PsiTreeUtil.getChildOfType(this, Perl6InfixImpl.class);
         if (infix == null || !infix.getText().equals("=")) return null;
         PsiElement value = infix.getNextSibling();
-        while (value instanceof PsiWhiteSpace || (value != null && value.getNode().getElementType() == UNV_WHITE_SPACE))
+        while (value instanceof PsiWhiteSpace || (value != null && value.getNode().getElementType() == UNV_WHITE_SPACE) ||
+                value instanceof Perl6Comment)
             value = value.getNextSibling();
-        return value == null ? null : ((Perl6PsiElement)value).inferType();
+        return value instanceof Perl6PsiElement ? ((Perl6PsiElement)value).inferType() : null;
     }
 
     @Override
