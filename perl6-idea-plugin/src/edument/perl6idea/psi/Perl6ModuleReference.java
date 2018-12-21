@@ -56,4 +56,13 @@ public class Perl6ModuleReference extends PsiReferenceBase<Perl6ModuleName> {
         Perl6ModuleName name = getElement();
         return name.setName(newElementName);
     }
+
+    @Override
+    public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
+        // Our Perl6File, so can calculate new path
+        if (element instanceof Perl6PsiElement) {
+            getElement().setName(((Perl6PsiElement)element).getEnclosingPerl6ModuleName());
+        }
+        return element;
+    }
 }
