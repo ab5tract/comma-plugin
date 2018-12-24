@@ -136,7 +136,7 @@ public class Perl6ElementFactory {
     }
 
     private static String getMethodCallText(NewCodeBlockData data) {
-        return String.format("self%s%s;", data.isPrivateMethod ? "." : "!", data.name);
+        return String.format("self%s%s();", data.isPrivateMethod ? "." : "!", data.name);
     }
 
     private static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {
