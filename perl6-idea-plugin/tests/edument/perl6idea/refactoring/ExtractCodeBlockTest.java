@@ -26,14 +26,19 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     }
 
     public void testTopFileMethodImpossible() {
-        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () -> {
-            doTest(() -> getClosestListBySelection("say 1"),
-                    "foo-bar", Perl6CodeBlockType.METHOD);
-        });
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () ->
+                doTest(() -> getClosestListBySelection("say 1"),
+                        "foo-bar", Perl6CodeBlockType.METHOD));
+    }
+
+    public void testInMethodMethodExtraction() {
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () ->
+                doTest(() -> getClosestListBySelection("foo"),
+                        "foo-bar", Perl6CodeBlockType.PRIVATEMETHOD));
     }
 
     public void testInClassMethodExtraction() {
-        doTest(() -> getClosestListBySelection("foo"),
+        doTest(() -> PsiTreeUtil.getParentOfType(getClosestListBySelection("say 'foo'"), Perl6StatementList.class),
                 "foo-bar", Perl6CodeBlockType.PRIVATEMETHOD);
     }
 
