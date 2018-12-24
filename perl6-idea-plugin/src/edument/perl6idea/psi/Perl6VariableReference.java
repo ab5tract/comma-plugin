@@ -9,7 +9,7 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
+public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     public Perl6VariableReference(Perl6Variable var) {
         super(var, new TextRange(0, var.getTextLength()));
     }
@@ -17,7 +17,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
     @Nullable
     @Override
     public PsiElement resolve() {
-        Perl6Variable var = (Perl6Variable)getElement();
+        Perl6Variable var = getElement();
         Perl6Symbol symbol = var.resolveSymbol(Perl6SymbolKind.Variable, var.getVariableName());
         if (symbol != null) {
             PsiElement psi = symbol.getPsi();
@@ -73,7 +73,6 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6PsiElement> {
 
     @Override
     public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-        Perl6Variable var = (Perl6Variable)myElement;
-        return var.setName(newElementName);
+        return myElement.setName(newElementName);
     }
 }
