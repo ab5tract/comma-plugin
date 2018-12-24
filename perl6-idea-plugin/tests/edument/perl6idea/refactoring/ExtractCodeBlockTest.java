@@ -9,6 +9,8 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.util.Producer;
+import edument.perl6idea.psi.Perl6File;
+import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6StatementList;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,10 +25,6 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
                 "foo-bar", Perl6CodeBlockType.ROUTINE);
     }
 
-    private Perl6StatementList getClosestListBySelection(String text) {
-        return myFixture.findElementByText(text, Perl6StatementList.class);
-    }
-
     public void testTopFileMethodImpossible() {
         assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () -> {
             doTest(() -> getClosestListBySelection("say 1"),
@@ -36,7 +34,11 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
 
     public void testInClassMethodExtraction() {
         doTest(() -> getClosestListBySelection("foo"),
-                "foo-bar", Perl6CodeBlockType.METHOD);
+                "foo-bar", Perl6CodeBlockType.PRIVATEMETHOD);
+    }
+
+    private Perl6StatementList getClosestListBySelection(String text) {
+        return myFixture.findElementByText(text, Perl6StatementList.class);
     }
 
     private void doTest(Producer<Perl6StatementList> getScope, String name, Perl6CodeBlockType type) {
