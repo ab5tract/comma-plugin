@@ -3419,7 +3419,7 @@ grammar MAIN {
     }
 
     token quote_quasi {
-        <?before 'quasi' <.ws>>
+        <?before 'quasi' <.ws> '{'>
         <.start-element('QUASI')>
         <.start-token('QUASI')>
         'quasi'
