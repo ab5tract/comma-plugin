@@ -83,6 +83,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, false);
     }
 
+    public void testAnonymousVariables() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"my $; my @; my %; my &; say $; say @; say %; say &;");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
     public void testDeclaredSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo() {};\nmy sub bar() {};\nfoo;\nbar()");
         myFixture.checkHighlighting(false, false, true, false);

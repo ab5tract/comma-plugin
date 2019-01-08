@@ -22,7 +22,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
             return;
 
         // Check for $=finish section
-        if (Perl6Variable.getTwigil(ref.getVariableName()) == '=' && variableName.equals("$=finish")) {
+        if (Perl6Variable.getTwigil(variableName) == '=' && variableName.equals("$=finish")) {
             PsiElement list = PsiTreeUtil.getChildOfType(
               PsiTreeUtil.getParentOfType(element, PsiFile.class),
               Perl6StatementList.class);
@@ -34,33 +34,31 @@ public class UndeclaredVariableAnnotator implements Annotator {
                   "There is no =finish section in this file");
         }
 
-        // We only check twigilless variables for now (can't yet do attributes
-        // because they may come from a role).
-        if (Perl6Variable.getTwigil(ref.getVariableName()) != ' ' || ref.getVariableName().equals("$"))
+        // We only check usual variables in this annotator
+        // attributes are handled by another one
+        if (Perl6Variable.getTwigil(variableName) != ' ')
             return;
 
-        // If it is attempt declare @() or %() contextualizer, IllegalVariableDeclarationAnnotator
-        // will take care of this.
-        if (ref.getParent() instanceof Perl6VariableDecl &&
-            ref.getNextSibling() instanceof Perl6Signature &&
-            (ref.getVariableName().equals("@") ||
-             ref.getVariableName().equals("%")))
+        // Ignore anonymous variables
+        // It also skips cases of contextualizer declarations
+        if (variableName.equals("$") || variableName.equals("@") ||
+            variableName.equals("%") || variableName.equals("&"))
             return;
 
         // Make sure it's not a long or late-bound name.
-        if (Perl6Variable.getTwigil(ref.getVariableName()) == '!' || variableName.contains("::") || variableName.contains(":["))
+        if (variableName.contains("::") || variableName.contains(":["))
             return;
 
         // Otherwise, try to resolve it.
         Perl6Symbol resolved = ref.resolveSymbol(Perl6SymbolKind.Variable, variableName);
         if (resolved == null) {
-            // Straight resolution failure.
+            // Straight resolution failure
             holder.createErrorAnnotation(element,
                 String.format("Variable %s is not declared", variableName));
         }
         else {
-            // May not be available yet.
-            if (Perl6Variable.getTwigil(ref.getVariableName()) == ' ' && Perl6Variable.getSigil(ref.getVariableName()) != '&') {
+            // May not be available yet
+            if (Perl6Variable.getTwigil(variableName) == ' ' && Perl6Variable.getSigil(variableName) != '&') {
                 PsiElement psi = resolved.getPsi();
                 if (psi != null && psi.getContainingFile() == ref.getContainingFile() &&
                         psi.getTextOffset() > ref.getTextOffset())
