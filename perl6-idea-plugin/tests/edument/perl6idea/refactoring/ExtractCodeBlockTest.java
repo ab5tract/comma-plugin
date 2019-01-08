@@ -9,8 +9,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.util.Producer;
-import edument.perl6idea.psi.Perl6File;
-import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6StatementList;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,28 +19,33 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     }
 
     public void testTopFileSubroutineExtraction() {
-        doTest(() -> getClosestListBySelection("say 1"),
+        doTest(() -> getClosestStatementListByText("say 1"),
                 "foo-bar", Perl6CodeBlockType.ROUTINE);
     }
 
     public void testTopFileMethodImpossible() {
         assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () ->
-                doTest(() -> getClosestListBySelection("say 1"),
+                doTest(() -> getClosestStatementListByText("say 1"),
                         "foo-bar", Perl6CodeBlockType.METHOD));
     }
 
     public void testInMethodMethodExtraction() {
         assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () ->
-                doTest(() -> getClosestListBySelection("foo"),
+                doTest(() -> getClosestStatementListByText("foo"),
                         "foo-bar", Perl6CodeBlockType.PRIVATEMETHOD));
     }
 
     public void testInClassMethodExtraction() {
-        doTest(() -> PsiTreeUtil.getParentOfType(getClosestListBySelection("say 'foo'"), Perl6StatementList.class),
+        doTest(() -> PsiTreeUtil.getParentOfType(getClosestStatementListByText("say 'foo'"), Perl6StatementList.class),
+                "foo-bar", Perl6CodeBlockType.METHOD);
+    }
+
+    public void testInClassPrivateMethodExtraction() {
+        doTest(() -> PsiTreeUtil.getParentOfType(getClosestStatementListByText("say 'foo'"), Perl6StatementList.class),
                 "foo-bar", Perl6CodeBlockType.PRIVATEMETHOD);
     }
 
-    private Perl6StatementList getClosestListBySelection(String text) {
+    private Perl6StatementList getClosestStatementListByText(String text) {
         return myFixture.findElementByText(text, Perl6StatementList.class);
     }
 
