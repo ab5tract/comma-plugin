@@ -234,7 +234,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     protected void replaceStatementsWithCall(Project project, NewCodeBlockData data, PsiElement parentScope, PsiElement[] elements) {
-        PsiElement call;
+        Perl6Statement call;
         if (data.type == Perl6CodeBlockType.ROUTINE) {
             call = Perl6ElementFactory.createSubCall(parentScope.getProject(), data);
         } else {

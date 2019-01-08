@@ -28,9 +28,9 @@ public class Perl6ElementFactory {
         String signature = signatureJoiner.toString();
         if (!data.returnType.isEmpty())
             signature += " --> " + data.returnType;
-
+        String nameToUse = data.type == Perl6CodeBlockType.PRIVATEMETHOD && !data.name.startsWith("!") ? "!" + data.name : data.name;
         String type = data.type == Perl6CodeBlockType.ROUTINE ? "sub" : "method";
-        String baseFilled = String.format(base, type, data.name, signature);
+        String baseFilled = String.format(base, type, nameToUse, signature);
 
         StringJoiner bodyJoiner = new StringJoiner("");
         contents.forEach(bodyJoiner::add);
@@ -131,12 +131,12 @@ public class Perl6ElementFactory {
         return String.format("%s();", data.name);
     }
 
-    public static PsiElement createMethodCall(Project project, NewCodeBlockData data) {
+    public static Perl6Statement createMethodCall(Project project, NewCodeBlockData data) {
         return produceElement(project, getMethodCallText(data), Perl6Statement.class);
     }
 
     private static String getMethodCallText(NewCodeBlockData data) {
-        return String.format("self%s%s();", data.isPrivateMethod ? "." : "!", data.name);
+        return String.format("self%s%s();", data.isPrivateMethod ? "!" : ".", data.name);
     }
 
     private static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {
