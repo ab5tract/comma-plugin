@@ -181,4 +181,11 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.moveFile("IdeaFoo4/Base.pm6", "IdeaFoo4/New");
         myFixture.checkResultByFile("IdeaFoo4/User.pm6", "IdeaFoo4/UserMovedBase.pm6", true);
     }
+
+    public void testGrammarRuleRename() {
+        myFixture.configureByFile("GrammarRule.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(52);
+        myFixture.renameElementAtCaret("foo-bar");
+        myFixture.checkResultByFile("GrammarRuleAfter.pm6");
+    }
 }
