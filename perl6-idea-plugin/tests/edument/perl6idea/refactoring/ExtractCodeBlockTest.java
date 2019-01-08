@@ -36,17 +36,30 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     }
 
     public void testInClassMethodExtraction() {
-        doTest(() -> PsiTreeUtil.getParentOfType(getClosestStatementListByText("say 'foo'"), Perl6StatementList.class),
+        doTest(() -> getNextList(getClosestStatementListByText("say 'foo'")),
                 "foo-bar", Perl6CodeBlockType.METHOD);
     }
 
     public void testInClassPrivateMethodExtraction() {
-        doTest(() -> PsiTreeUtil.getParentOfType(getClosestStatementListByText("say 'foo'"), Perl6StatementList.class),
+        doTest(() -> getNextList(getClosestStatementListByText("say 'foo'")),
                 "foo-bar", Perl6CodeBlockType.PRIVATEMETHOD);
     }
 
+    public void testSubroutineExtractionTwoLevelsUp() {
+        doTest(() -> getNextList(getNextList(getClosestStatementListByText("say 'foo'"))),
+                "outer-sub", Perl6CodeBlockType.ROUTINE);
+    }
+
+    // Helper methods
+    /**
+     * Gets innermost statement list in an opened file around a line of text passed
+     */
     private Perl6StatementList getClosestStatementListByText(String text) {
         return myFixture.findElementByText(text, Perl6StatementList.class);
+    }
+
+    private Perl6StatementList getNextList(Perl6StatementList list) {
+        return PsiTreeUtil.getParentOfType(list, Perl6StatementList.class, true);
     }
 
     private void doTest(Producer<Perl6StatementList> getScope, String name, Perl6CodeBlockType type) {
