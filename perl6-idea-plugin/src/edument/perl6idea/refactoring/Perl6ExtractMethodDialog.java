@@ -17,11 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public abstract class Perl6ExtractMethodDialog extends RefactoringDialog {
     public static final String[] SCOPE_OPTIONS = {"", "my", "our"};
@@ -33,10 +30,12 @@ public abstract class Perl6ExtractMethodDialog extends RefactoringDialog {
     private MethodSignatureComponent mySignature;
     private String myCodeBlockType;
     private boolean myIsPrivate;
+    private Perl6VariableData[] myInputVariables;
 
-    protected Perl6ExtractMethodDialog(Project project, String title, Perl6CodeBlockType codeBlockType) {
+    protected Perl6ExtractMethodDialog(Project project, String title, Perl6CodeBlockType codeBlockType, Perl6VariableData[] myInputVariables) {
         super(project, true);
         mySignature = new MethodSignatureComponent("", project, Perl6ScriptFileType.INSTANCE);
+        this.myInputVariables = myInputVariables;
         mySignature.setMinimumSize(new Dimension(400, 100));
         myNameField = new NameSuggestionsField(ArrayUtil.EMPTY_STRING_ARRAY, myProject);
         myScopeField = new ComboBox<>(SCOPE_OPTIONS);
@@ -66,12 +65,7 @@ public abstract class Perl6ExtractMethodDialog extends RefactoringDialog {
         scopePanel.add(scopeLabel, BorderLayout.NORTH);
         scopePanel.add(myScopeField, BorderLayout.SOUTH);
         scopeLabel.setLabelFor(myScopeField);
-        myScopeField.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                update();
-            }
-        });
+        myScopeField.addItemListener(e -> update());
         main.add(scopePanel, BorderLayout.WEST);
 
         // Name piece
@@ -108,7 +102,7 @@ public abstract class Perl6ExtractMethodDialog extends RefactoringDialog {
     @Override
     protected JComponent createCenterPanel() {
         myContentPane = new JPanel(new BorderLayout());
-        createParameters();
+        createParametersPanel();
 
         final Splitter splitter = new Splitter(true);
         splitter.setShowDividerIcon(false);
@@ -153,13 +147,20 @@ public abstract class Perl6ExtractMethodDialog extends RefactoringDialog {
 
     private String prepareSignatureParameterBlock() {
         String retType = myReturnTypeField.getText();
+        String base = ""; // parameters and return type
+        if (myInputVariables.length != 0) {
+            StringJoiner paramsJoiner = new StringJoiner(", ");
+            for (Perl6VariableData var : myInputVariables) {
+                paramsJoiner.add(var.getPresentation());
+            }
+            base += paramsJoiner.toString();
+        }
         if (!retType.isEmpty())
-            return String.format("--> %s", retType);
-        return "";
+            base += "--> " + retType;
+        return base;
     }
 
-    private void createParameters() {
-
+    private void createParametersPanel() {
     }
 
     public String getScope() {
@@ -170,8 +171,8 @@ public abstract class Perl6ExtractMethodDialog extends RefactoringDialog {
         return myNameField.getEnteredName();
     }
 
-    public JBTable getParams() {
-        return myParams;
+    public Perl6VariableData[] getInputVariables() {
+        return myInputVariables;
     }
 
     public String getReturnType() {

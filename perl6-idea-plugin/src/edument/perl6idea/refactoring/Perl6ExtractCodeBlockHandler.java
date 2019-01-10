@@ -15,7 +15,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
-import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +71,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
          * if no such anchor is possible, e.g. when a method is added after last one in a class */
         PsiElement anchor = getAnchor(parentScope, elements);
 
-        NewCodeBlockData newCodeBlockData = getNewBlockData(project);
+        NewCodeBlockData newCodeBlockData = getNewBlockData(project, elements);
         // If user cancelled action or exception occurred
         if (newCodeBlockData == null) return;
         List<String> contents = Arrays.stream(elements).map(p -> p.getText()).collect(Collectors.toList());
@@ -185,16 +184,16 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         return PsiTreeUtil.findFirstParent(commonParent, e -> e.getParent() == parentToCreateAt);
     }
 
-    protected NewCodeBlockData getNewBlockData(Project project) {
+    protected NewCodeBlockData getNewBlockData(Project project, PsiElement[] elements) {
         CompletableFuture<NewCodeBlockData> futureData = new CompletableFuture<>();
         TransactionGuard.getInstance().submitTransactionAndWait(() -> {
-            Perl6ExtractMethodDialog dialog = new Perl6ExtractMethodDialog(project, TITLE, myCodeBlockType) {
+            Perl6ExtractMethodDialog dialog = new Perl6ExtractMethodDialog(project, TITLE, myCodeBlockType, getCapturedVariables(elements)) {
                 @Override
                 protected void doAction() {
                     NewCodeBlockData data = new NewCodeBlockData(
                             myCodeBlockType, getScope(),
                             getName(), getReturnType(),
-                            ArrayUtil.EMPTY_STRING_ARRAY
+                            getInputVariables()
                     );
                     // TODO signature parts
                     futureData.complete(data);
@@ -215,6 +214,21 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         catch (InterruptedException|ExecutionException e) {
             return null;
         }
+    }
+
+    protected Perl6VariableData[] getCapturedVariables(PsiElement[] elements) {
+        List<Perl6VariableData> vars = new ArrayList<>();
+        List<Perl6Variable> rawVars = new ArrayList<>();
+        List<Perl6VariableDecl> rawVarDecls = new ArrayList<>();
+        for (PsiElement el : elements) {
+            rawVars.addAll(PsiTreeUtil.findChildrenOfType(el, Perl6Variable.class));
+            rawVarDecls.addAll(PsiTreeUtil.findChildrenOfType(el, Perl6VariableDecl.class));
+        }
+        for (Perl6Variable var : rawVars) {
+            vars.add(new Perl6VariableData(var.getVariableName(), ""));
+        }
+        System.out.println(vars);
+        return vars.toArray(new Perl6VariableData[0]);
     }
 
     protected PsiElement createNewBlock(Project project, NewCodeBlockData data, List<String> contents) {

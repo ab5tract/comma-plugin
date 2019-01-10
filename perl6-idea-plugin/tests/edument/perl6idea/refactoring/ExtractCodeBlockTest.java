@@ -50,6 +50,11 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
                 "outer-sub", Perl6CodeBlockType.ROUTINE);
     }
 
+    public void testSubroutineWithLocalVariablesExtraction() {
+        doTest(() -> getClosestStatementListByText("Magic number"),
+                "do-magic", Perl6CodeBlockType.ROUTINE);
+    }
+
     // Helper methods
     /**
      * Gets innermost statement list in an opened file around a line of text passed
@@ -89,8 +94,8 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
         }
 
         @Override
-        protected NewCodeBlockData getNewBlockData(Project project) {
-            return new NewCodeBlockData(type, name);
+        protected NewCodeBlockData getNewBlockData(Project project, PsiElement[] elements) {
+            return new NewCodeBlockData(type, name, getCapturedVariables(elements));
         }
     }
 }

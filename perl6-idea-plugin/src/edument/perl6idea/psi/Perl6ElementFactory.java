@@ -7,6 +7,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.refactoring.NewCodeBlockData;
 import edument.perl6idea.refactoring.Perl6CodeBlockType;
+import edument.perl6idea.refactoring.Perl6VariableData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -24,7 +25,7 @@ public class Perl6ElementFactory {
                                                 List<String> contents) {
         String base = "%s %s(%s)";
         StringJoiner signatureJoiner = new StringJoiner(", ");
-        Arrays.stream(data.signatureParts).forEachOrdered(signatureJoiner::add);
+        Arrays.stream(data.variables).forEachOrdered(p -> signatureJoiner.add(p.getPresentation()));
         String signature = signatureJoiner.toString();
         if (!data.returnType.isEmpty())
             signature += " --> " + data.returnType;
@@ -128,7 +129,11 @@ public class Perl6ElementFactory {
     }
 
     private static String getSubCallText(NewCodeBlockData data) {
-        return String.format("%s();", data.name);
+        StringJoiner vars = new StringJoiner(", ");
+        for (Perl6VariableData var : data.variables) {
+            vars.add(var.getPresentation());
+        }
+        return String.format("%s(%s);", data.name, vars.toString());
     }
 
     public static Perl6Statement createMethodCall(Project project, NewCodeBlockData data) {
@@ -136,7 +141,11 @@ public class Perl6ElementFactory {
     }
 
     private static String getMethodCallText(NewCodeBlockData data) {
-        return String.format("self%s%s();", data.isPrivateMethod ? "!" : ".", data.name);
+        StringJoiner vars = new StringJoiner(", ");
+        for (Perl6VariableData var : data.variables) {
+            vars.add(var.getPresentation());
+        }
+        return String.format("self%s%s(%s);", data.isPrivateMethod ? "!" : ".", data.name, vars.toString());
     }
 
     private static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {

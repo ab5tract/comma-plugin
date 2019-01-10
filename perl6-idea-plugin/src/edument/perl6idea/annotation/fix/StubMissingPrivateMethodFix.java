@@ -15,6 +15,7 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.refactoring.NewCodeBlockData;
 import edument.perl6idea.refactoring.Perl6CodeBlockType;
+import edument.perl6idea.refactoring.Perl6VariableData;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -109,7 +110,7 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         NewCodeBlockData data =
                 new NewCodeBlockData(
                         Perl6CodeBlockType.PRIVATEMETHOD, "",
-                        myName, "", parameters.toArray(new String[0]));
+                        myName, "", parameters.stream().map(n -> new Perl6VariableData(n, "")).toArray(Perl6VariableData[]::new));
         PsiElement newMethod = Perl6ElementFactory.createNamedCodeBlock(project, data, new ArrayList<>());
         anchor = anchor == null ? null : anchor.getNextSibling();
         if (anchor == null) {
