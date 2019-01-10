@@ -2,31 +2,32 @@ package edument.perl6idea.refactoring;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.Splitter;
 import com.intellij.refactoring.ui.MethodSignatureComponent;
 import com.intellij.refactoring.ui.NameSuggestionsField;
 import com.intellij.refactoring.ui.RefactoringDialog;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.SeparatorFactory;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ArrayUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
-import java.util.Objects;
-import java.util.StringJoiner;
 
 public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     public static final String[] SCOPE_OPTIONS = {"", "my", "our"};
-    private JPanel myContentPane;
+    public static final String[] KIND_OPTIONS = {"", "proto", "multi", "only"};
     private NameSuggestionsField myNameField;
     private JComboBox<String> myScopeField;
+    private JComboBox<String> myKindField;
     private JTextField myReturnTypeField;
-    private JBTable myParams;
     private MethodSignatureComponent mySignature;
     private String myCodeBlockType;
     private boolean myIsPrivate;
@@ -34,11 +35,12 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
 
     protected Perl6ExtractBlockDialog(Project project, String title, Perl6CodeBlockType codeBlockType, Perl6VariableData[] myInputVariables) {
         super(project, true);
-        mySignature = new MethodSignatureComponent("", project, Perl6ScriptFileType.INSTANCE);
         this.myInputVariables = myInputVariables;
-        mySignature.setMinimumSize(new Dimension(400, 100));
+        mySignature = new MethodSignatureComponent("", project, Perl6ScriptFileType.INSTANCE);
+        mySignature.setMinimumSize(new Dimension(500, 80));
         myNameField = new NameSuggestionsField(ArrayUtil.EMPTY_STRING_ARRAY, myProject);
         myScopeField = new ComboBox<>(SCOPE_OPTIONS);
+        myKindField = new ComboBox<>(KIND_OPTIONS);
         myReturnTypeField = new JTextField();
         switch (codeBlockType) {
             case METHOD:
@@ -52,12 +54,13 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         myIsPrivate = codeBlockType == Perl6CodeBlockType.PRIVATEMETHOD;
         setTitle(title);
         init();
+        update();
     }
 
     @Nullable
     @Override
     protected JComponent createNorthPanel() {
-        final JPanel main = new JPanel(new BorderLayout());
+        final JPanel northPanel = new JPanel(new BorderLayout());
 
         // Scope piece
         final JPanel scopePanel = new JPanel(new BorderLayout(0, 2));
@@ -66,7 +69,20 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         scopePanel.add(myScopeField, BorderLayout.SOUTH);
         scopeLabel.setLabelFor(myScopeField);
         myScopeField.addItemListener(e -> update());
-        main.add(scopePanel, BorderLayout.WEST);
+        northPanel.add(scopePanel, BorderLayout.WEST);
+
+        // Kind piece
+        final JPanel kindPanel = new JPanel(new BorderLayout(0, 2));
+        final JLabel kindLabel = new JLabel("Kind:");
+        kindPanel.add(kindLabel, BorderLayout.NORTH);
+        kindPanel.add(myKindField, BorderLayout.SOUTH);
+        kindLabel.setLabelFor(myKindField);
+        myKindField.addItemListener(e -> update());
+
+        final JPanel westPanel = new JPanel(new HorizontalLayout(2));
+        westPanel.add(scopePanel);
+        westPanel.add(kindPanel);
+        northPanel.add(westPanel, BorderLayout.WEST);
 
         // Name piece
         final JPanel namePanel = new JPanel(new BorderLayout(0, 2));
@@ -75,7 +91,7 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         namePanel.add(myNameField, BorderLayout.SOUTH);
         nameLabel.setLabelFor(myNameField);
         myNameField.addDataChangedListener(this::update);
-        main.add(namePanel, BorderLayout.CENTER);
+        northPanel.add(namePanel, BorderLayout.CENTER);
 
         // Return type piece
         final JPanel returnTypePanel = new JPanel(new BorderLayout(0, 2));
@@ -89,37 +105,31 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
                 update();
             }
         });
-        main.add(returnTypePanel, BorderLayout.EAST);
+        northPanel.add(returnTypePanel, BorderLayout.EAST);
 
-        return main;
-    }
-
-    private void update() {
-        updateSignature();
+        return northPanel;
     }
 
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        myContentPane = new JPanel(new BorderLayout());
-        createParametersPanel();
+        final JPanel centerPanel = new JPanel(new MigLayout("wrap 1"));
 
-        final Splitter splitter = new Splitter(true);
-        splitter.setShowDividerIcon(false);
-        splitter.setFirstComponent(myContentPane);
+        final JPanel parametersTablePanel = new JPanel(new BorderLayout());
+        parametersTablePanel.add(SeparatorFactory.createSeparator("Parameters", null), BorderLayout.CENTER);
+        parametersTablePanel.add(createParametersPanel(), BorderLayout.CENTER);
+        centerPanel.add(parametersTablePanel, "align left");
 
-        JPanel secondPanel = new JPanel(new BorderLayout(0, 5));
-        secondPanel.add(createSignaturePanel(), BorderLayout.CENTER);
-        splitter.setSecondComponent(secondPanel);
-        return splitter;
+        final JPanel signaturePanel = new JPanel(new BorderLayout());
+        signaturePanel.add(SeparatorFactory.createSeparator("Signature Preview", null), BorderLayout.CENTER);
+        signaturePanel.add(mySignature, BorderLayout.CENTER);
+        centerPanel.add(signaturePanel, "align left");
+
+        return centerPanel;
     }
 
-    private JComponent createSignaturePanel() {
-        final JPanel panel = new JPanel(new BorderLayout());
-        panel.add(SeparatorFactory.createSeparator("Signature Preview", null), BorderLayout.NORTH);
-        panel.add(mySignature, BorderLayout.CENTER);
+    private void update() {
         updateSignature();
-        return panel;
     }
 
     @NotNull
@@ -135,36 +145,40 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     }
 
     private String getSignature() {
-        String baseFormat = "%s %s%s(%s) {\n\n}";
-        String scopedFormat = "%s %s";
-        String base = String.format(baseFormat,
+        String baseFormat = "%s%s %s(%s) {\n\n}";
+        String prefix = String.format("%s%s", getScope(), getKind());
+        return String.format(baseFormat, prefix,
                              myCodeBlockType,
-                             myIsPrivate ? "!" : "",
-                             myNameField.getEnteredName(), prepareSignatureParameterBlock());
-        Object item = myScopeField.getSelectedItem();
-        return !Objects.equals(item, "") ? String.format(scopedFormat, item, base) : base;
+                             (myIsPrivate ? "!" : "") + getName(),
+                             getSignatureParameterBlock());
     }
 
-    private String prepareSignatureParameterBlock() {
-        String retType = myReturnTypeField.getText();
+    private String getSignatureParameterBlock() {
+        String retType = getReturnType();
         String base = ""; // parameters and return type
         if (myInputVariables.length != 0) {
-            StringJoiner paramsJoiner = new StringJoiner(", ");
-            for (Perl6VariableData var : myInputVariables) {
-                paramsJoiner.add(var.getPresentation());
-            }
-            base += paramsJoiner.toString();
+            base += NewCodeBlockData.formSignature(myInputVariables, false);
         }
         if (!retType.isEmpty())
-            base += "--> " + retType;
+            base += " --> " + retType;
         return base;
     }
 
-    private void createParametersPanel() {
+    private JComponent createParametersPanel() {
+        JTable table = new JBTable(new Perl6ParameterTableModel(myInputVariables));
+        JScrollPane scrollPane = new JBScrollPane(table);
+        table.setFillsViewportHeight(true);
+        return scrollPane;
     }
 
     public String getScope() {
-        return (String)myScopeField.getSelectedItem();
+        String scope = (String)myScopeField.getSelectedItem();
+        return scope == null || scope.isEmpty() ? "" : scope + " ";
+    }
+
+    public String getKind() {
+        String kind = (String)myKindField.getSelectedItem();
+        return kind == null || kind.isEmpty() ? "" : kind + " ";
     }
 
     public String getName() {
@@ -177,5 +191,73 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
 
     public String getReturnType() {
         return myReturnTypeField.getText();
+    }
+
+    private class Perl6ParameterTableModel extends AbstractTableModel {
+        String[] columns = {"", "Name", "Type"};
+        private final Perl6VariableData[] myVars;
+
+        public Perl6ParameterTableModel(Perl6VariableData[] variableData) {
+            super();
+            myVars = variableData;
+        }
+
+        @Override
+        public int getRowCount() {
+            return myVars.length;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columns.length;
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return true;
+        }
+
+        @Override
+        public void setValueAt(Object newValue, int rowIndex, int columnIndex) {
+            switch (columnIndex) {
+                case 0: {
+                    myVars[rowIndex].isUsed = (boolean)newValue;
+                    break;
+                }
+                case 1: {
+                    myVars[rowIndex].name = (String)newValue;
+                    break;
+                }
+                case 2: {
+                    myVars[rowIndex].type = (String)newValue;
+                    break;
+                }
+            }
+            fireTableCellUpdated(rowIndex, columnIndex);
+            update();
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            Perl6VariableData var = myVars[rowIndex];
+            switch (columnIndex) {
+                case 0: return var.isUsed;
+                case 1: return var.name;
+                default: return var.type;
+            }
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columns[column];
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch (columnIndex) {
+                case 0: return Boolean.class;
+                default: return String.class;
+            }
+        }
     }
 }

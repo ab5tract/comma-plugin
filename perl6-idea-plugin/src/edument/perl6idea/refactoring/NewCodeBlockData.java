@@ -1,5 +1,9 @@
 package edument.perl6idea.refactoring;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.StringJoiner;
+
 public class NewCodeBlockData {
     public Perl6CodeBlockType type;
     public String scope = "";
@@ -24,5 +28,18 @@ public class NewCodeBlockData {
         this.returnType = returnType;
         this.isPrivateMethod = type == Perl6CodeBlockType.PRIVATEMETHOD;
         this.variables = variableData;
+    }
+
+    public static String formSignature(@NotNull Perl6VariableData[] variables, boolean isCall) {
+        StringJoiner vars = new StringJoiner(", ");
+        for (Perl6VariableData var : variables) {
+            if (var.isUsed)
+                vars.add(var.getPresentation(isCall));
+        }
+        return vars.toString();
+    }
+
+    public String formSignature(boolean isCall) {
+        return formSignature(variables, isCall);
     }
 }

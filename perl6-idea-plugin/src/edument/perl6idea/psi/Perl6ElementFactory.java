@@ -7,10 +7,8 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.refactoring.NewCodeBlockData;
 import edument.perl6idea.refactoring.Perl6CodeBlockType;
-import edument.perl6idea.refactoring.Perl6VariableData;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -23,19 +21,14 @@ public class Perl6ElementFactory {
 
     private static String getNamedCodeBlockText(NewCodeBlockData data,
                                                 List<String> contents) {
-        String base = "%s %s(%s)";
-        StringJoiner signatureJoiner = new StringJoiner(", ");
-        Arrays.stream(data.variables).forEachOrdered(p -> signatureJoiner.add(p.getPresentation()));
-        String signature = signatureJoiner.toString();
+        String signature = data.formSignature(false);
         if (!data.returnType.isEmpty())
             signature += " --> " + data.returnType;
         String nameToUse = data.type == Perl6CodeBlockType.PRIVATEMETHOD && !data.name.startsWith("!") ? "!" + data.name : data.name;
         String type = data.type == Perl6CodeBlockType.ROUTINE ? "sub" : "method";
-        String baseFilled = String.format(base, type, nameToUse, signature);
-
+        String baseFilled = String.format("%s %s(%s)", type, nameToUse, signature);
         StringJoiner bodyJoiner = new StringJoiner("");
         contents.forEach(bodyJoiner::add);
-
         return String.format("%s {\n%s\n}", baseFilled, bodyJoiner.toString());
     }
 
@@ -129,11 +122,7 @@ public class Perl6ElementFactory {
     }
 
     private static String getSubCallText(NewCodeBlockData data) {
-        StringJoiner vars = new StringJoiner(", ");
-        for (Perl6VariableData var : data.variables) {
-            vars.add(var.getPresentation());
-        }
-        return String.format("%s(%s);", data.name, vars.toString());
+        return String.format("%s(%s);", data.name, data.formSignature(true));
     }
 
     public static Perl6Statement createMethodCall(Project project, NewCodeBlockData data) {
@@ -141,11 +130,7 @@ public class Perl6ElementFactory {
     }
 
     private static String getMethodCallText(NewCodeBlockData data) {
-        StringJoiner vars = new StringJoiner(", ");
-        for (Perl6VariableData var : data.variables) {
-            vars.add(var.getPresentation());
-        }
-        return String.format("self%s%s(%s);", data.isPrivateMethod ? "!" : ".", data.name, vars.toString());
+        return String.format("self%s%s(%s);", data.isPrivateMethod ? "!" : ".", data.name, data.formSignature(true));
     }
 
     private static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {

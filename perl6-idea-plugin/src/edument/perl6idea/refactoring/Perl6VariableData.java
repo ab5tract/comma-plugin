@@ -1,19 +1,18 @@
 package edument.perl6idea.refactoring;
 
 public class Perl6VariableData {
-    private String name;
-    private String type;
+    public boolean isUsed;
+    public String name;
+    public String type;
 
     public Perl6VariableData(String name, String type) {
         this.name = name;
         this.type = type;
+        this.isUsed = true;
     }
 
-    public String getPresentation() {
-        String result = "";
-        if (!type.isEmpty())
-            result += type + " ";
-        result += name;
-        return result;
+    public String getPresentation(boolean isCall) {
+        if (isCall) return name;
+        return type.isEmpty() ? name : type + " " + name;
     }
 }
