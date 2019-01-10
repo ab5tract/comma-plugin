@@ -20,7 +20,7 @@ import java.awt.*;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public abstract class Perl6ExtractMethodDialog extends RefactoringDialog {
+public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     public static final String[] SCOPE_OPTIONS = {"", "my", "our"};
     private JPanel myContentPane;
     private NameSuggestionsField myNameField;
@@ -32,7 +32,7 @@ public abstract class Perl6ExtractMethodDialog extends RefactoringDialog {
     private boolean myIsPrivate;
     private Perl6VariableData[] myInputVariables;
 
-    protected Perl6ExtractMethodDialog(Project project, String title, Perl6CodeBlockType codeBlockType, Perl6VariableData[] myInputVariables) {
+    protected Perl6ExtractBlockDialog(Project project, String title, Perl6CodeBlockType codeBlockType, Perl6VariableData[] myInputVariables) {
         super(project, true);
         mySignature = new MethodSignatureComponent("", project, Perl6ScriptFileType.INSTANCE);
         this.myInputVariables = myInputVariables;

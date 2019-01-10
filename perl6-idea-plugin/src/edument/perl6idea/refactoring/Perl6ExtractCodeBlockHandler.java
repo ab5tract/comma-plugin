@@ -187,7 +187,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     protected NewCodeBlockData getNewBlockData(Project project, PsiElement[] elements) {
         CompletableFuture<NewCodeBlockData> futureData = new CompletableFuture<>();
         TransactionGuard.getInstance().submitTransactionAndWait(() -> {
-            Perl6ExtractMethodDialog dialog = new Perl6ExtractMethodDialog(project, TITLE, myCodeBlockType, getCapturedVariables(elements)) {
+            Perl6ExtractBlockDialog dialog = new Perl6ExtractBlockDialog(project, TITLE, myCodeBlockType, getCapturedVariables(elements)) {
                 @Override
                 protected void doAction() {
                     NewCodeBlockData data = new NewCodeBlockData(
