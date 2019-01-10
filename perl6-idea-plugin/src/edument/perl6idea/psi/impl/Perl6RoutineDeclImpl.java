@@ -24,7 +24,7 @@ import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCKOID;
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 
 public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDeclStub> implements Perl6RoutineDecl, Perl6SignatureHolder, PsiMetaOwner {
-    private static final String[] ROUTINE_SYMBOLS = { "$/", "$!", "$_", "%_", "&?ROUTINE", "&?BLOCK" };
+    private static final String[] ROUTINE_SYMBOLS = { "$/", "$!", "$_", "&?ROUTINE", "&?BLOCK" };
 
     public Perl6RoutineDeclImpl(@NotNull ASTNode node) {
         super(node);
@@ -218,5 +218,9 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         for (String sym : ROUTINE_SYMBOLS)
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, sym, this));
+        String routineKind = getRoutineKind();
+        if (routineKind.equals("method") || routineKind.equals("submethod")) {
+            collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "%_", this));
+        }
     }
 }

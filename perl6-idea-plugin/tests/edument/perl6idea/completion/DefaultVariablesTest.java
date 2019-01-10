@@ -86,12 +86,28 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
         assertTrue(vars.containsAll(Arrays.asList("&?ROUTINE", "&?BLOCK")));
     }
 
+    public void testNamedArgsHashComplietionInMethod() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "method foo() { %<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.contains("%_"));
+    }
+
+    public void testNamedArgsHashComplietionInSubmethod() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "submethod foo() { %<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.contains("%_"));
+    }
+
     public void testNamedArgsHashComplietionInSub() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo() { %<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.contains("%_"));
+        assertFalse(vars.contains("%_"));
     }
 
     public void testPodFinishCompletion() {
