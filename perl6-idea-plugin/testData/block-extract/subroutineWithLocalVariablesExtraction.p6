@@ -2,7 +2,7 @@ my $a = 5;
 my @b = 1, 2, 3;
 my $number = 42;
 
-sub do-magic($a, @b, $number) {
+sub do-magic(Int $a, Any @b, Int $number) {
     say $a;
     say @b>>.Str.join('foo');
     say "Magic number is $number";
