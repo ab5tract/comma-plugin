@@ -58,7 +58,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
         }
         else {
             // May not be available yet
-            if (Perl6Variable.getTwigil(variableName) == ' ' && Perl6Variable.getSigil(variableName) != '&') {
+            if (Perl6Variable.getSigil(variableName) != '&') {
                 PsiElement psi = resolved.getPsi();
                 if (psi != null && psi.getContainingFile() == ref.getContainingFile() &&
                         psi.getTextOffset() > ref.getTextOffset())
