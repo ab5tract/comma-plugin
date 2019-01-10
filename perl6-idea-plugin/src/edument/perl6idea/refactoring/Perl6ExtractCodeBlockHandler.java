@@ -27,8 +27,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, ContextAwareActionHandler {
-    public static final String TITLE = "Code Block Extraction";
-    public static final List<String> packageTypesWithMethods = new ArrayList<>(
+    private static final String TITLE = "Code Block Extraction";
+    private static final List<String> packageTypesWithMethods = new ArrayList<>(
             Arrays.asList("class", "role", "grammar", "monitor"));
     private final Perl6CodeBlockType myCodeBlockType;
 
@@ -74,7 +74,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         NewCodeBlockData newCodeBlockData = getNewBlockData(project, elements);
         // If user cancelled action or exception occurred
         if (newCodeBlockData == null) return;
-        List<String> contents = Arrays.stream(elements).map(p -> p.getText()).collect(Collectors.toList());
+        List<String> contents = Arrays.stream(elements).map(PsiElement::getText).collect(Collectors.toList());
         PsiElement newBlock = createNewBlock(project, newCodeBlockData, contents);
         insertNewCodeBlock(project, parentScope, newBlock, anchor);
         replaceStatementsWithCall(project, newCodeBlockData, parentScope, elements);
@@ -195,7 +195,6 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
                             getName(), getReturnType(),
                             getInputVariables()
                     );
-                    // TODO signature parts
                     futureData.complete(data);
                     closeOKAction();
                 }
