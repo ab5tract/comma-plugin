@@ -227,7 +227,6 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         for (Perl6Variable var : rawVars) {
             vars.add(new Perl6VariableData(var.getVariableName(), ""));
         }
-        System.out.println(vars);
         return vars.toArray(new Perl6VariableData[0]);
     }
 
