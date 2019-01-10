@@ -224,7 +224,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             rawVarDecls.addAll(PsiTreeUtil.findChildrenOfType(el, Perl6VariableDecl.class));
         }
         for (Perl6Variable var : rawVars) {
-            vars.add(new Perl6VariableData(var.getVariableName(), ""));
+            String typeInferred = var.inferType();
+            vars.add(new Perl6VariableData(var.getVariableName(), typeInferred));
         }
         return vars.toArray(new Perl6VariableData[0]);
     }

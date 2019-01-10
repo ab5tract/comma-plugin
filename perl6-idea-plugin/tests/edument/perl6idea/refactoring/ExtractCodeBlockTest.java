@@ -55,6 +55,11 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
                 "do-magic", Perl6CodeBlockType.ROUTINE);
     }
 
+    public void testSubroutineWithTypedLocalVariablesExtraction() {
+        doTest(() -> getNextList(getClosestStatementListByText("Magic number")),
+                "do-magic", Perl6CodeBlockType.ROUTINE);
+    }
+
     // Helper methods
     /**
      * Gets innermost statement list in an opened file around a line of text passed
