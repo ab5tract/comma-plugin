@@ -8,14 +8,64 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import com.intellij.util.Consumer;
 import com.intellij.util.Producer;
+import edument.perl6idea.psi.Perl6File;
+import edument.perl6idea.psi.Perl6PackageDecl;
+import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6StatementList;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "testData/block-extract";
+    }
+
+    public void testMethodSingleScopePresence() {
+        doScopeTest("start", Perl6CodeBlockType.METHOD,
+                (scopes) -> {
+                    assertEquals(1, scopes.size());
+                    checkPackage(scopes, 0, "A", "class");
+                });
+    }
+
+    public void testMethodOuterClassScopePresence() {
+        doScopeTest("start", Perl6CodeBlockType.METHOD,
+                (scopes) -> {
+                    assertEquals(4, scopes.size());
+                    checkPackage(scopes, 0, "M", "monitor");
+                    checkPackage(scopes, 1, "G", "grammar");
+                    checkPackage(scopes, 2, "R", "role");
+                    checkPackage(scopes, 3, "C", "class");
+                });
+    }
+
+    public void testSubFilePresence() {
+        doScopeTest("'start'", Perl6CodeBlockType.ROUTINE,
+                (scopes) -> {
+                    assertEquals(1, scopes.size());
+                    PsiElement decl = PsiTreeUtil.getParentOfType(scopes.get(0), Perl6PackageDecl.class, Perl6RoutineDecl.class, Perl6File.class);
+                    assertTrue(decl instanceof Perl6File);
+                });
+    }
+
+    public void testSubNestedScopePresence() {
+        doScopeTest("'start'", Perl6CodeBlockType.ROUTINE,
+                (scopes) -> {
+                    assertEquals(4, scopes.size());
+                    checkPackage(scopes, 2, "ABC", "class");
+                });
+    }
+
+    private void checkPackage(List<Perl6StatementList> scopes, int index, String packageName, String packageKind) {
+        PsiElement decl = PsiTreeUtil.getParentOfType(scopes.get(index), Perl6PackageDecl.class, Perl6RoutineDecl.class, Perl6File.class);
+        assertTrue(decl instanceof Perl6PackageDecl);
+        assertNotNull(decl);
+        assertEquals(packageName, ((Perl6PackageDecl)decl).getPackageName());
+        assertEquals(packageKind, ((Perl6PackageDecl)decl).getPackageKind());
     }
 
     public void testTopFileSubroutineExtraction() {
@@ -72,6 +122,13 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
         return PsiTreeUtil.getParentOfType(list, Perl6StatementList.class, true);
     }
 
+    private void doScopeTest(String text, Perl6CodeBlockType type, Consumer<List<Perl6StatementList>> check) {
+        myFixture.configureByFile(getTestName(true) + ".p6");
+        PsiElement start = myFixture.findElementByText(text, PsiElement.class);
+        List<Perl6StatementList> scopes = (new Perl6ExtractCodeBlockHandlerMock(type)).getPossibleScopes(new PsiElement[]{start});
+        check.consume(scopes);
+    }
+
     private void doTest(Producer<Perl6StatementList> getScope, String name, Perl6CodeBlockType type) {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
         Perl6StatementList scope = getScope.produce();
@@ -83,14 +140,17 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     private class Perl6ExtractCodeBlockHandlerMock extends Perl6ExtractCodeBlockHandler {
         Perl6StatementList parent;
         private final String name;
-        private final Perl6CodeBlockType type;
 
         Perl6ExtractCodeBlockHandlerMock(Perl6CodeBlockType type, Perl6StatementList parent,
                                          String name) {
             super(type);
             this.parent = parent;
             this.name = name;
-            this.type = type;
+        }
+
+        public Perl6ExtractCodeBlockHandlerMock(Perl6CodeBlockType type) {
+            super(type);
+            name = "";
         }
 
         @Override
@@ -100,7 +160,7 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
 
         @Override
         protected NewCodeBlockData getNewBlockData(Project project, PsiElement[] elements) {
-            return new NewCodeBlockData(type, name, getCapturedVariables(elements));
+            return new NewCodeBlockData(myCodeBlockType, name, getCapturedVariables(elements));
         }
     }
 }

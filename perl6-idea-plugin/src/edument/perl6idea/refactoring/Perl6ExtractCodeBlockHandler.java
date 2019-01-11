@@ -30,7 +30,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     private static final String TITLE = "Code Block Extraction";
     private static final List<String> packageTypesWithMethods = new ArrayList<>(
             Arrays.asList("class", "role", "grammar", "monitor"));
-    private final Perl6CodeBlockType myCodeBlockType;
+    protected final Perl6CodeBlockType myCodeBlockType;
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;
@@ -165,14 +165,36 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
     protected List<Perl6StatementList> getPossibleScopes(PsiElement[] elements) {
         PsiElement commonParent = PsiTreeUtil.findCommonParent(elements);
-        Perl6StatementList list = PsiTreeUtil.getNonStrictParentOfType(commonParent, Perl6StatementList.class);
+        PsiElement list = PsiTreeUtil.getNonStrictParentOfType(commonParent, Perl6StatementList.class);
         if (list == null) {
-            return null;
+            return new ArrayList<>();
         }
+
         List<Perl6StatementList> scopes = new ArrayList<>();
-        while (list != null) {
-            scopes.add(list);
-            list = PsiTreeUtil.getParentOfType(list, Perl6StatementList.class);
+
+        // Subroutine can be in any scope above, but methods are restricted
+        if (myCodeBlockType != Perl6CodeBlockType.ROUTINE) {
+            while (true) {
+                Perl6PackageDecl methodScope = PsiTreeUtil.getParentOfType(list, Perl6PackageDecl.class);
+                if (methodScope == null) break;
+                String packageKind = methodScope.getPackageKind();
+                if (packageTypesWithMethods.contains(packageKind)) {
+                    Perl6StatementList newList = PsiTreeUtil.findChildOfType(methodScope, Perl6StatementList.class);
+                    if (newList != null) {
+                        scopes.add(newList);
+                        list = methodScope;
+                    } else {
+                        break;
+                    }
+                } else {
+                    list = methodScope;
+                }
+            }
+        } else {
+            while (list != null) {
+                scopes.add((Perl6StatementList) list);
+                list = PsiTreeUtil.getParentOfType(list, Perl6StatementList.class);
+            }
         }
         return scopes;
     }
