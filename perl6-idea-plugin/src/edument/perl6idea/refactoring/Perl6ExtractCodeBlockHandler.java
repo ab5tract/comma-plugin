@@ -11,6 +11,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
@@ -63,21 +64,21 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         }, PsiElement::getText, "Select creation scope");
     }
 
-    protected void invoke(@NotNull Project project, Editor editor, PsiFile file, Perl6StatementList parentScope, PsiElement[] elements) {
-        if (checkElementsSanity(project, editor, parentScope, elements)) return;
-        if (checkMethodSanity(project, editor, parentScope)) return;
+    protected void invoke(@NotNull Project project, Editor editor, PsiFile file, Perl6StatementList parentToCreateAt, PsiElement[] elements) {
+        if (checkElementsSanity(project, editor, parentToCreateAt, elements)) return;
+        if (checkMethodSanity(project, editor, parentToCreateAt)) return;
 
         /* Anchor represents an element, that will be a next to created one or null,
          * if no such anchor is possible, e.g. when a method is added after last one in a class */
-        PsiElement anchor = getAnchor(parentScope, elements);
+        PsiElement anchor = getAnchor(parentToCreateAt, elements);
 
-        NewCodeBlockData newCodeBlockData = getNewBlockData(project, elements);
+        NewCodeBlockData newCodeBlockData = getNewBlockData(project, parentToCreateAt, elements);
         // If user cancelled action or exception occurred
         if (newCodeBlockData == null) return;
         List<String> contents = Arrays.stream(elements).map(PsiElement::getText).collect(Collectors.toList());
         PsiElement newBlock = createNewBlock(project, newCodeBlockData, contents);
-        insertNewCodeBlock(project, parentScope, newBlock, anchor);
-        replaceStatementsWithCall(project, newCodeBlockData, parentScope, elements);
+        insertNewCodeBlock(project, parentToCreateAt, newBlock, anchor);
+        replaceStatementsWithCall(project, newCodeBlockData, parentToCreateAt, elements);
     }
 
     private boolean checkElementsSanity(@NotNull Project project, Editor editor, PsiElement parentScope, PsiElement[] elements) {
@@ -206,10 +207,10 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         return PsiTreeUtil.findFirstParent(commonParent, e -> e.getParent() == parentToCreateAt);
     }
 
-    protected NewCodeBlockData getNewBlockData(Project project, PsiElement[] elements) {
+    protected NewCodeBlockData getNewBlockData(Project project, Perl6StatementList parentToCreateAt, PsiElement[] elements) {
         CompletableFuture<NewCodeBlockData> futureData = new CompletableFuture<>();
         TransactionGuard.getInstance().submitTransactionAndWait(() -> {
-            Perl6ExtractBlockDialog dialog = new Perl6ExtractBlockDialog(project, TITLE, myCodeBlockType, getCapturedVariables(elements)) {
+            Perl6ExtractBlockDialog dialog = new Perl6ExtractBlockDialog(project, TITLE, myCodeBlockType, getCapturedVariables(parentToCreateAt, elements)) {
                 @Override
                 protected void doAction() {
                     NewCodeBlockData data = new NewCodeBlockData(
@@ -237,19 +238,72 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         }
     }
 
-    protected Perl6VariableData[] getCapturedVariables(PsiElement[] elements) {
-        List<Perl6VariableData> vars = new ArrayList<>();
-        List<Perl6Variable> rawVars = new ArrayList<>();
-        List<Perl6VariableDecl> rawVarDecls = new ArrayList<>();
-        for (PsiElement el : elements) {
-            rawVars.addAll(PsiTreeUtil.findChildrenOfType(el, Perl6Variable.class));
-            rawVarDecls.addAll(PsiTreeUtil.findChildrenOfType(el, Perl6VariableDecl.class));
+    protected Perl6VariableData[] getCapturedVariables(Perl6StatementList parentToCreateAt, PsiElement[] elements) {
+        PsiElement commonParent = PsiTreeUtil.findCommonParent(elements);
+        List<Perl6VariableData> capturedVariables = new ArrayList<>();
+        List<Perl6Variable> usedVariables = collectVariablesInStatements(elements);
+
+        for (Perl6Variable usedVariable : usedVariables) {
+            if (checkIfVariableCaptured(parentToCreateAt, commonParent, elements, usedVariable)) {
+                Perl6VariableData varData = new Perl6VariableData(usedVariable.getVariableName(), usedVariable.inferType());
+                capturedVariables.add(varData);
+            }
         }
-        for (Perl6Variable var : rawVars) {
-            String typeInferred = var.inferType();
-            vars.add(new Perl6VariableData(var.getVariableName(), typeInferred));
+        return capturedVariables.toArray(new Perl6VariableData[0]);
+    }
+
+    private boolean checkIfVariableCaptured(Perl6StatementList parentToCreateAt, PsiElement commonParent, PsiElement[] statements, Perl6Variable usedVariable) {
+        // First, check if the variable is defined locally in
+        // statements we are extracting
+        PsiReference originalRef = usedVariable.getReference();
+        assert originalRef != null;
+        PsiElement usedVariableDeclaration = originalRef.resolve();
+        if (usedVariableDeclaration != null) {
+            for (PsiElement statement : statements) {
+                if (PsiTreeUtil.isAncestor(statement, usedVariableDeclaration, true)) {
+                    return false;
+                }
+            }
         }
-        return vars.toArray(new Perl6VariableData[0]);
+
+        // We are checking whether a variable will be available
+        // at code place where new block will be created,
+        // to detect situation where it can be taken from
+        // outer scope making routine a closure
+        Perl6StatementList dummyVarStatement = Perl6ElementFactory.getVariableStatement(usedVariable.getProject(), usedVariable.getVariableName());
+        PsiElement[] statementsToInsert = new PsiElement[]{dummyVarStatement.getFirstChild(), dummyVarStatement.getLastChild()};
+
+        final PsiElement[] newScopeReachableDecl = new PsiElement[1];
+        WriteCommandAction.runWriteCommandAction(usedVariable.getProject(), () -> {
+            parentToCreateAt.addRange(statementsToInsert[0], statementsToInsert[statementsToInsert.length-1]);
+
+            Perl6Variable dummyVariable = PsiTreeUtil.findChildOfType(dummyVarStatement, Perl6Variable.class);
+            assert dummyVariable != null;
+            PsiReference dummyVarRef = dummyVariable.getReference();
+            if (dummyVarRef == null) {
+                // This won't happen, as Perl6Variable `getReference`
+                // implementation returns a new object in every case
+                parentToCreateAt.deleteChildRange(statementsToInsert[0], statementsToInsert[statementsToInsert.length-1]);
+                return;
+            }
+
+            newScopeReachableDecl[0] = dummyVarRef.resolve();
+            parentToCreateAt.getLastChild().delete();
+            parentToCreateAt.getLastChild().delete();
+        });
+        if (newScopeReachableDecl[0] != null) {
+            boolean isLocal = PsiTreeUtil.isAncestor(commonParent, newScopeReachableDecl[0], false);
+            return !isLocal;
+        } else {
+            // By default, we assume a variable has to be passed
+            return true;
+        }
+    }
+
+    private List<Perl6Variable> collectVariablesInStatements(PsiElement[] elements) {
+        return Arrays.stream(elements)
+                .flatMap(el -> PsiTreeUtil.findChildrenOfType(el, Perl6Variable.class).stream())
+                .collect(Collectors.toList());
     }
 
     protected PsiElement createNewBlock(Project project, NewCodeBlockData data, List<String> contents) {

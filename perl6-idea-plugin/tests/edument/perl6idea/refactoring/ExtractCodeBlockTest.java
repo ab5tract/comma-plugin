@@ -101,13 +101,18 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     }
 
     public void testSubroutineWithLocalVariablesExtraction() {
-        doTest(() -> getClosestStatementListByText("Magic number"),
+        doTest(() -> getNextList(getClosestStatementListByText("Magic number")),
                 "do-magic", Perl6CodeBlockType.ROUTINE);
     }
 
     public void testSubroutineWithTypedLocalVariablesExtraction() {
         doTest(() -> getNextList(getClosestStatementListByText("Magic number")),
                 "do-magic", Perl6CodeBlockType.ROUTINE);
+    }
+
+    public void testLocalDeclarationsAreNotPassed() {
+        doTest(() -> getNextList(getClosestStatementListByText("inner")),
+                "extracted", Perl6CodeBlockType.ROUTINE);
     }
 
     // Helper methods
@@ -159,8 +164,8 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
         }
 
         @Override
-        protected NewCodeBlockData getNewBlockData(Project project, PsiElement[] elements) {
-            return new NewCodeBlockData(myCodeBlockType, name, getCapturedVariables(elements));
+        protected NewCodeBlockData getNewBlockData(Project project, Perl6StatementList parentToCreateAt, PsiElement[] elements) {
+            return new NewCodeBlockData(myCodeBlockType, name, getCapturedVariables(parent, elements));
         }
     }
 }
