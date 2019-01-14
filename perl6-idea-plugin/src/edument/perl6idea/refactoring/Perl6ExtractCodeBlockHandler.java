@@ -8,6 +8,7 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogBuilder;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -23,6 +24,7 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +37,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     private static final String TITLE = "Code Block Extraction";
     private static final List<String> packageTypesWithMethods = new ArrayList<>(
             Arrays.asList("class", "role", "grammar", "monitor"));
-    protected final Perl6CodeBlockType myCodeBlockType;
+    protected Perl6CodeBlockType myCodeBlockType;
+    private List<Perl6StatementList> myScopes;
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;
@@ -59,13 +62,38 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
     protected void invoke(@NotNull Project project, Editor editor, PsiFile file, PsiElement[] elements) {
         // Gets a parent scope for new block according to callback-based API
-        List<Perl6StatementList> scopes = getPossibleScopes(elements);
-        IntroduceTargetChooser.showChooser(editor, scopes, new Pass<Perl6StatementList>() {
+        myScopes = getPossibleScopes(elements);
+        myScopes = handleZeroScopes(project, editor, elements);
+        if (myScopes.size() == 0) return;
+        IntroduceTargetChooser.showChooser(editor, myScopes, new Pass<Perl6StatementList>() {
             @Override
             public void pass(Perl6StatementList list) {
                 invoke(project, editor, file, list, elements);
             }
         }, PsiElement::getText, "Select creation scope");
+    }
+
+    private List<Perl6StatementList> handleZeroScopes(@NotNull Project project,
+                                     Editor editor,
+                                     PsiElement[] elements) {
+        if (myScopes.size() == 0) {
+            if (myCodeBlockType == Perl6CodeBlockType.ROUTINE) {
+                reportError(project, editor, "Cannot extract selected statements as there are no possible scopes present");
+                return new ArrayList<>();
+            }
+            else {
+                // In case if user mis-typed, offer to create a sub instead
+                DialogBuilder builder = new DialogBuilder();
+                builder.setTitle("Extract Subroutine?");
+                // FIXME A better presentation here is needed
+                builder.setCenterPanel(new JLabel("It is impossible to extract a method using selected statements. Would you like to extract a subroutine instead?"));
+                if (builder.showAndGet()) {
+                    myCodeBlockType = Perl6CodeBlockType.ROUTINE;
+                    return getPossibleScopes(elements);
+                }
+            }
+        }
+        return myScopes;
     }
 
     protected void invoke(@NotNull Project project, Editor editor, PsiFile file, Perl6StatementList parentToCreateAt, PsiElement[] elements) {
