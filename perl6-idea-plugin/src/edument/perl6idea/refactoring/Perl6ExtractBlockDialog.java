@@ -6,6 +6,7 @@ import com.intellij.refactoring.ui.MethodSignatureComponent;
 import com.intellij.refactoring.ui.NameSuggestionsField;
 import com.intellij.refactoring.ui.RefactoringDialog;
 import com.intellij.ui.DocumentAdapter;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.SeparatorFactory;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.panels.HorizontalLayout;
@@ -19,11 +20,14 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     public static final String[] SCOPE_OPTIONS = {"", "my", "our"};
     public static final String[] KIND_OPTIONS = {"", "proto", "multi", "only"};
+    public static final int LEXICAL_SCOPE_COLUMN_INDEX = 3;
+    public static final int PASSED_AS_PARAMETER_COLUMN_INDEX = 2;
     private NameSuggestionsField myNameField;
     private JComboBox<String> myScopeField;
     private JComboBox<String> myKindField;
@@ -166,6 +170,24 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
 
     private JComponent createParametersPanel() {
         JTable table = new JBTable(new Perl6ParameterTableModel(myInputVariables));
+        table.getColumnModel().getColumn(LEXICAL_SCOPE_COLUMN_INDEX).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                                                           Object value,
+                                                           boolean isSelected,
+                                                           boolean hasFocus,
+                                                           int row,
+                                                           int column) {
+                Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (column == LEXICAL_SCOPE_COLUMN_INDEX && "NO".equals(value)) {
+                    if (!(boolean)table.getModel().getValueAt(row, PASSED_AS_PARAMETER_COLUMN_INDEX))
+                        comp.setForeground(JBColor.RED);
+                } else {
+                    comp.setForeground(JBColor.BLACK);
+                }
+                return comp;
+            }
+        });
         JScrollPane scrollPane = new JBScrollPane(table);
         table.setFillsViewportHeight(true);
         return scrollPane;
@@ -214,21 +236,19 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return columnIndex != 3;
+            return columnIndex != LEXICAL_SCOPE_COLUMN_INDEX;
         }
 
         @Override
         public void setValueAt(Object newValue, int rowIndex, int columnIndex) {
             switch (columnIndex) {
-                case 0: {
+                case 0:
+                case 1: {
                     myVars[rowIndex].name = (String)newValue;
                     break;
                 }
-                case 1: {
-                    myVars[rowIndex].type = (String)newValue;
-                    break;
-                }
-                case 2: {
+                case PASSED_AS_PARAMETER_COLUMN_INDEX:
+                case LEXICAL_SCOPE_COLUMN_INDEX: {
                     myVars[rowIndex].isPassed = (boolean)newValue;
                     break;
                 }
