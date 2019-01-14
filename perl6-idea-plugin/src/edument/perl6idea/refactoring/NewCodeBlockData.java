@@ -33,7 +33,7 @@ public class NewCodeBlockData {
     public static String formSignature(@NotNull Perl6VariableData[] variables, boolean isCall) {
         StringJoiner vars = new StringJoiner(", ");
         for (Perl6VariableData var : variables) {
-            if (var.isUsed)
+            if (var.isPassed)
                 vars.add(var.getPresentation(isCall));
         }
         return vars.toString();

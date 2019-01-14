@@ -133,10 +133,6 @@ public class Perl6ElementFactory {
         return String.format("self%s%s(%s);", data.isPrivateMethod ? "!" : ".", data.name, data.formSignature(true));
     }
 
-    public static Perl6StatementList getVariableStatement(Project project, String name) {
-        return produceElement(project, "\n" + name, Perl6StatementList.class);
-    }
-
     private static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {
         String filename = "dummy." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
         Perl6File dummyFile = (Perl6File) PsiFileFactory.getInstance(project)

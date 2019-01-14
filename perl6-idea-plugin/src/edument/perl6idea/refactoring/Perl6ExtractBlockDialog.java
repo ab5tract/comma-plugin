@@ -194,7 +194,7 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     }
 
     private class Perl6ParameterTableModel extends AbstractTableModel {
-        String[] columns = {"", "Name", "Type"};
+        String[] columns = {"Name", "Type", "Pass as Parameter", "Available Lexically"};
         private final Perl6VariableData[] myVars;
 
         public Perl6ParameterTableModel(Perl6VariableData[] variableData) {
@@ -214,22 +214,22 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return true;
+            return columnIndex != 3;
         }
 
         @Override
         public void setValueAt(Object newValue, int rowIndex, int columnIndex) {
             switch (columnIndex) {
                 case 0: {
-                    myVars[rowIndex].isUsed = (boolean)newValue;
-                    break;
-                }
-                case 1: {
                     myVars[rowIndex].name = (String)newValue;
                     break;
                 }
-                case 2: {
+                case 1: {
                     myVars[rowIndex].type = (String)newValue;
+                    break;
+                }
+                case 2: {
+                    myVars[rowIndex].isPassed = (boolean)newValue;
                     break;
                 }
             }
@@ -241,9 +241,10 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         public Object getValueAt(int rowIndex, int columnIndex) {
             Perl6VariableData var = myVars[rowIndex];
             switch (columnIndex) {
-                case 0: return var.isUsed;
-                case 1: return var.name;
-                default: return var.type;
+                case 0: return var.name;
+                case 1: return var.type;
+                case 2: return var.isPassed;
+                default: return var.getLexicalState();
             }
         }
 
@@ -255,7 +256,9 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             switch (columnIndex) {
-                case 0: return Boolean.class;
+                case 0:
+                case 1: return String.class;
+                case 2: return Boolean.class;
                 default: return String.class;
             }
         }
