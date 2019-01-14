@@ -357,7 +357,6 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             closestParent.addBefore(call, elements[elements.length - 1].getNextSibling());
             // Delete present statements
             closestParent.deleteChildRange(elements[0], elements[elements.length - 1]);
-
         });
     }
 
