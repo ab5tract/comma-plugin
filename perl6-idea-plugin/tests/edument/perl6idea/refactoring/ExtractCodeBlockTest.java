@@ -120,6 +120,16 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
                 "inner", Perl6CodeBlockType.METHOD);
     }
 
+    public void testSelfInSubroutineIsPassed() {
+        doTest(() -> getNextList(getClosestStatementListByText("self")),
+                "foo", Perl6CodeBlockType.ROUTINE);
+    }
+
+    public void testSelfInAnotherClassIsPassed() {
+        doTest(() -> getNextList(getClosestStatementListByText("self")),
+                "foo", Perl6CodeBlockType.METHOD);
+    }
+
     // Helper methods
     /**
      * Gets innermost statement list in an opened file around a line of text passed

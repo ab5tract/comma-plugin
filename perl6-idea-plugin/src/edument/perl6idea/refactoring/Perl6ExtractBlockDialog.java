@@ -244,7 +244,7 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
             switch (columnIndex) {
                 case 0:
                 case 1: {
-                    myVars[rowIndex].name = (String)newValue;
+                    myVars[rowIndex].parameterName = (String)newValue;
                     break;
                 }
                 case PASSED_AS_PARAMETER_COLUMN_INDEX:
@@ -261,7 +261,7 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         public Object getValueAt(int rowIndex, int columnIndex) {
             Perl6VariableData var = myVars[rowIndex];
             switch (columnIndex) {
-                case 0: return var.name;
+                case 0: return var.parameterName;
                 case 1: return var.type;
                 case 2: return var.isPassed;
                 default: return var.getLexicalState();

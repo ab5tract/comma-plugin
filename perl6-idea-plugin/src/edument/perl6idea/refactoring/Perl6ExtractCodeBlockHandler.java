@@ -39,6 +39,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             Arrays.asList("class", "role", "grammar", "monitor"));
     protected Perl6CodeBlockType myCodeBlockType;
     private List<Perl6StatementList> myScopes;
+    private boolean selfIsPassed = false;
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;
@@ -270,14 +271,37 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         }
     }
 
-    protected static Perl6VariableData[] getCapturedVariables(Perl6StatementList parentToCreateAt, PsiElement[] elements) {
+    protected Perl6VariableData[] getCapturedVariables(Perl6StatementList parentToCreateAt, PsiElement[] elements) {
         List<Perl6VariableData> capturedVariables = new ArrayList<>();
-        List<Perl6Variable> usedVariables = collectVariablesInStatements(elements);
 
+        // Check self usage
+        if (checkSelfUsage(elements, parentToCreateAt)) {
+            selfIsPassed = true;
+            capturedVariables.add(new Perl6VariableData("self", "$self", "", false, true));
+        }
+
+        // Check ordinary variables usage
+        List<Perl6Variable> usedVariables = collectVariablesInStatements(elements);
         for (Perl6Variable usedVariable : usedVariables) {
             capturedVariables.add(checkIfVariableCaptured(parentToCreateAt, elements, usedVariable));
         }
+
         return capturedVariables.toArray(new Perl6VariableData[0]);
+    }
+
+    private boolean checkSelfUsage(PsiElement[] statements, Perl6StatementList parentToCreateAt) {
+        boolean selfPresence = Arrays.stream(statements)
+                .flatMap(el -> getUsages(el, Perl6Self.class, Perl6PackageDecl.class).stream())
+                .map(el -> (Perl6Self)el)
+                .count() != 0;
+        if (!selfPresence) return false;
+        // If self is present, we have to check if we are extracting stuff into new method of the same class
+        // If we are extracting into a sub, just short-circuit as we always pass $self there
+        if (myCodeBlockType == Perl6CodeBlockType.ROUTINE) return true;
+        // otherwise check seriously:
+        Perl6PackageDecl outerClassBody = PsiTreeUtil.getParentOfType(PsiTreeUtil.findCommonParent(statements), Perl6PackageDecl.class);
+        Perl6PackageDecl outermostClassBody = PsiTreeUtil.getParentOfType(parentToCreateAt, Perl6PackageDecl.class);
+        return !outerClassBody.equals(outermostClassBody);
     }
 
     private static Perl6VariableData checkIfVariableCaptured(Perl6StatementList parentToCreateAt, PsiElement[] statements, Perl6Variable usedVariable) {
@@ -300,12 +324,13 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
     private static List<Perl6Variable> collectVariablesInStatements(PsiElement[] elements) {
         return Arrays.stream(elements)
-                .flatMap(el -> getStatementVariables(el).stream())
+                .flatMap(el -> getUsages(el, Perl6Variable.class, Perl6VariableDecl.class).stream())
+                .map(el -> (Perl6Variable)el)
                 .collect(Collectors.toList());
     }
 
     @NotNull
-    private static Collection<Perl6Variable> getStatementVariables(PsiElement statement) {
+    private static Collection<PsiElement> getUsages(PsiElement statement, Class usageClazz, Class declClazz) {
         // It is an imitation of `getChildrenOfType` specialised for variables that avoids declarations
         // as we do have to differentiate between Perl6Variable used in an expression and
         // inside of a variable declaration
@@ -315,20 +340,29 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             new PsiElementProcessor.CollectElements<PsiElement>() {
                 @Override
                 public boolean execute(@NotNull PsiElement each) {
-                    if (each instanceof Perl6Variable) {
+                    if (usageClazz.isInstance(each)) {
                         return super.execute(each);
-                    } else if (each instanceof Perl6VariableDecl) {
+                    } else if (declClazz.isInstance(each)) {
                         return false;
                     }
                     return true;
                 }
             };
         PsiTreeUtil.processElements(statement, processor);
-        return processor.getCollection().stream().map(el -> (Perl6Variable)el).collect(Collectors.toList());
+        return processor.getCollection();
     }
 
     protected PsiElement createNewBlock(Project project, NewCodeBlockData data, List<String> contents) {
-        return Perl6ElementFactory.createNamedCodeBlock(project, data, contents);
+        return postProcessVariables(project, Perl6ElementFactory.createNamedCodeBlock(project, data, contents));
+    }
+
+    private PsiElement postProcessVariables(Project project, Perl6Statement block) {
+        // Post-process references to self
+        if (selfIsPassed)
+            getUsages(block, Perl6Self.class, Perl6PackageDecl.class)
+                    .forEach(el -> el.replace(Perl6ElementFactory.createVariable(project, "$self")));
+
+        return block;
     }
 
     protected void insertNewCodeBlock(Project project, PsiElement parent,
