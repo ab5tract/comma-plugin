@@ -12,6 +12,7 @@ import com.intellij.openapi.ui.DialogBuilder;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.PsiElementProcessor;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -20,6 +21,7 @@ import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
@@ -279,20 +281,50 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             capturedVariables.add(new Perl6VariableData("self", "$self", "", false, true));
         }
 
-        // Check ordinary variables usage
+        // Check ordinary variables and attributes usage
         List<Perl6Variable> usedVariables = collectVariablesInStatements(elements);
         for (Perl6Variable usedVariable : usedVariables) {
             char twigil = Perl6Variable.getTwigil(usedVariable.getVariableName());
-            if (twigil == ' ')
+            if (twigil != '!')
                 capturedVariables.add(checkIfLexicalVariableCaptured(parentToCreateAt, elements, usedVariable));
-            else if (twigil == '!') {
+            else {
                 if (checkIfAttributeCaptured(parentToCreateAt, elements, usedVariable))
                     capturedVariables.add(new Perl6VariableData(usedVariable.getVariableName(), usedVariable.getVariableName().replace("!", ""),
                             usedVariable.inferType(), false, true));
             }
         }
 
+        // Check lexical subs usage
+        for (Perl6SubCallName call : collectCallsInStatements(elements)) {
+            if (checkIfLexicalSubCaptured(parentToCreateAt, elements, capturedVariables, call)) {
+                capturedVariables.add(new Perl6VariableData("&" + call.getCallName(), "", false, true));
+            }
+        }
+
         return capturedVariables.toArray(new Perl6VariableData[0]);
+    }
+
+    private boolean checkIfLexicalSubCaptured(Perl6StatementList parentToCreateAt, PsiElement[] elements, List<Perl6VariableData> capturedVariables, Perl6SubCallName call) {
+        // Here, we iterate each call found
+        PsiReference ref = call.getReference();
+        assert ref != null;
+        PsiElement decl = ref.resolve();
+        // Declaration that the call invokes
+        // if there is no declaration, it's not local
+        if (decl == null)
+            return false;
+
+        // If declared as one of the statements - skip this particular call name
+        // as it will be still accessible after extraction anyway
+        for (PsiElement statement : elements) {
+            if (PsiTreeUtil.isAncestor(statement, decl, false))
+                return false;
+        }
+
+        // Try to see if we have such routine accessible in new scope
+        Perl6Symbol routineSymbol = parentToCreateAt.resolveSymbol(Perl6SymbolKind.Routine, call.getCallName());
+        // If it is not or if it points to another routine with the same name, pass a lexical sub in
+        return routineSymbol == null || routineSymbol.getPsi() == null || !PsiManager.getInstance(call.getProject()).areElementsEquivalent(routineSymbol.getPsi(), decl);
     }
 
     private boolean checkIfAttributeCaptured(Perl6StatementList parentToCreateAt, PsiElement[] elements, Perl6Variable usedVariable) {
@@ -356,6 +388,12 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         // We are checking whether a variable will be available from outer scope in scope where new block is created
         boolean isAvailableLexically = parentToCreateAt.resolveSymbol(Perl6SymbolKind.Variable, usedVariable.getVariableName()) != null;
         return new Perl6VariableData(usedVariable.getVariableName(), usedVariable.inferType(), isAvailableLexically, !isAvailableLexically);
+    }
+
+    private static List<Perl6SubCallName> collectCallsInStatements(PsiElement[] elements) {
+        return Arrays.stream(elements)
+                .flatMap(el -> PsiTreeUtil.findChildrenOfType(el, Perl6SubCallName.class).stream())
+                .collect(Collectors.toList());
     }
 
     private static List<Perl6Variable> collectVariablesInStatements(PsiElement[] elements) {

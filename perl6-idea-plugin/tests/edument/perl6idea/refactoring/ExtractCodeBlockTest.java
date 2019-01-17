@@ -150,6 +150,16 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
                 "outer", Perl6CodeBlockType.METHOD);
     }
 
+    public void testLexicalSubBeingPassed() {
+        doTest(() -> getNextList(getClosestStatementListByText("a(5)")),
+                "with-a-lexical", Perl6CodeBlockType.ROUTINE);
+    }
+
+    public void testLexicalSubsAreDifferentiated() {
+        doTest(() -> getNextList(getClosestStatementListByText("will be")),
+                "extracted", Perl6CodeBlockType.ROUTINE);
+    }
+
     // Helper methods
     /**
      * Gets innermost statement list in an opened file around a line of text passed
@@ -174,7 +184,7 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
         Perl6StatementList scope = getScope.produce();
         Perl6ExtractCodeBlockHandlerMock handler = new Perl6ExtractCodeBlockHandlerMock(type, scope, name);
         handler.invoke(myFixture.getProject(), myFixture.getEditor(), myFixture.getFile(), (DataContext) null);
-        myFixture.checkResultByFile(getTestName(true) + ".p6");
+        myFixture.checkResultByFile(getTestName(true) + ".p6", true);
     }
 
     private class Perl6ExtractCodeBlockHandlerMock extends Perl6ExtractCodeBlockHandler {
