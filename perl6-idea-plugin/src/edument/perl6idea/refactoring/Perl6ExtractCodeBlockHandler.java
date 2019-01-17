@@ -25,10 +25,7 @@ import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -199,7 +196,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
     protected List<Perl6StatementList> getPossibleScopes(PsiElement[] elements) {
         PsiElement commonParent = PsiTreeUtil.findCommonParent(elements);
-        PsiElement list = PsiTreeUtil.getNonStrictParentOfType(commonParent, Perl6StatementList.class);
+        PsiElement list = PsiTreeUtil.getNonStrictParentOfType(commonParent, Perl6PsiScope.class);
         if (list == null) {
             return new ArrayList<>();
         }
@@ -226,8 +223,10 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             }
         } else {
             while (list != null) {
-                scopes.add((Perl6StatementList) list);
-                list = PsiTreeUtil.getParentOfType(list, Perl6StatementList.class);
+                Perl6StatementList statementList = PsiTreeUtil.findChildOfType(list, Perl6StatementList.class);
+                if (statementList == null) break;
+                scopes.add(statementList);
+                list = PsiTreeUtil.getParentOfType(list, Perl6PsiScope.class);
             }
         }
         return scopes;
@@ -283,10 +282,47 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         // Check ordinary variables usage
         List<Perl6Variable> usedVariables = collectVariablesInStatements(elements);
         for (Perl6Variable usedVariable : usedVariables) {
-            capturedVariables.add(checkIfVariableCaptured(parentToCreateAt, elements, usedVariable));
+            char twigil = Perl6Variable.getTwigil(usedVariable.getVariableName());
+            if (twigil == ' ')
+                capturedVariables.add(checkIfLexicalVariableCaptured(parentToCreateAt, elements, usedVariable));
+            else if (twigil == '!') {
+                if (checkIfAttributeCaptured(parentToCreateAt, elements, usedVariable))
+                    capturedVariables.add(new Perl6VariableData(usedVariable.getVariableName(), usedVariable.getVariableName().replace("!", ""),
+                            usedVariable.inferType(), false, true));
+            }
         }
 
         return capturedVariables.toArray(new Perl6VariableData[0]);
+    }
+
+    private boolean checkIfAttributeCaptured(Perl6StatementList parentToCreateAt, PsiElement[] elements, Perl6Variable usedVariable) {
+        // We are checking if attribute has to be passed to a newly created block or not
+        // Passing is *not* necessary if either:
+        // * new block == lexical sub of the method in the same class
+        PsiElement commonParentOfOriginalElements = PsiTreeUtil.getNonStrictParentOfType(PsiTreeUtil.findCommonParent(elements), Perl6PsiScope.class);
+        PsiElement scopeToCreateAt = PsiTreeUtil.getParentOfType(parentToCreateAt, Perl6PsiScope.class);
+
+        if (myCodeBlockType == Perl6CodeBlockType.ROUTINE) {
+            while (true) {
+                if (scopeToCreateAt instanceof Perl6RoutineDecl) {
+                    if (((Perl6RoutineDecl) scopeToCreateAt).getRoutineKind().equals("method")) {
+                        return false;
+                    } else {
+                        scopeToCreateAt = PsiTreeUtil.getNonStrictParentOfType(scopeToCreateAt, Perl6PsiScope.class);
+                    }
+                } else if (scopeToCreateAt instanceof Perl6PackageDecl) {
+                    return true;
+                } else {
+                    if (scopeToCreateAt == null) break;
+                    scopeToCreateAt = PsiTreeUtil.getNonStrictParentOfType(scopeToCreateAt, Perl6PsiScope.class);
+                }
+            }
+        } else { // * new block == method in the same class
+            // Class that surrounds created method
+            Perl6PackageDecl outermostClassBody = PsiTreeUtil.getParentOfType(parentToCreateAt, Perl6PackageDecl.class);
+            return !Objects.equals(PsiTreeUtil.getNonStrictParentOfType(commonParentOfOriginalElements, Perl6PackageDecl.class), outermostClassBody);
+        }
+        return true;
     }
 
     private boolean checkSelfUsage(PsiElement[] statements, Perl6StatementList parentToCreateAt) {
@@ -301,10 +337,10 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         // otherwise check seriously:
         Perl6PackageDecl outerClassBody = PsiTreeUtil.getParentOfType(PsiTreeUtil.findCommonParent(statements), Perl6PackageDecl.class);
         Perl6PackageDecl outermostClassBody = PsiTreeUtil.getParentOfType(parentToCreateAt, Perl6PackageDecl.class);
-        return !outerClassBody.equals(outermostClassBody);
+        return !Objects.equals(outerClassBody, outermostClassBody);
     }
 
-    private static Perl6VariableData checkIfVariableCaptured(Perl6StatementList parentToCreateAt, PsiElement[] statements, Perl6Variable usedVariable) {
+    private static Perl6VariableData checkIfLexicalVariableCaptured(Perl6StatementList parentToCreateAt, PsiElement[] statements, Perl6Variable usedVariable) {
         // First, check if the variable is defined locally in statements we are extracting
         PsiReference originalRef = usedVariable.getReference();
         assert originalRef != null;
@@ -361,7 +397,13 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         if (selfIsPassed)
             getUsages(block, Perl6Self.class, Perl6PackageDecl.class)
                     .forEach(el -> el.replace(Perl6ElementFactory.createVariable(project, "$self")));
-
+        // Post-process attributes used
+        getUsages(block, Perl6Variable.class, Perl6VariableDecl.class)
+                .stream().filter(v -> ((Perl6Variable)v).getVariableName().contains("!"))
+                .forEach(var -> var.replace(
+                        Perl6ElementFactory.createVariable(
+                                project,
+                                ((Perl6Variable)var).getVariableName().replace("!", ""))));
         return block;
     }
 
