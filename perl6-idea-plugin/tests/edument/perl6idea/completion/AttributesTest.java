@@ -124,6 +124,7 @@ public class AttributesTest extends LightCodeInsightFixtureTestCase {
                                   "class Foo { has $.foo; has $.bar; method test { $<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
         assertTrue(vars.containsAll(Arrays.asList("$.foo", "$.bar", "$!foo", "$!bar")));
     }
 
@@ -132,6 +133,27 @@ public class AttributesTest extends LightCodeInsightFixtureTestCase {
                                   "class Foo { has $.foo1; has $.foo2; method test { $.fo<caret>; } }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
         assertTrue(vars.containsAll(Arrays.asList(".foo1", ".foo2")));
+    }
+
+    public void testLexicalSubBindsToOuterMethod() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class A { has $!a; has $.b; method m { sub a { say $<caret> } } };");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertTrue(vars.containsAll(Arrays.asList("$!a", "$!b", "$.b")));
+    }
+
+    public void testLexicalSubWithoutMethodWrapper() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class A { has $!a; has $.b; sub a { say $<caret> } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertFalse(vars.contains("$!a"));
+        assertFalse(vars.contains("$!b"));
+        assertFalse(vars.contains("$.b"));
     }
 }
