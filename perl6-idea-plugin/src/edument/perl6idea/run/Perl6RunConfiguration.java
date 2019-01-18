@@ -12,6 +12,8 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import edument.perl6idea.coverage.CoverageExecutor;
+import edument.perl6idea.coverage.Perl6CoverageCommandLineState;
 import edument.perl6idea.debugger.Perl6DebugCommandLineState;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -58,6 +60,9 @@ public class Perl6RunConfiguration extends LocatableConfigurationBase implements
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
         if (executor instanceof DefaultDebugExecutor) {
             return new Perl6DebugCommandLineState(environment);
+        }
+        if (executor instanceof CoverageExecutor) {
+            return new Perl6CoverageCommandLineState(environment);
         }
         return new Perl6RunCommandLineState(environment);
     }
