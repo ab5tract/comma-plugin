@@ -2,10 +2,13 @@ package edument.perl6idea.coverage;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -23,14 +26,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private final Project project;
-    private static final Pattern lineMatcher = Pattern.compile("^HIT  (.+)  (\\d+)");
+    private static final Pattern lineMatcher = Pattern.compile("^HIT  (.+?)(?: \\(.+\\))?  (\\d+)");
     private Set<Perl6CoverageSuite> coverageSuites = new HashSet<>();
     private Perl6CoverageSuite currentSuite;
+    private ConcurrentMap<Editor, Perl6CoverageSourceAnnotator> editorAnnotators =
+        new ConcurrentHashMap<>();
 
     public Perl6CoverageDataManagerImpl(@NotNull Project project) {
         this.project = project;
@@ -62,6 +69,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
 
         // Create the suite record.
         Perl6CoverageSuite suite = new Perl6CoverageSuite(name, timestamp, path);
+        coverageSuites.add(suite);
         return suite;
     }
 
@@ -114,9 +122,19 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         if (psiFile != null && psiFile.isPhysical()) {
             String path = psiFile.getVirtualFile().getPath();
             Map<String, Set<Integer>> fileData = currentSuite.lineDataForPath(path);
-            // Remote existing annotations for the file
-            if (!fileData.isEmpty()) {
-                // Annotate the file
+            for (FileEditor editor : editors) {
+                if (editor instanceof TextEditor) {
+                    // Clear any existing annotations.
+                    final Editor textEditor = ((TextEditor)editor).getEditor();
+                    Perl6CoverageSourceAnnotator ann = editorAnnotators.remove(textEditor);
+                    if (ann != null)
+                        ann.dispose();
+
+                    // Now add annotations.
+                    ann = new Perl6CoverageSourceAnnotator(psiFile, textEditor, fileData);
+                    editorAnnotators.put(textEditor, ann);
+                    ann.showAnnotations();
+                }
             }
         }
     }
