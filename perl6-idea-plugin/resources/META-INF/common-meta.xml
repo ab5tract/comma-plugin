@@ -105,4 +105,12 @@
     </component>
   </module-components>
 
+  <project-components>
+    <component>
+      <interface-class>edument.perl6idea.coverage.Perl6CoverageDataManager</interface-class>
+      <implementation-class>edument.perl6idea.coverage.Perl6CoverageDataManagerImpl</implementation-class>
+      <option name="workspace" value="true"/>
+    </component>
+  </project-components>
+
 </idea-plugin>

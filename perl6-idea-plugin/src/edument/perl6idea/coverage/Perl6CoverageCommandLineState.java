@@ -45,6 +45,7 @@ public class Perl6CoverageCommandLineState extends Perl6RunCommandLineState {
     @NotNull
     @Override
     protected ProcessHandler startProcess() throws ExecutionException {
+        Perl6CoverageCommandLineState state = this;
         ProcessHandler handler = super.startProcess();
         handler.addProcessListener(new ProcessAdapter() {
             @Override
@@ -66,8 +67,10 @@ public class Perl6CoverageCommandLineState extends Perl6RunCommandLineState {
 
                 // Disambiguate by lowest PID, then we have a result.
                 maybeBest.sort(Comparator.comparing(Perl6CoverageCommandLineState::extractPid));
-                if (maybeBest.size() > 0)
-                    System.out.println("Picked " + maybeBest.get(0).getAbsolutePath());
+                if (maybeBest.size() > 0) {
+                    Perl6CoverageDataManager.getInstance(getEnvironment().getProject())
+                            .addSuiteFromSingleCoverageFile(maybeBest.get(0), state);
+                }
                 else {
                     Notifications.Bus.notify(new Notification("Coverage Error", "Coverage Error",
                             "No coverage data collected.", NotificationType.ERROR));
@@ -82,7 +85,6 @@ public class Perl6CoverageCommandLineState extends Perl6RunCommandLineState {
     private static Integer extractPid(File f) {
         Matcher matcher = digits.matcher(f.getName());
         int result = matcher.matches() ? Integer.parseInt((matcher.toMatchResult().toString())) : 0;
-        System.out.println(result);
         return result;
     }
 }
