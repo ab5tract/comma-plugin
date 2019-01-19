@@ -2,8 +2,8 @@ package edument.perl6idea.refactoring;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.refactoring.ui.MethodSignatureComponent;
-import com.intellij.refactoring.ui.NameSuggestionsField;
 import com.intellij.refactoring.ui.RefactoringDialog;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.JBColor;
@@ -11,7 +11,6 @@ import com.intellij.ui.SeparatorFactory;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.ui.table.JBTable;
-import com.intellij.util.ArrayUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
@@ -22,13 +21,15 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     public static final String[] SCOPE_OPTIONS = {"", "my", "our"};
     public static final String[] KIND_OPTIONS = {"", "proto", "multi", "only"};
     public static final int LEXICAL_SCOPE_COLUMN_INDEX = 3;
     public static final int PASSED_AS_PARAMETER_COLUMN_INDEX = 2;
-    private NameSuggestionsField myNameField;
+    private JTextField myNameField;
     private JComboBox<String> myScopeField;
     private JComboBox<String> myKindField;
     private JTextField myReturnTypeField;
@@ -42,7 +43,7 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         this.myInputVariables = myInputVariables;
         mySignature = new MethodSignatureComponent("", project, Perl6ScriptFileType.INSTANCE);
         mySignature.setMinimumSize(new Dimension(500, 80));
-        myNameField = new NameSuggestionsField(ArrayUtil.EMPTY_STRING_ARRAY, myProject);
+        myNameField = new JTextField();
         myScopeField = new ComboBox<>(SCOPE_OPTIONS);
         myKindField = new ComboBox<>(KIND_OPTIONS);
         myReturnTypeField = new JTextField();
@@ -94,7 +95,13 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         namePanel.add(nameLabel, BorderLayout.NORTH);
         namePanel.add(myNameField, BorderLayout.SOUTH);
         nameLabel.setLabelFor(myNameField);
-        myNameField.addDataChangedListener(this::update);
+        myNameField.requestFocus();
+        myNameField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                update();
+            }
+        });
         northPanel.add(namePanel, BorderLayout.CENTER);
 
         // Return type piece
@@ -130,6 +137,22 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         centerPanel.add(signaturePanel, "align left");
 
         return centerPanel;
+    }
+
+    @Nullable
+    @Override
+    public JComponent getPreferredFocusedComponent() {
+        return myNameField;
+    }
+
+    @Nullable
+    @Override
+    protected ValidationInfo doValidate() {
+        if (getName() != null && !getName().isEmpty()) {
+            return null;
+        } else {
+            return new ValidationInfo("Name is required", myNameField);
+        }
     }
 
     private void update() {
@@ -204,7 +227,7 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     }
 
     public String getName() {
-        return myNameField.getEnteredName();
+        return myNameField.getText();
     }
 
     public Perl6VariableData[] getInputVariables() {
