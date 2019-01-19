@@ -825,4 +825,12 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.contains(".returns"));
     }
+
+    public void testEnumValueCompletion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "enum A <One Two>; say Two.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertTrue(methods.containsAll(Arrays.asList(".enums", ".acos")));
+    }
 }
