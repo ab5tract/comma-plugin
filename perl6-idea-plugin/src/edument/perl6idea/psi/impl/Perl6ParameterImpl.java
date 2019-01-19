@@ -3,6 +3,7 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6ParameterVariable;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.PARAMETER_QUANTIFIER;
+import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Parameter {
     public Perl6ParameterImpl(@NotNull ASTNode node) {
@@ -50,7 +52,10 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
             summary.append(term.getText());
 
         PsiElement maybeQuant = getLastChild();
-        if (maybeQuant.getNode().getElementType() == PARAMETER_QUANTIFIER)
+        while (maybeQuant != null && (maybeQuant instanceof PsiWhiteSpace || maybeQuant.getNode().getElementType() == UNV_WHITE_SPACE)) {
+            maybeQuant = maybeQuant.getPrevSibling();
+        }
+        if (maybeQuant != null && maybeQuant.getNode().getElementType() == PARAMETER_QUANTIFIER)
             summary.append(maybeQuant.getText());
 
         return summary.toString();
