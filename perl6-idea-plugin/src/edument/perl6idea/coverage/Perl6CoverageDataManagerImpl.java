@@ -1,5 +1,6 @@
 package edument.perl6idea.coverage;
 
+import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.editor.Editor;
@@ -16,10 +17,7 @@ import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -33,6 +31,7 @@ import java.util.regex.Pattern;
 
 public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private final Project project;
+    private static final Pattern indexMatcher = Pattern.compile("^([^\\t]+)\\t(.+)");
     private static final Pattern lineMatcher = Pattern.compile("^HIT  (.+?)(?: \\(.+\\))?  (\\d+)");
     private Set<Perl6CoverageSuite> coverageSuites = new HashSet<>();
     private Perl6CoverageSuite currentSuite;
@@ -51,12 +50,31 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         changeToSuite(suite);
     }
 
+    @Override
+    public void addSuiteFromIndexFile(File index, Perl6CoverageTestRunningState state) {
+        Perl6CoverageSuite suite = createSuite(state);
+        try (BufferedReader br = new BufferedReader(new FileReader(index))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                Matcher matcher = indexMatcher.matcher(line);
+                if (matcher.matches())
+                    suite.addCoverageData(matcher.group(1),
+                            parseCoverageFile(new File(matcher.group(2))));
+            }
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        changeToSuite(suite);
+    }
+
     public void changeToSuite(Perl6CoverageSuite suite) {
         currentSuite = suite;
         triggerPresentationUpdate();
     }
 
-    private Perl6CoverageSuite createSuite(Perl6CoverageCommandLineState state) {
+    private Perl6CoverageSuite createSuite(CommandLineState state) {
         // Form suite info.
         String name = project.getName() + " - " + state.getEnvironment().getRunProfile().getName();
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);

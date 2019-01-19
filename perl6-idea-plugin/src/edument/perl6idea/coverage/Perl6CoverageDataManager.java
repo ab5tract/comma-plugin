@@ -12,6 +12,8 @@ public abstract class Perl6CoverageDataManager implements ProjectComponent {
 
     abstract void addSuiteFromSingleCoverageFile(File data, Perl6CoverageCommandLineState state);
 
+    public abstract void addSuiteFromIndexFile(File index, Perl6CoverageTestRunningState state);
+
     abstract void changeToSuite(Perl6CoverageSuite suite);
 
     abstract public void triggerPresentationUpdate();

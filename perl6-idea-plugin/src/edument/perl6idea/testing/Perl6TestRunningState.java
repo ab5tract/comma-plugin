@@ -70,7 +70,7 @@ public class Perl6TestRunningState extends CommandLineState {
         return processHandler;
     }
 
-    private GeneralCommandLine createCommandLine() throws ExecutionException {
+    protected GeneralCommandLine createCommandLine() throws ExecutionException {
         if (isDebugging) {
             command = Perl6CommandLine.populateDebugCommandLine(
               getEnvironment().getProject(),

@@ -12,6 +12,8 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
+import edument.perl6idea.coverage.CoverageExecutor;
+import edument.perl6idea.coverage.Perl6CoverageTestRunningState;
 import edument.perl6idea.run.Perl6DebuggableConfiguration;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +36,9 @@ public class Perl6TestRunConfiguration extends RunConfigurationBase implements P
     @Nullable
     @Override
     public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
+        if (executor instanceof CoverageExecutor) {
+            return new Perl6CoverageTestRunningState(environment);
+        }
         return new Perl6TestRunningState(environment, executor instanceof DefaultDebugExecutor);
     }
 
