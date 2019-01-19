@@ -283,10 +283,47 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
         // Check ordinary variables and attributes usage
         List<Perl6Variable> usedVariables = collectVariablesInStatements(elements);
-        for (Perl6Variable usedVariable : usedVariables) {
+        List<Perl6Variable> deduplicatedVars = new ArrayList<>();
+
+        /*
+        Here we need to de-duplicate collected variables
+        As our most truthful check of declaration
+        may result in null, we additionally check
+        variable's name, so altogether it looks quite expensive,
+        but considering that variable list rarely is too large and
+        the refactoring call is not hot operation, it is likely good enough
+        */
+        for (int i = 0, size = usedVariables.size(); i < size; i++) {
+            Perl6Variable var = usedVariables.get(i);
+            PsiReference ref = var.getReference();
+            assert ref != null;
+            PsiElement decl = ref.resolve();
+            String name = var.getVariableName();
+
+            boolean isDuplicate = false;
+            for (int i1 = 0, size1 = deduplicatedVars.size(); i1 < size1; i1++) {
+                Perl6Variable each = deduplicatedVars.get(i1);
+                if (each.getVariableName().equals(name)) {
+                    PsiReference eachRef = each.getReference();
+                    assert eachRef != null;
+                    PsiElement eachDecl = eachRef.resolve();
+                    if (Objects.equals(decl, eachDecl)) {
+                        isDuplicate = true;
+                    }
+                }
+            }
+            if (!isDuplicate) {
+                deduplicatedVars.add(var);
+            }
+        }
+
+        for (Perl6Variable usedVariable : deduplicatedVars) {
             char twigil = Perl6Variable.getTwigil(usedVariable.getVariableName());
-            if (twigil != '!')
-                capturedVariables.add(checkIfLexicalVariableCaptured(parentToCreateAt, elements, usedVariable));
+            if (twigil != '!') {
+                Perl6VariableData variableCapture = checkIfLexicalVariableCaptured(parentToCreateAt, elements, usedVariable);
+                if (variableCapture != null)
+                    capturedVariables.add(variableCapture);
+            }
             else {
                 if (checkIfAttributeCaptured(parentToCreateAt, elements, usedVariable))
                     capturedVariables.add(new Perl6VariableData(usedVariable.getVariableName(), usedVariable.getVariableName().replace("!", ""),
@@ -380,7 +417,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         if (usedVariableDeclaration != null) {
             for (PsiElement statement : statements) {
                 if (PsiTreeUtil.isAncestor(statement, usedVariableDeclaration, true)) {
-                    return new Perl6VariableData(usedVariable.getVariableName(), usedVariable.inferType(), true, false);
+                    return null;
                 }
             }
         }
@@ -398,9 +435,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
     private static List<Perl6Variable> collectVariablesInStatements(PsiElement[] elements) {
         return Arrays.stream(elements)
-                .flatMap(el -> getUsages(el, Perl6Variable.class, Perl6VariableDecl.class).stream())
-                .map(el -> (Perl6Variable)el)
-                .collect(Collectors.toList());
+                     .flatMap(el -> PsiTreeUtil.findChildrenOfType(el, Perl6Variable.class).stream())
+                     .collect(Collectors.toList());
     }
 
     @NotNull

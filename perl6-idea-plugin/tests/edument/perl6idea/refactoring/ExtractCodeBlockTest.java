@@ -160,6 +160,16 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
                 "extracted", Perl6CodeBlockType.ROUTINE);
     }
 
+    public void testVarUsedInDeclarationIsPassed() {
+        doTest(() -> getNextList(getClosestStatementListByText("$var.key")),
+                "foo", Perl6CodeBlockType.PRIVATEMETHOD);
+    }
+
+    public void testVarsUsedAreNotDuplicated() {
+        doTest(() -> getNextList(getClosestStatementListByText("$foo")),
+                "foo", Perl6CodeBlockType.ROUTINE);
+    }
+
     // Helper methods
     /**
      * Gets innermost statement list in an opened file around a line of text passed
