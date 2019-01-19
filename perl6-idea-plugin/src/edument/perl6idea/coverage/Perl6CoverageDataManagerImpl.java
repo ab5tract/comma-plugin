@@ -3,7 +3,12 @@ package edument.perl6idea.coverage;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.event.EditorFactoryEvent;
+import com.intellij.openapi.editor.event.EditorFactoryListener;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
@@ -12,8 +17,10 @@ import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.util.Alarm;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,7 +63,6 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         try (BufferedReader br = new BufferedReader(new FileReader(index))) {
             String line;
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
                 Matcher matcher = indexMatcher.matcher(line);
                 if (matcher.matches())
                     suite.addCoverageData(matcher.group(1),
@@ -140,6 +146,8 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         if (psiFile != null && psiFile.isPhysical()) {
             String path = psiFile.getVirtualFile().getPath();
             Map<String, Set<Integer>> fileData = currentSuite.lineDataForPath(path);
+            if (fileData == null)
+                return;
             for (FileEditor editor : editors) {
                 if (editor instanceof TextEditor) {
                     // Clear any existing annotations.
@@ -152,6 +160,68 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
                     ann = new Perl6CoverageSourceAnnotator(psiFile, textEditor, fileData);
                     editorAnnotators.put(textEditor, ann);
                     ann.showAnnotations();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void projectOpened() {
+        EditorFactory.getInstance().addEditorFactoryListener(new CoverageEditorFactoryListener(), project);
+    }
+
+    private class CoverageEditorFactoryListener implements EditorFactoryListener {
+        private final Alarm myAlarm = new Alarm(Alarm.ThreadToUse.POOLED_THREAD, project);
+        private final Map<Editor, Runnable> myCurrentEditors = new HashMap<>();
+
+        @Override
+        public void editorCreated(@NotNull EditorFactoryEvent event) {
+            final Editor editor = event.getEditor();
+            if (editor.getProject() != project) return;
+            final PsiFile psiFile = ReadAction.compute(() -> {
+                if (project.isDisposed()) return null;
+                final PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
+                final Document document = editor.getDocument();
+                return documentManager.getPsiFile(document);
+            });
+
+            if (psiFile != null && psiFile.isPhysical()) {
+                String path = psiFile.getVirtualFile().getPath();
+                Map<String, Set<Integer>> fileData = currentSuite.lineDataForPath(path);
+                if (fileData == null)
+                    return;
+                Perl6CoverageSourceAnnotator ann = editorAnnotators.get(editor);
+                if (ann == null) {
+                    ann = new Perl6CoverageSourceAnnotator(psiFile, editor, fileData);
+                }
+                editorAnnotators.put(editor, ann);
+                ann.showAnnotations();
+
+                final Perl6CoverageSourceAnnotator finalAnn = ann;
+                final Runnable request = () -> {
+                    if (project.isDisposed()) return;
+                    finalAnn.showAnnotations();
+                };
+
+                myCurrentEditors.put(editor, request);
+                myAlarm.addRequest(request, 100);
+            }
+        }
+
+        @Override
+        public void editorReleased(@NotNull EditorFactoryEvent event) {
+            final Editor editor = event.getEditor();
+            if (editor.getProject() != project) return;
+            try {
+                Perl6CoverageSourceAnnotator ann = editorAnnotators.remove(editor);
+                if (ann != null) {
+                    Disposer.dispose(ann);
+                }
+            }
+            finally {
+                final Runnable request = myCurrentEditors.remove(editor);
+                if (request != null) {
+                    myAlarm.cancelRequest(request);
                 }
             }
         }
