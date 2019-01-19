@@ -1,4 +1,4 @@
-sub do-magic(Int $a, Any @b, Int $number) {
+sub do-magic(Int $a, @b, Int $number) {
     say $a;
     say @b>>.Str.join('foo');
     say "Magic number is $number";

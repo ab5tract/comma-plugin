@@ -1,4 +1,4 @@
-sub do-magic(Int $a, Str @values, Str $number) {
+sub do-magic(Int $a, @values, Str $number) {
     say $a;
     say +@values;
     say "Magic number is $number";

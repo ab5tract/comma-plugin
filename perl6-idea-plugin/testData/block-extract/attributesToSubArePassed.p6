@@ -2,7 +2,7 @@ class {
     has $.a;
     has Int @!b;
 
-    sub foo($self, Any $a, Int @b) {
+    sub foo($self, Any $a, @b) {
         say $a + $self.a;
         say @b + $self.b;
     }

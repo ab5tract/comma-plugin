@@ -325,9 +325,11 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
                     capturedVariables.add(variableCapture);
             }
             else {
-                if (checkIfAttributeCaptured(parentToCreateAt, elements, usedVariable))
+                if (checkIfAttributeCaptured(parentToCreateAt, elements, usedVariable)) {
+                    String type = usedVariable.getVariableName().startsWith("$") ? usedVariable.inferType() : "";
                     capturedVariables.add(new Perl6VariableData(usedVariable.getVariableName(), usedVariable.getVariableName().replace("!", ""),
-                            usedVariable.inferType(), false, true));
+                                                                type, false, true));
+                }
             }
         }
 
@@ -424,7 +426,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
         // We are checking whether a variable will be available from outer scope in scope where new block is created
         boolean isAvailableLexically = parentToCreateAt.resolveSymbol(Perl6SymbolKind.Variable, usedVariable.getVariableName()) != null;
-        return new Perl6VariableData(usedVariable.getVariableName(), usedVariable.inferType(), isAvailableLexically, !isAvailableLexically);
+        String type = usedVariable.getVariableName().startsWith("$") ? usedVariable.inferType() : "";
+        return new Perl6VariableData(usedVariable.getVariableName(), type, isAvailableLexically, !isAvailableLexically);
     }
 
     private static List<Perl6SubCallName> collectCallsInStatements(PsiElement[] elements) {
