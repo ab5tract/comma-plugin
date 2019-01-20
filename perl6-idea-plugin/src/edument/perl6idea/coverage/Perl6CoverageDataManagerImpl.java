@@ -178,6 +178,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         public void editorCreated(@NotNull EditorFactoryEvent event) {
             final Editor editor = event.getEditor();
             if (editor.getProject() != project) return;
+            if (currentSuite == null) return;
             final PsiFile psiFile = ReadAction.compute(() -> {
                 if (project.isDisposed()) return null;
                 final PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
