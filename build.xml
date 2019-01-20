@@ -1,13 +1,13 @@
 <project name="Comma Supporter Edition" default="all">
   <property name="project.home" value="${basedir}/.."/>
-  <property name="python.home" value="${basedir}"/>
+  <property name="comma.home" value="${basedir}"/>
   <property name="out.dir" value="${project.home}/out"/>
   <property name="tmp.dir" value="${project.home}/out/tmp"/>
   <property name="idea.build.number" value="0"/>
   <property name="idea.path" value=""/>
 
   <target name="cleanup">
-    <delete file="${python.home}/perl6-idea-plugin/resources/META-INF/plugin.xml" failonerror="false"/>
+    <delete file="${comma.home}/perl6-idea-plugin/resources/META-INF/plugin.xml" failonerror="false"/>
     <delete dir="${out.dir}" failonerror="false"/>
   </target>
 
@@ -32,18 +32,27 @@
     </sequential>
   </macrodef>
 
-  <target name="build" depends="init">
-    <call_gant script="${python.home}/build/comma_supporter_build.gant"/>
+  <target name="complete-build" depends="init">
+    <call_gant script="${comma.home}/build/comma_complete_build.gant"/>
   </target>
 
-  <target name="plugin" depends="init">
-    <call_gant script="${python.home}/build/perl6_supporter_plugin_build.gant"/>
+  <target name="community-build" depends="init">
+    <call_gant script="${comma.home}/build/comma_community_build.gant"/>
   </target>
+
+  <target name="complete-plugin" depends="init">
+    <call_gant script="${comma.home}/build/perl6_complete_plugin_build.gant"/>
+  </target>
+
+  <target name="community-plugin" depends="init">
+    <call_gant script="${comma.home}/build/perl6_community_plugin_build.gant"/>
+  </target>
+
   <!--
   <target name="test" depends="init">
     <call_gant script="${project.home}/build/scripts/tests_in_community.gant"/>
   </target>
   -->
 
-  <target name="all" depends="cleanup,build"/>
+  <target name="all" depends="cleanup, complete-build"/>
 </project>
