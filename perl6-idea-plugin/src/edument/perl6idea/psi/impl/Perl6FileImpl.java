@@ -276,7 +276,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
             // Now add uncovered lines up to the end of this statement.
             if (!seen) {
-                int endLine = document.getLineNumber(stmt.getTextOffset() + stmt.getTextLength());
+                int endLine = document.getLineNumber(stmt.getTextOffset() +
+                        stmt.getText().replaceFirst("\\s+$", "").length());
                 for (int i = startLine + 1; i <= endLine; i++) {
                     if (!covered.contains(i)) {
                         covered.add(i);
@@ -306,7 +307,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         for (PsiElement child : node.getChildren()) {
             if (child instanceof Perl6StatementList)
                 buildStatementLineMap(result, covered, document, (Perl6StatementList)child);
-            else if (child instanceof Perl6PsiElement)
+            else
                 findNestedStatements(result, covered, document, (Perl6PsiElement)child);
         }
     }
