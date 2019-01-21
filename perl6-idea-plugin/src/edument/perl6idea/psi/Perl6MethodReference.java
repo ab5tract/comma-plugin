@@ -107,9 +107,11 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
                 String newName = subset.getSubsetBaseTypeName();
                 name = newName != null ? newName : "Any";
             } else if (base instanceof Perl6Enum) {
-                List<String> enumMethods = tryToCompleteExternalTypeMethods("Int", call);
-                enumMethods.addAll(tryToCompleteExternalTypeMethods("Enumeration", call));
-                return enumMethods;
+                if (!isSingle) {
+                    List<String> enumMethods = tryToCompleteExternalTypeMethods("Int", call);
+                    enumMethods.addAll(tryToCompleteExternalTypeMethods("Enumeration", call));
+                    return enumMethods;
+                }
             }
             if (decl != null) { // Not external type
                 return isSingle ?

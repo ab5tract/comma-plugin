@@ -10,6 +10,8 @@ import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
+
 public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
@@ -23,21 +25,19 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testLocalVariable1() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = 5; say $a<caret>;");
-        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
-        Perl6Variable var = PsiTreeUtil.getParentOfType(usage, Perl6Variable.class);
-        PsiElement decl = var.getReference().resolve();
-        assertNotNull(decl);
-        assertEquals(3, decl.getTextOffset());
+        doTest("my $a = 5; say $a<caret>;", 1,
+                Perl6Variable.class, (decl) -> {
+                    assertNotNull(decl);
+                    assertEquals(3, decl.getTextOffset());
+                });
     }
 
     public void testLocalVariable2() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our $a = 5; say $a<caret>;");
-        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
-        Perl6Variable var = PsiTreeUtil.getParentOfType(usage, Perl6Variable.class);
-        PsiElement decl = var.getReference().resolve();
-        assertNotNull(decl);
-        assertEquals(4, decl.getTextOffset());
+        doTest("our $a = 5; say $a<caret>;", 1,
+                Perl6Variable.class, (decl) -> {
+                    assertNotNull(decl);
+                    assertEquals(4, decl.getTextOffset());
+                });
     }
 
     public void testExternalVariable1() {
@@ -59,30 +59,27 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testUseLocalType() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo; Fo<caret>o.new;");
-        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
-        Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
-        PsiElement decl = var.getReference().resolve();
-        assertNotNull(decl);
-        assertEquals(6, decl.getTextOffset());
+        doTest("class Foo; Fo<caret>o.new;", 1,
+                Perl6TypeName.class, (decl) -> {
+                    assertNotNull(decl);
+                    assertEquals(6, decl.getTextOffset());
+                });
     }
 
     public void testUseLocalTypeMultiPart() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo::Bar::Baz; Foo::<caret>Bar::Baz.new;");
-        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
-        Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
-        PsiElement decl = var.getReference().resolve();
-        assertNotNull(decl);
-        assertEquals(6, decl.getTextOffset());
+        doTest("class Foo::Bar::Baz; Foo::<caret>Bar::Baz.new;", 1,
+                Perl6TypeName.class, (decl) -> {
+                    assertNotNull(decl);
+                    assertEquals(6, decl.getTextOffset());
+                });
     }
 
     public void testUseLocalTypeParametrized() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo::Bar[TypeName]; Foo::<caret>Bar.new;");
-        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
-        Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
-        PsiElement decl = var.getReference().resolve();
-        assertNotNull(decl);
-        assertEquals(6, decl.getTextOffset());
+        doTest("class Foo::Bar[TypeName]; Foo::<caret>Bar.new;", 1,
+                Perl6TypeName.class, (decl) -> {
+                    assertNotNull(decl);
+                    assertEquals(6, decl.getTextOffset());
+                });
     }
 
     public void testUseExternalType() {
@@ -114,12 +111,10 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testPrivateMethodsReference() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Foo { method !a{} }; class Bar does Foo { method !b{ self!<caret>a; } }");
-        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset()).getParent().getParent();
-        PsiElement resolved = usage.getReference().resolve();
-        Perl6PackageDecl role = PsiTreeUtil.getParentOfType(resolved, Perl6PackageDecl.class);
-        assertNotNull(role);
-        assertEquals("Foo", role.getPackageName());
+        doTest("class Foo { has $.foo; method test { $.fo<caret>o; } }", 0,
+                Perl6MethodCall.class, (call) -> {
+                    assertTrue(call instanceof Perl6VariableDecl);
+                });
     }
 
     public void testOverloadedPrivateMethodReference() {
@@ -132,28 +127,40 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testAttributeByCall() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo { has $.foo; method test { $.fo<caret>o; } }");
-        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset());
-        Perl6MethodCall call = PsiTreeUtil.getParentOfType(usage, Perl6MethodCall.class);
-        PsiElement resolved = call.getReference().resolve();
-        assertTrue(resolved instanceof Perl6VariableDecl);
+        doTest("class Foo { has $.foo; method test { $.fo<caret>o; } }", 0,
+                Perl6MethodCall.class, (call) -> {
+                    assertTrue(call instanceof Perl6VariableDecl);
+                });
     }
 
     public void testMultipleInheritance() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Foo {}; class Bar does Foo {}; Ba<caret>r.new;");
-        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
-        Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
-        PsiElement decl = var.getReference().resolve();
-        assertNotNull(decl);
-        assertEquals(19, decl.getTextOffset());
+        doTest("role Foo {}; class Bar does Foo {}; Ba<caret>r.new;", 1,
+                Perl6TypeName.class, (decl) -> {
+                    assertNotNull(decl);
+                    assertEquals(19, decl.getTextOffset());
+                });
     }
 
     public void testEnumType() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "enum Foos <Foo1 Foo2>; my Fo<caret>o1 $foo;");
-        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - 1);
-        Perl6TypeName var = PsiTreeUtil.getParentOfType(usage, Perl6TypeName.class);
-        PsiElement decl = var.getReference().resolve();
-        assertNotNull(decl);
-        assertEquals(5, decl.getTextOffset());
+        doTest("enum Foos <Foo1 Foo2>; my Fo<caret>o1 $foo;", 1,
+                Perl6TypeName.class, (decl) -> {
+                    assertNotNull(decl);
+                    assertEquals(5, decl.getTextOffset());
+                });
+    }
+
+    public void testEnumFullType() {
+        doTest("enum Foos <Foo1 Foo2>; my Foos::Fo<caret>o1 $foo;", 1,
+                Perl6TypeName.class, (decl) -> {
+                    assertNotNull(decl);
+                    assertEquals(5, decl.getTextOffset());
+                });
+    }
+
+    public void doTest(String text, int offset, Class<? extends Perl6PsiElement> clazz, Consumer<PsiElement> check) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
+        PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - offset);
+        Perl6PsiElement var = PsiTreeUtil.getParentOfType(usage, clazz);
+        check.accept(var.getReference().resolve());
     }
 }

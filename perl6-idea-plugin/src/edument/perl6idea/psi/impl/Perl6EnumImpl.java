@@ -67,9 +67,12 @@ public class Perl6EnumImpl extends Perl6TypeStubBasedPsi<Perl6EnumStub> implemen
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
         super.contributeSymbols(collector);
+        String enumName = getEnumName();
         List<String> enumValues = getEnumValues();
-        for (String type : enumValues)
+        for (String type : enumValues) {
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant, this, type));
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant, this, enumName + "::" + type));
+        }
     }
 
     public String toString() {
