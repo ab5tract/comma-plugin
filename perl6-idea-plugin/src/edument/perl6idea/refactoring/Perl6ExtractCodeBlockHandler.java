@@ -66,12 +66,16 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         myScopes = getPossibleScopes(elements);
         myScopes = handleZeroScopes(project, editor, elements);
         if (myScopes.size() == 0) return;
-        IntroduceTargetChooser.showChooser(editor, myScopes, new Pass<Perl6StatementList>() {
-            @Override
-            public void pass(Perl6StatementList list) {
-                invoke(project, editor, file, list, elements);
-            }
-        }, PsiElement::getText, "Select creation scope");
+        if (myScopes.size() == 1) {
+            invoke(project, editor, file, myScopes.get(0), elements);
+        } else {
+            IntroduceTargetChooser.showChooser(editor, myScopes, new Pass<Perl6StatementList>() {
+                @Override
+                public void pass(Perl6StatementList list) {
+                    invoke(project, editor, file, list, elements);
+                }
+            }, PsiElement::getText, "Select creation scope");
+        }
     }
 
     private List<Perl6StatementList> handleZeroScopes(@NotNull Project project,
