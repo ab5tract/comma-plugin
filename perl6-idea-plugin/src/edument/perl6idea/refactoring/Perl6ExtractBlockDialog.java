@@ -21,8 +21,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     public static final String[] SCOPE_OPTIONS = {"", "my", "our"};
@@ -96,9 +94,9 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         namePanel.add(myNameField, BorderLayout.SOUTH);
         nameLabel.setLabelFor(myNameField);
         myNameField.requestFocus();
-        myNameField.addActionListener(new ActionListener() {
+        myNameField.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            protected void textChanged(DocumentEvent e) {
                 update();
             }
         });
