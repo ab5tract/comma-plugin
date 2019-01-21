@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
+import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.Perl6File;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,13 +49,14 @@ public class Perl6CoverageSourceAnnotator implements Disposable {
             for (int line : lineUsers.keySet()) {
                 int zeroBasedLine = line - 1;
                 if (lineMap.containsKey(zeroBasedLine)) {
+                    String info = formCoverageInfo(lineUsers.get(line));
                     for (int markLine : lineMap.get(zeroBasedLine)) {
                         final int startOffset = document.getLineStartOffset(markLine);
                         final int endOffset = document.getLineEndOffset(markLine);
                         RangeHighlighter highlighter = markupModel.addRangeHighlighter(startOffset, endOffset,
-                                                                                       HighlighterLayer.SELECTION - 1, null,
+                                                                                       HighlighterLayer.LAST, null,
                                                                                        HighlighterTargetArea.LINES_IN_RANGE);
-                        highlighter.setLineMarkerRenderer(new Perl6CoverageLineMarkerRenderer(markerStyle));
+                        highlighter.setLineMarkerRenderer(new Perl6CoverageLineMarkerRenderer(markerStyle, info));
                         highlighters.add(highlighter);
                     }
                 }
@@ -63,10 +65,16 @@ public class Perl6CoverageSourceAnnotator implements Disposable {
         });
     }
 
+    private String formCoverageInfo(List<String> strings) {
+        if (strings.size() == 0 || strings.get(0).equals("main"))
+            return null;
+        return String.join("\n", ArrayUtil.toStringArray(strings));
+    }
+
     @NotNull
     private TextAttributes getMarkerStyle() {
         // TODO: make configurable
-        return new TextAttributes(null, Color.green, null, null, 0);
+        return new TextAttributes(null, Color.decode("#0f6403"), null, null, 0);
     }
 
     public void hideAnnotations() {

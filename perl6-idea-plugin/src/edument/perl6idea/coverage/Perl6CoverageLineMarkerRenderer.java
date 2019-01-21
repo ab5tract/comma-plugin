@@ -5,15 +5,24 @@ import com.intellij.openapi.editor.ex.EditorGutterComponentEx;
 import com.intellij.openapi.editor.markup.ActiveGutterRenderer;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.ui.ColorUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class Perl6CoverageLineMarkerRenderer implements ActiveGutterRenderer {
     private final TextAttributes style;
+    private final String info;
 
-    public Perl6CoverageLineMarkerRenderer(TextAttributes style) {
+    public Perl6CoverageLineMarkerRenderer(TextAttributes style, String info) {
         this.style = style;
+        this.info = info;
+    }
+
+    @Nullable
+    @Override
+    public String getTooltipText() {
+        return info;
     }
 
     @Override
@@ -22,7 +31,7 @@ public class Perl6CoverageLineMarkerRenderer implements ActiveGutterRenderer {
 
     @Override
     public boolean canDoAction(MouseEvent e) {
-        return false;
+        return info != null;
     }
 
     @Override
