@@ -205,6 +205,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testOptionalParameterAfterDefaultWithReturnType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a($a = 5, $b? ) {}");
+        myFixture.checkHighlighting();
+    }
+
     public void testRawWheneverAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=descr=\"A whenever must be within a supply or react block\"whenever</error> $foo {}");
         myFixture.checkHighlighting(false, false, true, true);
