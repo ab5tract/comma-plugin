@@ -74,7 +74,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
                 public void pass(Perl6StatementList list) {
                     invoke(project, editor, file, list, elements);
                 }
-            }, PsiElement::getText, "Select creation scope");
+            }, Perl6BlockRenderer::renderBlock, "Select creation scope");
         }
     }
 
