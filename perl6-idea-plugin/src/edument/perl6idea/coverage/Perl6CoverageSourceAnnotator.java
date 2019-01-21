@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.DocumentMarkupModel;
 import com.intellij.openapi.editor.markup.*;
 import com.intellij.psi.PsiFile;
+import edument.perl6idea.psi.Perl6File;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -35,13 +36,21 @@ public class Perl6CoverageSourceAnnotator implements Disposable {
             TextAttributes markerStyle = getMarkerStyle();
             Document document = editor.getDocument();
             MarkupModel markupModel = DocumentMarkupModel.forDocument(document, editor.getProject(), true);
+            if (!(file instanceof Perl6File))
+                return;
+            Map<Integer, List<Integer>> lineMap = ((Perl6File)file).getStatementLineMap();
             for (int line : lineUsers.keySet()) {
-                final int startOffset = document.getLineStartOffset(line - 1);
-                final int endOffset = document.getLineEndOffset(line - 1);
-                RangeHighlighter highlighter = markupModel.addRangeHighlighter(startOffset, endOffset,
-                         HighlighterLayer.SELECTION - 1, null,
-                         HighlighterTargetArea.LINES_IN_RANGE);
-                highlighter.setLineMarkerRenderer(new Perl6CoverageLineMarkerRenderer(markerStyle));
+                int zeroBasedLine = line - 1;
+                if (lineMap.containsKey(zeroBasedLine)) {
+                    for (int markLine : lineMap.get(zeroBasedLine)) {
+                        final int startOffset = document.getLineStartOffset(markLine);
+                        final int endOffset = document.getLineEndOffset(markLine);
+                        RangeHighlighter highlighter = markupModel.addRangeHighlighter(startOffset, endOffset,
+                                                                                       HighlighterLayer.SELECTION - 1, null,
+                                                                                       HighlighterTargetArea.LINES_IN_RANGE);
+                        highlighter.setLineMarkerRenderer(new Perl6CoverageLineMarkerRenderer(markerStyle));
+                    }
+                }
             }
         });
     }

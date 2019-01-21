@@ -1,6 +1,7 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.PsiFileBase;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
@@ -229,5 +230,84 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };
+    }
+
+    /* Builds a map from statement start line number to the line(s) that the statement
+     * spans. The start line is always included, but any line numbers where an inner
+     * statement starts will be excluded (so the values may be sparse). Any line that
+     * does not have an entry is not "interesting" statement (e.g. one that is meaningful
+     * in coverage or could be hit by a breakpoint).
+     */
+    public Map<Integer, List<Integer>> getStatementLineMap() {
+        Map<Integer, List<Integer>> result = new HashMap<>();
+        Set<Integer> covered = new HashSet<>();
+        FileViewProvider fileViewProvider = getViewProvider();
+        Document document = fileViewProvider.getDocument();
+        Perl6StatementList stmts = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
+        buildStatementLineMap(result, covered, document, stmts);
+        return result;
+    }
+
+    private void buildStatementLineMap(Map<Integer, List<Integer>> result,
+                                       Set<Integer> covered,
+                                       Document document,
+                                       Perl6StatementList stmts) {
+        if (stmts == null)
+            return;
+        for (Perl6Statement stmt : PsiTreeUtil.getChildrenOfTypeAsList(stmts, Perl6Statement.class)) {
+            // Get the start line and, if not seen already add it to the set of
+            // covered statements.
+            int startLine = document.getLineNumber(stmt.getTextOffset());
+            boolean seen = covered.contains(startLine);
+            List<Integer> spanned = null;
+            if (!seen) {
+                if (!isCodeDeclarator(stmt)) {
+                    covered.add(startLine);
+                    if (!isSymbolDeclarator(stmt)) {
+                        spanned = new ArrayList<>();
+                        result.put(startLine, spanned);
+                        spanned.add(startLine);
+                    }
+                }
+            }
+
+            // Visit statement lists enclosed in this file.
+            findNestedStatements(result, covered, document, stmt);
+
+            // Now add uncovered lines up to the end of this statement.
+            if (!seen) {
+                int endLine = document.getLineNumber(stmt.getTextOffset() + stmt.getTextLength());
+                for (int i = startLine + 1; i <= endLine; i++) {
+                    if (!covered.contains(i)) {
+                        covered.add(i);
+                        if (spanned != null)
+                            spanned.add(i);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isSymbolDeclarator(Perl6Statement stmt) {
+        PsiElement scoped = PsiTreeUtil.getChildOfType(stmt, Perl6ScopedDecl.class);
+        Perl6PsiElement declChild = PsiTreeUtil.getChildOfAnyType(scoped != null ? scoped : stmt,
+                Perl6PackageDecl.class, Perl6UseStatement.class, Perl6NeedStatement.class,
+                Perl6Subset.class, Perl6Enum.class);
+        return declChild != null;
+    }
+
+    private boolean isCodeDeclarator(Perl6Statement stmt) {
+        Perl6PsiElement declChild = PsiTreeUtil.getChildOfAnyType(stmt,
+                Perl6RoutineDecl.class, Perl6MultiDecl.class, Perl6RegexDecl.class);
+        return declChild != null;
+    }
+
+    private void findNestedStatements(Map<Integer, List<Integer>> result, Set<Integer> covered, Document document, Perl6PsiElement node) {
+        for (PsiElement child : node.getChildren()) {
+            if (child instanceof Perl6StatementList)
+                buildStatementLineMap(result, covered, document, (Perl6StatementList)child);
+            else if (child instanceof Perl6PsiElement)
+                findNestedStatements(result, covered, document, (Perl6PsiElement)child);
+        }
     }
 }
