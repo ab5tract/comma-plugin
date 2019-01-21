@@ -94,7 +94,16 @@
             description="Create new Perl 6 test in current project" icon="/icons/camelia.png">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewModuleAction"/>
     </action>
-
+    <group id="Perl6Plugin.CoverageMenu">
+      <action id="Perl6Plugin.HideCoverage" class="edument.perl6idea.coverage.Perl6CoverageHideAction"
+              text="Hide Coverage Data" />
+      <separator/>
+    </group>
+    <group id="CoveragePlatformMenu" popup="false">
+      <separator/>
+      <reference ref="Perl6Plugin.CoverageMenu"/>
+      <add-to-group group-id="RunMenu" anchor="before" relative-to-action="DebugMainMenu"/>
+    </group>
   </actions>
 
   <module-components>

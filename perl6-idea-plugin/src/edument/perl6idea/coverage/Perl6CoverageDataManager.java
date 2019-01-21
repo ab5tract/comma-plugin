@@ -16,5 +16,9 @@ public abstract class Perl6CoverageDataManager implements ProjectComponent {
 
     abstract void changeToSuite(Perl6CoverageSuite suite);
 
+    abstract void hideCoverageData();
+
+    abstract boolean hasCurrentCoverageSuite();
+
     abstract public void triggerPresentationUpdate();
 }

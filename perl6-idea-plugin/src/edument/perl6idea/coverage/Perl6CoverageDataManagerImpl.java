@@ -1,6 +1,7 @@
 package edument.perl6idea.coverage;
 
 import com.intellij.execution.configurations.CommandLineState;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.application.ReadAction;
@@ -80,6 +81,15 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         triggerPresentationUpdate();
     }
 
+    public void hideCoverageData() {
+        currentSuite = null;
+        triggerPresentationUpdate();
+    }
+
+    public boolean hasCurrentCoverageSuite() {
+        return currentSuite != null;
+    }
+
     private Perl6CoverageSuite createSuite(CommandLineState state) {
         // Form suite info.
         String name = project.getName() + " - " + state.getEnvironment().getRunProfile().getName();
@@ -126,8 +136,6 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
 
     @Override
     public void triggerPresentationUpdate() {
-        if (currentSuite == null)
-            return;
         renewInformationInEditors();
     }
 
@@ -145,18 +153,20 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
             () -> PsiManager.getInstance(project).findFile(file));
         if (psiFile != null && psiFile.isPhysical()) {
             String path = psiFile.getVirtualFile().getPath();
-            Map<String, Set<Integer>> fileData = currentSuite.lineDataForPath(path);
-            if (fileData == null)
-                return;
             for (FileEditor editor : editors) {
                 if (editor instanceof TextEditor) {
                     // Clear any existing annotations.
                     final Editor textEditor = ((TextEditor)editor).getEditor();
                     Perl6CoverageSourceAnnotator ann = editorAnnotators.remove(textEditor);
                     if (ann != null)
-                        ann.dispose();
+                        Disposer.dispose(ann);
 
                     // Now add annotations.
+                    if (currentSuite == null)
+                        continue;
+                    Map<String, Set<Integer>> fileData = currentSuite.lineDataForPath(path);
+                    if (fileData == null)
+                        continue;
                     ann = new Perl6CoverageSourceAnnotator(psiFile, textEditor, fileData);
                     editorAnnotators.put(textEditor, ann);
                     ann.showAnnotations();

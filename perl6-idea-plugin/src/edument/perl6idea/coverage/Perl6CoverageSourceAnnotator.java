@@ -6,6 +6,8 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.DocumentMarkupModel;
 import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
 import edument.perl6idea.psi.Perl6File;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +17,7 @@ import java.util.*;
 import java.util.List;
 
 public class Perl6CoverageSourceAnnotator implements Disposable {
+    public static final Key<List<RangeHighlighter>> PERL6_COVERAGE_HIGHLIGHTERS = Key.create("PERL6_COVERAGE_HIGHLIGHTERS");
     private Map<Integer, List<String>> lineUsers = new HashMap<>();
     private PsiFile file;
     private Editor editor;
@@ -33,12 +36,15 @@ public class Perl6CoverageSourceAnnotator implements Disposable {
 
     public void showAnnotations() {
         ApplicationManager.getApplication().invokeLater(() -> {
+            if (editor.getUserData(PERL6_COVERAGE_HIGHLIGHTERS) != null)
+                return;
             TextAttributes markerStyle = getMarkerStyle();
             Document document = editor.getDocument();
             MarkupModel markupModel = DocumentMarkupModel.forDocument(document, editor.getProject(), true);
             if (!(file instanceof Perl6File))
                 return;
             Map<Integer, List<Integer>> lineMap = ((Perl6File)file).getStatementLineMap();
+            List<RangeHighlighter> highlighters = new ArrayList<>();
             for (int line : lineUsers.keySet()) {
                 int zeroBasedLine = line - 1;
                 if (lineMap.containsKey(zeroBasedLine)) {
@@ -49,9 +55,11 @@ public class Perl6CoverageSourceAnnotator implements Disposable {
                                                                                        HighlighterLayer.SELECTION - 1, null,
                                                                                        HighlighterTargetArea.LINES_IN_RANGE);
                         highlighter.setLineMarkerRenderer(new Perl6CoverageLineMarkerRenderer(markerStyle));
+                        highlighters.add(highlighter);
                     }
                 }
             }
+            editor.putUserData(PERL6_COVERAGE_HIGHLIGHTERS, highlighters);
         });
     }
 
@@ -62,6 +70,17 @@ public class Perl6CoverageSourceAnnotator implements Disposable {
     }
 
     public void hideAnnotations() {
+        Editor editor = this.editor;
+        PsiFile file = this.file;
+        if (editor.isDisposed() || file == null)
+            return;
+        final List<RangeHighlighter> highlighters = editor.getUserData(PERL6_COVERAGE_HIGHLIGHTERS);
+        if (highlighters != null) {
+            for (final RangeHighlighter highlighter : highlighters) {
+                ApplicationManager.getApplication().invokeLater(() -> highlighter.dispose());
+            }
+            editor.putUserData(PERL6_COVERAGE_HIGHLIGHTERS, null);
+        }
     }
 
     @Override
