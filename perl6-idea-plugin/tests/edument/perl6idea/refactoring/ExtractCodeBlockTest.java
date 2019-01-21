@@ -9,6 +9,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.util.Consumer;
+import com.intellij.util.Function;
 import com.intellij.util.Producer;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PackageDecl;
@@ -170,6 +171,15 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
                 "foo", Perl6CodeBlockType.ROUTINE);
     }
 
+    public void testVarRenaming() {
+        doTest(() -> getNextList(getClosestStatementListByText("say $aaa")),
+               "foo-bar", Perl6CodeBlockType.ROUTINE,
+               (data) -> {
+                   data.variables[0].parameterName = "$bbb";
+                   return data;
+               });
+    }
+
     // Helper methods
     /**
      * Gets innermost statement list in an opened file around a line of text passed
@@ -190,26 +200,35 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     }
 
     private void doTest(Producer<Perl6StatementList> getScope, String name, Perl6CodeBlockType type) {
+        doTest(getScope, name, type, null);
+    }
+
+    private void doTest(Producer<Perl6StatementList> getScope, String name, Perl6CodeBlockType type, Function<NewCodeBlockData, NewCodeBlockData> userAction) {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
         Perl6StatementList scope = getScope.produce();
-        Perl6ExtractCodeBlockHandlerMock handler = new Perl6ExtractCodeBlockHandlerMock(type, scope, name);
+        Perl6ExtractCodeBlockHandlerMock handler = new Perl6ExtractCodeBlockHandlerMock(type, scope, name, userAction);
         handler.invoke(myFixture.getProject(), myFixture.getEditor(), myFixture.getFile(), (DataContext) null);
         myFixture.checkResultByFile(getTestName(true) + ".p6", true);
     }
 
-    private class Perl6ExtractCodeBlockHandlerMock extends Perl6ExtractCodeBlockHandler {
+    private static class Perl6ExtractCodeBlockHandlerMock extends Perl6ExtractCodeBlockHandler {
+        private final Function<NewCodeBlockData, NewCodeBlockData> userAction;
         Perl6StatementList parent;
         private final String name;
 
-        Perl6ExtractCodeBlockHandlerMock(Perl6CodeBlockType type, Perl6StatementList parent,
-                                         String name) {
+        Perl6ExtractCodeBlockHandlerMock(Perl6CodeBlockType type,
+                                         Perl6StatementList parent,
+                                         String name,
+                                         Function<NewCodeBlockData, NewCodeBlockData> userAction) {
             super(type);
             this.parent = parent;
             this.name = name;
+            this.userAction = userAction;
         }
 
         public Perl6ExtractCodeBlockHandlerMock(Perl6CodeBlockType type) {
             super(type);
+            userAction = null;
             name = "";
         }
 
@@ -220,7 +239,11 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
 
         @Override
         protected NewCodeBlockData getNewBlockData(Project project, Perl6StatementList parentToCreateAt, PsiElement[] elements) {
-            return new NewCodeBlockData(myCodeBlockType, name, getCapturedVariables(parent, elements));
+            NewCodeBlockData data = new NewCodeBlockData(myCodeBlockType, name, getCapturedVariables(parent, elements));
+            if (userAction == null)
+                return data;
+            else
+                return userAction.fun(data);
         }
     }
 }

@@ -19,6 +19,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.IntroduceTargetChooser;
 import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
+import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
@@ -466,22 +467,41 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     protected PsiElement createNewBlock(Project project, NewCodeBlockData data, List<String> contents) {
-        return postProcessVariables(project, Perl6ElementFactory.createNamedCodeBlock(project, data, contents));
+        return postProcessVariables(project, data.variables, Perl6ElementFactory.createNamedCodeBlock(project, data, contents));
     }
 
-    private PsiElement postProcessVariables(Project project, Perl6Statement block) {
+    private PsiElement postProcessVariables(Project project,
+                                            Perl6VariableData[] variables,
+                                            Perl6Statement block) {
         // Post-process references to self
         if (selfIsPassed)
             getUsages(block, Perl6Self.class, Perl6PackageDecl.class)
                     .forEach(el -> el.replace(Perl6ElementFactory.createVariable(project, "$self")));
         // Post-process attributes used
-        getUsages(block, Perl6Variable.class, Perl6VariableDecl.class)
-                .stream().filter(v -> ((Perl6Variable)v).getVariableName().contains("!"))
-                .forEach(var -> var.replace(
-                        Perl6ElementFactory.createVariable(
-                                project,
-                                ((Perl6Variable)var).getVariableName().replace("!", ""))));
+        renameVariableInBlock(project, block,
+                              (var) -> var.getVariableName().contains("!"),
+                              (var) -> var.getVariableName().replace("!", ""));
+        // Post-process variables that were renamed
+        for (Perl6VariableData data : variables) {
+            if (data.parameterName.equals(data.originalName))
+                continue;
+            renameVariableInBlock(project, block,
+                                  (var) -> Objects.equals(var.getVariableName(), data.originalName),
+                                  (var) -> data.parameterName);
+        }
         return block;
+    }
+
+    private static void renameVariableInBlock(Project project,
+                                              Perl6Statement block,
+                                              Function<Perl6Variable, Boolean> check,
+                                              Function<Perl6Variable, String> newName) {
+        collectVariablesInStatements(new PsiElement[]{block})
+            .stream().filter((var) -> check.fun(var))
+            .forEach(var -> var.replace(
+                Perl6ElementFactory.createVariable(
+                    project,
+                    newName.fun(var))));
     }
 
     protected void insertNewCodeBlock(Project project, PsiElement parent,
