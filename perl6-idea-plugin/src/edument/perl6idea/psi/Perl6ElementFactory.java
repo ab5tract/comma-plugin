@@ -107,9 +107,7 @@ public class Perl6ElementFactory {
     }
 
     public static Perl6RegexCall createRegexCall(Project project, String name) {
-        String text = getRegexCallText(name);
-        Perl6File dummyFile = createFile(project, text);
-        return PsiTreeUtil.findChildOfType(dummyFile, Perl6RegexCall.class);
+        return produceElement(project, getRegexCallText(name), Perl6RegexCall.class);
     }
 
     private static String getRegexCallText(String name) {
@@ -117,9 +115,7 @@ public class Perl6ElementFactory {
     }
 
     public static Perl6LongName createRegexLongName(Project project, String name) {
-        String text = getRegexDeclText(name);
-        Perl6File dummyFile = createFile(project, text);
-        return PsiTreeUtil.findChildOfType(dummyFile, Perl6LongName.class);
+        return produceElement(project, getRegexDeclText(name), Perl6LongName.class);
     }
 
     private static String getRegexDeclText(String name) {
