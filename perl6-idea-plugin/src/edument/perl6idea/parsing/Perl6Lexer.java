@@ -25,7 +25,7 @@ public class Perl6Lexer extends LexerBase {
                     resumePoints.remove(resPos);
                 }
                 else {
-                    if (resPos >= startOffset) {
+                    if (resPos - 1 > startOffset) {
                         resumePoints.remove(resPos);
                         delete = true;
                     }
