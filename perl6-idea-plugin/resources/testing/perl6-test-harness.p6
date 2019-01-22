@@ -1,16 +1,23 @@
 my @args = @*ARGS;
 
+# Gather and sort test files.
 my @test-files;
 my @todo = 't'.IO;
-
 while @todo {
     for @todo.pop.dir -> $path {
         @test-files.push($path) if !$path.d && $path.extension eq 't';
         @todo.push($path) if $path.d;
     }
 }
-
 @test-files .= sort;
+
+# Check if we need to write coverage data.
+my $coverage-dir;
+with %*ENV<COMMA_TEST_COVERAGE> {
+    $coverage-dir = .IO;
+    $coverage-dir.mkdir;
+}
+my %coverage-index;
 
 react {
     my $jobs = %*ENV<TEST_JOBS> // $*KERNEL.cpu-cores;
@@ -23,12 +30,39 @@ react {
             whenever $proc {
                 $output ~= $_;
             }
-            whenever $proc.start -> $exit {
+
+            my $ENV;
+            my $cov-file;
+            if $coverage-dir {
+                $cov-file = $coverage-dir.add($file.subst(/\W+/, '-', :g));
+                $ENV := {
+                    %*ENV,
+                    MVM_SPESH_DISABLE => '1',
+                    MVM_COVERAGE_LOG => $cov-file ~ '.%d'
+                };
+            }
+            else {
+                $ENV := %*ENV;
+            }
+
+            my $pid;
+            whenever $proc.ready {
+                $cov-file ~= ".$_" if $cov-file;
+            }
+
+            whenever $proc.start(:$ENV) -> $exit {
                 say $output;
                 say "====$file";
                 try $*OUT.flush;
+                if $cov-file && $cov-file.IO.e {
+                    %coverage-index{$file} = $cov-file;
+                }
                 run-a-test-file;
             }
         }
     }
+}
+
+if %coverage-index {
+    $coverage-dir.add('index').spurt: %coverage-index.fmt("%s\t%s");
 }
