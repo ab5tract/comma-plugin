@@ -96,7 +96,16 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
             scope.contributeScopeSymbols(collector);
             if (collector.isSatisfied())
                 return;
-            if (scope instanceof Perl6PackageDecl)
+
+            // lexical sub is bind to outer method, so can have package symbols,
+            // but a lexical sub without method wrapper cannot
+            if (scope instanceof Perl6RoutineDecl) {
+                Perl6PsiScope outerScope = PsiTreeUtil.getParentOfType(scope, Perl6RoutineDecl.class, Perl6PackageDecl.class);
+                if (outerScope instanceof Perl6PackageDecl && ((Perl6RoutineDecl) scope).getRoutineKind().equals("sub")) {
+                    collector.increasePackageDepth();
+                    collector.setAreInternalPartsCollected(false);
+                }
+            } else if (scope instanceof Perl6PackageDecl)
                 collector.increasePackageDepth();
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }

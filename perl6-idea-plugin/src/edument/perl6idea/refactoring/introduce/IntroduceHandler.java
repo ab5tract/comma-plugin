@@ -100,7 +100,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
 
     private void showCannotPerformError(Project project, Editor editor) {
         CommonRefactoringUtil.showErrorHint(project, editor, "Cannot extract this code", myDialogTitle,
-                                            "refactoring.extractMethod");
+                                            "refactoring.extractVariable");
     }
 
     private boolean smartIntroduce(IntroduceOperation operation) {
