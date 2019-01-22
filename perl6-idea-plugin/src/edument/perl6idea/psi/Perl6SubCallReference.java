@@ -26,7 +26,7 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6SubCallName> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        return getElement().getSymbolVariants(Perl6SymbolKind.Routine)
+        return getElement().getSymbolVariants(Perl6SymbolKind.Routine, Perl6SymbolKind.TypeOrConstant)
                            .stream()
                            .map(sym -> sym.getName())
                            .toArray();

@@ -3,9 +3,7 @@ package edument.perl6idea.run;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.KillableColoredProcessHandler;
-import com.intellij.execution.process.ProcessHandler;
-import com.intellij.execution.process.ProcessTerminatedListener;
+import com.intellij.execution.process.*;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -46,10 +44,14 @@ public class Perl6RunCommandLineState extends CommandLineState {
         populateRunCommand();
         setScript();
         GeneralCommandLine cmd = Perl6CommandLine.getCustomPerl6CommandLine(command, runConfiguration.getWorkingDirectory());
-        cmd.withEnvironment(runConfiguration.getEnvs());
+        setEnvironment(cmd);
         KillableColoredProcessHandler handler = new KillableColoredProcessHandler(cmd, true);
         ProcessTerminatedListener.attach(handler);
         return handler;
+    }
+
+    protected void setEnvironment(GeneralCommandLine cmd) {
+        cmd.withEnvironment(runConfiguration.getEnvs());
     }
 
     private void setScript() {

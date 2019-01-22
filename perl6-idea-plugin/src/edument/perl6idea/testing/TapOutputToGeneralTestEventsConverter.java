@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEventsConverter {
-    public static final Pattern EXPECTED_GOT_PATTERN = Pattern.compile("expected: '(.+?)'\ngot: '(.+?)'\n", Pattern.DOTALL);
+    public static final Pattern EXPECTED_GOT_PATTERN = Pattern.compile("expected: (.+?)\ngot: (.+?)\n", Pattern.DOTALL);
     private final String myBaseUrl;
     @NotNull
     private TapConsumer myConsumer;

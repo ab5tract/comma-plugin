@@ -39,6 +39,7 @@ public class Perl6IntroduceVariableHandler extends IntroduceHandler {
                child instanceof Perl6WheneverStatement ||
                child instanceof Perl6ForStatement ||
                child instanceof Perl6GivenStatement ||
+               child instanceof Perl6WhenStatement ||
                child instanceof Perl6LoopStatement ||
                child instanceof Perl6WhileStatement ||
                child instanceof Perl6UntilStatement ||

@@ -217,5 +217,9 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         for (String sym : ROUTINE_SYMBOLS)
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, sym, this));
+        String routineKind = getRoutineKind();
+        if (routineKind.equals("method") || routineKind.equals("submethod")) {
+            collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "%_", this));
+        }
     }
 }

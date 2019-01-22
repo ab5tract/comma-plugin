@@ -1,0 +1,2 @@
+unit Foo;
+<caret>

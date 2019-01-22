@@ -1,11 +1,9 @@
 package edument.perl6idea.parsing;
 
 import com.intellij.psi.tree.IElementType;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This works much like the Cursor class in Perl 6: it is the base class for grammars, and contains the state of an
@@ -634,6 +632,60 @@ public abstract class Cursor<TCursor extends Cursor> {
                 getDynamicVariable("$*SUB_PREC").toString(),
                 getDynamicVariable("$*ASSOC").toString(),
                 isValueTruthy(getDynamicVariable("$*FAKE")));
+    }
+
+    public void scopePush() {
+        stack.symbols.add(new HashMap<>());
+    }
+
+    public void scopePop() {
+        stack.symbols.remove(stack.symbols.size() - 1);
+    }
+
+    public void startSymbol() {
+        stack.symbolStart = pos;
+    }
+
+    public void endSymbol(String type) {
+        String symbol = stack.target.subSequence(stack.symbolStart, pos).toString();
+        Map<String, Perl6SymbolKind> st = stack.symbols.get(stack.symbols.size() - 1);
+        if (type.equals("term") || type.equals("type"))
+            st.put(symbol, Perl6SymbolKind.TypeOrConstant);
+        else if (type.equals("routine"))
+            st.put(symbol, Perl6SymbolKind.Routine);
+    }
+
+    private static final Set<String> knownRoutines = new HashSet<>(Arrays.asList(
+        "EVAL", "EVALFILE"
+    ));
+    private static final Set<String> knownTypes = new HashSet<>(Arrays.asList(
+        "int", "int8", "int16", "int32", "int64",
+        "uint", "uint8", "uint16", "uint32", "uint64",
+        "num", "num32", "num64",
+        "num", "num32", "num64",
+        "blob", "blob8", "blob16", "blob32", "blob64",
+        "buf", "buf8", "buf16", "buf32", "buf64",
+        "utf8", "utf16", "utf32",
+        "str", "array"
+    ));
+
+    public boolean isName() {
+        // First try and resolve type on the stack and see if it matches.
+        String symbol = stack.target.subSequence(stack.symbolStart, pos).toString();
+        List<Map<String, Perl6SymbolKind>> symbolTables = stack.symbols;
+        for (int i = symbolTables.size() - 1; i >= 0; i--) {
+            Map<String, Perl6SymbolKind> st = symbolTables.get(i);
+            Perl6SymbolKind foundKind = st.get(symbol);
+            if (foundKind != null)
+                return foundKind == Perl6SymbolKind.TypeOrConstant;
+        }
+
+        // If that fails, then we go on heuristics based on what is in the setting.
+        if (knownTypes.contains(symbol))
+            return true;
+        if (knownRoutines.contains(symbol))
+            return false;
+        return Character.isUpperCase(symbol.charAt(0));
     }
 
     public abstract int runRule();

@@ -107,7 +107,7 @@ public class Perl6DebugThread extends Thread {
         Perl6StackFrameDescriptor[] result = new Perl6StackFrameDescriptor[frames.size()];
         for (int i = 0; i < frames.size(); i++) {
             StackFrame frame = frames.get(i);
-            Perl6LoadedFileDescriptor fileDescriptor = new Perl6LoadedFileDescriptor(frame.getFile(), "");
+            Perl6LoadedFileDescriptor fileDescriptor = new Perl6LoadedFileDescriptor(frame.getFile(), frame.getName());
             result[i] = new Perl6StackFrameDescriptor(fileDescriptor, frame);
             int finalI = i;
             client.contextHandle(1, i)

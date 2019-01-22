@@ -2,6 +2,7 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import edument.perl6idea.psi.Perl6File;
@@ -27,6 +28,8 @@ public class Perl6NeedStatementImpl extends StubBasedPsiElementBase<Perl6NeedSta
 
     @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
+        // We cannot contribute based on stubs when indexing is in progress
+        if (DumbService.isDumb(getProject())) return;
         for (String name : getModuleNames()) {
             Project project = getProject();
             Collection<Perl6File> found = ProjectModulesStubIndex.getInstance()

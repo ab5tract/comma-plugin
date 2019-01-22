@@ -104,7 +104,7 @@ public class Perl6ParserDefinition implements ParserDefinition {
         if (type == Perl6ElementTypes.GIVEN_STATEMENT)
             return new Perl6GivenStatementImpl(astNode);
         if (type == Perl6ElementTypes.WHEN_STATEMENT)
-            return new Perl6WheneverStatementImpl(astNode);
+            return new Perl6WhenStatementImpl(astNode);
         if (type == Perl6ElementTypes.DEFAULT_STATEMENT)
             return new Perl6DefaultStatementImpl(astNode);
         if (type == Perl6ElementTypes.CATCH_STATEMENT)

@@ -83,6 +83,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, false);
     }
 
+    public void testAnonymousVariables() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"my $; my @; my %; my &; say $; say @; say %; say &;");
+        myFixture.checkHighlighting(false, false, true, false);
+    }
+
     public void testDeclaredSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo() {};\nmy sub bar() {};\nfoo;\nbar()");
         myFixture.checkHighlighting(false, false, true, false);
@@ -197,6 +202,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testUnnamedTypenameInSignature() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub MAIN(Admin, 'web') {}");
+        myFixture.checkHighlighting();
+    }
+
+    public void testOptionalParameterAfterDefaultWithReturnType() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a($a = 5, $b? ) {}");
         myFixture.checkHighlighting();
     }
 
@@ -423,7 +433,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     public void testSigspaceAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "grammar G { rule foo { abc<info desc=\"Implicit <.ws> call\"> </info>def<info desc=\"Implicit <.ws> call\"> </info>} }");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting(false, true, false, true);
     }
 
     public void testPackageDeclAnnotator1() {
@@ -482,6 +492,106 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testMonitorAnnotatorOnEmptyNameCase() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use v6.d.PREVIEW; monitor <error descr=\"Cannot use monitor type package without OO::Monitors module being included\">Bar</error> {}");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testCompletelyFineReturn() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo() { return 42 }");
+        myFixture.checkHighlighting(false, false, false, false);
+    }
+
+    public void testReturnOutsideOfRoutineListOp() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 42; <error descr=\"Return outside of routine\">return 100</error>;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testReturnOutsideOfRoutineFunctionCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 42; <error descr=\"Return outside of routine\">return(100)</error>;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testReturnInStartBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await start { <error descr=\"Cannot use return to produce a result in a start block\">return 100</error>; }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testReturnInSupplyBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $s = supply { <error descr=\"Cannot use return to exit a supply block\">return 100</error>; }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testReturnInReactBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "react { <error descr=\"Cannot use return to exit a react block\">return 100</error>; }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testReturnInWheneverBlock() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "react { whenever Supply.interval(1) { <error descr=\"Cannot use return in a whenever block\">return 100</error>; } }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenFunctionCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say<error descr=\"Missing closing )\">(</error>42;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenMethodCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$*OUT.say<error descr=\"Missing closing )\">(</error>42");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenExpression() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Missing closing )\">(</error>42 + (4 * 3);");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenLoop() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "loop <error descr=\"Missing closing )\">(</error>my $i = 0; $i < 10; $i++ { }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenVarDecl() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my <error descr=\"Missing closing )\">(</error>$x, $y");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenSignature() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo<error descr=\"Missing closing )\">(</error>$x, { }");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingParenCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = { .say }; $a<error descr=\"Missing closing )\">(</error>42");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingArrayComposer() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <error descr=\"Missing closing ]\">[</error>1,2,3");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingArrayIndexer() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = 1,2,3; say @a<error descr=\"Missing closing ]\">[</error>1;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingBlockoid() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo <error descr=\"Missing closing }\">{</error> say 42;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingRegexGroup() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 'xxx' ~~ /a <error descr=\"Missing closing ]\">[</error> b | c /;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingRegexAssertion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 'xxx' ~~ /a <error descr=\"Missing closing >\"><</error>ident /;");
+        myFixture.checkHighlighting(false, true, false, false);
+    }
+
+    public void testMissingClosingRegexCapture() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 'xxx' ~~ /a <error descr=\"Missing closing )\">(</error> b | c /;");
         myFixture.checkHighlighting(false, true, false, false);
     }
 }

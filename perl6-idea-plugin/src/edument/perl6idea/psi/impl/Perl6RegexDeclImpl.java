@@ -5,9 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
-import edument.perl6idea.psi.Perl6MemberStubBasedPsi;
-import edument.perl6idea.psi.Perl6Signature;
-import edument.perl6idea.psi.Perl6RegexDecl;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6RegexDeclStub;
 import edument.perl6idea.psi.stub.Perl6RegexDeclStubElementType;
 import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
@@ -76,7 +74,14 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        return null;
+        Perl6LongName newLongName = Perl6ElementFactory.createRegexLongName(getProject(), name);
+        Perl6LongName longName = findChildByClass(Perl6LongName.class);
+        if (longName != null) {
+            ASTNode keyNode = longName.getNode();
+            ASTNode newKeyNode = newLongName.getNode();
+            getNode().replaceChild(keyNode, newKeyNode);
+        }
+        return this;
     }
 
     @Override

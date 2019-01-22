@@ -106,6 +106,26 @@ public class Perl6ElementFactory {
         return String.format("%s();", name);
     }
 
+    public static Perl6RegexCall createRegexCall(Project project, String name) {
+        String text = getRegexCallText(name);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6RegexCall.class);
+    }
+
+    private static String getRegexCallText(String name) {
+        return String.format("grammar { rule { <%s> } }", name);
+    }
+
+    public static Perl6LongName createRegexLongName(Project project, String name) {
+        String text = getRegexDeclText(name);
+        Perl6File dummyFile = createFile(project, text);
+        return PsiTreeUtil.findChildOfType(dummyFile, Perl6LongName.class);
+    }
+
+    private static String getRegexDeclText(String name) {
+        return String.format("rule %s {<?>}", name);
+    }
+
     public static Perl6Variable createVariable(Project project, String name) {
         return produceElement(project, getVariableText(name), Perl6Variable.class);
     }

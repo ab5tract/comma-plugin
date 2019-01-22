@@ -1,3 +1,3 @@
 package edument.perl6idea.psi;
 
-public interface Perl6ImportStatement {}
+public interface Perl6ImportStatement extends Perl6PsiElement {}

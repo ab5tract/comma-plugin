@@ -71,4 +71,13 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         assertTrue(vars.containsAll(Arrays.asList("$!", "$!xyz")));
         assertEquals(2, vars.size());
     }
+
+    public void testCommentDoesNotThrow() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "my $a = #`( comment )\n10; say $a.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertContainsElements(methods, ".abs");
+    }
 }

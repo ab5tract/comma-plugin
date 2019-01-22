@@ -39,8 +39,8 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         return collector.getResult();
     }
 
-    default Collection<Perl6Symbol> getSymbolVariants(Perl6SymbolKind kind) {
-        Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(kind);
+    default Collection<Perl6Symbol> getSymbolVariants(Perl6SymbolKind... kinds) {
+        Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(kinds);
         applySymbolCollector(collector);
         return collector.getVariants();
     }

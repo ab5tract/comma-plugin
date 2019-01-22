@@ -60,8 +60,9 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 throw new IllegalStateException("Could not create directory: " + directory);
             }
             VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemDependentName(sourcePath));
-            if (sourceRoot != null)
-                contentEntry.addSourceFolder(sourceRoot, false, sourcePathPair.second);
+            if (sourceRoot != null) {
+                contentEntry.addSourceFolder(sourceRoot, Objects.equals(sourcePath, "t"), sourcePathPair.second);
+            }
             switch (type) {
                 case PERL6_SCRIPT:
                     stubScript(sourcePath, scriptName);

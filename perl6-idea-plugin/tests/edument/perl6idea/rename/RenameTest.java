@@ -188,4 +188,18 @@ public class RenameTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("IdeaFoo4.pm6", "IdeaFoo4/Base.pm6",true);
         myFixture.checkResultByFile("IdeaFoo4/User.pm6", "IdeaFoo4/UserAfterShrink.pm6",true);
     }
+
+    public void testModuleMoveCausesRename() {
+        // Dummy is necessary for `New` directory to be created
+        myFixture.configureByFiles("IdeaFoo4/User.pm6", "IdeaFoo4/Base.pm6", "IdeaFoo4/New/Dummy.pm6");
+        myFixture.moveFile("IdeaFoo4/Base.pm6", "IdeaFoo4/New");
+        myFixture.checkResultByFile("IdeaFoo4/User.pm6", "IdeaFoo4/UserMovedBase.pm6", true);
+    }
+
+    public void testGrammarRuleRename() {
+        myFixture.configureByFile("GrammarRule.pm6");
+        myFixture.getEditor().getCaretModel().moveToOffset(52);
+        myFixture.renameElementAtCaret("foo-bar");
+        myFixture.checkResultByFile("GrammarRuleAfter.pm6");
+    }
 }

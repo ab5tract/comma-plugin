@@ -8,6 +8,7 @@ grammar MAIN {
         :my $*LEFTSIGIL = '';
         :my $*IN_META = '';
         :my $*IN_REDUCE = 0;
+        <.scope-push>
         <.statementlist>
         [
         || $
@@ -19,6 +20,7 @@ grammar MAIN {
            ]*
            <.bogus_end>?
         ]
+        <.scope-pop>
     }
 
     token bogus_end {
@@ -59,7 +61,9 @@ grammar MAIN {
     token defterm {
         <.start-element('TERM_DEFINITION')>
         <.start-token('TERM')>
+        <.start-symbol>
         <.identifier>
+        <.end-symbol('term')>
         <.end-token('TERM')>
         <.end-element('TERM_DEFINITION')>
     }
@@ -595,14 +599,18 @@ grammar MAIN {
            <.end-token('LAMBDA')>
            :my $*GOAL = '{';
            <.ws>
+           <.scope-push>
            <.start-element('SIGNATURE')>
            <.signature>
            <.end-element('SIGNATURE')>
            <.blockoid>?
+           <.scope-pop>
            <.end-element('POINTY_BLOCK')>
         || <?[{]>
            <.start-element('BLOCK')>
+           <.scope-push>
            <.blockoid>
+           <.scope-pop>
            <.end-element('BLOCK')>
         || <.start-token('MISSING_BLOCK')> <?> <.end-token('MISSING_BLOCK')>
     }
@@ -611,7 +619,9 @@ grammar MAIN {
 
     token block {
         <.start-element('BLOCK')>
+        <.scope-push>
         <.blockoid>
+        <.scope-pop>
         <.end-element('BLOCK')>
     }
 
@@ -1344,19 +1354,13 @@ grammar MAIN {
         <.end-element('SUB_CALL')>
     }
 
-    # This is rather tricky. A true Perl 6 implementation will rely on knowing
-    # on what is and is not a type name. We can start trying to track that in
-    # the future while lexing, but even then we'll be going on incomplete info.
-    # For now, we assume anything that starts with A..Z is a type name, and
-    # anything else is a listop sub name, with the exception of known name
-    # types and known EVAL subroutine.
     token term_name {
-        || <?before <[A..Z]> || '::' || 'u'?'int'\d+ >> || 'num'\d+ >> || 'str' >> || 'array' >> >
-           <!before 'EVAL'>
-           <.start-element('TYPE_NAME')>
+        || <.start-element('TYPE_NAME')>
            <.start-element('LONG_NAME')>
            <.start-token('NAME')>
+           <.start-symbol>
            <.name>
+           <.is-name>
            <.end-token('NAME')>
            <.longname_colonpairs>
            <.end-element('LONG_NAME')>
@@ -1875,6 +1879,7 @@ grammar MAIN {
         <.ws>
         <.routine_name>?
         <.ws>
+        <.scope-push>
         [
             <.start-element('SIGNATURE')>
             <.start-token('PARENTHESES_OPEN')>
@@ -1897,6 +1902,7 @@ grammar MAIN {
         # Allow for body not written yet
         || <?>
         ]
+        <.scope-pop>
     }
 
     token method_def {
@@ -1904,6 +1910,7 @@ grammar MAIN {
         <.ws>
         <.method_name>?
         <.ws>
+        <.scope-push>
         [
             <.start-element('SIGNATURE')>
             <.start-token('PARENTHESES_OPEN')>
@@ -1926,6 +1933,7 @@ grammar MAIN {
         # Allow for body not written yet
         || <?>
         ]
+        <.scope-pop>
     }
 
     token onlystar {
@@ -2372,6 +2380,7 @@ grammar MAIN {
         <.ws>
         <.routine_name>?
         <.ws>
+        <.scope-push>
         [
             <.start-element('SIGNATURE')>
             <.start-token('PARENTHESES_OPEN')>
@@ -2408,6 +2417,7 @@ grammar MAIN {
             ]?
             <.end-element('BLOCKOID')>
         ]?
+        <.scope-pop>
     }
 
     token type_declarator {
@@ -2562,6 +2572,7 @@ grammar MAIN {
         ]?
         { $*IN_DECL = '' }
         <.trait>*
+        <.scope-push>
         [
         || <?[{]> <.blockoid>
         || <?[;]>
@@ -2572,6 +2583,7 @@ grammar MAIN {
            <.statementlist>?
         || <?>
         ]
+        <.scope-pop>
     }
 
     # XXX Hack
@@ -3407,7 +3419,7 @@ grammar MAIN {
     }
 
     token quote_quasi {
-        <?before 'quasi' <.ws>>
+        <?before 'quasi' <.ws> '{'>
         <.start-element('QUASI')>
         <.start-token('QUASI')>
         'quasi'
@@ -3457,7 +3469,7 @@ grammar MAIN {
            <.end-element('ARRAY_COMPOSER')>
         || <?[{]>
            <.start-token('BARE_BLOCK')> <?> <.end-token('BARE_BLOCK')>
-           <.start-element('BLOCK_OR_HASH')> <.blockoid> <.end-element('BLOCK_OR_HASH')>
+           <.start-element('BLOCK_OR_HASH')> <.scope-push> <.blockoid> <.scope-pop> <.end-element('BLOCK_OR_HASH')>
         || <.start-element('STRING_LITERAL')>
            <.start-token('STRING_LITERAL_QUOTE_OPEN')>
            '<<'
@@ -4614,11 +4626,13 @@ grammar MAIN {
               <.start-token('METHOD_CALL_NAME')>
               <.name>
               <.end-token('METHOD_CALL_NAME')>
+              <.longname_colonpairs>
               <.end-element('REGEX_CALL')>
            || <.start-element('REGEX_CALL')>
               <.start-token('REGEX_CAPTURE_NAME')>
               <.name>
               <.end-token('REGEX_CAPTURE_NAME')>
+              <.longname_colonpairs>
               <.end-element('REGEX_CALL')>
            ]
            [

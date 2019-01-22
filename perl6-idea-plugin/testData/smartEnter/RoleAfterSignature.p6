@@ -1,0 +1,1 @@
+role Foo[Type]<caret>

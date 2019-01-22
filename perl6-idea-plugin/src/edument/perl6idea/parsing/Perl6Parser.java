@@ -901,6 +901,9 @@ public class Perl6Parser implements PsiParser {
         } else {
             return false;
         }
+        if (!(this.longname_colonpairs_67(builder))) {
+            return false;
+        }
         marker19.done(Perl6ElementTypes.REGEX_CALL);
         return true;
     }
@@ -911,6 +914,9 @@ public class Perl6Parser implements PsiParser {
         if ((builder.getTokenType()) == Perl6TokenTypes.METHOD_CALL_NAME) {
             builder.advanceLexer();
         } else {
+            return false;
+        }
+        if (!(this.longname_colonpairs_67(builder))) {
             return false;
         }
         marker21.done(Perl6ElementTypes.REGEX_CALL);
