@@ -8,6 +8,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.parsing.Perl6OPPElementTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     private BlockWithParent myParent;
     private CodeStyleSettings mySettings;
     private Boolean isStatementContinuation;
+    private List<Block> children;
 
     private TokenSet WHITESPACES = TokenSet.create(
             UNV_WHITE_SPACE, WHITE_SPACE,
@@ -79,6 +81,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             childBlock.setParent(this);
             children.add(childBlock);
         }
+        this.children = children;
         return children;
     }
 
@@ -105,6 +108,10 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if (isStatementContinuation != null && isStatementContinuation)
             return Indent.getContinuationWithoutFirstIndent();
         return Indent.getNoneIndent();
+    }
+
+    public List<Block> getChildren() {
+        return children;
     }
 
     private static boolean nodeInStatementContinuation(ASTNode startNode) {
@@ -168,7 +175,32 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     @Override
     public ChildAttributes getChildAttributes(final int newIndex) {
         IElementType elementType = myNode.getElementType();
-        if (elementType == BLOCKOID || elementType == REGEX_GROUP || elementType == ARRAY_COMPOSER) {
+        if (elementType == REGEX_GROUP || elementType == ARRAY_COMPOSER) {
+            return new ChildAttributes(Indent.getNormalIndent(), null);
+        }
+        else if (elementType == BLOCKOID) {
+            if (newIndex == children.size() - 1) {
+                // Maybe adding at the end of the blockoid; see if the last statement is
+                // complete.
+                Block maybeStatementList = children.get(1);
+                if (maybeStatementList instanceof Perl6StatementListBlock) {
+                    List<Block> stmts = ((Perl6StatementListBlock)maybeStatementList).getChildren();
+                    if (stmts.size() > 0) {
+                        Block lastStatement = stmts.get(stmts.size() - 1);
+                        if (lastStatement instanceof AbstractBlock) {
+                            // This is incredibly cheaty, but: if the thing doesn't contain a
+                            // ; or a } then it wasn't terminated. If it does, well, who knows,
+                            // but it's better than getting it wrong all of the time.
+                            String lastStmtText = ((AbstractBlock)lastStatement).getNode().getText();
+                            if (!lastStmtText.contains(";") && !lastStmtText.contains("}")) {
+                                int indent = mySettings.getIndentSize(Perl6ModuleFileType.INSTANCE) +
+                                             mySettings.getContinuationIndentSize(Perl6ModuleFileType.INSTANCE);
+                                return new ChildAttributes(Indent.getSpaceIndent(indent), null);
+                            }
+                        }
+                    }
+                }
+            }
             return new ChildAttributes(Indent.getNormalIndent(), null);
         }
         else if (isStatementContinuation != null && isStatementContinuation) {
