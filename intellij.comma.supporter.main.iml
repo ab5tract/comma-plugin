@@ -2,8 +2,18 @@
 <module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="intellij.platform.ide.impl" />
+    <orderEntry type="module" module-name="intellij.perl6.community.impl" />
+    <orderEntry type="module" module-name="intellij.platform.lang" />
+    <orderEntry type="module" module-name="intellij.platform.lang.impl" />
+    <orderEntry type="library" name="Guava" level="project" />
+    <orderEntry type="module" module-name="intellij.java.impl" />
+    <orderEntry type="module" module-name="intellij.java.ui" />
     <orderEntry type="module" module-name="intellij.platform.bootstrap" />
     <orderEntry type="module" module-name="intellij.platform.colorSchemes" />
     <orderEntry type="module" module-name="intellij.vcs.cvs" />
@@ -12,7 +22,6 @@
     <orderEntry type="module" module-name="intellij.vcs.git" />
     <orderEntry type="module" module-name="intellij.vcs.github" />
     <orderEntry type="module" module-name="intellij.terminal" />
-    <orderEntry type="module" module-name="edument.comma.supporter" />
     <orderEntry type="module" module-name="intellij.platform.main" />
     <orderEntry type="module" module-name="intellij.tasks.jira" />
     <orderEntry type="module" module-name="intellij.shortcutPromoter" />
