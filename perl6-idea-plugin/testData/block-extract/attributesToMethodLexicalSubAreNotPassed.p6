@@ -3,7 +3,7 @@ class AA {
 
     method a {
         sub inner-lexical() {
-            say $foo + $foo;
+            say $!foo + $!foo;
         }
         inner-lexical();
     }

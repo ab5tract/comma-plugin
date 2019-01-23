@@ -481,10 +481,6 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         if (selfIsPassed)
             getUsages(block, Perl6Self.class, Perl6PackageDecl.class)
                     .forEach(el -> el.replace(Perl6ElementFactory.createVariable(project, "$self")));
-        // Post-process attributes used
-        renameVariableInBlock(project, block,
-                              (var) -> var.getVariableName().contains("!"),
-                              (var) -> var.getVariableName().replace("!", ""));
         // Post-process variables that were renamed
         for (Perl6VariableData data : variables) {
             if (data.parameterName.equals(data.originalName))

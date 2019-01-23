@@ -6,9 +6,9 @@ class Foo {
         self!two();
     }
     method !two() {
-        say $a;
-        say $b;
+        say $!a;
+        say $!b;
         say $.b;
-        say $unknown-attribute;
+        say $!unknown-attribute;
     }
 }
