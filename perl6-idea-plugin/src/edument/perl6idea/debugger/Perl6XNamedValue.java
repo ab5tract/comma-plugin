@@ -18,10 +18,7 @@ public class Perl6XNamedValue extends XNamedValue {
 
     @Override
     public void computePresentation(@NotNull XValueNode node, @NotNull XValuePlace place) {
-        node.setPresentation(Perl6Icons.CAMELIA, calculateType(), myDescriptor.getValue(), myDescriptor.isExpandableNode());
-    }
-
-    private String calculateType() {
-        return myDescriptor.getType();
+        node.setPresentation(Perl6Icons.CAMELIA, myDescriptor.getType(), myDescriptor.getValue(),
+                myDescriptor.isExpandableNode());
     }
 }

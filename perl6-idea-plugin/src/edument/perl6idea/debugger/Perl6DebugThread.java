@@ -17,10 +17,7 @@ import org.edument.moarvm.DebugEvent;
 import org.edument.moarvm.EventType;
 import org.edument.moarvm.RemoteInstance;
 import org.edument.moarvm.types.ExecutionStack;
-import org.edument.moarvm.types.Lexical.IntValue;
-import org.edument.moarvm.types.Lexical.Lexical;
-import org.edument.moarvm.types.Lexical.NumValue;
-import org.edument.moarvm.types.Lexical.StrValue;
+import org.edument.moarvm.types.Lexical.*;
 import org.edument.moarvm.types.StackFrame;
 import org.edument.moarvm.types.event.BreakpointNotification;
 
@@ -124,27 +121,26 @@ public class Perl6DebugThread extends Thread {
         Perl6ValueDescriptor[] result = new Perl6ValueDescriptor[lex.size()];
         AtomicInteger i = new AtomicInteger();
         lex.forEach((k, v) -> {
-            String value;
-            String type;
+            Perl6ValueDescriptor descriptor;
             switch (v.getKind()) {
                 case INT:
-                    type = "int";
-                    value = String.valueOf(((IntValue) v).getValue());
+                    descriptor = new Perl6NativeValueDescriptor(k, "int",
+                            String.valueOf(((IntValue) v).getValue()));
                     break;
                 case NUM:
-                    type = "num";
-                    value = String.valueOf(((NumValue) v).getValue());
+                    descriptor = new Perl6NativeValueDescriptor(k, "num",
+                            String.valueOf(((NumValue) v).getValue()));
                     break;
                 case STR:
-                    type = "str";
-                    value = String.valueOf(((StrValue) v).getValue());
+                    descriptor = new Perl6NativeValueDescriptor(k, "str",
+                            String.valueOf(((StrValue) v).getValue()));
                     break;
                 default:
-                    type = "obj";
-                    value = "OBJECT";
+                    ObjValue ov = (ObjValue)v;
+                    descriptor = new Perl6ObjectValueDescriptor(k, ov.getType(), ov.isConcrete());
                     break;
             }
-            result[i.get()] = new Perl6ValueDescriptor(k, type, value);
+            result[i.get()] = descriptor;
             i.getAndIncrement();
         });
         return result;

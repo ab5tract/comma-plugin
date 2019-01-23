@@ -1,29 +1,18 @@
 package edument.perl6idea.debugger;
 
-public class Perl6ValueDescriptor {
+public abstract class Perl6ValueDescriptor {
     private String name;
-    private String type;
-    private String value;
 
-    Perl6ValueDescriptor(String name, String type, String value) {
+    Perl6ValueDescriptor(String name) {
         this.name = name;
-        this.type = type;
-        this.value = value;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public boolean isExpandableNode() {
-        return type.equals("obj");
-    }
+    public abstract String getKind();
+    public abstract String getType();
+    public abstract String getValue();
+    public abstract boolean isExpandableNode();
 }
