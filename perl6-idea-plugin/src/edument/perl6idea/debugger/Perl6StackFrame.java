@@ -59,4 +59,8 @@ public class Perl6StackFrame extends XStackFrame {
             super.computeChildren(node);
         }
     }
+
+    public Perl6DebugThread getDebugThread() {
+        return myDebugThread;
+    }
 }

@@ -7,6 +7,8 @@ import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
+import com.intellij.xdebugger.frame.XCompositeNode;
+import com.intellij.xdebugger.frame.XValueChildrenList;
 import edument.perl6idea.debugger.event.Perl6DebugEventBreakpointReached;
 import edument.perl6idea.debugger.event.Perl6DebugEventBreakpointSet;
 import edument.perl6idea.debugger.event.Perl6DebugEventStop;
@@ -20,7 +22,10 @@ import org.edument.moarvm.types.ExecutionStack;
 import org.edument.moarvm.types.Lexical.*;
 import org.edument.moarvm.types.StackFrame;
 import org.edument.moarvm.types.event.BreakpointNotification;
+import org.jetbrains.annotations.NotNull;
+import org.msgpack.value.Value;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -121,29 +126,34 @@ public class Perl6DebugThread extends Thread {
         Perl6ValueDescriptor[] result = new Perl6ValueDescriptor[lex.size()];
         AtomicInteger i = new AtomicInteger();
         lex.forEach((k, v) -> {
-            Perl6ValueDescriptor descriptor;
-            switch (v.getKind()) {
-                case INT:
-                    descriptor = new Perl6NativeValueDescriptor(k, "int",
-                            String.valueOf(((IntValue) v).getValue()));
-                    break;
-                case NUM:
-                    descriptor = new Perl6NativeValueDescriptor(k, "num",
-                            String.valueOf(((NumValue) v).getValue()));
-                    break;
-                case STR:
-                    descriptor = new Perl6NativeValueDescriptor(k, "str",
-                            String.valueOf(((StrValue) v).getValue()));
-                    break;
-                default:
-                    ObjValue ov = (ObjValue)v;
-                    descriptor = new Perl6ObjectValueDescriptor(k, ov.getType(), ov.isConcrete());
-                    break;
-            }
-            result[i.get()] = descriptor;
+            result[i.get()] = convertDescriptor(k, v);
             i.getAndIncrement();
         });
         return result;
+    }
+
+    @NotNull
+    private static Perl6ValueDescriptor convertDescriptor(String k, Lexical v) {
+        Perl6ValueDescriptor descriptor;
+        switch (v.getKind()) {
+            case INT:
+                descriptor = new Perl6NativeValueDescriptor(k, "int",
+                        String.valueOf(((IntValue) v).getValue()));
+                break;
+            case NUM:
+                descriptor = new Perl6NativeValueDescriptor(k, "num",
+                        String.valueOf(((NumValue) v).getValue()));
+                break;
+            case STR:
+                descriptor = new Perl6NativeValueDescriptor(k, "str",
+                        String.valueOf(((StrValue) v).getValue()));
+                break;
+            default:
+                ObjValue ov = (ObjValue)v;
+                descriptor = new Perl6ObjectValueDescriptor(k, ov.getType(), ov.isConcrete(), ov.getHandle());
+                break;
+        }
+        return descriptor;
     }
 
     private void sendBreakpoints() {
@@ -180,6 +190,78 @@ public class Perl6DebugThread extends Thread {
     public void queueBreakpoint(XLineBreakpoint breakpoint, boolean isRemove) {
         breakpointQueue.add(new BreakpointActionRequest(isRemove, breakpoint));
         sendBreakpoints();
+    }
+
+    public void addObjectChildren(int handle, XCompositeNode node) {
+        objectMetadata(handle)
+            .thenAccept(metadata -> {
+                Value attrFeatures = metadata.get("attr_features");
+                if (attrFeatures != null && attrFeatures.asBooleanValue().getBoolean()) {
+                    addObjectAttributes(handle, node);
+                    return;
+                }
+                Value posFeatures = metadata.get("pos_features");
+                if (posFeatures != null && posFeatures.asBooleanValue().getBoolean()) {
+                    addPositionalElements(handle, node);
+                    return;
+                }
+                Value assFeatures = metadata.get("ass_features");
+                if (assFeatures != null && assFeatures.asBooleanValue().getBoolean()) {
+                    addAssociativeElements(handle, node);
+                    return;
+                }
+                node.addChildren(XValueChildrenList.EMPTY, true);
+            });
+    }
+
+    private void addObjectAttributes(int handle, XCompositeNode node) {
+        client.getObjectAttributes(handle)
+              .thenAccept(classAttrs -> {
+                  XValueChildrenList children = new XValueChildrenList();
+                  for (Map.Entry<String, Map<String,Lexical>> classEntry : classAttrs.entrySet()) {
+                        Perl6ValueDescriptor[] descriptors = convertLexicals(classEntry.getValue());
+                        String className = classEntry.getKey();
+                        for (Perl6ValueDescriptor desc : descriptors) {
+                            children.add(new Perl6XAttributeValue(desc, this, className));
+                        }
+                    }
+                    node.addChildren(children, true);
+              });
+    }
+
+    private void addPositionalElements(int handle, XCompositeNode node) {
+        node.addChildren(XValueChildrenList.EMPTY, true);
+        client.getObjectPositionals(handle)
+              .thenAccept(positional -> {
+                  XValueChildrenList children = new XValueChildrenList();
+                  for (int i = 0; i < positional.size(); i++) {
+                      children.add(new Perl6XAggregateValue(
+                          convertDescriptor(Integer.toString(i), positional.get(i)),
+                          this));
+                  }
+                  node.addChildren(children, true);
+              });
+    }
+
+    private void addAssociativeElements(int handle, XCompositeNode node) {
+        node.addChildren(XValueChildrenList.EMPTY, true);
+        client.getObjectAssociatives(handle)
+              .thenAccept(associative -> {
+                  XValueChildrenList children = new XValueChildrenList();
+                  for (Perl6ValueDescriptor desc : convertLexicals(associative))
+                      children.add(new Perl6XAggregateValue(desc, this));
+                  node.addChildren(children, true);
+              });
+    }
+
+    private CompletableFuture<Map<String, Value>> objectMetadata(int handle) {
+        return client.getObjectMetadata(handle)
+            .thenApply(metadataMessage -> {
+                Map<String, Value> metadata = new HashMap<>();
+                for (Map.Entry<Value, Value> entry : metadataMessage.asMapValue().entrySet())
+                    metadata.put(entry.getKey().asStringValue().asString(), entry.getValue());
+                return metadata;
+            });
     }
 
     static class BreakpointActionRequest {
