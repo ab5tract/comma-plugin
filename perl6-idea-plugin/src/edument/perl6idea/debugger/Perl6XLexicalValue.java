@@ -6,11 +6,11 @@ import com.intellij.xdebugger.frame.XValuePlace;
 import edument.perl6idea.Perl6Icons;
 import org.jetbrains.annotations.NotNull;
 
-public class Perl6XNamedValue extends XNamedValue {
+public class Perl6XLexicalValue extends XNamedValue {
     private final Perl6ValueDescriptor myDescriptor;
     private final Perl6StackFrame myStackFrame;
 
-    public Perl6XNamedValue(Perl6ValueDescriptor descriptor, Perl6StackFrame StackFrame) {
+    public Perl6XLexicalValue(Perl6ValueDescriptor descriptor, Perl6StackFrame StackFrame) {
         super(descriptor.getName());
         myDescriptor = descriptor;
         myStackFrame = StackFrame;
