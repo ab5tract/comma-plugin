@@ -7,6 +7,7 @@ import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.breakpoints.XBreakpointHandler;
 import com.intellij.xdebugger.evaluation.XDebuggerEditorsProvider;
+import com.intellij.xdebugger.frame.XExecutionStack;
 import com.intellij.xdebugger.frame.XSuspendContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +43,29 @@ class Perl6XDebugProcess extends XDebugProcess {
     @Override
     public void startPausing() {
         myDebugThread.pauseExecution();
+    }
+
+    @Override
+    public void startStepOver(@Nullable XSuspendContext context) {
+        myDebugThread.stepOver(getActiveThreadId(context));
+    }
+
+    @Override
+    public void startStepInto(@Nullable XSuspendContext context) {
+        myDebugThread.stepInto(getActiveThreadId(context));
+    }
+
+    @Override
+    public void startStepOut(@Nullable XSuspendContext context) {
+        myDebugThread.stepOut(getActiveThreadId(context));
+    }
+
+    private int getActiveThreadId(@Nullable XSuspendContext context) {
+        XExecutionStack stack = context.getActiveExecutionStack();
+        int threadId = 1;
+        if (stack instanceof Perl6ExecutionStack)
+            threadId = ((Perl6ExecutionStack)stack).getThreadId();
+        return threadId;
     }
 
     @Override

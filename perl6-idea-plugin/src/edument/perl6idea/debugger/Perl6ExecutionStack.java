@@ -11,10 +11,12 @@ import java.util.List;
 public class Perl6ExecutionStack extends XExecutionStack {
     private final Perl6SuspendContext mySuspendContext;
     private List<Perl6StackFrame> stackFrames = new ArrayList<>();
+    private Perl6ThreadDescriptor thread;
 
-    public Perl6ExecutionStack(String threadName, Perl6StackFrameDescriptor[] frames, Perl6SuspendContext suspendContext) {
-        super(threadName);
+    public Perl6ExecutionStack(Perl6ThreadDescriptor thread, Perl6StackFrameDescriptor[] frames, Perl6SuspendContext suspendContext) {
+        super(thread.getDescription());
         mySuspendContext = suspendContext;
+        this.thread = thread;
         for (Perl6StackFrameDescriptor frame : frames) {
             stackFrames.add(new Perl6StackFrame(frame, this));
         }
@@ -33,5 +35,9 @@ public class Perl6ExecutionStack extends XExecutionStack {
 
     public Perl6SuspendContext getSuspendContext() {
         return mySuspendContext;
+    }
+
+    public int getThreadId() {
+        return thread.getThreadId();
     }
 }

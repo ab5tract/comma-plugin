@@ -157,6 +157,21 @@ public class Perl6DebugThread extends Thread {
         return result;
     }
 
+    public void stepOver(int threadId) {
+        // TODO Implement this properly
+        resumeExecution();
+    }
+
+    public void stepInto(int threadId) {
+        // TODO Implement this properly
+        resumeExecution();
+    }
+
+    public void stepOut(int threadId) {
+        // TODO Implement this properly
+        resumeExecution();
+    }
+
     private static Perl6ValueDescriptor[] convertLexicals(Map<String, Lexical> lex) {
         Perl6ValueDescriptor[] result = new Perl6ValueDescriptor[lex.size()];
         AtomicInteger i = new AtomicInteger();

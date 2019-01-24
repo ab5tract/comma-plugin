@@ -21,7 +21,7 @@ public class Perl6SuspendContext extends XSuspendContext {
         myDebugSession = debugSession;
         myExecutionStacks = new ArrayList<>();
         for (Perl6ThreadDescriptor thread : threads)
-            myExecutionStacks.add(new Perl6ExecutionStack(thread.getDescription(), thread.getStackFrames(), this));
+            myExecutionStacks.add(new Perl6ExecutionStack(thread, thread.getStackFrames(), this));
         this.activeThreadIndex = activeThreadIndex;
     }
 
