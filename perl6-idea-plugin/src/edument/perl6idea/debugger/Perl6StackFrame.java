@@ -53,10 +53,14 @@ public class Perl6StackFrame extends XStackFrame {
         XValueChildrenList list = new XValueChildrenList();
 
         if (lexicals != null && lexicals.length > 0) {
-            list.addTopGroup(new Perl6XValueGroup("Lexical variables", lexicals, this));
+            list.addTopGroup(new Perl6XLexicalGroup("Lexical variables", lexicals, this));
             node.addChildren(list, true);
         } else {
             super.computeChildren(node);
         }
+    }
+
+    public Perl6DebugThread getDebugThread() {
+        return myDebugThread;
     }
 }

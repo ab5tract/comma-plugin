@@ -12,8 +12,8 @@ public class Perl6ExecutionStack extends XExecutionStack {
     private final Perl6SuspendContext mySuspendContext;
     private List<Perl6StackFrame> stackFrames = new ArrayList<>();
 
-    public Perl6ExecutionStack(Perl6StackFrameDescriptor[] frames, Perl6SuspendContext suspendContext) {
-        super("");
+    public Perl6ExecutionStack(String threadName, Perl6StackFrameDescriptor[] frames, Perl6SuspendContext suspendContext) {
+        super(threadName);
         mySuspendContext = suspendContext;
         for (Perl6StackFrameDescriptor frame : frames) {
             stackFrames.add(new Perl6StackFrame(frame, this));

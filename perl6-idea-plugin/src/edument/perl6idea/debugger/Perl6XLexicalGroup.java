@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class Perl6XValueGroup extends XValueGroup {
+public class Perl6XLexicalGroup extends XValueGroup {
     private final Perl6StackFrame myStackFrame;
     private final Perl6ValueDescriptor[] lexicals;
 
-    public Perl6XValueGroup(String name, Perl6ValueDescriptor[] lexicals, Perl6StackFrame stackFrame) {
+    public Perl6XLexicalGroup(String name, Perl6ValueDescriptor[] lexicals, Perl6StackFrame stackFrame) {
         super(name);
         this.lexicals = lexicals;
         myStackFrame = stackFrame;
@@ -25,7 +25,7 @@ public class Perl6XValueGroup extends XValueGroup {
         } else {
             XValueChildrenList list = new XValueChildrenList();
             for (Perl6ValueDescriptor descriptor : lexicals) {
-                list.add(new Perl6XNamedValue(descriptor, myStackFrame));
+                list.add(new Perl6XLexicalValue(descriptor, myStackFrame));
             }
             node.setAlreadySorted(true);
             node.addChildren(list, true);
