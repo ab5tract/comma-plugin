@@ -20,11 +20,13 @@ import org.edument.moarvm.EventType;
 import org.edument.moarvm.RemoteInstance;
 import org.edument.moarvm.types.ExecutionStack;
 import org.edument.moarvm.types.Lexical.*;
+import org.edument.moarvm.types.MoarThread;
 import org.edument.moarvm.types.StackFrame;
 import org.edument.moarvm.types.event.BreakpointNotification;
 import org.jetbrains.annotations.NotNull;
 import org.msgpack.value.Value;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,8 +70,25 @@ public class Perl6DebugThread extends Thread {
                 Perl6DebugThread thread = this;
                 Executors.newSingleThreadExecutor().execute(() -> {
                     BreakpointNotification bpn = (BreakpointNotification) event;
+                    Perl6ThreadDescriptor[] threads;
+                    try {
+                        // Need to suspend all the threads at the breakpoint, so we can
+                        // get the thread list.
+                        client.suspend().get();
+                        threads = getThreads();
+                    }
+                    catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    int activeThreadIndex = 0;
+                    for (int i = 0; i < threads.length; i++) {
+                        if (threads[i].getThreadId() == bpn.getThread()) {
+                            activeThreadIndex = i;
+                            break;
+                        }
+                    }
                     Perl6DebugEventBreakpointReached reachedEvent =
-                            new Perl6DebugEventBreakpointReached(stackToFrames(bpn.getStack()),
+                            new Perl6DebugEventBreakpointReached(threads, activeThreadIndex,
                                     mySession, thread, bpn.getFile(), bpn.getLine());
                     myExecutor.execute(reachedEvent);
                 });
@@ -95,16 +114,32 @@ public class Perl6DebugThread extends Thread {
     public void pauseExecution() {
         try {
             client.suspend().get();
-            ExecutionStack stack = client.threadStackTrace(1).get();
+            Perl6ThreadDescriptor[] threads = getThreads();
             Perl6DebugEventStop stopEvent =
-                    new Perl6DebugEventStop(stackToFrames(stack), mySession, this);
+                    new Perl6DebugEventStop(threads, 1, mySession, this);
             myExecutor.execute(stopEvent);
         } catch (CancellationException | InterruptedException | ExecutionException e) {
             LOG.error(e);
         }
     }
 
-    private Perl6StackFrameDescriptor[] stackToFrames(ExecutionStack stack) {
+    private Perl6ThreadDescriptor[] getThreads() throws ExecutionException, InterruptedException {
+        List<MoarThread> threads = client.threadList().get();
+        List<Perl6ThreadDescriptor> threadDescriptors = new ArrayList<Perl6ThreadDescriptor>(threads.size());
+        for (MoarThread thread : threads) {
+            try {
+                ExecutionStack stack = client.threadStackTrace(thread.threadId).get();
+                threadDescriptors.add(new Perl6ThreadDescriptor(thread.threadId, thread.nativeId,
+                        stackToFrames(thread, stack)));
+            }
+            catch (ExecutionException e) {
+                // Some threads we can not get (e.g. the debug or spesh threads). Ignore.
+            }
+        }
+        return threadDescriptors.toArray(new Perl6ThreadDescriptor[0]);
+    }
+
+    private Perl6StackFrameDescriptor[] stackToFrames(MoarThread thread, ExecutionStack stack) {
         List<StackFrame> frames = stack.getFrames();
         Perl6StackFrameDescriptor[] result = new Perl6StackFrameDescriptor[frames.size()];
         for (int i = 0; i < frames.size(); i++) {
@@ -112,7 +147,7 @@ public class Perl6DebugThread extends Thread {
             Perl6LoadedFileDescriptor fileDescriptor = new Perl6LoadedFileDescriptor(frame.getFile(), frame.getName());
             result[i] = new Perl6StackFrameDescriptor(fileDescriptor, frame);
             int finalI = i;
-            client.contextHandle(1, i)
+            client.contextHandle(thread.threadId, i)
                     .thenApply(v -> client.contextLexicals(v).thenApply(lex -> {
                         result[finalI].setLexicals(convertLexicals(lex));
                         client.releaseHandle(new int[]{v});
@@ -166,7 +201,7 @@ public class Perl6DebugThread extends Thread {
                          * MoarVM's debugserver likewise starts at 1, so we
                          * have to add 1 here to get everything right.
                          */
-                        int realLine = client.setBreakpoint(request.file, request.line + 1, true, true).get();
+                        int realLine = client.setBreakpoint(request.file, request.line + 1, true, false).get();
                         /* The breakpoint line number we've received back from
                          * the debugserver has to be translated back.
                          */

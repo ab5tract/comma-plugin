@@ -5,18 +5,21 @@ import com.intellij.xdebugger.frame.XSuspendContext;
 import edument.perl6idea.debugger.Perl6DebugThread;
 import edument.perl6idea.debugger.Perl6StackFrameDescriptor;
 import edument.perl6idea.debugger.Perl6SuspendContext;
+import edument.perl6idea.debugger.Perl6ThreadDescriptor;
 
 public class Perl6DebugEventStop extends Perl6DebugEventBase implements Perl6DebugEvent {
-    private final Perl6StackFrameDescriptor[] frames;
+    private final Perl6ThreadDescriptor[] threads;
+    private final int activeThreadIndex;
 
-    public Perl6DebugEventStop(Perl6StackFrameDescriptor[] frames, XDebugSession session, Perl6DebugThread thread) {
+    public Perl6DebugEventStop(Perl6ThreadDescriptor[] threads, int activeThreadIndex, XDebugSession session, Perl6DebugThread thread) {
         setDebugSession(session);
         setDebugThread(thread);
-        this.frames = frames;
+        this.threads = threads;
+        this.activeThreadIndex = activeThreadIndex;
     }
 
     XSuspendContext getSuspendContext() {
-        return new Perl6SuspendContext(frames, getDebugSession(), getDebugThread());
+        return new Perl6SuspendContext(threads, activeThreadIndex, getDebugSession(), getDebugThread());
     }
 
     @Override
