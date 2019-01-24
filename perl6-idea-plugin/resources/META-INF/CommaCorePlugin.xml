@@ -4,7 +4,7 @@
   <xi:include href="/META-INF/JsonPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/ImagesPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
-    <version>0.1</version>
+    <version>2018.13</version>
     <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
     <description><![CDATA[
@@ -15,7 +15,6 @@
     ]]>
     </change-notes>
 
-    <xi:include href="common-meta.xml" xpointer="xpointer(/idea-plugin/*)"/>
     <!-- Components of standalone Comma -->
     <extensionPoints>
       <extensionPoint name="projectWizard.projectCategory" interface="com.intellij.ide.projectWizard.ProjectCategory"/>
