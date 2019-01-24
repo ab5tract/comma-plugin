@@ -192,7 +192,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
                             // ; or a } then it wasn't terminated. If it does, well, who knows,
                             // but it's better than getting it wrong all of the time.
                             String lastStmtText = ((AbstractBlock)lastStatement).getNode().getText();
-                            if (!lastStmtText.contains(";") && !lastStmtText.contains("}")) {
+                            if (shouldBeContinued(lastStmtText)) {
                                 int indent = mySettings.getIndentSize(Perl6ModuleFileType.INSTANCE) +
                                              mySettings.getContinuationIndentSize(Perl6ModuleFileType.INSTANCE);
                                 return new ChildAttributes(Indent.getSpaceIndent(indent), null);
@@ -212,6 +212,22 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         else {
             return new ChildAttributes(Indent.getContinuationWithoutFirstIndent(), null);
         }
+    }
+
+    private static boolean shouldBeContinued(String lastStmtText) {
+        // Get last line entered.
+        String[] lines = lastStmtText.trim().split("\n");
+        if (lines.length == 0)
+            return false;
+        String lastLine = lines[lines.length - 1].trim();
+
+        // Comments don't cause continuations.
+        if (lastLine.startsWith("#"))
+            return false;
+
+        // Otherwise, strip any comment/whitespace and see if it ends with ; or }.
+        String checkEnd = lastLine.replaceAll("\\s*#.*", "");
+        return !checkEnd.endsWith(";") && !checkEnd.endsWith("}");
     }
 
     private boolean isInHashOrArrayLiteral(ASTNode node) {
