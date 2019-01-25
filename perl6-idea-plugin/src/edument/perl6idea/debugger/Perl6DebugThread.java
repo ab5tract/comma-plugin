@@ -23,6 +23,7 @@ import org.edument.moarvm.types.Lexical.*;
 import org.edument.moarvm.types.MoarThread;
 import org.edument.moarvm.types.StackFrame;
 import org.edument.moarvm.types.event.BreakpointNotification;
+import org.edument.moarvm.types.event.StepCompletedNotification;
 import org.jetbrains.annotations.NotNull;
 import org.msgpack.value.Value;
 
@@ -92,7 +93,34 @@ public class Perl6DebugThread extends Thread {
                                     mySession, thread, bpn.getFile(), bpn.getLine());
                     myExecutor.execute(reachedEvent);
                 });
-            } else {
+            }
+            else if (event.getEventType() == EventType.StepCompleted) {
+                Perl6DebugThread thread = this;
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    StepCompletedNotification scn = (StepCompletedNotification)event;
+                    Perl6ThreadDescriptor[] threads;
+                    try {
+                        // Need to suspend all the threads at the breakpoint, so we can
+                        // get the thread list.
+                        client.suspend().get();
+                        threads = getThreads();
+                    }
+                    catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    int activeThreadIndex = 0;
+                    for (int i = 0; i < threads.length; i++) {
+                        if (threads[i].getThreadId() == scn.getThread()) {
+                            activeThreadIndex = i;
+                            break;
+                        }
+                    }
+                    Perl6DebugEventStop reachedEvent = new Perl6DebugEventStop(threads,
+                            activeThreadIndex, mySession, thread);
+                    myExecutor.execute(reachedEvent);
+                });
+            }
+            else {
                 System.out.println("Event + " + event.getClass().getName());
             }
         });
@@ -158,18 +186,27 @@ public class Perl6DebugThread extends Thread {
     }
 
     public void stepOver(int threadId) {
-        // TODO Implement this properly
-        resumeExecution();
+        try {
+            client.stepOver(threadId).get();
+        } catch (CancellationException | InterruptedException | ExecutionException e) {
+            LOG.error(e);
+        }
     }
 
     public void stepInto(int threadId) {
-        // TODO Implement this properly
-        resumeExecution();
+        try {
+            client.stepInto(threadId).get();
+        } catch (CancellationException | InterruptedException | ExecutionException e) {
+            LOG.error(e);
+        }
     }
 
     public void stepOut(int threadId) {
-        // TODO Implement this properly
-        resumeExecution();
+        try {
+            client.stepOut(threadId, 1).get();
+        } catch (CancellationException | InterruptedException | ExecutionException e) {
+            LOG.error(e);
+        }
     }
 
     private static Perl6ValueDescriptor[] convertLexicals(Map<String, Lexical> lex) {
