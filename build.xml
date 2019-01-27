@@ -6,6 +6,14 @@
   <property name="idea.build.number" value="0"/>
   <property name="idea.path" value=""/>
 
+  <target name="standalone-init">
+    <delete file="perl6-idea-plugin/resources/META-INF/plugin.xml" failonerror="false"/>
+  </target>
+
+  <target name="plugin-init">
+    <copyfile src="perl6-idea-plugin/resources/META-INF/meta/plugin.xml" dest="perl6-idea-plugin/resources/META-INF/plugin.xml"/>
+  </target>
+
   <target name="cleanup">
     <delete dir="${out.dir}" failonerror="false"/>
   </target>
@@ -31,19 +39,19 @@
     </sequential>
   </macrodef>
 
-  <target name="complete-build" depends="init,cleanup">
+  <target name="complete-build" depends="init,cleanup,standalone-init">
     <call_gant script="${comma.home}/build/comma_complete_build.gant"/>
   </target>
 
-  <target name="community-build" depends="init,cleanup">
+  <target name="community-build" depends="init,cleanup,standalone-init">
     <call_gant script="${comma.home}/build/comma_community_build.gant"/>
   </target>
 
-  <target name="complete-plugin" depends="init">
+  <target name="complete-plugin" depends="init,plugin-init">
     <call_gant script="${comma.home}/build/perl6_complete_plugin_build.gant"/>
   </target>
 
-  <target name="community-plugin" depends="init">
+  <target name="community-plugin" depends="init,plugin-init">
     <call_gant script="${comma.home}/build/perl6_community_plugin_build.gant"/>
   </target>
 
