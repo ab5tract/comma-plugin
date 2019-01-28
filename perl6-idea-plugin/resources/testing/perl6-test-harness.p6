@@ -32,9 +32,11 @@ react {
             }
 
             my $ENV;
+            my $cov-name;
             my $cov-file;
             if $coverage-dir {
-                $cov-file = $coverage-dir.add($file.subst(/\W+/, '-', :g));
+                $cov-name = $file.subst(/\W+/, '-', :g);
+                $cov-file = $coverage-dir.add($cov-name);
                 $ENV := {
                     %*ENV,
                     MVM_SPESH_DISABLE => '1',
@@ -56,6 +58,9 @@ react {
                 try $*OUT.flush;
                 if $cov-file && $cov-file.IO.e {
                     %coverage-index{$file} = $cov-file;
+                }
+                elsif $cov-file && dir($coverage-dir, :test(/^$cov-name/)) -> @found {
+                    %coverage-index{$file} = ~@found[0];
                 }
                 run-a-test-file;
             }
