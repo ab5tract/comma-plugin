@@ -114,7 +114,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
             while ((line = br.readLine()) != null) {
                 Matcher matcher = lineMatcher.matcher(line);
                 if (matcher.matches()) {
-                    String filename = matcher.group(1);
+                    String filename = matcher.group(1).replace(File.separator, "/");
                     if (isProjectFile(filename)) {
                         Integer lineNumber = Integer.parseInt(matcher.group(2));
                         if (!covered.containsKey(filename))
