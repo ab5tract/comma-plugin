@@ -3,77 +3,34 @@
 <h2>2019.1.0</h2>
 
 <ul>
-    <li>Implement Smart Enter (Ctrl+Shift+Enter), which can be used to complete
-        statements in various ways. For example, typing 'class Foo' and then
-        pressing Ctrl+Shift+Enter will insert the curly braces for the class body
-        and then place the caret within the class body. The feature works on a
-        range of constructs.</li>
-    <li>Correctly handle lexical term declarations with the current compilation
-        unit. Previously, a declaration like 'my \foo = 42' would not cause a
-        mention of 'foo' later on in that scope to recognize it as a term, and it
-        would instead be considered an undeclared routine. Reference resolution
-        and auto-complete now also works for these kinds of declaration.</li>
-    <li>Implement Context Info (Alt+Q). Pressing this when in a routine will, if
-        the routine starts off the top of the screen, show the routine's name and
-        signature. The same happens with the current package (if in a method that
-        has its starting line off screen, Alt+Q first shows the method declaration,
-        and then pressing it again shows the class declaration).</li>
-    <li>Add detection of various mis-uses of the 'return' statement, for example
-        outside of a routine or inside of a 'start' block.</li>
-    <li>Mark unclosed parentheses, brackets, and curlies as errors.</li>
-    <li>Include routine names in the stack trace shown by the debugger.</li>
-    <li>When a test fails with got/expected, offer a visual diff interface to help
-        one find the differences.</li>
-    <li>In the test results interface, make it possible to right-click on a test file
-        and Go To Source (also available as Ctrl+Enter when the test file is selected).</li>
-    <li>Collect non-TAP stdout and stderr produced by running tests, and
-        show it in the test output console.</li>
-    <li>When adding a New Module, also offer to stub a class, role, grammar, or module
-        inside of it, with the option to make it unit scoped. This avoids typing the
-        module name a second time inside of the created file.</li>
-    <li>Make sure that an opening comment inside of a block gets the indentation
-        level of the block it is in when reformatting code, not that of its parent.</li>
-    <li>Fix a lexer bug involving literals passed to parametric roles.</li>
-    <li>Properly report SDK not being set when the user tries to debug a program (this
-        was correctly reported for Run, but not Debug).</li>
-    <li>Make the test runner script robust in the face of calls to <code>flush</code> failing.</li>
-    <li>Fix a bug where constant extraction would work perfectly well, but then show
-        an error message claiming it hadn't worked.</li>
-    <li>Make sure the error on missing module dependency is immediately removed after
-        applying the quick-fix to add it to META6.json.</li>
-    <li>Fix an exception in 'monitor' usage annotator when 'use' statement
-        is present with a non-module name (e.g. <code>use v6.d.PREVIEW;</code>). Also,
-        do not duplicate <code>OO::Monitors</code> in module 'depends' if present
-        already.</li>
-    <li>Fix an exception on attempt to infer type of variables with
-        assignment when inplace comments are present.</li>
-    <li>Fix a number of issues caused by attempts to rename any Perl 6 file
-        the same way as a Perl 6 module is, now "module-like" behavior is
-        reserved for Perl 6 modules under <code>lib</code> source root.</li>
-    <li>Fix error message on attempt to rename a non-private method.</li>
-    <li>Moving and renaming directories that contain Perl 6 modules under
-        <code>lib</code> source root updates META6.json <code>provides</code> section now.</li>
-    <li>During module creation, opening or import, if present, <code>bin</code> directory is added as a
-        source root. Test <code>t</code> source root is marked as test one.</li>
-    <li>When a project is opened with <code>Open</code> action, source roots are
-        correctly set based on directory content.</li>
-    <li>Perl 6 module metadata file errors either syntax (such as incorrect
-        JSON) or logical (e.g. having <code>provides</code> section not being an object
-        with string values) are now displayed on project opening or
-        META6.json saving.</li>
-    <li>Show a warning if obsolete module meta filename (<code>META.info</code>) is
-        being used and offer renaming it into <code>META6.json</code>.</li>
-    <li>In order to get future support of projects with multiple modules,
-        actions <code>New Module</code>, <code>New test</code> and <code>New Script</code> are now accessible
-        in <code>File | New...</code> menu only if possible root directory or sibling
-        file is selected in Project IDEA view and so new file path is not
-        based on project root anymore.</li>
-    <li>Use normalization of module names, which makes 'use' annotator
-        correctly work with, for example, <code>Foo::Bar:ver&lt;0.5&gt;</code> specified in
-        META6.json.</li>
-    <li>IDEA's Project view is now updated when a Perl 6 module file is
-        created or removed.</li>
-    <li>As renaming local module by 'use' element renaming modifies project
-        file tree, now Perl 6 module file moving does not cause an
-        exception and updates all 'use' references.</li>
+    <li>Add an Extract Code refactoring, allowing for extraction of one or more
+        statements into a subroutine, method, or private method. The symbols that
+        need to be passed along as parameters are analyzed, and the extracted code
+        replaced with a call to the extracted routine that passes the required
+        symbols as arguments.</li>
+    <li>Add support for collecting coverage data in both normal applications and
+        when running tests. Implement basic display of this information inline with
+        the code, and indication of which tests cover that line of code on hover.</li>
+    <li>Support renaming refactors on tokens, rules, and regexes in a grammar.</li>
+    <li>Allow for digging in to attributes, array elements, and hash elements inside
+        of the debugger.</li>
+    <li>Better indicate type object vs. concrete in the debug view.</li>
+    <li>Allow for browsing the stacks of all running threads in the debugger, not
+        just the one execution stopped in.</li>
+    <li>Fix a crash when single-stepping in the debugger.</li>
+    <li>Recognize %_ as an implicitly declared routine variable in a method, such
+        that it will be suggested by auto-complete and not incorrectly marked as
+        undeclared.</li>
+    <li>Support colonpairs in regex callee names, so that calls to a specific
+        protoregex candidate will parse and reference resolve correctly.</li>
+    <li>Fix a glitch with closing curly brace insertion that was introduced with the
+        additional of incremental lexing.</li>
+    <li>Fix indentation handling when inserting multi-line statements at the end of a
+        block to properly use continuation indentation.</li>
+    <li>Make <code>self</code> resolve to the closest outer class/role/monitor/grammar.</li>
+    <li>Fix using the word "quasi" as a hash key.</li>
+    <li>Fix anonymous array and hash variables wrongly being considered undeclared.</li>
+    <li>Fix a case where a bogus error about a required parameter occurring after an
+        optional one would be reported.</li>
+    <li>Fix an occasional exception in indexing code when "need" was used.</li>
 </ul>
