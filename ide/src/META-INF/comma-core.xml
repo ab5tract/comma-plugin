@@ -11,7 +11,7 @@
   <xi:include href="/META-INF/SpellCheckerPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-  <version>2018.12.0</version>
+  <version>2019.1.0</version>
   <vendor email="info@commaide.com" url="http://www.edument.se/">Edument Central Europe sro.</vendor>
 
   <description><![CDATA[
