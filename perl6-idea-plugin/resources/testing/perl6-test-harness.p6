@@ -60,7 +60,7 @@ react {
                     %coverage-index{$file} = $cov-file;
                 }
                 elsif $cov-file && dir($coverage-dir, :test(/^$cov-name/)) -> @found {
-                    %coverage-index{$file} = ~@found[0];
+                    %coverage-index{$file} = @found[0].absolute;
                 }
                 run-a-test-file;
             }
