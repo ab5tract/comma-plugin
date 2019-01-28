@@ -61,3 +61,11 @@ test {
         showStandardStreams = true
     }
 }
+
+task preparePluginMETA(type: Copy) {
+    from 'resources/META-INF/meta/community/community-plugin.xml'
+    into 'resources/META-INF/'
+    rename { 'plugin.xml' }
+}
+
+compileJava.dependsOn preparePluginMETA

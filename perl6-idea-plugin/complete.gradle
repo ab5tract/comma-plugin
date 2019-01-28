@@ -1,0 +1,72 @@
+// Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+plugins {
+    id "org.jetbrains.intellij" version "0.2.17"
+}
+
+repositories {
+    maven { url 'http://dl.bintray.com/jetbrains/intellij-plugin-service' }
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.tap4j:tap4j:4.3"
+    compile "org.json:json:20171018"
+    compile "com.miglayout:miglayout-swing:5.1"
+    compile files('libs/moarvmremote.jar')
+    testCompile 'junit:junit:4.12'
+}
+
+version = "${pluginVersion}${platformBranch}${pluginBuild}"
+
+apply plugin: 'java'
+sourceCompatibility = javaVersion
+targetCompatibility = javaTargetVersion
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+
+sourceSets {
+    main {
+        java.srcDirs 'src'
+        resources.srcDir 'resources'
+    }
+    test {
+        java.srcDir 'tests'
+        resources.srcDirs 'testData'
+    }
+}
+
+apply plugin: 'org.jetbrains.intellij'
+intellij {
+    version "${platformVersion}${platformBranch}${platformBuild}"
+    downloadSources Boolean.valueOf(downloadIdeaSource)
+    if (project.hasProperty('idea_sandbox')) {
+        sandboxDirectory project.rootDir.canonicalPath + "/" + project.idea_sandbox
+    } else {
+        sandboxDirectory project.rootDir.canonicalPath + "/.sandbox"
+    }
+    if (project.hasProperty('idea_path')) {
+        alternativeIdePath = project.idea_path
+    }
+    updateSinceUntilBuild = false
+}
+
+patchPluginXml {
+    pluginDescription(file(descriptionFile).text)
+    changeNotes(file(changesFile).text)
+}
+
+test {
+    systemProperty("idea.plugins.path", project.rootDir.canonicalPath + "/.test-plugins")
+
+    testLogging {
+        exceptionFormat = 'full'
+        showStandardStreams = true
+    }
+}
+
+task preparePluginMETA(type: Copy) {
+    from 'resources/META-INF/meta/complete/complete-plugin.xml'
+    into 'resources/META-INF/'
+    rename { 'plugin.xml' }
+}
+
+compileJava.dependsOn preparePluginMETA

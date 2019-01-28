@@ -1,0 +1,37 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+  <id>edument.perl6-idea-plugin</id>
+  <name>Comma Community Edition (Perl 6 Language Support)</name>
+  <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
+
+  <description><![CDATA[
+  ]]>
+  </description>
+
+  <change-notes><![CDATA[
+  ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="145.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.lang</depends>
+
+  <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NullRegexAnnotator"/>
+  </extensions>
+
+  <!--<actions>-->
+    <!--<xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>-->
+  <!--</actions>-->
+
+  <!--<module-components>-->
+    <!--<xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/module-components/*)"/>-->
+  <!--</module-components>-->
+
+  <!--<xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/*)"/>-->
+
+</idea-plugin>
