@@ -26,6 +26,7 @@
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
+    <xi:include href="/META-INF/comma.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
     <projectImportProvider implementation="com.intellij.ide.util.projectWizard.ModuleImportProvider"/>
     <applicationService serviceInterface="com.intellij.openapi.module.ModuleTypeManager"
                         serviceImplementation="edument.perl6idea.module.Perl6ModuleTypeManager"/>
@@ -87,9 +88,17 @@
     </component>
   </project-components>
 
-  <!-- Actions for standalone Comma -->
-  <!-- Actions for Welcome Screen -->
+  <module-components>
+    <xi:include href="/META-INF/comma.xml" xpointer="xpointer(/idea-plugin/module-components/*)"/>
+  </module-components>
+
+
+
   <actions>
+    <!-- Common actions with plugin -->
+    <xi:include href="/META-INF/comma.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
+    <!-- Actions for standalone Comma -->
+    <!-- Actions for Welcome Screen -->
     <action id="ShowProjectStructureSettings" class="edument.perl6idea.actions.ShowPerl6ProjectStructureAction"
             icon="AllIcons.General.ProjectStructure">
       <add-to-group group-id="FileMainSettingsGroup" anchor="after" relative-to-action="ShowSettings"/>
