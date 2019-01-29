@@ -16,9 +16,9 @@ Do inside a work-related directory, for example, `comma`.
 
 #### How to build a plugin
 
-While in `comma-build` directory:
-* `ant community-plugin` or `ant complete-plugin` for Community version or Complete version.
-* Plugin will be in `../out/commaCT/artifacts/CO-plugins/` (or `commaCP` for complete version) directory.
+While in `perl6-idea-plugin` directory:
+* `./gradlew --rerun-tasks -b community.gradle buildPlugin` or `./gradlew --rerun-tasks -b complete.gradle buildPlugin` for Community version or Complete version.
+* Plugin will be placed in `build/distributions` directory.
 
 #### How to build standalone Comma
 
@@ -56,6 +56,14 @@ While in `comma-build` directory.
   - Classpath of module: `edument.perl6.plugin`
   - JRE: `IDEA jdk`
 
+Add a Gradle task in "Before launch" section:
+
+  - Project: `perl6-idea-plugin` directory.
+  - Tasks: `preparePluginsMeta`
+  - Arguments:
+    - If you want **Community** edition: `--rerun-tasks -b community.gradle`
+    - If you want **Complete** edition: `--rerun-tasks -b complete.gradle`
+
 * Run `IDEA with Perl 6 Plugin` configuration.
 
 #### How to run tests
@@ -65,7 +73,6 @@ In `comma-build/perl6-idea-plugin`:
 
 ### How to update version
 
-1) Version of plugin is set in `plugin.xml` file
-2) Description there is persistent and changelog has to be updated on every release.
-3) Version and build date in Comma "About" splash screen is set in `CommaCoreApplicationInfo.xml`
-4) 
+-  Version of the plugin is set in `gradle.properties`
+- Version and build date in Comma "About" splash screen is set in `CommaCoreApplicationInfo.xml`
+- **Both those cases are handled by `set-version` script**, please do use it as `20??.??.?`.

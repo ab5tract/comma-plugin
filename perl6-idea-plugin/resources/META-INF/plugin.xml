@@ -18,20 +18,16 @@
        on how to target different products -->
   <depends>com.intellij.modules.lang</depends>
 
-  <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/*)"/>
-
   <extensions defaultExtensionNs="com.intellij">
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NullRegexAnnotator"/>
+    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
   </extensions>
 
-  <!--<actions>-->
-    <!--<xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>-->
-  <!--</actions>-->
+  <actions>
+    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
+  </actions>
 
-  <!--<module-components>-->
-    <!--<xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/module-components/*)"/>-->
-  <!--</module-components>-->
-
-  <!--<xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/*)"/>-->
+  <module-components>
+    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/module-components/*)"/>
+  </module-components>
 
 </idea-plugin>

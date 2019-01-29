@@ -11,3 +11,4 @@ perl6-idea-plugin/build/
 perl6-idea-plugin/resources/META-INF/plugin.xml
 perl6-idea-plugin/.idea/
 perl6-idea-plugin/perl6-idea-plugin.iml
+perl6-idea-plugin/resources/plugin.xml
