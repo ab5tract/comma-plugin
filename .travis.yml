@@ -18,7 +18,6 @@ addons:
     packages:
     - rakudo-pkg
 script:
-before_script:
 - (cd perl6-idea-plugin/tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
 - (cd perl6-idea-plugin/tools/symbol-script-module && zef install .)
 - (cd perl6-idea-plugin/tools/symbol-script-module && perl6 symbol-script-test.p6)
@@ -28,7 +27,7 @@ before_script:
 - (cd perl6-idea-plugin && ./gradlew -b complete.gradle assemble)
 - (cd perl6-idea-plugin && ./gradlew -b complete.gradle test)
 after_success:
-- (cd perl6-idea-plugin && ./gradlew buildPlugin)
+- (cd perl6-idea-plugin && ./gradlew -b complete.gradle buildPlugin)
 deploy:
   provider: s3
   access_key_id: AKIAJV46PZNKKRZTY3EQ
