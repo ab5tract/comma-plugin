@@ -1,4 +1,4 @@
-<project name="Comma Supporter Edition" default="all">
+<project name="Comma" default="all">
   <property name="project.home" value="${basedir}/.."/>
   <property name="comma.home" value="${basedir}"/>
   <property name="out.dir" value="${project.home}/out"/>
@@ -38,8 +38,11 @@
         <fileset file="perl6-idea-plugin/resources/META-INF/meta/complete/complete-plugin.xml"/>
         <globmapper from="*" to="comma.xml"/>
       </copy>
+      <copy file="perl6-idea-plugin/resources/idea/metainfo/complete/CommaCoreApplicationInfo.xml"
+            tofile="perl6-idea-plugin/resources/idea/CommaCoreApplicationInfo.xml" overwrite="true"/>
       <call_gant script="${comma.home}/build/comma_complete_build.gant"/>
       <delete file="perl6-idea-plugin/resources/META-INF/comma.xml" failonerror="false"/>
+      <delete file="perl6-idea-plugin/resources/idea/CommaCoreApplicationInfo.xml" failonerror="false"/>
     </sequential>
   </target>
 
@@ -49,8 +52,11 @@
         <fileset file="perl6-idea-plugin/resources/META-INF/meta/community/community-plugin.xml"/>
         <globmapper from="*" to="comma.xml"/>
       </copy>
+      <copy file="perl6-idea-plugin/resources/idea/metainfo/community/CommaCoreApplicationInfo.xml"
+            tofile="perl6-idea-plugin/resources/idea/CommaCoreApplicationInfo.xml" overwrite="true"/>
       <call_gant script="${comma.home}/build/comma_community_build.gant"/>
       <delete file="perl6-idea-plugin/resources/META-INF/comma.xml" failonerror="false"/>
+      <delete file="perl6-idea-plugin/resources/idea/CommaCoreApplicationInfo.xml" failonerror="false"/>
     </sequential>
   </target>
 

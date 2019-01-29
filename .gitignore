@@ -13,3 +13,4 @@ perl6-idea-plugin/.idea/
 perl6-idea-plugin/perl6-idea-plugin.iml
 perl6-idea-plugin/resources/META-INF/plugin.xml
 perl6-idea-plugin/resources/META-INF/comma.xml
+perl6-idea-plugin/resources/META-INF/idea/CommaCoreApplicationInfo.xml
