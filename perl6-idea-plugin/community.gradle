@@ -49,8 +49,8 @@ intellij {
 }
 
 patchPluginXml {
-    pluginDescription(file(descriptionFile).text)
-    changeNotes(file(changesFile).text)
+    pluginDescription(file('resources/about/community/pluginDescription.html').text)
+    changeNotes(file('resources/about/community/pluginChanges.html').text)
 }
 
 test {

@@ -50,8 +50,8 @@ intellij {
 }
 
 patchPluginXml {
-    pluginDescription(file(descriptionFile).text)
-    changeNotes(file(changesFile).text)
+    pluginDescription(file('resources/about/complete/pluginDescription.html').text)
+    changeNotes(file('resources/about/complete/pluginChanges.html').text)
 }
 
 test {
