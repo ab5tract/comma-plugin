@@ -8,6 +8,8 @@
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
   <!-- Components of standalone Comma -->
+  <module value="com.intellij.modules.xml"/>
+
   <extensionPoints>
     <extensionPoint name="projectWizard.projectCategory" interface="com.intellij.ide.projectWizard.ProjectCategory"/>
     <extensionPoint name="projectImportProvider" interface="com.intellij.projectImport.ProjectImportProvider"/>
