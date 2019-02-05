@@ -37,6 +37,6 @@ public class Perl6ObjectValueDescriptor extends Perl6ValueDescriptor {
 
     @Override
     public boolean isExpandableNode() {
-        return true;
+        return concrete;
     }
 }
