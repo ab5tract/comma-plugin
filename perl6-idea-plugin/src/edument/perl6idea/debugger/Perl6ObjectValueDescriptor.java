@@ -6,12 +6,15 @@ public class Perl6ObjectValueDescriptor extends Perl6ValueDescriptor {
     private String type;
     private boolean concrete;
     private int handle;
+    private String presentableDescription;
 
-    Perl6ObjectValueDescriptor(String name, String type, boolean concrete, int handle) {
+    Perl6ObjectValueDescriptor(String name, String type, boolean concrete, int handle,
+                               String presentableDescription) {
         super(name);
         this.type = type;
         this.concrete = concrete;
         this.handle = handle;
+        this.presentableDescription = presentableDescription;
     }
 
     @Override
@@ -29,6 +32,11 @@ public class Perl6ObjectValueDescriptor extends Perl6ValueDescriptor {
         if (type.equals(LAL))
             return "<optimized out>";
         return concrete ? type + ".new" : "(" + type + ")";
+    }
+
+    @Override
+    public String getPresentableDescription(Perl6DebugThread debugThread) {
+        return presentableDescription != null ? presentableDescription : getValue();
     }
 
     public int getHandle() {

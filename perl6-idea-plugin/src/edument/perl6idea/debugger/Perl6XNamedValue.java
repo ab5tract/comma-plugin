@@ -17,7 +17,8 @@ abstract public class Perl6XNamedValue extends XNamedValue {
 
     @Override
     public void computePresentation(@NotNull XValueNode node, @NotNull XValuePlace place) {
-        node.setPresentation(Perl6Icons.CAMELIA, myDescriptor.getType(), myDescriptor.getValue(),
+        node.setPresentation(Perl6Icons.CAMELIA, myDescriptor.getType(),
+                             myDescriptor.getPresentableDescription(getDebugThread()),
                              myDescriptor.isExpandableNode());
     }
 

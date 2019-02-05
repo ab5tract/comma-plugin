@@ -15,4 +15,8 @@ public abstract class Perl6ValueDescriptor {
     public abstract String getType();
     public abstract String getValue();
     public abstract boolean isExpandableNode();
+
+    public String getPresentableDescription(Perl6DebugThread thread) {
+        return getValue();
+    }
 }

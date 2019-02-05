@@ -19,6 +19,7 @@ import org.edument.moarvm.DebugEvent;
 import org.edument.moarvm.EventType;
 import org.edument.moarvm.RemoteInstance;
 import org.edument.moarvm.types.ExecutionStack;
+import org.edument.moarvm.types.Kind;
 import org.edument.moarvm.types.Lexical.*;
 import org.edument.moarvm.types.MoarThread;
 import org.edument.moarvm.types.StackFrame;
@@ -209,7 +210,7 @@ public class Perl6DebugThread extends Thread {
         }
     }
 
-    private static Perl6ValueDescriptor[] convertLexicals(Map<String, Lexical> lex) {
+    private Perl6ValueDescriptor[] convertLexicals(Map<String, Lexical> lex) {
         Perl6ValueDescriptor[] result = new Perl6ValueDescriptor[lex.size()];
         AtomicInteger i = new AtomicInteger();
         lex.forEach((k, v) -> {
@@ -220,8 +221,8 @@ public class Perl6DebugThread extends Thread {
     }
 
     @NotNull
-    private static Perl6ValueDescriptor convertDescriptor(String k, Lexical v) {
-        Perl6ValueDescriptor descriptor;
+    private Perl6ValueDescriptor convertDescriptor(String k, Lexical v) {
+        Perl6ValueDescriptor descriptor = null;
         switch (v.getKind()) {
             case INT:
                 descriptor = new Perl6NativeValueDescriptor(k, "int",
@@ -237,10 +238,90 @@ public class Perl6DebugThread extends Thread {
                 break;
             default:
                 ObjValue ov = (ObjValue)v;
-                descriptor = new Perl6ObjectValueDescriptor(k, ov.getType(), ov.isConcrete(), ov.getHandle());
+                String type = ov.getType();
+                boolean concrete = ov.isConcrete();
+                int handle = ov.getHandle();
+                descriptor = new Perl6ObjectValueDescriptor(k, type, concrete, handle,
+                        presentableDescriptionForType(type, handle));
                 break;
         }
         return descriptor;
+    }
+
+    /* Some types recieve special handling to show them in a nicer way. */
+    private String presentableDescriptionForType(String type, int handle) {
+        try {
+            switch (type) {
+                case "Int": {
+                    Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
+                    Map<String, Lexical> attrsInt = attrs.get("Int");
+                    if (attrsInt != null) {
+                        Lexical value = attrsInt.get("$!value");
+                        if (value != null && value.getKind() == Kind.INT)
+                            return Integer.toString(((IntValue)value).getValue());
+                    }
+                    break;
+                }
+                case "Num": {
+                    Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
+                    Map<String, Lexical> attrsNum = attrs.get("Num");
+                    if (attrsNum != null) {
+                        Lexical value = attrsNum.get("$!value");
+                        if (value != null && value.getKind() == Kind.NUM)
+                            return Double.toString(((NumValue)value).getValue());
+                    }
+                    break;
+                }
+                case "Rat": {
+                    Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
+                    Map<String, Lexical> attrsRat = attrs.get("Rat");
+                    if (attrsRat != null) {
+                        Lexical nu = attrsRat.get("$!numerator");
+                        Lexical de = attrsRat.get("$!denominator");
+                        if (nu != null && nu.getKind() == Kind.OBJ && de != null && de.getKind() == Kind.OBJ) {
+                            ObjValue ovNu = (ObjValue)nu;
+                            ObjValue ovDe = (ObjValue)de;
+                            String nuPres = presentableDescriptionForType(ovNu.getType(), ovNu.getHandle());
+                            String dePres = presentableDescriptionForType(ovDe.getType(), ovDe.getHandle());
+                            if (nuPres != null && dePres != null)
+                                return Double.toString(Double.parseDouble(nuPres) / Double.parseDouble(dePres));
+                        }
+                    }
+                    break;
+                }
+                case "Str": {
+                    Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
+                    Map<String, Lexical> attrsStr = attrs.get("Str");
+                    if (attrsStr != null) {
+                        Lexical value = attrsStr.get("$!value");
+                        if (value != null && value.getKind() == Kind.STR)
+                            return ((StrValue)value).getValue();
+                    }
+                    break;
+                }
+                case "Scalar": {
+                    Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
+                    Map<String, Lexical> attrsScalar = attrs.get("Scalar");
+                    if (attrsScalar != null) {
+                        Lexical value = attrsScalar.get("$!value");
+                        if (value != null && value.getKind() == Kind.OBJ) {
+                            ObjValue ov = (ObjValue)value;
+                            String nestedType = ov.getType();
+                            String nested = presentableDescriptionForType(nestedType, ov.getHandle());
+                            if (nested == null)
+                                nested = ov.isConcrete() ? nestedType + ".new" : "(" + nestedType + ")";
+                            return "$ = " + nested;
+                        }
+                    }
+                    break;
+                }
+            }
+            return null;
+        }
+        catch (Throwable t) {
+            LOG.error(t);
+            return null;
+        }
     }
 
     private void sendBreakpoints() {
