@@ -252,6 +252,8 @@ public class Perl6DebugThread extends Thread {
     /* Some types recieve special handling to show them in a nicer way. */
     private String presentableDescriptionForType(ObjValue ov, boolean recurse) {
         try {
+            if (!ov.isConcrete())
+                return null;
             int handle = ov.getHandle();
             switch (ov.getType()) {
                 case "Int": {
@@ -362,7 +364,7 @@ public class Perl6DebugThread extends Thread {
                     }
                 }
                 case "Map":
-                case "Hash":
+                case "Hash": {
                     if (!recurse)
                         return defaultObjectRepresentation(ov);
                     Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
@@ -399,6 +401,31 @@ public class Perl6DebugThread extends Thread {
                         }
                     }
                     break;
+                }
+                case "Promise": {
+                    Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
+                    Map<String, Lexical> attrsPromise = attrs.get("Promise");
+                    if (attrsPromise != null) {
+                        Lexical status = attrsPromise.get("$!status");
+                        Lexical result = attrsPromise.get("$!result");
+                        if (status != null && status.getKind() == Kind.OBJ && result != null && result.getKind() == Kind.OBJ) {
+                            Map<String, Map<String, Lexical>> statusAttrs = client.getObjectAttributes(((ObjValue)status).getHandle()).get();
+                            String statusString = presentableDescriptionForType((ObjValue)statusAttrs.get("PromiseStatus").get("$!key"), false);
+                            switch (statusString) {
+                                case "Planned":
+                                    return "Promise.new (not yet kept or broken)";
+                                case "Kept":
+                                case "Broken": {
+                                    String nested = presentableDescriptionForType((ObjValue)result, false);
+                                    if (nested == null)
+                                        nested = defaultObjectRepresentation((ObjValue)result);
+                                    return "Promise." + statusString.toLowerCase() + "(" + nested + ")";
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
             }
             return null;
         }
