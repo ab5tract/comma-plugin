@@ -317,7 +317,7 @@ public class Perl6DebugThread extends Thread {
                     break;
                 }
                 case "List":
-                case "Array":
+                case "Array": {
                     if (!recurse)
                         return defaultObjectRepresentation(ov);
                     Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
@@ -326,7 +326,7 @@ public class Perl6DebugThread extends Thread {
                         Lexical reified = attrsList.get("$!reified");
                         Lexical todo = attrsList.get("$!todo");
                         if (reified != null && reified.getKind() == Kind.OBJ &&
-                                todo != null && todo.getKind() == Kind.OBJ) {
+                            todo != null && todo.getKind() == Kind.OBJ) {
                             boolean isArray = ov.getType().equals("Array");
                             boolean lazy = ((ObjValue)todo).isConcrete();
                             if (((ObjValue)reified).isConcrete()) {
@@ -360,6 +360,45 @@ public class Perl6DebugThread extends Thread {
                             }
                         }
                     }
+                }
+                case "Map":
+                case "Hash":
+                    if (!recurse)
+                        return defaultObjectRepresentation(ov);
+                    Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
+                    Map<String, Lexical> attrsMap = attrs.get("Map");
+                    if (attrsMap != null) {
+                        Lexical storage = attrsMap.get("$!storage");
+                        if (storage != null && storage.getKind() == Kind.OBJ) {
+                            boolean isHash = ov.getType().equals("Hash");
+                            if (((ObjValue)storage).isConcrete()) {
+                                Map<String, Lexical> elements = client.getObjectAssociatives(((ObjValue)storage).getHandle()).get();
+                                int elems = elements.size();
+                                List<String> elemsRendered = new ArrayList<>();
+                                int i = 0;
+                                for (String name : elements.keySet()) {
+                                    ObjValue hov = (ObjValue)elements.get(name);
+                                    String nested = presentableDescriptionForType(hov, false);
+                                    if (nested == null)
+                                        nested = defaultObjectRepresentation(hov);
+                                    if (isHash && nested.startsWith("$ = "))
+                                        nested = nested.substring(4);
+                                    elemsRendered.add(name + " => " + nested);
+                                    if (++i == 5)
+                                        break;
+                                }
+                                if (elems > 5) {
+                                    elemsRendered.add("...total " + Integer.toString(elems) + " elems");
+                                }
+                                String values = String.join(", ", ArrayUtil.toStringArray(elemsRendered));
+                                return isHash ? "{" + values + "}" : "Map.new((" + values + "))";
+                            }
+                            else {
+                                return isHash ? "{}" : "Map.new";
+                            }
+                        }
+                    }
+                    break;
             }
             return null;
         }
