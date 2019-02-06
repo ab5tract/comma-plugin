@@ -5,6 +5,7 @@ import com.intellij.execution.actions.StopProcessAction;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.ArrayUtil;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import com.intellij.xdebugger.frame.XCompositeNode;
@@ -242,16 +243,17 @@ public class Perl6DebugThread extends Thread {
                 boolean concrete = ov.isConcrete();
                 int handle = ov.getHandle();
                 descriptor = new Perl6ObjectValueDescriptor(k, type, concrete, handle,
-                        presentableDescriptionForType(type, handle));
+                        presentableDescriptionForType(ov, true));
                 break;
         }
         return descriptor;
     }
 
     /* Some types recieve special handling to show them in a nicer way. */
-    private String presentableDescriptionForType(String type, int handle) {
+    private String presentableDescriptionForType(ObjValue ov, boolean recurse) {
         try {
-            switch (type) {
+            int handle = ov.getHandle();
+            switch (ov.getType()) {
                 case "Int": {
                     Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
                     Map<String, Lexical> attrsInt = attrs.get("Int");
@@ -281,8 +283,8 @@ public class Perl6DebugThread extends Thread {
                         if (nu != null && nu.getKind() == Kind.OBJ && de != null && de.getKind() == Kind.OBJ) {
                             ObjValue ovNu = (ObjValue)nu;
                             ObjValue ovDe = (ObjValue)de;
-                            String nuPres = presentableDescriptionForType(ovNu.getType(), ovNu.getHandle());
-                            String dePres = presentableDescriptionForType(ovDe.getType(), ovDe.getHandle());
+                            String nuPres = presentableDescriptionForType(ovNu, false);
+                            String dePres = presentableDescriptionForType(ovDe, false);
                             if (nuPres != null && dePres != null)
                                 return Double.toString(Double.parseDouble(nuPres) / Double.parseDouble(dePres));
                         }
@@ -305,16 +307,59 @@ public class Perl6DebugThread extends Thread {
                     if (attrsScalar != null) {
                         Lexical value = attrsScalar.get("$!value");
                         if (value != null && value.getKind() == Kind.OBJ) {
-                            ObjValue ov = (ObjValue)value;
-                            String nestedType = ov.getType();
-                            String nested = presentableDescriptionForType(nestedType, ov.getHandle());
+                            ObjValue vov = (ObjValue)value;
+                            String nested = presentableDescriptionForType(vov, recurse);
                             if (nested == null)
-                                nested = ov.isConcrete() ? nestedType + ".new" : "(" + nestedType + ")";
+                                nested = defaultObjectRepresentation(vov);
                             return "$ = " + nested;
                         }
                     }
                     break;
                 }
+                case "List":
+                case "Array":
+                    if (!recurse)
+                        return defaultObjectRepresentation(ov);
+                    Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
+                    Map<String, Lexical> attrsList = attrs.get("List");
+                    if (attrsList != null) {
+                        Lexical reified = attrsList.get("$!reified");
+                        Lexical todo = attrsList.get("$!todo");
+                        if (reified != null && reified.getKind() == Kind.OBJ &&
+                                todo != null && todo.getKind() == Kind.OBJ) {
+                            boolean isArray = ov.getType().equals("Array");
+                            boolean lazy = ((ObjValue)todo).isConcrete();
+                            if (((ObjValue)reified).isConcrete()) {
+                                List<Lexical> elements = client.getObjectPositionals(((ObjValue)reified).getHandle()).get();
+                                int elems = elements.size();
+                                List<String> elemsRendered = new ArrayList<>();
+                                for (int i = 0; i < Math.min(elems, 5); i++) {
+                                    ObjValue aov = (ObjValue)elements.get(i);
+                                    String nested = presentableDescriptionForType(aov, false);
+                                    if (nested == null)
+                                        nested = defaultObjectRepresentation(aov);
+                                    if (isArray && nested.startsWith("$ = "))
+                                        nested = nested.substring(4);
+                                    elemsRendered.add(nested);
+                                }
+                                if (lazy) {
+                                    elemsRendered.add("...lazy...");
+                                }
+                                else if (elems > 5) {
+                                    elemsRendered.add("...total " + Integer.toString(elems) + " elems");
+                                }
+                                String values = String.join(", ", ArrayUtil.toStringArray(elemsRendered));
+                                return isArray ? "[" + values + "]" : "(" + values + ")";
+                            }
+                            else {
+                                // Empty, or lazy and unevaluated.
+                                if (lazy)
+                                    return isArray ? "[...lazy...]" : "(...lazy...)";
+                                else
+                                    return isArray ? "[]" : "()";
+                            }
+                        }
+                    }
             }
             return null;
         }
@@ -322,6 +367,12 @@ public class Perl6DebugThread extends Thread {
             LOG.error(t);
             return null;
         }
+    }
+
+    @NotNull
+    private String defaultObjectRepresentation(ObjValue ov) {
+        String type = ov.getType();
+        return ov.isConcrete() ? type + ".new" : "(" + type + ")";
     }
 
     private void sendBreakpoints() {
