@@ -58,7 +58,7 @@ public class Perl6RunConfiguration extends LocatableConfigurationBase implements
 
     @Nullable
     @Override
-    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
+    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
         if (executor instanceof DefaultDebugExecutor) {
             return new Perl6DebugCommandLineState(environment);
         } else if (executor instanceof Perl6ProfileExecutor) {
