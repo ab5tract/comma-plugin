@@ -31,7 +31,7 @@ public class Perl6TestFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "t";
+        return "t6";
     }
 
     @Nullable
