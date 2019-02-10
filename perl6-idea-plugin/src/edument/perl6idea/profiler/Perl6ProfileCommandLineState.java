@@ -12,6 +12,7 @@ import edument.perl6idea.sdk.Perl6SdkType;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
     static Logger LOG = Logger.getInstance(Perl6ProfileCommandLineState.class);
@@ -27,7 +28,8 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
 
     @Override
     protected void populateRunCommand() throws ExecutionException {
-        checkSDK();
+        String perl6Path = checkSDK();
+        command.add(Paths.get(perl6Path, Perl6SdkType.perl6Command()).toAbsolutePath().toString());
         String canonicalPath;
         try {
             tempFile = FileUtil.createTempFile("comma-profiler", ".sql");
@@ -38,7 +40,6 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
             LOG.warn(e);
             throw new ExecutionException(e.getMessage());
         }
-        command.add(Perl6SdkType.perl6Command());
         command.add("--profile");
         command.add(String.format("--profile-filename=%s", canonicalPath));
         setInterpreterParameters();
@@ -46,7 +47,6 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
 
     @Override
     protected void setListeners(KillableColoredProcessHandler handler) {
-
         handler.addProcessListener(new ProfileTerminationListener(tempFile, getEnvironment().getProject()));
     }
 }
