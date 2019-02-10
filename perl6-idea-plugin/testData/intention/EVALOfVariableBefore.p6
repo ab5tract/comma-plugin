@@ -1,0 +1,1 @@
+my $foo = 5; EVAL $f<caret>oo;

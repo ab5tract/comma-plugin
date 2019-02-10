@@ -1,0 +1,1 @@
+our $foo is export;

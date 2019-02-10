@@ -1,0 +1,1 @@
+my $foo is expo<caret>rt;
