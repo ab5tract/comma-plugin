@@ -1,0 +1,1 @@
+class C {}; role A is<caret> C {}
