@@ -1,19 +1,42 @@
 package edument.perl6idea.run;
 
-import com.intellij.execution.executors.DefaultRunExecutor;
+import com.intellij.execution.Executor;
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.wm.ToolWindowId;
 import edument.perl6idea.Perl6Icons;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class Perl6ProfileExecutor extends DefaultRunExecutor {
-    public static final String RUN_WITH_PERL_6_PROFILER = "Profile";
-    public static final String RUN_WITH_PERL_6_PROFILER1 = "RunWithPerl6Profiler";
+public class Perl6ProfileExecutor extends Executor {
+    public static final String EXECUTOR_ID = "Perl6Profile";
 
     @NotNull
+    public String getStartActionText() {
+        return "Run with _Profiling";
+    }
+
+    @Override
+    public String getStartActionText(String configurationName) {
+        final String name = configurationName != null
+                            ? escapeMnemonicsInConfigurationName(configurationName)
+                            : null;
+        return "Run" + (StringUtil.isEmpty(name) ? "" : " '" + name + "'") + " with _Profiling";
+    }
+
+    private static String escapeMnemonicsInConfigurationName(String configurationName) {
+        return configurationName.replace("_", "__");
+    }
+
     public String getToolWindowId() {
-            return getId();
-	}
+        return ToolWindowId.RUN;
+    }
+
+    @Override
+    public Icon getToolWindowIcon() {
+        return AllIcons.Toolwindows.ToolWindowRun;
+    }
 
     @NotNull
     public Icon getIcon() {
@@ -25,27 +48,21 @@ public class Perl6ProfileExecutor extends DefaultRunExecutor {
 	}
 
     public String getDescription() {
-            return RUN_WITH_PERL_6_PROFILER;
+            return "Profile the selected run configuration";
 	}
 
     @NotNull
     public String getActionName() {
-            return RUN_WITH_PERL_6_PROFILER1;
+            return "Profile";
 	}
 
     @NotNull
     public String getId() {
-            return RUN_WITH_PERL_6_PROFILER;
+            return EXECUTOR_ID;
 	}
 
-    @NotNull
-    public String getStartActionText() {
-            return RUN_WITH_PERL_6_PROFILER;
-        }
-
     public String getContextActionId() {
-        // HACK: ExecutorRegistryImpl expects this to be non-null, but we don't want any context actions for every file
-        return getId() + " context-action-does-not-exist";
+        return "Perl6RunProfile";
     }
 
     public String getHelpId() {
