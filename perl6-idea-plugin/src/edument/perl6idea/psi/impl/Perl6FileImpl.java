@@ -297,7 +297,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         PsiElement scoped = PsiTreeUtil.getChildOfType(stmt, Perl6ScopedDecl.class);
         Perl6PsiElement declChild = PsiTreeUtil.getChildOfAnyType(scoped != null ? scoped : stmt,
                 Perl6PackageDecl.class, Perl6UseStatement.class, Perl6NeedStatement.class,
-                Perl6Subset.class, Perl6Enum.class);
+                Perl6Subset.class, Perl6Enum.class, Perl6StubCode.class);
         return declChild != null;
     }
 
