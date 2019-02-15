@@ -1,4 +1,3 @@
-// Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.profiler;
 
 import com.intellij.notification.Notification;
@@ -110,7 +109,7 @@ public class Perl6ProfileTask extends Task.Modal {
 
             panel.add(createOptionsPanel(), BorderLayout.NORTH);
 
-            JXTreeTable treeTable = new Perl6ProfileTreeTable(new Perl6ProfileModel(nodes, ourShowInternals));
+            JXTreeTable treeTable = new Perl6ProfileTreeTable(myProject, new Perl6ProfileModel(nodes, ourShowInternals));
             JScrollPane scrollpane = new JScrollPane(treeTable);
             panel.add(scrollpane, BorderLayout.CENTER);
 
@@ -129,7 +128,7 @@ public class Perl6ProfileTask extends Task.Modal {
     private static List<ProfilerNode> getProfileViewDataRows(Statement statement) throws SQLException {
         List<ProfilerNode> nodes = new ArrayList<>();
         ResultSet calls = statement
-            .executeQuery("SELECT r.file, r.name, c.inclusive_time, c.exclusive_time, c.entries, json_group_array(sr.name) as callee " +
+            .executeQuery("SELECT r.file, r.line, r.name, c.inclusive_time, c.exclusive_time, c.entries, json_group_array(sr.name) as callee " +
                           "FROM calls c INNER JOIN calls sc ON sc.parent_id == c.id INNER JOIN routines sr " +
                           "ON sc.routine_id == sr.id INNER JOIN routines r ON c.routine_id == r.id " +
                           "GROUP BY c.id ORDER BY c.inclusive_time DESC");
@@ -142,6 +141,7 @@ public class Perl6ProfileTask extends Task.Modal {
             }
             nodes.add(new ProfilerNode(
                 calls.getString("file"),
+                calls.getInt("line"),
                 calls.getString("name"),
                 calls.getInt("inclusive_time"),
                 calls.getInt("exclusive_time"),

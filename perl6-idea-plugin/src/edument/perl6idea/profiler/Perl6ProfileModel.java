@@ -102,6 +102,10 @@ public class Perl6ProfileModel extends AbstractTreeTableModel {
         }
     }
 
+    public ProfilerNode getCall(int row) {
+        return (ProfilerNode)((List)root).get(row);
+    }
+
     public void sortRoutines(int index, boolean reverse) {
         if (reverse && root instanceof List) {
             Collections.reverse((List)root);
