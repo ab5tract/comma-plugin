@@ -277,7 +277,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             // Now add uncovered lines up to the end of this statement.
             if (!seen) {
                 int endLine = document.getLineNumber(stmt.getTextOffset() +
-                        stmt.getText().replaceFirst("\\s+$", "").length());
+                        stmt.getText().replaceFirst("\\s+$", "").length() - 1);
                 for (int i = startLine + 1; i <= endLine; i++) {
                     if (!covered.contains(i)) {
                         covered.add(i);
