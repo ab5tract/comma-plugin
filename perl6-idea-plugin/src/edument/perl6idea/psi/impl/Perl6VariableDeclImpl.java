@@ -74,6 +74,11 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
+    public boolean hasInitializer() {
+        return PsiTreeUtil.getChildOfType(this, Perl6Infix.class) != null;
+    }
+
+    @Override
     public String inferType() {
         Perl6VariableDeclStub stub = getStub();
         if (stub != null) {

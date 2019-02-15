@@ -1,7 +1,6 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.PsiFileBase;
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
@@ -266,7 +265,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             boolean seen = covered.contains(startLine);
             List<Integer> spanned = null;
             if (!seen) {
-                if (!isCodeDeclarator(stmt)) {
+                if (!isUncoverableDeclarator(stmt)) {
                     covered.add(startLine);
                     if (!isSymbolDeclarator(stmt)) {
                         spanned = new ArrayList<>();
@@ -302,10 +301,20 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         return declChild != null;
     }
 
-    private boolean isCodeDeclarator(Perl6Statement stmt) {
-        Perl6PsiElement declChild = PsiTreeUtil.getChildOfAnyType(stmt,
+    private boolean isUncoverableDeclarator(Perl6Statement stmt) {
+        Perl6ScopedDecl scopedDecl = PsiTreeUtil.getChildOfType(stmt, Perl6ScopedDecl.class);
+        Perl6PsiElement consider = scopedDecl == null ? stmt : scopedDecl;
+
+        Perl6PsiElement codeChild = PsiTreeUtil.getChildOfAnyType(consider,
                 Perl6RoutineDecl.class, Perl6MultiDecl.class, Perl6RegexDecl.class);
-        return declChild != null;
+        if (codeChild != null)
+            return true;
+
+        Perl6VariableDecl varChild = PsiTreeUtil.getChildOfType(consider, Perl6VariableDecl.class);
+        if (varChild != null && !varChild.hasInitializer())
+            return true;
+
+        return false;
     }
 
     private void findNestedStatements(Map<Integer, List<Integer>> result, Set<Integer> covered, Document document, Perl6PsiElement node) {
