@@ -244,9 +244,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public Map<Integer, List<Integer>> getStatementLineMap() {
         Map<Integer, List<Integer>> result = new HashMap<>();
         Set<Integer> covered = new HashSet<>();
-        ApplicationManager.getApplication().invokeAndWait(() -> {
+        if (ApplicationManager.getApplication().isDispatchThread())
             PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
-        });
         FileViewProvider fileViewProvider = getViewProvider();
         Document document = fileViewProvider.getDocument();
         Perl6StatementList stmts = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
