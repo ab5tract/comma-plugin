@@ -1,6 +1,8 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.PsiFileBase;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
@@ -242,7 +244,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public Map<Integer, List<Integer>> getStatementLineMap() {
         Map<Integer, List<Integer>> result = new HashMap<>();
         Set<Integer> covered = new HashSet<>();
-        PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
+        ApplicationManager.getApplication().invokeAndWait(() -> {
+            PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
+        });
         FileViewProvider fileViewProvider = getViewProvider();
         Document document = fileViewProvider.getDocument();
         Perl6StatementList stmts = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
