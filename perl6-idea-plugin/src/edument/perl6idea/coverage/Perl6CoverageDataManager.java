@@ -2,6 +2,7 @@ package edument.perl6idea.coverage;
 
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.File;
 
@@ -21,4 +22,6 @@ public abstract class Perl6CoverageDataManager implements ProjectComponent {
     abstract boolean hasCurrentCoverageSuite();
 
     abstract public void triggerPresentationUpdate();
+
+    public abstract CoverageStatistics coverageForFile(VirtualFile file);
 }

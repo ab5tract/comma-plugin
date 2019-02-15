@@ -1,7 +1,7 @@
 package edument.perl6idea.coverage;
 
 import com.intellij.execution.configurations.CommandLineState;
-import com.intellij.openapi.Disposable;
+import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.application.ReadAction;
@@ -21,17 +21,16 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.stubs.*;
 import com.intellij.util.Alarm;
+import edument.perl6idea.psi.stub.Perl6FileStub;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
@@ -137,6 +136,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     @Override
     public void triggerPresentationUpdate() {
         renewInformationInEditors();
+        ProjectView.getInstance(project).refresh();
     }
 
     private void renewInformationInEditors() {
@@ -236,5 +236,42 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
                 }
             }
         }
+    }
+
+    public CoverageStatistics coverageForFile(VirtualFile file) {
+        // Get coverage data if available.
+        if (currentSuite == null)
+            return null;
+        String path = file.getPath();
+        Map<String, Set<Integer>> fileData = currentSuite.lineDataForPath(path);
+        if (fileData == null)
+            return null;
+
+        // Look up file stub and line mapping for the file.
+        ObjectStubTree stubTree = StubTreeLoader.getInstance().readFromVFile(project, file);
+        if (stubTree == null)
+            return null;
+        Stub stubRoot = stubTree.getRoot();
+        if (!(stubRoot instanceof Perl6FileStub))
+            return null;
+        Map<Integer, List<Integer>> statementLineMap = ((Perl6FileStub)stubRoot).getStatementLineMap();
+
+        // Make a flat map of all line starters we might cover.
+        Set<Integer> coverable = new HashSet<>();
+        for (Map.Entry<Integer, List<Integer>> lineMapping : statementLineMap.entrySet())
+            if (lineMapping.getValue() != null)
+                coverable.add(lineMapping.getKey());
+        int coverableLines = coverable.size();
+        if (coverableLines == 0)
+            return null;
+
+        // Delete the covered ones from the set, leaving the uncovered.
+        for (Set<Integer> covered : fileData.values())
+            for (int oneBasedLine : covered)
+                coverable.remove(oneBasedLine - 1);
+        int uncoveredLines = coverable.size();
+
+        // Return statistics object.
+        return new CoverageStatistics(coverableLines - uncoveredLines, coverableLines);
     }
 }
