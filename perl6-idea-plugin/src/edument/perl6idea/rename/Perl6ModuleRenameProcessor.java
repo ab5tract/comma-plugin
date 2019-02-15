@@ -12,6 +12,7 @@ import com.intellij.refactoring.listeners.RefactoringElementListener;
 import com.intellij.refactoring.rename.RenamePsiElementProcessor;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6ModuleName;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +69,7 @@ public class Perl6ModuleRenameProcessor extends RenamePsiElementProcessor {
         List<String> oldName = new ArrayList<>(Arrays.asList(oldNameArray));
         oldName.remove(oldName.size() - 1);
         List<String> newName = new ArrayList<>(Arrays.asList(newNameArray));
-        String newFileName = newName.get(newName.size() - 1) + ".pm6";
+        String newFileName = newName.get(newName.size() - 1) + "." + Perl6ModuleFileType.INSTANCE.getDefaultExtension();
         newName.remove(newName.size() - 1);
         VirtualFile directoryToCleanupAfter = file.getVirtualFile().getParent();
 

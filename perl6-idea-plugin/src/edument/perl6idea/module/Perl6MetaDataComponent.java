@@ -16,6 +16,7 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.*;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -303,7 +304,9 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     public void addNamespaceToProvides(String name) {
         if (!isMetaDataExist()) return;
-        String libBasedModulePath = String.format("lib/%s.pm6", name.replaceAll("::", "/"));
+        String libBasedModulePath = String.format(
+            "lib/%s.%s", name.replaceAll("::", "/"),
+            Perl6ModuleFileType.INSTANCE.getDefaultExtension());
         JSONObject provides = myMeta.getJSONObject("provides");
         provides.put(name, libBasedModulePath);
         myMeta.put("provides", provides);

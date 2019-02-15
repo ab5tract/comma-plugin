@@ -4,6 +4,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.symbols.*;
 
 import java.util.Collection;
@@ -14,7 +15,7 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
     default String getEnclosingPerl6ModuleName() {
         // Make sure it's a .pm6 file, and trim the extension.
         String path = getContainingFile().getVirtualFile().getPath();
-        if (!path.endsWith(".pm6"))
+        if (!path.endsWith(Perl6ModuleFileType.INSTANCE.getDefaultExtension()))
             return null;
         path = path.substring(0, path.length() - 4);
 
