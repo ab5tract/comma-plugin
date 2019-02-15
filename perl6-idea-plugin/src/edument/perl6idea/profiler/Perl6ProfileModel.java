@@ -1,15 +1,27 @@
 package edument.perl6idea.profiler;
 
+import com.intellij.ui.components.JBCheckBox;
+import com.intellij.xdebugger.frame.XValueChildrenList;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Perl6ProfileModel extends AbstractTreeTableModel {
+    protected boolean internalCallsAreVisible = false;
 
-    public Perl6ProfileModel(List<ProfilerNode> routines) {
+    public Perl6ProfileModel(List<ProfilerNode> routines, JBCheckBox showInternals) {
         super(routines);
+        showInternals.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                internalCallsAreVisible = showInternals.isSelected();
+            }
+        });
     }
 
     @Override

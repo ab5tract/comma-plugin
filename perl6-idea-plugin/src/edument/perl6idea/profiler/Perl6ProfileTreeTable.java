@@ -4,6 +4,8 @@ import edument.perl6idea.Perl6Icons;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
+import javax.swing.*;
+import javax.swing.table.TableModel;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 

@@ -1,5 +1,6 @@
 package edument.perl6idea.profiler;
 
+import com.intellij.execution.ExecutionException;
 import com.intellij.execution.process.ProcessAdapter;
 import com.intellij.execution.process.ProcessEvent;
 import com.intellij.notification.Notification;
@@ -12,16 +13,19 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import edument.perl6idea.Perl6Icons;
+import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,6 +41,7 @@ public class ProfileTerminationListener extends ProcessAdapter {
     public static final Logger LOG = Logger.getInstance(ProfileTerminationListener.class);
     private final File file;
     private final Project project;
+    private Exception myException = null;
 
     ProfileTerminationListener(File file, Project project) {
         this.file = file;
@@ -47,92 +52,13 @@ public class ProfileTerminationListener extends ProcessAdapter {
     public void processTerminated(@NotNull ProcessEvent event) {
         if (event.getExitCode() != 0) {
             file.delete();
-            return;
+            LOG.warn(new ExecutionException("The executed process has finished with an error, cannot show the profiling data."));
+        } else {
+            ProgressManager.getInstance().run(new Perl6ProfileTask(project, "Processing Profiling Data", true, file));
         }
-        final Connection[] connection = {null};
+    }
 
-        ProgressManager.getInstance().run(new Task.Modal(project, "Processing Profiling Data", true) {
-            @Override
-            public void onCancel() {
-                if (connection[0] != null) {
-                    try {
-                        connection[0].close();
-                    }
-                    catch (SQLException e) {
-                        LOG.warn(e);
-                    }
-                }
-                file.delete();
-            }
-
-            public void run(@NotNull ProgressIndicator indicator) {
-                try {
-                    indicator.setIndeterminate(false);
-                    // Create in-memory DB
-                    indicator.setText("Creating database...");
-                    indicator.setFraction(0.1);
-                    connection[0] = DriverManager.getConnection("jdbc:sqlite::memory:");
-                    Statement statement = connection[0].createStatement();
-                    indicator.setText("Reading data...");
-                    indicator.setFraction(0.2);
-                    Stream<String> lines = Files.lines(Paths.get(file.getCanonicalPath()), StandardCharsets.UTF_8);
-                    Iterator<String> iterator = lines.iterator();
-                    // Load base
-                    indicator.setText("Preparing database...");
-                    indicator.setFraction(0.3);
-                    while (iterator.hasNext())
-                        statement.executeUpdate(iterator.next());
-
-                    List<ProfilerNode> nodes = new ArrayList<>();
-                    ResultSet calls = statement.executeQuery("SELECT r.file, r.name, c.inclusive_time, c.exclusive_time, c.entries, json_group_array(sr.name) as callee " +
-                                                             "FROM calls c INNER JOIN calls sc ON sc.parent_id == c.id INNER JOIN routines sr " +
-                                                             "ON sc.routine_id == sr.id INNER JOIN routines r ON c.routine_id == r.id " +
-                                                             "GROUP BY c.id ORDER BY c.inclusive_time DESC");
-
-                    while(calls.next()) {
-                        JSONArray calleeJSON = new JSONArray(calls.getString("callee"));
-                        List<CalleeNode> callees = new ArrayList<>();
-                        for (int i = 0; i < calleeJSON.length(); i++)
-                            callees.add(new CalleeNode(calleeJSON.getString(i)));
-                        nodes.add(new ProfilerNode(
-                            calls.getString("file"),
-                            calls.getString("name"),
-                            calls.getInt("inclusive_time"),
-                            calls.getInt("exclusive_time"),
-                            calls.getInt("entries"),
-                            callees
-                        ));
-                    }
-
-                    indicator.setText("Done!");
-                    indicator.setFraction(1);
-                    ApplicationManager.getApplication().invokeLater(() -> {
-                        ToolWindow window = ToolWindowManager.getInstance(project).registerToolWindow(
-                            "Perl 6 profiling tool window",
-                            true,
-                            ToolWindowAnchor.BOTTOM
-                        );
-                        window.setIcon(Perl6Icons.CAMELIA_13x13);
-                        window.activate(() -> {
-                            JComponent component = window.getComponent();
-                            TreeTableModel treeTableModel = new Perl6ProfileModel(nodes);
-                            JXTreeTable treeTable = new Perl6ProfileTreeTable(treeTableModel);
-                            JScrollPane scrollpane = new JScrollPane(treeTable);
-                            component.add(scrollpane);
-                        });
-                    });
-                }
-                catch (SQLException | IOException e) {
-                    LOG.warn(e);
-                    Notifications.Bus.notify(
-                        new Notification("Perl 6 Profiler", "Error during profiling data procession",
-                                         e.getMessage(), NotificationType.ERROR));
-                    throw new ProcessCanceledException();
-                }
-                finally {
-                    onCancel();
-                }
-            }
-        });
+    public Exception getException() {
+        return myException;
     }
 }
