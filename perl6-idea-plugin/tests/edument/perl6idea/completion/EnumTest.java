@@ -9,18 +9,25 @@ import java.util.List;
 
 public class EnumTest extends LightFixtureCompletionTestCase {
     public void testEnumCompletionStringLiteral() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "enum Phos <Foo1 Foo2>; my Fo<caret>");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> types = myFixture.getLookupElementStrings();
-        assertNotNull(types);
-        assertTrue(types.containsAll(Arrays.asList("Foo1", "Foo2")));
+        doTest("enum Phospho <FooName1 FooName2>; my FooName<caret>",
+               Arrays.asList("FooName1", "FooName2", "Phospho::FooName1", "Phospho::FooName2"), 4);
     }
 
     public void testEnumCompletionNamedValues() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "enum Phos ( Foo1 => 1, Foo2 => 2 ); my Fo<caret>");
+        doTest("enum Phospho ( FooName1 => 1, FooName2 => 2 ); my Phosph<caret>",
+               Arrays.asList("Phospho::FooName1", "Phospho::FooName2", "Phospho"), 3);
+    }
+
+    public void testEnumFullReference() {
+        doTest("enum Phospho <\nFoo1\nFoo2\n>; my Phosph<caret>", Arrays.asList("Phospho", "Phospho::Foo1", "Phospho::Foo2"), 3);
+    }
+
+    public void doTest(String text, List<String> values, int len) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> types = myFixture.getLookupElementStrings();
         assertNotNull(types);
-        assertTrue(types.containsAll(Arrays.asList("Foo1", "Foo2")));
+        assertEquals(len, types.size());
+        assertTrue(types.containsAll(values));
     }
 }
