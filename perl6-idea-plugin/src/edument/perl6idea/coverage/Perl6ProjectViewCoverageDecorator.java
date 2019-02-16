@@ -22,21 +22,30 @@ public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorat
         if (file == null)
             return;
         if (file.isDirectory()) {
-
+            data.clearText();
+            data.addText(file.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
+            if (coverageDataManager != null && coverageDataManager.hasCurrentCoverageSuite()) {
+                CoverageStatistics stats = coverageDataManager.coverageForDirectory(file);
+                if (stats != null)
+                    addCoverageStatistics(data, stats);
+            }
         }
         else if (file.getPath().endsWith(".pm6")) {
             data.clearText();
             data.addText(file.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
             if (coverageDataManager != null && coverageDataManager.hasCurrentCoverageSuite()) {
                 CoverageStatistics stats = coverageDataManager.coverageForFile(file);
-                if (stats != null) {
-                    data.addText(" (" + stats.getCoveredLines() + " / " + stats.getCoverableLines() +
-                                 " statements; ", SimpleTextAttributes.GRAY_ATTRIBUTES);
-                    data.addText(stats.percent() + "%)", percentAttributes(stats));
-                    data.addText(")", SimpleTextAttributes.GRAY_ATTRIBUTES);
-                }
+                if (stats != null)
+                    addCoverageStatistics(data, stats);
             }
         }
+    }
+
+    private void addCoverageStatistics(PresentationData data, CoverageStatistics stats) {
+        data.addText(" (" + stats.getCoveredLines() + " / " + stats.getCoverableLines() +
+                     " statements; ", SimpleTextAttributes.GRAY_ATTRIBUTES);
+        data.addText(stats.percent() + "%)", percentAttributes(stats));
+        data.addText(")", SimpleTextAttributes.GRAY_ATTRIBUTES);
     }
 
     private static SimpleTextAttributes percentAttributes(CoverageStatistics stats) {

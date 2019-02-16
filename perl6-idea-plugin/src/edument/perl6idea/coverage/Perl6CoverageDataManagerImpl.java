@@ -17,7 +17,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -35,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private final Project project;
@@ -44,6 +47,8 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private Perl6CoverageSuite currentSuite;
     private ConcurrentMap<Editor, Perl6CoverageSourceAnnotator> editorAnnotators =
         new ConcurrentHashMap<>();
+    private ConcurrentMap<String, CoverageStatistics> fileCoverageStatsCache
+            = new ConcurrentHashMap<>();
 
     public Perl6CoverageDataManagerImpl(@NotNull Project project) {
         this.project = project;
@@ -77,11 +82,13 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
 
     public void changeToSuite(Perl6CoverageSuite suite) {
         currentSuite = suite;
+        fileCoverageStatsCache.clear();
         triggerPresentationUpdate();
     }
 
     public void hideCoverageData() {
         currentSuite = null;
+        fileCoverageStatsCache.clear();
         triggerPresentationUpdate();
     }
 
@@ -239,6 +246,17 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     }
 
     public CoverageStatistics coverageForFile(VirtualFile file) {
+        String path = file.getPath();
+        CoverageStatistics result = fileCoverageStatsCache.get(path);
+        if (result == null) {
+            result = computeCoverageForFile(file);
+            if (result != null)
+                fileCoverageStatsCache.put(path, result);
+        }
+        return result;
+    }
+
+    private CoverageStatistics computeCoverageForFile(VirtualFile file) {
         // Get coverage data if available.
         if (currentSuite == null)
             return null;
@@ -273,5 +291,33 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
 
         // Return statistics object.
         return new CoverageStatistics(coverableLines - uncoveredLines, coverableLines);
+    }
+
+    public CoverageStatistics coverageForDirectory(VirtualFile dir) {
+        /* Gather all .pm6 files in the directory. */
+        List<VirtualFile> allSourceFiles = new ArrayList<>();
+        VfsUtilCore.visitChildrenRecursively(dir, new VirtualFileVisitor<Object>() {
+            @Override
+            public boolean visitFile(@NotNull VirtualFile file) {
+                if (!file.isDirectory() && file.getName().endsWith(".pm6"))
+                    allSourceFiles.add(file);
+                return true;
+            }
+        });
+
+        /* Gather all the statistics. */
+        List<CoverageStatistics> allStatistics = allSourceFiles.stream()
+                .map(f -> coverageForFile(f))
+                .filter(s -> s != null)
+                 .collect(Collectors.toList());
+        if (allStatistics.isEmpty())
+            return null;
+        int totalCovered = 0;
+        int totalCoverable = 0;
+        for (CoverageStatistics stats : allStatistics) {
+            totalCovered += stats.getCoveredLines();
+            totalCoverable += stats.getCoverableLines();
+        }
+        return new CoverageStatistics(totalCovered, totalCoverable);
     }
 }

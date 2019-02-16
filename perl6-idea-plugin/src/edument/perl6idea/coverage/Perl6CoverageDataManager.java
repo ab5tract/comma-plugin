@@ -24,4 +24,6 @@ public abstract class Perl6CoverageDataManager implements ProjectComponent {
     abstract public void triggerPresentationUpdate();
 
     public abstract CoverageStatistics coverageForFile(VirtualFile file);
+
+    public abstract CoverageStatistics coverageForDirectory(VirtualFile file);
 }
