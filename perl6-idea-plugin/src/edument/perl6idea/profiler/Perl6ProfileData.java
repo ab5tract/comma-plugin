@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public class Perl6ProfileData {
     public static final Logger LOG = Logger.getInstance(Perl6ProfileData.class);
     public static final Function<String, String> RELATED_CALL_NODES_SQL = (table) ->
-        "SELECT c.id, rs.name, rs.file, rs.line," +
+        "SELECT rs.id, rs.name, rs.file, rs.line," +
         "total(case when c.rec_depth = 0 then c.inclusive_time else 0 end) as inclusive_time," +
         "c.exclusive_time, c.entries " +
         table +

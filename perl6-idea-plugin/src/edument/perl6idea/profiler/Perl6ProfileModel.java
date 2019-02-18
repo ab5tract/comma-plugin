@@ -79,4 +79,13 @@ public class Perl6ProfileModel extends AbstractTableModel {
     public int getNodeSourceLine(int row) {
         return nodes.get(row).getLine();
     }
+
+    public int getNavigationIndexByCallId(int id) {
+        for (int i = 0, size = nodes.size(); i < size; i++) {
+            Perl6ProfilerNode node = nodes.get(i);
+            if (node.getCallId() == id)
+                return i;
+        }
+        return -1;
+    }
 }

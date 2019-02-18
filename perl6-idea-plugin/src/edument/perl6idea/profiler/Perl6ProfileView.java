@@ -17,6 +17,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.TableRowSorter;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -41,6 +42,8 @@ public class Perl6ProfileView extends JPanel {
         setupCheckboxHandler();
         setupNavigation();
         updateCallData();
+        setupNavigationSelectorListener(calleeTable);
+        setupNavigationSelectorListener(callerTable);
     }
 
     private void setupCheckboxHandler() {
@@ -65,11 +68,34 @@ public class Perl6ProfileView extends JPanel {
     private void updateCalleeTable(int callId) {
         List<Perl6ProfilerNode> calleeList = myProfileData.getCalleeListByCallId(callId);
         calleeTable.setModel(new Perl6ProfileModel(calleeList));
+
     }
 
     private void updateCallerTable(int callId) {
         List<Perl6ProfilerNode> callerList = myProfileData.getCallerListByCallId(callId);
         callerTable.setModel(new Perl6ProfileModel(callerList));
+    }
+
+    private void setupNavigationSelectorListener(JBTable table) {
+        table.addMouseListener(
+            new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    int index = table.rowAtPoint(e.getPoint());
+                    if (index < 0)
+                        return;
+                    int row = table.convertRowIndexToModel(index);
+                    Perl6ProfileModel model = (Perl6ProfileModel)table.getModel();
+                    int callNodeId = model.getNodeId(row);
+                    Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
+                    int callOfNodeToConvert = navigationModel.getNavigationIndexByCallId(callNodeId);
+                    if (callOfNodeToConvert >= 0) {
+                        callsNavigation.setRowSelectionInterval(callOfNodeToConvert, callOfNodeToConvert);
+                        Rectangle cellRect = callsNavigation.getCellRect(callOfNodeToConvert, 0, true);
+                        callsNavigation.scrollRectToVisible(cellRect);
+                        updateCallData();
+                    }
+                }
+            });
     }
 
     private void setupNavigation() {
