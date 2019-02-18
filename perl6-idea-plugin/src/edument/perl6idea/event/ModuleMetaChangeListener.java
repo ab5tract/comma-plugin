@@ -33,7 +33,8 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
 
     @Nullable
     private static String calculateModuleName(String path) {
-        Matcher m = Pattern.compile(".*?/lib/(.+).pm6").matcher(path);
+        String regexPattern = String.format(".*?/lib/(.+).%s", Perl6ModuleFileType.INSTANCE.getDefaultExtension());
+        Matcher m = Pattern.compile(regexPattern).matcher(path);
         if (m.matches()) {
             return m.group(1)
                     .replaceAll("/", "::")

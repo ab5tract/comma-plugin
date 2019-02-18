@@ -15,6 +15,9 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import edument.perl6idea.filetypes.Perl6TestFileType;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6ProjectType;
 import org.jetbrains.annotations.NotNull;
@@ -117,7 +120,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 metaData.addNamespaceToProvides(moduleName);
             });
         }
-        String modulePath = Paths.get(moduleLibraryPath, moduleName.split("::")) + ".pm6";
+        String modulePath = Paths.get(moduleLibraryPath, moduleName.split("::")) + "." + Perl6ModuleFileType.INSTANCE.getDefaultExtension();
         new File(modulePath).getParentFile().mkdirs();
         writeCodeToPath(Paths.get(modulePath), getModuleCodeByType(type, moduleName, isUnitScoped));
         return modulePath;
@@ -160,8 +163,9 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
 
     public static String stubTest(String testDirectoryPath, String fileName, List<String> imports) {
         Path testPath = Paths.get(testDirectoryPath, fileName);
-        if (!testPath.toString().endsWith(".t"))
-            testPath = Paths.get(testDirectoryPath, fileName + ".t");
+        // If no extension, add default `.t`
+        if (!testPath.toString().contains("."))
+            testPath = Paths.get(testDirectoryPath, fileName + "." + Perl6TestFileType.INSTANCE.getDefaultExtension());
         List<String> lines = new LinkedList<>();
         imports.forEach(i -> lines.add(String.format("use %s;", i)));
         lines.addAll(Arrays.asList("use Test;", "", "done-testing;"));
@@ -172,8 +176,8 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     public static String stubScript(String moduleLibraryPath, String scriptName) {
         Path scriptPath = Paths.get(moduleLibraryPath, scriptName);
         String stringPath = scriptPath.toString();
-        if (!stringPath.endsWith(".pl6") && !stringPath.endsWith(".p6"))
-            stringPath += ".p6";
+        if (!stringPath.endsWith(".pl6") && !stringPath.endsWith(Perl6ScriptFileType.INSTANCE.getDefaultExtension()))
+            stringPath += "." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
 
         List<String> lines = Arrays.asList(
                 "#!/usr/bin/env perl6",

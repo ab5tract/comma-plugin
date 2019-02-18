@@ -10,7 +10,7 @@ public class Perl6FileTypeFactory extends FileTypeFactory {
         consumer.consume(Perl6ScriptFileType.INSTANCE);
         consumer.consume(Perl6OldStyleScriptFileType.INSTANCE);
         consumer.consume(Perl6ModuleFileType.INSTANCE);
-        consumer.consume(Perl6TestFileType.INSTANCE);
+        consumer.consume(Perl6TestFileType.INSTANCE, "t6;t");
         consumer.consume(Perl6PodFileType.INSTANCE);
     }
 }

@@ -58,10 +58,11 @@ public class NewTestAction extends AnAction {
                     testPath = ((PsiFile) navigatable).getParent().getVirtualFile().getPath();
         }
 
-        String fileName = Messages.showInputDialog(project,
-                "Test file name (without .t extension):",
-                "New Test Name",
-                Messages.getQuestionIcon(), null, validator);
+        String fileName = Messages.showInputDialog(
+            project,
+            "Test file name (type one without an extension to use a default '.t'):",
+            "New Test Name",
+            Messages.getQuestionIcon(), null, validator);
         if (fileName == null)
             return;
 
