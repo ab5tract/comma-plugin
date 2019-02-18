@@ -7,6 +7,7 @@ import java.util.List;
 public class Perl6ProfileModel extends AbstractTableModel {
     protected int inclusiveSum;
     protected List<Perl6ProfilerNode> nodes;
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     @Override
     public int getRowCount() {
@@ -45,9 +46,9 @@ public class Perl6ProfileModel extends AbstractTableModel {
         }
     }
 
-    private Object calculateInclusiveValue(int time) {
-        DecimalFormat df = new DecimalFormat("#.##");
-        return String.format("%s%% (%s μs)", time == inclusiveSum ? "100" : df.format((double)time / inclusiveSum), time);
+    private Object calculateInclusiveValue(int timeInMills) {
+        String percents = DECIMAL_FORMAT.format(((double)timeInMills / inclusiveSum) * 100);
+        return String.format("%s%% (%s μs)", percents, timeInMills);
     }
 
     @Override
