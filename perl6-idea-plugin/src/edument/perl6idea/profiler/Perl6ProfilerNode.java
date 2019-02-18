@@ -11,11 +11,10 @@ public class Perl6ProfilerNode {
     private int inclusiveTime;
     private int exclusiveTime;
     private int callCount;
-    private final List<CalleeNode> callee;
 
     public Perl6ProfilerNode(int id, String filename, int line, String name,
                              int inclusiveTime, int exclusiveTime,
-                             int callCount, List<CalleeNode> callee) {
+                             int callCount) {
         this.id = id;
         this.filename = filename;
         this.line = line;
@@ -23,7 +22,6 @@ public class Perl6ProfilerNode {
         this.inclusiveTime = inclusiveTime;
         this.exclusiveTime = exclusiveTime;
         this.callCount = callCount;
-        this.callee = callee;
     }
 
     public String getName() {
@@ -62,14 +60,6 @@ public class Perl6ProfilerNode {
 
     public int getLine() {
         return line;
-    }
-
-    public CalleeNode getCalleeNode(int index) {
-        return callee.get(index);
-    }
-
-    public int getCalleeSize() {
-        return callee.size();
     }
 
     public int getCallId() {

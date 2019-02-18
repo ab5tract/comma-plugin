@@ -34,31 +34,30 @@ public class Perl6ProfileData {
     }
 
     public void initialize() throws IOException, SQLException {
-        Statement statement = connection.createStatement();
-        Stream<String> lines = Files.lines(Paths.get(sqlDataFilePath), StandardCharsets.UTF_8);
-        Iterator<String> iterator = lines.iterator();
-        // Load the base from the file
-        while (iterator.hasNext()) {
-            statement.executeUpdate(iterator.next());
+        try (Statement statement = connection.createStatement()) {
+            Stream<String> lines = Files.lines(Paths.get(sqlDataFilePath), StandardCharsets.UTF_8);
+            Iterator<String> iterator = lines.iterator();
+            // Load the base from the file
+            while (iterator.hasNext()) {
+                statement.executeUpdate(iterator.next());
+            }
         }
-        statement.close();
     }
 
     public List<Perl6ProfilerNode> getNavigationNodes() throws SQLException {
         List<Perl6ProfilerNode> nodes = new ArrayList<>();
-        Statement statement = connection.createStatement();
-        ResultSet calls = statement
-            .executeQuery("SELECT r.id, r.file, r.line, r.name, c.inclusive_time, c.exclusive_time, c.entries, json_group_array(sr.name) as callee " +
-                          "FROM calls c INNER JOIN calls sc ON sc.parent_id == c.id INNER JOIN routines sr " +
-                          "ON sc.routine_id == sr.id INNER JOIN routines r ON c.routine_id == r.id " +
-                          "GROUP BY c.id ORDER BY c.inclusive_time DESC");
+        try (Statement statement = connection.createStatement()) {
+            ResultSet calls = statement
+                .executeQuery("SELECT r.id, r.file, r.line, r.name, c.inclusive_time, c.exclusive_time, c.entries " +
+                              "FROM calls c INNER JOIN routines r ON c.routine_id == r.id " +
+                              "GROUP BY c.id ORDER BY c.inclusive_time DESC");
+            convertProfilerNodes(nodes, calls);
+        }
+        return nodes;
+    }
 
+    private void convertProfilerNodes(List<Perl6ProfilerNode> nodes, ResultSet calls) throws SQLException {
         while (calls.next()) {
-            JSONArray calleeJSON = new JSONArray(calls.getString("callee"));
-            List<CalleeNode> callees = new ArrayList<>();
-            for (int i = 0; i < calleeJSON.length(); i++) {
-                callees.add(new CalleeNode(calleeJSON.getString(i)));
-            }
             nodes.add(new Perl6ProfilerNode(
                 calls.getInt("id"),
                 calls.getString("file"),
@@ -66,12 +65,9 @@ public class Perl6ProfileData {
                 calls.getString("name"),
                 calls.getInt("inclusive_time"),
                 calls.getInt("exclusive_time"),
-                calls.getInt("entries"),
-                callees
+                calls.getInt("entries")
             ));
         }
-        statement.close();
-        return nodes;
     }
 
     public void cancel() {
@@ -89,27 +85,19 @@ public class Perl6ProfileData {
         }
     }
 
-    public List<Perl6ProfilerNode> getCalleeListByCallId(int id) {
+    private List<Perl6ProfilerNode> getRelatedCallNodes(int id, boolean wantCallers) {
         try {
             if (!connection.isClosed()) {
                 List<Perl6ProfilerNode> calleeList = new ArrayList<>();
-                PreparedStatement statement = connection.prepareStatement(
-                    RELATED_CALL_NODES_SQL.fun("FROM calls c JOIN calls pc ON pc.id == c.parent_id "));
-                statement.setInt(1, id);
-                ResultSet callees = statement.executeQuery();
-                while (callees.next()) {
-                    calleeList.add(new Perl6ProfilerNode(
-                        callees.getInt("id"),
-                        callees.getString("file"),
-                        callees.getInt("line"),
-                        callees.getString("name"),
-                        callees.getInt("inclusive_time"),
-                        callees.getInt("exclusive_time"),
-                        callees.getInt("entries"),
-                        new ArrayList<>()
-                    ));
+                String sql = RELATED_CALL_NODES_SQL.fun(
+                    wantCallers ?
+                    "FROM calls pc JOIN calls c ON c.id == pc.parent_id " :
+                    "FROM calls c JOIN calls pc ON pc.id == c.parent_id ");
+                try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                    statement.setInt(1, id);
+                    ResultSet callees = statement.executeQuery();
+                    convertProfilerNodes(calleeList, callees);
                 }
-                statement.close();
                 return calleeList;
             }
         }
@@ -119,34 +107,11 @@ public class Perl6ProfileData {
         return new ArrayList<>();
     }
 
+    public List<Perl6ProfilerNode> getCalleeListByCallId(int id) {
+        return getRelatedCallNodes(id,false);
+    }
+
     public List<Perl6ProfilerNode> getCallerListByCallId(int id) {
-        try {
-            if (!connection.isClosed()) {
-                List<Perl6ProfilerNode> calleeList = new ArrayList<>();
-                PreparedStatement statement = connection.prepareStatement(
-                    RELATED_CALL_NODES_SQL.fun("FROM calls pc JOIN calls c ON c.id == pc.parent_id ")
-                );
-                statement.setInt(1, id);
-                ResultSet callees = statement.executeQuery();
-                while (callees.next()) {
-                    calleeList.add(new Perl6ProfilerNode(
-                        callees.getInt("id"),
-                        callees.getString("file"),
-                        callees.getInt("line"),
-                        callees.getString("name"),
-                        callees.getInt("inclusive_time"),
-                        callees.getInt("exclusive_time"),
-                        callees.getInt("entries"),
-                        new ArrayList<>()
-                    ));
-                }
-                statement.close();
-                return calleeList;
-            }
-        }
-        catch (SQLException e) {
-            LOG.warn(e);
-        }
-        return new ArrayList<>();
+        return getRelatedCallNodes(id, true);
     }
 }
