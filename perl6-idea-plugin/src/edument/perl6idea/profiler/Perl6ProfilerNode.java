@@ -58,6 +58,10 @@ public class Perl6ProfilerNode {
         return callCount;
     }
 
+    public int getLine() {
+        return line;
+    }
+
     public CalleeNode getCalleeNode(int index) {
         return callee.get(index);
     }

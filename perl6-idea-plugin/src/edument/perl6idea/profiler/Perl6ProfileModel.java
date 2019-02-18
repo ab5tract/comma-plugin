@@ -67,4 +67,12 @@ public class Perl6ProfileModel extends AbstractTableModel {
     public boolean isCellInternal(int row, String path) {
         return !nodes.get(row).getOriginalFile().startsWith(path);
     }
+
+    public String getNodeSourceFile(int row) {
+        return nodes.get(row).getOriginalFile();
+    }
+
+    public int getNodeSourceLine(int row) {
+        return nodes.get(row).getLine();
+    }
 }

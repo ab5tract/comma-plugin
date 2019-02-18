@@ -73,7 +73,7 @@ public class Perl6ProfileTask extends Task.Modal {
         window.activate(() -> {
             JComponent component = window.getComponent();
             JPanel panel = new JPanel(new BorderLayout());
-            Perl6ProfileView view = new Perl6ProfileView(data, myProject.getBaseDir().getCanonicalPath());
+            Perl6ProfileView view = new Perl6ProfileView(myProject, data);
             panel.add(view.getPanel(), BorderLayout.CENTER);
             component.add(panel);
         });

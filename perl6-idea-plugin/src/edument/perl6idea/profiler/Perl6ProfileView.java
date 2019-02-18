@@ -1,19 +1,30 @@
 package edument.perl6idea.profiler;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.Function;
+import edument.perl6idea.psi.Perl6File;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.List;
 
 public class Perl6ProfileView extends JPanel {
     public static final Logger LOG = Logger.getInstance(Perl6ProfileView.class);
+    protected Project myProject;
     protected Perl6ProfileData myProfileData;
     protected String myBaseProjectPath;
     private JPanel myPanel1;
@@ -22,13 +33,14 @@ public class Perl6ProfileView extends JPanel {
     private JBTable callerTable;
     private JBTable calleeTable;
 
-    public Perl6ProfileView(Perl6ProfileData profileData, String baseProjectPath) {
+    public Perl6ProfileView(Project project, Perl6ProfileData profileData) {
+        myProject = project;
         myProfileData = profileData;
-        myBaseProjectPath = baseProjectPath;
+        myBaseProjectPath = myProject.getBaseDir().getCanonicalPath();
         myShowInternalsCheckBox.setSelected(true);
         setupCheckboxHandler();
         setupNavigation();
-        //setupCalleeTable();
+        setupCalleeTable();
     }
 
     private void setupCheckboxHandler() {
@@ -40,9 +52,10 @@ public class Perl6ProfileView extends JPanel {
         });
     }
 
-    private void setupCalleeTable(TableModel model) {
-        calleeTable.setModel(model);
-        calleeTable.setAutoCreateRowSorter(true);
+    private void setupCalleeTable() {
+        System.out.println(callsNavigation.getSelectedRow());
+        //calleeTable.setModel(model);
+        //calleeTable.setAutoCreateRowSorter(true);
     }
 
     private void setupNavigation() {
@@ -54,6 +67,10 @@ public class Perl6ProfileView extends JPanel {
             LOG.warn("Could not build a list of calls: " + e.getMessage());
             return;
         }
+        // Setup a model
+        Perl6ProfileModel model = new Perl6ProfileModel(calls);
+        callsNavigation.setModel(model);
+
         // Single selection + default sort for all columns
         callsNavigation.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         callsNavigation.setAutoCreateRowSorter(true);
@@ -63,12 +80,46 @@ public class Perl6ProfileView extends JPanel {
         callsNavigation.setDefaultRenderer(String.class, profileNodeRenderer);
         callsNavigation.setDefaultRenderer(Integer.class, profileNodeRenderer);
 
-        // Setup a model
-        Perl6ProfileModel model = new Perl6ProfileModel(calls);
-        callsNavigation.setModel(model);
+        callsNavigation.addMouseListener(
+            new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    int index = callsNavigation.rowAtPoint(e.getPoint());
+                    if (index < 0)
+                        return;
+                    int row = callsNavigation.convertRowIndexToModel(index);
+                    goToCallAtRow(row);
+                    // FIXME update right tab
+                    //calleeTable.getModel().update
+                }
+            });
 
         // Constructs and applies appropriate filter
         updateRowFilter();
+
+        // Select first row
+        if (calls.size() > 0) {
+            callsNavigation.setRowSelectionInterval(0, 0);
+        }
+    }
+
+    private void goToCallAtRow(int row) {
+        Perl6ProfileModel model = (Perl6ProfileModel)callsNavigation.getModel();
+        if (!model.isCellInternal(row, myBaseProjectPath)) {
+            VirtualFile file = LocalFileSystem.getInstance().findFileByPath(model.getNodeSourceFile(row));
+            if (file != null) {
+                PsiFile psiFile = PsiManager.getInstance(myProject).findFile(file);
+                if (!(psiFile instanceof Perl6File))
+                    return;
+                psiFile.navigate(true);
+                Editor editor = FileEditorManager.getInstance(myProject).getSelectedTextEditor();
+                if (editor == null) {
+                    LOG.warn("Editor is not opened for some reason, file is" + file.getCanonicalPath());
+                    return;
+                }
+                int offset = StringUtil.lineColToOffset(editor.getDocument().getText(), model.getNodeSourceLine(row) - 1, 0);
+                editor.getCaretModel().moveToOffset(offset);
+            }
+        }
     }
 
     private void updateRowFilter() {
@@ -83,8 +134,8 @@ public class Perl6ProfileView extends JPanel {
     }
 
     private Function<Integer, Boolean> generateVisibleCallsCondition() {
-        /* In future we will likely have more options besides "Show internal calls"
-         * so while we can avoid this method and construction of a Function for easy case,
+        /* In future, we will likely have more options besides "Show internal calls"
+         * so while we can avoid this method and construction of a Function for the easy case,
          * it may become much more complex, so the logic is generalized here from the start.
          */
         return rowIndex -> {
