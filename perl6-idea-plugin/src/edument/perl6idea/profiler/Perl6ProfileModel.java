@@ -47,7 +47,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
 
     private Object calculateInclusiveValue(int time) {
         DecimalFormat df = new DecimalFormat("#.##");
-        return String.format("%s%% (%s μs)", df.format((double)time / inclusiveSum), time);
+        return String.format("%s%% (%s μs)", time == inclusiveSum ? "100" : df.format((double)time / inclusiveSum), time);
     }
 
     @Override
