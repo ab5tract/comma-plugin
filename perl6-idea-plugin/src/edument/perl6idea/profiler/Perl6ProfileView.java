@@ -108,7 +108,7 @@ public class Perl6ProfileView extends JPanel {
             return;
         }
         // Setup a model
-        Perl6ProfileModel model = new Perl6ProfileModel(calls);
+        Perl6ProfileModel model = new Perl6ProfileNavigationModel(calls);
         callsNavigation.setModel(model);
 
         // Single selection + default sort for all columns
