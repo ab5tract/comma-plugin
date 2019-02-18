@@ -78,6 +78,7 @@
     <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
     <executor implementation="edument.perl6idea.coverage.CoverageExecutor"/>
     <programRunner implementation="edument.perl6idea.coverage.Perl6CoverageRunner"/>
+    <projectViewNodeDecorator implementation="edument.perl6idea.coverage.Perl6ProjectViewCoverageDecorator"/>
   </extensions>
 
   <actions>
