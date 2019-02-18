@@ -33,9 +33,15 @@ public class Perl6ProfileTask extends Task.Modal {
 
     @Override
     public void onCancel() {
-        if (myProfileData != null)
+        // FIXME anything smarter regarding resources handling will be nice here
+        if (myProfileData != null) {
             myProfileData.cancel();
-        sqlDataFile.delete();
+            myProfileData = null;
+        }
+        if (sqlDataFile != null) {
+            sqlDataFile.delete();
+            sqlDataFile = null;
+        }
     }
 
     public void run(@NotNull ProgressIndicator indicator) {
@@ -44,6 +50,7 @@ public class Perl6ProfileTask extends Task.Modal {
             // Create in-memory DB
             indicator.setText("Creating a database...");
             indicator.setFraction(0.1);
+            indicator.checkCanceled();
             myProfileData = new Perl6ProfileData(sqlDataFile.getCanonicalPath());
             indicator.setText("Loading profiler data into the database...");
             indicator.setFraction(0.2);
@@ -60,6 +67,11 @@ public class Perl6ProfileTask extends Task.Modal {
                 new Notification("Perl 6 Profiler", "Error during profiling data procession",
                                  e.getMessage(), NotificationType.ERROR));
             throw new ProcessCanceledException();
+        } finally {
+            if (sqlDataFile != null) {
+                sqlDataFile.delete();
+                sqlDataFile = null;
+            }
         }
     }
 
