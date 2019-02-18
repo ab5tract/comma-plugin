@@ -7,7 +7,7 @@ import java.util.List;
 public class Perl6ProfileModel extends AbstractTableModel {
     protected int inclusiveSum;
     protected List<Perl6ProfilerNode> nodes;
-    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+    protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     @Override
     public int getRowCount() {
@@ -24,8 +24,9 @@ public class Perl6ProfileModel extends AbstractTableModel {
         calculatePercentage();
     }
 
-    private void calculatePercentage() {
-        // Calculate inclusive time
+    protected void calculatePercentage() {
+        // Calculate inclusive time as sum of all inclusive times of calls in the table
+        // It is correct for related call tables and is overridden in navigation table
         inclusiveSum = nodes.stream().mapToInt(p -> p.getInclusiveTime()).sum();
     }
 
@@ -40,13 +41,17 @@ public class Perl6ProfileModel extends AbstractTableModel {
             case 2:
                 return calculateInclusiveValue(profilerNode.getInclusiveTime());
             case 3:
-                return profilerNode.getExclusiveTime();
+                return calculateExclusiveValue(profilerNode.getExclusiveTime(), profilerNode.getInclusiveTime());
             default:
                 return profilerNode.getCallCount();
         }
     }
 
-    private Object calculateInclusiveValue(int timeInMills) {
+    protected String calculateExclusiveValue(int time, int inclusiveTime) {
+        return String.valueOf(time);
+    }
+
+    protected Object calculateInclusiveValue(int timeInMills) {
         String percents = DECIMAL_FORMAT.format(((double)timeInMills / inclusiveSum) * 100);
         return String.format("%s%% (%s μs)", percents, timeInMills);
     }
