@@ -12,32 +12,19 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.ui.components.JBCheckBox;
 import edument.perl6idea.Perl6Icons;
-import org.intellij.lang.annotations.JdkConstants;
-import org.jdesktop.swingx.JXTreeTable;
-import org.jdesktop.swingx.treetable.TreeTableModel;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Stream;
+import java.sql.SQLException;
 
 public class Perl6ProfileTask extends Task.Modal {
     public static final Logger LOG = Logger.getInstance(Perl6ProfileTask.class);
     private File sqlDataFile;
-    private Connection connection = null;
-    private static JBCheckBox ourShowInternals;
+    private Perl6ProfileData myProfileData;
 
     public Perl6ProfileTask(Project project, String data, boolean canBeCancelled, File file) {
         super(project, data, canBeCancelled);
@@ -46,14 +33,8 @@ public class Perl6ProfileTask extends Task.Modal {
 
     @Override
     public void onCancel() {
-        if (connection != null) {
-            try {
-                connection.close();
-            }
-            catch (SQLException e) {
-                LOG.warn(e);
-            }
-        }
+        if (myProfileData != null)
+            myProfileData.cancel();
         sqlDataFile.delete();
     }
 
@@ -61,42 +42,28 @@ public class Perl6ProfileTask extends Task.Modal {
         try {
             indicator.setIndeterminate(false);
             // Create in-memory DB
-            indicator.setText("Creating database...");
+            indicator.setText("Creating a database...");
             indicator.setFraction(0.1);
-            connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-            Statement statement = connection.createStatement();
-            indicator.setText("Reading data...");
+            myProfileData = new Perl6ProfileData(sqlDataFile.getCanonicalPath());
+            indicator.setText("Loading profiler data into the database...");
             indicator.setFraction(0.2);
-            Stream<String> lines = Files.lines(Paths.get(sqlDataFile.getCanonicalPath()), StandardCharsets.UTF_8);
-            Iterator<String> iterator = lines.iterator();
-            // Load a base from the file
-            indicator.setText("Preparing database...");
-            indicator.setFraction(0.3);
-            while (iterator.hasNext()) {
-                statement.executeUpdate(iterator.next());
-            }
-
-            List<ProfilerNode> nodes = getProfileViewDataRows(statement);
-
+            myProfileData.initialize();
             indicator.setText("Profile data processing is finished");
             indicator.setFraction(1);
-            ApplicationManager.getApplication().invokeLater(() -> {
-                createProfileToolWindow(nodes);
-            });
+            //createProfileToolWindow();
+            ApplicationManager.getApplication().invokeLater(() -> createProfileToolWindow(myProfileData));
         }
         catch (SQLException | IOException e) {
+            onCancel();
             LOG.warn(e);
             Notifications.Bus.notify(
                 new Notification("Perl 6 Profiler", "Error during profiling data procession",
                                  e.getMessage(), NotificationType.ERROR));
             throw new ProcessCanceledException();
         }
-        finally {
-            onCancel();
-        }
     }
 
-    private void createProfileToolWindow(List<ProfilerNode> nodes) {
+    private void createProfileToolWindow(Perl6ProfileData data) {
         ToolWindow window = ToolWindowManager.getInstance(myProject).registerToolWindow(
             "Perl 6 profiling tool window",
             true,
@@ -106,49 +73,9 @@ public class Perl6ProfileTask extends Task.Modal {
         window.activate(() -> {
             JComponent component = window.getComponent();
             JPanel panel = new JPanel(new BorderLayout());
-
-            panel.add(createOptionsPanel(), BorderLayout.NORTH);
-
-            JXTreeTable treeTable = new Perl6ProfileTreeTable(myProject, new Perl6ProfileModel(nodes, ourShowInternals));
-            JScrollPane scrollpane = new JScrollPane(treeTable);
-            panel.add(scrollpane, BorderLayout.CENTER);
-
+            Perl6ProfileView view = new Perl6ProfileView(data, myProject.getBaseDir().getCanonicalPath());
+            panel.add(view.getPanel(), BorderLayout.CENTER);
             component.add(panel);
         });
-    }
-
-    private static JPanel createOptionsPanel() {
-        JPanel northPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        ourShowInternals = new JBCheckBox("Show internal calls");
-        northPanel.add(ourShowInternals);
-        return northPanel;
-    }
-
-    @NotNull
-    private static List<ProfilerNode> getProfileViewDataRows(Statement statement) throws SQLException {
-        List<ProfilerNode> nodes = new ArrayList<>();
-        ResultSet calls = statement
-            .executeQuery("SELECT r.file, r.line, r.name, c.inclusive_time, c.exclusive_time, c.entries, json_group_array(sr.name) as callee " +
-                          "FROM calls c INNER JOIN calls sc ON sc.parent_id == c.id INNER JOIN routines sr " +
-                          "ON sc.routine_id == sr.id INNER JOIN routines r ON c.routine_id == r.id " +
-                          "GROUP BY c.id ORDER BY c.inclusive_time DESC");
-
-        while (calls.next()) {
-            JSONArray calleeJSON = new JSONArray(calls.getString("callee"));
-            List<CalleeNode> callees = new ArrayList<>();
-            for (int i = 0; i < calleeJSON.length(); i++) {
-                callees.add(new CalleeNode(calleeJSON.getString(i)));
-            }
-            nodes.add(new ProfilerNode(
-                calls.getString("file"),
-                calls.getInt("line"),
-                calls.getString("name"),
-                calls.getInt("inclusive_time"),
-                calls.getInt("exclusive_time"),
-                calls.getInt("entries"),
-                callees
-            ));
-        }
-        return nodes;
     }
 }

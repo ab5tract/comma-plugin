@@ -1,87 +1,47 @@
 package edument.perl6idea.profiler;
 
-import com.intellij.ui.components.JBCheckBox;
-import com.intellij.xdebugger.frame.XValueChildrenList;
-import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Collections;
-import java.util.Comparator;
+import javax.swing.table.AbstractTableModel;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class Perl6ProfileModel extends AbstractTreeTableModel {
-    protected boolean internalCallsAreVisible = false;
+public class Perl6ProfileModel extends AbstractTableModel {
+    protected List<Perl6ProfilerNode> nodes;
 
-    public Perl6ProfileModel(List<ProfilerNode> routines, JBCheckBox showInternals) {
-        super(routines);
-        showInternals.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                internalCallsAreVisible = showInternals.isSelected();
-            }
-        });
+    @Override
+    public int getRowCount() {
+        return nodes.size();
     }
 
     @Override
     public int getColumnCount() {
-        return 4;
+        return 5;
+    }
+
+    public Perl6ProfileModel(List<Perl6ProfilerNode> routines) {
+        nodes = routines;
     }
 
     @Override
-    public Object getValueAt(Object node, int column) {
-        if (node instanceof ProfilerNode) {
-            ProfilerNode profilerNode = (ProfilerNode)node;
-            switch (column) {
-                case 0:
-                    return profilerNode.getName();
-                case 1:
-                    return profilerNode.getInclusiveTime();
-                case 2:
-                    return profilerNode.getExclusiveTime();
-                default:
-                    return profilerNode.getCallCount();
-            }
-        } else if (node instanceof CalleeNode && column == 0) {
-            return ((CalleeNode)node).getName();
+    public Object getValueAt(int row, int column) {
+        Perl6ProfilerNode profilerNode = nodes.get(row);
+        switch (column) {
+            case 0:
+                return profilerNode.getName();
+            case 1:
+                return profilerNode.getFilename();
+            case 2:
+                return profilerNode.getInclusiveTime();
+            case 3:
+                return profilerNode.getExclusiveTime();
+            default:
+                return profilerNode.getCallCount();
         }
-        return null;
-    }
-
-    @Override
-    public Object getChild(Object parent, int index) {
-        if (parent instanceof List) {
-            return ((List)parent).get(index);
-        } else if (parent instanceof ProfilerNode) {
-            return ((ProfilerNode)parent).getCalleeNode(index);
-        }
-        return null;
-    }
-
-    @Override
-    public int getChildCount(Object parent) {
-        if (parent instanceof List) {
-            return ((List)parent).size();
-        } else if (parent instanceof ProfilerNode) {
-            return ((ProfilerNode)parent).getCalleeSize();
-        } else {
-            return 0;
-        }
-    }
-
-    @Override
-    public int getIndexOfChild(Object parent, Object child) {
-        if (parent instanceof List) {
-            ((List)parent).indexOf(child);
-        }
-        return 0;
     }
 
     @Override
     public Class<?> getColumnClass(int column) {
         switch (column) {
             case 0:
+            case 1:
                 return String.class;
             default:
                 return Integer.class;
@@ -92,40 +52,19 @@ public class Perl6ProfileModel extends AbstractTreeTableModel {
     public String getColumnName(int column) {
         switch (column) {
             case 0:
-                return "Routine";
+                return "Name";
             case 1:
-                return "Inclusive time (μs)";
+                return "File";
             case 2:
+                return "Inclusive time (μs)";
+            case 3:
                 return "Exclusive time (μs)";
             default:
                 return "Call count";
         }
     }
 
-    public ProfilerNode getCall(int row) {
-        return (ProfilerNode)((List)root).get(row);
-    }
-
-    public void sortRoutines(int index, boolean reverse) {
-        if (reverse && root instanceof List) {
-            Collections.reverse((List)root);
-            modelSupport.fireNewRoot();
-            return;
-        }
-
-        if (!(root instanceof List)) return;
-        Collections.sort((List)root, (Comparator<ProfilerNode>)(o1, o2) -> {
-            switch (index) {
-                case 0:
-                    return o2.getName().compareTo(o1.getName());
-                case 1:
-                    return Integer.compare(o2.getInclusiveTime(), o1.getInclusiveTime());
-                case 2:
-                    return Integer.compare(o2.getExclusiveTime(), o1.getExclusiveTime());
-                default:
-                    return Integer.compare(o2.getCallCount(), o1.getCallCount());
-            }
-        });
-        modelSupport.fireNewRoot();
+    public boolean isCellInternal(int row, String path) {
+        return !nodes.get(row).getOriginalFile().startsWith(path);
     }
 }

@@ -31,7 +31,7 @@ public class TypeWizardStepForm extends ModuleWizardStep implements Disposable {
     }
 
     private String getSelectedType() {
-        return (String) list1.getSelectedValue();
+        return (String)list1.getSelectedValue();
     }
 
     @Override
@@ -50,7 +50,7 @@ public class TypeWizardStepForm extends ModuleWizardStep implements Disposable {
             if (e.getValueIsAdjusting()) return;
             Perl6ProjectType type = Perl6ProjectType.fromTypeLabel(getSelectedType());
             builder.setType(type);
-            description.setText("<html>" +  Perl6ProjectType.getDescription(type) + "</html>");
+            description.setText("<html>" + Perl6ProjectType.getDescription(type) + "</html>");
         });
     }
 }

@@ -1,8 +1,9 @@
 package edument.perl6idea.profiler;
 
+import java.nio.file.Paths;
 import java.util.List;
 
-public class ProfilerNode {
+public class Perl6ProfilerNode {
     private String filename;
     private int line;
     private String name;
@@ -11,9 +12,9 @@ public class ProfilerNode {
     private int callCount;
     private final List<CalleeNode> callee;
 
-    public ProfilerNode(String filename, int line, String name,
-                        int inclusiveTime, int exclusiveTime,
-                        int callCount, List<CalleeNode> callee) {
+    public Perl6ProfilerNode(String filename, int line, String name,
+                             int inclusiveTime, int exclusiveTime,
+                             int callCount, List<CalleeNode> callee) {
         this.filename = filename;
         this.line = line;
         this.name = name;
@@ -24,11 +25,25 @@ public class ProfilerNode {
     }
 
     public String getName() {
-        return (name.isEmpty() ? "<anon>" : name) + " at " + filename;
+        return name.isEmpty() ? "<anon>" : name;
+    }
+
+    public String getOriginalFile() {
+        return filename;
     }
 
     public String getFilename() {
-        return filename;
+        return renderFilename() + ":" + line;
+    }
+
+    private String renderFilename() {
+        if (filename.endsWith(".nqp")) {
+            return "<nqp>";
+        } else if (filename.startsWith("SETTING:")) {
+            return "<CORE SETTING>";
+        } else {
+            return Paths.get(filename).getFileName().toString();
+        }
     }
 
     public int getInclusiveTime() {
@@ -49,13 +64,5 @@ public class ProfilerNode {
 
     public int getCalleeSize() {
         return callee.size();
-    }
-
-    public String getCallName() {
-        return name;
-    }
-
-    public int getLine() {
-        return line;
     }
 }
