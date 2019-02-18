@@ -40,7 +40,7 @@ public class Perl6ProfileView extends JPanel {
         myShowInternalsCheckBox.setSelected(true);
         setupCheckboxHandler();
         setupNavigation();
-        setupCalleeTable();
+        updateCallData();
     }
 
     private void setupCheckboxHandler() {
@@ -52,10 +52,24 @@ public class Perl6ProfileView extends JPanel {
         });
     }
 
-    private void setupCalleeTable() {
-        System.out.println(callsNavigation.getSelectedRow());
-        //calleeTable.setModel(model);
-        //calleeTable.setAutoCreateRowSorter(true);
+    private void updateCallData() {
+        int callRow = callsNavigation.convertRowIndexToModel(callsNavigation.getSelectedRow());
+        if (callRow >= 0) {
+            Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
+            int callId = navigationModel.getNodeId(callRow);
+            updateCalleeTable(callId);
+            updateCallerTable(callId);
+        }
+    }
+
+    private void updateCalleeTable(int callId) {
+        List<Perl6ProfilerNode> calleeList = myProfileData.getCalleeListByCallId(callId);
+        calleeTable.setModel(new Perl6ProfileModel(calleeList));
+    }
+
+    private void updateCallerTable(int callId) {
+        List<Perl6ProfilerNode> callerList = myProfileData.getCallerListByCallId(callId);
+        callerTable.setModel(new Perl6ProfileModel(callerList));
     }
 
     private void setupNavigation() {
@@ -88,8 +102,7 @@ public class Perl6ProfileView extends JPanel {
                         return;
                     int row = callsNavigation.convertRowIndexToModel(index);
                     goToCallAtRow(row);
-                    // FIXME update right tab
-                    //calleeTable.getModel().update
+                    updateCallData();
                 }
             });
 

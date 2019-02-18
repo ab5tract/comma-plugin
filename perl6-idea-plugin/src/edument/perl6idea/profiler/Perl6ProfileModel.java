@@ -68,6 +68,10 @@ public class Perl6ProfileModel extends AbstractTableModel {
         return !nodes.get(row).getOriginalFile().startsWith(path);
     }
 
+    public int getNodeId(int row) {
+        return nodes.get(row).getCallId();
+    }
+
     public String getNodeSourceFile(int row) {
         return nodes.get(row).getOriginalFile();
     }

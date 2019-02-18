@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Perl6ProfilerNode {
+    private int id;
     private String filename;
     private int line;
     private String name;
@@ -12,9 +13,10 @@ public class Perl6ProfilerNode {
     private int callCount;
     private final List<CalleeNode> callee;
 
-    public Perl6ProfilerNode(String filename, int line, String name,
+    public Perl6ProfilerNode(int id, String filename, int line, String name,
                              int inclusiveTime, int exclusiveTime,
                              int callCount, List<CalleeNode> callee) {
+        this.id = id;
         this.filename = filename;
         this.line = line;
         this.name = name;
@@ -68,5 +70,9 @@ public class Perl6ProfilerNode {
 
     public int getCalleeSize() {
         return callee.size();
+    }
+
+    public int getCallId() {
+        return id;
     }
 }

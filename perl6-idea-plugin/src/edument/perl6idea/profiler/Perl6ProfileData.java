@@ -1,6 +1,7 @@
 package edument.perl6idea.profiler;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.Function;
 import org.json.JSONArray;
 
 import java.io.IOException;
@@ -15,7 +16,16 @@ import java.util.stream.Stream;
 
 public class Perl6ProfileData {
     public static final Logger LOG = Logger.getInstance(Perl6ProfileData.class);
-    private final Connection connection;
+    public static final Function<String, String> RELATED_CALL_NODES_SQL = (table) ->
+        "SELECT c.id, rs.name, rs.file, rs.line," +
+        "total(case when c.rec_depth = 0 then c.inclusive_time else 0 end) as inclusive_time," +
+        "c.exclusive_time, c.entries " +
+        table +
+        "JOIN routines rs ON c.routine_id == rs.id " +
+        "WHERE pc.routine_id = ? " +
+        "GROUP BY c.routine_id " +
+        "ORDER BY c.inclusive_time DESC;";
+    private Connection connection;
     private final String sqlDataFilePath;
 
     public Perl6ProfileData(String pathToSqlFile) throws SQLException {
@@ -38,7 +48,7 @@ public class Perl6ProfileData {
         List<Perl6ProfilerNode> nodes = new ArrayList<>();
         Statement statement = connection.createStatement();
         ResultSet calls = statement
-            .executeQuery("SELECT r.file, r.line, r.name, c.inclusive_time, c.exclusive_time, c.entries, json_group_array(sr.name) as callee " +
+            .executeQuery("SELECT r.id, r.file, r.line, r.name, c.inclusive_time, c.exclusive_time, c.entries, json_group_array(sr.name) as callee " +
                           "FROM calls c INNER JOIN calls sc ON sc.parent_id == c.id INNER JOIN routines sr " +
                           "ON sc.routine_id == sr.id INNER JOIN routines r ON c.routine_id == r.id " +
                           "GROUP BY c.id ORDER BY c.inclusive_time DESC");
@@ -50,6 +60,7 @@ public class Perl6ProfileData {
                 callees.add(new CalleeNode(calleeJSON.getString(i)));
             }
             nodes.add(new Perl6ProfilerNode(
+                calls.getInt("id"),
                 calls.getString("file"),
                 calls.getInt("line"),
                 calls.getString("name"),
@@ -70,9 +81,72 @@ public class Perl6ProfileData {
 
         try {
             connection.close();
+            connection = null;
+        }
+        catch (SQLException e) {
+            LOG.warn(e);
+            connection = null;
+        }
+    }
+
+    public List<Perl6ProfilerNode> getCalleeListByCallId(int id) {
+        try {
+            if (!connection.isClosed()) {
+                List<Perl6ProfilerNode> calleeList = new ArrayList<>();
+                PreparedStatement statement = connection.prepareStatement(
+                    RELATED_CALL_NODES_SQL.fun("FROM calls c JOIN calls pc ON pc.id == c.parent_id "));
+                statement.setInt(1, id);
+                ResultSet callees = statement.executeQuery();
+                while (callees.next()) {
+                    calleeList.add(new Perl6ProfilerNode(
+                        callees.getInt("id"),
+                        callees.getString("file"),
+                        callees.getInt("line"),
+                        callees.getString("name"),
+                        callees.getInt("inclusive_time"),
+                        callees.getInt("exclusive_time"),
+                        callees.getInt("entries"),
+                        new ArrayList<>()
+                    ));
+                }
+                statement.close();
+                return calleeList;
+            }
         }
         catch (SQLException e) {
             LOG.warn(e);
         }
+        return new ArrayList<>();
+    }
+
+    public List<Perl6ProfilerNode> getCallerListByCallId(int id) {
+        try {
+            if (!connection.isClosed()) {
+                List<Perl6ProfilerNode> calleeList = new ArrayList<>();
+                PreparedStatement statement = connection.prepareStatement(
+                    RELATED_CALL_NODES_SQL.fun("FROM calls pc JOIN calls c ON c.id == pc.parent_id ")
+                );
+                statement.setInt(1, id);
+                ResultSet callees = statement.executeQuery();
+                while (callees.next()) {
+                    calleeList.add(new Perl6ProfilerNode(
+                        callees.getInt("id"),
+                        callees.getString("file"),
+                        callees.getInt("line"),
+                        callees.getString("name"),
+                        callees.getInt("inclusive_time"),
+                        callees.getInt("exclusive_time"),
+                        callees.getInt("entries"),
+                        new ArrayList<>()
+                    ));
+                }
+                statement.close();
+                return calleeList;
+            }
+        }
+        catch (SQLException e) {
+            LOG.warn(e);
+        }
+        return new ArrayList<>();
     }
 }
