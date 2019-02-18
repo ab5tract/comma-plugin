@@ -1,9 +1,11 @@
 package edument.perl6idea.profiler;
 
 import javax.swing.table.AbstractTableModel;
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class Perl6ProfileModel extends AbstractTableModel {
+    protected int inclusiveSum;
     protected List<Perl6ProfilerNode> nodes;
 
     @Override
@@ -18,6 +20,12 @@ public class Perl6ProfileModel extends AbstractTableModel {
 
     public Perl6ProfileModel(List<Perl6ProfilerNode> routines) {
         nodes = routines;
+        calculatePercentage();
+    }
+
+    private void calculatePercentage() {
+        // Calculate inclusive time
+        inclusiveSum = nodes.stream().mapToInt(p -> p.getInclusiveTime()).sum();
     }
 
     @Override
@@ -29,7 +37,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
             case 1:
                 return profilerNode.getFilename();
             case 2:
-                return profilerNode.getInclusiveTime();
+                return calculateInclusiveValue(profilerNode.getInclusiveTime());
             case 3:
                 return profilerNode.getExclusiveTime();
             default:
@@ -37,11 +45,17 @@ public class Perl6ProfileModel extends AbstractTableModel {
         }
     }
 
+    private Object calculateInclusiveValue(int time) {
+        DecimalFormat df = new DecimalFormat("#.##");
+        return String.format("%s%% (%s μs)", df.format((double)time / inclusiveSum), time);
+    }
+
     @Override
     public Class<?> getColumnClass(int column) {
         switch (column) {
             case 0:
             case 1:
+            case 2:
                 return String.class;
             default:
                 return Integer.class;
@@ -56,9 +70,9 @@ public class Perl6ProfileModel extends AbstractTableModel {
             case 1:
                 return "File";
             case 2:
-                return "Inclusive time (μs)";
+                return "Inclusive (μs)";
             case 3:
-                return "Exclusive time (μs)";
+                return "Exclusive (μs)";
             default:
                 return "Call count";
         }
