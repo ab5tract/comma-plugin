@@ -8,9 +8,12 @@ import com.intellij.refactoring.ui.RefactoringDialog;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SeparatorFactory;
+import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.ui.EditableModel;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
@@ -122,17 +125,17 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        final JPanel centerPanel = new JPanel(new MigLayout("wrap 1"));
+        final JPanel centerPanel = new JPanel(new BorderLayout());
 
         final JPanel parametersTablePanel = new JPanel(new BorderLayout());
-        parametersTablePanel.add(SeparatorFactory.createSeparator("Parameters", null), BorderLayout.CENTER);
+        parametersTablePanel.add(SeparatorFactory.createSeparator("Parameters", null), BorderLayout.NORTH);
         parametersTablePanel.add(createParametersPanel(), BorderLayout.CENTER);
-        centerPanel.add(parametersTablePanel, "align left");
+        centerPanel.add(parametersTablePanel, BorderLayout.CENTER);
 
         final JPanel signaturePanel = new JPanel(new BorderLayout());
-        signaturePanel.add(SeparatorFactory.createSeparator("Signature Preview", null), BorderLayout.CENTER);
+        signaturePanel.add(SeparatorFactory.createSeparator("Signature Preview", null), BorderLayout.NORTH);
         signaturePanel.add(mySignature, BorderLayout.CENTER);
-        centerPanel.add(signaturePanel, "align left");
+        centerPanel.add(signaturePanel, BorderLayout.SOUTH);
 
         return centerPanel;
     }
@@ -190,7 +193,9 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     }
 
     private JComponent createParametersPanel() {
-        JTable table = new JBTable(new Perl6ParameterTableModel(myInputVariables));
+        JTable table = new JBTable();
+        Perl6ParameterTableModel parameterTableModel = new Perl6ParameterTableModel(myInputVariables, table);
+        table.setModel(parameterTableModel);
         table.getColumnModel().getColumn(LEXICAL_SCOPE_COLUMN_INDEX).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table,
@@ -209,9 +214,8 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
                 return comp;
             }
         });
-        JScrollPane scrollPane = new JBScrollPane(table);
         table.setFillsViewportHeight(true);
-        return scrollPane;
+        return ToolbarDecorator.createDecorator(table).disableAddAction().disableRemoveAction().createPanel();
     }
 
     public String getScope() {
@@ -236,13 +240,15 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         return myReturnTypeField.getText();
     }
 
-    private class Perl6ParameterTableModel extends AbstractTableModel {
+    private class Perl6ParameterTableModel extends AbstractTableModel implements EditableModel {
         String[] columns = {"Name", "Type", "Pass as Parameter", "Available Lexically"};
         private final Perl6VariableData[] myVars;
+        protected final JTable myTable;
 
-        public Perl6ParameterTableModel(Perl6VariableData[] variableData) {
+        public Perl6ParameterTableModel(Perl6VariableData[] variableData, JTable table) {
             super();
             myVars = variableData;
+            myTable = table;
         }
 
         @Override
@@ -302,6 +308,35 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
                 case 2: return Boolean.class;
                 default: return String.class;
             }
+        }
+
+        @Override
+        public void addRow() {
+            throw new IncorrectOperationException("Cannot add a row");
+        }
+
+        @Override
+        public void exchangeRows(int oldIndex, int newIndex) {
+            if (!canExchangeRows(oldIndex, newIndex)) return;
+
+            final Perl6VariableData targetVar = myVars[newIndex];
+            myVars[newIndex] = myVars[oldIndex];
+            myVars[oldIndex] = targetVar;
+
+            myTable.getSelectionModel().setSelectionInterval(newIndex, newIndex);
+            updateSignature();
+        }
+
+        @Override
+        public boolean canExchangeRows(int oldIndex, int newIndex) {
+            if (oldIndex < 0 || oldIndex >= myVars.length) return false;
+            if (newIndex < 0 || newIndex >= myVars.length) return false;
+            return true;
+        }
+
+        @Override
+        public void removeRow(int idx) {
+            throw new IncorrectOperationException("Cannot remove a row");
         }
     }
 }

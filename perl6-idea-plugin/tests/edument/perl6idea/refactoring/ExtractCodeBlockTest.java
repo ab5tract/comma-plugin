@@ -11,10 +11,7 @@ import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCa
 import com.intellij.util.Consumer;
 import com.intellij.util.Function;
 import com.intellij.util.Producer;
-import edument.perl6idea.psi.Perl6File;
-import edument.perl6idea.psi.Perl6PackageDecl;
-import edument.perl6idea.psi.Perl6RoutineDecl;
-import edument.perl6idea.psi.Perl6StatementList;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -180,6 +177,17 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
                });
     }
 
+    public void testVarsSwapping() {
+        doTest(() -> getNextList(getClosestStatementListByText("say $one")),
+               "sum", Perl6CodeBlockType.ROUTINE,
+               (data) -> {
+                   Perl6VariableData temp = data.variables[0];
+                   data.variables[0] = data.variables[1];
+                   data.variables[1] = temp;
+                   return data;
+               });
+    }
+
     // Helper methods
     /**
      * Gets innermost statement list in an opened file around a line of text passed
@@ -188,7 +196,7 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
         return myFixture.findElementByText(text, Perl6StatementList.class);
     }
 
-    private Perl6StatementList getNextList(Perl6StatementList list) {
+    private static Perl6StatementList getNextList(Perl6StatementList list) {
         return PsiTreeUtil.getParentOfType(list, Perl6StatementList.class, true);
     }
 
