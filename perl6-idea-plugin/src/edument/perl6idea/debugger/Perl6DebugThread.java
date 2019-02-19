@@ -256,6 +256,15 @@ public class Perl6DebugThread extends Thread {
                 return null;
             int handle = ov.getHandle();
             switch (ov.getType()) {
+                case "Bool": {
+                    Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
+                    Map<String, Lexical> attrsInt = attrs.get("Int");
+                    if (attrsInt != null) {
+                        Lexical value = attrsInt.get("$!value");
+                        if (value != null && value.getKind() == Kind.INT)
+                            return ((IntValue)value).getValue() == 0 ? "False" : "True";
+                    }
+                }
                 case "Int": {
                     Map<String, Map<String, Lexical>> attrs = client.getObjectAttributes(handle).get();
                     Map<String, Lexical> attrsInt = attrs.get("Int");
