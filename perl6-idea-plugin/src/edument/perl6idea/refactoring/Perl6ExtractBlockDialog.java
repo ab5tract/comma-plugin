@@ -8,6 +8,7 @@ import com.intellij.refactoring.ui.RefactoringDialog;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SeparatorFactory;
+import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.ui.table.JBTable;
@@ -122,17 +123,17 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        final JPanel centerPanel = new JPanel(new MigLayout("wrap 1"));
+        final JPanel centerPanel = new JPanel(new BorderLayout());
 
         final JPanel parametersTablePanel = new JPanel(new BorderLayout());
         parametersTablePanel.add(SeparatorFactory.createSeparator("Parameters", null), BorderLayout.CENTER);
         parametersTablePanel.add(createParametersPanel(), BorderLayout.CENTER);
-        centerPanel.add(parametersTablePanel, "align left");
+        centerPanel.add(parametersTablePanel, BorderLayout.CENTER);
 
         final JPanel signaturePanel = new JPanel(new BorderLayout());
         signaturePanel.add(SeparatorFactory.createSeparator("Signature Preview", null), BorderLayout.CENTER);
         signaturePanel.add(mySignature, BorderLayout.CENTER);
-        centerPanel.add(signaturePanel, "align left");
+        centerPanel.add(signaturePanel, BorderLayout.SOUTH);
 
         return centerPanel;
     }
