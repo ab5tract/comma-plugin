@@ -126,12 +126,12 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         final JPanel centerPanel = new JPanel(new BorderLayout());
 
         final JPanel parametersTablePanel = new JPanel(new BorderLayout());
-        parametersTablePanel.add(SeparatorFactory.createSeparator("Parameters", null), BorderLayout.CENTER);
+        parametersTablePanel.add(SeparatorFactory.createSeparator("Parameters", null), BorderLayout.NORTH);
         parametersTablePanel.add(createParametersPanel(), BorderLayout.CENTER);
         centerPanel.add(parametersTablePanel, BorderLayout.CENTER);
 
         final JPanel signaturePanel = new JPanel(new BorderLayout());
-        signaturePanel.add(SeparatorFactory.createSeparator("Signature Preview", null), BorderLayout.CENTER);
+        signaturePanel.add(SeparatorFactory.createSeparator("Signature Preview", null), BorderLayout.NORTH);
         signaturePanel.add(mySignature, BorderLayout.CENTER);
         centerPanel.add(signaturePanel, BorderLayout.SOUTH);
 
