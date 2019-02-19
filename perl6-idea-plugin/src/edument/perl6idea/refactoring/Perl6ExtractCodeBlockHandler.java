@@ -296,7 +296,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         may result in null, we additionally check
         variable's name, so altogether it looks quite expensive,
         but considering that variable list rarely is too large and
-        the refactoring call is not hot operation, it is likely good enough
+        the refactoring call is not a hot operation, it is likely good enough
         */
         for (int i = 0, size = usedVariables.size(); i < size; i++) {
             Perl6Variable var = usedVariables.get(i);
