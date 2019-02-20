@@ -34,7 +34,7 @@
                   <component id="e6170" class="javax.swing.JCheckBox" binding="myShowInternalsCheckBox" default-binding="true">
                     <constraints/>
                     <properties>
-                      <text value="Show internals"/>
+                      <text value="Hide externals"/>
                     </properties>
                   </component>
                 </children>
