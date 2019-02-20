@@ -80,6 +80,8 @@ public class Perl6ProfileView extends JPanel {
         table.addMouseListener(
             new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
+                    if (e.getButton() != MouseEvent.BUTTON1)
+                        return;
                     int index = table.rowAtPoint(e.getPoint());
                     if (index < 0)
                         return;
@@ -92,6 +94,7 @@ public class Perl6ProfileView extends JPanel {
                     Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
                     int navigationModelIndex = navigationModel.getNavigationIndexByCallId(callNodeId);
                     // It is a model index, so we need to convert it to view-able one
+                    if (navigationModelIndex < 0) return;
                     int routineIndexToJumpTo = callsNavigation.convertRowIndexToView(navigationModelIndex);
                     if (routineIndexToJumpTo >= 0) {
                         callsNavigation.setRowSelectionInterval(routineIndexToJumpTo, routineIndexToJumpTo);
@@ -128,6 +131,8 @@ public class Perl6ProfileView extends JPanel {
         callsNavigation.addMouseListener(
             new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
+                    if (e.getButton() != MouseEvent.BUTTON1)
+                        return;
                     int index = callsNavigation.rowAtPoint(e.getPoint());
                     if (index < 0)
                         return;
