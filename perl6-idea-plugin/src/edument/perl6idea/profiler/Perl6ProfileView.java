@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.Function;
 import edument.perl6idea.psi.Perl6File;
@@ -16,6 +17,7 @@ import edument.perl6idea.psi.Perl6File;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -36,6 +38,8 @@ public class Perl6ProfileView extends JPanel {
     private JBTable callerTable;
     private JBTable calleeTable;
     private JCheckBox myShowRealNamesCheckBox;
+    private String namePattern = "";
+    private JTextField myFilterByNameTextField;
 
     public Perl6ProfileView(Project project, Perl6ProfileData profileData) {
         myProject = project;
@@ -46,8 +50,19 @@ public class Perl6ProfileView extends JPanel {
         setupCheckboxHandlers();
         setupNavigation();
         updateCallData();
+        setupNavigationFilters();
         setupNavigationSelectorListener(calleeTable);
         setupNavigationSelectorListener(callerTable);
+    }
+
+    private void setupNavigationFilters() {
+        myFilterByNameTextField.getDocument().addDocumentListener(new DocumentAdapter() {
+            @Override
+            protected void textChanged(DocumentEvent e) {
+                namePattern = myFilterByNameTextField.getText();
+                updateRowFilter();
+            }
+        });
     }
 
     private void setupCheckboxHandlers() {
@@ -223,8 +238,17 @@ public class Perl6ProfileView extends JPanel {
          */
         return rowIndex -> {
             Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
-            return myShowInternalsCheckBox.isSelected() ||
-                   !navigationModel.isCellInternal(rowIndex, myBaseProjectPath);
+            boolean isExternalCheck = myShowInternalsCheckBox.isSelected() ||
+                        !navigationModel.isCellInternal(rowIndex, myBaseProjectPath);
+            boolean patternCheck = true;
+            System.out.println(namePattern.isEmpty());
+            if (!namePattern.isEmpty()) {
+                System.out.println("Doing a pattern check!");
+                patternCheck = navigationModel.getNodeName(rowIndex).startsWith(namePattern);
+                System.out.println(namePattern);
+                System.out.println(patternCheck);
+            }
+            return isExternalCheck && patternCheck;
         };
     }
 

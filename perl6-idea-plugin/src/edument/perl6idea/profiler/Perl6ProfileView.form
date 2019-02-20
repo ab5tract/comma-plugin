@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="myPanel1" default-binding="true" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="1045" height="799"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -42,6 +42,20 @@
                     <properties>
                       <enabled value="true"/>
                       <text value="Show full filenames"/>
+                    </properties>
+                  </component>
+                  <component id="128d7" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <labelFor value="74f04"/>
+                      <text value="Filter by name"/>
+                    </properties>
+                  </component>
+                  <component id="74f04" class="javax.swing.JTextField" binding="myFilterByNameTextField" default-binding="true">
+                    <constraints/>
+                    <properties>
+                      <columns value="10"/>
+                      <toolTipText value="Type text here to find routine calls with names matching the input"/>
                     </properties>
                   </component>
                 </children>

@@ -81,6 +81,10 @@ public class Perl6ProfileModel extends AbstractTableModel {
         return nodes.get(row).getCallRoutineId();
     }
 
+    public String getNodeName(int row) {
+        return nodes.get(row).getName();
+    }
+
     public String getNodeSourceFile(int row) {
         return nodes.get(row).getOriginalFile();
     }
