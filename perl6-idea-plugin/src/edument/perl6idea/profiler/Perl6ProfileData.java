@@ -51,6 +51,11 @@ public class Perl6ProfileData {
                               "FROM calls c INNER JOIN routines r ON c.routine_id == r.id " +
                               "GROUP BY c.id ORDER BY c.inclusive_time DESC");
             convertProfilerNodes(nodes, calls);
+            // XXX remove(0) has complexity O(n) for an ArrayList we use here,
+            // but it's not clear if we should to make `convertProfilerNodes` more specific
+            // by adding a check "Is it a first element? Then skip it" for every node iteration.
+            // And we are likely to get exact elements using an index quite often, so LinkedList isn't usable here
+            nodes.remove(0);
         }
         return nodes;
     }
