@@ -18,6 +18,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -120,6 +122,19 @@ public class Perl6ProfileView extends JPanel {
         // Setup a model
         Perl6ProfileModel model = new Perl6ProfileNavigationModel(calls);
         callsNavigation.setModel(model);
+
+
+        callsNavigation.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyTyped(e);
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    updateCallData();
+                } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    updateCallData();
+                }
+            }
+        });
 
         // Single selection + default sort for all columns
         callsNavigation.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
