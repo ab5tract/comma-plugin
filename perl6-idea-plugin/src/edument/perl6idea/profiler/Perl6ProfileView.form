@@ -37,6 +37,13 @@
                       <text value="Hide externals"/>
                     </properties>
                   </component>
+                  <component id="3158" class="javax.swing.JCheckBox" binding="myShowRealNamesCheckBox" default-binding="true">
+                    <constraints/>
+                    <properties>
+                      <enabled value="true"/>
+                      <text value="Show full filenames"/>
+                    </properties>
+                  </component>
                 </children>
               </grid>
               <grid id="a179d" layout-manager="BorderLayout" hgap="0" vgap="0">

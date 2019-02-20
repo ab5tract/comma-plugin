@@ -38,7 +38,7 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
             case 0:
                 return profilerNode.getName();
             case 1:
-                return profilerNode.getFilename();
+                return showRealFileNames ? profilerNode.getOriginalFile() : profilerNode.getFilename();
             case 2:
                 return calculateInclusiveValue(profilerNode.getInclusiveTime());
             case 3:

@@ -12,6 +12,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
     );
     protected int inclusiveSum;
     protected List<Perl6ProfilerNode> nodes;
+    protected boolean showRealFileNames = false;
     protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     @Override
@@ -42,7 +43,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
             case 0:
                 return profilerNode.getName();
             case 1:
-                return profilerNode.getFilename();
+                return showRealFileNames ? profilerNode.getOriginalFile() : profilerNode.getFilename();
             case 2:
                 return calculateInclusiveValue(profilerNode.getInclusiveTime());
             default:
@@ -86,6 +87,14 @@ public class Perl6ProfileModel extends AbstractTableModel {
 
     public int getNodeSourceLine(int row) {
         return nodes.get(row).getLine();
+    }
+
+    public void setShowRealFileNames(boolean showRealFileNames) {
+        this.showRealFileNames = showRealFileNames;
+    }
+
+    public boolean getShowRealFileNames() {
+        return showRealFileNames;
     }
 
     public int getNavigationIndexByCallId(int id) {

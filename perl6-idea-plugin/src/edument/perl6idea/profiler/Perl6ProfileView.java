@@ -35,26 +35,42 @@ public class Perl6ProfileView extends JPanel {
     private JBTable callsNavigation;
     private JBTable callerTable;
     private JBTable calleeTable;
+    private JCheckBox myShowRealNamesCheckBox;
 
     public Perl6ProfileView(Project project, Perl6ProfileData profileData) {
         myProject = project;
         myProfileData = profileData;
         myBaseProjectPath = myProject.getBaseDir().getCanonicalPath();
         myShowInternalsCheckBox.setSelected(true);
-        setupCheckboxHandler();
+        myShowRealNamesCheckBox.setSelected(false);
+        setupCheckboxHandlers();
         setupNavigation();
         updateCallData();
         setupNavigationSelectorListener(calleeTable);
         setupNavigationSelectorListener(callerTable);
     }
 
-    private void setupCheckboxHandler() {
+    private void setupCheckboxHandlers() {
         myShowInternalsCheckBox.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 updateRowFilter();
             }
         });
+        myShowRealNamesCheckBox.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                toggleRealFilenamesVisibility(callsNavigation);
+                toggleRealFilenamesVisibility(calleeTable);
+                toggleRealFilenamesVisibility(callerTable);
+            }
+        });
+    }
+
+    private static void toggleRealFilenamesVisibility(JBTable table) {
+        Perl6ProfileModel model = (Perl6ProfileModel)table.getModel();
+        model.setShowRealFileNames(!model.getShowRealFileNames());
+        table.updateUI();
     }
 
     private void updateCallData() {
@@ -163,7 +179,7 @@ public class Perl6ProfileView extends JPanel {
         updateRowFilter();
 
         // Select first row
-        if (calls.size() > 0) {
+        if (callsNavigation.getModel().getRowCount() > 0) {
             callsNavigation.setRowSelectionInterval(0, 0);
         }
     }
