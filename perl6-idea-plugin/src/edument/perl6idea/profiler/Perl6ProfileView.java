@@ -184,6 +184,7 @@ public class Perl6ProfileView extends JPanel {
                 }
                 int offset = StringUtil.lineColToOffset(editor.getDocument().getText(), model.getNodeSourceLine(row) - 1, 0);
                 editor.getCaretModel().moveToOffset(offset);
+                callsNavigation.requestFocus();
             }
         }
     }
