@@ -2,9 +2,14 @@ package edument.perl6idea.profiler;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Perl6ProfileModel extends AbstractTableModel {
+    protected static final ArrayList<String> COLUMN_NAMES = new ArrayList<>(
+        Arrays.asList("Name", "File", "Inclusive (μs)", "Entries")
+    );
     protected int inclusiveSum;
     protected List<Perl6ProfilerNode> nodes;
     protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
@@ -16,7 +21,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 5;
+        return 4;
     }
 
     public Perl6ProfileModel(List<Perl6ProfilerNode> routines) {
@@ -40,15 +45,9 @@ public class Perl6ProfileModel extends AbstractTableModel {
                 return profilerNode.getFilename();
             case 2:
                 return calculateInclusiveValue(profilerNode.getInclusiveTime());
-            case 3:
-                return calculateExclusiveValue(profilerNode.getExclusiveTime(), profilerNode.getInclusiveTime());
             default:
                 return profilerNode.getCallCount();
         }
-    }
-
-    protected String calculateExclusiveValue(int time, int inclusiveTime) {
-        return String.valueOf(time);
     }
 
     protected Object calculateInclusiveValue(int timeInMills) {
@@ -70,18 +69,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        switch (column) {
-            case 0:
-                return "Name";
-            case 1:
-                return "File";
-            case 2:
-                return "Inclusive (μs)";
-            case 3:
-                return "Exclusive (μs)";
-            default:
-                return "Call count";
-        }
+        return COLUMN_NAMES.get(column);
     }
 
     public boolean isCellInternal(int row, String path) {
