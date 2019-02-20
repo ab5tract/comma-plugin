@@ -82,6 +82,8 @@ public class Perl6ProfileView extends JPanel {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getButton() != MouseEvent.BUTTON1)
                         return;
+                    if (e.getClickCount() != 2)
+                        return;
                     int index = table.rowAtPoint(e.getPoint());
                     if (index < 0)
                         return;
