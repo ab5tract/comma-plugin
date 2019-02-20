@@ -21,8 +21,8 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
         }
     }
 
-    protected String calculateExclusiveValue(int time, int inclusiveTime) {
-        String percents = DECIMAL_FORMAT.format(((double)time / inclusiveTime) * 100);
+    protected String calculateExclusiveValue(int time) {
+        String percents = DECIMAL_FORMAT.format(((double)time / inclusiveSum) * 100);
         return String.format("%s%% (%s μs)", percents, time);
     }
 
@@ -42,7 +42,7 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
             case 2:
                 return calculateInclusiveValue(profilerNode.getInclusiveTime());
             case 3:
-                return calculateExclusiveValue(profilerNode.getExclusiveTime(), profilerNode.getInclusiveTime());
+                return calculateExclusiveValue(profilerNode.getExclusiveTime());
             default:
                 return profilerNode.getCallCount();
         }
