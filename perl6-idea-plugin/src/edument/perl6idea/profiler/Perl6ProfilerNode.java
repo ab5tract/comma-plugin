@@ -4,7 +4,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Perl6ProfilerNode {
-    private int id;
+    private int routineID;
     private String filename;
     private int line;
     private String name;
@@ -12,10 +12,10 @@ public class Perl6ProfilerNode {
     private int exclusiveTime;
     private int callCount;
 
-    public Perl6ProfilerNode(int id, String filename, int line, String name,
+    public Perl6ProfilerNode(int routineID, String filename, int line, String name,
                              int inclusiveTime, int exclusiveTime,
                              int callCount) {
-        this.id = id;
+        this.routineID = routineID;
         this.filename = filename;
         this.line = line;
         this.name = name;
@@ -62,7 +62,7 @@ public class Perl6ProfilerNode {
         return line;
     }
 
-    public int getCallId() {
-        return id;
+    public int getCallRoutineId() {
+        return routineID;
     }
 }

@@ -2,7 +2,6 @@ package edument.perl6idea.profiler;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.Function;
-import org.json.JSONArray;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -56,7 +55,7 @@ public class Perl6ProfileData {
         return nodes;
     }
 
-    private void convertProfilerNodes(List<Perl6ProfilerNode> nodes, ResultSet calls) throws SQLException {
+    private static void convertProfilerNodes(List<Perl6ProfilerNode> nodes, ResultSet calls) throws SQLException {
         while (calls.next()) {
             nodes.add(new Perl6ProfilerNode(
                 calls.getInt("id"),

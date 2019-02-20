@@ -83,14 +83,19 @@ public class Perl6ProfileView extends JPanel {
                     int index = table.rowAtPoint(e.getPoint());
                     if (index < 0)
                         return;
-                    int row = table.convertRowIndexToModel(index);
-                    Perl6ProfileModel model = (Perl6ProfileModel)table.getModel();
-                    int callNodeId = model.getNodeId(row);
+                    // We have a row the user clicked on, get its model index
+                    int relatedCallTableRow = table.convertRowIndexToModel(index);
+                    // Get routine id of the call that we want to jump to
+                    Perl6ProfileModel relatedCallsTableModel = (Perl6ProfileModel)table.getModel();
+                    int callNodeId = relatedCallsTableModel.getNodeId(relatedCallTableRow);
+                    // To jump, we need not a routine id, but its position in the navigation table
                     Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
-                    int callOfNodeToConvert = navigationModel.getNavigationIndexByCallId(callNodeId);
-                    if (callOfNodeToConvert >= 0) {
-                        callsNavigation.setRowSelectionInterval(callOfNodeToConvert, callOfNodeToConvert);
-                        Rectangle cellRect = callsNavigation.getCellRect(callOfNodeToConvert, 0, true);
+                    int navigationModelIndex = navigationModel.getNavigationIndexByCallId(callNodeId);
+                    // It is a model index, so we need to convert it to view-able one
+                    int routineIndexToJumpTo = callsNavigation.convertRowIndexToView(navigationModelIndex);
+                    if (routineIndexToJumpTo >= 0) {
+                        callsNavigation.setRowSelectionInterval(routineIndexToJumpTo, routineIndexToJumpTo);
+                        Rectangle cellRect = callsNavigation.getCellRect(routineIndexToJumpTo, 0, true);
                         callsNavigation.scrollRectToVisible(cellRect);
                         updateCallData();
                     }

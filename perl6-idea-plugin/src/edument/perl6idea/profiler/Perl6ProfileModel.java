@@ -89,7 +89,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
     }
 
     public int getNodeId(int row) {
-        return nodes.get(row).getCallId();
+        return nodes.get(row).getCallRoutineId();
     }
 
     public String getNodeSourceFile(int row) {
@@ -103,7 +103,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
     public int getNavigationIndexByCallId(int id) {
         for (int i = 0, size = nodes.size(); i < size; i++) {
             Perl6ProfilerNode node = nodes.get(i);
-            if (node.getCallId() == id)
+            if (node.getCallRoutineId() == id)
                 return i;
         }
         return -1;
