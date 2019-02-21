@@ -159,9 +159,7 @@ public class Perl6ProfileView extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 super.keyTyped(e);
-                if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    updateCallData();
-                } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
                     updateCallData();
                 }
             }
