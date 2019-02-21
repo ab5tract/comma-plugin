@@ -41,11 +41,14 @@ public class Perl6ProfileView extends JPanel {
     private JCheckBox myShowRealNamesCheckBox;
     private String namePattern = "";
     private JTextField myFilterByNameTextField;
+    private final Perl6ProfileNodeRenderer myProfileNodeRenderer;
 
     public Perl6ProfileView(Project project, Perl6ProfileData profileData) {
         myProject = project;
         myProfileData = profileData;
         myBaseProjectPath = myProject.getBaseDir().getCanonicalPath();
+        // Default renderer
+        myProfileNodeRenderer = new Perl6ProfileNodeRenderer(myBaseProjectPath);
         myHideExternalsCheckBox.setSelected(false);
         myShowRealNamesCheckBox.setSelected(false);
         setupCheckboxHandlers();
@@ -102,12 +105,13 @@ public class Perl6ProfileView extends JPanel {
     private void updateCalleeTable(int callId) {
         List<Perl6ProfilerNode> calleeList = myProfileData.getCalleeListByCallId(callId);
         calleeTable.setModel(new Perl6ProfileModel(calleeList));
-
+        calleeTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
     }
 
     private void updateCallerTable(int callId) {
         List<Perl6ProfilerNode> callerList = myProfileData.getCallerListByCallId(callId);
         callerTable.setModel(new Perl6ProfileModel(callerList));
+        callerTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
     }
 
     private void setupNavigationSelectorListener(JBTable table) {
@@ -154,8 +158,10 @@ public class Perl6ProfileView extends JPanel {
         // Setup a model
         Perl6ProfileNavigationModel model = new Perl6ProfileNavigationModel(calls);
         callsNavigation.setModel(model);
-
-
+        // Single selection + default sort for all columns
+        callsNavigation.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        callsNavigation.setRowSorter(new Perl6ProfileOutputTableRowSorter(model));
+        callsNavigation.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
         callsNavigation.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -165,38 +171,6 @@ public class Perl6ProfileView extends JPanel {
                 }
             }
         });
-
-        // Single selection + default sort for all columns
-        callsNavigation.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        callsNavigation.setAutoCreateRowSorter(true);
-        callsNavigation.setRowSorter(new TableRowSorter<Perl6ProfileNavigationModel>(model) {
-            @Override
-            public void toggleSortOrder(int column) {
-                if (column <= 1) {
-                    super.toggleSortOrder(column);
-                    return;
-                }
-                ArrayList<SortKey> sortKeys = new ArrayList<>(getSortKeys());
-                if (sortKeys.isEmpty() || sortKeys.get(0).getColumn() != column) {
-                    sortKeys.add(0, new RowSorter.SortKey(column, SortOrder.DESCENDING));
-                }
-                else if (sortKeys.get(0).getSortOrder() == SortOrder.ASCENDING) {
-                    sortKeys.removeIf(key -> key.getColumn() == column);
-                    sortKeys.add(0, new RowSorter.SortKey(column, SortOrder.DESCENDING));
-                }
-                else {
-                    sortKeys.removeIf(key -> key.getColumn() == column);
-                    sortKeys.add(0, new RowSorter.SortKey(column, SortOrder.ASCENDING));
-                }
-                setSortKeys(sortKeys);
-            }
-        });
-
-        // Default renderer
-        Perl6ProfileNodeRenderer profileNodeRenderer = new Perl6ProfileNodeRenderer(myBaseProjectPath);
-        callsNavigation.setDefaultRenderer(String.class, profileNodeRenderer);
-        callsNavigation.setDefaultRenderer(Integer.class, profileNodeRenderer);
-
         callsNavigation.addMouseListener(
             new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {

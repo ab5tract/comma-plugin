@@ -40,9 +40,9 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
             case 1:
                 return showRealFileNames ? profilerNode.getOriginalFile() : profilerNode.getFilename();
             case 2:
-                return calculateInclusiveValue(profilerNode.getInclusiveTime());
+                return profilerNode.getInclusiveTime();
             case 3:
-                return calculateExclusiveValue(profilerNode.getExclusiveTime());
+                return profilerNode.getExclusiveTime();
             default:
                 return profilerNode.getCallCount();
         }
@@ -51,5 +51,20 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
     @Override
     public String getColumnName(int column) {
         return COLUMN_NAMES.get(column);
+    }
+
+    @Override
+    public boolean needsSpecialRendering(int column) {
+        return column == 2 || column == 3;
+    }
+
+    @Override
+    public String renderNode(int column, Object value) {
+        if (column == 2) {
+            return calculateInclusiveValue((Integer)value);
+        } else if (column == 3) {
+            return calculateExclusiveValue((Integer)value);
+        }
+        return "";
     }
 }

@@ -45,13 +45,13 @@ public class Perl6ProfileModel extends AbstractTableModel {
             case 1:
                 return showRealFileNames ? profilerNode.getOriginalFile() : profilerNode.getFilename();
             case 2:
-                return calculateInclusiveValue(profilerNode.getInclusiveTime());
+                return profilerNode.getInclusiveTime();
             default:
                 return profilerNode.getCallCount();
         }
     }
 
-    protected Object calculateInclusiveValue(int timeInMills) {
+    protected String calculateInclusiveValue(int timeInMills) {
         String percents = DECIMAL_FORMAT.format(((double)timeInMills / inclusiveSum) * 100);
         return String.format("%s%% (%s μs)", percents, timeInMills);
     }
@@ -61,8 +61,9 @@ public class Perl6ProfileModel extends AbstractTableModel {
         switch (column) {
             case 0:
             case 1:
-            case 2:
                 return String.class;
+            case 2:
+            case 3:
             default:
                 return Integer.class;
         }
@@ -108,5 +109,16 @@ public class Perl6ProfileModel extends AbstractTableModel {
                 return i;
         }
         return -1;
+    }
+
+    public boolean needsSpecialRendering(int column) {
+        return column == 2;
+    }
+
+    public String renderNode(int column, Object value) {
+        if (column == 2) {
+            return calculateInclusiveValue((Integer)value);
+        }
+        return "";
     }
 }

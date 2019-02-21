@@ -31,11 +31,19 @@ public class Perl6ProfileNodeRenderer extends ColoredTableCellRenderer {
         }
 
         Perl6ProfileModel model = (Perl6ProfileModel)table.getModel();
+
+        SimpleTextAttributes style;
         if (myBaseProjectPath == null || model.isCellInternal(table.convertRowIndexToModel(row), myBaseProjectPath)) {
-            append(value.toString(), SPECIAL_NODE_ATTRIBUTES);
+            style = SPECIAL_NODE_ATTRIBUTES;
+        } else {
+            style = DEFAULT_ATTRIBUTES;
         }
-        else {
-            append(value.toString(), DEFAULT_ATTRIBUTES);
+
+        int modelColumn = table.convertColumnIndexToModel(column);
+        if (model.needsSpecialRendering(modelColumn)) {
+            append(model.renderNode(modelColumn, value), style);
+        } else {
+            append(value.toString(), style);
         }
     }
 }
