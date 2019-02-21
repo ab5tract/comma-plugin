@@ -12,20 +12,17 @@ import com.intellij.psi.PsiManager;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.Function;
+import com.intellij.util.PlatformIcons;
 import edument.perl6idea.psi.Perl6File;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
+import javax.swing.event.*;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Perl6ProfileView extends JPanel {
@@ -57,6 +54,54 @@ public class Perl6ProfileView extends JPanel {
         setupNavigationFilters();
         setupNavigationSelectorListener(calleeTable);
         setupNavigationSelectorListener(callerTable);
+        setupContextMenuActions();
+    }
+
+    private void setupContextMenuActions() {
+        setupContextMenuForTable(callsNavigation);
+        setupContextMenuForTable(calleeTable);
+        setupContextMenuForTable(callerTable);
+    }
+
+    private static void setupContextMenuForTable(JBTable table) {
+        final JPopupMenu popupMenu = new JPopupMenu();
+        popupMenu.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    Point point = SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table);
+                    int rowAtPoint = table.rowAtPoint(point);
+                    int columnAtPoint = table.columnAtPoint(point);
+                    if (rowAtPoint > -1)
+                        table.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+                    if (columnAtPoint > -1) {
+                        table.setColumnSelectionInterval(columnAtPoint, columnAtPoint);
+                    }
+                    });
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {}
+        });
+        populatePopupActions(table, popupMenu);
+        table.setComponentPopupMenu(popupMenu);
+    }
+
+    private static void populatePopupActions(JBTable table, JPopupMenu popupMenu) {
+        JMenuItem deleteItem = new JMenuItem("Copy to Clipboard", PlatformIcons.COPY_ICON);
+        deleteItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object value = table.getValueAt(table.getSelectedRow(), table.getSelectedColumn());
+                StringSelection stringSelection = new StringSelection(value.toString());
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(stringSelection, null);
+            }
+        });
+        popupMenu.add(deleteItem);
     }
 
     private void setupNavigationFilters() {
