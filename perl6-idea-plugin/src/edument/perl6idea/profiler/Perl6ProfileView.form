@@ -31,10 +31,11 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="e6170" class="javax.swing.JCheckBox" binding="myShowInternalsCheckBox" default-binding="true">
+                  <component id="e6170" class="javax.swing.JCheckBox" binding="myHideExternalsCheckBox">
                     <constraints/>
                     <properties>
                       <text value="Hide externals"/>
+                      <toolTipText value="Hide calls of routines outside of the project"/>
                     </properties>
                   </component>
                   <component id="3158" class="javax.swing.JCheckBox" binding="myShowRealNamesCheckBox" default-binding="true">

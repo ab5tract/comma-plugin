@@ -33,7 +33,7 @@ public class Perl6ProfileView extends JPanel {
     protected Perl6ProfileData myProfileData;
     protected String myBaseProjectPath;
     private JPanel myPanel1;
-    private JCheckBox myShowInternalsCheckBox;
+    private JCheckBox myHideExternalsCheckBox;
     private JBTable callsNavigation;
     private JBTable callerTable;
     private JBTable calleeTable;
@@ -45,7 +45,7 @@ public class Perl6ProfileView extends JPanel {
         myProject = project;
         myProfileData = profileData;
         myBaseProjectPath = myProject.getBaseDir().getCanonicalPath();
-        myShowInternalsCheckBox.setSelected(true);
+        myHideExternalsCheckBox.setSelected(false);
         myShowRealNamesCheckBox.setSelected(false);
         setupCheckboxHandlers();
         setupNavigation();
@@ -66,7 +66,7 @@ public class Perl6ProfileView extends JPanel {
     }
 
     private void setupCheckboxHandlers() {
-        myShowInternalsCheckBox.addChangeListener(new ChangeListener() {
+        myHideExternalsCheckBox.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 updateRowFilter();
@@ -238,15 +238,11 @@ public class Perl6ProfileView extends JPanel {
          */
         return rowIndex -> {
             Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
-            boolean isExternalCheck = myShowInternalsCheckBox.isSelected() ||
-                        !navigationModel.isCellInternal(rowIndex, myBaseProjectPath);
+            boolean isExternalCheck = !myHideExternalsCheckBox.isSelected() ||
+                                      !navigationModel.isCellInternal(rowIndex, myBaseProjectPath);
             boolean patternCheck = true;
-            System.out.println(namePattern.isEmpty());
             if (!namePattern.isEmpty()) {
-                System.out.println("Doing a pattern check!");
                 patternCheck = navigationModel.getNodeName(rowIndex).startsWith(namePattern);
-                System.out.println(namePattern);
-                System.out.println(patternCheck);
             }
             return isExternalCheck && patternCheck;
         };
