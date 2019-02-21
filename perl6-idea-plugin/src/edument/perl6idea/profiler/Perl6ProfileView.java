@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Perl6ProfileView extends JPanel {
@@ -151,7 +152,7 @@ public class Perl6ProfileView extends JPanel {
             return;
         }
         // Setup a model
-        Perl6ProfileModel model = new Perl6ProfileNavigationModel(calls);
+        Perl6ProfileNavigationModel model = new Perl6ProfileNavigationModel(calls);
         callsNavigation.setModel(model);
 
 
@@ -168,6 +169,28 @@ public class Perl6ProfileView extends JPanel {
         // Single selection + default sort for all columns
         callsNavigation.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         callsNavigation.setAutoCreateRowSorter(true);
+        callsNavigation.setRowSorter(new TableRowSorter<Perl6ProfileNavigationModel>(model) {
+            @Override
+            public void toggleSortOrder(int column) {
+                if (column <= 1) {
+                    super.toggleSortOrder(column);
+                    return;
+                }
+                ArrayList<SortKey> sortKeys = new ArrayList<>(getSortKeys());
+                if (sortKeys.isEmpty() || sortKeys.get(0).getColumn() != column) {
+                    sortKeys.add(0, new RowSorter.SortKey(column, SortOrder.DESCENDING));
+                }
+                else if (sortKeys.get(0).getSortOrder() == SortOrder.ASCENDING) {
+                    sortKeys.removeIf(key -> key.getColumn() == column);
+                    sortKeys.add(0, new RowSorter.SortKey(column, SortOrder.DESCENDING));
+                }
+                else {
+                    sortKeys.removeIf(key -> key.getColumn() == column);
+                    sortKeys.add(0, new RowSorter.SortKey(column, SortOrder.ASCENDING));
+                }
+                setSortKeys(sortKeys);
+            }
+        });
 
         // Default renderer
         Perl6ProfileNodeRenderer profileNodeRenderer = new Perl6ProfileNodeRenderer(myBaseProjectPath);
