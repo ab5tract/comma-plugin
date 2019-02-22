@@ -84,6 +84,7 @@
   </application-components>
 
   <project-components>
+    <xi:include href="/META-INF/comma.xml" xpointer="xpointer(/idea-plugin/project-components/*)"/>
     <component>
       <interface-class>com.intellij.packaging.artifacts.ArtifactManager</interface-class>
       <implementation-class>com.intellij.packaging.impl.artifacts.ArtifactManagerImpl</implementation-class>
@@ -93,8 +94,6 @@
   <module-components>
     <xi:include href="/META-INF/comma.xml" xpointer="xpointer(/idea-plugin/module-components/*)"/>
   </module-components>
-
-
 
   <actions>
     <!-- Common actions with plugin -->
