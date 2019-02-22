@@ -281,10 +281,6 @@ public class Perl6ProfileView extends JPanel {
     }
 
     private Function<Integer, Boolean> generateVisibleCallsCondition() {
-        /* In future, we will likely have more options besides "Show internal calls"
-         * so while we can avoid this method and construction of a Function for the easy case,
-         * it may become much more complex, so the logic is generalized here from the start.
-         */
         return rowIndex -> {
             Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
             boolean isExternalCheck = !myHideExternalsCheckBox.isSelected() ||
