@@ -7,14 +7,25 @@ sub MAIN($version) {
             spurt 'perl6-idea-plugin/gradle.properties',
                 .subst(/'pluginVersion=' <( \N+ )>/, $version);
         }
-        given slurp('resources/idea/CommaCoreApplicationInfo.xml') {
-            spurt 'resources/idea/CommaCoreApplicationInfo.xml',
+        given slurp('resources/idea/metainfo/community/CommaCoreApplicationInfo.xml') {
+            spurt 'resources/idea/metainfo/community/CommaCoreApplicationInfo.xml',
                 .subst(/'<version ' <( 'major="' \d+ '" minor="' \d+ '"' )>/,
                     qq|major="$maj" minor="$min"|);
         }
-        given slurp('resources/idea/CommaCoreApplicationInfo.xml') {
+        given slurp('resources/idea/metainfo/community/CommaCoreApplicationInfo.xml') {
             my $date = Date.today.yyyy-mm-dd.subst('-', '', :g);
-            spurt 'resources/idea/CommaCoreApplicationInfo.xml',
+            spurt 'resources/idea/metainfo/community/CommaCoreApplicationInfo.xml',
+                .subst(/'<build ' <( 'number="' <-["]>+ '" date="' \d+ '"' )>/,
+                    qq|number="CO-$maj.$min.$build" date="$date"|);
+        }
+        given slurp('resources/idea/metainfo/complete/CommaCoreApplicationInfo.xml') {
+            spurt 'resources/idea/metainfo/complete/CommaCoreApplicationInfo.xml',
+                .subst(/'<version ' <( 'major="' \d+ '" minor="' \d+ '"' )>/,
+                    qq|major="$maj" minor="$min"|);
+        }
+        given slurp('resources/idea/metainfo/complete/CommaCoreApplicationInfo.xml') {
+            my $date = Date.today.yyyy-mm-dd.subst('-', '', :g);
+            spurt 'resources/idea/metainfo/complete/CommaCoreApplicationInfo.xml',
                 .subst(/'<build ' <( 'number="' <-["]>+ '" date="' \d+ '"' )>/,
                     qq|number="CO-$maj.$min.$build" date="$date"|);
         }
