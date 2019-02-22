@@ -12,27 +12,36 @@ import edument.perl6idea.utils.Perl6CommandLine;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Perl6RunCommandLineState extends CommandLineState {
     protected List<String> command = new LinkedList<>();
     protected Perl6RunConfiguration runConfiguration;
 
-    protected Perl6RunCommandLineState(ExecutionEnvironment environment) throws ExecutionException {
+    protected Perl6RunCommandLineState(ExecutionEnvironment environment) {
         super(environment);
         runConfiguration = (Perl6RunConfiguration)getEnvironment().getRunProfile();
     }
 
-    protected void populateRunCommand() throws ExecutionException {
+    protected String checkSDK() throws ExecutionException {
         Sdk projectSdk = ProjectRootManager.getInstance(getEnvironment().getProject()).getProjectSdk();
         if (projectSdk == null)
             throw new ExecutionException("Perl 6 SDK is not set for the project, please set one");
         String path = projectSdk.getHomePath();
         if (path == null)
             throw new ExecutionException("Perl 6 SDK path is likely to be corrupt");
-        command.add(Paths.get(path, Perl6SdkType.perl6Command()).toAbsolutePath().toString());
+        return path;
+    }
+
+    protected void populateRunCommand() throws ExecutionException {
+        String perl6Path = checkSDK();
+        command.add(Paths.get(perl6Path, Perl6SdkType.perl6Command()).toAbsolutePath().toString());
+        setInterpreterParameters();
+    }
+
+    protected void setInterpreterParameters() {
         String params = runConfiguration.getInterpreterParameters();
         if (params != null && !params.trim().isEmpty())
             command.add(params);
@@ -46,13 +55,16 @@ public class Perl6RunCommandLineState extends CommandLineState {
         GeneralCommandLine cmd = Perl6CommandLine.getCustomPerl6CommandLine(command, runConfiguration.getWorkingDirectory());
         setEnvironment(cmd);
         KillableColoredProcessHandler handler = new KillableColoredProcessHandler(cmd, true);
-        ProcessTerminatedListener.attach(handler);
+        ProcessTerminatedListener.attach(handler, getEnvironment().getProject());
+        setListeners(handler);
         return handler;
     }
 
     protected void setEnvironment(GeneralCommandLine cmd) {
         cmd.withEnvironment(runConfiguration.getEnvs());
     }
+
+    protected void setListeners(KillableColoredProcessHandler handler) {}
 
     private void setScript() {
         command.add(runConfiguration.getScriptPath());

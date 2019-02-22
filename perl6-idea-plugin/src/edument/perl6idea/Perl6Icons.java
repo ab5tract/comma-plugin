@@ -5,6 +5,7 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.*;
 
 public class Perl6Icons {
+    public static final Icon CAMELIA_13x13 = IconLoader.getIcon("/icons/camelia-13x13.png");
     public static final Icon CAMELIA = IconLoader.getIcon("/icons/camelia.png");
     public static final Icon SUB = IconLoader.getIcon("/icons/sub.png");
     public static final Icon METHOD = IconLoader.getIcon("/icons/method.png");
