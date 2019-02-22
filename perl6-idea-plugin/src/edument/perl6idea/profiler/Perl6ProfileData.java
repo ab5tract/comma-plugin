@@ -47,7 +47,8 @@ public class Perl6ProfileData {
         List<Perl6ProfilerNode> nodes = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
             ResultSet calls = statement
-                .executeQuery("SELECT r.id, r.file, r.line, r.name, c.inclusive_time, c.exclusive_time, c.entries " +
+                .executeQuery("SELECT r.id, r.file, r.line, r.name, SUM(c.inclusive_time) as inclusive_time, " +
+                              "SUM(c.exclusive_time) as exclusive_time, SUM(c.entries) as entries " +
                               "FROM calls c INNER JOIN routines r ON c.routine_id == r.id " +
                               "GROUP BY r.id ORDER BY c.inclusive_time DESC");
             convertProfilerNodes(nodes, calls);
