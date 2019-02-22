@@ -24,6 +24,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Perl6ProfileView extends JPanel {
     public static final Logger LOG = Logger.getInstance(Perl6ProfileView.class);
@@ -291,8 +292,8 @@ public class Perl6ProfileView extends JPanel {
             boolean patternCheck = true;
 
             if (!namePattern.isEmpty()) {
-
-                patternCheck = navigationModel.getNodeName(rowIndex).startsWith(namePattern);
+                Pattern pattern = Pattern.compile(".*?" + Pattern.quote(namePattern) + ".*?");
+                patternCheck = pattern.matcher(navigationModel.getNodeName(rowIndex)).matches();
             }
 
             return isExternalCheck && patternCheck;
