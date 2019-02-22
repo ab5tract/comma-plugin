@@ -49,7 +49,7 @@ public class Perl6ProfileData {
             ResultSet calls = statement
                 .executeQuery("SELECT r.id, r.file, r.line, r.name, c.inclusive_time, c.exclusive_time, c.entries " +
                               "FROM calls c INNER JOIN routines r ON c.routine_id == r.id " +
-                              "GROUP BY c.id ORDER BY c.inclusive_time DESC");
+                              "GROUP BY r.id ORDER BY c.inclusive_time DESC");
             convertProfilerNodes(nodes, calls);
             // XXX remove(0) has complexity O(n) for an ArrayList we use here,
             // but it's not clear if we should to make `convertProfilerNodes` more specific
