@@ -1,7 +1,7 @@
 package edument.perl6idea.coverage;
 
 import com.intellij.execution.configurations.CommandLineState;
-import com.intellij.openapi.Disposable;
+import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.application.ReadAction;
@@ -17,25 +17,27 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.stubs.*;
 import com.intellij.util.Alarm;
+import edument.perl6idea.psi.stub.Perl6FileStub;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private final Project project;
@@ -45,6 +47,8 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private Perl6CoverageSuite currentSuite;
     private ConcurrentMap<Editor, Perl6CoverageSourceAnnotator> editorAnnotators =
         new ConcurrentHashMap<>();
+    private ConcurrentMap<String, CoverageStatistics> fileCoverageStatsCache
+            = new ConcurrentHashMap<>();
 
     public Perl6CoverageDataManagerImpl(@NotNull Project project) {
         this.project = project;
@@ -78,11 +82,13 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
 
     public void changeToSuite(Perl6CoverageSuite suite) {
         currentSuite = suite;
+        fileCoverageStatsCache.clear();
         triggerPresentationUpdate();
     }
 
     public void hideCoverageData() {
         currentSuite = null;
+        fileCoverageStatsCache.clear();
         triggerPresentationUpdate();
     }
 
@@ -137,6 +143,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     @Override
     public void triggerPresentationUpdate() {
         renewInformationInEditors();
+        ProjectView.getInstance(project).refresh();
     }
 
     private void renewInformationInEditors() {
@@ -236,5 +243,81 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
                 }
             }
         }
+    }
+
+    public CoverageStatistics coverageForFile(VirtualFile file) {
+        String path = file.getPath();
+        CoverageStatistics result = fileCoverageStatsCache.get(path);
+        if (result == null) {
+            result = computeCoverageForFile(file);
+            if (result != null)
+                fileCoverageStatsCache.put(path, result);
+        }
+        return result;
+    }
+
+    private CoverageStatistics computeCoverageForFile(VirtualFile file) {
+        // Get coverage data if available.
+        if (currentSuite == null)
+            return null;
+        String path = file.getPath();
+        Map<String, Set<Integer>> fileData = currentSuite.lineDataForPath(path);
+        if (fileData == null)
+            return null;
+
+        // Look up file stub and line mapping for the file.
+        ObjectStubTree stubTree = StubTreeLoader.getInstance().readFromVFile(project, file);
+        if (stubTree == null)
+            return null;
+        Stub stubRoot = stubTree.getRoot();
+        if (!(stubRoot instanceof Perl6FileStub))
+            return null;
+        Map<Integer, List<Integer>> statementLineMap = ((Perl6FileStub)stubRoot).getStatementLineMap();
+
+        // Make a flat map of all line starters we might cover.
+        Set<Integer> coverable = new HashSet<>();
+        for (Map.Entry<Integer, List<Integer>> lineMapping : statementLineMap.entrySet())
+            if (lineMapping.getValue() != null)
+                coverable.add(lineMapping.getKey());
+        int coverableLines = coverable.size();
+        if (coverableLines == 0)
+            return null;
+
+        // Delete the covered ones from the set, leaving the uncovered.
+        for (Set<Integer> covered : fileData.values())
+            for (int oneBasedLine : covered)
+                coverable.remove(oneBasedLine - 1);
+        int uncoveredLines = coverable.size();
+
+        // Return statistics object.
+        return new CoverageStatistics(coverableLines - uncoveredLines, coverableLines);
+    }
+
+    public CoverageStatistics coverageForDirectory(VirtualFile dir) {
+        /* Gather all .pm6 files in the directory. */
+        List<VirtualFile> allSourceFiles = new ArrayList<>();
+        VfsUtilCore.visitChildrenRecursively(dir, new VirtualFileVisitor<Object>() {
+            @Override
+            public boolean visitFile(@NotNull VirtualFile file) {
+                if (!file.isDirectory() && file.getName().endsWith(".pm6"))
+                    allSourceFiles.add(file);
+                return true;
+            }
+        });
+
+        /* Gather all the statistics. */
+        List<CoverageStatistics> allStatistics = allSourceFiles.stream()
+                .map(f -> coverageForFile(f))
+                .filter(s -> s != null)
+                 .collect(Collectors.toList());
+        if (allStatistics.isEmpty())
+            return null;
+        int totalCovered = 0;
+        int totalCoverable = 0;
+        for (CoverageStatistics stats : allStatistics) {
+            totalCovered += stats.getCoveredLines();
+            totalCoverable += stats.getCoverableLines();
+        }
+        return new CoverageStatistics(totalCovered, totalCoverable);
     }
 }

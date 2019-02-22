@@ -114,15 +114,13 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         PsiElement newMethod = Perl6ElementFactory.createNamedCodeBlock(project, data, new ArrayList<>());
         anchor = anchor == null ? null : anchor.getNextSibling();
         if (anchor == null) {
-            list.getNode().addChild(new PsiWhiteSpaceImpl("\n"));
             list.getNode().addChild(newMethod.getNode());
         } else {
             addPossibleNewline(list, anchor);
             list.getNode().addChild(newMethod.getNode(), anchor.getNode());
-            list.getNode().addChild(new PsiWhiteSpaceImpl("\n"), anchor.getNode());
         }
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
-        CodeStyleManager.getInstance(project).reformat(file);
+        CodeStyleManager.getInstance(project).reformatNewlyAddedElement(list.getNode(), newMethod.getNode());
         allowRename(newMethod, editor);
     }
 

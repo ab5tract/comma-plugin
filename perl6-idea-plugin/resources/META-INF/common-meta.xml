@@ -81,6 +81,7 @@
     <executor implementation="edument.perl6idea.coverage.CoverageExecutor"/>
     <programRunner implementation="edument.perl6idea.coverage.Perl6CoverageRunner"/>
     <consoleFilterProvider implementation="edument.perl6idea.run.Perl6OutputLinkProvider"/>
+    <projectViewNodeDecorator implementation="edument.perl6idea.coverage.Perl6ProjectViewCoverageDecorator"/>
   </extensions>
 
   <actions>

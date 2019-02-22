@@ -10,9 +10,13 @@ import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Perl6FileElementType extends IStubFileElementType<Perl6FileStub> {
-    public static final int STUB_VERSION = 22;
+    public static final int STUB_VERSION = 23;
 
     public Perl6FileElementType() {
         super(Perl6Language.INSTANCE);
@@ -37,13 +41,32 @@ public class Perl6FileElementType extends IStubFileElementType<Perl6FileStub> {
     @Override
     public void serialize(@NotNull final Perl6FileStub stub, @NotNull final StubOutputStream dataStream) throws IOException {
         dataStream.writeName(stub.getCompilationUnitName());
+        Map<Integer, List<Integer>> lineMap = stub.getStatementLineMap();
+        dataStream.writeInt(lineMap.size());
+        for (Map.Entry<Integer, List<Integer>> line : lineMap.entrySet()) {
+            dataStream.writeInt(line.getKey());
+            List<Integer> lineList = line.getValue();
+            dataStream.writeInt(lineList.size());
+            for (Integer lineNumber : lineList)
+                dataStream.writeInt(lineNumber);
+        }
     }
 
     @NotNull
     @Override
     public Perl6FileStub deserialize(@NotNull final StubInputStream dataStream, final StubElement parentStub) throws IOException {
         StringRef compilationUnitName = dataStream.readName();
-        return new Perl6FileStubImpl(null, compilationUnitName == null ? null : compilationUnitName.getString());
+        int numLineMapEntries = dataStream.readInt();
+        Map<Integer, List<Integer>> lineMap = new HashMap<>(numLineMapEntries);
+        for (int i = 0; i < numLineMapEntries; i++) {
+            int lineNumber = dataStream.readInt();
+            int numMappings = dataStream.readInt();
+            List<Integer> mappings = new ArrayList<>(numMappings);
+            for (int j = 0; j < numMappings; j++)
+                mappings.add(dataStream.readInt());
+            lineMap.put(lineNumber, mappings);
+        }
+        return new Perl6FileStubImpl(null, compilationUnitName == null ? null : compilationUnitName.getString(), lineMap);
     }
 
     @Override

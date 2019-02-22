@@ -74,7 +74,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
         if (caller.isSelf()) {
             return isSingle ?
                    Collections.singletonList(call.resolveSymbol(Perl6SymbolKind.Method, call.getCallName())) :
-                   call.getSymbolVariants(Perl6SymbolKind.Method).stream().map(s -> s.getName()).collect(Collectors.toList());
+                   call.getSymbolVariants(Perl6SymbolKind.Method).stream().map(Perl6Symbol::getName).collect(Collectors.toList());
         } else {
             String name;
             if (caller.isTypeName()) {
@@ -106,6 +106,12 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
                 decl = subset.getSubsetBaseType();
                 String newName = subset.getSubsetBaseTypeName();
                 name = newName != null ? newName : "Any";
+            } else if (base instanceof Perl6Enum) {
+                if (!isSingle) {
+                    List<String> enumMethods = tryToCompleteExternalTypeMethods("Int", call);
+                    enumMethods.addAll(tryToCompleteExternalTypeMethods("Enumeration", call));
+                    return enumMethods;
+                }
             }
             if (decl != null) { // Not external type
                 return isSingle ?

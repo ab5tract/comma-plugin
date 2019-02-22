@@ -5,6 +5,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.stubs.DefaultStubBuilder;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.testFramework.LightVirtualFile;
+import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.stub.impl.Perl6FileStubImpl;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,8 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
     @Override
     protected StubElement createStubForFile(@NotNull PsiFile file) {
         if (file instanceof Perl6File)
-            return new Perl6FileStubImpl((Perl6File)file, generateCompilationUnitName(file));
+            return new Perl6FileStubImpl((Perl6File)file, generateCompilationUnitName(file),
+                    ((Perl6File)file).getStatementLineMap());
         else
             return super.createStubForFile(file);
     }
@@ -25,7 +27,7 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
             vf = ((LightVirtualFile)vf).getOriginalFile();
         if (vf != null) {
             String filePath = vf.getPath();
-            if (filePath.endsWith(".pm6")) {
+            if (filePath.endsWith(Perl6ModuleFileType.INSTANCE.getDefaultExtension())) {
                 String basePath = file.getProject().getBaseDir().getPath();
                 if (filePath.startsWith(basePath)) {
                     String relPath = filePath.substring(basePath.length() + 1);

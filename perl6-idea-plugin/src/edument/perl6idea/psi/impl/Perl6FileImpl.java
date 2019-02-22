@@ -1,10 +1,12 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.PsiFileBase;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -241,6 +243,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public Map<Integer, List<Integer>> getStatementLineMap() {
         Map<Integer, List<Integer>> result = new HashMap<>();
         Set<Integer> covered = new HashSet<>();
+        if (ApplicationManager.getApplication().isDispatchThread())
+            PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
         FileViewProvider fileViewProvider = getViewProvider();
         Document document = fileViewProvider.getDocument();
         Perl6StatementList stmts = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
@@ -261,7 +265,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             boolean seen = covered.contains(startLine);
             List<Integer> spanned = null;
             if (!seen) {
-                if (!isCodeDeclarator(stmt)) {
+                if (!isUncoverableDeclarator(stmt)) {
                     covered.add(startLine);
                     if (!isSymbolDeclarator(stmt)) {
                         spanned = new ArrayList<>();
@@ -277,7 +281,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             // Now add uncovered lines up to the end of this statement.
             if (!seen) {
                 int endLine = document.getLineNumber(stmt.getTextOffset() +
-                        stmt.getText().replaceFirst("\\s+$", "").length());
+                        stmt.getText().replaceFirst("\\s+$", "").length() - 1);
                 for (int i = startLine + 1; i <= endLine; i++) {
                     if (!covered.contains(i)) {
                         covered.add(i);
@@ -293,14 +297,24 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         PsiElement scoped = PsiTreeUtil.getChildOfType(stmt, Perl6ScopedDecl.class);
         Perl6PsiElement declChild = PsiTreeUtil.getChildOfAnyType(scoped != null ? scoped : stmt,
                 Perl6PackageDecl.class, Perl6UseStatement.class, Perl6NeedStatement.class,
-                Perl6Subset.class, Perl6Enum.class);
+                Perl6Subset.class, Perl6Enum.class, Perl6StubCode.class);
         return declChild != null;
     }
 
-    private boolean isCodeDeclarator(Perl6Statement stmt) {
-        Perl6PsiElement declChild = PsiTreeUtil.getChildOfAnyType(stmt,
+    private boolean isUncoverableDeclarator(Perl6Statement stmt) {
+        Perl6ScopedDecl scopedDecl = PsiTreeUtil.getChildOfType(stmt, Perl6ScopedDecl.class);
+        Perl6PsiElement consider = scopedDecl == null ? stmt : scopedDecl;
+
+        Perl6PsiElement codeChild = PsiTreeUtil.getChildOfAnyType(consider,
                 Perl6RoutineDecl.class, Perl6MultiDecl.class, Perl6RegexDecl.class);
-        return declChild != null;
+        if (codeChild != null)
+            return true;
+
+        Perl6VariableDecl varChild = PsiTreeUtil.getChildOfType(consider, Perl6VariableDecl.class);
+        if (varChild != null && !varChild.hasInitializer())
+            return true;
+
+        return false;
     }
 
     private void findNestedStatements(Map<Integer, List<Integer>> result, Set<Integer> covered, Document document, Perl6PsiElement node) {
