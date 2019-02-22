@@ -38,6 +38,8 @@ public class Perl6ProfileView extends JPanel {
     private JCheckBox myShowRealNamesCheckBox;
     private String namePattern = "";
     private JTextField myFilterByNameTextField;
+    private JSeparator separator1;
+    private JSeparator separator2;
     private final Perl6ProfileNodeRenderer myProfileNodeRenderer;
 
     public Perl6ProfileView(Project project, Perl6ProfileData profileData) {
@@ -55,6 +57,12 @@ public class Perl6ProfileView extends JPanel {
         setupNavigationSelectorListener(calleeTable);
         setupNavigationSelectorListener(callerTable);
         setupContextMenuActions();
+        setupSeparators();
+    }
+
+    private void setupSeparators() {
+        separator1.setPreferredSize(new Dimension(2, 10));
+        separator2.setPreferredSize(new Dimension(2, 10));
     }
 
     private void setupContextMenuActions() {
@@ -281,9 +289,12 @@ public class Perl6ProfileView extends JPanel {
             boolean isExternalCheck = !myHideExternalsCheckBox.isSelected() ||
                                       !navigationModel.isCellInternal(rowIndex, myBaseProjectPath);
             boolean patternCheck = true;
+
             if (!namePattern.isEmpty()) {
+
                 patternCheck = navigationModel.getNodeName(rowIndex).startsWith(namePattern);
             }
+
             return isExternalCheck && patternCheck;
         };
     }
