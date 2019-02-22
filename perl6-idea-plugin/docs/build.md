@@ -59,7 +59,7 @@ While in `comma-build` directory.
 Add a Gradle task in "Before launch" section:
 
   - Project: `perl6-idea-plugin` directory.
-  - Tasks: `preparePluginsMeta`
+  - Tasks: `preparePluginMeta`
   - Arguments:
     - If you want **Community** edition: `--rerun-tasks -b community.gradle`
     - If you want **Complete** edition: `--rerun-tasks -b complete.gradle`
