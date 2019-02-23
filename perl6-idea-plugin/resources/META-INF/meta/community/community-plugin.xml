@@ -20,6 +20,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
+    <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6CommunityRefactoringSupportProvider"/>
   </extensions>
 
   <actions>

@@ -34,6 +34,8 @@
 
   <target name="complete-build" depends="init,cleanup">
     <sequential>
+      <delete file="perl6-idea-plugin/resources/META-INF/comma.xml" failonerror="false"/>
+      <delete file="perl6-idea-plugin/resources/idea/CommaCoreApplicationInfo.xml" failonerror="false"/>
       <copy todir="perl6-idea-plugin/resources/META-INF">
         <fileset file="perl6-idea-plugin/resources/META-INF/meta/complete/complete-plugin.xml"/>
         <globmapper from="*" to="comma.xml"/>
@@ -48,6 +50,8 @@
 
   <target name="community-build" depends="init,cleanup">
     <sequential>
+      <delete file="perl6-idea-plugin/resources/META-INF/comma.xml" failonerror="false"/>
+      <delete file="perl6-idea-plugin/resources/idea/CommaCoreApplicationInfo.xml" failonerror="false"/>
       <copy todir="perl6-idea-plugin/resources/META-INF">
         <fileset file="perl6-idea-plugin/resources/META-INF/meta/community/community-plugin.xml"/>
         <globmapper from="*" to="comma.xml"/>

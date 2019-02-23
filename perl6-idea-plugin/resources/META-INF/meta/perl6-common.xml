@@ -7,8 +7,8 @@
     <configurationType implementation="edument.perl6idea.run.Perl6RunConfigurationType"/>
     <configurationType implementation="edument.perl6idea.testing.Perl6TestConfigurationType"/>
     <programRunner implementation="edument.perl6idea.debugger.Perl6DebugRunner"/>
-    <programRunner implementation="edument.perl6idea.profiler.Perl6ProfileRunner"/>
-    <executor implementation="edument.perl6idea.run.Perl6ProfileExecutor"/>
+    <programRunner implementation="edument.perl6idea.coverage.Perl6CoverageRunner"/>
+    <executor implementation="edument.perl6idea.coverage.CoverageExecutor"/>
     <xdebugger.breakpointType implementation="edument.perl6idea.debugger.Perl6LineBreakpointType"/>
     <lang.syntaxHighlighterFactory language="Perl6" implementationClass="edument.perl6idea.highlighter.Perl6SyntaxHighlighterFactory"/>
     <lang.parserDefinition language="Perl6" implementationClass="edument.perl6idea.parsing.Perl6ParserDefinition"/>
@@ -75,13 +75,9 @@
     <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6PsiElementProcessor"/>
     <usageTypeProvider implementation="edument.perl6idea.findUsages.Perl6UsageTypeProvider"/>
     <lang.smartEnterProcessor language="Perl6" implementationClass="edument.perl6idea.editor.smartEnter.Perl6SmartEnterProcessor"/>
-    <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6RefactoringSupportProvider"/>
     <enterBetweenBracesDelegate language="Perl6" implementationClass="edument.perl6idea.editor.Perl6EnterBetweenBracesDelegate"/>
     <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
-    <executor implementation="edument.perl6idea.coverage.CoverageExecutor"/>
-    <programRunner implementation="edument.perl6idea.coverage.Perl6CoverageRunner"/>
     <consoleFilterProvider implementation="edument.perl6idea.run.Perl6OutputLinkProvider"/>
-    <projectViewNodeDecorator implementation="edument.perl6idea.coverage.Perl6ProjectViewCoverageDecorator"/>
   </extensions>
 
   <actions>
@@ -96,16 +92,6 @@
     <action id="Perl6Plugin.NewTestAction" class="edument.perl6idea.actions.NewTestAction" text="Perl 6 Test"
             description="Create new Perl 6 test in current project" icon="/icons/camelia.png">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewModuleAction"/>
-    </action>
-    <action id="Perl6Plugin.ExtractPrivateMethod" class="edument.perl6idea.actions.ExtractPrivateMethodAction" text="Private Method..."
-            description="Turn this selected code fragment into a private method">
-      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt P"/>
-      <add-to-group group-id="IntroduceActionsGroup" anchor="after" relative-to-action="ExtractMethod"/>
-    </action>
-    <action id="Perl6Plugin.ExtractRoutine" class="edument.perl6idea.actions.ExtractRoutineAction" text="Subroutine..."
-            description="Turn this selected code fragment into a subroutine">
-      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt R"/>
-      <add-to-group group-id="IntroduceActionsGroup" anchor="before" relative-to-action="ExtractMethod"/>
     </action>
     <group id="Perl6Plugin.CoverageMenu">
       <action id="Perl6Plugin.HideCoverage" class="edument.perl6idea.coverage.Perl6CoverageHideAction"
