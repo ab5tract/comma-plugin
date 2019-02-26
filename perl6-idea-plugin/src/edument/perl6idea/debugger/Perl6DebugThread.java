@@ -55,7 +55,7 @@ public class Perl6DebugThread extends Thread {
     public void run() {
         try {
             Perl6DebuggableConfiguration runConfiguration = (Perl6DebuggableConfiguration) mySession.getRunProfile();
-            client = RemoteInstance.connect(runConfiguration.getDebugPort()).get(2, TimeUnit.SECONDS);
+            client = RemoteInstance.connect(runConfiguration.getDebugPort()).get(10, TimeUnit.SECONDS);
             ready = true;
             sendBreakpoints();
             setEventHandler();
