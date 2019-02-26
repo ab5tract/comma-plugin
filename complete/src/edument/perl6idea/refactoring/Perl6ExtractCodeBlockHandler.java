@@ -1,3 +1,4 @@
+// Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.refactoring;
 
 import com.intellij.lang.ContextAwareActionHandler;
@@ -471,7 +472,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     protected PsiElement createNewBlock(Project project, NewCodeBlockData data, List<String> contents) {
-        return postProcessVariables(project, data.variables, Perl6ElementFactory.createNamedCodeBlock(project, data, contents));
+        return postProcessVariables(project, data.variables, CompletePerl6ElementFactory.createNamedCodeBlock(project, data, contents));
     }
 
     private PsiElement postProcessVariables(Project project,
@@ -519,9 +520,9 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     protected void replaceStatementsWithCall(Project project, NewCodeBlockData data, PsiElement parentScope, PsiElement[] elements) {
         Perl6Statement call;
         if (data.type == Perl6CodeBlockType.ROUTINE) {
-            call = Perl6ElementFactory.createSubCall(parentScope.getProject(), data);
+            call = CompletePerl6ElementFactory.createSubCall(parentScope.getProject(), data);
         } else {
-            call = Perl6ElementFactory.createMethodCall(parentScope.getProject(), data);
+            call = CompletePerl6ElementFactory.createMethodCall(parentScope.getProject(), data);
         }
 
         WriteCommandAction.runWriteCommandAction(project, () -> {
