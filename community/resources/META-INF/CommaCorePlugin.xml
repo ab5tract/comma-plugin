@@ -1,10 +1,11 @@
+<!-- Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file. -->
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <xi:include href="/META-INF/PlatformLangPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/XmlPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/JsonPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/ImagesPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/SpellCheckerPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
-  <xi:include href="CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
   <!-- Components of standalone Comma -->
@@ -28,7 +29,6 @@
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
-    <xi:include href="/META-INF/comma.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
     <projectImportProvider implementation="com.intellij.ide.util.projectWizard.ModuleImportProvider"/>
     <applicationService serviceInterface="com.intellij.openapi.module.ModuleTypeManager"
                         serviceImplementation="edument.perl6idea.module.Perl6ModuleTypeManager"/>
@@ -84,21 +84,14 @@
   </application-components>
 
   <project-components>
-    <xi:include href="/META-INF/comma.xml" xpointer="xpointer(/idea-plugin/project-components/*)"/>
     <component>
       <interface-class>com.intellij.packaging.artifacts.ArtifactManager</interface-class>
       <implementation-class>com.intellij.packaging.impl.artifacts.ArtifactManagerImpl</implementation-class>
     </component>
   </project-components>
 
-  <module-components>
-    <xi:include href="/META-INF/comma.xml" xpointer="xpointer(/idea-plugin/module-components/*)"/>
-  </module-components>
-
+  <!-- Actions for standalone Comma -->
   <actions>
-    <!-- Common actions with plugin -->
-    <xi:include href="/META-INF/comma.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
-    <!-- Actions for standalone Comma -->
     <!-- Actions for Welcome Screen -->
     <action id="ShowProjectStructureSettings" class="edument.perl6idea.actions.ShowPerl6ProjectStructureAction"
             icon="AllIcons.General.ProjectStructure">

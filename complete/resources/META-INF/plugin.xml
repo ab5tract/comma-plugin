@@ -1,5 +1,5 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
-  <id>edument.perl6-idea-plugin</id>
+  <!--<id>edument.perl6-idea-plugin</id>-->
   <name>Comma Complete Edition (Perl 6 Language Support)</name>
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
@@ -23,7 +23,7 @@
     <programRunner implementation="edument.perl6idea.profiler.Perl6ProfileRunner"/>
     <executor implementation="edument.perl6idea.run.Perl6ProfileExecutor"/>
     <projectViewNodeDecorator implementation="edument.perl6idea.coverage.Perl6ProjectViewCoverageDecorator"/>
-    <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6RefactoringSupportProvider"/>
+    <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6CompleteRefactoringSupportProvider"/>
   </extensions>
 
   <actions>

@@ -3,15 +3,15 @@
            xsi:schemaLocation="http://jetbrains.org/intellij/schema/application-info http://jetbrains.org/intellij/schema/ApplicationInfo.xsd">
   <version major="2019" minor="1" eap="false"/>
   <company name="Edument Central Europe s.r.o." url="https://www.edument.se" copyrightStart="2010"/>
-  <build number="CT-2019.1.0" date="20190128"/>
-  <logo url="/community/comma_core_logo.png" textcolor="000000" progressColor="000000" progressX="114" progressY="278" progressHeight="3"/>
-  <about url="/community/comma_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="000000"
+  <build number="CP-2019.1.0" date="20190128"/>
+  <logo url="/comma_core_logo.png" textcolor="000000" progressColor="000000" progressX="114" progressY="278" progressHeight="3"/>
+  <about url="/comma_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="000000"
          copyrightForeground="000000" linkColor="000000"/>
-  <icon size32="/community/CommaCore32.png" size16="/community/CommaCore16.png" ico="CommaCore.ico"/>
-  <package code="CT"/>
-  <names product="Comma" edition="Community Edition" script="comma"/>
+  <icon size32="/CommaCore32.png" size16="/CommaCore16.png" ico="CommaCore.ico"/>
+  <package code="CP"/>
+  <names product="Comma" edition="Complete Edition" script="comma"/>
 
-  <welcome-screen logo-url="/community/CommaCoreWelcomeScreen.png"/>
+  <welcome-screen logo-url="/CommaCoreWelcomeScreen.png"/>
 
   <plugins url="http://plugins.jetbrains.com/"/>
   <update-urls check="https://commaide.com/updates/updates.xml"/>

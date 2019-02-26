@@ -10,7 +10,7 @@ import edument.perl6idea.refactoring.introduce.variable.Perl6IntroduceVariableHa
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Perl6RefactoringSupportProvider extends RefactoringSupportProvider {
+public class Perl6CompleteRefactoringSupportProvider extends RefactoringSupportProvider {
     @Override
     public boolean isInplaceRenameAvailable(@NotNull PsiElement element, PsiElement context) {
         return element instanceof Perl6VariableDecl || element instanceof Perl6ParameterVariable;
