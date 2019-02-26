@@ -40,6 +40,14 @@
       <call_gant script="${comma.home}/build/comma_community_build.gant"/>
   </target>
 
+  <target name="complete-plugin-build" depends="init,cleanup">
+      <call_gant script="${comma.home}/build/perl6_complete_plugin_build.gant"/>
+  </target>
+
+  <target name="community-plugin-build" depends="init,cleanup">
+      <call_gant script="${comma.home}/build/perl6_community_plugin_build.gant"/>
+  </target>
+
   <!--
   <target name="test" depends="init">
     <call_gant script="${project.home}/build/scripts/tests_in_community.gant"/>
