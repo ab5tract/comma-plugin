@@ -4,10 +4,59 @@
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
   <description><![CDATA[
+<p>
+  The Comma plugin provides Perl 6 language support for IDEA-based IDEs, such as IntelliJ.
+  Features include:
+</p>
+
+<ul>
+  <li>Project templates</li>
+  <li>Syntax highlighting</li>
+  <li>Auto-completion of various program elements</li>
+  <li>Numerous code navigation features</li>
+  <li>Running tests and code</li>
+</ul>
+
+<p>
+  The same functionality is also available as an independent IDE. For more details, see
+  <a href="https://commaide.com/">the Comma website</a>.
+</p>
   ]]>
   </description>
 
   <change-notes><![CDATA[
+<ul>
+    <li>Add an Extract Code refactoring, allowing for extraction of one or more
+        statements into a subroutine, method, or private method. The symbols that
+        need to be passed along as parameters are analyzed, and the extracted code
+        replaced with a call to the extracted routine that passes the required
+        symbols as arguments.</li>
+    <li>Add support for collecting coverage data in both normal applications and
+        when running tests. Implement basic display of this information inline with
+        the code, and indication of which tests cover that line of code on hover.</li>
+    <li>Support renaming refactors on tokens, rules, and regexes in a grammar.</li>
+    <li>Allow for digging in to attributes, array elements, and hash elements inside
+        of the debugger.</li>
+    <li>Better indicate type object vs. concrete in the debug view.</li>
+    <li>Allow for browsing the stacks of all running threads in the debugger, not
+        just the one execution stopped in.</li>
+    <li>Fix a crash when single-stepping in the debugger.</li>
+    <li>Recognize %_ as an implicitly declared routine variable in a method, such
+        that it will be suggested by auto-complete and not incorrectly marked as
+        undeclared.</li>
+    <li>Support colonpairs in regex callee names, so that calls to a specific
+        protoregex candidate will parse and reference resolve correctly.</li>
+    <li>Fix a glitch with closing curly brace insertion that was introduced with the
+        additional of incremental lexing.</li>
+    <li>Fix indentation handling when inserting multi-line statements at the end of a
+        block to properly use continuation indentation.</li>
+    <li>Make <code>self</code> resolve to the closest outer class/role/monitor/grammar.</li>
+    <li>Fix using the word "quasi" as a hash key.</li>
+    <li>Fix anonymous array and hash variables wrongly being considered undeclared.</li>
+    <li>Fix a case where a bogus error about a required parameter occurring after an
+        optional one would be reported.</li>
+    <li>Fix an occasional exception in indexing code when "need" was used.</li>
+</ul>
   ]]>
   </change-notes>
 
