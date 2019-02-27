@@ -38,7 +38,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     public Perl6MetaDataComponent(Module module) {
         String name = module.getModuleTypeName();
-        if (name == null || !name.equals(Perl6ModuleType.getInstance().getName()))
+        if (name == null || !name.equals(Perl6ModuleType.getInstance().getId()))
             return;
 
         VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
