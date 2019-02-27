@@ -7,11 +7,13 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
+import com.intellij.testFramework.UsefulTestCase;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.util.Consumer;
 import com.intellij.util.Function;
 import com.intellij.util.Producer;
 import edument.perl6idea.psi.*;
+import junit.framework.TestCase;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -25,7 +27,7 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     public void testMethodSingleScopePresence() {
         doScopeTest("start", Perl6CodeBlockType.METHOD,
                 (scopes) -> {
-                    assertEquals(1, scopes.size());
+                    TestCase.assertEquals(1, scopes.size());
                     checkPackage(scopes, 0, "A", "class");
                 });
     }
@@ -33,7 +35,7 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     public void testMethodOuterClassScopePresence() {
         doScopeTest("start", Perl6CodeBlockType.METHOD,
                 (scopes) -> {
-                    assertEquals(4, scopes.size());
+                    TestCase.assertEquals(4, scopes.size());
                     checkPackage(scopes, 0, "M", "monitor");
                     checkPackage(scopes, 1, "G", "grammar");
                     checkPackage(scopes, 2, "R", "role");
@@ -44,26 +46,26 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     public void testSubFilePresence() {
         doScopeTest("'start'", Perl6CodeBlockType.ROUTINE,
                 (scopes) -> {
-                    assertEquals(1, scopes.size());
+                    TestCase.assertEquals(1, scopes.size());
                     PsiElement decl = PsiTreeUtil.getParentOfType(scopes.get(0), Perl6PackageDecl.class, Perl6RoutineDecl.class, Perl6File.class);
-                    assertTrue(decl instanceof Perl6File);
+                    TestCase.assertTrue(decl instanceof Perl6File);
                 });
     }
 
     public void testSubNestedScopePresence() {
         doScopeTest("'start'", Perl6CodeBlockType.ROUTINE,
                 (scopes) -> {
-                    assertEquals(4, scopes.size());
+                    TestCase.assertEquals(4, scopes.size());
                     checkPackage(scopes, 2, "ABC", "class");
                 });
     }
 
     private void checkPackage(List<Perl6StatementList> scopes, int index, String packageName, String packageKind) {
         PsiElement decl = PsiTreeUtil.getParentOfType(scopes.get(index), Perl6PackageDecl.class, Perl6RoutineDecl.class, Perl6File.class);
-        assertTrue(decl instanceof Perl6PackageDecl);
-        assertNotNull(decl);
-        assertEquals(packageName, ((Perl6PackageDecl)decl).getPackageName());
-        assertEquals(packageKind, ((Perl6PackageDecl)decl).getPackageKind());
+        TestCase.assertTrue(decl instanceof Perl6PackageDecl);
+        TestCase.assertNotNull(decl);
+        TestCase.assertEquals(packageName, ((Perl6PackageDecl)decl).getPackageName());
+        TestCase.assertEquals(packageKind, ((Perl6PackageDecl)decl).getPackageKind());
     }
 
     public void testTopFileSubroutineExtraction() {
@@ -72,13 +74,13 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
     }
 
     public void testTopFileMethodImpossible() {
-        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () ->
+        UsefulTestCase.assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () ->
                 doTest(() -> getClosestStatementListByText("say 1"),
                         "foo-bar", Perl6CodeBlockType.METHOD));
     }
 
     public void testInMethodMethodExtraction() {
-        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () ->
+        UsefulTestCase.assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () ->
                 doTest(() -> getClosestStatementListByText("foo"),
                         "foo-bar", Perl6CodeBlockType.PRIVATEMETHOD));
     }

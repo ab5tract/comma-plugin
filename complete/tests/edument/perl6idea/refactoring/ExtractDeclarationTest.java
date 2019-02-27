@@ -1,6 +1,7 @@
 package edument.perl6idea.refactoring;
 
 import com.intellij.refactoring.util.CommonRefactoringUtil;
+import com.intellij.testFramework.UsefulTestCase;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import edument.perl6idea.Perl6ConstantExtractionHandlerMock;
 import edument.perl6idea.Perl6VariableExtractionHandlerMock;
@@ -145,7 +146,7 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
     public void testPhaserExtractionFailing() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>BEGIN { say 10; }</selection>");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
-        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () -> {
+        UsefulTestCase.assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () -> {
             handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
         });
     }
@@ -153,7 +154,7 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
     public void testImportsExtractionFailing() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use <selection>Foo::Bar</selection>;");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
-        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () -> {
+        UsefulTestCase.assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, () -> {
             handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
         });
     }
