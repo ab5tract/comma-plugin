@@ -69,6 +69,10 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
+    <configurationType implementation="edument.perl6idea.run.Perl6CompleteRunConfigurationType"/>
+    <configurationType implementation="edument.perl6idea.testing.Perl6CompleteTestConfigurationType"/>
+    <programRunner implementation="edument.perl6idea.coverage.Perl6CoverageRunner"/>
+    <executor implementation="edument.perl6idea.coverage.CoverageExecutor"/>
     <programRunner implementation="edument.perl6idea.profiler.Perl6ProfileRunner"/>
     <executor implementation="edument.perl6idea.run.Perl6ProfileExecutor"/>
     <projectViewNodeDecorator implementation="edument.perl6idea.coverage.Perl6ProjectViewCoverageDecorator"/>
@@ -87,6 +91,16 @@
       <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt R"/>
       <add-to-group group-id="IntroduceActionsGroup" anchor="before" relative-to-action="ExtractMethod"/>
     </action>
+    <group id="Perl6Plugin.CoverageMenu">
+      <action id="Perl6Plugin.HideCoverage" class="edument.perl6idea.coverage.Perl6CoverageHideAction"
+              text="Hide Coverage Data" />
+      <separator/>
+    </group>
+    <group id="CoveragePlatformMenu" popup="false">
+      <separator/>
+      <reference ref="Perl6Plugin.CoverageMenu"/>
+      <add-to-group group-id="RunMenu" anchor="before" relative-to-action="DebugMainMenu"/>
+    </group>
   </actions>
 
   <module-components>
@@ -95,6 +109,11 @@
 
   <project-components>
     <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/project-components/*)"/>
+    <component>
+      <interface-class>edument.perl6idea.coverage.Perl6CoverageDataManager</interface-class>
+      <implementation-class>edument.perl6idea.coverage.Perl6CoverageDataManagerImpl</implementation-class>
+      <option name="workspace" value="true"/>
+    </component>
   </project-components>
 
 </idea-plugin>

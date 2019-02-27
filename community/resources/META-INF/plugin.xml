@@ -69,6 +69,8 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
+    <configurationType implementation="edument.perl6idea.run.Perl6CommunityRunConfigurationType"/>
+    <configurationType implementation="edument.perl6idea.testing.Perl6CommunityTestConfigurationType"/>
     <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6CommunityRefactoringSupportProvider"/>
   </extensions>
 

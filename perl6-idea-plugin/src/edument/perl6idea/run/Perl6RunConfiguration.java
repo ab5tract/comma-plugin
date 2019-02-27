@@ -1,21 +1,13 @@
 package edument.perl6idea.run;
 
 import com.intellij.execution.CommonProgramRunConfigurationParameters;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.*;
-import com.intellij.execution.executors.DefaultDebugExecutor;
-import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import edument.perl6idea.coverage.CoverageExecutor;
-import edument.perl6idea.coverage.Perl6CoverageCommandLineState;
-import edument.perl6idea.debugger.Perl6DebugCommandLineState;
-import edument.perl6idea.profiler.Perl6ProfileCommandLineState;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Perl6RunConfiguration extends LocatableConfigurationBase implements CommonProgramRunConfigurationParameters,
+abstract public class Perl6RunConfiguration extends LocatableConfigurationBase implements CommonProgramRunConfigurationParameters,
                                                                                  Perl6DebuggableConfiguration{
     private static final String SCRIPT_PATH = "SCRIPT_PATH";
     private static final String SCRIPT_ARGS = "SCRIPT_ARGS";
@@ -54,20 +46,6 @@ public class Perl6RunConfiguration extends LocatableConfigurationBase implements
     @Override
     public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
         return new Perl6RunSettingsEditor(getProject());
-    }
-
-    @Nullable
-    @Override
-    public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
-        if (executor instanceof DefaultDebugExecutor) {
-            return new Perl6DebugCommandLineState(environment);
-        } else if (executor instanceof Perl6ProfileExecutor) {
-            return new Perl6ProfileCommandLineState(environment);
-        }
-        if (executor instanceof CoverageExecutor) {
-            return new Perl6CoverageCommandLineState(environment);
-        }
-        return new Perl6RunCommandLineState(environment);
     }
 
     @Override

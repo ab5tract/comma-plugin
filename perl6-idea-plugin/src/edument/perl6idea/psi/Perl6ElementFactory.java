@@ -5,7 +5,12 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import edument.perl6idea.refactoring.NewCodeBlockData;
+import edument.perl6idea.refactoring.Perl6CodeBlockType;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.StringJoiner;
 
 public class Perl6ElementFactory {
     public static Perl6Statement createStatementFromText(Project project, String def) {
@@ -107,6 +112,26 @@ public class Perl6ElementFactory {
             return "has " + name;
         }
         return name;
+    }
+
+    public static Perl6Statement createNamedCodeBlock(Project project,
+                                                      NewCodeBlockData data,
+                                                      List<String> contents) {
+        return produceElement(project, getNamedCodeBlockText(data, contents), Perl6Statement.class);
+    }
+
+    private static String getNamedCodeBlockText(NewCodeBlockData data,
+                                                List<String> contents) {
+        String signature = data.formSignature(false);
+        if (!data.returnType.isEmpty()) {
+            signature += " --> " + data.returnType;
+        }
+        String nameToUse = data.type == Perl6CodeBlockType.PRIVATEMETHOD && !data.name.startsWith("!") ? "!" + data.name : data.name;
+        String type = data.type == Perl6CodeBlockType.ROUTINE ? "sub" : "method";
+        String baseFilled = String.format("%s %s(%s)", type, nameToUse, signature);
+        StringJoiner bodyJoiner = new StringJoiner("");
+        contents.forEach(bodyJoiner::add);
+        return String.format("%s {\n%s\n}", baseFilled, bodyJoiner.toString());
     }
 
     protected static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {

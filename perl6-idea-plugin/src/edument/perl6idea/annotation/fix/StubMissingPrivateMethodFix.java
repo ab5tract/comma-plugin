@@ -209,7 +209,7 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
         }
     }
 
-    private List<String> moveNamedsAfterPositionals(List<String> parameters) {
+    private static List<String> moveNamedsAfterPositionals(List<String> parameters) {
         List<String> result = new ArrayList<>();
         List<String> namedParams = new ArrayList<>();
         for (String param : parameters) {

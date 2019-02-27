@@ -4,11 +4,7 @@
     <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
     <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
     <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>
-    <configurationType implementation="edument.perl6idea.run.Perl6RunConfigurationType"/>
-    <configurationType implementation="edument.perl6idea.testing.Perl6TestConfigurationType"/>
     <programRunner implementation="edument.perl6idea.debugger.Perl6DebugRunner"/>
-    <programRunner implementation="edument.perl6idea.coverage.Perl6CoverageRunner"/>
-    <executor implementation="edument.perl6idea.coverage.CoverageExecutor"/>
     <xdebugger.breakpointType implementation="edument.perl6idea.debugger.Perl6LineBreakpointType"/>
     <lang.syntaxHighlighterFactory language="Perl6" implementationClass="edument.perl6idea.highlighter.Perl6SyntaxHighlighterFactory"/>
     <lang.parserDefinition language="Perl6" implementationClass="edument.perl6idea.parsing.Perl6ParserDefinition"/>
@@ -93,16 +89,6 @@
             description="Create new Perl 6 test in current project" icon="/icons/camelia.png">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewModuleAction"/>
     </action>
-    <group id="Perl6Plugin.CoverageMenu">
-      <action id="Perl6Plugin.HideCoverage" class="edument.perl6idea.coverage.Perl6CoverageHideAction"
-              text="Hide Coverage Data" />
-      <separator/>
-    </group>
-    <group id="CoveragePlatformMenu" popup="false">
-      <separator/>
-      <reference ref="Perl6Plugin.CoverageMenu"/>
-      <add-to-group group-id="RunMenu" anchor="before" relative-to-action="DebugMainMenu"/>
-    </group>
   </actions>
 
   <module-components>
@@ -115,11 +101,6 @@
   </module-components>
 
   <project-components>
-    <component>
-      <interface-class>edument.perl6idea.coverage.Perl6CoverageDataManager</interface-class>
-      <implementation-class>edument.perl6idea.coverage.Perl6CoverageDataManagerImpl</implementation-class>
-      <option name="workspace" value="true"/>
-    </component>
   </project-components>
 
 </idea-plugin>
