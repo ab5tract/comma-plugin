@@ -13,7 +13,7 @@ public class ContextualizerTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/contextualizer";
+        return "perl6-idea-plugin/testData/parsing/contextualizer";
     }
 
     @Override

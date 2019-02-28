@@ -13,7 +13,7 @@ public class ProtoregexLongCalls extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/protoregex-long-calls";
+    return "perl6-idea-plugin/testData/parsing/protoregex-long-calls";
   }
 
   @Override

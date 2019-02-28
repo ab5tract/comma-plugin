@@ -14,7 +14,7 @@ import edument.perl6idea.filetypes.Perl6ScriptFileType;
 public class FormatterTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/formatter";
+        return "perl6-idea-plugin/testData/formatter";
   }
 
     public void testBasicFormatting() {

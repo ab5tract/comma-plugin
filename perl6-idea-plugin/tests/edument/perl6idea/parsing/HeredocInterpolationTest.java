@@ -13,7 +13,7 @@ public class HeredocInterpolationTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/heredoc-interpolation";
+        return "perl6-idea-plugin/testData/parsing/heredoc-interpolation";
     }
 
     @Override

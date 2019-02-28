@@ -11,7 +11,7 @@ import java.util.List;
 public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/codeInsight/localVariables";
+        return "perl6-idea-plugin/testData/codeInsight/localVariables";
     }
 
     public void testCompletion() {

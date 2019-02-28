@@ -13,7 +13,7 @@ public class MultilineComment extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/multiline-comment";
+    return "perl6-idea-plugin/testData/parsing/multiline-comment";
   }
 
   @Override

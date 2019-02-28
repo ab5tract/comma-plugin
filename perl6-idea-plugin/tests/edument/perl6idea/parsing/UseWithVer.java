@@ -13,7 +13,7 @@ public class UseWithVer extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/use-with-ver";
+    return "perl6-idea-plugin/testData/parsing/use-with-ver";
   }
 
   @Override

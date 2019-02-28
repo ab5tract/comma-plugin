@@ -13,7 +13,7 @@ public class SignatureInvocant extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/signature-invocant";
+        return "perl6-idea-plugin/testData/parsing/signature-invocant";
     }
 
     @Override

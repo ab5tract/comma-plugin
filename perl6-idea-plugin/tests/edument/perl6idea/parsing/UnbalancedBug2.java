@@ -13,7 +13,7 @@ public class UnbalancedBug2 extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/unbalanced-bug-2";
+        return "perl6-idea-plugin/testData/parsing/unbalanced-bug-2";
     }
 
     @Override

@@ -13,7 +13,7 @@ public class Trusts extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/trusts";
+        return "perl6-idea-plugin/testData/parsing/trusts";
     }
 
     @Override

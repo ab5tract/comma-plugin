@@ -13,7 +13,7 @@ public class MetaOpsTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/metaops";
+        return "perl6-idea-plugin/testData/parsing/metaops";
     }
 
     @Override

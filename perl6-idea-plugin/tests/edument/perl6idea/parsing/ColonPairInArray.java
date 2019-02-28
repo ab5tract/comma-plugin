@@ -13,7 +13,7 @@ public class ColonPairInArray extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/colonpair-in-array";
+    return "perl6-idea-plugin/testData/parsing/colonpair-in-array";
   }
 
   @Override

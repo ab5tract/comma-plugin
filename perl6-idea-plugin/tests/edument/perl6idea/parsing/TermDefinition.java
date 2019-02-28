@@ -13,7 +13,7 @@ public class TermDefinition extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/term-definition";
+        return "perl6-idea-plugin/testData/parsing/term-definition";
     }
 
     @Override

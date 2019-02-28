@@ -13,7 +13,7 @@ public class SpaceAfterPrefix extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/space-after-prefix";
+        return "perl6-idea-plugin/testData/parsing/space-after-prefix";
     }
 
     @Override

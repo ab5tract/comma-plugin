@@ -6,7 +6,7 @@ import edument.perl6idea.filetypes.Perl6ScriptFileType;
 public class Perl6StatementMoveTest extends LightPlatformCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/mover";
+        return "perl6-idea-plugin/testData/mover";
     }
 
     public void testSimple() {

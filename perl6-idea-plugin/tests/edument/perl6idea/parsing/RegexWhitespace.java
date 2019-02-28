@@ -13,7 +13,7 @@ public class RegexWhitespace extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/regex-whitespace";
+    return "perl6-idea-plugin/testData/parsing/regex-whitespace";
   }
 
   @Override

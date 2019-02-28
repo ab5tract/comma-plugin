@@ -13,7 +13,7 @@ public class OperatorsTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/operators";
+        return "perl6-idea-plugin/testData/parsing/operators";
     }
 
     @Override

@@ -13,7 +13,7 @@ public class SignatureOneArgQuant extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/signature-onearg-quant";
+        return "perl6-idea-plugin/testData/parsing/signature-onearg-quant";
     }
 
     @Override

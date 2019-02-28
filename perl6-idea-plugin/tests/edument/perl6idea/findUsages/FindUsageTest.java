@@ -11,7 +11,7 @@ import java.util.Collection;
 public class FindUsageTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/findUsage";
+        return "perl6-idea-plugin/testData/findUsage";
     }
 
     @NotNull

@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/reference";
+        return "perl6-idea-plugin/testData/reference";
     }
 
     @NotNull

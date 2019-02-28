@@ -13,7 +13,7 @@ public class RxSquareQuotes extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/rx-square-quotes";
+        return "perl6-idea-plugin/testData/parsing/rx-square-quotes";
     }
 
     @Override

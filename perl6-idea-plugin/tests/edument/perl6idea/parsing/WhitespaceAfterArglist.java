@@ -13,7 +13,7 @@ public class WhitespaceAfterArglist extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/ws-after-arglist";
+    return "perl6-idea-plugin/testData/parsing/ws-after-arglist";
   }
 
   @Override

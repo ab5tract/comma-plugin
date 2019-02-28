@@ -48,11 +48,15 @@
       <call_gant script="${comma.home}/build/perl6_community_plugin_build.gant"/>
   </target>
 
-  <!--
-  <target name="test" depends="init">
-    <call_gant script="${project.home}/build/scripts/tests_in_community.gant"/>
+  <target name="test-community" depends="init">
+    <call_gant script="${comma.home}/build/comma_community_tests.gant"/>
   </target>
-  -->
+
+  <target name="test-complete" depends="init">
+    <call_gant script="${comma.home}/build/comma_complete_tests.gant"/>
+  </target>
+
+  <target name="test" depends="init,test-community,test-complete"/>
 
   <target name="all" depends="cleanup, complete-build"/>
 </project>

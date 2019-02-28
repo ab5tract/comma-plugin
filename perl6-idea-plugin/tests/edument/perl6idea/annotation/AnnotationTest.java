@@ -13,7 +13,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/annotation";
+        return "perl6-idea-plugin/testData/annotation";
     }
 
     @Override

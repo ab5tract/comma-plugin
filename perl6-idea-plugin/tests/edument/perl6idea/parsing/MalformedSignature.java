@@ -13,7 +13,7 @@ public class MalformedSignature extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/malformed-sig";
+    return "perl6-idea-plugin/testData/parsing/malformed-sig";
   }
 
   @Override

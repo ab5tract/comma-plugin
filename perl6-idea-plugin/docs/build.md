@@ -2,7 +2,7 @@
 
 #### Preparation
 
-Do next steps inside a work-related directory, for example, `comma`.
+Do the following steps inside a work-related directory, for example, `comma`.
 * `git clone https://github.com/edument/intellij-community.git`
 * `cd intellij-community`
 * `git checkout comma`
@@ -16,13 +16,13 @@ Do next steps inside a work-related directory, for example, `comma`.
 
 #### How to build a plugin
 
-While in `comma-build` directory.
+While in the `comma-build` directory.
 * `ant community-build-plugin` or `ant complete-build-plugin` for Community version or Complete version.
-* Plugin will be placed in `../out/commaCT/artifacts/CT-plugins/` and `out/commaCP/artifacts/CP-plugins/` directories relatively.
+* The plugin will be placed in `../out/commaCT/artifacts/CT-plugins/` and `out/commaCP/artifacts/CP-plugins/` directories relatively.
 
-#### How to build standalone Comma
+#### How to build a standalone Comma
 
-While in `comma-build` directory.
+While in the `comma-build` directory.
 * `ant community-build` or `ant complete-build` for Community version or Complete version.
 * Built images will be in `../out/commaCT/artifacts` directory.
 
@@ -33,8 +33,7 @@ While in `comma-build` directory.
 * Error reporter used is always Intellij's one, not Edument-based.
 * Because of plugin absence, `Check out from version control` always has no options, but those are present in final build.
 
-* Open Run Configurations tab. Create a new one:
-  - Type: `Application`
+* Open Run Configurations tab. Create a new Run Configuration of type "Application":
   - Name: `Comma`(does not matter for build, you also should specify wanted edition, "Complete" or "Community")
   - Main class: `com.intellij.idea.Main` (type `Main` in Search by Name and select needed)
   - VM options: `-ea  -Xmx192m -Didea.is.internal=true -Didea.platform.prefix=CommaCore -Didea.paths.selector=Comma`
@@ -46,9 +45,7 @@ While in `comma-build` directory.
 
 #### How to run Perl 6 Plugin from IDEA Run Configuration for testing
 
-* Open Run Configurations. Create a new one(you may copy `IDEA with Python plugin` and do appropriate changes if wanted):
-
-  - Type: `Application`
+* Open Run Configurations. Create a new Run Configuration (you may copy `IDEA with Python plugin` and do appropriate changes if wanted):
   - Name: `IDEA with Perl 6 plugin`(does not matter for build, you also likely want to specify edition).
   - Main class: com.intellij.idea.Main (type `Main` in Search by Name and select needed)
   - VM options: `-ea -Xmx192m -Didea.is.internal=true`
@@ -60,7 +57,12 @@ While in `comma-build` directory.
 
 #### How to run tests
 
-TODO
+While in the `comma-build` directory.
+* `ant test`
+
+Or one can execute either `ant test-complete` and `ant test-community` to run dedicated set of tests.
+`ant test` target consists of `test-complete` and `test-community`.
+The `test-complete` target consists of tests that are common for both editions and dedicated ones. The same is true for `test-community`.
 
 ### How to update version
 

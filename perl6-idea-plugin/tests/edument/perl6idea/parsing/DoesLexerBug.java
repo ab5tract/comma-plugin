@@ -13,7 +13,7 @@ public class DoesLexerBug extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/does-lexer-bug";
+        return "perl6-idea-plugin/testData/parsing/does-lexer-bug";
     }
 
     @Override

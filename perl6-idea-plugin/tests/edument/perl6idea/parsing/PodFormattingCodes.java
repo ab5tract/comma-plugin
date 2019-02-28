@@ -13,7 +13,7 @@ public class PodFormattingCodes extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/pod-formatting-codes";
+        return "perl6-idea-plugin/testData/parsing/pod-formatting-codes";
     }
 
     @Override

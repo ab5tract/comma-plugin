@@ -21,7 +21,7 @@ import java.util.List;
 public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/block-extract";
+        return "perl6-idea-plugin/testData/block-extract";
     }
 
     public void testMethodSingleScopePresence() {
