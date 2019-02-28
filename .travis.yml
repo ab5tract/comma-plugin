@@ -1,4 +1,5 @@
 language: java
+install: ant deps
 env:
   global:
   - export PATH="/opt/rakudo-pkg/bin:/opt/rakudo-pkg/share/perl6/site/bin:$PATH"
