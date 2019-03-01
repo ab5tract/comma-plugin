@@ -5,16 +5,21 @@
 
   <description><![CDATA[
 <p>
-  The Comma plugin provides Perl 6 language support for IDEA-based IDEs, such as IntelliJ.
+  The Comma Complete plugin provides Perl 6 language support for IDEA-based IDEs.
   Features include:
 </p>
 
 <ul>
-  <li>Project templates</li>
-  <li>Syntax highlighting</li>
+  <li>Detailed and customizable syntax highlighting</li>
   <li>Auto-completion of various program elements</li>
+  <li>Live code analysis to detect common problems</li>
   <li>Numerous code navigation features</li>
-  <li>Running tests and code</li>
+  <li>A range of refactorings, such as rename, extract variable, and extract method</li>
+  <li>Running scripts</li>
+  <li>Running tests and viewing the results</li>
+  <li>Debugging</li>
+  <li>Test coverage reporting</li>
+  <li>Profiling</li>
 </ul>
 
 <p>
