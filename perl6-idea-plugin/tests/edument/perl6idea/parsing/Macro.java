@@ -13,7 +13,7 @@ public class Macro extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/macro";
+    return "perl6-idea-plugin/testData/parsing/macro";
   }
 
   @Override

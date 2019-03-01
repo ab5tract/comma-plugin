@@ -13,7 +13,7 @@ public class QuasiHashKey extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/quasi-hash-key";
+    return "perl6-idea-plugin/testData/parsing/quasi-hash-key";
   }
 
   @Override

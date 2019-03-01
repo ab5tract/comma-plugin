@@ -13,7 +13,7 @@ public class Also extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/also";
+    return "perl6-idea-plugin/testData/parsing/also";
   }
 
   @Override

@@ -13,7 +13,7 @@ public class Labels extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/labels";
+        return "perl6-idea-plugin/testData/parsing/labels";
     }
 
     @Override

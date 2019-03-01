@@ -32,7 +32,7 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/completion";
+        return "perl6-idea-plugin/testData/completion";
     }
 
     @NotNull

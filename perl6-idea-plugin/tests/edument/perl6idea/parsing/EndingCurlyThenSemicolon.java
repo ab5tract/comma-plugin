@@ -13,7 +13,7 @@ public class EndingCurlyThenSemicolon extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/ending-curly-then-semicolon";
+        return "perl6-idea-plugin/testData/parsing/ending-curly-then-semicolon";
     }
 
     @Override

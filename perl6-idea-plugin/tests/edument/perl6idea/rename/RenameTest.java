@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class RenameTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/rename";
+        return "perl6-idea-plugin/testData/rename";
     }
 
     @NotNull

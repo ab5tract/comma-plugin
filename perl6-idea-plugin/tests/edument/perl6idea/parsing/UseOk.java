@@ -13,7 +13,7 @@ public class UseOk extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/use-ok";
+        return "perl6-idea-plugin/testData/parsing/use-ok";
     }
 
     @Override

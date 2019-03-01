@@ -13,7 +13,7 @@ public class LowercaseConstantTerm extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/lowercase-constant-term";
+    return "perl6-idea-plugin/testData/parsing/lowercase-constant-term";
   }
 
   @Override

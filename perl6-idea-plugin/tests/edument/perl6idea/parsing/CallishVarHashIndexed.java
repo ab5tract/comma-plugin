@@ -13,7 +13,7 @@ public class CallishVarHashIndexed extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/callish-var-hash-indexed";
+        return "perl6-idea-plugin/testData/parsing/callish-var-hash-indexed";
     }
 
     @Override

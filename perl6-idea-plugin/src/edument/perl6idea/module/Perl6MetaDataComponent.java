@@ -32,11 +32,15 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Perl6MetaDataComponent implements ModuleComponent {
     public static final String META6_JSON_NAME = "META6.json";
     public static final String META_OBSOLETE_NAME = "META.info";
-    private final Module myModule;
+    private Module myModule = null;
     private VirtualFile myMetaFile = null;
     private JSONObject myMeta = null;
 
     public Perl6MetaDataComponent(Module module) {
+        String name = module.getModuleTypeName();
+        if (name == null || !name.equals(Perl6ModuleType.getInstance().getId()))
+            return;
+
         VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
             @Override
             public void contentsChanged(@NotNull VirtualFileEvent event) {

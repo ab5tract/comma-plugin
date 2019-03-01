@@ -17,7 +17,7 @@ public class TraitCompletionTest extends LightCodeInsightFixtureTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/codeInsight/localVariables";
+        return "perl6-idea-plugin/testData/codeInsight/localVariables";
     }
 
     @Override

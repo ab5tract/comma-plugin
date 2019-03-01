@@ -13,7 +13,7 @@ public class GrammarTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/grammar";
+        return "perl6-idea-plugin/testData/parsing/grammar";
     }
 
     @Override

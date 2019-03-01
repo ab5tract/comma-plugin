@@ -13,7 +13,7 @@ public class BlockStructureTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/block-structure";
+        return "perl6-idea-plugin/testData/parsing/block-structure";
     }
 
     @Override

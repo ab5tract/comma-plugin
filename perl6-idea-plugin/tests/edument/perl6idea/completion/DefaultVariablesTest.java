@@ -4,13 +4,14 @@ import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
 public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/codeInsight/defaultVariables";
+        return "perl6-idea-plugin/testData/codeInsight/defaultVariables";
     }
 
     public void testCompletion() {

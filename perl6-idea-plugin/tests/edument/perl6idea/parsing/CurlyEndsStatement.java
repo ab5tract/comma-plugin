@@ -13,7 +13,7 @@ public class CurlyEndsStatement extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/curly-ends-statement";
+        return "perl6-idea-plugin/testData/parsing/curly-ends-statement";
     }
 
     @Override

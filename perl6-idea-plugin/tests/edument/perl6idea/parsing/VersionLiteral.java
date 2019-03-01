@@ -13,7 +13,7 @@ public class VersionLiteral extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/version-literal";
+    return "perl6-idea-plugin/testData/parsing/version-literal";
   }
 
   @Override

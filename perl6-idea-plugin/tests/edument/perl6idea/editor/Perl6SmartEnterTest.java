@@ -14,7 +14,7 @@ import java.util.List;
 public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/smartEnter";
+        return "perl6-idea-plugin/testData/smartEnter";
     }
 
     public void doTest() {

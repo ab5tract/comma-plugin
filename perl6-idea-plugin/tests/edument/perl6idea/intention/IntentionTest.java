@@ -7,7 +7,7 @@ import edument.perl6idea.filetypes.Perl6ScriptFileType;
 public class IntentionTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/intention";
+        return "perl6-idea-plugin/testData/intention";
     }
 
     public void testZeroToN() {

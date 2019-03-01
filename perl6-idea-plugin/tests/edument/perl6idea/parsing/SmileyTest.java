@@ -13,7 +13,7 @@ public class SmileyTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/smiley";
+        return "perl6-idea-plugin/testData/parsing/smiley";
     }
 
     @Override

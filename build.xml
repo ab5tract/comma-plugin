@@ -1,14 +1,14 @@
-<project name="Comma Supporter Edition" default="all">
+<project name="Comma" default="all">
   <property name="project.home" value="${basedir}/.."/>
-  <property name="python.home" value="${basedir}"/>
+  <property name="comma.home" value="${basedir}"/>
   <property name="out.dir" value="${project.home}/out"/>
   <property name="tmp.dir" value="${project.home}/out/tmp"/>
   <property name="idea.build.number" value="0"/>
   <property name="idea.path" value=""/>
 
   <target name="cleanup">
-    <delete file="${python.home}/perl6-idea-plugin/resources/META-INF/plugin.xml" failonerror="false"/>
     <delete dir="${out.dir}" failonerror="false"/>
+    <delete file="perl6-idea-plugin/resources/META-INF/plugin.xml" failonerror="false"/>
   </target>
 
   <target name="init">
@@ -32,18 +32,31 @@
     </sequential>
   </macrodef>
 
-  <target name="build" depends="init">
-    <call_gant script="${python.home}/build/comma_supporter_build.gant"/>
+  <target name="complete-build" depends="init,cleanup">
+      <call_gant script="${comma.home}/build/comma_complete_build.gant"/>
   </target>
 
-  <target name="plugin" depends="init">
-    <call_gant script="${python.home}/build/perl6_supporter_plugin_build.gant"/>
+  <target name="community-build" depends="init,cleanup">
+      <call_gant script="${comma.home}/build/comma_community_build.gant"/>
   </target>
-  <!--
-  <target name="test" depends="init">
-    <call_gant script="${project.home}/build/scripts/tests_in_community.gant"/>
-  </target>
-  -->
 
-  <target name="all" depends="cleanup,build"/>
+  <target name="complete-plugin-build" depends="init,cleanup">
+      <call_gant script="${comma.home}/build/perl6_complete_plugin_build.gant"/>
+  </target>
+
+  <target name="community-plugin-build" depends="init,cleanup">
+      <call_gant script="${comma.home}/build/perl6_community_plugin_build.gant"/>
+  </target>
+
+  <target name="test-community" depends="init">
+    <call_gant script="${comma.home}/build/comma_community_tests.gant"/>
+  </target>
+
+  <target name="test-complete" depends="init">
+    <call_gant script="${comma.home}/build/comma_complete_tests.gant"/>
+  </target>
+
+  <target name="test" depends="init,test-community,test-complete"/>
+
+  <target name="all" depends="cleanup, complete-build"/>
 </project>

@@ -1,0 +1,106 @@
+<idea-plugin>
+  <extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="edument.perl6idea.filetypes.Perl6FileTypeFactory"/>
+    <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
+    <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
+    <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>
+    <programRunner implementation="edument.perl6idea.debugger.Perl6DebugRunner"/>
+    <xdebugger.breakpointType implementation="edument.perl6idea.debugger.Perl6LineBreakpointType"/>
+    <lang.syntaxHighlighterFactory language="Perl6" implementationClass="edument.perl6idea.highlighter.Perl6SyntaxHighlighterFactory"/>
+    <lang.parserDefinition language="Perl6" implementationClass="edument.perl6idea.parsing.Perl6ParserDefinition"/>
+    <colorSettingsPage implementation="edument.perl6idea.highlighter.Perl6ColorSettingsPage"/>
+    <lang.formatter language="Perl6" implementationClass="edument.perl6idea.formatter.Perl6FormattingModelBuilder"/>
+    <lang.braceMatcher language="Perl6" implementationClass="edument.perl6idea.editor.Perl6BraceMatcher"/>
+    <lang.psiStructureViewFactory language="Perl6" implementationClass="edument.perl6idea.structureView.Perl6StructureViewFactory"/>
+    <declarationRangeHandler key="edument.perl6idea.psi.Perl6PackageDecl"
+                             implementationClass="edument.perl6idea.structureView.PackageDeclarationRangeHandler"/>
+    <declarationRangeHandler key="edument.perl6idea.psi.Perl6RoutineDecl"
+                             implementationClass="edument.perl6idea.structureView.RoutineDeclarationRangeHandler"/>
+    <lang.commenter language="Perl6" implementationClass="edument.perl6idea.editor.Perl6Commenter"/>
+    <lang.foldingBuilder language="Perl6" implementationClass="edument.perl6idea.editor.Perl6FoldingBuilder"/>
+    <typedHandler implementation="edument.perl6idea.editor.SigilCompletionAutoPopupHandler"/>
+    <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultPerl6.xml"/>
+    <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaPerl6.xml"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NullRegexAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredVariableAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredRoutineAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredPrivateMethod"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredAttribute"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.editor.SigSpaceAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.LeadingZeroAnnotation"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MethodNotOnRangeAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingUnitKeywordAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.PodFormatAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.SignatureAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UsedModuleAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.WheneverOutsideOfReactAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.IllegalVariableDeclarationAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UnitSubAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NoEndpointRangeAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.InterpolatedEVALAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingRoleMethodAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MyScopedVariableExportedAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.IncomposableDoesAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MonitorUsageAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NonInheritableComposableDeclAnnotation"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.ProblematicReturn"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingThingsAnnotator"/>
+    <intentionAction>
+      <className>edument.perl6idea.intention.RangeIntentionFix</className>
+      <category>Range</category>
+      <descriptionDirectoryName>RangeIntentionFix</descriptionDirectoryName>
+    </intentionAction>
+    <stubElementTypeHolder class="edument.perl6idea.parsing.Perl6ElementTypes"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.ProjectModulesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllConstantsStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllAttributesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllRoutinesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllRegexesStubIndex"/>
+    <gotoClassContributor implementation="edument.perl6idea.contribution.Perl6ClassNameContributor"/>
+    <gotoSymbolContributor implementation="edument.perl6idea.contribution.Perl6SymbolNameContributor"/>
+    <errorHandler implementation="edument.perl6idea.utils.Perl6ErrorReportSubmitter"/>
+    <statementUpDownMover implementation="edument.perl6idea.editor.Perl6StatementMover"/>
+    <treeStructureProvider implementation="edument.perl6idea.structureView.Perl6ProjectStructureProvider"/>
+    <spellchecker.support language="Perl6" implementationClass="edument.perl6idea.editor.Perl6SpellCheckingStrategy"/>
+    <enterHandlerDelegate implementation="edument.perl6idea.editor.Perl6EnterDelegate"/>
+    <lang.findUsagesProvider language="Perl6" implementationClass="edument.perl6idea.findUsages.Perl6FindUsagesProvider"/>
+    <lang.namesValidator language="Perl6" implementationClass="edument.perl6idea.rename.Perl6InputValidator"/>
+    <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6ModuleRenameProcessor"/>
+    <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6PsiElementProcessor"/>
+    <usageTypeProvider implementation="edument.perl6idea.findUsages.Perl6UsageTypeProvider"/>
+    <lang.smartEnterProcessor language="Perl6" implementationClass="edument.perl6idea.editor.smartEnter.Perl6SmartEnterProcessor"/>
+    <enterBetweenBracesDelegate language="Perl6" implementationClass="edument.perl6idea.editor.Perl6EnterBetweenBracesDelegate"/>
+    <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
+    <consoleFilterProvider implementation="edument.perl6idea.run.Perl6OutputLinkProvider"/>
+  </extensions>
+
+  <actions>
+    <action id="Perl6Plugin.NewScriptAction" class="edument.perl6idea.actions.NewScriptAction" text="Perl 6 Script"
+            description="Create new Perl 6 script in current project" icon="/icons/camelia.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
+    </action>
+    <action id="Perl6Plugin.NewModuleAction" class="edument.perl6idea.actions.NewModuleAction" text="Perl 6 Module"
+            description="Create new Perl 6 module in current project" icon="/icons/camelia.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewScriptAction"/>
+    </action>
+    <action id="Perl6Plugin.NewTestAction" class="edument.perl6idea.actions.NewTestAction" text="Perl 6 Test"
+            description="Create new Perl 6 test in current project" icon="/icons/camelia.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewModuleAction"/>
+    </action>
+  </actions>
+
+  <module-components>
+    <component>
+      <implementation-class>edument.perl6idea.module.Perl6MetaDataComponent</implementation-class>
+    </component>
+    <component>
+      <implementation-class>edument.perl6idea.event.ModuleMetaChangeListener</implementation-class>
+    </component>
+  </module-components>
+
+  <project-components>
+  </project-components>
+
+</idea-plugin>

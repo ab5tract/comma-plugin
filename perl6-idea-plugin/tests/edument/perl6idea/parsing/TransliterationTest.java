@@ -13,7 +13,7 @@ public class TransliterationTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/transliteration";
+        return "perl6-idea-plugin/testData/parsing/transliteration";
     }
 
     @Override

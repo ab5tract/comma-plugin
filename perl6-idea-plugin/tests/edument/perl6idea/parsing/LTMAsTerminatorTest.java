@@ -13,7 +13,7 @@ public class LTMAsTerminatorTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/ltm-terminator";
+        return "perl6-idea-plugin/testData/parsing/ltm-terminator";
     }
 
     @Override

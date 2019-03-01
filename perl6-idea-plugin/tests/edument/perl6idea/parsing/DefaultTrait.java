@@ -13,7 +13,7 @@ public class DefaultTrait extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "testData/parsing/default-trait";
+        return "perl6-idea-plugin/testData/parsing/default-trait";
     }
 
     @Override

@@ -13,7 +13,7 @@ public class ParametricRole extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "testData/parsing/parametric-role";
+    return "perl6-idea-plugin/testData/parsing/parametric-role";
   }
 
   @Override

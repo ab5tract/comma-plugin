@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 public class FoldingTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "testData/folding";
+        return "perl6-idea-plugin/testData/folding";
     }
 
     public void testFolding() {
