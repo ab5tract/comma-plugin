@@ -12,7 +12,7 @@ sub MAIN($version) {
             my $date = Date.today.yyyy-mm-dd.subst('-', '', :g);
             spurt 'community/resources/idea/CommaCoreApplicationInfo.xml',
                 .subst(/'<build ' <( 'number="' <-["]>+ '" date="' \d+ '"' )>/,
-                    qq|number="CO-$maj.$min.$build" date="$date"|);
+                    qq|number="CT-$maj.$min.$build" date="$date"|);
         }
         given slurp('complete/resources/idea/CommaCoreApplicationInfo.xml') {
             spurt 'complete/resources/idea/CommaCoreApplicationInfo.xml',
@@ -23,7 +23,15 @@ sub MAIN($version) {
             my $date = Date.today.yyyy-mm-dd.subst('-', '', :g);
             spurt 'complete/resources/idea/CommaCoreApplicationInfo.xml',
                 .subst(/'<build ' <( 'number="' <-["]>+ '" date="' \d+ '"' )>/,
-                    qq|number="CO-$maj.$min.$build" date="$date"|);
+                    qq|number="CP-$maj.$min.$build" date="$date"|);
+        }
+        given slurp('community/resources/META-INF/plugin.xml') {
+            spurt 'community/resources/META-INF/plugin.xml',
+                .subst(/'<version>' <( .+? )> '</version>'/, $version);
+        }
+        given slurp('complete/resources/META-INF/plugin.xml') {
+            spurt 'complete/resources/META-INF/plugin.xml',
+                .subst(/'<version>' <( .+? )> '</version>'/, $version);
         }
     }
     else {
