@@ -5,7 +5,7 @@ sub MAIN($version) {
     with $version ~~ /^ (\d**4) '.' (\d**1..2) '.' (\d+)? $/ -> ($maj, $min, $build, |) {
         given slurp('community/resources/idea/CommaCoreApplicationInfo.xml') {
             spurt 'community/resources/idea/CommaCoreApplicationInfo.xml',
-                .subst(/'<version ' <( 'major="' \d+ '" minor="' \d+ '"' 'micro="' \d+ '"' )>/,
+                .subst(/'<version ' <( 'major="' \d+ '" minor="' \d+ '" micro="' \d+ '"' )>/,
                     qq|major="$maj" minor="$min" micro="$build"|);
         }
         given slurp('community/resources/idea/CommaCoreApplicationInfo.xml') {
@@ -16,7 +16,7 @@ sub MAIN($version) {
         }
         given slurp('complete/resources/idea/CommaCoreApplicationInfo.xml') {
             spurt 'complete/resources/idea/CommaCoreApplicationInfo.xml',
-                .subst(/'<version ' <( 'major="' \d+ '" minor="' \d+ '"' 'micro="' \d+ '"' )>/,
+                .subst(/'<version ' <( 'major="' \d+ '" minor="' \d+ '" micro="' \d+ '"' )>/,
                     qq|major="$maj" minor="$min" micro="$build"|);
         }
         given slurp('complete/resources/idea/CommaCoreApplicationInfo.xml') {
