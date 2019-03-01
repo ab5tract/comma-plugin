@@ -394,6 +394,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             notification.addAction(new AnAction(String.format("Open %s", META6_JSON_NAME)) {
                 @Override
                 public void actionPerformed(AnActionEvent e) {
+                    if (myModule.isDisposed()) return;
                     FileEditorManager.getInstance(myModule.getProject()).openFile(myMetaFile, true);
                     notification.expire();
                 }
@@ -423,6 +424,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             public void actionPerformed(AnActionEvent e) {
                 try {
                     notification.expire();
+                    if (myModule.isDisposed()) return;
                     createStubMetaFile(null, true);
                 }
                 catch (IOException e1) {
