@@ -286,12 +286,12 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         this.scriptName = scriptName;
     }
 
-    @Nullable
-    @Override
-    public ModuleWizardStep modifySettingsStep(@NotNull SettingsStep settingsStep) {
-        final ModuleNameLocationSettings nameField = settingsStep.getModuleNameLocationSettings();
-        if (moduleName != null && nameField != null)
-            nameField.setModuleName(StringUtil.sanitizeJavaIdentifier(moduleName));
-        return super.modifySettingsStep(settingsStep);
-    }
+    //@Nullable
+    //@Override
+    //public ModuleWizardStep modifySettingsStep(@NotNull SettingsStep settingsStep) {
+    //    final ModuleNameLocationSettings nameField = settingsStep.getModuleNameLocationSettings();
+    //    if (moduleName != null && nameField != null)
+    //        nameField.setModuleName(StringUtil.sanitizeJavaIdentifier(moduleName));
+    //    return super.modifySettingsStep(settingsStep);
+    //}
 }
