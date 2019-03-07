@@ -174,18 +174,16 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     }
 
     public static String stubScript(String moduleLibraryPath, String scriptName) {
-        Path scriptPath = Paths.get(moduleLibraryPath, scriptName);
-        String stringPath = scriptPath.toString();
-        if (!stringPath.endsWith(".pl6") && !stringPath.endsWith(Perl6ScriptFileType.INSTANCE.getDefaultExtension()))
-            stringPath += "." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
-
+        if (!scriptName.endsWith(".pl6") && !scriptName.endsWith(Perl6ScriptFileType.INSTANCE.getDefaultExtension()))
+            scriptName += "." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
         List<String> lines = Arrays.asList(
                 "#!/usr/bin/env perl6",
                 "", "",
                 "sub MAIN() { }"
         );
-        writeCodeToPath(scriptPath, lines);
-        return stringPath;
+        Path path = Paths.get(moduleLibraryPath, scriptName);
+        writeCodeToPath(path, lines);
+        return path.toString();
     }
 
     private static void writeCodeToPath(Path codePath, List<String> lines) {
