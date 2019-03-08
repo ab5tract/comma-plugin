@@ -159,8 +159,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         SelectionModel selectionModel = editor.getSelectionModel();
         PsiElement startLeaf = file.findElementAt(selectionModel.getSelectionStart());
         PsiElement endLeaf = file.findElementAt(selectionModel.getSelectionEnd());
-        PsiElement start = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(startLeaf, true), Perl6Statement.class);
-        PsiElement end = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(endLeaf, false), Perl6Statement.class);
+        PsiElement start = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(startLeaf, true), Perl6Statement.class, Perl6Heredoc.class);
+        PsiElement end = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(endLeaf, false), Perl6Statement.class, Perl6Heredoc.class);
 
         if (start == null || end == null) {
             if (end != null) {

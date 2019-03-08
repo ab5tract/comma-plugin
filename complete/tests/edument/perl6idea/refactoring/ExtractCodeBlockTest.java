@@ -190,6 +190,11 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
                });
     }
 
+    public void testHeredoc() {
+        doTest(() -> getClosestStatementListByText("END"),
+               "heredoc", Perl6CodeBlockType.ROUTINE);
+    }
+
     // Helper methods
     /**
      * Gets innermost statement list in an opened file around a line of text passed
