@@ -14,7 +14,6 @@ import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
@@ -44,7 +43,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (stub != null)
             return stub.getPackageKind();
 
-        PsiElement declarator = findChildByType(Perl6TokenTypes.PACKAGE_DECLARATOR);
+        PsiElement declarator = getDeclarator();
         return declarator == null ? "package" : declarator.getText();
     }
 
@@ -398,7 +397,8 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     public PsiMetaData getMetaData() {
         PsiElement decl = this;
         String shortName = getPackageName();
-        if (shortName == null) return null;
+        if (shortName == null)
+            shortName = "";
         int lastIndexOf = shortName.lastIndexOf(':');
         if (lastIndexOf != -1) {
             shortName = shortName.substring(lastIndexOf + 1);

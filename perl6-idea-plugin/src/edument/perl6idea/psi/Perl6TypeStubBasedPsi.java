@@ -8,6 +8,7 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.StubElement;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.stub.Perl6EnumStubElementType;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStubElementType;
 import edument.perl6idea.psi.stub.Perl6SubsetStubElementType;
@@ -43,7 +44,14 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
     @Override
     public int getTextOffset() {
         PsiElement name = getNameIdentifier();
-        return name == null ? 0 : name.getTextOffset();
+        if (name != null)
+            return name.getTextOffset();
+        PsiElement declarator = getDeclarator();
+        return declarator == null ? 0 : declarator.getTextOffset();
+    }
+
+    protected PsiElement getDeclarator() {
+        return findChildByType(Perl6TokenTypes.PACKAGE_DECLARATOR);
     }
 
     @Override

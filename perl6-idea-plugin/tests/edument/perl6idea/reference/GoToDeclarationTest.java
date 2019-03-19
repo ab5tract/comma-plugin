@@ -157,10 +157,21 @@ public class GoToDeclarationTest extends LightCodeInsightFixtureTestCase {
                 });
     }
 
+    public void testNamelessPackageSelf() {
+        doTest("say 13; class { method { say se<caret>lf; } }", 1,
+                Perl6Self.class, (decl) -> {
+                    assertNotNull(decl);
+                    assertEquals(8, decl.getTextOffset());
+                });
+    }
+
     public void doTest(String text, int offset, Class<? extends Perl6PsiElement> clazz, Consumer<PsiElement> check) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
+        System.out.println(myFixture.getEditor().getDocument().getText());
         PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - offset);
+        System.out.println(usage);
         Perl6PsiElement var = PsiTreeUtil.getParentOfType(usage, clazz);
+        System.out.println(var);
         check.accept(var.getReference().resolve());
     }
 }
