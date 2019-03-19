@@ -170,6 +170,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         Object depends = myMeta.has(key) ? myMeta.get(key) : new JSONArray();
         if (!(depends instanceof JSONArray)) return;
         JSONArray dependsArray = (JSONArray)depends;
+        if (dependsArray.toList().contains(name))
+            return;
         dependsArray.put(name);
         myMeta.put("depends", dependsArray);
         saveFile();

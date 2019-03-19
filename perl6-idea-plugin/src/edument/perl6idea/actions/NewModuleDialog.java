@@ -45,6 +45,7 @@ public class NewModuleDialog extends DialogWrapper {
         moduleTypeComboBox.addItem("Class");
         moduleTypeComboBox.addItem("Role");
         moduleTypeComboBox.addItem("Grammar");
+        moduleTypeComboBox.addItem("Monitor");
         moduleTypeComboBox.addItem("Module");
         return myPanel;
     }

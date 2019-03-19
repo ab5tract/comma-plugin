@@ -106,7 +106,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
 
     public static String stubModule(Perl6MetaDataComponent metaData, String moduleLibraryPath,
                                     String moduleName, boolean firstModule, boolean shouldOpenEditor,
-                                    VirtualFile root, String type, boolean isUnitScoped) {
+                                    VirtualFile root, String moduleType, boolean isUnitScoped) {
         if (firstModule) {
             try {
                 metaData.createStubMetaFile(root, shouldOpenEditor);
@@ -122,40 +122,37 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         }
         String modulePath = Paths.get(moduleLibraryPath, moduleName.split("::")) + "." + Perl6ModuleFileType.INSTANCE.getDefaultExtension();
         new File(modulePath).getParentFile().mkdirs();
-        writeCodeToPath(Paths.get(modulePath), getModuleCodeByType(type, moduleName, isUnitScoped));
+        writeCodeToPath(Paths.get(modulePath), getModuleCodeByType(moduleType, moduleName, isUnitScoped));
+        if (moduleType.equals("Monitor")) {
+            metaData.addDepends("OO::Monitors");
+        }
         return modulePath;
     }
 
     private static List<String> getModuleCodeByType(String type, String name, boolean isUnitScoped) {
         if (isUnitScoped) {
             switch (type) {
-                case "Class": {
-                    return Arrays.asList(String.format("unit class %s;", name), "");
-                }
-                case "Role": {
-                    return Arrays.asList(String.format("unit role %s;", name), "");
-                }
-                case "Grammar": {
-                    return Arrays.asList(String.format("unit grammar %s;", name), "");
-                }
-                case "Module": {
-                    return Arrays.asList(String.format("unit module %s;", name), "");
-                }
+                case "Class":
+                case "Role":
+                case "Grammar":
+                case "Module":
+                    return Arrays.asList(String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name), "");
+                case "Monitor":
+                    return Arrays.asList(
+                        "use OO::Monitors;", "",
+                        String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name), "");
             }
         } else {
             switch (type) {
-                case "Class": {
-                    return Arrays.asList(String.format("class %s {", name), "", "}");
-                }
-                case "Role": {
-                    return Arrays.asList(String.format("role %s {", name), "", "}");
-                }
-                case "Grammar": {
-                    return Arrays.asList(String.format("grammar %s {", name), "", "}");
-                }
-                case "Module": {
-                    return Arrays.asList(String.format("module %s {", name), "", "}");
-                }
+                case "Class":
+                case "Role":
+                case "Grammar":
+                case "Module":
+                    return Arrays.asList(String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name), "", "}");
+                case "Monitor":
+                    return Arrays.asList(
+                        "use OO::Monitors;", "",
+                        String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name), "", "}");
             }
         }
         return Collections.singletonList("");
