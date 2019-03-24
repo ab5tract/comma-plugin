@@ -2,8 +2,13 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6ColonPair;
+import edument.perl6idea.psi.Perl6Statement;
 import org.jetbrains.annotations.NotNull;
+
+import static edument.perl6idea.parsing.Perl6TokenTypes.COLON_PAIR;
 
 public class Perl6ColonPairImpl extends ASTWrapperPsiElement implements Perl6ColonPair {
     public Perl6ColonPairImpl(@NotNull ASTNode node) {
@@ -13,5 +18,18 @@ public class Perl6ColonPairImpl extends ASTWrapperPsiElement implements Perl6Col
     @Override
     public String inferType() {
         return "Pair";
+    }
+
+    @Override
+    public String getKey() {
+        PsiElement sibling = getFirstChild().getNextSibling();
+        if (sibling.getNode().getElementType() == COLON_PAIR)
+            return sibling.getText();
+        return null;
+    }
+
+    @Override
+    public Perl6Statement getStatement() {
+        return PsiTreeUtil.findChildOfType(this, Perl6Statement.class);
     }
 }

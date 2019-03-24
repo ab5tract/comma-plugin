@@ -594,4 +594,14 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 'xxx' ~~ /a <error descr=\"Missing closing )\">(</error> b | c /;");
         myFixture.checkHighlighting(false, true, false, false);
     }
+
+    public void testColonPairSimplification() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; sub a {}; a(<weak_warning descr=\"Pair literal can be simplified\">:foo($foo)</weak_warning>)");
+        myFixture.checkHighlighting();
+    }
+
+    public void testFatArrowSimplification() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; sub a {}; a(<weak_warning descr=\"Pair literal can be simplified\">foo => $foo</weak_warning>)");
+        myFixture.checkHighlighting();
+    }
 }
