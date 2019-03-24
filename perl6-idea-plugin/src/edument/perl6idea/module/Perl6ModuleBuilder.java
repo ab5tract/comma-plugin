@@ -141,8 +141,11 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                     return Arrays.asList(
                         "use OO::Monitors;", "",
                         String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name), "");
+                default:
+                    return Collections.singletonList("");
             }
-        } else {
+        }
+        else {
             switch (type) {
                 case "Class":
                 case "Role":
@@ -153,9 +156,10 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                     return Arrays.asList(
                         "use OO::Monitors;", "",
                         String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name), "", "}");
+                default:
+                    return Collections.singletonList("");
             }
         }
-        return Collections.singletonList("");
     }
 
     public static String stubTest(String testDirectoryPath, String fileName, List<String> imports) {

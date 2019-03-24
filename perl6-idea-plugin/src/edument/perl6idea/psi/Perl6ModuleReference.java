@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public class Perl6ModuleReference extends PsiReferenceBase<Perl6ModuleName> {
     public Perl6ModuleReference(@NotNull Perl6ModuleName moduleName) {
@@ -43,9 +42,9 @@ public class Perl6ModuleReference extends PsiReferenceBase<Perl6ModuleName> {
                 reallyInThisProject.add(module);
         }
 
-        Set<String> externals = Perl6ModuleListFetcher.getProvidesAsync(myElement.getProject());
-        if (externals != null)
-            reallyInThisProject.addAll(externals);
+        if (Perl6ModuleListFetcher.isReady()) {
+            reallyInThisProject.addAll(Perl6ModuleListFetcher.getProvides(myElement.getProject()));
+        }
         reallyInThisProject.addAll(Perl6ModuleListFetcher.PREINSTALLED_MODULES);
         reallyInThisProject.addAll(Perl6ModuleListFetcher.PRAGMAS);
         return reallyInThisProject.toArray();

@@ -2,9 +2,12 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
-import com.intellij.openapi.module.*;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import edument.perl6idea.annotation.fix.CreateLocalModuleFix;
 import edument.perl6idea.annotation.fix.MissingModuleFix;
 import edument.perl6idea.module.Perl6MetaDataComponent;
 import edument.perl6idea.psi.Perl6ModuleName;
@@ -37,16 +40,29 @@ public class UsedModuleAnnotator implements Annotator {
         PsiElement resolved = ref.resolve();
         if (resolved != null) return;
 
-        boolean isProvided = false;
-        for (String dependency : metaData.getDepends(true)) {
-            Set<String> provides = Perl6ModuleListFetcher.getProvidesByModuleAsync(element.getProject(), dependency);
-            if (provides == null) return;
-            isProvided = provides.contains(moduleName);
-            if (isProvided) break;
+        Project project = element.getProject();
+
+        if (!Perl6ModuleListFetcher.isReady()) {
+            Perl6ModuleListFetcher.populateModules(project);
+            return;
         }
-        if (!isProvided)
+
+        for (String dependency : metaData.getDepends(true)) {
+            Set<String> providesOfDependency = Perl6ModuleListFetcher.getProvidesByModule(project, dependency);
+            // If a module is in dependencies list, do nothing
+            if (providesOfDependency.contains(moduleName))
+                return;
+        }
+        String holderPackage = Perl6ModuleListFetcher.getModuleByProvide(project, moduleName);
+        if (holderPackage != null) {
             holder
                 .createErrorAnnotation(element, String.format("Cannot find %s based on dependencies from META6.json", moduleName))
-                .registerFix(new MissingModuleFix(element.getProject(), moduleName));
+                .registerFix(new MissingModuleFix(holderPackage));
+        }
+        else {
+            holder
+                .createErrorAnnotation(element, String.format("Cannot find %s in the ecosystem", moduleName))
+                .registerFix(new CreateLocalModuleFix(module, moduleName));
+        }
     }
 }

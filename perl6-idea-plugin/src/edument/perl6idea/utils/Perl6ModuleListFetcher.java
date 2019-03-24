@@ -12,14 +12,15 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 public class Perl6ModuleListFetcher {
     public static final String GITHUB_MIRROR1 = "http://ecosystem-api.p6c.org/projects.json";
@@ -45,19 +46,17 @@ public class Perl6ModuleListFetcher {
     private static Pair<Map<String, JSONObject>, Instant> modulesList = null;
     private static boolean isFirst = true;
 
-    public static String getModuleByProvideAsync(Project project, String text) {
-        if (modulesList != null) {
-            Instant past = Instant.now().minus(Duration.ofMinutes(30));
-            if (!past.isAfter(modulesList.second))
-                return getModuleByProvide(modulesList.first, text);
+    private static void refreshModules(Project project) {
+        Instant now = Instant.now();
+        if (modulesList == null || now.isAfter(modulesList.second)) {
+                populateModules(project);
         }
-
-        populateModulesAsync(project);
-        return null;
     }
 
-    private static String getModuleByProvide(Map<String, JSONObject> modules, String text) {
-        for (Object module : modules.values()) {
+    @Nullable
+    public static String getModuleByProvide(Project project, String text) {
+        refreshModules(project);
+        for (Object module : modulesList.first.values()) {
             JSONObject jsonModule = (JSONObject)module;
             if (!jsonModule.has("provides")) continue;
             JSONObject provide = (JSONObject)jsonModule.get("provides");
@@ -67,20 +66,11 @@ public class Perl6ModuleListFetcher {
         return null;
     }
 
-    public static Set<String> getProvidesByModuleAsync(Project project, String dependency) {
-        if (modulesList != null) {
-            Instant past = Instant.now().minus(Duration.ofMinutes(30));
-            if (!past.isAfter(modulesList.second))
-                return getProvidesByModule(modulesList.first, dependency);
-        }
-
-        populateModulesAsync(project);
-        return null;
-    }
-
-    private static Set<String> getProvidesByModule(Map<String, JSONObject> modules, String name) {
+    @NotNull
+    public static Set<String> getProvidesByModule(Project project, String name) {
+        refreshModules(project);
         HashSet<String> provides = new HashSet<>();
-        JSONObject module = modules.get(name);
+        JSONObject module = modulesList.first.get(name);
         if (module != null) {
             if (module.has("provides")) {
                 Object localProvides = module.get("provides");
@@ -91,7 +81,7 @@ public class Perl6ModuleListFetcher {
                 Object localDepends = module.get("depends");
                 if (localDepends instanceof JSONArray) {
                     for (Object depend : (JSONArray)localDepends) {
-                        provides.addAll(getProvidesByModule(modules, (String)depend));
+                        provides.addAll(getProvidesByModule(project, (String)depend));
                     }
                 }
             }
@@ -99,20 +89,11 @@ public class Perl6ModuleListFetcher {
         return provides;
     }
 
-    public static Set<String> getModulesNamesAsync(Project project) {
-        if (modulesList != null) {
-            Instant past = Instant.now().minus(Duration.ofMinutes(30));
-            if (!past.isAfter(modulesList.second))
-                return getNames(modulesList.first);
-        }
-
-        populateModulesAsync(project);
-        return modulesList != null ? getNames(modulesList.first) : new HashSet<>();
-    }
-
-    private static Set<String> getNames(Map<String, JSONObject> modules) {
+    @NotNull
+    public static Set<String> getNames(Project project) {
+        refreshModules(project);
         Set<String> names = new HashSet<>();
-        for (Object module : modules.values()) {
+        for (Object module : modulesList.first.values()) {
             JSONObject json = (JSONObject)module;
             if (json.has("name"))
                 names.add(json.getString("name"));
@@ -120,20 +101,11 @@ public class Perl6ModuleListFetcher {
         return names;
     }
 
-    public static Set<String> getProvidesAsync(Project project) {
-        if (modulesList != null) {
-            Instant past = Instant.now().minus(Duration.ofMinutes(30));
-            if (!past.isAfter(modulesList.second))
-                return getProvides(modulesList.first);
-        }
-
-        populateModulesAsync(project);
-        return modulesList != null ? getProvides(modulesList.first) : new HashSet<>();
-    }
-
-    private static Set<String> getProvides(Map<String, JSONObject> modules) {
+    @NotNull
+    public static Set<String> getProvides(Project project) {
+        refreshModules(project);
         Set<String> names = new HashSet<>();
-        for (Object module : modules.values()) {
+        for (Object module : modulesList.first.values()) {
             JSONObject json = (JSONObject)module;
             if (json.has("provides"))
                 names.addAll(json.getJSONObject("provides").keySet());
@@ -141,18 +113,33 @@ public class Perl6ModuleListFetcher {
         return names;
     }
 
-    private static void populateModulesAsync(Project project) {
+    public static synchronized CompletableFuture<Boolean> populateModules(Project project) {
         if (isFirst) {
             isFirst = false;
+            CompletableFuture<Boolean> isCacheLoaded = new CompletableFuture<>();
             ProgressManager.getInstance()
                            .runProcessWithProgressAsynchronously(new Task.Backgroundable(project, "Getting Perl 6 Modules List") {
                                @Override
                                public void run(@NotNull ProgressIndicator indicator) {
                                    populateModules();
+                                   isCacheLoaded.complete(true);
                                    indicator.setFraction(1.0);
                                    indicator.setText("finished");
                                }
+
+                               @Override
+                               public void onThrowable(@NotNull Throwable error) {
+                                   modulesList = new Pair<>(new HashMap<>(), Instant.now().plus(3,ChronoUnit.MINUTES));
+                               }
+
+                               @Override
+                               public void onCancel() {
+                                   modulesList = new Pair<>(new HashMap<>(), Instant.now().plus(3,ChronoUnit.MINUTES));
+                               }
                            }, new EmptyProgressIndicator());
+            return isCacheLoaded;
+        } else {
+            return CompletableFuture.completedFuture(true);
         }
     }
 
@@ -175,7 +162,7 @@ public class Perl6ModuleListFetcher {
                 if (checkVersions(jsonObject, modulesMap))
                     modulesMap.put(jsonObject.getString("name"), jsonObject);
         }
-        modulesList = new Pair<>(modulesMap, Instant.now());
+        modulesList = new Pair<>(modulesMap, Instant.now().plus(30, ChronoUnit.MINUTES));
     }
 
     private static boolean checkVersions(JSONObject module, Map<String, JSONObject> modulesMap) {
@@ -228,5 +215,9 @@ public class Perl6ModuleListFetcher {
         catch (Exception e) {
             return null;
         }
+    }
+
+    public static boolean isReady() {
+        return modulesList != null;
     }
 }

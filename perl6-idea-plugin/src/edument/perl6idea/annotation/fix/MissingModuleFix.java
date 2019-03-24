@@ -16,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
 public class MissingModuleFix implements IntentionAction {
     private String moduleName;
 
-    public MissingModuleFix(Project project, String text) {
-        moduleName = Perl6ModuleListFetcher.getModuleByProvideAsync(project, text);
+    public MissingModuleFix(String holder) {
+        moduleName = holder;
     }
 
     @Nls
