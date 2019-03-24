@@ -52,7 +52,6 @@
     <favoritesListProvider implementation="com.intellij.ide.bookmarks.BookmarksFavoriteListProvider"/>
     <favoritesListProvider implementation="com.intellij.xdebugger.impl.breakpoints.BreakpointsFavoriteListProvider"/>
     <moduleConfigurationEditorProvider implementation="edument.perl6idea.module.Perl6ModuleConfigurationEditorProvider" order="FIRST"/>
-    <postStartupActivity implementation="edument.perl6idea.utils.Perl6PostStartupActivity"/>
     <projectViewPane implementation="com.intellij.ide.projectView.impl.ProjectViewPane"/>
     <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
     <OrderRootTypeUI key="JAVADOC"
