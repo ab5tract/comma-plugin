@@ -13,7 +13,10 @@ public class CompletePerl6ElementFactory extends Perl6ElementFactory {
     }
 
     private static String getSubCallText(NewCodeBlockData data) {
-        return String.format("%s(%s);", data.name, data.formSignature(true));
+        return String.format("%s(%s)%s",
+                             data.name,
+                             data.formSignature(true),
+                             data.containsExpression ? "" : ";");
     }
 
     public static Perl6Statement createMethodCall(Project project, NewCodeBlockData data) {
@@ -21,6 +24,10 @@ public class CompletePerl6ElementFactory extends Perl6ElementFactory {
     }
 
     private static String getMethodCallText(NewCodeBlockData data) {
-        return String.format("self%s%s(%s);", data.isPrivateMethod ? "!" : ".", data.name, data.formSignature(true));
+        return String.format("self%s%s(%s)%s",
+                             data.isPrivateMethod ? "!" : ".",
+                             data.name,
+                             data.formSignature(true),
+                             data.containsExpression ? "" : ";");
     }
 }

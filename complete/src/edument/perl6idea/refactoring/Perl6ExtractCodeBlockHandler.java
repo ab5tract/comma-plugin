@@ -41,6 +41,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     protected Perl6CodeBlockType myCodeBlockType;
     private List<Perl6StatementList> myScopes;
     private boolean selfIsPassed = false;
+    private boolean isExpr = false;
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;
@@ -119,7 +120,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         replaceStatementsWithCall(project, newCodeBlockData, parentToCreateAt, elements);
     }
 
-    private boolean checkElementsSanity(@NotNull Project project, Editor editor, PsiElement parentScope, PsiElement[] elements) {
+    private static boolean checkElementsSanity(@NotNull Project project, Editor editor, PsiElement parentScope, PsiElement[] elements) {
         if (elements.length == 0 || parentScope == null) {
             reportError(project, editor, "Cannot extract code");
             return true;
@@ -147,7 +148,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         return false;
     }
 
-    protected static PsiElement[] getStatementsToExtract(PsiFile file, Editor editor) {
+    protected PsiElement[] getStatementsToExtract(PsiFile file, Editor editor) {
         if (editor.getSelectionModel().hasSelection()) {
             return getElementsFromSelection(file, editor);
         } else {
@@ -155,10 +156,10 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         }
     }
 
-    private static PsiElement[] getElementsFromSelection(PsiFile file, Editor editor) {
+    private PsiElement[] getElementsFromSelection(PsiFile file, Editor editor) {
         SelectionModel selectionModel = editor.getSelectionModel();
         PsiElement startLeaf = file.findElementAt(selectionModel.getSelectionStart());
-        PsiElement endLeaf = file.findElementAt(selectionModel.getSelectionEnd());
+        PsiElement endLeaf = file.findElementAt(selectionModel.getSelectionEnd() - 1);
         PsiElement start = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(startLeaf, true), Perl6Statement.class, Perl6Heredoc.class);
         PsiElement end = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(endLeaf, false), Perl6Statement.class, Perl6Heredoc.class);
 
@@ -171,6 +172,34 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             }
             else {
                 return PsiElement.EMPTY_ARRAY;
+            }
+        }
+
+        if (Objects.equals(start, end)) {
+            // Leafs are never null if neither start and end is null
+            assert startLeaf != null && endLeaf != null;
+            PsiElement commonParent = PsiTreeUtil.findCommonParent(startLeaf, endLeaf);
+            if (commonParent instanceof P6Extractable) {
+                List<PsiElement> targets = new ArrayList<>();
+                targets.add(commonParent);
+                isExpr = !(commonParent instanceof Perl6Statement);
+                if (isExpr) {
+                    while (!(commonParent instanceof Perl6Statement) && commonParent != null) {
+                        commonParent = commonParent.getParent();
+                        if (commonParent instanceof P6Extractable)
+                            targets.add(commonParent);
+                    }
+                }
+
+                IntroduceTargetChooser.showChooser(editor, targets, new Pass<PsiElement>() {
+                    @Override
+                    public void pass(PsiElement element) {
+                        invoke(element.getProject(), editor, file, new PsiElement[]{element});
+                    }
+                }, (PsiElement e) -> e.getText(), "Select expression to extract");
+                return PsiElement.EMPTY_ARRAY;
+            } else {
+                return new PsiElement[]{start};
             }
         }
 
@@ -258,6 +287,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
                             getName(), getReturnType(),
                             getInputVariables()
                     );
+                    data.containsExpression = isExpr;
                     futureData.complete(data);
                     closeOKAction();
                 }
