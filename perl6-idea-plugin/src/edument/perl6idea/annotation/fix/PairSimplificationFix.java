@@ -26,14 +26,14 @@ public class PairSimplificationFix implements IntentionAction {
     @NotNull
     @Override
     public String getText() {
-        return "Convert to named pair literal";
+        return "Convert to :" + variable.getText();
     }
 
     @Nls
     @NotNull
     @Override
     public String getFamilyName() {
-        return getText();
+        return "Convert to simpler pair literal";
     }
 
     @Override
