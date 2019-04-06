@@ -134,6 +134,11 @@ public class Perl6ElementFactory {
         return String.format("%s {\n%s\n}", baseFilled, bodyJoiner.toString());
     }
 
+
+    public static Perl6ColonPair createColonPair(Project project, String text) {
+        return produceElement(project, ":" + text, Perl6ColonPair.class);
+    }
+
     protected static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {
         String filename = "dummy." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
         Perl6File dummyFile = (Perl6File) PsiFileFactory.getInstance(project)
