@@ -44,7 +44,7 @@ public class Perl6RunCommandLineState extends CommandLineState {
     protected void setInterpreterParameters() {
         String params = runConfiguration.getInterpreterParameters();
         if (params != null && !params.trim().isEmpty())
-            command.add(params);
+            command.addAll(Arrays.asList(params.split(" ")));
     }
 
     @NotNull
