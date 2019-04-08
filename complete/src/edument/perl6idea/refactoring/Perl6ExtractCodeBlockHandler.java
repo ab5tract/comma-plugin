@@ -42,6 +42,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     private List<Perl6StatementList> myScopes;
     private boolean selfIsPassed = false;
     private boolean isExpr = false;
+    private boolean myIsCaretSelection = false;
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;
@@ -64,19 +65,31 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     protected void invoke(@NotNull Project project, Editor editor, PsiFile file, PsiElement[] elements) {
-        // Gets a parent scope for new block according to callback-based API
-        myScopes = getPossibleScopes(elements);
-        myScopes = handleZeroScopes(project, editor, elements);
-        if (myScopes.size() == 0) return;
-        if (myScopes.size() == 1) {
-            invoke(project, editor, file, myScopes.get(0), elements);
-        } else {
-            IntroduceTargetChooser.showChooser(editor, myScopes, new Pass<Perl6StatementList>() {
+        if (myIsCaretSelection) {
+            IntroduceTargetChooser.showChooser(editor, Arrays.asList(elements), new Pass<PsiElement>() {
                 @Override
-                public void pass(Perl6StatementList list) {
-                    invoke(project, editor, file, list, elements);
+                public void pass(PsiElement psiElement) {
+                    myIsCaretSelection = false;
+                    invoke(project, editor, file, new PsiElement[]{psiElement});
                 }
-            }, Perl6BlockRenderer::renderBlock, "Select creation scope");
+            }, Perl6BlockRenderer::renderBlock, "Select expression to extract");
+        }
+        else {
+            // Gets a parent scope for new block according to callback-based API
+            myScopes = getPossibleScopes(elements);
+            myScopes = handleZeroScopes(project, editor, elements);
+            if (myScopes.size() == 0) return;
+            if (myScopes.size() == 1) {
+                invoke(project, editor, file, myScopes.get(0), elements);
+            }
+            else {
+                IntroduceTargetChooser.showChooser(editor, myScopes, new Pass<Perl6StatementList>() {
+                    @Override
+                    public void pass(Perl6StatementList list) {
+                        invoke(project, editor, file, list, elements);
+                    }
+                }, Perl6BlockRenderer::renderBlock, "Select creation scope");
+            }
         }
     }
 
@@ -149,10 +162,11 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     protected PsiElement[] getStatementsToExtract(PsiFile file, Editor editor) {
-        if (editor.getSelectionModel().hasSelection()) {
-            return getElementsFromSelection(file, editor);
-        } else {
+        myIsCaretSelection = !editor.getSelectionModel().hasSelection();
+        if (myIsCaretSelection) {
             return getElementsFromCaret(file, editor);
+        } else {
+            return getElementsFromSelection(file, editor);
         }
     }
 
