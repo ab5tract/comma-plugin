@@ -191,7 +191,7 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
                             ((VFileMoveEvent)event).getOldPath();
         String oldName = calculateModuleName(oldPathRaw);
         String newName = calculateModuleName(event.getPath());
-        if (oldName != null && newName != null)
+        if (oldName != null)
             updateMeta(oldName, newName);
     }
 
