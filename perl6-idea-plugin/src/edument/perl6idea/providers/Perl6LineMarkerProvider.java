@@ -92,6 +92,7 @@ public class Perl6LineMarkerProvider extends RelatedItemLineMarkerProvider {
         if (PsiTreeUtil.getParentOfType(element, Perl6Trait.class) != null)
             return null;
         // Return an outer package for the type name we are working with
-        return PsiTreeUtil.getParentOfType(element, Perl6PackageDecl.class);
+        PsiElement nameParent = element.getParent();
+        return nameParent instanceof Perl6PackageDecl ? (Perl6PackageDecl)nameParent : null;
     }
 }
