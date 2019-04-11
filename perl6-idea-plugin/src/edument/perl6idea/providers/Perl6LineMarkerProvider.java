@@ -37,7 +37,7 @@ public class Perl6LineMarkerProvider extends RelatedItemLineMarkerProvider {
             result.add(NavigationGutterIconBuilder
                            .create(Perl6Icons.CLASS)
                            .setTargets(targets)
-                           .setTooltipText("Navigate to parent classes")
+                           .setTooltipText("Navigate to subtypes and supertypes")
                            .createLineMarkerInfo(element)
             );
     }
