@@ -10970,6 +10970,9 @@ public class Perl6Parser implements PsiParser {
     private boolean quibble_122(PsiBuilder builder) {
         OPP opp;
         opp = null;
+        if (!(this.ws_258(builder))) {
+            return false;
+        }
         PsiBuilder.Marker altMarker9;
         altMarker9 = builder.mark();
         if (this.quibble_122_alt_8(builder, opp)) {
@@ -11086,6 +11089,9 @@ public class Perl6Parser implements PsiParser {
     private boolean quibble_rx_123(PsiBuilder builder) {
         OPP opp;
         opp = null;
+        if (!(this.ws_258(builder))) {
+            return false;
+        }
         PsiBuilder.Marker altMarker7;
         altMarker7 = builder.mark();
         if (this.quibble_rx_123_alt_6(builder, opp)) {
@@ -12735,6 +12741,9 @@ public class Perl6Parser implements PsiParser {
                 altMarker2.rollbackTo();
                 return false;
             }
+        }
+        if (!(this.ws_258(builder))) {
+            return false;
         }
         PsiBuilder.Marker altMarker7;
         altMarker7 = builder.mark();

@@ -2876,11 +2876,11 @@ grammar MAIN {
         :my $*Q_TO = 0;
         <.start-element('STRING_LITERAL')>
         [
-        || <?before ['Q' <.quote_mod>? [<.has-delimiter> || <.quotepair>]]>
+        || <?before ['Q' <.quote_mod>? <.ws> [<.has-delimiter> || <.quotepair>]]>
            <.start-token('STRING_LITERAL_QUOTE_SYNTAX')> 'Q' <.end-token('STRING_LITERAL_QUOTE_SYNTAX')>
            <.quote_mod_Q>?
            <.quibble>
-        || <?before ['qq' <.quote_mod>? [<.has-delimiter> || <.quotepair>]]>
+        || <?before ['qq' <.quote_mod>? <.ws> [<.has-delimiter> || <.quotepair>]]>
            <.start-token('STRING_LITERAL_QUOTE_SYNTAX')> 'qq' <.end-token('STRING_LITERAL_QUOTE_SYNTAX')>
            { $*Q_QQ = 1 }
            { $*Q_BACKSLASH = 1 }
@@ -2892,7 +2892,7 @@ grammar MAIN {
            { $*Q_FUNCTIONS = 1 }
            <.quote_mod_Q>?
            <.quibble>
-        || <?before ['q' <.quote_mod>? [<.has-delimiter> || <.quotepair>]]>
+        || <?before ['q' <.quote_mod>? <.ws> [<.has-delimiter> || <.quotepair>]]>
            <.start-token('STRING_LITERAL_QUOTE_SYNTAX')> 'q' <.end-token('STRING_LITERAL_QUOTE_SYNTAX')>
            { $*Q_Q = 1 }
            { $*Q_QBACKSLASH = 1 }
@@ -2939,14 +2939,14 @@ grammar MAIN {
            || <.start-token('MISSING_REGEX')> <?> <.end-token('MISSING_REGEX')>
            ]
            [<.start-token('QUOTE_REGEX')> '/' <.end-token('QUOTE_REGEX')>]?
-        || <?before ['rx' [<.has-delimiter> || <.quotepair>]]>
+        || <?before ['rx' <.ws> [<.has-delimiter> || <.quotepair>]]>
            <.start-token('QUOTE_REGEX')> 'rx' <.end-token('QUOTE_REGEX')>
            <.quibble_rx>
-        || <?before ['ms' [<.has-delimiter> || <.quotepair>]]>
+        || <?before ['ms' <.ws> [<.has-delimiter> || <.quotepair>]]>
            <.start-token('QUOTE_REGEX')> 'ms' <.end-token('QUOTE_REGEX')>
            { $*RX_S = 1 }
            <.quibble_rx>
-        || <?before ['m' [<.has-delimiter> || <.quotepair>]]>
+        || <?before ['m' <.ws> [<.has-delimiter> || <.quotepair>]]>
            <.start-token('QUOTE_REGEX')> 'm' <.end-token('QUOTE_REGEX')>
            <.quibble_rx>
         || <?before ['Ss' [<.has-delimiter> || <.quotepair>]]>
@@ -2980,12 +2980,13 @@ grammar MAIN {
     }
 
     token quote_tr {
-        <?before [['tr'||'TR'] [<.has-delimiter> || <.quotepair>]]>
+        <?before [['tr'||'TR'] <.ws> [<.has-delimiter> || <.quotepair>]]>
         <.start-element('TRANSLITERATION')>
         [
         || <.start-token('QUOTE_REGEX')> 'tr' <.end-token('QUOTE_REGEX')>
         || <.start-token('QUOTE_REGEX')> 'TR' <.end-token('QUOTE_REGEX')>
         ]
+        <.ws>
         [
         || [ <.quotepair_rx> <.ws> ]+ <.tribble>
         || <.tribble>
@@ -3028,6 +3029,7 @@ grammar MAIN {
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
         :my $*DELIM = '';
+        <.ws>
         [
         || [ <.quotepair_Q> <.ws> ]+
            [
@@ -3062,6 +3064,7 @@ grammar MAIN {
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
         :my $*DELIM = '';
+        <.ws>
         [
         || [ <.quotepair_rx> <.ws> ]+
            [
