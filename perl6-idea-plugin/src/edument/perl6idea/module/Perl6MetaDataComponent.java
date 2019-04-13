@@ -374,7 +374,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     private void saveFile() {
         if (myMetaFile == null || myMeta == null) return;
-        String json = myMeta.toString(4);
+        String json = MetaDataJSONSerializer.serializer(myMeta);
         ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(
             () -> {
                 try {
