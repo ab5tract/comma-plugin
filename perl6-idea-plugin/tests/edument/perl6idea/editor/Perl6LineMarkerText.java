@@ -20,6 +20,10 @@ public class Perl6LineMarkerText extends LightCodeInsightFixtureTestCase {
         doTest(6);
     }
 
+    public void testNameUsages() {
+        doTest(2);
+    }
+
     private void doTest(int size) {
         myFixture.configureByFile(getTestName(true) + ".pm6");
         myFixture.doHighlighting();
