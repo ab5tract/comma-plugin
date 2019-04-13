@@ -1,6 +1,5 @@
 package edument.perl6idea.refactoring;
 
-import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
@@ -195,6 +194,46 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
                "heredoc", Perl6CodeBlockType.ROUTINE);
     }
 
+    public void testMathExpression() {
+        doTest(() -> getClosestStatementListByText("say"),
+                "math", Perl6CodeBlockType.ROUTINE);
+    }
+
+    public void testFullMathExpression() {
+        doTest(() -> getClosestStatementListByText("say"),
+                "math", Perl6CodeBlockType.ROUTINE, 1);
+    }
+
+    public void testTopMathExpression() {
+        doTest(() -> getClosestStatementListByText("say"),
+                "math", Perl6CodeBlockType.ROUTINE, 2);
+    }
+
+    public void testMathExpressionFromSelection() {
+        doTest(() -> getClosestStatementListByText("say"),
+                "math", Perl6CodeBlockType.ROUTINE);
+    }
+
+    public void testFullMathExpressionFromSelection() {
+        doTest(() -> getClosestStatementListByText("say"),
+                "math", Perl6CodeBlockType.ROUTINE, 1);
+    }
+
+    public void testCallchain() {
+        doTest(() -> getClosestStatementListByText("foo"),
+                "cond", Perl6CodeBlockType.ROUTINE, 0);
+    }
+
+    public void testCallchainFromSelection1() {
+        doTest(() -> getClosestStatementListByText("foo"),
+                "cond", Perl6CodeBlockType.ROUTINE, 1);
+    }
+
+    public void testCallchainFromSelection2() {
+        doTest(() -> getClosestStatementListByText("foo"),
+                "cond", Perl6CodeBlockType.ROUTINE);
+    }
+
     // Helper methods
     /**
      * Gets innermost statement list in an opened file around a line of text passed
@@ -222,7 +261,15 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
         myFixture.configureByFile(getTestName(true) + "Before.p6");
         Perl6StatementList scope = getScope.produce();
         Perl6ExtractCodeBlockHandlerMock handler = new Perl6ExtractCodeBlockHandlerMock(type, scope, name, userAction);
-        handler.invoke(myFixture.getProject(), myFixture.getEditor(), myFixture.getFile(), (DataContext) null);
+        handler.invoke(myFixture.getProject(), myFixture.getEditor(), myFixture.getFile(), null);
+        myFixture.checkResultByFile(getTestName(true) + ".p6", true);
+    }
+
+    private void doTest(Producer<Perl6StatementList> getScope, String name, Perl6CodeBlockType type, int exprLevel) {
+        myFixture.configureByFile(getTestName(true) + "Before.p6");
+        Perl6StatementList scope = getScope.produce();
+        Perl6ExtractCodeBlockHandlerMock handler = new Perl6ExtractCodeBlockHandlerMock(type, scope, name, exprLevel);
+        handler.invoke(myFixture.getProject(), myFixture.getEditor(), myFixture.getFile(), null);
         myFixture.checkResultByFile(getTestName(true) + ".p6", true);
     }
 
@@ -230,6 +277,18 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
         private final Function<NewCodeBlockData, NewCodeBlockData> userAction;
         Perl6StatementList parent;
         private final String name;
+        private int myExpressionTargetIndex;
+
+        Perl6ExtractCodeBlockHandlerMock(Perl6CodeBlockType type,
+                                         Perl6StatementList parent,
+                                         String name,
+                                         int expressionTargetIndex) {
+            super(type);
+            this.parent = parent;
+            this.name = name;
+            this.userAction = null;
+            this.myExpressionTargetIndex = expressionTargetIndex;
+        }
 
         Perl6ExtractCodeBlockHandlerMock(Perl6CodeBlockType type,
                                          Perl6StatementList parent,
@@ -248,17 +307,39 @@ public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCas
         }
 
         @Override
-        protected void invoke(@NotNull Project project, Editor editor, PsiFile file, PsiElement[] elements) {
-            invoke(project, editor, file, parent, elements);
+        protected void invokeWithStatements(@NotNull Project project, Editor editor, PsiFile file, PsiElement[] elementsToExtract) {
+            invokeWithScope(project, editor, parent, elementsToExtract);
         }
 
         @Override
         protected NewCodeBlockData getNewBlockData(Project project, Perl6StatementList parentToCreateAt, PsiElement[] elements) {
             NewCodeBlockData data = new NewCodeBlockData(myCodeBlockType, name, getCapturedVariables(parent, elements));
+            data.containsExpression = isExpr;
             if (userAction == null)
                 return data;
             else
                 return userAction.fun(data);
+        }
+
+        @Override
+        protected PsiElement[] getExpressionsFromSelection(PsiFile file, Editor editor, @NotNull PsiElement commonParent, PsiElement fullStatementBackup) {
+            List<PsiElement> targets = getExpressionTargets(commonParent);
+            PsiElement psiElement = targets.get(myExpressionTargetIndex);
+            isExpr = !(psiElement instanceof Perl6Statement);
+            return new PsiElement[]{psiElement};
+        }
+
+        @Override
+        protected PsiElement[] getElementsFromCaret(PsiFile file, Editor editor) {
+            int offset = editor.getCaretModel().getOffset();
+            PsiElement element = file.findElementAt(offset);
+            if (element == null) {
+                return PsiElement.EMPTY_ARRAY;
+            }
+            List<PsiElement> targets = getExpressionTargets(element.getParent());
+            PsiElement psiElement = targets.get(myExpressionTargetIndex);
+            isExpr = !(psiElement instanceof Perl6Statement);
+            return new PsiElement[]{psiElement};
         }
     }
 }
