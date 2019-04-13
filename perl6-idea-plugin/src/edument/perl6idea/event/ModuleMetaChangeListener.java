@@ -7,7 +7,10 @@ import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
-import com.intellij.openapi.vfs.newvfs.events.*;
+import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
+import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
 import com.intellij.util.messages.MessageBusConnection;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.module.Perl6MetaDataComponent;
@@ -16,7 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,13 +55,6 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
     public void after(@NotNull List<? extends VFileEvent> events) {
         for (VFileEvent event : events) {
             VirtualFile file = event.getFile();
-
-            if (file != null && file.getName().equals("META6.json")) {
-                if (event instanceof VFileContentChangeEvent) {
-                    myMetaData.triggerMetaBuild(file);
-                }
-            }
-
             if (file == null || // File might be null
                 // It is not a directory and its path does not end with `.pm6`, so skip it
                 !file.isDirectory() && !(Objects.equals(file.getExtension(), Perl6ModuleFileType.INSTANCE.getDefaultExtension())))
