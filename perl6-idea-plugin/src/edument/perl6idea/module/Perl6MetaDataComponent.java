@@ -38,6 +38,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     public Perl6MetaDataComponent(Module module) {
         String name = module.getModuleTypeName();
+
         if (name == null || !name.equals(Perl6ModuleType.getInstance().getId()))
             return;
 
@@ -103,7 +104,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     private JSONObject checkMetaSanity() {
         JSONObject meta = null;
-        if (myMetaFile.exists()) {
+        if (myMetaFile != null && myMetaFile.exists()) {
             try {
                 String content = new String(myMetaFile.contentsToByteArray(), CharsetToolkit.UTF8_CHARSET);
                 meta = new JSONObject(content);
@@ -378,6 +379,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(
             () -> {
                 try {
+                    if (!myMetaFile.isValid())
+                        myMetaFile = myMetaFile.getParent().createChildData(this, myMetaFile.getName());
                     myMetaFile.setBinaryContent(json.getBytes(CharsetToolkit.UTF8_CHARSET));
                 }
                 catch (IOException e) {
@@ -412,7 +415,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 }
             });
         }
-        Notifications.Bus.notify(notification);
+        Notifications.Bus.notify(notification, myModule.getProject());
     }
 
     private void notifyMissingMETA() {
