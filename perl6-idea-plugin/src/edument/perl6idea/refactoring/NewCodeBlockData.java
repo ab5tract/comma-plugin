@@ -11,6 +11,7 @@ public class NewCodeBlockData {
     public String returnType = "";
     public final Perl6VariableData[] variables;
     public boolean isPrivateMethod;
+    public boolean containsExpression;
 
     public NewCodeBlockData(Perl6CodeBlockType type, String name, Perl6VariableData[] variableData) {
         this.type = type;

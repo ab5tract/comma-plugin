@@ -1,8 +1,6 @@
-// Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.refactoring;
 
 import com.intellij.lang.ContextAwareActionHandler;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -13,7 +11,6 @@ import com.intellij.openapi.ui.DialogBuilder;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.PsiElementProcessor;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -34,6 +31,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import static edument.perl6idea.psi.Perl6ElementFactory.createNamedCodeBlock;
+
 public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, ContextAwareActionHandler {
     private static final String TITLE = "Code Block Extraction";
     private static final List<String> packageTypesWithMethods = new ArrayList<>(
@@ -41,6 +40,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     protected Perl6CodeBlockType myCodeBlockType;
     private List<Perl6StatementList> myScopes;
     private boolean selfIsPassed = false;
+    protected boolean isExpr = false;
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;
@@ -48,32 +48,33 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
     @Override
     public void invoke(@NotNull Project project, @NotNull PsiElement[] elements, DataContext dataContext) {
-        if (dataContext != null) {
-            final Editor editor = CommonDataKeys.EDITOR.getData(dataContext);
-            final PsiFile file = CommonDataKeys.PSI_FILE.getData(dataContext);
-            if (file != null && editor != null) {
-                invoke(project, editor, file, elements);
-            }
-        }
     }
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file, DataContext dataContext) {
-        invoke(project, editor, file, getStatementsToExtract(file, editor));
+        PsiElement[] elementsToExtract = getElementsToExtract(file, editor);
+        invokeWithStatements(project, editor, file, elementsToExtract);
     }
 
-    protected void invoke(@NotNull Project project, Editor editor, PsiFile file, PsiElement[] elements) {
+    protected void invokeWithStatements(@NotNull Project project, Editor editor, PsiFile file, PsiElement[] elementsToExtract) {
+        if (elementsToExtract.length == 0)
+            return;
+
         // Gets a parent scope for new block according to callback-based API
-        myScopes = getPossibleScopes(elements);
-        myScopes = handleZeroScopes(project, editor, elements);
-        if (myScopes.size() == 0) return;
+        myScopes = getPossibleScopes(elementsToExtract);
+        myScopes = handleZeroScopes(project, editor, elementsToExtract);
+        if (myScopes.size() == 0) {
+            reportError(project, editor, "Cannot extract selected statements as there are no possible scopes present");
+            return;
+        }
         if (myScopes.size() == 1) {
-            invoke(project, editor, file, myScopes.get(0), elements);
-        } else {
+            invokeWithScope(project, editor, myScopes.get(0), elementsToExtract);
+        }
+        else {
             IntroduceTargetChooser.showChooser(editor, myScopes, new Pass<Perl6StatementList>() {
                 @Override
-                public void pass(Perl6StatementList list) {
-                    invoke(project, editor, file, list, elements);
+                public void pass(Perl6StatementList scope) {
+                    invokeWithScope(project, editor, scope, elementsToExtract);
                 }
             }, Perl6BlockRenderer::renderBlock, "Select creation scope");
         }
@@ -102,7 +103,10 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         return myScopes;
     }
 
-    protected void invoke(@NotNull Project project, Editor editor, PsiFile file, Perl6StatementList parentToCreateAt, PsiElement[] elements) {
+    protected void invokeWithScope(@NotNull Project project,
+                                   Editor editor,
+                                   Perl6StatementList parentToCreateAt,
+                                   PsiElement[] elements) {
         if (checkElementsSanity(project, editor, parentToCreateAt, elements)) return;
         if (checkMethodSanity(project, editor, parentToCreateAt)) return;
 
@@ -119,7 +123,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         replaceStatementsWithCall(project, newCodeBlockData, parentToCreateAt, elements);
     }
 
-    private boolean checkElementsSanity(@NotNull Project project, Editor editor, PsiElement parentScope, PsiElement[] elements) {
+    private static boolean checkElementsSanity(@NotNull Project project, Editor editor, PsiElement parentScope, PsiElement[] elements) {
         if (elements.length == 0 || parentScope == null) {
             reportError(project, editor, "Cannot extract code");
             return true;
@@ -147,7 +151,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         return false;
     }
 
-    protected static PsiElement[] getStatementsToExtract(PsiFile file, Editor editor) {
+    protected PsiElement[] getElementsToExtract(PsiFile file, Editor editor) {
         if (editor.getSelectionModel().hasSelection()) {
             return getElementsFromSelection(file, editor);
         } else {
@@ -155,10 +159,10 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         }
     }
 
-    private static PsiElement[] getElementsFromSelection(PsiFile file, Editor editor) {
+    private PsiElement[] getElementsFromSelection(PsiFile file, Editor editor) {
         SelectionModel selectionModel = editor.getSelectionModel();
         PsiElement startLeaf = file.findElementAt(selectionModel.getSelectionStart());
-        PsiElement endLeaf = file.findElementAt(selectionModel.getSelectionEnd());
+        PsiElement endLeaf = file.findElementAt(selectionModel.getSelectionEnd() - 1);
         PsiElement start = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(startLeaf, true), Perl6Statement.class, Perl6Heredoc.class);
         PsiElement end = PsiTreeUtil.getNonStrictParentOfType(Perl6PsiUtil.skipSpaces(endLeaf, false), Perl6Statement.class, Perl6Heredoc.class);
 
@@ -172,6 +176,17 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             else {
                 return PsiElement.EMPTY_ARRAY;
             }
+        }
+
+        // If a single statement is selected, we want to offer
+        // expressions too
+        if (Objects.equals(start, end)) {
+            // Leafs are never null if neither start and end is null
+            assert startLeaf != null && endLeaf != null;
+            PsiElement commonParent = PsiTreeUtil.findCommonParent(startLeaf, endLeaf);
+            if (commonParent instanceof Perl6Statement)
+                return new PsiElement[]{commonParent};
+            return commonParent == null ? PsiElement.EMPTY_ARRAY : getExpressionsFromSelection(file, editor, commonParent, start);
         }
 
         if (PsiTreeUtil.isAncestor(start, end, true)) {
@@ -190,16 +205,54 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         return elements.toArray(PsiElement.EMPTY_ARRAY);
     }
 
-    private static PsiElement[] getElementsFromCaret(PsiFile file, Editor editor) {
-        int offset = editor.getCaretModel().getOffset();
-        List<PsiElement> exprs = new ArrayList<>();
-        PsiElement element = file.findElementAt(offset);
-        while (element != null && !(element instanceof Perl6StatementList)) {
-            if (element instanceof P6Extractable)
-                exprs.add(element);
-            element = element.getParent();
+    protected PsiElement[] getExpressionsFromSelection(PsiFile file, Editor editor, @NotNull PsiElement commonParent, PsiElement fullStatementBackup) {
+        if (commonParent instanceof P6Extractable) {
+            List<PsiElement> targets = getExpressionTargets(commonParent);
+            IntroduceTargetChooser.showChooser(editor, targets, new Pass<PsiElement>() {
+                @Override
+                public void pass(PsiElement element) {
+                    isExpr = !(element instanceof Perl6Statement);
+                    invokeWithStatements(element.getProject(), editor, file, new PsiElement[]{element});
+                }
+            }, PsiElement::getText, "Select expression to extract");
+            return PsiElement.EMPTY_ARRAY;
+        } else {
+            return new PsiElement[]{fullStatementBackup};
         }
-        return exprs.toArray(PsiElement.EMPTY_ARRAY);
+    }
+
+    @NotNull
+    protected List<PsiElement> getExpressionTargets(@NotNull PsiElement commonParent) {
+        List<PsiElement> targets = new ArrayList<>();
+        if (commonParent.getParent() instanceof Perl6Statement) {
+            targets.add(commonParent.getParent());
+            return targets;
+        }
+        else {
+            while (!(commonParent instanceof Perl6StatementList)) {
+                if (commonParent instanceof P6Extractable && !(commonParent.getParent() instanceof Perl6Statement))
+                    targets.add(commonParent);
+                commonParent = commonParent.getParent();
+            }
+        }
+        return targets;
+    }
+
+    protected PsiElement[] getElementsFromCaret(PsiFile file, Editor editor) {
+        int offset = editor.getCaretModel().getOffset();
+        PsiElement element = file.findElementAt(offset);
+        if (element == null) {
+            return PsiElement.EMPTY_ARRAY;
+        }
+        List<PsiElement> targets = getExpressionTargets(element.getParent());
+        IntroduceTargetChooser.showChooser(editor, targets, new Pass<PsiElement>() {
+            @Override
+            public void pass(PsiElement element) {
+                isExpr = !(element instanceof Perl6Statement);
+                invokeWithStatements(element.getProject(), editor, file, new PsiElement[]{element});
+            }
+        }, PsiElement::getText, "Select expression to extract");
+        return PsiElement.EMPTY_ARRAY;
     }
 
     protected List<Perl6StatementList> getPossibleScopes(PsiElement[] elements) {
@@ -258,6 +311,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
                             getName(), getReturnType(),
                             getInputVariables()
                     );
+                    data.containsExpression = isExpr;
                     futureData.complete(data);
                     closeOKAction();
                 }
@@ -331,7 +385,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
                     capturedVariables.add(variableCapture);
             }
             else {
-                if (checkIfAttributeCaptured(parentToCreateAt, elements, usedVariable)) {
+                if (checkIfAttributeCaptured(parentToCreateAt, elements)) {
                     String type = usedVariable.getVariableName().startsWith("$") ? usedVariable.inferType() : "";
                     capturedVariables.add(new Perl6VariableData(usedVariable.getVariableName(), usedVariable.getVariableName().replace("!", ""),
                                                                 type, false, true));
@@ -341,7 +395,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
         // Check lexical subs usage
         for (Perl6SubCallName call : collectCallsInStatements(elements)) {
-            if (checkIfLexicalSubCaptured(parentToCreateAt, elements, capturedVariables, call)) {
+            if (checkIfLexicalSubCaptured(parentToCreateAt, elements, call)) {
                 capturedVariables.add(new Perl6VariableData("&" + call.getCallName(), "", false, true));
             }
         }
@@ -349,7 +403,9 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         return capturedVariables.toArray(new Perl6VariableData[0]);
     }
 
-    private boolean checkIfLexicalSubCaptured(Perl6StatementList parentToCreateAt, PsiElement[] elements, List<Perl6VariableData> capturedVariables, Perl6SubCallName call) {
+    private static boolean checkIfLexicalSubCaptured(Perl6StatementList parentToCreateAt,
+                                                     PsiElement[] elements,
+                                                     Perl6SubCallName call) {
         // Here, we iterate each call found
         PsiReference ref = call.getReference();
         assert ref != null;
@@ -369,10 +425,11 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         // Try to see if we have such routine accessible in new scope
         Perl6Symbol routineSymbol = parentToCreateAt.resolveSymbol(Perl6SymbolKind.Routine, call.getCallName());
         // If it is not or if it points to another routine with the same name, pass a lexical sub in
-        return routineSymbol == null || routineSymbol.getPsi() == null || !PsiManager.getInstance(call.getProject()).areElementsEquivalent(routineSymbol.getPsi(), decl);
+        return routineSymbol == null || routineSymbol.getPsi() == null || !call.getManager()
+                                                                               .areElementsEquivalent(routineSymbol.getPsi(), decl);
     }
 
-    private boolean checkIfAttributeCaptured(Perl6StatementList parentToCreateAt, PsiElement[] elements, Perl6Variable usedVariable) {
+    private boolean checkIfAttributeCaptured(Perl6StatementList parentToCreateAt, PsiElement[] elements) {
         // We are checking if attribute has to be passed to a newly created block or not
         // Passing is *not* necessary if either:
         // * new block == lexical sub of the method in the same class
@@ -472,7 +529,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     protected PsiElement createNewBlock(Project project, NewCodeBlockData data, List<String> contents) {
-        return postProcessVariables(project, data.variables, CompletePerl6ElementFactory.createNamedCodeBlock(project, data, contents));
+        return postProcessVariables(project, data.variables, createNamedCodeBlock(project, data, contents));
     }
 
     private PsiElement postProcessVariables(Project project,

@@ -1,0 +1,1 @@
+say <selection>15</selection> * 3;
