@@ -42,7 +42,8 @@ class MetaDataJSONSerializer {
 
     private static Object processField(Object fieldValue) {
         if (fieldValue instanceof JSONObject) {
-            return ((JSONObject)fieldValue).toMap();
+            Map<String, Object> map = ((JSONObject)fieldValue).toMap();
+            return new TreeMap<>(map);
         }
         else if (fieldValue instanceof JSONArray) {
             return ((JSONArray)fieldValue).toList();
