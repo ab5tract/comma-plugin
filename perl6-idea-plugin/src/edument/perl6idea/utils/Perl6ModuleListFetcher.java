@@ -1,5 +1,6 @@
 package edument.perl6idea.utils;
 
+import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -22,7 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class Perl6ModuleListFetcher {
+public class Perl6ModuleListFetcher implements ProjectComponent {
     public static final String GITHUB_MIRROR1 = "http://ecosystem-api.p6c.org/projects.json";
     public static final String GITHUB_MIRROR2 = "http://ecosystem-api.p6c.org/projects1.json";
     public static final String CPAN_MIRROR1   = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan.json";
@@ -45,6 +46,16 @@ public class Perl6ModuleListFetcher {
                       "trace", "v6", "variables", "worries");
     private static Pair<Map<String, JSONObject>, Instant> modulesList = null;
     private static boolean isFirst = true;
+    private final Project myProject;
+
+    public Perl6ModuleListFetcher(Project project) {
+        this.myProject = project;
+    }
+
+    @Override
+    public void initComponent() {
+        refreshModules(myProject);
+    }
 
     private static void refreshModules(Project project) {
         Instant now = Instant.now();

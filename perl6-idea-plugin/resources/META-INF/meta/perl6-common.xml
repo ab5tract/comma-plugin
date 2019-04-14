@@ -103,6 +103,9 @@
   </module-components>
 
   <project-components>
+    <component>
+      <implementation-class>edument.perl6idea.utils.Perl6ModuleListFetcher</implementation-class>
+    </component>
   </project-components>
 
 </idea-plugin>
