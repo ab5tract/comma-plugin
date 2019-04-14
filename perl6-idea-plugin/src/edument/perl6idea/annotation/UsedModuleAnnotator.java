@@ -35,6 +35,11 @@ public class UsedModuleAnnotator implements Annotator {
 
         Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
 
+        // No need to annotate "missing" modules, if there are
+        // no META data available
+        if (!metaData.isMetaDataExist())
+            return;
+
         PsiReference ref = element.getReference();
         if (ref == null) return;
         PsiElement resolved = ref.resolve();
