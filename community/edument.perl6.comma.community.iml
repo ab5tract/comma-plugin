@@ -13,5 +13,6 @@
     <orderEntry type="module" module-name="intellij.platform.lang" />
     <orderEntry type="module" module-name="intellij.platform.debugger" />
     <orderEntry type="module" module-name="intellij.platform.lang.impl" />
+    <orderEntry type="library" name="gson" level="project" />
   </component>
 </module>
