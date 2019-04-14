@@ -17,6 +17,8 @@ import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub> implements Perl6VariableDecl, PsiMetaOwner {
@@ -108,6 +110,17 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         while (value instanceof PsiWhiteSpace || (value != null && value.getNode().getElementType() == UNV_WHITE_SPACE) ||
                 value instanceof Perl6Comment)
             value = value.getNextSibling();
+        if (value instanceof Perl6Variable) {
+            String variableName = ((Perl6Variable)value).getVariableName();
+            if (Objects.equals(variableName, getVariableName())) {
+                return null;
+            }
+        } else if (value instanceof Perl6PostfixApplication) {
+            if (value.getFirstChild() instanceof Perl6Variable)
+                if (Objects.equals(((Perl6Variable)value.getFirstChild()).getVariableName(), getVariableName())) {
+                    return null;
+                }
+        }
         return value instanceof Perl6PsiElement ? ((Perl6PsiElement)value).inferType() : null;
     }
 
