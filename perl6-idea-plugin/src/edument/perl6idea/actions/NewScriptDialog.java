@@ -28,10 +28,10 @@ public class NewScriptDialog extends DialogWrapper {
     @Nullable
     @Override
     protected ValidationInfo doValidate() {
-        boolean isCorrectModuleName = scriptNameField.getText().matches(Patterns.MODULE_PATTERN);
-        if (isCorrectModuleName)
+        boolean isCorrectScriptName = scriptNameField.getText().matches(Patterns.SCRIPT_PATTERN);
+        if (isCorrectScriptName)
             return null;
-        return new ValidationInfo("Incorrect module name (examples: `Module`, `Foo::Bar`)", scriptNameField);
+        return new ValidationInfo("Incorrect script name (examples: `main`, `main.p6`)", scriptNameField);
     }
 
     @Nullable
