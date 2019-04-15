@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidator;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
@@ -44,10 +43,14 @@ public class NewScriptAction extends AnAction {
                 return inputString.matches(Patterns.SCRIPT_PATTERN);
             }
         };
-        String fileName = Messages.showInputDialog(project,
-                    "Script name (example: foo, foo.p6):",
-                    "New Script Name",
-                    Messages.getQuestionIcon(), null, validator);
+
+        NewScriptDialog dialog = new NewScriptDialog(project, false);
+        boolean isOk = dialog.showAndGet();
+        // User cancelled action
+        if (!isOk) return;
+
+        String fileName = dialog.getScriptName();
+        boolean shouldFill = dialog.shouldAddTemplate();
         // If user cancelled action.
         if (fileName == null)
             return;
@@ -64,7 +67,7 @@ public class NewScriptAction extends AnAction {
 
         scriptPath = Perl6ModuleBuilder.stubScript(
                 scriptPath != null ? scriptPath :
-                project.getBaseDir().getCanonicalPath(), fileName);
+                project.getBaseDir().getCanonicalPath(), fileName, shouldFill);
         VirtualFile scriptFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(scriptPath);
         assert scriptFile != null;
         FileEditorManager.getInstance(project).openFile(scriptFile, true);
