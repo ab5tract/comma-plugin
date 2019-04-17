@@ -610,11 +610,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testWhileOne() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<warning descr=\"Idiomatic 'loop' construction can be used instead\">while</warning> 1 {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"Idiomatic 'loop' construction can be used instead\">while</weak_warning> 1 {}");
     }
 
     public void testWhileTrue() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<warning descr=\"Idiomatic 'loop' construction can be used instead\">while</warning> True {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"Idiomatic 'loop' construction can be used instead\">while</weak_warning> True {}");
     }
 
     public void testWhileCondition() {
