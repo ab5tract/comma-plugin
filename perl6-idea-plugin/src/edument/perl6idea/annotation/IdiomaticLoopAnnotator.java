@@ -32,7 +32,7 @@ public class IdiomaticLoopAnnotator implements Annotator {
             suits = Objects.equals("True", ((Perl6TypeName)condition).getTypeName());
         }
         if (suits) {
-            holder.createWarningAnnotation(keyword, "Idiomatic 'loop' construction can be used instead")
+            holder.createWeakWarningAnnotation(keyword, "Idiomatic 'loop' construction can be used instead")
                   .registerFix(new IdiomaticLoopFix((Perl6WhileStatement)element));
         }
     }
