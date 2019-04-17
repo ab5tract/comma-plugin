@@ -118,6 +118,14 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Convert");
     }
 
+    public void testWhileOneSimplification() {
+        executeIntention("Use");
+    }
+
+    public void testWhileTrueSimplification() {
+        executeIntention("Use");
+    }
+
     public void testConstConstantKeywordFix() {
         executeIntention("Use");
     }

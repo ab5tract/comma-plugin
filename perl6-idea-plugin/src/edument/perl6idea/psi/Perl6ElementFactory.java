@@ -139,6 +139,10 @@ public class Perl6ElementFactory {
         return produceElement(project, ":" + text, Perl6ColonPair.class);
     }
 
+    public static Perl6LoopStatement createLoop(Project project, PsiElement block) {
+        return produceElement(project, "loop " + block.getText(), Perl6LoopStatement.class);
+    }
+
     protected static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {
         String filename = "dummy." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
         Perl6File dummyFile = (Perl6File) PsiFileFactory.getInstance(project)
