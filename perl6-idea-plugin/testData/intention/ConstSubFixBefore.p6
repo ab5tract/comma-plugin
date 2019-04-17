@@ -1,0 +1,1 @@
+c<caret>onst(1);

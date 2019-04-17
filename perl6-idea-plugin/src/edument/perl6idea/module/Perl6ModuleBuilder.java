@@ -12,7 +12,6 @@ import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
@@ -68,7 +67,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
             }
             switch (type) {
                 case PERL6_SCRIPT:
-                    stubScript(sourcePath, scriptName);
+                    stubScript(sourcePath, scriptName, true);
                     break;
                 case PERL6_MODULE:
                     if (sourcePath.endsWith("lib")) {
@@ -174,7 +173,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         return testPath.toString();
     }
 
-    public static String stubScript(String moduleLibraryPath, String scriptName) {
+    public static String stubScript(String moduleLibraryPath, String scriptName, boolean shouldFill) {
         if (!scriptName.endsWith(".pl6") && !scriptName.endsWith(Perl6ScriptFileType.INSTANCE.getDefaultExtension()))
             scriptName += "." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
         List<String> lines = Arrays.asList(
@@ -183,7 +182,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 "sub MAIN() { }"
         );
         Path path = Paths.get(moduleLibraryPath, scriptName);
-        writeCodeToPath(path, lines);
+        writeCodeToPath(path, shouldFill ? lines : new ArrayList<>());
         return path.toString();
     }
 

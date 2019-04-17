@@ -3,6 +3,10 @@ package edument.perl6idea.intention;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class IntentionTest extends LightCodeInsightFixtureTestCase {
     @Override
@@ -122,11 +126,37 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Use");
     }
 
+    public void testConstConstantKeywordFix() {
+        executeIntention("Use");
+    }
+
+    public void testConstConstantVarFix() {
+        executeIntention("Use");
+    }
+
+    public void testConstSubFix() {
+        checkIntentionAbsence("Use");
+    }
+
+    private void checkIntentionAbsence(String hint) {
+        assertNull(prepareIntention(hint));
+    }
+
     private void executeIntention(String hint) {
-        myFixture.configureByFile(getTestName(false) + "Before.p6");
-        IntentionAction intention = myFixture.findSingleIntention(hint);
+        IntentionAction intention = prepareIntention(hint);
         assertNotNull(intention);
         myFixture.launchAction(intention);
         myFixture.checkResultByFile(getTestName(false) + ".p6", true);
+    }
+
+    @Nullable
+    private IntentionAction prepareIntention(String hint) {
+        myFixture.configureByFile(getTestName(false) + "Before.p6");
+        List<IntentionAction> availableIntentions = myFixture.filterAvailableIntentions(hint);
+        assertTrue(availableIntentions.size() == 1 || availableIntentions.size() == 0);
+        if (availableIntentions.size() == 0)
+            return null;
+        else
+            return myFixture.findSingleIntention(hint);
     }
 }
