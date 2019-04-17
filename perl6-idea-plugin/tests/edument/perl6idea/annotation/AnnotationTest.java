@@ -32,7 +32,6 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         SdkConfigurationUtil.removeSdk(testSdk);
         super.tearDown();
     }
-
     public void testUndeclaredVariableAnnotatorReallyUndeclared() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable $foo is not declared\">$foo</error>;");
         myFixture.checkHighlighting(false, false, true, true);
@@ -608,5 +607,17 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     public void testFatArrowSimplification() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; sub a {}; a(<weak_warning descr=\"Pair literal can be simplified\">foo => $foo</weak_warning>)");
         myFixture.checkHighlighting();
+    }
+
+    public void testWhileOne() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<warning descr=\"Idiomatic 'loop' construction can be used instead\">while</warning> 1 {}");
+    }
+
+    public void testWhileTrue() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<warning descr=\"Idiomatic 'loop' construction can be used instead\">while</warning> True {}");
+    }
+
+    public void testWhileCondition() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "while $foo != 10 {}");
     }
 }

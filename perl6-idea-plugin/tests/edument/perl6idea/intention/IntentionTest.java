@@ -114,6 +114,14 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Convert");
     }
 
+    public void testWhileOneSimplification() {
+        executeIntention("Use");
+    }
+
+    public void testWhileTrueSimplification() {
+        executeIntention("Use");
+    }
+
     private void executeIntention(String hint) {
         myFixture.configureByFile(getTestName(false) + "Before.p6");
         IntentionAction intention = myFixture.findSingleIntention(hint);
