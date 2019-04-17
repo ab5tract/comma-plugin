@@ -841,4 +841,12 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertTrue(methods.containsAll(Arrays.asList(".enums", ".acos")));
     }
+
+    public void testRecursiveVariableCompletion() {
+        assertNoThrowable(() -> {
+            myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                      "my $foo = $foo.<caret>");
+            myFixture.complete(CompletionType.BASIC, 1);
+        });
+    }
 }
