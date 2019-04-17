@@ -23,7 +23,7 @@ public class NewActionsTest extends LightPlatformCodeInsightFixtureTestCase {
 
     public void testNewScriptAction() {
         @SystemIndependent String basePath = getProject().getBasePath();
-        Perl6ModuleBuilder.stubScript(basePath, "test.p6");
+        Perl6ModuleBuilder.stubScript(basePath, "test.p6", true);
         File path = Paths.get(basePath, "test.p6").toFile();
         assertTrue(path.exists());
     }
