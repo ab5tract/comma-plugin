@@ -21,8 +21,8 @@ public class IdiomaticLoopAnnotator implements Annotator {
             return;
         PsiElement keyword = element.getFirstChild();
         PsiElement condition = keyword.getNextSibling();
-        while (condition instanceof PsiWhiteSpace ||
-               condition.getNode().getElementType() == UNV_WHITE_SPACE) {
+        while (condition != null && (condition instanceof PsiWhiteSpace ||
+               condition.getNode().getElementType() == UNV_WHITE_SPACE)) {
             condition = condition.getNextSibling();
         }
         boolean suits = false;
