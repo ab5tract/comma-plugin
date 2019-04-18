@@ -31,29 +31,67 @@
   </description>
 
   <change-notes><![CDATA[
-<ul>
-  <li>Introduce basic profiling support. Programs can now be run under the MoarVM profiler. The
-  routines where time was spent are then displayed, sortable by inclusive and exclusive time.
-  It is also possible to explore the callers and callees of each routine, to understand more
-  about the time they spend.</li>
-  <li>After running coverage analysis, display the number of statements hit, the number of
-  coverable statements, and the percentage coverage next to each module in the project view.
-  These are summed/averaged on directories.</li>
-  <li>When extracting code to a sub or method, it is now possible to change the order of
-  the parameters taken by the extracted routine.</li>
-  <li>Show helpful summary information in the debugger for type objects, Bool/Int/Rat/Num/Str/Scalar objects,
-  Array/List/Map/Hash objects, and Promise objects. Scalars are looked into, in order to display what is in
-  them without having to dig into them to see the value.</li>
-  <li>Support use of the <code>.t6</code> extension for tests. The test runner is updated to run such files. Further,
-  the filename input field of the 'New Test' action does not unconditionally add the extension .t; if
-  an extension is entered it will use that, and otherwise, if there is no extension, it will add .t.</li>
-  <li>Make the fix that stubs a missing private method only reformat the surrounding block, not the whole file.</li>
-  <li>Support method completion on enum values.</li>
-  <li>Fix inability of the debugger to connect to the debug server when it was listening on the IPv6
-  loopback interface.</li>
-  <li>Fix some broken bundled IDEA platform plugins: properties support, settings repository, and task
-  management.</li>
-</ul>
+    <ul>
+      <li>The ‘Extract to…’ routine refactoring now supports extracting expressions<br>
+        into a routine, method or a private method (previously it only supported<br>
+        extracting full statements)</li>
+      <li>With the ‘Extract to…’ refactoring, it is now possible to extract<br>
+        statements with heredoc</li>
+      <li>When the compunit name from a use statement is not found in the<br>
+        ecosystem, a quickfix is provided to stub a module in the project</li>
+      <li>Gutter navigation is added for Perl 6 classes and roles. It is<br>
+        possible to quickly navigate from a parent class to its children,<br>
+        from a child to a parent class, and for roles to go to its parents<br>
+        and packages that implement the role</li>
+      <li>In the <code>New Module</code> action dialog, it is possible to stub a monitor now,<br>
+        along with class, role, grammar and module</li>
+      <li>Add a checkbox to the <code>New Script</code> action dialog that allows to set<br>
+        if new script file should be populated with a <code>MAIN</code> template or<br>
+        not</li>
+      <li>Add an annotator that detects attempts to declare a constant using<br>
+        <code>const</code> instead of <code>constant</code> and provides a quickfix. Usages of a<br>
+        subroutine named <code>const</code> will not be annotated</li>
+      <li>Add an annotator that detects non-idiomatic style for infinite loops<br>
+        <code>while True</code> and <code>while 1</code>, and provides a quickfix to replace it<br>
+        with <code>loop</code> construction</li>
+      <li>Add an annotator that annotates pair literals that can be<br>
+        simplified, such as <code>:foo($foo)</code> and <code>foo =&gt; $foo</code> and suggests a<br>
+        conversion to the <code>:$foo</code> pair literal form</li>
+      <li>Fix a bug where a Perl6 SDK was not added to the Comma SDK table from the<br>
+        <code>Project Structure</code> dialog, which prevented use of SDK-related features for opened<br>
+        projects until a new project was created</li>
+      <li>Fix an exception on creating a new script without an extension set<br>
+        (<a href="https://commaide.com/subscriber/feedback/37">https://commaide.com/subscriber/feedback/37</a>)</li>
+      <li>Fix an exception on saving changes in the <code>Project Structure</code> dialog<br>
+        with <code>META6.json</code> deleted before opening the dialog</li>
+      <li>Fix passing of multiple arguments to a Perl 6 process in a Run<br>
+        Configuration</li>
+      <li>Fix whitespace parsing in quote constructs, so now <code>q &quot;foo&quot;</code> is<br>
+        correctly recognized as well as <code>q&quot;foo&quot;</code></li>
+      <li>Fix duplicate messages about <code>META6.json</code> syntax errors</li>
+      <li>Fix issues with <code>META6.json</code> that appeared when more than a single<br>
+        Comma instance are used: now <code>META6.json</code> content does not<br>
+        interfere. Error messages from a project do not accidentally appear<br>
+        in another project (<a href="https://commaide.com/subscriber/feedback/45">https://commaide.com/subscriber/feedback/45</a>)</li>
+      <li>Now <code>META6.json</code> file fields are sorted in specific order, and items<br>
+        in the <code>provides</code> section are sorted in a natural order. It fixes effects<br>
+        of inner hash re-building and reduces VCS noise introduced by<br>
+        possible excessive change of the keys order</li>
+      <li>When the <code>META6.json</code> file is not present, compunit names in use<br>
+        statements are not annotated, as in this case we cannot check if the<br>
+        current project has a distribution that provides this compunit is<br>
+        present in <code>depends</code> section</li>
+      <li>When a module file is moved out of the <code>lib</code> directory, it is now<br>
+        removed from the <code>META6.json</code> file. Before it worked for a directory<br>
+        being moved out, but not for a single file</li>
+      <li>The <code>self</code> reference inside of a nameless package now resolves to<br>
+        its declarator, instead of the file start</li>
+      <li>During project creation, the <code>t</code> directory is now correctly marked<br>
+        as a test source directory</li>
+      <li>A thinko when a user tries to declare a variable using its method in<br>
+        the initializer (e.g. <code>my $foo = $foo.bar</code>) does not lead to an<br>
+        exception now</li>
+    </ul>
   ]]>
   </change-notes>
 
