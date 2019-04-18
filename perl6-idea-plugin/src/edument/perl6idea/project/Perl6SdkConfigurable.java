@@ -1,6 +1,7 @@
 package edument.perl6idea.project;
 
 import com.intellij.openapi.application.ApplicationBundle;
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -25,6 +26,12 @@ public class Perl6SdkConfigurable implements UnnamedConfigurable {
     private final SdkModel.Listener myListener = new SdkModel.Listener() {
         @Override
         public void sdkAdded(Sdk sdk) {
+            try {
+                myJdksModel.apply(null, true);
+            }
+            catch (ConfigurationException e) {
+                throw new RuntimeException(e);
+            }
             reloadModel();
         }
 
