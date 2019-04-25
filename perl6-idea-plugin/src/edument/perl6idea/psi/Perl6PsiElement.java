@@ -3,11 +3,15 @@ package edument.perl6idea.psi;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.symbols.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+
+import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public interface Perl6PsiElement extends NavigatablePsiElement {
     /* Name-manages the enclosing file name into a module name, if possible.
@@ -114,5 +118,25 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
 
     default String inferType() {
         return "Any";
+    }
+
+    @Nullable
+    default PsiElement skipWhitespacesBackward() {
+        PsiElement temp = getPrevSibling();
+        while (temp != null &&
+               (temp instanceof PsiWhiteSpace ||
+                temp.getNode().getElementType() == UNV_WHITE_SPACE))
+            temp = temp.getPrevSibling();
+        return temp;
+    }
+
+    @Nullable
+    default PsiElement skipWhitespacesForward() {
+        PsiElement temp = getNextSibling();
+        while (temp != null &&
+               (temp instanceof PsiWhiteSpace ||
+                temp.getNode().getElementType() == UNV_WHITE_SPACE))
+            temp = temp.getNextSibling();
+        return temp;
     }
 }
