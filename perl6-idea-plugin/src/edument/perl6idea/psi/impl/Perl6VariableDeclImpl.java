@@ -17,6 +17,7 @@ import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
@@ -77,7 +78,73 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
     @Override
     public boolean hasInitializer() {
-        return PsiTreeUtil.getChildOfType(this, Perl6Infix.class) != null;
+        return getAssignmentInfix() != null;
+    }
+
+    @Nullable
+    @Override
+    public PsiElement getInitializer(PsiElement variable) {
+        Perl6Infix infix = getAssignmentInfix();
+        if (infix == null) return null;
+
+        PsiElement identificator = infix.getPrevSibling();
+        while (identificator != null && !(identificator instanceof Perl6Variable || identificator instanceof Perl6Signature)) {
+            identificator = identificator.getPrevSibling();
+        }
+
+        if (identificator instanceof Perl6Variable) {
+            return infix.skipWhitespacesForward();
+        } else if (identificator != null) {
+            PsiElement init = extractInitializerForSignatureVar((Perl6Signature) identificator, variable, infix);
+            if (init != null)
+                return init;
+        }
+        return null;
+    }
+
+    @Nullable
+    private PsiElement extractInitializerForSignatureVar(Perl6Signature signature, PsiElement variable, @NotNull Perl6Infix infix) {
+        int initIndex = -1;
+        Perl6Parameter[] parameters = signature.getParameters();
+        for (int i = 0, parametersLength = parameters.length; i < parametersLength; i++) {
+            Perl6Parameter parameter = parameters[i];
+            Perl6ParameterVariable parameterVariable = PsiTreeUtil.findChildOfType(parameter, Perl6ParameterVariable.class);
+            if (Objects.equals(parameterVariable, variable)) {
+                initIndex = i;
+                break;
+            }
+        }
+
+        if (initIndex >= 0) {
+            // We have an initializer index, try to find it in initializer list
+            PsiElement multiInit = infix.skipWhitespacesForward();
+            if (multiInit instanceof Perl6InfixApplication) {
+                Perl6Infix[] commas = PsiTreeUtil.getChildrenOfType(multiInit, Perl6Infix.class);
+                if (commas != null && commas.length >= initIndex) {
+                    return initIndex == 0 ?
+                            commas[0].skipWhitespacesBackward() :
+                            commas[initIndex - 1].skipWhitespacesForward();
+                }
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    private Perl6Infix getAssignmentInfix() {
+        Perl6Infix infix = PsiTreeUtil.getChildOfType(this, Perl6Infix.class);
+        if (infix == null)
+            return null;
+        if (!Objects.equals(infix.getOperator(), "="))
+            return null;
+        return infix;
+    }
+
+    @Nullable
+    @Override
+    public PsiElement getInitializer() {
+        Perl6Infix assignmentInfix = getAssignmentInfix();
+        return assignmentInfix == null ? null : assignmentInfix.getRightSide();
     }
 
     @Override
