@@ -13,11 +13,13 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
-import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
+import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
