@@ -1752,7 +1752,8 @@ grammar MAIN {
         || [
                <!before [<.sigil> || <[\\(]> || 'sub' || 'method' ||
                          'regex' || 'token' || 'rule' ||
-                         'multi' || 'proto' || 'only']>
+                         'multi' || 'proto' || 'only' ||
+                         'constant' || 'enum' || 'subset' ]>
                <.typename> <.ws>?
            ]+
            <.multi_declarator>?

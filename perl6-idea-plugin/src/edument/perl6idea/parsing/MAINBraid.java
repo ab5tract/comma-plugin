@@ -47090,7 +47090,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
         while (true) {
             switch (this.state) {
             case 0:
-                this.bsFailMark(11);
+                this.bsFailMark(14);
                 this.bsMark(2);
                 this.setArgs();
                 this.state = 1;
@@ -47106,8 +47106,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(11);
-                this.state = 11;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 2:
@@ -47119,8 +47119,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(11);
-                this.state = 11;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 3:
@@ -47132,8 +47132,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(11);
-                this.state = 11;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 4:
@@ -47145,8 +47145,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(11);
-                this.state = 11;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 5:
@@ -47158,8 +47158,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(11);
-                this.state = 11;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 6:
@@ -47171,8 +47171,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(11);
-                this.state = 11;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 7:
@@ -47184,8 +47184,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(11);
-                this.state = 11;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 8:
@@ -47197,8 +47197,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(11);
-                this.state = 11;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 9:
@@ -47210,11 +47210,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(11);
-                this.state = 11;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 10:
+                this.bsMark(11);
                 if (!(this.literal("only"))) {
                     if (this.backtrack()) {
                         continue;
@@ -47222,10 +47223,48 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.state = 11;
+                this.bsCommit(14);
+                this.state = 14;
                 continue;
 
             case 11:
+                this.bsMark(12);
+                if (!(this.literal("constant"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.bsCommit(14);
+                this.state = 14;
+                continue;
+
+            case 12:
+                this.bsMark(13);
+                if (!(this.literal("enum"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.bsCommit(14);
+                this.state = 14;
+                continue;
+
+            case 13:
+                if (!(this.literal("subset"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 14;
+                continue;
+
+            case 14:
                 return -1;
 
             }
