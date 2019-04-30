@@ -2017,7 +2017,10 @@ grammar MAIN {
     token parameter {
         <.start-element('PARAMETER')>
         [
-        || <.type_constraint>+
+        ||  [
+            <!before ['is' || 'hides' || 'does' || 'will' || 'of' || 'returns' || 'handles']>
+            <.type_constraint>
+            ]+
             [
             || [
                || <.start-token('TERM_DECLARATION_BACKSLASH')>

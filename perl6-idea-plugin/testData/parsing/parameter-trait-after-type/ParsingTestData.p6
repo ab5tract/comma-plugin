@@ -1,0 +1,1 @@
+sub sqlite3_bind_text(Str is encoded('utf8')) returns int32 is native(LIB) is export { ... };
