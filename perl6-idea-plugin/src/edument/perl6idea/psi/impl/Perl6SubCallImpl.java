@@ -5,11 +5,11 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.Perl6ElementFactory;
-import edument.perl6idea.psi.Perl6RoutineDecl;
-import edument.perl6idea.psi.Perl6SubCall;
-import edument.perl6idea.psi.Perl6SubCallName;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import static edument.perl6idea.parsing.Perl6TokenTypes.PARENTHESES_OPEN;
 
 public class Perl6SubCallImpl extends ASTWrapperPsiElement implements Perl6SubCall {
     public Perl6SubCallImpl(@NotNull ASTNode node) {
@@ -20,13 +20,44 @@ public class Perl6SubCallImpl extends ASTWrapperPsiElement implements Perl6SubCa
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         Perl6SubCallName call =
             Perl6ElementFactory.createSubCallName(getProject(), name);
-        Perl6SubCallName callName = findChildByClass(Perl6SubCallName.class);
+        Perl6SubCallName callName = getSubCallNameNode();
         if (callName != null) {
             ASTNode keyNode = callName.getNode();
             ASTNode newKeyNode = call.getNode();
             getNode().replaceChild(keyNode, newKeyNode);
         }
         return this;
+    }
+
+    @Nullable
+    private Perl6SubCallName getSubCallNameNode() {
+        return findChildByClass(Perl6SubCallName.class);
+    }
+
+    @Override
+    public String getSubCallName() {
+        Perl6SubCallName name = getSubCallNameNode();
+        return name == null ? "" : name.getCallName();
+    }
+
+    @Override
+    public PsiElement[] getSubCallArguments() {
+        Perl6SubCallName name = getSubCallNameNode();
+        if (name == null)
+            return new PsiElement[0];
+        PsiElement argument = name.skipWhitespacesForward();
+        if (argument != null && argument.getNode().getElementType() == PARENTHESES_OPEN) {
+            argument = argument.getNextSibling();
+        }
+
+        if (argument == null)
+            return new PsiElement[0];
+
+        if (argument instanceof Perl6InfixApplication) {
+            return ((Perl6InfixApplication) argument).getOperands();
+        } else {
+            return new PsiElement[]{argument};
+        }
     }
 
     @Override
