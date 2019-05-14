@@ -2,6 +2,7 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
@@ -20,7 +21,7 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
+import java.util.*;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
@@ -85,7 +86,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
     @Nullable
     @Override
-    public PsiElement getInitializer(PsiElement variable) {
+    public PsiElement getInitializer(Perl6Variable variable) {
         Perl6Infix infix = getAssignmentInfix();
         if (infix == null) return null;
 
@@ -105,13 +106,13 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Nullable
-    private PsiElement extractInitializerForSignatureVar(Perl6Signature signature, PsiElement variable, @NotNull Perl6Infix infix) {
+    private PsiElement extractInitializerForSignatureVar(Perl6Signature signature, Perl6Variable variable, @NotNull Perl6Infix infix) {
         int initIndex = -1;
         Perl6Parameter[] parameters = signature.getParameters();
         for (int i = 0, parametersLength = parameters.length; i < parametersLength; i++) {
             Perl6Parameter parameter = parameters[i];
-            Perl6ParameterVariable parameterVariable = PsiTreeUtil.findChildOfType(parameter, Perl6ParameterVariable.class);
-            if (Objects.equals(parameterVariable, variable)) {
+            Perl6Variable parameterVariable = PsiTreeUtil.findChildOfType(parameter, Perl6Variable.class);
+            if (Objects.equals(parameterVariable.getName(), variable.getName())) {
                 initIndex = i;
                 break;
             }
@@ -147,6 +148,61 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public PsiElement getInitializer() {
         Perl6Infix assignmentInfix = getAssignmentInfix();
         return assignmentInfix == null ? null : assignmentInfix.getRightSide();
+    }
+
+    @Override
+    public void removeVariable(Perl6Variable variable) {
+        PsiNamedElement[] variables = getDeclaredVariables();
+        if (variables.length == 1) {
+            delete();
+        } else {
+            // Should we enclose resulting variable list with parentheses or no
+            boolean shouldEnclose = variables.length - 1 != 1;
+
+            StringJoiner signature = new StringJoiner(", ");
+            String nameToAvoid = variable.getName();
+            for (PsiNamedElement var : variables) {
+                if (!Objects.equals(var.getName(), nameToAvoid))
+                    signature.add(var.getName());
+            }
+
+            // Get part of multi-initializer that we have to exclude
+            PsiElement deleteInit = getInitializer(variable);
+            if (deleteInit == null)
+                return;
+
+            // Get all pieces, excluding deleteInit
+            List<PsiElement> initPartsToPreserve = new ArrayList<>();
+            for (PsiElement initNode : getInitializer().getChildren()) {
+                if (!Objects.equals(initNode, deleteInit) && !(initNode instanceof Perl6Infix))
+                    initPartsToPreserve.add(initNode);
+            }
+            // If we have only a single value left after exclusion, it is not InfixApplication anymore,
+            // so we can just replace it with the value directly
+            if (initPartsToPreserve.size() == 1) {
+                getInitializer().replace(initPartsToPreserve.get(0));
+            } else {
+                // Otherwise, create a new application and use it
+                Perl6InfixApplication newApplication = Perl6ElementFactory.
+                        createInfixApplication(getProject(), initPartsToPreserve);
+                getInitializer().replace(newApplication);
+            }
+
+            PsiElement newDeclaration = Perl6ElementFactory.createVariableAssignment(
+                    variable.getProject(),
+                    String.format(shouldEnclose ? "(%s)" : "%s", signature.toString()),
+                    getInitializer().getText(), false);
+
+            PsiTreeUtil.getParentOfType(this, Perl6Statement.class).replace(newDeclaration);
+        }
+    }
+
+    private PsiNamedElement[] getDeclaredVariables() {
+        Collection<PsiNamedElement> variables = PsiTreeUtil.findChildrenOfType(this, Perl6ParameterVariable.class);
+        if (variables.size() == 0) {
+            variables = PsiTreeUtil.findChildrenOfType(this, Perl6Variable.class);
+        }
+        return variables.toArray(new PsiNamedElement[0]);
     }
 
     @Override
