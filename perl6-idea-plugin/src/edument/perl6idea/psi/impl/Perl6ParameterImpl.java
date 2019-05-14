@@ -72,7 +72,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
 
     @Override
     public String getVariableName() {
-        Perl6ParameterVariable var = findChildByClass(Perl6ParameterVariable.class);
+        Perl6ParameterVariable var = PsiTreeUtil.findChildOfType(this, Perl6ParameterVariable.class);
         return var != null ? var.getText() : "";
     }
 
@@ -80,7 +80,26 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     @Override
     public PsiElement getInitializer() {
         Perl6ParameterDefault parameterDefault = PsiTreeUtil.getChildOfType(this, Perl6ParameterDefault.class);
-        return parameterDefault == null ? null : parameterDefault.getLastChild();
+        return parameterDefault == null ? getMultideclarationInit() : parameterDefault.getLastChild();
+    }
+
+    private PsiElement getMultideclarationInit() {
+        Perl6Variable paramVariable = PsiTreeUtil.findChildOfType(this, Perl6Variable.class);
+        Perl6VariableDecl decl = PsiTreeUtil.getParentOfType(this, Perl6VariableDecl.class);
+        if (decl != null)
+            return decl.getInitializer(paramVariable);
+
+        return null;
+    }
+
+    @Override
+    public boolean isPositional() {
+        return findChildByClass(Perl6ParameterVariableImpl.class) != null;
+    }
+
+    @Override
+    public boolean isNamed() {
+        return findChildByClass(Perl6NamedParameterImpl.class) != null;
     }
 
     @Override

@@ -8,4 +8,6 @@ public interface Perl6Parameter extends Perl6PsiElement, Perl6PsiDeclaration {
     String getVariableName();
     @Nullable
     PsiElement getInitializer();
+    boolean isPositional();
+    boolean isNamed();
 }
