@@ -3,6 +3,7 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.SearchScope;
@@ -29,7 +30,7 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     @Nullable
     @Override
     public PsiElement getNameIdentifier() {
-        return findChildByType(Perl6TokenTypes.VARIABLE);
+        return PsiTreeUtil.getChildOfType(this, Perl6Variable.class);
     }
 
     @NotNull
