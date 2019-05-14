@@ -1,8 +1,10 @@
 package edument.perl6idea.psi;
 
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
+import org.jetbrains.annotations.Nullable;
 
 public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
                                           StubBasedPsiElement<Perl6RoutineDeclStub>,
@@ -12,4 +14,5 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     String getRoutineName();
     boolean isPrivate();
     boolean isStubbed();
+    PsiElement[] getContent();
 }
