@@ -611,13 +611,26 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testWhileOne() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"Idiomatic 'loop' construction can be used instead\">while</weak_warning> 1 {}");
+        myFixture.checkHighlighting();
     }
 
     public void testWhileTrue() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"Idiomatic 'loop' construction can be used instead\">while</weak_warning> True {}");
+        myFixture.checkHighlighting();
     }
 
     public void testWhileCondition() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "while $foo != 10 {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "while <error descr=\"Variable $foo is not declared\">$foo</error> != 10 {}");
+        myFixture.checkHighlighting();
+    }
+
+    public void testWithAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"'with' construction can be used instead\">if 5.defined</weak_warning> {}");
+        myFixture.checkHighlighting();
+    }
+
+    public void testWithoutAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"'without' construction can be used instead\">unless 5.defined</weak_warning> {}");
+        myFixture.checkHighlighting();
     }
 }
