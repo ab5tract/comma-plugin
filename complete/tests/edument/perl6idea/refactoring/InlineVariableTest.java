@@ -1,8 +1,10 @@
 package edument.perl6idea.refactoring;
 
+import com.intellij.ide.DataManager;
+import com.intellij.refactoring.BaseRefactoringProcessor;
+import com.intellij.refactoring.inline.InlineRefactoringActionHandler;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
-import edument.perl6idea.refactoring.inline.Perl6InlineHandler;
 
 public class InlineVariableTest extends LightPlatformCodeInsightFixtureTestCase {
     @Override
@@ -10,7 +12,11 @@ public class InlineVariableTest extends LightPlatformCodeInsightFixtureTestCase 
         return "complete/testData/inline-variable";
     }
 
-    public void testInitSingleUsage() {
+    public void testInitSingleUsageSave() {
+        doTest();
+    }
+
+    public void testInitSingleUsageNoSave() {
         doTest();
     }
 
@@ -18,46 +24,80 @@ public class InlineVariableTest extends LightPlatformCodeInsightFixtureTestCase 
         doTest();
     }
 
-    public void testLateSingleInitSingleCase() {
+    public void testLateSingleInitCaseException() {
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Inline Variable refactoring is supported only when the initializer is present", this::doTest);
+    }
+
+    public void testIntermediateAssignmentConflict() {
+        assertThrows(BaseRefactoringProcessor.ConflictsInTestsException.class,
+            "Variable to be inlined has occurrences as lvalue", this::doTest);
+    }
+
+    public void testMultivarInitSingleCaseLeftSave() {
         doTest();
     }
 
-    public void testMultivarInitSingleCaseLeft() {
+    public void testMultivarInitSingleCaseLeftNoSave() {
         doTest();
     }
 
-    public void testMultivarInitSingleCaseRight() {
+    public void testMultivarInitSingleCaseRightSave() {
         doTest();
     }
 
-    public void testMultivarInitDoubleCaseLeft() {
+    public void testMultivarInitSingleCaseRightNoSave() {
         doTest();
     }
 
-    public void testMultivarInitDoubleCaseCenter() {
+    public void testMultivarInitDoubleCaseLeftSave() {
         doTest();
     }
 
-    public void testMultivarInitDoubleCaseRight() {
+    public void testMultivarInitDoubleCaseLeftNoSave() {
         doTest();
     }
 
-    public void testNamedParameterSingleUsage() {
+    public void testMultivarInitDoubleCaseCenterSave() {
         doTest();
     }
 
-    public void testPositionalParameterSingleUsage() {
+    public void testMultivarInitDoubleCaseCenterNoSave() {
+        doTest();
+    }
+
+    public void testMultivarInitDoubleCaseRightSave() {
+        doTest();
+    }
+
+    public void testMultivarInitDoubleCaseRightNoSave() {
+        doTest();
+    }
+
+    public void testNamedParameterSingleUsageSave() {
+        doTest();
+    }
+
+    public void testNamedParameterSingleUsageNoSave() {
+        doTest();
+    }
+
+    public void testPositionalParameterSingleUsageSave() {
+        doTest();
+    }
+
+    public void testPositionalParameterSingleUsageNoSave() {
         doTest();
     }
 
     public void testNoAssignmentException() {
-        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, "Cannot inline the variable $foo: the variable is not initialized", this::doTest);
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, "Inline Variable refactoring is supported only when the initializer is present", this::doTest);
     }
 
     private void doTest() {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
-        Perl6InlineHandler handler = new Perl6InlineHandler();
-        handler.inlineElement(getProject(), myFixture.getEditor(), myFixture.getElementAtCaret());
+        InlineRefactoringActionHandler action = new InlineRefactoringActionHandler();
+        action.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), DataManager.getInstance().getDataContextFromFocus().getResult());
         myFixture.checkResultByFile(getTestName(true) + ".p6");
     }
 }
