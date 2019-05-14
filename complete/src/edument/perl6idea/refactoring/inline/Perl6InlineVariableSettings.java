@@ -1,9 +1,8 @@
 package edument.perl6idea.refactoring.inline;
 
 import com.intellij.lang.refactoring.InlineHandler;
-import com.intellij.psi.PsiNamedElement;
 import edument.perl6idea.psi.Perl6Variable;
-Handle
+
 public abstract  class Perl6InlineVariableSettings implements InlineHandler.Settings {
     private Perl6Variable myVariable;
 
