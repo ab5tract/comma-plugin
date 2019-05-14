@@ -149,4 +149,24 @@ public class Perl6ElementFactory {
                 .createFileFromText(filename, Perl6ScriptFileType.INSTANCE, text);
         return PsiTreeUtil.findChildOfType(dummyFile, clazz);
     }
+
+    public static Perl6InfixApplication createInfixApplication(Project project, List<PsiElement> parts) {
+        return produceElement(project, getInfixApplicationText(parts), Perl6InfixApplication.class);
+    }
+
+    private static String getInfixApplicationText(List<PsiElement> parts) {
+        StringJoiner infix = new StringJoiner(", ");
+        parts.stream().map(PsiElement::getText).forEach(infix::add);
+        return infix.toString() + ";";
+    }
+
+    public static Perl6Signature createRoutineSignature(Project project, List<Perl6Parameter> parameters) {
+        return produceElement(project, createRoutineSignatureText(parameters), Perl6Signature.class);
+    }
+
+    private static String createRoutineSignatureText(List<Perl6Parameter> parameters) {
+        StringJoiner signature = new StringJoiner(", ");
+        parameters.stream().map(PsiElement::getText).forEach(signature::add);
+        return "sub foo(" + signature.toString() + ") {}";
+    }
 }
