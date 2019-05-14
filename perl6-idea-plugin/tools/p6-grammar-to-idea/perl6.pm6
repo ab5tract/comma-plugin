@@ -2102,13 +2102,7 @@ grammar MAIN {
            ]?
            <.end-element('SIGNATURE')>
         || <.start-element('PARAMETER_VARIABLE')>
-           <.start-token('VARIABLE')>
-           <.sigil> <.twigil>?
-           [
-           || <.identifier>
-           || <[/!]>
-           ]?
-           <.end-token('VARIABLE')>
+           <.variable>
            [
                <?before '['>
                <.start-token('PARAM_ARRAY_SHAPE')> <?> <.end-token('PARAM_ARRAY_SHAPE')>
