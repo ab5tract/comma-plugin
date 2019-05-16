@@ -4,45 +4,49 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiWhiteSpace;
 import edument.perl6idea.annotation.fix.UseWithSyntaxFix;
-import edument.perl6idea.psi.Perl6IfStatement;
-import edument.perl6idea.psi.Perl6MethodCall;
-import edument.perl6idea.psi.Perl6PostfixApplication;
-import edument.perl6idea.psi.Perl6UnlessStatement;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
-
-import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
+import java.util.Set;
 
 public class WithConstructionAnnotator implements Annotator {
+    public static Set<String> terms = new HashSet<>();
+    static {
+        Collections.addAll(terms, "if", "elsif", "unless");
+    }
+
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-        if (!(psiElement instanceof Perl6IfStatement || psiElement instanceof Perl6UnlessStatement))
+        if (!(psiElement instanceof P6Conditional))
             return;
 
-        PsiElement condition = psiElement.getFirstChild();
-        if (condition != null)
-            condition = condition.getNextSibling();
+        P6Conditional conditional = (P6Conditional) psiElement;
 
-        if (!(condition instanceof Perl6PostfixApplication))
-            while (condition != null && (condition instanceof PsiWhiteSpace || condition.getNode().getElementType() == UNV_WHITE_SPACE))
-                condition = condition.getNextSibling();
-
-        if (!(condition instanceof Perl6PostfixApplication))
-            return;
-
-        PsiElement methodCall = condition.getLastChild();
-
-        if (!(methodCall instanceof Perl6MethodCall))
-            return;
-
-        if (Objects.equals(((Perl6MethodCall) methodCall).getCallName(), ".defined")) {
-            annotationHolder.createWeakWarningAnnotation(new TextRange(psiElement.getTextOffset(),
-                            methodCall.getTextOffset() + methodCall.getTextLength()),
-                    psiElement instanceof Perl6IfStatement ? "'with' construction can be used instead" : "'without' construction can be used instead")
-                    .registerFix(new UseWithSyntaxFix(psiElement));
+        for (Perl6ConditionalBranch branch : conditional.getBranches()) {
+            if (terms.contains(branch.term.getText()) && checkIfReplaceable((branch.condition))) {
+                annotationHolder.createWeakWarningAnnotation(
+                        new TextRange(branch.term.getTextOffset(),
+                                branch.condition.getTextOffset() + branch.condition.getTextLength()),
+                        psiElement instanceof Perl6IfStatement ? "'with' construction can be used instead" : "'without' construction can be used instead"
+                ).registerFix(new UseWithSyntaxFix(branch));
+            }
         }
+    }
+
+    private boolean checkIfReplaceable(PsiElement condition) {
+        if (!(condition instanceof Perl6PostfixApplication))
+            return false;
+
+        PsiElement maybeMethodCall = condition.getLastChild();
+        if (!(maybeMethodCall instanceof Perl6MethodCall))
+            return false;
+
+        String methodName = ((Perl6MethodCall) maybeMethodCall).getCallName();
+        return Objects.equals(methodName, ".defined");
+
     }
 }
