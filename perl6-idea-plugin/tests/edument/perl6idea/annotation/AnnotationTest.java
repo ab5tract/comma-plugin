@@ -633,4 +633,9 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"'without' construction can be used instead\">unless 5.defined</weak_warning> {}");
         myFixture.checkHighlighting();
     }
+
+    public void testMultiWithAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"'with' construction can be used instead\">if 5.defined</weak_warning> {} <weak_warning descr=\"'with' construction can be used instead\">elsif 4.defined</weak_warning> {} else {}");
+        myFixture.checkHighlighting();
+    }
 }
