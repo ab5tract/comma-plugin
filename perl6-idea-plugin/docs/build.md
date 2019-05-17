@@ -2,17 +2,23 @@
 
 #### Preparation
 
+Currently, Comma works with 191.6707 Intellij revision/branch.
+
 Do the following steps inside a work-related directory, for example, `comma`.
 * `git clone https://github.com/edument/intellij-community.git`
 * `cd intellij-community`
-* `git checkout comma`
+* `git checkout comma-191.6707`
 * Do steps from `intellij-community` repo [README](https://github.com/JetBrains/intellij-community/#opening-the-intellij-source-code-for-build): creating `IDEA jdk` JDK and setting it to the project, running `getPlugins.sh` script.
 * `git clone https://github.com/edumentab/perl6-idea-plugin.git comma-build` (so the structure is `intellij-community/comma-build`)
+* Make sure that revisions of android-related repo are the same as the IDEA checkout, 191.6707.
+  * `cd android; git checkout 191.6707`
+  * `cd tools-base; git checkout 191.6707`
+  * `cd ../..`
 * Start IDEA instance, open existing project from `intellij-community` directory.
 * A `Unregistered VCS root detected` for `comma-bulid` will appear - let IDEA add this root.
-* At this point, `json`, `tap4j`, and `miglayout` dependencies may be missing.
+* At this point, `json` and`tap4j` dependencies may be missing.
   * Open `Project Structure` -> `Libraries` and add them manually using `From Maven` submenu.
-  * Maven coordinates are: `org.tap4j:tap4j:4.3`, `org.json:json:20171018`, and `com.miglayout:miglayout-swing:5.1`. Add them to the module `edument.perl6.plugin`.
+  * Maven coordinates are: `org.tap4j:tap4j:4.3`, `org.json:json:20171018`. Add them to the module `edument.perl6.plugin`.
 
 #### How to build a plugin
 
