@@ -23,8 +23,8 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <projectImportProvider implementation="com.intellij.ide.util.projectWizard.ModuleImportProvider"/>
-    <applicationService serviceInterface="com.intellij.openapi.module.ModuleTypeManager"
-                        serviceImplementation="edument.perl6idea.module.Perl6ModuleTypeManager"/>
+<!--    <applicationService serviceInterface="com.intellij.openapi.module.ModuleTypeManager"-->
+<!--                        serviceImplementation="edument.perl6idea.module.Perl6ModuleTypeManager"/>-->
     <projectImportProvider implementation="edument.perl6idea.module.Perl6ProjectImportProvider"/>
     <applicationService serviceImplementation="com.intellij.ide.util.newProjectWizard.SelectTemplateSettings"/>
     <applicationService serviceInterface="com.intellij.openapi.roots.ui.OrderEntryAppearanceService"
@@ -102,16 +102,16 @@
       <group id="NewElementInMenuGroup" class="com.intellij.ide.actions.NewActionGroup" text="New" popup="true"/>
       <add-to-group group-id="FileOpenGroup" anchor="first"/>
     </group>
-    <group id="NewProjectOrModuleGroup">
-      <action id="NewProject" class="com.intellij.ide.actions.NewProjectAction" text="Project..."/>
-      <action id="ImportProject" class="com.intellij.ide.actions.ImportProjectAction" text="Project from Existing Sources..."/>
-      <group id="NewProjectFromVCS" class="com.intellij.openapi.vcs.checkout.NewProjectFromVCSGroup" text="Project from Version Control"
-             popup="true"/>
-      <separator/>
-      <action id="NewModule" class="com.intellij.openapi.roots.ui.configuration.actions.NewModuleAction" text="Module..."/>
-      <action id="ImportModule" class="com.intellij.ide.actions.ImportModuleAction" text="Module from Existing Sources..."/>
-      <separator/>
-    </group>
+<!--    <group id="NewProjectOrModuleGroup">-->
+<!--      <action id="NewProject" class="com.intellij.ide.actions.NewProjectAction" text="Project..."/>-->
+<!--      <action id="ImportProject" class="com.intellij.ide.actions.ImportProjectAction" text="Project from Existing Sources..."/>-->
+<!--      <group id="NewProjectFromVCS" class="com.intellij.openapi.vcs.checkout.NewProjectFromVCSGroup" text="Project from Version Control"-->
+<!--             popup="true"/>-->
+<!--      <separator/>-->
+<!--      <action id="NewModule" class="com.intellij.openapi.roots.ui.configuration.actions.NewModuleAction" text="Module..."/>-->
+<!--      <action id="ImportModule" class="com.intellij.ide.actions.ImportModuleAction" text="Module from Existing Sources..."/>-->
+<!--      <separator/>-->
+<!--    </group>-->
     <action id="NewElement" class="com.intellij.ide.actions.NewElementAction"/>
     <group id="MoveModuleToGroup" class="com.intellij.ide.projectView.impl.MoveModuleToGroupTopLevel" popup="true"/>
   </actions>

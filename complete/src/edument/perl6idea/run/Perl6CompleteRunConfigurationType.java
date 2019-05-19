@@ -1,5 +1,6 @@
 package edument.perl6idea.run;
 
+import com.intellij.coverage.CoverageExecutor;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -10,7 +11,6 @@ import com.intellij.execution.executors.DefaultDebugExecutor;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.Project;
 import edument.perl6idea.Perl6Icons;
-import edument.perl6idea.coverage.CoverageExecutor;
 import edument.perl6idea.coverage.Perl6CoverageCommandLineState;
 import edument.perl6idea.debugger.Perl6DebugCommandLineState;
 import edument.perl6idea.profiler.Perl6ProfileCommandLineState;
