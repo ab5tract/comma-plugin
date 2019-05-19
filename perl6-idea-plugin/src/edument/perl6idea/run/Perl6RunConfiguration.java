@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 abstract public class Perl6RunConfiguration extends LocatableConfigurationBase implements CommonProgramRunConfigurationParameters,
-                                                                                 Perl6DebuggableConfiguration{
+                                                                                 Perl6DebuggableConfiguration {
     private static final String SCRIPT_PATH = "SCRIPT_PATH";
     private static final String SCRIPT_ARGS = "SCRIPT_ARGS";
     private static final String WORKING_DIRECTORY = "WORKING_DIRECTORY";
@@ -50,6 +50,8 @@ abstract public class Perl6RunConfiguration extends LocatableConfigurationBase i
 
     @Override
     public String suggestedName() {
+        if (getScriptPath() == null)
+            return null;
         VirtualFile script = LocalFileSystem.getInstance().findFileByPath(getScriptPath());
         return script == null ? null : script.getName();
     }
@@ -109,7 +111,7 @@ abstract public class Perl6RunConfiguration extends LocatableConfigurationBase i
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
         Path path = Paths.get(scriptPath);
-        if (!(Files.exists(path))) {
+        if (!path.toFile().exists()) {
             throw new RuntimeConfigurationError("Path to main script must be specified");
         }
     }
