@@ -5,6 +5,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import edument.perl6idea.run.Perl6RunCommandLineState;
+import edument.perl6idea.timeline.client.TimelineClient;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
