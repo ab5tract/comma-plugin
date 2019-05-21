@@ -1,6 +1,7 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.PsiFileBase;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
@@ -243,7 +244,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public Map<Integer, List<Integer>> getStatementLineMap() {
         Map<Integer, List<Integer>> result = new HashMap<>();
         Set<Integer> covered = new HashSet<>();
-        if (ApplicationManager.getApplication().isDispatchThread())
+        Application application = ApplicationManager.getApplication();
+        if (application.isDispatchThread() && application.isWriteAccessAllowed())
             PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
         FileViewProvider fileViewProvider = getViewProvider();
         Document document = fileViewProvider.getDocument();
