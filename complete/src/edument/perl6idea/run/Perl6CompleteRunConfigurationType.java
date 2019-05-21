@@ -14,6 +14,8 @@ import edument.perl6idea.coverage.CoverageExecutor;
 import edument.perl6idea.coverage.Perl6CoverageCommandLineState;
 import edument.perl6idea.debugger.Perl6DebugCommandLineState;
 import edument.perl6idea.profiler.Perl6ProfileCommandLineState;
+import edument.perl6idea.timeline.Perl6TimelineCommandLineState;
+import edument.perl6idea.timeline.Perl6TimelineExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,8 +55,11 @@ public class Perl6CompleteRunConfigurationType extends ConfigurationTypeBase {
             else if (executor instanceof Perl6ProfileExecutor) {
                 return new Perl6ProfileCommandLineState(environment);
             }
-            if (executor instanceof CoverageExecutor) {
+            else if (executor instanceof CoverageExecutor) {
                 return new Perl6CoverageCommandLineState(environment);
+            }
+            else if (executor instanceof Perl6TimelineExecutor) {
+                return new Perl6TimelineCommandLineState(environment);
             }
             return new Perl6RunCommandLineState(environment);
         }
