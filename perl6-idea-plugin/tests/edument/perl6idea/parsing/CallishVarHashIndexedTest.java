@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class TermDefinition extends ParsingTestCase {
-    public TermDefinition() {
+public class CallishVarHashIndexedTest extends ParsingTestCase {
+    public CallishVarHashIndexedTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class TermDefinition extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/term-definition";
+        return "perl6-idea-plugin/testData/parsing/callish-var-hash-indexed";
     }
 
     @Override

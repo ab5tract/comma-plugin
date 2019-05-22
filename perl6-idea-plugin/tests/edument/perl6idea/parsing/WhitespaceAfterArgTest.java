@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class ColonPairInArray extends ParsingTestCase {
-  public ColonPairInArray() {
+public class WhitespaceAfterArgTest extends ParsingTestCase {
+  public WhitespaceAfterArgTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 
@@ -13,7 +13,7 @@ public class ColonPairInArray extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "perl6-idea-plugin/testData/parsing/colonpair-in-array";
+    return "perl6-idea-plugin/testData/parsing/ws-after-arglist";
   }
 
   @Override

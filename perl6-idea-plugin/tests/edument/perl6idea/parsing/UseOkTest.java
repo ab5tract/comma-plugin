@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class SignatureInvocant extends ParsingTestCase {
-    public SignatureInvocant() {
+public class UseOkTest extends ParsingTestCase {
+    public UseOkTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class SignatureInvocant extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/signature-invocant";
+        return "perl6-idea-plugin/testData/parsing/use-ok";
     }
 
     @Override

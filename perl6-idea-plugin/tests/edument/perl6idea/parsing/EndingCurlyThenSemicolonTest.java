@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class CallishVarHashIndexed extends ParsingTestCase {
-    public CallishVarHashIndexed() {
+public class EndingCurlyThenSemicolonTest extends ParsingTestCase {
+    public EndingCurlyThenSemicolonTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class CallishVarHashIndexed extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/callish-var-hash-indexed";
+        return "perl6-idea-plugin/testData/parsing/ending-curly-then-semicolon";
     }
 
     @Override

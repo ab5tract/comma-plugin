@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class SpaceAfterPrefix extends ParsingTestCase {
-    public SpaceAfterPrefix() {
+public class UnbalancedBug1Test extends ParsingTestCase {
+    public UnbalancedBug1Test() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class SpaceAfterPrefix extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/space-after-prefix";
+        return "perl6-idea-plugin/testData/parsing/unbalanced-bug-1";
     }
 
     @Override
@@ -26,4 +26,3 @@ public class SpaceAfterPrefix extends ParsingTestCase {
         return true;
     }
 }
-

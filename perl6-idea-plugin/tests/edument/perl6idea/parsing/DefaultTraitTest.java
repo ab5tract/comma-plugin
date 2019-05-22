@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class DoesLexerBug extends ParsingTestCase {
-    public DoesLexerBug() {
+public class DefaultTraitTest extends ParsingTestCase {
+    public DefaultTraitTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class DoesLexerBug extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/does-lexer-bug";
+        return "perl6-idea-plugin/testData/parsing/default-trait";
     }
 
     @Override
@@ -26,3 +26,4 @@ public class DoesLexerBug extends ParsingTestCase {
         return true;
     }
 }
+

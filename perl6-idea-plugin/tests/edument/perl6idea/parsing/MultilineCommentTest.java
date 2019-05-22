@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class MalformedSignature extends ParsingTestCase {
-  public MalformedSignature() {
+public class MultilineCommentTest extends ParsingTestCase {
+  public MultilineCommentTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 
@@ -13,7 +13,7 @@ public class MalformedSignature extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "perl6-idea-plugin/testData/parsing/malformed-sig";
+    return "perl6-idea-plugin/testData/parsing/multiline-comment";
   }
 
   @Override

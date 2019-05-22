@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class MultilineComment extends ParsingTestCase {
-  public MultilineComment() {
+public class VersionLiteralTest extends ParsingTestCase {
+  public VersionLiteralTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 
@@ -13,7 +13,7 @@ public class MultilineComment extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "perl6-idea-plugin/testData/parsing/multiline-comment";
+    return "perl6-idea-plugin/testData/parsing/version-literal";
   }
 
   @Override

@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class Trusts extends ParsingTestCase {
-    public Trusts() {
+public class TrustsTest extends ParsingTestCase {
+    public TrustsTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 

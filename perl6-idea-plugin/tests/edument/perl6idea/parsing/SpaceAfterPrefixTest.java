@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class PodFormattingCodes extends ParsingTestCase {
-    public PodFormattingCodes() {
+public class SpaceAfterPrefixTest extends ParsingTestCase {
+    public SpaceAfterPrefixTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class PodFormattingCodes extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/pod-formatting-codes";
+        return "perl6-idea-plugin/testData/parsing/space-after-prefix";
     }
 
     @Override
@@ -26,3 +26,4 @@ public class PodFormattingCodes extends ParsingTestCase {
         return true;
     }
 }
+

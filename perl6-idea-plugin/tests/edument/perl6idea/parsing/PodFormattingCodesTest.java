@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class DefaultTrait extends ParsingTestCase {
-    public DefaultTrait() {
+public class PodFormattingCodesTest extends ParsingTestCase {
+    public PodFormattingCodesTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class DefaultTrait extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/default-trait";
+        return "perl6-idea-plugin/testData/parsing/pod-formatting-codes";
     }
 
     @Override
@@ -26,4 +26,3 @@ public class DefaultTrait extends ParsingTestCase {
         return true;
     }
 }
-

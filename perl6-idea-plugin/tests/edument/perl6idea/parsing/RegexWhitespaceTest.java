@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class QuasiHashKey extends ParsingTestCase {
-  public QuasiHashKey() {
+public class RegexWhitespaceTest extends ParsingTestCase {
+  public RegexWhitespaceTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 
@@ -13,7 +13,7 @@ public class QuasiHashKey extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "perl6-idea-plugin/testData/parsing/quasi-hash-key";
+    return "perl6-idea-plugin/testData/parsing/regex-whitespace";
   }
 
   @Override

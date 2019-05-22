@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class LowercaseConstantTerm extends ParsingTestCase {
-  public LowercaseConstantTerm() {
+public class QuasiHashKeyTest extends ParsingTestCase {
+  public QuasiHashKeyTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 
@@ -13,7 +13,7 @@ public class LowercaseConstantTerm extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "perl6-idea-plugin/testData/parsing/lowercase-constant-term";
+    return "perl6-idea-plugin/testData/parsing/quasi-hash-key";
   }
 
   @Override

@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class UseOk extends ParsingTestCase {
-    public UseOk() {
+public class LabelsTest extends ParsingTestCase {
+    public LabelsTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class UseOk extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/use-ok";
+        return "perl6-idea-plugin/testData/parsing/labels";
     }
 
     @Override

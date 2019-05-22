@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class CurlyEndsStatement extends ParsingTestCase {
-    public CurlyEndsStatement() {
+public class UnbalancedBug2Test extends ParsingTestCase {
+    public UnbalancedBug2Test() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class CurlyEndsStatement extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/curly-ends-statement";
+        return "perl6-idea-plugin/testData/parsing/unbalanced-bug-2";
     }
 
     @Override

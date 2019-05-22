@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class ColonPairWithValue extends ParsingTestCase {
-  public ColonPairWithValue() {
+public class ColonPairWithValueTest extends ParsingTestCase {
+  public ColonPairWithValueTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 

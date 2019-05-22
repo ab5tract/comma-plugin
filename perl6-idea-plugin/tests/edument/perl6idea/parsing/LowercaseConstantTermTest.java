@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class ProtoregexLongCalls extends ParsingTestCase {
-  public ProtoregexLongCalls() {
+public class LowercaseConstantTermTest extends ParsingTestCase {
+  public LowercaseConstantTermTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 
@@ -13,7 +13,7 @@ public class ProtoregexLongCalls extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "perl6-idea-plugin/testData/parsing/protoregex-long-calls";
+    return "perl6-idea-plugin/testData/parsing/lowercase-constant-term";
   }
 
   @Override

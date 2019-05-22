@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class Macro extends ParsingTestCase {
-  public Macro() {
+public class ProtoregexLongCallsTest extends ParsingTestCase {
+  public ProtoregexLongCallsTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 
@@ -13,7 +13,7 @@ public class Macro extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "perl6-idea-plugin/testData/parsing/macro";
+    return "perl6-idea-plugin/testData/parsing/protoregex-long-calls";
   }
 
   @Override

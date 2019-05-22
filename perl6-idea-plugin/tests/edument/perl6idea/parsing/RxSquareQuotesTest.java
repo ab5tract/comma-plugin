@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class RxSquareQuotes extends ParsingTestCase {
-    public RxSquareQuotes() {
+public class RxSquareQuotesTest extends ParsingTestCase {
+    public RxSquareQuotesTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 

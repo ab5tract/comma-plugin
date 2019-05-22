@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class WhitespaceAfterArglist extends ParsingTestCase {
-  public WhitespaceAfterArglist() {
+public class AlsoTest extends ParsingTestCase {
+  public AlsoTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 
@@ -13,7 +13,7 @@ public class WhitespaceAfterArglist extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "perl6-idea-plugin/testData/parsing/ws-after-arglist";
+    return "perl6-idea-plugin/testData/parsing/also";
   }
 
   @Override

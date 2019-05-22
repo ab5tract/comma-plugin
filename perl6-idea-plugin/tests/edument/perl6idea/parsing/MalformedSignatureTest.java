@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class VersionLiteral extends ParsingTestCase {
-  public VersionLiteral() {
+public class MalformedSignatureTest extends ParsingTestCase {
+  public MalformedSignatureTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 
@@ -13,7 +13,7 @@ public class VersionLiteral extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "perl6-idea-plugin/testData/parsing/version-literal";
+    return "perl6-idea-plugin/testData/parsing/malformed-sig";
   }
 
   @Override

@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class UnbalancedBug1 extends ParsingTestCase {
-    public UnbalancedBug1() {
+public class TermDefinitionTest extends ParsingTestCase {
+    public TermDefinitionTest() {
         super("", "p6", new Perl6ParserDefinition());
     }
 
@@ -13,7 +13,7 @@ public class UnbalancedBug1 extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/unbalanced-bug-1";
+        return "perl6-idea-plugin/testData/parsing/term-definition";
     }
 
     @Override

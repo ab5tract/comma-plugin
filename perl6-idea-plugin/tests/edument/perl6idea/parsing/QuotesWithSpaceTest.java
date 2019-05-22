@@ -2,8 +2,8 @@ package edument.perl6idea.parsing;
 
 import com.intellij.testFramework.ParsingTestCase;
 
-public class Also extends ParsingTestCase {
-  public Also() {
+public class QuotesWithSpaceTest extends ParsingTestCase {
+  public QuotesWithSpaceTest() {
     super("", "p6", new Perl6ParserDefinition());
   }
 
@@ -13,7 +13,7 @@ public class Also extends ParsingTestCase {
 
   @Override
   protected String getTestDataPath() {
-    return "perl6-idea-plugin/testData/parsing/also";
+    return "perl6-idea-plugin/testData/parsing/quotes-with-whitespace";
   }
 
   @Override
