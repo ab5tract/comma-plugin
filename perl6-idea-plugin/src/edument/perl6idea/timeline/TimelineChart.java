@@ -9,6 +9,7 @@ import edument.perl6idea.timeline.model.Timeline;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.util.ArrayList;
@@ -49,8 +50,79 @@ public class TimelineChart extends JPanel {
     private ColorGenerator colorGen = new ColorGenerator();
     private Map<String, Color> assignedColors = new HashMap<>();
 
+    // The current area of the graph.
+    private Rectangle graphArea = new Rectangle();
+
     public TimelineChart(Timeline timeline) {
         this.timeline = timeline;
+        addMouseEventHandlers();
+    }
+
+    private void addMouseEventHandlers() {
+        addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                // Only zoom when Ctrl is held down and in graph area.
+                if (!e.isControlDown() && graphArea.contains(e.getPoint()))
+                    return;
+
+                // Calculate new tick interval.
+                double factor = e.getWheelRotation() < 0 ? 0.5 : 2.0;
+                int notches = Math.abs(e.getWheelRotation());
+                for (int i = 0; i < notches; i++)
+                    tickInterval *= factor;
+
+                // Repaint the graph at this size.
+                repaint();
+            }
+        });
+        MouseAdapter dragHandler = new MouseAdapter() {
+            private boolean moving = false;
+            private Point lastPoint;
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1 && graphArea.contains(e.getPoint())) {
+                    moving = true;
+                    lastPoint = e.getPoint();
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                moving = false;
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (moving) {
+                    Point newPoint = e.getPoint();
+                    if (graphArea.contains(newPoint)) {
+                        // See how far we moved since the last event, and update the
+                        // latest point to the current one for next time around.
+                        int xDiff = (int)lastPoint.getX() - (int)newPoint.getX();
+                        lastPoint = newPoint;
+
+                        // Work out how many ticks we moved and update the start time
+                        // accordingly; hang on to the amount we didn't yet use.
+                        int wholeTicks = xDiff / tickSpacing;
+                        int leftoverPixels = xDiff - wholeTicks * tickSpacing;
+                        lastPoint.translate(leftoverPixels, 0);
+                        startTime += wholeTicks * tickInterval;
+                        if (startTime < 0.0)
+                            startTime = 0.0;
+
+                        // Repaint in new position.
+                        repaint();
+                    }
+                    else {
+                        moving = false;
+                    }
+                }
+            }
+        };
+        addMouseListener(dragHandler);
+        addMouseMotionListener(dragHandler);
     }
 
     @Override
@@ -172,6 +244,10 @@ public class TimelineChart extends JPanel {
         // Paint elements in view.
         for (RenderLine line : linesToRender)
             line.render(g, chartPadding + maxLabelWidth + 1, ticksPossible);
+
+        // Stash the rectangle of the painted area, for handling mouse events.
+        graphArea = new Rectangle(chartPadding + maxLabelWidth, chartPadding,
+                                  ticksPossible * tickSpacing, curY - chartPadding);
     }
 
     private Dimension paintName(Graphics2D g, int y, Font font, int height, String module) {
