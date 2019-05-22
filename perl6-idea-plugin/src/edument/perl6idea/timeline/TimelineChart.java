@@ -2,7 +2,9 @@ package edument.perl6idea.timeline;
 
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.JBUI;
+import edument.perl6idea.timeline.model.Event;
 import edument.perl6idea.timeline.model.Logged;
+import edument.perl6idea.timeline.model.Task;
 import edument.perl6idea.timeline.model.Timeline;
 
 import javax.swing.*;
@@ -10,6 +12,7 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +45,10 @@ public class TimelineChart extends JPanel {
     // The current starting position.
     private double startTime = 0.0;
 
+    // Colors we've assigned, plus a color generator.
+    private ColorGenerator colorGen = new ColorGenerator();
+    private Map<String, Color> assignedColors = new HashMap<>();
+
     public TimelineChart(Timeline timeline) {
         this.timeline = timeline;
     }
@@ -71,7 +78,7 @@ public class TimelineChart extends JPanel {
     }
 
     // Information about a single line on the chart to render.
-    private static class RenderLine {
+    private class RenderLine {
         private List<Logged> loggedItems;
         private int top;
 
@@ -79,6 +86,44 @@ public class TimelineChart extends JPanel {
             this.loggedItems = loggedItems;
             this.top = top;
         }
+
+        public void render(Graphics2D g, int startingX, int numTicks) {
+            // Go through the items, find those in view, and render them.
+            double endTime = startTime + tickInterval * numTicks;
+            for (Logged item : loggedItems) {
+                g.setColor(colorForItem(item));
+                if (item instanceof Event) {
+                    Event event = (Event)item;
+                    if (event.getWhen() >= startTime && event.getWhen() < endTime)
+                        renderEvent(g, startingX, event.getWhen());
+                }
+                else if (item instanceof Task) {
+                    Task task = (Task)item;
+                    if (task.getStart() < endTime && task.getEnd() >= startTime) {
+                        double boundedStart = Math.max(startTime, task.getStart());
+                        double boundedEnd = Math.min(endTime, task.getEnd());
+                        renderTask(g, startingX, boundedStart, boundedEnd);
+                    }
+                }
+            }
+        }
+
+        private void renderEvent(Graphics2D g, int x, double when) {
+            int midPixel = (int)((when - startTime) / tickInterval * tickSpacing);
+            // TODO Render
+        }
+
+        private void renderTask(Graphics2D g, int startingX, double start, double end) {
+            int startPixel = (int)((start - startTime) / tickInterval * tickSpacing);
+            int endPixel = (int)((end - startTime) / tickInterval * tickSpacing);
+            int width = Math.max(endPixel - startPixel, 1);
+            g.fillRect(startingX + startPixel, top + labelPadding, width, textHeight);
+        }
+    }
+
+    private Color colorForItem(Logged item) {
+        String key = item.getModule() + "\0" + item.getCategory() + "\0" + item.getName();
+        return assignedColors.computeIfAbsent(key, k -> colorGen.nextColor());
     }
 
     private void paintChart(Graphics2D g) {
@@ -123,6 +168,10 @@ public class TimelineChart extends JPanel {
         // Paint the axes.
         paintLeftAxis(g, curY, chartPadding + maxLabelWidth);
         paintTimeAxis(g, chartPadding + maxLabelWidth, curY, ticksPossible);
+
+        // Paint elements in view.
+        for (RenderLine line : linesToRender)
+            line.render(g, chartPadding + maxLabelWidth + 1, ticksPossible);
     }
 
     private Dimension paintName(Graphics2D g, int y, Font font, int height, String module) {
