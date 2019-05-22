@@ -10,11 +10,17 @@ import com.intellij.execution.runners.RunTab;
 import com.intellij.execution.ui.*;
 import com.intellij.execution.ui.layout.PlaceInGrid;
 import com.intellij.icons.AllIcons;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
+import com.intellij.notification.NotificationsManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.content.Content;
+import edument.perl6idea.timeline.client.ClientEvent;
 import edument.perl6idea.timeline.client.TimelineClient;
+import edument.perl6idea.timeline.client.TimelineEventListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,6 +71,19 @@ public class TimelineContentBuilder extends RunTab {
         Content content = myUi.createContent(TIMELINE_CONTENT_ID, timeline, "Timeline", null, null);
         content.setCloseable(false);
         myUi.addContent(content, 0, PlaceInGrid.center, false);
+
+        client.connect(new TimelineEventListener() {
+            @Override
+            public void onEvent(ClientEvent e) {
+                System.out.println(e.getModule() + "," + e.getCategory() + "," + e.getName());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Notifications.Bus.notify(
+                        new Notification("Could not get timeline data: " + e.getMessage(), null, NotificationType.ERROR));
+            }
+        });
     }
 
     private void addConsoleTab(RunProfile profile, RunContentDescriptor contentDescriptor) {
