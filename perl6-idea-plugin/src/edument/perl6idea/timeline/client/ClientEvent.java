@@ -46,7 +46,7 @@ public class ClientEvent {
     }
 
     public boolean isTaskEnd() {
-        return kind == 1;
+        return kind == 2;
     }
 
     public double getTimestamp() {

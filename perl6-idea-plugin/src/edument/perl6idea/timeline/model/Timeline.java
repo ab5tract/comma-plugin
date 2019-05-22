@@ -2,21 +2,26 @@ package edument.perl6idea.timeline.model;
 
 import edument.perl6idea.timeline.client.ClientEvent;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 public class Timeline {
     private Map<Integer, Task> activeTasks = new HashMap<>();
     private Map<String, Map<String, Map<String, List<Logged>>>> topLevel = new LinkedHashMap<>();
-    private double startTime = 0.0;
-    private double endTime = 10.0;
+    private double firstTimestamp = 0.0;
+    private Instant ourIinstantAtFirstTimestap;
+    private double endTime = 0.0;
 
     public void incorporate(ClientEvent clientEvent) {
         // We deal in times relative to the timestamp of the first event we see.
-        if (startTime == 0)
-            startTime = clientEvent.getTimestamp();
-        double timestamp = clientEvent.getTimestamp() - startTime;
+        if (firstTimestamp == 0) {
+            firstTimestamp = clientEvent.getTimestamp();
+            ourIinstantAtFirstTimestap = Instant.now();
+        }
+        double timestamp = clientEvent.getTimestamp() - firstTimestamp;
         if (timestamp > endTime)
-            endTime = Math.ceil(endTime + timestamp);
+            endTime = timestamp;
 
         // Add the event.
         if (clientEvent.isEvent()) {
@@ -55,11 +60,23 @@ public class Timeline {
         name.add(logged);
     }
 
+    public void tick() {
+        if (ourIinstantAtFirstTimestap != null) {
+            double elapsed = (double)Duration.between(ourIinstantAtFirstTimestap, Instant.now()).toMillis() / 1000;
+            if (elapsed > endTime)
+                endTime = elapsed;
+        }
+    }
+
     public boolean isEmpty() {
         return topLevel.isEmpty();
     }
 
     public Map<String, Map<String, Map<String, List<Logged>>>> getData() {
         return topLevel;
+    }
+
+    public double getEndTime() {
+        return endTime;
     }
 }

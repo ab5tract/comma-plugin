@@ -1,5 +1,7 @@
 package edument.perl6idea.timeline;
 
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.JBUI;
 import edument.perl6idea.timeline.model.Event;
@@ -16,6 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /** Renders the timeline chart, with axes and currently visible data. */
 public class TimelineChart extends JPanel {
@@ -53,9 +58,17 @@ public class TimelineChart extends JPanel {
     // The current area of the graph.
     private Rectangle graphArea = new Rectangle();
 
+    // Used to get ticks to update the graph end point.
+    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
     public TimelineChart(Timeline timeline) {
         this.timeline = timeline;
         addMouseEventHandlers();
+        executor.scheduleAtFixedRate(
+                () -> ApplicationManager.getApplication().invokeLater(() -> {
+                    timeline.tick();
+                    repaint();
+                }), 100, 100, TimeUnit.MILLISECONDS);
     }
 
     private void addMouseEventHandlers() {
@@ -161,7 +174,7 @@ public class TimelineChart extends JPanel {
 
         public void render(Graphics2D g, int startingX, int numTicks) {
             // Go through the items, find those in view, and render them.
-            double endTime = startTime + tickInterval * numTicks;
+            double endTime = Math.min(startTime + tickInterval * numTicks, timeline.getEndTime());
             for (Logged item : loggedItems) {
                 g.setColor(colorForItem(item));
                 if (item instanceof Event) {
