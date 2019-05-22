@@ -5,30 +5,35 @@ import edument.perl6idea.timeline.client.ClientEvent;
 import java.util.*;
 
 public class Timeline {
-    private Map<Integer, Task> activeTasks;
-    private Map<String, Map<String, Map<String, List<Logged>>>> topLevel;
-
-    public Timeline() {
-        activeTasks = new HashMap<>();
-        topLevel = new LinkedHashMap<>();
-    }
+    private Map<Integer, Task> activeTasks = new HashMap<>();
+    private Map<String, Map<String, Map<String, List<Logged>>>> topLevel = new LinkedHashMap<>();
+    private double startTime = 0.0;
+    private double endTime = 10.0;
 
     public void incorporate(ClientEvent clientEvent) {
+        // We deal in times relative to the timestamp of the first event we see.
+        if (startTime == 0)
+            startTime = clientEvent.getTimestamp();
+        double timestamp = clientEvent.getTimestamp() - startTime;
+        if (timestamp > endTime)
+            endTime = Math.ceil(endTime + timestamp);
+
+        // Add the event.
         if (clientEvent.isEvent()) {
             Event event = new Event(clientEvent.getModule(), clientEvent.getCategory(), clientEvent.getName(),
-                                    clientEvent.getData(), clientEvent.getTimestamp());
+                                    clientEvent.getData(), timestamp);
             add(event, clientEvent.getParentId());
         }
         else if (clientEvent.isTaskStart()) {
             Task task = new Task(clientEvent.getModule(), clientEvent.getCategory(), clientEvent.getName(),
-                                 clientEvent.getData(), clientEvent.getTimestamp());
+                                 clientEvent.getData(), timestamp);
             activeTasks.put(clientEvent.getId(), task);
             add(task, clientEvent.getParentId());
         }
         else if (clientEvent.isTaskEnd()) {
             Task found = activeTasks.remove(clientEvent.getId());
             if (found != null)
-                found.endTask(clientEvent.getTimestamp());
+                found.endTask(timestamp);
         }
     }
 
@@ -48,5 +53,13 @@ public class Timeline {
         List<Logged> name = category
                 .computeIfAbsent(logged.getName(), n -> new ArrayList<>());
         name.add(logged);
+    }
+
+    public boolean isEmpty() {
+        return topLevel.isEmpty();
+    }
+
+    public Map<String, Map<String, Map<String, List<Logged>>>> getData() {
+        return topLevel;
     }
 }

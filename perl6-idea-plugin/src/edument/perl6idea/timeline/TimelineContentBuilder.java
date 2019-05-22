@@ -66,8 +66,7 @@ public class TimelineContentBuilder extends RunTab {
     }
 
     private void addTimelineTab(TimelineClient client) {
-        JPanel timeline = new JPanel();
-        timeline.add(new JLabel("timeline goes here"));
+        TimelineView timeline = new TimelineView();
         Content content = myUi.createContent(TIMELINE_CONTENT_ID, timeline, "Timeline", null, null);
         content.setCloseable(false);
         myUi.addContent(content, 0, PlaceInGrid.center, false);
@@ -75,7 +74,7 @@ public class TimelineContentBuilder extends RunTab {
         client.connect(new TimelineEventListener() {
             @Override
             public void onEvent(ClientEvent e) {
-                System.out.println(e.getModule() + "," + e.getCategory() + "," + e.getName());
+                ApplicationManager.getApplication().invokeLater(() -> timeline.updateWith(e));
             }
 
             @Override

@@ -46,7 +46,6 @@ public class TimelineClient {
             conn.connect(address, null, new CompletionHandler<Void, Object>() {
                 @Override
                 public void completed(Void r, Object attachment) {
-                    System.out.println("connected to port " + port);
                     result.complete(conn);
                 }
 
