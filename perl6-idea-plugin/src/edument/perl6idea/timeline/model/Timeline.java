@@ -44,10 +44,15 @@ public class Timeline {
 
     private void add(Logged logged, int parent) {
         Task parentTask = activeTasks.get(parent);
-        if (parentTask != null)
+        if (parentTask != null) {
             parentTask.addChild(logged);
-        else
+            if (!logged.getModule().equals(parentTask.getModule()) ||
+                    !logged.getCategory().equals(parentTask.getCategory()))
+                addTopLevel(logged);
+        }
+        else {
             addTopLevel(logged);
+        }
     }
 
     private void addTopLevel(Logged logged) {
