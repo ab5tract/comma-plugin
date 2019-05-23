@@ -4,10 +4,8 @@ import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.JBUI;
+import edument.perl6idea.timeline.model.*;
 import edument.perl6idea.timeline.model.Event;
-import edument.perl6idea.timeline.model.Logged;
-import edument.perl6idea.timeline.model.Task;
-import edument.perl6idea.timeline.model.Timeline;
 
 import javax.swing.*;
 import java.awt.*;
@@ -217,7 +215,7 @@ public class TimelineChart extends JPanel {
         List<RenderLine> linesToRender = new ArrayList<>();
         int curY = chartPadding;
         int maxLabelWidth = 150;
-        Map<String, Map<String, Map<String, List<Logged>>>> modules = timeline.getData();
+        Map<String, Map<String, Map<String, LaneGroup>>> modules = timeline.getData();
         for (String module : modules.keySet()) {
             // Paint module name.
             Dimension modDims = paintName(g, curY, moduleNameFont, moduleNameHeight, module);
@@ -225,7 +223,7 @@ public class TimelineChart extends JPanel {
             curY += modDims.height;
 
             // Visit categories.
-            Map<String, Map<String, List<Logged>>> categories = modules.get(module);
+            Map<String, Map<String, LaneGroup>> categories = modules.get(module);
             for (String category : categories.keySet()) {
                 // Paint category name.
                 Dimension catDims = paintName(g, curY, categoryNameFont, textHeight, category);
@@ -233,15 +231,17 @@ public class TimelineChart extends JPanel {
                 curY += catDims.height;
 
                 // Visit the names.
-                Map<String, List<Logged>> names = categories.get(category);
+                Map<String, LaneGroup> names = categories.get(category);
                 for (String name : names.keySet()) {
-                    // Add set of things to render at this point.
-                    linesToRender.add(new RenderLine(names.get(name), curY));
-
                     // Paint name.
                     Dimension nameDims = paintName(g, curY, font, textHeight, name);
                     maxLabelWidth = Math.max(maxLabelWidth, nameDims.width);
-                    curY += nameDims.height;
+
+                    // Add the lanes to render.
+                    for (Lane lane : names.get(name).getLanes()) {
+                        linesToRender.add(new RenderLine(lane.getEntries(), curY));
+                        curY += nameDims.height;
+                    }
                 }
             }
         }

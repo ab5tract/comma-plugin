@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Timeline {
     private Map<Integer, Task> activeTasks = new HashMap<>();
-    private Map<String, Map<String, Map<String, List<Logged>>>> topLevel = new LinkedHashMap<>();
+    private Map<String, Map<String, Map<String, LaneGroup>>> topLevel = new LinkedHashMap<>();
     private double firstTimestamp = 0.0;
     private Instant ourIinstantAtFirstTimestap;
     private double endTime = 0.0;
@@ -56,12 +56,12 @@ public class Timeline {
     }
 
     private void addTopLevel(Logged logged) {
-        Map<String, Map<String, List<Logged>>> module = topLevel
+        Map<String, Map<String, LaneGroup>> module = topLevel
                 .computeIfAbsent(logged.getModule(), m -> new LinkedHashMap<>());
-        Map<String, List<Logged>> category = module
+        Map<String, LaneGroup> category = module
                 .computeIfAbsent(logged.getCategory(), c -> new LinkedHashMap<>());
-        List<Logged> name = category
-                .computeIfAbsent(logged.getName(), n -> new ArrayList<>());
+        LaneGroup name = category
+                .computeIfAbsent(logged.getName(), n -> new LaneGroup());
         name.add(logged);
     }
 
@@ -77,7 +77,7 @@ public class Timeline {
         return topLevel.isEmpty();
     }
 
-    public Map<String, Map<String, Map<String, List<Logged>>>> getData() {
+    public Map<String, Map<String, Map<String, LaneGroup>>> getData() {
         return topLevel;
     }
 
