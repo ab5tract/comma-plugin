@@ -241,22 +241,31 @@ public class TimelineChart extends JPanel {
         public void render(Graphics2D g, int startingX, int numTicks) {
             // Go through the items, find those in view, and render them.
             double endTime = Math.min(startTime + tickInterval * numTicks, timeline.getEndTime());
+            boolean darken = true;
             for (Logged item : loggedItems) {
-                g.setColor(colorForItem(item));
                 if (item instanceof Event) {
                     Event event = (Event)item;
-                    if (event.getWhen() >= startTime && event.getWhen() < endTime)
+                    if (event.getWhen() >= startTime && event.getWhen() < endTime) {
+                        setColor(g, darken, item);
                         renderEvent(g, startingX, event.getWhen());
+                    }
                 }
                 else if (item instanceof Task) {
                     Task task = (Task)item;
                     if (task.getStart() < endTime && task.getEnd() >= startTime) {
                         double boundedStart = Math.max(startTime, task.getStart());
                         double boundedEnd = Math.min(endTime, task.getEnd());
+                        setColor(g, darken, item);
                         renderTask(g, startingX, boundedStart, boundedEnd, task);
                     }
                 }
+                darken = !darken;
             }
+        }
+
+        private void setColor(Graphics2D g, boolean darken, Logged item) {
+            Color baseColor = colorForItem(item);
+            g.setColor(darken ? baseColor.darker() : baseColor);
         }
 
         private void renderEvent(Graphics2D g, int x, double when) {
