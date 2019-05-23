@@ -45,6 +45,9 @@ public class TimelineChart extends JPanel {
     private static final int tickSpacing = 100;
     private static final int tickDashSize = 10;
 
+    // Indentation space for children.
+    private static final int childIndent = 15;
+
     // The current tick interval in seconds.
     private double tickInterval = 1.0;
 
@@ -285,7 +288,7 @@ public class TimelineChart extends JPanel {
         Map<String, Map<String, Map<String, LaneGroup>>> modules = timeline.getData();
         for (String module : modules.keySet()) {
             // Paint module name.
-            Dimension modDims = paintName(g, curY, moduleNameFont, moduleNameHeight, module);
+            Dimension modDims = paintName(g, 0, curY, moduleNameFont, moduleNameHeight, module);
             maxLabelWidth = Math.max(maxLabelWidth, modDims.width);
             curY += modDims.height;
 
@@ -293,7 +296,7 @@ public class TimelineChart extends JPanel {
             Map<String, Map<String, LaneGroup>> categories = modules.get(module);
             for (String category : categories.keySet()) {
                 // Paint category name.
-                Dimension catDims = paintName(g, curY, categoryNameFont, textHeight, category);
+                Dimension catDims = paintName(g, 0, curY, categoryNameFont, textHeight, category);
                 maxLabelWidth = Math.max(maxLabelWidth, catDims.width);
                 curY += catDims.height;
 
@@ -301,13 +304,17 @@ public class TimelineChart extends JPanel {
                 Map<String, LaneGroup> names = categories.get(category);
                 for (String name : names.keySet()) {
                     // Paint name.
-                    Dimension nameDims = paintName(g, curY, font, textHeight, name);
+                    Dimension nameDims = paintName(g, 0, curY, font, textHeight, name);
                     maxLabelWidth = Math.max(maxLabelWidth, nameDims.width);
 
                     // Add the lanes to render.
                     for (Lane lane : names.get(name).getLanes()) {
                         linesToRender.add(new RenderLine(lane.getEntries(), curY));
                         curY += nameDims.height;
+                        Dimension childNameDims = renderChildLanes(g, lane.getChildTaskLaneGroups(),
+                                linesToRender, curY, 1);
+                        maxLabelWidth = Math.max(maxLabelWidth, childNameDims.width);
+                        curY += childNameDims.height;
                     }
                 }
             }
@@ -330,11 +337,38 @@ public class TimelineChart extends JPanel {
                                   ticksPossible * tickSpacing, curY - chartPadding);
     }
 
-    private Dimension paintName(Graphics2D g, int y, Font font, int height, String module) {
+    private Dimension renderChildLanes(Graphics2D g,
+                                       Map<String, LaneGroup> namedLaneGroups,
+                                       List<RenderLine> linesToRender,
+                                       int curY,
+                                       int indent) {
+        int addedHeight = 0;
+        int maxLabelWidth = 0;
+        for (String name : namedLaneGroups.keySet()) {
+            // Render the name of the child lane.
+            Dimension nameDims = paintName(g, indent * childIndent, curY, font, textHeight, name);
+            maxLabelWidth = Math.max(maxLabelWidth, nameDims.width);
+            addedHeight += nameDims.height;
+
+            // Add the lanes to render.
+            for (Lane lane : namedLaneGroups.get(name).getLanes()) {
+                linesToRender.add(new RenderLine(lane.getEntries(), curY));
+                curY += nameDims.height;
+                Dimension childNameDims = renderChildLanes(g, lane.getChildTaskLaneGroups(),
+                        linesToRender, curY, indent + 1);
+                maxLabelWidth = Math.max(maxLabelWidth, childNameDims.width);
+                curY += childNameDims.height;
+                addedHeight += childNameDims.height;
+            }
+        }
+        return new Dimension(maxLabelWidth, addedHeight);
+    }
+
+    private Dimension paintName(Graphics2D g, int x, int y, Font font, int height, String module) {
         TextLayout layout = new TextLayout(module, font, fontRenderContext);
         g.setFont(font);
-        g.drawString(module, chartPadding, y + labelPadding + height);
-        return new Dimension((int)layout.getBounds().getWidth() + labelPadding,
+        g.drawString(module, chartPadding + x, y + labelPadding + height);
+        return new Dimension(x + (int)layout.getBounds().getWidth() + labelPadding,
                              height + 2 * labelPadding);
     }
 

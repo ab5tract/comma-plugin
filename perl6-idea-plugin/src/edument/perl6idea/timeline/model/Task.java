@@ -34,6 +34,7 @@ public class Task extends Logged {
 
     public void addChild(Logged child) {
         this.children.add(child);
+        lane.addToChildLane(child);
     }
 
     public List<Logged> getChildren() {

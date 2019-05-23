@@ -1,12 +1,15 @@
 package edument.perl6idea.timeline.model;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /** A lane is an individual row in the timeline. It exists as part of a lane group,
  * which ensures we don't ever render two tasks on top of each other. */
 public class Lane {
     private List<Logged> entries = new ArrayList<>();
+    private Map<String, LaneGroup> childTaskLaneGroups = new LinkedHashMap<>();
 
     public boolean tryAdd(Logged entry) {
         if (entry instanceof Event) {
@@ -18,6 +21,7 @@ public class Lane {
                 return false;
         }
         entries.add(entry);
+        entry.setLane(this);
         return true;
     }
 
@@ -56,5 +60,14 @@ public class Lane {
 
     public List<Logged> getEntries() {
         return entries;
+    }
+
+    public void addToChildLane(Logged child) {
+        LaneGroup group = childTaskLaneGroups.computeIfAbsent(child.getName(), n -> new LaneGroup());
+        group.add(child);
+    }
+
+    public Map<String, LaneGroup> getChildTaskLaneGroups() {
+        return childTaskLaneGroups;
     }
 }

@@ -9,6 +9,7 @@ public abstract class Logged {
     private String category;
     private String name;
     private Map<String, Object> data;
+    protected Lane lane;
 
     public Logged(String module, String category, String name, Map<String, Object> data) {
         this.module = module;
@@ -31,5 +32,9 @@ public abstract class Logged {
 
     public Map<String, Object> getData() {
         return data;
+    }
+
+    public void setLane(Lane lane) {
+        this.lane = lane;
     }
 }
