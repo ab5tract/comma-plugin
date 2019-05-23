@@ -35,7 +35,7 @@ public class Perl6SdkType extends SdkType {
     private static final String NAME = "Perl 6 SDK";
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
     private List<Perl6Symbol> setting;
-    private Map<String, Perl6ExternalPackage> settingClasses;
+    private Map<String, Perl6ExternalPackage> settingClasses = null;
     private Map<String, String> moarBuildConfig;
     private Map<String, List<Perl6Symbol>> useNameCache = new ConcurrentHashMap<>();
     private Map<String, List<Perl6Symbol>> needNameCache = new ConcurrentHashMap<>();
@@ -259,15 +259,20 @@ public class Perl6SdkType extends SdkType {
     }
 
     public List<Perl6Symbol> getNamesForUse(Project project, String name) {
+        if (useNameCache == null)
+            return new ArrayList<>();
         return useNameCache.computeIfAbsent(name, n -> loadModuleSymbols(project, "use", n));
     }
 
     public List<Perl6Symbol> getNamesForNeed(Project project, String name) {
+        if (needNameCache == null)
+            return new ArrayList<>();
         return needNameCache.computeIfAbsent(name, n -> loadModuleSymbols(project, "need", n));
     }
 
     public void invalidateCaches() {
-        settingClasses = new ConcurrentHashMap<>();
+        setting = null;
+        settingClasses = null;
         useNameCache = new ConcurrentHashMap<>();
         needNameCache = new ConcurrentHashMap<>();
     }
