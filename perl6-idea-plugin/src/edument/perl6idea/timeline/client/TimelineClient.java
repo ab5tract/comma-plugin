@@ -1,10 +1,13 @@
 package edument.perl6idea.timeline.client;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -130,8 +133,11 @@ public class TimelineClient {
             double timestamp = json.get("t").getAsDouble();
             int id = json.has("i") ? json.get("i").getAsInt() : 0;
             int parent = json.has("p") ? json.get("p").getAsInt() : 0;
-            // TODO data
-            listener.onEvent(new ClientEvent(module, category, name, kind, timestamp, id, parent, EMPTY_DATA));
+            Type type = new TypeToken<Map<String, Object>>(){}.getType();
+            Map<String, Object> data = json.has("d")
+                    ? new Gson().fromJson(json.get("d"), type)
+                    : EMPTY_DATA;
+            listener.onEvent(new ClientEvent(module, category, name, kind, timestamp, id, parent, data));
         }
         catch (Exception e) {
             listener.onError(e);

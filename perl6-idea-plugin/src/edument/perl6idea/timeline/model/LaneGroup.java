@@ -16,7 +16,6 @@ public class LaneGroup {
                 return;
 
         // If we get here, we need a new one; adding to an empty lane must work.
-        System.out.println("Creating a new lane for " + logged.getName());
         Lane newLane = new Lane();
         newLane.tryAdd(logged);
         lanes.add(newLane);

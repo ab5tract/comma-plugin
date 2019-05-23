@@ -1,8 +1,10 @@
 package edument.perl6idea.timeline;
 
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.ui.JBUI;
 import edument.perl6idea.timeline.model.*;
 import edument.perl6idea.timeline.model.Event;
@@ -59,6 +61,26 @@ public class TimelineChart extends JPanel {
     // Used to get ticks to update the graph end point.
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
+    // Information about a rendered area on the chart, for handling tooltips and expansions.
+    private static class VisibleLogged {
+        private final Rectangle area;
+        private final Logged logged;
+
+        public VisibleLogged(Rectangle area, Logged logged) {
+            this.area = area;
+            this.logged = logged;
+        }
+
+        public boolean contains(Point p) {
+            return area.contains(p);
+        }
+
+        public Logged getLogged() {
+            return logged;
+        }
+    }
+    private List<VisibleLogged> visibleLoggeds = new ArrayList<>();
+
     public TimelineChart(Timeline timeline) {
         this.timeline = timeline;
         addMouseEventHandlers();
@@ -87,9 +109,12 @@ public class TimelineChart extends JPanel {
                 repaint();
             }
         });
-        MouseAdapter dragHandler = new MouseAdapter() {
+
+        MouseAdapter dragAndMoveHandler = new MouseAdapter() {
             private boolean moving = false;
             private Point lastPoint;
+            private Logged currentTooltipLogged;
+            private JBPopup currentPopup;
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -131,9 +156,48 @@ public class TimelineChart extends JPanel {
                     }
                 }
             }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if (e.getButton() != 0)
+                    return;
+                maybeShowTooltip(e.getPoint());
+            }
+
+            private void maybeShowTooltip(Point point) {
+                for (VisibleLogged visible : visibleLoggeds) {
+                    if (visible.contains(point)) {
+                        if (visible.getLogged() != currentTooltipLogged) {
+                            closeActiveTooltip();
+                            showTooltip(point, visible);
+                        }
+                        return;
+                    }
+                }
+                closeActiveTooltip(); // Because we're not in any
+            }
+
+            private void showTooltip(Point point, VisibleLogged visible) {
+                currentTooltipLogged = visible.getLogged();
+                JBPopup popup = JBPopupFactory.getInstance()
+                          .createComponentPopupBuilder(new TimelineTooltip(currentTooltipLogged), null)
+                          .setFocusOwners(new Component[] { TimelineChart.this })
+                          .createPopup();
+                currentPopup = popup;
+                popup.show(new RelativePoint(TimelineChart.this, point));
+            }
+
+            private void closeActiveTooltip() {
+                if (currentTooltipLogged != null) {
+                    currentPopup.cancel();
+                    currentPopup.dispose();
+                    currentPopup = null;
+                    currentTooltipLogged = null;
+                }
+            }
         };
-        addMouseListener(dragHandler);
-        addMouseMotionListener(dragHandler);
+        addMouseListener(dragAndMoveHandler);
+        addMouseMotionListener(dragAndMoveHandler);
     }
 
     @Override
@@ -143,6 +207,7 @@ public class TimelineChart extends JPanel {
         // Set us up to paint.
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        visibleLoggeds.clear();
 
         // If there's no data, then just render text that we're waiting for it.
         // Otherwise, render the chart.
@@ -185,7 +250,7 @@ public class TimelineChart extends JPanel {
                     if (task.getStart() < endTime && task.getEnd() >= startTime) {
                         double boundedStart = Math.max(startTime, task.getStart());
                         double boundedEnd = Math.min(endTime, task.getEnd());
-                        renderTask(g, startingX, boundedStart, boundedEnd);
+                        renderTask(g, startingX, boundedStart, boundedEnd, task);
                     }
                 }
             }
@@ -196,11 +261,13 @@ public class TimelineChart extends JPanel {
             // TODO Render
         }
 
-        private void renderTask(Graphics2D g, int startingX, double start, double end) {
+        private void renderTask(Graphics2D g, int startingX, double start, double end, Task task) {
             int startPixel = (int)((start - startTime) / tickInterval * tickSpacing);
             int endPixel = (int)((end - startTime) / tickInterval * tickSpacing);
             int width = Math.max(endPixel - startPixel, 1);
-            g.fillRect(startingX + startPixel, top + labelPadding, width, textHeight);
+            Rectangle rect = new Rectangle(startingX + startPixel, top + labelPadding, width, textHeight);
+            g.fillRect(rect.x, rect.y, rect.width, rect.height);
+            visibleLoggeds.add(new VisibleLogged(rect, task));
         }
     }
 
