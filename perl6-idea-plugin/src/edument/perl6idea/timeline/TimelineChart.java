@@ -357,7 +357,6 @@ public class TimelineChart extends JPanel {
             // Render the name of the child lane.
             Dimension nameDims = paintName(g, indent * childIndent, curY, font, textHeight, name);
             maxLabelWidth = Math.max(maxLabelWidth, nameDims.width);
-            addedHeight += nameDims.height;
 
             // Add the lanes to render.
             for (Lane lane : namedLaneGroups.get(name).getLanes()) {
@@ -367,7 +366,7 @@ public class TimelineChart extends JPanel {
                         linesToRender, curY, indent + 1);
                 maxLabelWidth = Math.max(maxLabelWidth, childNameDims.width);
                 curY += childNameDims.height;
-                addedHeight += childNameDims.height;
+                addedHeight += nameDims.height + childNameDims.height;
             }
         }
         return new Dimension(maxLabelWidth, addedHeight);
