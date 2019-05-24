@@ -1,6 +1,5 @@
 package edument.perl6idea.psi.stub;
 
-import com.intellij.openapi.extensions.AreaInstance;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.containers.hash.HashMap;
 import edument.perl6idea.Perl6Language;
@@ -26,7 +25,7 @@ public class Perl6SubCallStubElementType extends IStubElementType<Perl6SubCallSt
     @NotNull
     @Override
     public Perl6SubCallStub createStub(@NotNull Perl6SubCall call, StubElement parentStub) {
-        Perl6FrameworkCall[] extensions = Perl6FrameworkCall.FRAMEWORK_CALL_EP.getExtensions();
+        Perl6FrameworkCall[] extensions = Perl6FrameworkCall.EP_NAME.getExtensions();
         String calleeName = call.getCalleeName();
         Map<String, String> frameworkData = new HashMap<>();
         for (Perl6FrameworkCall ext : extensions) {
