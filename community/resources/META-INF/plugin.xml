@@ -101,8 +101,7 @@
   <depends>com.intellij.modules.lang</depends>
 
   <extensionPoints>
-    <extensionPoint qualifiedName="edument.perl6idea.frameworkCall"
-                    interface="edument.perl6idea.extensions.Perl6FrameworkCall" />
+    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/extensionPoints/*)"/>
   </extensionPoints>
 
   <extensions defaultExtensionNs="edument.perl6idea">
