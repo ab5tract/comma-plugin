@@ -5,6 +5,7 @@ import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.awt.RelativePoint;
+import com.intellij.util.Consumer;
 import com.intellij.util.ui.JBUI;
 import edument.perl6idea.timeline.model.*;
 import edument.perl6idea.timeline.model.Event;
@@ -71,12 +72,13 @@ public class TimelineChart extends JPanel {
     private enum Expander { None, Opener, Closer }
 
     // Information about the number of lanes and those in view, used for vertical
-    // scrolling support.
+    // scrolling support, along with an event handler.
     private int yAxisEnd;
     private boolean reachedEnd;
     private int totalLanes = 0;
     private int lanesInView = 0;
     private int firstLane = 0;
+    private Consumer<VisibleLanesChanged> visibleLanesChangedHandler;
 
     // Information about a rendered area on the chart, for handling tooltips and expansions.
     private static class VisibleLogged {
@@ -124,6 +126,7 @@ public class TimelineChart extends JPanel {
     public TimelineChart(Timeline timeline) {
         this.timeline = timeline;
         addMouseEventHandlers();
+        addResizeHandler();
         executor.scheduleAtFixedRate(
                 () -> ApplicationManager.getApplication().invokeLater(() -> {
                     timeline.tick();
@@ -178,6 +181,7 @@ public class TimelineChart extends JPanel {
                             String key = label.getKey();
                             expanded.put(key, !expanded.get(key));
                             repaint();
+                            fireVisibleLanesChangedHandler();
                             break;
                         }
                     }
@@ -255,6 +259,34 @@ public class TimelineChart extends JPanel {
         };
         addMouseListener(dragAndMoveHandler);
         addMouseMotionListener(dragAndMoveHandler);
+    }
+
+    private void addResizeHandler() {
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                fireVisibleLanesChangedHandler();
+            }
+        });
+    }
+
+    public void updateFromTimeline() {
+        repaint();
+        fireVisibleLanesChangedHandler();
+    }
+
+    public void setVisibleLanesChangedHandler(Consumer<VisibleLanesChanged> visibleLanesChangedHandler) {
+        this.visibleLanesChangedHandler = visibleLanesChangedHandler;
+    }
+
+    public void setFirstLaneInView(int firstLaneInView) {
+        firstLane = firstLaneInView;
+    }
+
+    private void fireVisibleLanesChangedHandler() {
+        if (visibleLanesChangedHandler != null)
+            visibleLanesChangedHandler.consume(new VisibleLanesChanged(
+                    totalLanes, firstLane, lanesInView));
     }
 
     @Override
@@ -514,6 +546,7 @@ public class TimelineChart extends JPanel {
         }
 
         // Otherwise, it'll fit.
+        lanesInView++;
         return true;
     }
 
