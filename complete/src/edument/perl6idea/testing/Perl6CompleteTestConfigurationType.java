@@ -1,6 +1,5 @@
 package edument.perl6idea.testing;
 
-import com.intellij.coverage.CoverageExecutor;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -15,6 +14,8 @@ import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.coverage.Perl6CoverageTestRunningState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class Perl6CompleteTestConfigurationType extends ConfigurationTypeBase implements DumbAware {
     private static final String PERL6_TEST_CONFIGURATION_ID = "PERL6_TEST_CONFIGURATION";
@@ -44,7 +45,7 @@ public class Perl6CompleteTestConfigurationType extends ConfigurationTypeBase im
         @Nullable
         @Override
         public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
-            if (executor instanceof CoverageExecutor) {
+            if (Objects.equals(executor.getClass().getSimpleName(), "CoverageExecutor")) {
                 return new Perl6CoverageTestRunningState(environment);
             }
             return new Perl6TestRunningState(environment, executor instanceof DefaultDebugExecutor);

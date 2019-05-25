@@ -1,6 +1,5 @@
 package edument.perl6idea.run;
 
-import com.intellij.coverage.CoverageExecutor;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -18,6 +17,8 @@ import edument.perl6idea.timeline.Perl6TimelineCommandLineState;
 import edument.perl6idea.timeline.Perl6TimelineExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class Perl6CompleteRunConfigurationType extends ConfigurationTypeBase {
     protected static final String PERL6_RUN_CONFIGURATION_ID = "PERL6_RUN_CONFIGURATION";
@@ -55,7 +56,7 @@ public class Perl6CompleteRunConfigurationType extends ConfigurationTypeBase {
             else if (executor instanceof Perl6ProfileExecutor) {
                 return new Perl6ProfileCommandLineState(environment);
             }
-            else if (executor instanceof CoverageExecutor) {
+            if (Objects.equals(executor.getClass().getSimpleName(), "CoverageExecutor")) {
                 return new Perl6CoverageCommandLineState(environment);
             }
             else if (executor instanceof Perl6TimelineExecutor) {
