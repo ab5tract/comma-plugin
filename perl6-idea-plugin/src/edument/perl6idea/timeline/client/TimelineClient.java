@@ -49,6 +49,7 @@ public class TimelineClient {
             conn.connect(address, null, new CompletionHandler<Void, Object>() {
                 @Override
                 public void completed(Void r, Object attachment) {
+                    executor.shutdown();
                     result.complete(conn);
                 }
 
@@ -64,8 +65,10 @@ public class TimelineClient {
     }
 
     private void retryOrFail(CompletableFuture<AsynchronousSocketChannel> result, LinkedList<Double> backoff, Throwable e) {
-        if (backoff.isEmpty())
+        if (backoff.isEmpty()) {
             result.completeExceptionally(e);
+            executor.shutdown();
+        }
         else {
             double delay = backoff.removeFirst();
             executor.schedule(() -> attemptConnection(result, backoff), (long)(delay * 1000), TimeUnit.MILLISECONDS);
@@ -82,10 +85,12 @@ public class TimelineClient {
         conn.read(buffer, null, new CompletionHandler<Integer, Object>() {
             @Override
             public void completed(Integer bytesRead, Object attachment) {
-                buffer.flip();
-                outstanding.put(buffer);
-                processBuffer(outstanding, listener);
-                read(conn, outstanding, listener);
+                if (bytesRead >= 0) {
+                    buffer.flip();
+                    outstanding.put(buffer);
+                    processBuffer(outstanding, listener);
+                    read(conn, outstanding, listener);
+                }
             }
 
             @Override
