@@ -70,6 +70,14 @@ public class TimelineChart extends JPanel {
     // Controls rendering an icon for opening/closing a section
     private enum Expander { None, Opener, Closer }
 
+    // Information about the number of lanes and those in view, used for vertical
+    // scrolling support.
+    private int yAxisEnd;
+    private boolean reachedEnd;
+    private int totalLanes = 0;
+    private int lanesInView = 0;
+    private int firstLane = 0;
+
     // Information about a rendered area on the chart, for handling tooltips and expansions.
     private static class VisibleLogged {
         private final Rectangle area;
@@ -259,6 +267,16 @@ public class TimelineChart extends JPanel {
         visibleLoggeds.clear();
         visibleLabels.clear();
 
+        // Calculate the end of the y axis and clear "reached end" flag,
+        // as well as the current lane view state.
+        yAxisEnd = this.getHeight() - (
+                chartPadding +                              // Padding at bottom
+                tickDashSize + labelPadding + textHeight +  // Axis
+                10);                                        // Fudge :-)
+        reachedEnd = false;
+        totalLanes = 0;
+        lanesInView = 0;
+
         // If there's no data, then just render text that we're waiting for it.
         // Otherwise, render the chart.
         if (timeline.isEmpty())
@@ -345,13 +363,15 @@ public class TimelineChart extends JPanel {
         for (String module : modules.keySet()) {
             // Paint module name.
             boolean moduleExpanded = expanded(module, true);
-            Dimension modDims = paintName(g, 0, curY, moduleNameFont, moduleNameHeight,
-                    module, moduleExpanded ? Expander.Closer : Expander.Opener);
-            maxLabelWidth = Math.max(maxLabelWidth, modDims.width);
-            visibleLabels.add(new VisibleLabel(
-                    new Rectangle(chartPadding, curY, modDims.width, modDims.height),
-                    module));
-            curY += modDims.height;
+            if (isInView(curY, moduleNameHeight)) {
+                Dimension modDims = paintName(g, 0, curY, moduleNameFont, moduleNameHeight,
+                                              module, moduleExpanded ? Expander.Closer : Expander.Opener);
+                maxLabelWidth = Math.max(maxLabelWidth, modDims.width);
+                visibleLabels.add(new VisibleLabel(
+                        new Rectangle(chartPadding, curY, modDims.width, modDims.height),
+                        module));
+                curY += modDims.height;
+            }
 
             // Skip the categories if the module is not expanded.
             if (!moduleExpanded)
@@ -363,13 +383,15 @@ public class TimelineChart extends JPanel {
                 // Paint category name.
                 String categoryKey = module + "\0" + category;
                 boolean categoryExpanded = expanded(categoryKey, true);
-                Dimension catDims = paintName(g, 0, curY, categoryNameFont, textHeight,
-                        category, categoryExpanded ? Expander.Closer : Expander.Opener);
-                maxLabelWidth = Math.max(maxLabelWidth, catDims.width);
-                visibleLabels.add(new VisibleLabel(
-                        new Rectangle(chartPadding, curY, catDims.width, catDims.height),
-                        categoryKey));
-                curY += catDims.height;
+                if (isInView(curY, textHeight)) {
+                    Dimension catDims = paintName(g, 0, curY, categoryNameFont, textHeight,
+                                                  category, categoryExpanded ? Expander.Closer : Expander.Opener);
+                    maxLabelWidth = Math.max(maxLabelWidth, catDims.width);
+                    visibleLabels.add(new VisibleLabel(
+                            new Rectangle(chartPadding, curY, catDims.width, catDims.height),
+                            categoryKey));
+                    curY += catDims.height;
+                }
 
                 // Skip the names if the category is not expanded.
                 if (!categoryExpanded)
@@ -383,23 +405,30 @@ public class TimelineChart extends JPanel {
                     List<Lane> lanes = names.get(name).getLanes();
                     boolean expandable = doesAnyLaneHaveChildren(lanes);
                     boolean isExpanded = expandable && expanded(nameKey, false);
-                    Dimension nameDims = paintName(g, 0, curY, font, textHeight, name,
-                            expandable ? (isExpanded ? Expander.Closer : Expander.Opener) : Expander.None);
-                    maxLabelWidth = Math.max(maxLabelWidth, nameDims.width);
-                    visibleLabels.add(new VisibleLabel(
-                            new Rectangle(chartPadding, curY, nameDims.width, nameDims.height),
-                            nameKey));
+                    boolean firstLaneInView = isInView(curY, textHeight);
+                    if (firstLaneInView) {
+                        Dimension nameDims = paintName(g, 0, curY, font, textHeight, name,
+                                                       expandable ? (isExpanded ? Expander.Closer : Expander.Opener) : Expander.None);
+                        maxLabelWidth = Math.max(maxLabelWidth, nameDims.width);
+                        visibleLabels.add(new VisibleLabel(
+                                new Rectangle(chartPadding, curY, nameDims.width, nameDims.height),
+                                nameKey));
+                    }
 
                     // Add the lanes to render.
+                    boolean curLaneInView = firstLaneInView;
                     for (Lane lane : lanes) {
-                        linesToRender.add(new RenderLine(lane.getEntries(), curY));
-                        curY += nameDims.height;
+                        if (curLaneInView) {
+                            linesToRender.add(new RenderLine(lane.getEntries(), curY));
+                            curY += 2 * labelPadding + textHeight;
+                        }
                         if (isExpanded) {
                             Dimension childNameDims = renderChildLanes(g, lane.getChildTaskLaneGroups(),
                                     linesToRender, curY, 1, nameKey);
                             maxLabelWidth = Math.max(maxLabelWidth, childNameDims.width);
                             curY += childNameDims.height;
                         }
+                        curLaneInView = isInView(curY, textHeight);
                     }
                 }
             }
@@ -410,8 +439,8 @@ public class TimelineChart extends JPanel {
         int ticksPossible = Math.max(spaceAvailable / tickSpacing, 2);
 
         // Paint the axes.
-        paintLeftAxis(g, curY, chartPadding + maxLabelWidth);
-        paintTimeAxis(g, chartPadding + maxLabelWidth, curY, ticksPossible);
+        paintLeftAxis(g, yAxisEnd, chartPadding + maxLabelWidth);
+        paintTimeAxis(g, chartPadding + maxLabelWidth, yAxisEnd, ticksPossible);
 
         // Paint elements in view.
         for (RenderLine line : linesToRender)
@@ -419,7 +448,7 @@ public class TimelineChart extends JPanel {
 
         // Stash the rectangle of the painted area, for handling mouse events.
         graphArea = new Rectangle(chartPadding + maxLabelWidth, chartPadding,
-                                  ticksPossible * tickSpacing, curY - chartPadding);
+                                  ticksPossible * tickSpacing, yAxisEnd);
     }
 
     private Dimension renderChildLanes(Graphics2D g, Map<String, LaneGroup> namedLaneGroups,
@@ -433,18 +462,24 @@ public class TimelineChart extends JPanel {
             List<Lane> lanes = namedLaneGroups.get(name).getLanes();
             boolean expandable = doesAnyLaneHaveChildren(lanes);
             boolean isExpanded = expandable && expanded(childKey, false);
-            Dimension nameDims = paintName(g, indent * childIndent, curY, font, textHeight, name,
-                   expandable ? (isExpanded ? Expander.Closer : Expander.Opener) : Expander.None);
-            maxLabelWidth = Math.max(maxLabelWidth, nameDims.width);
-            visibleLabels.add(new VisibleLabel(
-                    new Rectangle(chartPadding + indent * childIndent, curY, nameDims.width, nameDims.height),
-                    childKey));
+            boolean firstLaneInView = isInView(curY, textHeight);
+            if (firstLaneInView) {
+                Dimension nameDims = paintName(g, indent * childIndent, curY, font, textHeight, name,
+                                               expandable ? (isExpanded ? Expander.Closer : Expander.Opener) : Expander.None);
+                maxLabelWidth = Math.max(maxLabelWidth, nameDims.width);
+                visibleLabels.add(new VisibleLabel(
+                        new Rectangle(chartPadding + indent * childIndent, curY, nameDims.width, nameDims.height),
+                        childKey));
+            }
 
             // Add the lanes to render.
+            boolean curLaneInView = firstLaneInView;
             for (Lane lane : lanes) {
-                linesToRender.add(new RenderLine(lane.getEntries(), curY));
-                curY += nameDims.height;
-                addedHeight += nameDims.height;
+                if (curLaneInView) {
+                    linesToRender.add(new RenderLine(lane.getEntries(), curY));
+                    curY += 2 * labelPadding + textHeight;
+                    addedHeight += 2 * labelPadding + textHeight;
+                }
                 if (isExpanded) {
                     Dimension childNameDims = renderChildLanes(g, lane.getChildTaskLaneGroups(),
                             linesToRender, curY, indent + 1, childKey);
@@ -452,9 +487,34 @@ public class TimelineChart extends JPanel {
                     curY += childNameDims.height;
                     addedHeight += childNameDims.height;
                 }
+                curLaneInView = isInView(curY, textHeight);
             }
         }
         return new Dimension(maxLabelWidth, addedHeight);
+    }
+
+    private boolean isInView(int curY, int labelTextHeight) {
+        // Increment total number of lanes.
+        int laneNum = totalLanes++;
+
+        // Should not have already run out of space.
+        if (reachedEnd)
+            return false;
+
+        // Should be beyond the first lane to show.
+        if (laneNum < firstLane)
+            return false;
+
+        // Is there space for it?
+        int predictedHeight = 2 * labelPadding + labelTextHeight;
+        if (curY + predictedHeight > yAxisEnd) {
+            // Out of space.
+            reachedEnd = false;
+            return false;
+        }
+
+        // Otherwise, it'll fit.
+        return true;
     }
 
     private boolean doesAnyLaneHaveChildren(List<Lane> lanes) {
