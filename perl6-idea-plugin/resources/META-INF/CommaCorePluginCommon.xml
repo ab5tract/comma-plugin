@@ -5,6 +5,11 @@
   <module value="com.intellij.modules.xml"/>
 
   <extensionPoints>
+    <extensionPoint qualifiedName="com.intellij.moduleConfigurable"
+                    beanClass="com.intellij.openapi.options.ModuleConfigurableEP"
+                    area="IDEA_MODULE">
+      <with attribute="instance" implements="com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleConfigurable"/>
+    </extensionPoint>
     <extensionPoint name="projectWizard.projectCategory" interface="com.intellij.ide.projectWizard.ProjectCategory"/>
     <extensionPoint name="projectImportProvider" interface="com.intellij.projectImport.ProjectImportProvider"/>
     <extensionPoint name="projectStructureDetector" interface="com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector"/>
