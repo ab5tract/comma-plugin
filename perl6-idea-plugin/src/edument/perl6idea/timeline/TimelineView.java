@@ -37,4 +37,8 @@ public class TimelineView extends JPanel {
         timeline.incorporate(event);
         chart.updateFromTimeline();
     }
+
+    public void endLiveUpdates() {
+        chart.endLiveUpdates();
+    }
 }

@@ -4,6 +4,8 @@ package edument.perl6idea.timeline;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.execution.configurations.RunProfile;
+import com.intellij.execution.process.ProcessAdapter;
+import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.RunContentBuilder;
 import com.intellij.execution.runners.RunTab;
@@ -79,8 +81,15 @@ public class TimelineContentBuilder extends RunTab {
 
             @Override
             public void onError(Throwable e) {
+                timeline.endLiveUpdates();
                 Notifications.Bus.notify(
                         new Notification("Could not get timeline data: " + e.getMessage(), null, NotificationType.ERROR));
+            }
+        });
+        myExecutionResult.getProcessHandler().addProcessListener(new ProcessAdapter() {
+            @Override
+            public void processTerminated(@NotNull ProcessEvent event) {
+                timeline.endLiveUpdates();
             }
         });
     }

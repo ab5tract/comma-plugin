@@ -620,4 +620,15 @@ public class TimelineChart extends JPanel {
     private boolean expanded(String key, boolean defaultValue) {
         return expanded.computeIfAbsent(key, k -> defaultValue);
     }
+
+    public void endLiveUpdates() {
+        terminateTicker();
+    }
+
+    private void terminateTicker() {
+        if (executor != null) {
+            executor.shutdown();
+            executor = null;
+        }
+    }
 }
