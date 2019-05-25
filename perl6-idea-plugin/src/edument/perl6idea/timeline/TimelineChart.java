@@ -344,7 +344,7 @@ public class TimelineChart extends JPanel {
                     Event event = (Event)item;
                     if (event.getWhen() >= startTime && event.getWhen() < endTime) {
                         setColor(g, darken, item);
-                        renderEvent(g, startingX, event.getWhen());
+                        renderEvent(g, startingX, event.getWhen(), event);
                     }
                 }
                 else if (item instanceof Task) {
@@ -365,9 +365,16 @@ public class TimelineChart extends JPanel {
             g.setColor(darken ? baseColor.darker() : baseColor);
         }
 
-        private void renderEvent(Graphics2D g, int x, double when) {
-            int midPixel = (int)((when - startTime) / tickInterval * tickSpacing);
-            // TODO Render
+        private void renderEvent(Graphics2D g, int startingX, double when, Event event) {
+            int left = startingX + (int)((when - startTime) / tickInterval * tickSpacing);
+            int width = 2 * (textHeight / 3);
+            Polygon triangle = new Polygon();
+            triangle.addPoint(left, top + labelPadding);
+            triangle.addPoint(left, top + labelPadding + textHeight);
+            triangle.addPoint(left + width, top + labelPadding + textHeight / 2);
+            g.fillPolygon(triangle);
+            Rectangle rect = new Rectangle(left, top + labelPadding, width, textHeight);
+            visibleLoggeds.add(new VisibleLogged(rect, event));
         }
 
         private void renderTask(Graphics2D g, int startingX, double start, double end, Task task) {
