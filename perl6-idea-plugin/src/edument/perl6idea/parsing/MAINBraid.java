@@ -3175,59 +3175,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 2:
-                this.bsMark(9);
-                this.startToken(Perl6TokenTypes.UNV_WHITE_SPACE);
-                this.bsFailMark(4);
-                this.state = 3;
-                break;
-            case 3:
-                if (!(this.inCharList("\u0009 \u00A0\u1680\u180E\u2002\u2003\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000"))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
-                rep = this.peekRep(4);
-                ++rep;
-                this.bsCommit(4);
-                this.bsMark(4, rep);
-                this.state = 3;
-                continue;
-
-            case 4:
-                this.state = 5;
-                return -3;
-
-            case 5:
-                this.bsMark(8);
-                this.state = 6;
-                break;
-            case 6:
-                this.setArgs();
-                this.state = 7;
-                return 23;
-
-            case 7:
-                if (this.lastResult.isFailed()) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                } else {
-                    this.pos = this.lastResult.getPos();
-                }
-                this.bsCommit(8);
-                this.state = 8;
-                continue;
-
-            case 8:
-                this.bsCommit(11);
-                this.state = 11;
-                continue;
-
-            case 9:
+                this.bsMark(4);
                 if (!(this.lookahead(270))) {
                     if (this.backtrack()) {
                         continue;
@@ -3243,10 +3191,10 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.setArgs();
-                this.state = 10;
+                this.state = 3;
                 return 29;
 
-            case 10:
+            case 3:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -3256,6 +3204,58 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
+                this.bsCommit(11);
+                this.state = 11;
+                continue;
+
+            case 4:
+                this.startToken(Perl6TokenTypes.UNV_WHITE_SPACE);
+                this.bsFailMark(6);
+                this.state = 5;
+                break;
+            case 5:
+                if (!(this.inCharList("\u0009 \u00A0\u1680\u180E\u2002\u2003\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                rep = this.peekRep(6);
+                ++rep;
+                this.bsCommit(6);
+                this.bsMark(6, rep);
+                this.state = 5;
+                continue;
+
+            case 6:
+                this.state = 7;
+                return -3;
+
+            case 7:
+                this.bsMark(10);
+                this.state = 8;
+                break;
+            case 8:
+                this.setArgs();
+                this.state = 9;
+                return 23;
+
+            case 9:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(10);
+                this.state = 10;
+                continue;
+
+            case 10:
                 this.state = 11;
                 continue;
 

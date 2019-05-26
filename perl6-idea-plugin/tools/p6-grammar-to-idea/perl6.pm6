@@ -194,9 +194,9 @@ grammar MAIN {
     token unv {
         [
         || <.comment>
+        || <?before [\h* '=' [ \w || '\\']]> ^^ <.pod_content_toplevel>
         || <.start-token('UNV_WHITE_SPACE')> \h+ <.end-token('UNV_WHITE_SPACE')>
            <.comment>?
-        || <?before [\h* '=' [ \w || '\\']]> ^^ <.pod_content_toplevel>
         ]
     }
 
