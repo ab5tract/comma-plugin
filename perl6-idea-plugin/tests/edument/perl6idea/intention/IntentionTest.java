@@ -138,6 +138,18 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         checkIntentionAbsence("Use");
     }
 
+    public void testWithConstructionFix() {
+        executeIntention("Use");
+    }
+
+    public void testWithoutConstructionFix() {
+        executeIntention("Use");
+    }
+
+    public void testWithConstructionMultiFix() {
+        executeIntention("Use");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
