@@ -609,6 +609,11 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testColonPairWithBlockExpression() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; sub a {}; a(:foo{$foo})");
+        myFixture.checkHighlighting();
+    }
+
     public void testWhileOne() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"Idiomatic 'loop' construction can be used instead\">while</weak_warning> 1 {}");
         myFixture.checkHighlighting();

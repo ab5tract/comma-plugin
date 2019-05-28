@@ -3,11 +3,9 @@ package edument.perl6idea.annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.annotation.fix.PairSimplificationFix;
-import edument.perl6idea.psi.Perl6ColonPair;
-import edument.perl6idea.psi.Perl6FatArrow;
-import edument.perl6idea.psi.Perl6Statement;
-import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -33,6 +31,9 @@ public class NamedPairArgumentAnnotator implements Annotator {
         Perl6Statement value = pair.getStatement();
         if (value == null) return;
         PsiElement child = value.getFirstChild();
+        // Check if it is `()` form we can work with
+        PsiElement parensExpr = PsiTreeUtil.getChildOfType(pair, Perl6ParenthesizedExpr.class);
+        if (parensExpr == null) return;
         processPair(child, key, pair, annotationHolder);
     }
 
