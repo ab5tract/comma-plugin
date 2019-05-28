@@ -359,8 +359,8 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
-    public void testMissingStubbedMethodsDoNotIncludeMulti() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { multi method foo($a) {...}; method bar($a) {...} }; class <error descr=\"Composed roles require to implement methods: bar\">C does R </error>{}");
+    public void testMissingStubbedMethodsIncludeMulti() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { multi method foo($a) {...}; method bar($a) {...} }; class C does R { multi method foo($a) {}; multi method foo(@b) {}; method bar($a) {...} }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 

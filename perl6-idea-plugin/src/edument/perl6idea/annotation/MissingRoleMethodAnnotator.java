@@ -35,7 +35,7 @@ public class MissingRoleMethodAnnotator implements Annotator {
         for (Perl6PsiDeclaration declaration : declarations) {
             if (!(declaration instanceof Perl6RoutineDecl)) continue;
             Perl6RoutineDecl routineDecl = (Perl6RoutineDecl)declaration;
-            if (routineDecl.getRoutineKind().equals("method") && !(routineDecl.getParent() instanceof Perl6MultiDecl)) {
+            if (routineDecl.getRoutineKind().equals("method")) {
                 methodsToImplement.remove(routineDecl.getRoutineName());
             }
         }
