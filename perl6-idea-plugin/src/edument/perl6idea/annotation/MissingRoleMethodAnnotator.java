@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MissingRoleMethodAnnotator implements Annotator {
@@ -21,34 +22,43 @@ public class MissingRoleMethodAnnotator implements Annotator {
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6PackageDecl)) return;
 
-        Perl6PackageDecl decl = (Perl6PackageDecl)element;
-        if (!decl.getPackageKind().equals("class")) return;
+        Perl6PackageDecl packageDecl = (Perl6PackageDecl)element;
+        if (!packageDecl.getPackageKind().equals("class")) return;
 
-        List<Perl6Trait> traits = decl.getTraits();
+        List<Perl6Trait> traits = packageDecl.getTraits();
         if (traits.size() == 0) return;
 
         Map<String, Pair<Integer, String>> methodsToImplement = new HashMap<>();
         Map<String, Integer> seen = new HashMap<>();
         gatherRoleStubs(traits, methodsToImplement, seen, 0);
 
-        List<Perl6PsiDeclaration> declarations = decl.getDeclarations();
-        for (Perl6PsiDeclaration declaration : declarations) {
-            if (!(declaration instanceof Perl6RoutineDecl)) continue;
-            Perl6RoutineDecl routineDecl = (Perl6RoutineDecl)declaration;
-            if (routineDecl.getRoutineKind().equals("method")) {
-                methodsToImplement.remove(routineDecl.getRoutineName());
+        List<Perl6PsiDeclaration> declarations = packageDecl.getDeclarations();
+        for (Perl6PsiDeclaration decl : declarations) {
+            if (decl instanceof Perl6RoutineDecl) {
+                Perl6RoutineDecl routineDecl = (Perl6RoutineDecl)decl;
+                if (routineDecl.getRoutineKind().equals("method")) {
+                    methodsToImplement.remove(routineDecl.getRoutineName());
+                }
+            } else if (decl instanceof Perl6VariableDecl) {
+                Perl6VariableDecl variableDecl = (Perl6VariableDecl)decl;
+                if (Objects.equals(variableDecl.getScope(), "has")) {
+                    String name = variableDecl.getVariableName();
+                    if (Perl6Variable.getTwigil(name) == '.') {
+                        methodsToImplement.remove(name.substring(2));
+                    }
+                }
             }
         }
 
         if (methodsToImplement.size() != 0) {
             String names = String.join(", ", methodsToImplement.keySet());
-            int start = decl.getTextOffset();
-            PsiElement blockoid = PsiTreeUtil.getChildOfType(decl, Perl6Blockoid.class);
+            int start = packageDecl.getTextOffset();
+            PsiElement blockoid = PsiTreeUtil.getChildOfType(packageDecl, Perl6Blockoid.class);
             // Block is not yet typed
             if (blockoid == null) return;
             int end = blockoid.getTextOffset();
             holder.createErrorAnnotation(new TextRange(start, end), String.format("Composed roles require to implement methods: %s", names))
-                  .registerFix(new StubMissingMethodsFix(decl,
+                  .registerFix(new StubMissingMethodsFix(packageDecl,
                                                          methodsToImplement
                                                              .values()
                                                              .stream()
