@@ -93,22 +93,13 @@ public class InlineCallTest extends LightPlatformCodeInsightFixtureTestCase {
         doTest();
     }
 
-
     public void testAcceptIncompleteCallWithDefault() {
         doTest();
     }
 
-// TODO
-//    public void testRejectIncompleteCall() {
-//        doTest();
-//    }
-//    public void testRejectIncompleteNamedCall() {
-//        doTest();
-//    }
-//
-//    public void testRejectSlurpyCall() {
-//        doTest();
-//    }
+    public void testExpressionInCallNoSave() {
+        doTest();
+    }
 
     private void doTest() {
         myFixture.configureByFile(getTestName(true) + "Before.p6");

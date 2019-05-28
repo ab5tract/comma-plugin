@@ -44,20 +44,20 @@ public class Perl6SubCallImpl extends ASTWrapperPsiElement implements Perl6SubCa
     public PsiElement[] getSubCallArguments() {
         Perl6SubCallName name = getSubCallNameNode();
         if (name == null)
-            return new PsiElement[0];
+            return PsiElement.EMPTY_ARRAY;
         PsiElement argument = name.skipWhitespacesForward();
         if (argument != null && argument.getNode().getElementType() == PARENTHESES_OPEN) {
             argument = argument.getNextSibling();
         }
 
         if (argument == null)
-            return new PsiElement[0];
+            return PsiElement.EMPTY_ARRAY;
 
         if (argument instanceof Perl6InfixApplication) {
-            return ((Perl6InfixApplication) argument).getOperands();
-        } else {
-            return new PsiElement[]{argument};
+            if (((Perl6InfixApplication)argument).getOperator().equals(","))
+                return ((Perl6InfixApplication) argument).getOperands();
         }
+        return new PsiElement[]{argument};
     }
 
     @Override

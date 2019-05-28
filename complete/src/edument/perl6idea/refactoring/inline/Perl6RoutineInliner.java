@@ -47,7 +47,7 @@ public class Perl6RoutineInliner implements InlineHandler.Inliner {
     }
 
     @NotNull
-    private Map<String, Integer> enumeratePositionalParameters(Perl6RoutineDecl decl) {
+    private static Map<String, Integer> enumeratePositionalParameters(Perl6RoutineDecl decl) {
         Map<String, Integer> positionalRoutineParams = new HashMap<>();
 
         Perl6Signature signature = decl.getSignatureNode();
@@ -62,7 +62,7 @@ public class Perl6RoutineInliner implements InlineHandler.Inliner {
         return positionalRoutineParams;
     }
 
-    private void unwrapLastReturnStatement(PsiElement[] blockNodes) {
+    private static void unwrapLastReturnStatement(PsiElement[] blockNodes) {
         PsiElement blockNode = blockNodes[blockNodes.length - 1];
         PsiElement returnStatement = blockNode.getFirstChild();
         if (returnStatement instanceof Perl6SubCall && ((Perl6SubCall) returnStatement).getSubCallName().equals("return")) {
@@ -72,7 +72,7 @@ public class Perl6RoutineInliner implements InlineHandler.Inliner {
         }
     }
 
-    private PsiElement[] getBlockCopy(PsiElement[] blockNodes) {
+    private static PsiElement[] getBlockCopy(PsiElement[] blockNodes) {
         for (int i = 0, blockNodesLength = blockNodes.length; i < blockNodesLength; i++) {
             blockNodes[i] = blockNodes[i].copy();
         }
@@ -123,7 +123,10 @@ public class Perl6RoutineInliner implements InlineHandler.Inliner {
             int sigilsCutIndex = Perl6Variable.getTwigil(variableName) == ' ' ? 1 : 2;
 
             if (callNamedArgs.containsKey(variableName.substring(sigilsCutIndex))) {
-                variable.replace(callNamedArgs.get(variableName.substring(sigilsCutIndex)).copy());
+                variable.replace(
+                  wrapElement(callNamedArgs.get(variableName.substring(sigilsCutIndex)))
+                    .copy()
+                );
             } else {
                 // If it is not a named variable, let's try
                 int callIndex = positionalRoutineParams.get(variableName);
@@ -135,10 +138,16 @@ public class Perl6RoutineInliner implements InlineHandler.Inliner {
                     positionalRoutineParams.get(variableName);
                 } else {
                     PsiElement argument = callPositionalArgs.get(callIndex);
-                    variable.replace(argument.copy());
+                    variable.replace(wrapElement(argument).copy());
                 }
             }
         }
+    }
+
+    private PsiElement wrapElement(PsiElement argument) {
+        if (argument instanceof Perl6InfixApplication)
+            return CompletePerl6ElementFactory.createParenthesesExpr(argument);
+        return argument;
     }
 
     private boolean shouldKeepVariable(PsiElement block, Perl6Variable variable) {

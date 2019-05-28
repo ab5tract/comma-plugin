@@ -20,7 +20,7 @@ public class Perl6InfixApplicationImpl extends ASTWrapperPsiElement implements P
     public PsiElement[] getOperands() {
         Perl6Infix[] infixes = PsiTreeUtil.getChildrenOfType(this, Perl6Infix.class);
         if (infixes == null)
-            return new PsiElement[0];
+            return PsiElement.EMPTY_ARRAY;
         // To get elements between infixes, we gather them all on the first level and
         // iterating over every instance, collecting a previous element,
         // thus for `1 infix' 2 infix'' 3` we collect `1` as left of `infix'`,
@@ -38,7 +38,7 @@ public class Perl6InfixApplicationImpl extends ASTWrapperPsiElement implements P
                     operands.add(right);
             }
         }
-        return operands.toArray(new PsiElement[0]);
+        return operands.toArray(PsiElement.EMPTY_ARRAY);
     }
 
     @Override
