@@ -11,6 +11,8 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.Project;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.debugger.Perl6DebugCommandLineState;
+import edument.perl6idea.timeline.Perl6TimelineCommandLineState;
+import edument.perl6idea.timeline.Perl6TimelineExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +48,9 @@ public class Perl6CommunityRunConfigurationType extends ConfigurationTypeBase {
         public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
             if (executor instanceof DefaultDebugExecutor) {
                 return new Perl6DebugCommandLineState(environment);
+            }
+            else if (executor instanceof Perl6TimelineExecutor) {
+                return new Perl6TimelineCommandLineState(environment);
             }
             return new Perl6RunCommandLineState(environment);
         }
