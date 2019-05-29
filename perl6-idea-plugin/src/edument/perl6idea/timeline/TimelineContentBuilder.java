@@ -1,4 +1,3 @@
-// Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.timeline;
 
 import com.intellij.execution.ExecutionResult;
@@ -27,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-
 
 public class TimelineContentBuilder extends RunTab {
     private final static String TIMELINE_CONTENT_ID = "TimelineContent";
@@ -82,8 +80,14 @@ public class TimelineContentBuilder extends RunTab {
             @Override
             public void onError(Throwable e) {
                 timeline.endLiveUpdates();
+                String message = e.getMessage();
+                if (message == null)
+                    message = "unknown problem";
                 Notifications.Bus.notify(
-                        new Notification("Could not get timeline data: " + e.getMessage(), null, NotificationType.ERROR));
+                        new Notification("Timeline connection error", null,
+                                         "Timeline connection error", null,
+                                         "Could not get timeline data: " + message,
+                                         NotificationType.ERROR, null));
             }
         });
         myExecutionResult.getProcessHandler().addProcessListener(new ProcessAdapter() {
