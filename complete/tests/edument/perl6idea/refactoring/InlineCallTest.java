@@ -1,9 +1,8 @@
 package edument.perl6idea.refactoring;
 
-import com.intellij.ide.DataManager;
-import com.intellij.refactoring.inline.InlineRefactoringActionHandler;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import edument.perl6idea.refactoring.inline.Perl6InlineCallActionHandler;
 
 public class InlineCallTest extends LightPlatformCodeInsightFixtureTestCase {
     @Override
@@ -27,30 +26,12 @@ public class InlineCallTest extends LightPlatformCodeInsightFixtureTestCase {
         doTest();
     }
 
-    public void testMultireturnBlockInlineFails() {
-        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
-                "Refactoring is not supported when return statement interrupts the execution flow",
-                this::doTest);
-    }
-
     public void testSingleReturnMulticallSave() {
         doTest();
     }
 
     public void testSingleReturnMulticallNoSave() {
         doTest();
-    }
-
-    public void testNonTrailingReturnFails() {
-        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
-                "Refactoring is not supported when return statement interrupts the execution flow",
-                this::doTest);
-    }
-
-    public void testStateVariableFails() {
-        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
-                "Refactoring is not supported when state variables are present",
-                this::doTest);
     }
 
     public void testPositionalArgumentSave() {
@@ -101,11 +82,76 @@ public class InlineCallTest extends LightPlatformCodeInsightFixtureTestCase {
         doTest();
     }
 
+    public void testSimpleMethodInlineSave() {
+        doTest();
+    }
+
+    public void testSimpleMethodInlineNoSave() {
+        doTest();
+    }
+
+    public void testExpressionsAreParenthesised() {
+        doTest();
+    }
+
+    public void testCannotInlineProto() {
+        assertThrows(
+            CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: inlining of routine with proto is not supported", this::doTest);
+    }
+
+    public void testCannotInlineMulti() {
+        assertThrows(
+            CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: inlining of routine with multi is not supported", this::doTest);
+    }
+
+    public void testCannotInlineMultipleReturns() {
+        assertThrows(
+            CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: return statement interrupts the execution flow", this::doTest);
+    }
+
+    public void testCannotInlineNonTrailingReturn() {
+        assertThrows(
+            CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: return statement interrupts the execution flow", this::doTest);
+    }
+
+    public void testStateVariableFails() {
+        assertThrows(
+            CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: state variables are present", this::doTest);
+    }
+
+    public void testCannotInlineWhenLexicalsAreUnavailable() {
+        assertThrows(
+            CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: lexical variables are used in original routine that are not available at call location", this::doTest);
+    }
+
+    public void testCannotInlineMethodFromOtherClassWithSelf() {
+        assertThrows(
+            CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: a reference to `self` is found, but caller and callee are in different classes", this::doTest);
+    }
+
+    public void testCannotInlineMethodFromOtherClassWithPrivateMethod() {
+        assertThrows(
+            CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: a reference to `self` is found, but caller and callee are in different classes", this::doTest);
+    }
+
+    public void testCannotInlineMethodFromOtherClassWithAttribute() {
+        assertThrows(
+            CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: attributes of class that contains a routine are used", this::doTest);
+    }
+
     private void doTest() {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
-        InlineRefactoringActionHandler action = new InlineRefactoringActionHandler();
-        action.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(),
-                DataManager.getInstance().getDataContextFromFocus().getResult());
+        Perl6InlineCallActionHandler action = new Perl6InlineCallActionHandler();
+        action.inlineElement(getProject(), myFixture.getEditor(), myFixture.getElementAtCaret());
         myFixture.checkResultByFile(getTestName(true) + ".p6");
     }
 }
