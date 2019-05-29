@@ -9,8 +9,6 @@ import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static edument.perl6idea.parsing.Perl6TokenTypes.PARENTHESES_OPEN;
-
 public class Perl6SubCallImpl extends ASTWrapperPsiElement implements Perl6SubCall {
     public Perl6SubCallImpl(@NotNull ASTNode node) {
         super(node);
@@ -35,29 +33,14 @@ public class Perl6SubCallImpl extends ASTWrapperPsiElement implements Perl6SubCa
     }
 
     @Override
-    public String getSubCallName() {
+    public String getCallName() {
         Perl6SubCallName name = getSubCallNameNode();
         return name == null ? "" : name.getCallName();
     }
 
     @Override
-    public PsiElement[] getSubCallArguments() {
-        Perl6SubCallName name = getSubCallNameNode();
-        if (name == null)
-            return PsiElement.EMPTY_ARRAY;
-        PsiElement argument = name.skipWhitespacesForward();
-        if (argument != null && argument.getNode().getElementType() == PARENTHESES_OPEN) {
-            argument = argument.getNextSibling();
-        }
-
-        if (argument == null)
-            return PsiElement.EMPTY_ARRAY;
-
-        if (argument instanceof Perl6InfixApplication) {
-            if (((Perl6InfixApplication)argument).getOperator().equals(","))
-                return ((Perl6InfixApplication) argument).getOperands();
-        }
-        return new PsiElement[]{argument};
+    public PsiElement getWholeCallNode() {
+        return this;
     }
 
     @Override
