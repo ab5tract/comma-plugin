@@ -106,7 +106,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Nullable
-    private PsiElement extractInitializerForSignatureVar(Perl6Signature signature, Perl6Variable variable, @NotNull Perl6Infix infix) {
+    private static PsiElement extractInitializerForSignatureVar(Perl6Signature signature, Perl6Variable variable, @NotNull Perl6Infix infix) {
         int initIndex = -1;
         Perl6Parameter[] parameters = signature.getParameters();
         for (int i = 0, parametersLength = parameters.length; i < parametersLength; i++) {
