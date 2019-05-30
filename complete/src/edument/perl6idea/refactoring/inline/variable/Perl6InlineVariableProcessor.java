@@ -16,6 +16,7 @@ import com.intellij.refactoring.BaseRefactoringProcessor;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewDescriptor;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.refactoring.CompletePerl6ElementFactory;
 import edument.perl6idea.refactoring.inline.Perl6InlineViewDescriptor;
 import org.jetbrains.annotations.NotNull;
 
@@ -101,19 +102,28 @@ public class Perl6InlineVariableProcessor extends BaseRefactoringProcessor {
                 // Presence of declaration means we are dealing with a multi-declaration,
                 // so ask for particular initializer
                 {
-                    usageElement.replace(decl.getInitializer((Perl6Variable)usageElement).copy());
+                    PsiElement initializer = decl.getInitializer((Perl6Variable)usageElement).copy();
+                    if (initializer instanceof Perl6InfixApplication)
+                        initializer = CompletePerl6ElementFactory.createParenthesesExpr(initializer);
+                    usageElement.replace(initializer);
                 }
                 else {
                     // Ask for a parameter initializer
                     Perl6Parameter parameter = PsiTreeUtil.getNonStrictParentOfType(myDeclaration, Perl6Parameter.class);
                     if (parameter != null) {
-                        usageElement.replace(parameter.getInitializer().copy());
+                        PsiElement initializer = parameter.getInitializer().copy();
+                        if (initializer instanceof Perl6InfixApplication)
+                            initializer = CompletePerl6ElementFactory.createParenthesesExpr(initializer);
+                        usageElement.replace(initializer);
                     }
                 }
             }
             else if (decl != null) {
                 // If just a simple variable declaration, inline its initializer
-                usageElement.replace(decl.getInitializer().copy());
+                PsiElement initializer = decl.getInitializer().copy();
+                if (initializer instanceof Perl6InfixApplication)
+                    initializer = CompletePerl6ElementFactory.createParenthesesExpr(initializer);
+                usageElement.replace(initializer);
             }
         }
 
@@ -127,10 +137,7 @@ public class Perl6InlineVariableProcessor extends BaseRefactoringProcessor {
     private void deleteDeclaration() {
         if (myDeclaration instanceof Perl6VariableDecl) {
             Perl6Statement statement = PsiTreeUtil.getParentOfType(myDeclaration, Perl6Statement.class);
-            PsiElement ws = statement.getNextSibling();
             statement.delete();
-            if (ws instanceof PsiWhiteSpace)
-                ws.delete();
         }
         if (myDeclaration instanceof Perl6ParameterVariable) {
             Perl6VariableDecl decl = PsiTreeUtil.getParentOfType(myDeclaration, Perl6VariableDecl.class);

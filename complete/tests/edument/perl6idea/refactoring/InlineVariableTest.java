@@ -1,8 +1,5 @@
 package edument.perl6idea.refactoring;
 
-import com.intellij.ide.DataManager;
-import com.intellij.refactoring.BaseRefactoringProcessor;
-import com.intellij.refactoring.inline.InlineRefactoringActionHandler;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import edument.perl6idea.refactoring.inline.variable.Perl6InlineVariableActionHandler;
