@@ -1,0 +1,109 @@
+package edument.perl6idea.refactoring.inline.variable;
+
+import com.intellij.codeInsight.TargetElementUtil;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.searches.ReferencesSearch;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.refactoring.util.CommonRefactoringUtil;
+import edument.perl6idea.Perl6Language;
+import edument.perl6idea.psi.Perl6InfixApplication;
+import edument.perl6idea.psi.Perl6Parameter;
+import edument.perl6idea.psi.Perl6ParameterVariable;
+import edument.perl6idea.psi.Perl6VariableDecl;
+import edument.perl6idea.refactoring.inline.Perl6InlineActionHandler;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+
+public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
+    @Override
+    public boolean canInlineElement(PsiElement element) {
+        return element instanceof Perl6VariableDecl &&
+               element.getNavigationElement() instanceof Perl6VariableDecl &&
+               element.getLanguage() instanceof Perl6Language;
+    }
+
+    @Override
+    public void inlineElement(Project project, Editor editor, PsiElement element) {
+        PsiElement variableDecl = element.getNavigationElement();
+
+        PsiReference reference = editor != null ?
+                                 TargetElementUtil.findReference(editor, editor.getCaretModel().getOffset()) : null;
+
+        boolean invokedOnDeclaration = reference == null;
+
+        if (reference != null && PsiTreeUtil.isAncestor(element, reference.getElement(), false)) {
+            invokedOnDeclaration = true;
+        }
+
+        boolean hasInitializer;
+        if (element instanceof Perl6VariableDecl) {
+            hasInitializer = ((Perl6VariableDecl) element).hasInitializer();
+        } else if (element instanceof Perl6ParameterVariable) {
+            Perl6Parameter parameter = PsiTreeUtil.getParentOfType(element, Perl6Parameter.class);
+            hasInitializer = parameter != null && parameter.getInitializer() != null;
+        } else {
+            reportError(project, editor, "refactoring is unsupported here");
+            return;
+        }
+
+        if (!hasInitializer) {
+            reportError(project, editor, "refactoring is supported only when the initializer is present");
+            return;
+        }
+
+        Collection<PsiReference> usages = invokedOnDeclaration ?
+                                          ReferencesSearch.search(variableDecl, GlobalSearchScope.projectScope(project)).findAll() :
+                                          Collections.singletonList(reference);
+
+        for (PsiReference callRef : usages) {
+            if (checkIfVariableIsLeftValue(callRef)) {
+                reportError(project, editor,"variable to be inlined has occurrences as lvalue" );
+                return;
+            }
+        }
+
+        PsiElement refElement = null;
+        if (reference != null) {
+            refElement = reference.getElement();
+        }
+
+        Perl6InlineVariableDialog dialog = new Perl6InlineVariableDialog(project, variableDecl, refElement, editor, invokedOnDeclaration);
+        if (ApplicationManager.getApplication().isUnitTestMode()) {
+            dialog.doAction();
+        } else {
+            dialog.show();
+        }
+    }
+
+    private static boolean checkIfVariableIsLeftValue(PsiReference reference) {
+        PsiElement variable = reference.getElement();
+        PsiElement usageElement = reference.getElement();
+        PsiElement refParent = usageElement == null ? null : usageElement.getParent();
+        if (!(refParent instanceof Perl6InfixApplication))
+            return false;
+
+        Perl6InfixApplication application = (Perl6InfixApplication)refParent;
+        PsiElement[] operands = application.getOperands();
+        if (operands.length < 2 || !application.getOperator().equals("="))
+            return false;
+
+        for (PsiElement operand : operands) {
+            if (Objects.equals(operand, variable))
+                return true;
+        }
+        return false;
+    }
+
+    protected void reportError(Project project, Editor editor, String reason) {
+        CommonRefactoringUtil.showErrorHint(project, editor,
+                String.format("Cannot perform inline refactoring: %s", reason),
+                "Cannot inline variable", null);
+    }
+}

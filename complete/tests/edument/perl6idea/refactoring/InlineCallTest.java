@@ -2,7 +2,7 @@ package edument.perl6idea.refactoring;
 
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
-import edument.perl6idea.refactoring.inline.Perl6InlineCallActionHandler;
+import edument.perl6idea.refactoring.inline.call.Perl6InlineCallActionHandler;
 
 public class InlineCallTest extends LightPlatformCodeInsightFixtureTestCase {
     @Override

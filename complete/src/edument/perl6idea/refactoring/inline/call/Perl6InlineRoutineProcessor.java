@@ -1,8 +1,7 @@
-package edument.perl6idea.refactoring.inline;
+package edument.perl6idea.refactoring.inline.call;
 
 import com.intellij.history.LocalHistory;
 import com.intellij.history.LocalHistoryAction;
-import com.intellij.lang.findUsages.DescriptiveNameUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.RangeMarker;
 import com.intellij.openapi.project.Project;
@@ -14,25 +13,24 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.BaseRefactoringProcessor;
-import com.intellij.refactoring.RefactoringBundle;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewDescriptor;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.refactoring.CompletePerl6ElementFactory;
+import edument.perl6idea.refactoring.inline.Perl6InlineViewDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class InlinePerl6RoutineProcessor extends BaseRefactoringProcessor {
-    private final String myDescriptiveName;
+public class Perl6InlineRoutineProcessor extends BaseRefactoringProcessor {
     private final Perl6RoutineDecl myRoutine;
     private final PsiElement myCall;
     private final Editor myEditor;
     private final boolean myInlineThisOnly;
     private final boolean myDeleteTheDeclaration;
 
-    protected InlinePerl6RoutineProcessor(@NotNull Project project, Perl6RoutineDecl routine,
+    protected Perl6InlineRoutineProcessor(@NotNull Project project, Perl6RoutineDecl routine,
                                           @Nullable PsiElement call, Editor editor,
                                           boolean inlineThisOnly, boolean isDeleteTheDeclaration) {
         super(project);
@@ -41,7 +39,6 @@ public class InlinePerl6RoutineProcessor extends BaseRefactoringProcessor {
         myEditor = editor;
         myInlineThisOnly = inlineThisOnly;
         myDeleteTheDeclaration = isDeleteTheDeclaration;
-        myDescriptiveName = DescriptiveNameUtil.getDescriptiveName(myRoutine);
     }
 
     @NotNull
@@ -126,7 +123,7 @@ public class InlinePerl6RoutineProcessor extends BaseRefactoringProcessor {
     @NotNull
     @Override
     protected String getCommandName() {
-        return RefactoringBundle.message("inline.method.command", myDescriptiveName);
+        return "Inline routine";
     }
 
     @NotNull

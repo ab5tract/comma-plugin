@@ -1,4 +1,4 @@
-package edument.perl6idea.refactoring.inline;
+package edument.perl6idea.refactoring.inline.call;
 
 import com.intellij.codeInsight.TargetElementUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -15,6 +15,7 @@ import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.refactoring.inline.Perl6InlineActionHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -34,6 +35,7 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
 
         PsiReference reference = editor != null ?
                                  TargetElementUtil.findReference(editor, editor.getCaretModel().getOffset()) : null;
+
         if (routine.getParent() instanceof Perl6MultiDecl) {
             String typeOfMulti = routine.getParent().getFirstChild().getText();
             if (Objects.equals(typeOfMulti, "proto"))
@@ -88,46 +90,12 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
             refElement = reference.getElement();
         }
 
-        Perl6InlineRoutineDialog dialog = new Perl6InlineRoutineDialog(project, routine, refElement, editor, allowInlineThisOnly);
+        Perl6InlineCallDialog dialog = new Perl6InlineCallDialog(project, routine, refElement, editor, allowInlineThisOnly);
         if (ApplicationManager.getApplication().isUnitTestMode()) {
             dialog.doAction();
         } else {
             dialog.show();
         }
-    }
-
-    private static boolean hasUnresolvedSelf(Perl6RoutineDecl routine, PsiReference reference) {
-        PsiElementProcessor.CollectElements<PsiElement> processor =
-            new PsiElementProcessor.CollectElements<PsiElement>() {
-                @Override
-                public boolean execute(@NotNull PsiElement each) {
-                    if (each instanceof Perl6Self)
-                        return super.execute(each);
-                    else if (each instanceof Perl6PackageDecl)
-                        return false;
-                    return true;
-                }
-            };
-        for (PsiElement part : routine.getContent()) {
-            PsiTreeUtil.processElements(part, processor);
-        }
-        Collection<PsiElement> selfs = processor.getCollection();
-        if (selfs.isEmpty())
-            return false;
-
-        Perl6PackageDecl routinePackage = PsiTreeUtil.getParentOfType(routine, Perl6PackageDecl.class);
-        if (reference != null) {
-            Perl6PackageDecl callPackage = PsiTreeUtil.getParentOfType(reference.getElement(), Perl6PackageDecl.class);
-            return callPackage == null || routinePackage == null || !Objects.equals(callPackage.getPackageName(), routinePackage.getPackageName());
-        } else {
-            Project project = routine.getProject();
-            for (PsiReference callRef : ReferencesSearch.search(routine, GlobalSearchScope.projectScope(project))) {
-                Perl6PackageDecl callPackage = PsiTreeUtil.getParentOfType(callRef.getElement(), Perl6PackageDecl.class);
-                if (callPackage == null || routinePackage == null || !Objects.equals(callPackage.getPackageName(), routinePackage.getPackageName()))
-                    return true;
-            }
-        }
-        return false;
     }
 
     private static PsiElement getUnresolvedElements(Perl6RoutineDecl routine, PsiReference reference) {

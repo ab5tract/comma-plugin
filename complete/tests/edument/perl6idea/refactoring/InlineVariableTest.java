@@ -5,6 +5,7 @@ import com.intellij.refactoring.BaseRefactoringProcessor;
 import com.intellij.refactoring.inline.InlineRefactoringActionHandler;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import edument.perl6idea.refactoring.inline.variable.Perl6InlineVariableActionHandler;
 
 public class InlineVariableTest extends LightPlatformCodeInsightFixtureTestCase {
     @Override
@@ -26,12 +27,12 @@ public class InlineVariableTest extends LightPlatformCodeInsightFixtureTestCase 
 
     public void testLateSingleInitCaseException() {
         assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
-            "Inline Variable refactoring is supported only when the initializer is present", this::doTest);
+            "Cannot perform inline refactoring: refactoring is supported only when the initializer is present", this::doTest);
     }
 
     public void testIntermediateAssignmentConflict() {
-        assertThrows(BaseRefactoringProcessor.ConflictsInTestsException.class,
-            "Variable to be inlined has occurrences as lvalue", this::doTest);
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: variable to be inlined has occurrences as lvalue", this::doTest);
     }
 
     public void testMultivarInitSingleCaseLeftSave() {
@@ -91,13 +92,14 @@ public class InlineVariableTest extends LightPlatformCodeInsightFixtureTestCase 
     }
 
     public void testNoAssignmentException() {
-        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, "Inline Variable refactoring is supported only when the initializer is present", this::doTest);
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
+                     "Cannot perform inline refactoring: refactoring is supported only when the initializer is present", this::doTest);
     }
 
     private void doTest() {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
-        InlineRefactoringActionHandler action = new InlineRefactoringActionHandler();
-        action.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), DataManager.getInstance().getDataContextFromFocus().getResult());
+        Perl6InlineVariableActionHandler action = new Perl6InlineVariableActionHandler();
+        action.inlineElement(getProject(), myFixture.getEditor(), myFixture.getElementAtCaret());
         myFixture.checkResultByFile(getTestName(true) + ".p6");
     }
 }

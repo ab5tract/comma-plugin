@@ -5,6 +5,7 @@ import com.intellij.refactoring.RefactoringBundle;
 import com.intellij.usageView.UsageViewBundle;
 import com.intellij.usageView.UsageViewDescriptor;
 import edument.perl6idea.psi.Perl6RoutineDecl;
+import edument.perl6idea.psi.Perl6VariableDecl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +27,8 @@ public class Perl6InlineViewDescriptor implements UsageViewDescriptor {
   public String getProcessedElementsHeader() {
     if (myElement instanceof Perl6RoutineDecl) {
       return ((Perl6RoutineDecl)myElement).getRoutineKind() + " to inline";
+    } else if (myElement instanceof Perl6VariableDecl) {
+      return ((Perl6VariableDecl)myElement).getVariableName() + " to inline";
     }
     return "Unknown element";
   }
