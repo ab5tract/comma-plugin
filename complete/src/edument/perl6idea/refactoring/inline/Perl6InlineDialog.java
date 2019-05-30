@@ -45,6 +45,6 @@ public abstract class Perl6InlineDialog extends InlineOptionsDialog {
     @Override
     public boolean isKeepTheDeclaration() {
         if (ApplicationManager.getApplication().isUnitTestMode()) return myReference != null;
-        return super.isKeepTheDeclaration();
+        return super.isInlineThisOnly();
     }
 }
