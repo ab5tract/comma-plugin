@@ -88,6 +88,14 @@ public class InlineVariableTest extends LightPlatformCodeInsightFixtureTestCase 
         doTest();
     }
 
+    public void testStrLiteralInline() {
+        doTest();
+    }
+
+    public void testStartInline() {
+        doTest();
+    }
+
     public void testNoAssignmentException() {
         assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
                      "Cannot perform inline refactoring: refactoring is supported only when the initializer is present", this::doTest);

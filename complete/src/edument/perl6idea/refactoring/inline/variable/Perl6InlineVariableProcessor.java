@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -93,7 +92,10 @@ public class Perl6InlineVariableProcessor extends BaseRefactoringProcessor {
     private void doRefactoring(UsageInfo[] usages) {
         for (UsageInfo usage : usages) {
             PsiElement usageElement = usage.getElement();
+            assert usageElement != null;
             Perl6VariableDecl decl = PsiTreeUtil.getNonStrictParentOfType(myDeclaration, Perl6VariableDecl.class);
+
+            PsiElement initializer = null;
 
             // If we work with a multi-declaration, it can be either a `my (...)` form or
             // a routine parameter
@@ -102,29 +104,27 @@ public class Perl6InlineVariableProcessor extends BaseRefactoringProcessor {
                 // Presence of declaration means we are dealing with a multi-declaration,
                 // so ask for particular initializer
                 {
-                    PsiElement initializer = decl.getInitializer((Perl6Variable)usageElement).copy();
-                    if (initializer instanceof Perl6InfixApplication)
-                        initializer = CompletePerl6ElementFactory.createParenthesesExpr(initializer);
-                    usageElement.replace(initializer);
+                    initializer = decl.getInitializer((Perl6Variable)usageElement);
                 }
                 else {
                     // Ask for a parameter initializer
                     Perl6Parameter parameter = PsiTreeUtil.getNonStrictParentOfType(myDeclaration, Perl6Parameter.class);
-                    if (parameter != null) {
-                        PsiElement initializer = parameter.getInitializer().copy();
-                        if (initializer instanceof Perl6InfixApplication)
-                            initializer = CompletePerl6ElementFactory.createParenthesesExpr(initializer);
-                        usageElement.replace(initializer);
-                    }
+                    if (parameter != null)
+                        initializer = parameter.getInitializer();
                 }
             }
             else if (decl != null) {
                 // If just a simple variable declaration, inline its initializer
-                PsiElement initializer = decl.getInitializer().copy();
-                if (initializer instanceof Perl6InfixApplication)
-                    initializer = CompletePerl6ElementFactory.createParenthesesExpr(initializer);
-                usageElement.replace(initializer);
+                initializer = decl.getInitializer();
             }
+
+            assert initializer != null;
+            if (checkIfNeedToWrap(initializer))
+                initializer = CompletePerl6ElementFactory.createParenthesesExpr(initializer);
+            else
+                initializer = initializer.copy();
+
+            usageElement.replace(initializer);
         }
 
         PsiDocumentManager.getInstance(myProject).commitAllDocuments();
@@ -132,6 +132,21 @@ public class Perl6InlineVariableProcessor extends BaseRefactoringProcessor {
         if (myDeleteTheDeclaration) {
             deleteDeclaration();
         }
+    }
+
+    private static boolean checkIfNeedToWrap(PsiElement initializer) {
+        boolean isSingular = initializer instanceof Perl6Variable ||
+                             initializer instanceof Perl6ColonPair ||
+                             initializer instanceof Perl6ComplexLiteral ||
+                             initializer instanceof Perl6IntLiteral ||
+                             initializer instanceof Perl6NumLiteral ||
+                             initializer instanceof Perl6RatLiteral ||
+                             initializer instanceof Perl6RegexLiteral ||
+                             initializer instanceof Perl6StrLiteral ||
+                             initializer instanceof Perl6Contextualizer ||
+                             initializer instanceof Perl6ArrayComposer ||
+                             initializer instanceof Perl6BlockOrHash;
+        return !isSingular;
     }
 
     private void deleteDeclaration() {
