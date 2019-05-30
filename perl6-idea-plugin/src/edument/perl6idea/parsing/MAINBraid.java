@@ -18627,79 +18627,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 14;
                 break;
             case 14:
-<<<<<<< HEAD
-                this.setArgs();
-                this.state = 15;
-                return 146;
-
-            case 15:
-                if (this.lastResult.isFailed()) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                } else {
-                    this.pos = this.lastResult.getPos();
-                }
-                this.bsCommit(16);
-                this.state = 16;
-                continue;
-
-            case 16:
-                this.bsMark(21);
-                this.state = 17;
-                break;
-            case 17:
-                this.bsFailMark(20);
-                this.bsMark(19);
-                this.setArgs();
-                this.state = 18;
-                return 4;
-
-            case 18:
-                if (this.lastResult.isFailed()) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                } else {
-                    this.pos = this.lastResult.getPos();
-                }
-                this.bsCommit(20);
-                this.state = 20;
-                continue;
-
-            case 19:
-                if (!(this.inCharList("/!"))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
-                this.state = 20;
-                continue;
-
-            case 20:
-                this.bsCommit(21);
-                this.state = 21;
-                continue;
-
-            case 21:
-                this.state = 22;
-                return -3;
-
-            case 22:
-                this.bsMark(26);
-                this.state = 23;
-                break;
-            case 23:
                 if (!(this.lookahead(414))) {
-=======
-                if (!(this.lookahead(413))) {
->>>>>>> Add Variable node inside of ParameterVariable
                     if (this.backtrack()) {
                         continue;
                     } else {
