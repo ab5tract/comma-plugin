@@ -11,10 +11,8 @@ import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import edument.perl6idea.Perl6Language;
-import edument.perl6idea.psi.Perl6InfixApplication;
-import edument.perl6idea.psi.Perl6Parameter;
-import edument.perl6idea.psi.Perl6ParameterVariable;
-import edument.perl6idea.psi.Perl6VariableDecl;
+import edument.perl6idea.psi.*;
+import edument.perl6idea.refactoring.inline.IllegalInlineeException;
 import edument.perl6idea.refactoring.inline.Perl6InlineActionHandler;
 
 import java.util.Collection;
@@ -42,18 +40,19 @@ public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
             invokedOnDeclaration = true;
         }
 
-        boolean hasInitializer;
+        PsiElement initializer;
+
         if (element instanceof Perl6VariableDecl) {
-            hasInitializer = ((Perl6VariableDecl) element).hasInitializer();
+            initializer = ((Perl6VariableDecl) element).getInitializer();
         } else if (element instanceof Perl6ParameterVariable) {
             Perl6Parameter parameter = PsiTreeUtil.getParentOfType(element, Perl6Parameter.class);
-            hasInitializer = parameter != null && parameter.getInitializer() != null;
+            initializer = parameter != null ? parameter.getInitializer() : null;
         } else {
             reportError(project, editor, "refactoring is unsupported here");
             return;
         }
 
-        if (!hasInitializer) {
+        if (initializer == null) {
             reportError(project, editor, "refactoring is supported only when the initializer is present");
             return;
         }
@@ -63,10 +62,19 @@ public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
                                           Collections.singletonList(reference);
 
         for (PsiReference callRef : usages) {
-            if (checkIfVariableIsLeftValue(callRef)) {
+            PsiElement variable = callRef.getElement();
+            if (checkIfVariableIsLeftValue(variable)) {
                 reportError(project, editor,"variable to be inlined has occurrences as lvalue" );
                 return;
             }
+        }
+
+        try {
+            checkUnresolvedElements((Perl6PsiElement)variableDecl, reference);
+        }
+        catch (IllegalInlineeException ex) {
+            reportError(project, editor, ex.toString());
+            return;
         }
 
         PsiElement refElement = null;
@@ -82,9 +90,7 @@ public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
         }
     }
 
-    private static boolean checkIfVariableIsLeftValue(PsiReference reference) {
-        PsiElement variable = reference.getElement();
-        PsiElement usageElement = reference.getElement();
+    private static boolean checkIfVariableIsLeftValue(PsiElement usageElement) {
         PsiElement refParent = usageElement == null ? null : usageElement.getParent();
         if (!(refParent instanceof Perl6InfixApplication))
             return false;
@@ -95,7 +101,7 @@ public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
             return false;
 
         for (PsiElement operand : operands) {
-            if (Objects.equals(operand, variable))
+            if (Objects.equals(operand, usageElement))
                 return true;
         }
         return false;

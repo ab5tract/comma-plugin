@@ -6,15 +6,12 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiElementProcessor;
-import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.*;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.refactoring.inline.IllegalInlineeException;
 import edument.perl6idea.refactoring.inline.Perl6InlineActionHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -58,17 +55,11 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
             return;
         }
 
-        PsiElement unresolvedElement = getUnresolvedElements(routine, reference);
-        if (unresolvedElement instanceof Perl6Self) {
-            reportError(project, editor, "a reference to `self` is found, but caller and callee are in different classes");
-            return;
-        } else if (unresolvedElement instanceof Perl6Variable) {
-            String variableName = ((Perl6Variable)unresolvedElement).getVariableName();
-            if (Perl6Variable.getTwigil(variableName) == '!' || Perl6Variable.getTwigil(variableName) == '.') {
-                reportError(project, editor, "attributes of class that contains a routine are used");
-            } else {
-                reportError(project, editor, "lexical variables are used in original routine that are not available at call location");
-            }
+        try {
+            checkUnresolvedElements(routine, reference);
+        }
+        catch (IllegalInlineeException ex) {
+            reportError(project, editor, ex.toString());
             return;
         }
 
@@ -93,68 +84,6 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
         } else {
             dialog.show();
         }
-    }
-
-    private static PsiElement getUnresolvedElements(Perl6RoutineDecl routine, PsiReference reference) {
-        // We search for self references, attributes, lexicals
-        // If executed on call, check it only, otherwise check all calls
-        if (reference != null) {
-            return getUnresolvedForCall(routine, reference);
-        } else {
-            Project project = routine.getProject();
-            for (PsiReference callRef : ReferencesSearch.search(routine, GlobalSearchScope.projectScope(project))) {
-                PsiElement item = getUnresolvedForCall(routine, callRef);
-                if (item != null)
-                    return item;
-            }
-        }
-        return null;
-    }
-
-    private static PsiElement getUnresolvedForCall(Perl6RoutineDecl routine, PsiReference reference) {
-        PsiElementProcessor.CollectElements<PsiElement> processor =
-            new PsiElementProcessor.CollectElements<PsiElement>() {
-                @Override
-                public boolean execute(@NotNull PsiElement each) {
-                    if (each instanceof Perl6Self)
-                        return super.execute(each);
-                    else if (each instanceof Perl6PackageDecl)
-                        return false;
-                    return true;
-                }
-            };
-        for (PsiElement part : routine.getContent()) {
-            PsiTreeUtil.processElements(part, processor);
-        }
-        Collection<PsiElement> selfs = processor.getCollection();
-        if (!selfs.isEmpty()) {
-            Perl6PackageDecl routinePackage = PsiTreeUtil.getParentOfType(routine, Perl6PackageDecl.class);
-            Perl6PackageDecl callPackage = PsiTreeUtil.getParentOfType(reference.getElement(), Perl6PackageDecl.class);
-            if (callPackage == null || routinePackage == null || !Objects.equals(callPackage.getPackageName(), routinePackage.getPackageName())) {
-                return selfs.iterator().next();
-            }
-        }
-
-        PsiElement call = reference.getElement();
-        PsiElement[] statements = routine.getContent();
-        for (PsiElement statement : statements) {
-            Collection<Perl6Variable> vars = PsiTreeUtil.findChildrenOfType(statement, Perl6Variable.class);
-            for (Perl6Variable var : vars) {
-                PsiReference varRef = var.getReference();
-                if (varRef == null) continue;
-                PsiElement varDecl = varRef.resolve();
-                if (varDecl == null)
-                    continue;
-                if (PsiTreeUtil.isAncestor(routine, varDecl, true))
-                    continue;
-                if (call instanceof Perl6PsiElement) {
-                    Perl6Symbol declFromCall = ((Perl6PsiElement)call).resolveSymbol(Perl6SymbolKind.Variable, var.getVariableName());
-                    if (declFromCall == null || declFromCall.getPsi() == null)
-                        return var;
-                }
-            }
-        }
-        return null;
     }
 
     private static boolean hasStateVariables(Perl6RoutineDecl routine) {

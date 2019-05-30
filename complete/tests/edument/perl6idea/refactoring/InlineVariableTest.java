@@ -96,9 +96,34 @@ public class InlineVariableTest extends LightPlatformCodeInsightFixtureTestCase 
         doTest();
     }
 
+    public void testAttributeVariableException() {
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
+                     "Cannot perform inline refactoring: attributes of class are used that are not available at inlining location",
+                     this::doTest);
+    }
+
+    public void testSelfOfOtherClassInExpressionException() {
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
+                     "Cannot perform inline refactoring: a reference to `self` is found, but caller and callee are in different classes",
+                     this::doTest);
+    }
+
     public void testNoAssignmentException() {
         assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
-                     "Cannot perform inline refactoring: refactoring is supported only when the initializer is present", this::doTest);
+                     "Cannot perform inline refactoring: refactoring is supported only when the initializer is present",
+                     this::doTest);
+    }
+
+    public void testScopeConflictException() {
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
+                     "Cannot perform inline refactoring: element from original code is shadowed by another one at inlining location",
+                     this::doTest);
+    }
+
+    public void testScopeConflictWithRoutineException() {
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
+                     "Cannot perform inline refactoring: element from original code is shadowed by another one at inlining location",
+                     this::doTest);
     }
 
     private void doTest() {

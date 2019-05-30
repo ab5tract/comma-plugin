@@ -127,7 +127,7 @@ public class InlineCallTest extends LightPlatformCodeInsightFixtureTestCase {
     public void testCannotInlineWhenLexicalsAreUnavailable() {
         assertThrows(
             CommonRefactoringUtil.RefactoringErrorHintException.class,
-            "Cannot perform inline refactoring: lexical variables are used in original routine that are not available at call location", this::doTest);
+            "Cannot perform inline refactoring: lexical is used in original code that are not available at inlining location", this::doTest);
     }
 
     public void testCannotInlineMethodFromOtherClassWithSelf() {
@@ -145,7 +145,13 @@ public class InlineCallTest extends LightPlatformCodeInsightFixtureTestCase {
     public void testCannotInlineMethodFromOtherClassWithAttribute() {
         assertThrows(
             CommonRefactoringUtil.RefactoringErrorHintException.class,
-            "Cannot perform inline refactoring: attributes of class that contains a routine are used", this::doTest);
+            "Cannot perform inline refactoring: attributes of class are used that are not available at inlining location", this::doTest);
+    }
+
+    public void testCannotInlineWithNameShadowed() {
+        assertThrows(
+            CommonRefactoringUtil.RefactoringErrorHintException.class,
+            "Cannot perform inline refactoring: element from original code is shadowed by another one at inlining location", this::doTest);
     }
 
     private void doTest() {
