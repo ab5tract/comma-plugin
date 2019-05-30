@@ -72,8 +72,6 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
             return;
         }
 
-        boolean allowInlineThisOnly = false;
-
         if (hasBadReturns(routine)) {
             reportError(project, editor, "return statement interrupts the execution flow");
                 return;
@@ -84,13 +82,12 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
             return;
         }
 
-
         PsiElement refElement = null;
         if (reference != null) {
             refElement = reference.getElement();
         }
 
-        Perl6InlineCallDialog dialog = new Perl6InlineCallDialog(project, routine, refElement, editor, allowInlineThisOnly);
+        Perl6InlineCallDialog dialog = new Perl6InlineCallDialog(project, routine, refElement, editor);
         if (ApplicationManager.getApplication().isUnitTestMode()) {
             dialog.doAction();
         } else {

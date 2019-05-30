@@ -10,12 +10,11 @@ public class Perl6InlineCallDialog extends Perl6InlineDialog {
     private final Perl6RoutineDecl myRoutineDecl;
     private final PsiElement myReference;
     private final Editor myEditor;
-    //private final boolean myAllowInlineThisOnly;
 
     protected Perl6InlineCallDialog(Project project,
                                     Perl6RoutineDecl routine,
                                     PsiElement call,
-                                    Editor editor, boolean allowInlineThisOnly) {
+                                    Editor editor) {
         super(project, routine, call, editor);
         myRoutineDecl = routine;
         myReference = call;
