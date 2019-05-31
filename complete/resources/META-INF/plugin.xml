@@ -67,7 +67,7 @@
         rewriting to <code>:$foo</code></li>
 
         <li>Fix a bug where the <code>t</code> directory was marked as a Source Directory
-        instead of Test Directory on Windows</li>
+        instead of a Test Directory on Windows</li>
     </ul>
   ]]>
   </change-notes>
