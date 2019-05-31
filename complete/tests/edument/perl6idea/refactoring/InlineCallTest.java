@@ -94,6 +94,10 @@ public class InlineCallTest extends LightPlatformCodeInsightFixtureTestCase {
         doTest();
     }
 
+    public void testLiteralIsNotParenthesised() {
+        doTest();
+    }
+
     public void testCannotInlineProto() {
         assertThrows(
             CommonRefactoringUtil.RefactoringErrorHintException.class,

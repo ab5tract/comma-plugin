@@ -11,18 +11,18 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.refactoring.BaseRefactoringProcessor;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewDescriptor;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.refactoring.CompletePerl6ElementFactory;
+import edument.perl6idea.refactoring.inline.Perl6InlineProcessor;
 import edument.perl6idea.refactoring.inline.Perl6InlineViewDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Perl6InlineVariableProcessor extends BaseRefactoringProcessor {
+public class Perl6InlineVariableProcessor extends Perl6InlineProcessor {
     private final PsiElement myDeclaration;
     private final PsiElement myReference;
     private final Editor myEditor;
@@ -132,21 +132,6 @@ public class Perl6InlineVariableProcessor extends BaseRefactoringProcessor {
         if (myDeleteTheDeclaration) {
             deleteDeclaration();
         }
-    }
-
-    private static boolean checkIfNeedToWrap(PsiElement initializer) {
-        boolean isSingular = initializer instanceof Perl6Variable ||
-                             initializer instanceof Perl6ColonPair ||
-                             initializer instanceof Perl6ComplexLiteral ||
-                             initializer instanceof Perl6IntLiteral ||
-                             initializer instanceof Perl6NumLiteral ||
-                             initializer instanceof Perl6RatLiteral ||
-                             initializer instanceof Perl6RegexLiteral ||
-                             initializer instanceof Perl6StrLiteral ||
-                             initializer instanceof Perl6Contextualizer ||
-                             initializer instanceof Perl6ArrayComposer ||
-                             initializer instanceof Perl6BlockOrHash;
-        return !isSingular;
     }
 
     private void deleteDeclaration() {

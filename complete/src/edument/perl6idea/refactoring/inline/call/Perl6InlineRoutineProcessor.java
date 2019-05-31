@@ -12,18 +12,18 @@ import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.refactoring.BaseRefactoringProcessor;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewDescriptor;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.refactoring.CompletePerl6ElementFactory;
+import edument.perl6idea.refactoring.inline.Perl6InlineProcessor;
 import edument.perl6idea.refactoring.inline.Perl6InlineViewDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class Perl6InlineRoutineProcessor extends BaseRefactoringProcessor {
+public class Perl6InlineRoutineProcessor extends Perl6InlineProcessor {
     private final Perl6RoutineDecl myRoutine;
     private final PsiElement myCall;
     private final Editor myEditor;
@@ -168,7 +168,8 @@ public class Perl6InlineRoutineProcessor extends BaseRefactoringProcessor {
 
             inserter = singleStatement.getFirstChild().copy();
             PsiElement wholeCallNode = call.getWholeCallNode();
-            if (!(wholeCallNode.getParent() instanceof Perl6Statement))
+            if (!(wholeCallNode.getParent() instanceof Perl6Statement) &&
+                checkIfNeedToWrap(inserter))
                 inserter = CompletePerl6ElementFactory.createParenthesesExpr(inserter);
         }
         else {
