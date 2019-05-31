@@ -63,7 +63,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
             }
             VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemDependentName(sourcePath));
             if (sourceRoot != null) {
-                contentEntry.addSourceFolder(sourceRoot, sourcePath.endsWith("/t"), sourcePathPair.second);
+                contentEntry.addSourceFolder(sourceRoot, sourcePath.endsWith("/t") || sourcePath.endsWith("\\t"), sourcePathPair.second);
             }
             switch (type) {
                 case PERL6_SCRIPT:
