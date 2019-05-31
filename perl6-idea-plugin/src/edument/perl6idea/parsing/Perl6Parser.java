@@ -7865,9 +7865,7 @@ public class Perl6Parser implements PsiParser {
     private boolean param_var_93_alt_2(PsiBuilder builder, OPP opp) {
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if ((builder.getTokenType()) == Perl6TokenTypes.VARIABLE) {
-            builder.advanceLexer();
-        } else {
+        if (!(this.variable_253(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker3;

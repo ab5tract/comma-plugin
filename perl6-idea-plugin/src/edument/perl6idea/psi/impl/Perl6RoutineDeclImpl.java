@@ -18,6 +18,7 @@ import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCKOID;
@@ -97,6 +98,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         return statement.length != 0 && statement[0] instanceof Perl6StubCode;
     }
 
+    @Nullable
     @Override
     public Perl6Signature getSignatureNode() {
         return findChildByClass(Perl6Signature.class);
@@ -106,6 +108,15 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     @Override
     public PsiElement getNameIdentifier() {
         return findChildByType(LONG_NAME);
+    }
+
+    @NotNull
+    @Override
+    public PsiElement[] getContent() {
+        Perl6StatementList statementList = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
+        if (statementList == null)
+            return PsiElement.EMPTY_ARRAY;
+        return statementList.getChildren();
     }
 
     @Override

@@ -1,6 +1,4 @@
 package edument.perl6idea.psi;
 
-import com.intellij.psi.PsiNamedElement;
-
-public interface Perl6SubCall extends Perl6PsiElement, PsiNamedElement, P6Extractable {
+public interface Perl6SubCall extends Perl6PsiElement, P6CodeBlockCall, P6Extractable {
 }

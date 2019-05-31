@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Perl6SignatureHolder {
     String getSignature();
+    @Nullable
     Perl6Signature getSignatureNode();
     String getReturnsTrait();
 

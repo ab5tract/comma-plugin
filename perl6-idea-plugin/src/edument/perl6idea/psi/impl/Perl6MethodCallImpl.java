@@ -2,13 +2,12 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.Perl6ElementFactory;
-import edument.perl6idea.psi.Perl6LongName;
-import edument.perl6idea.psi.Perl6MethodCall;
-import edument.perl6idea.psi.Perl6MethodReference;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
@@ -34,6 +33,11 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
     }
 
     @Override
+    public PsiElement getWholeCallNode() {
+        return PsiTreeUtil.getParentOfType(this, Perl6PostfixApplication.class);
+    }
+
+    @Override
     public String getCallOperator() {
         ASTNode op = findChildByType(METHOD_CALL_OPERATOR);
         return op == null ? "" : op.getText();
@@ -41,8 +45,7 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        if (name.startsWith("!"))
-            name = name.substring(1);
+        name = StringUtil.trimStart(name, "!");
         Perl6LongName call = Perl6ElementFactory.createMethodCallName(getProject(), name);
         Perl6LongName longName = findChildByClass(Perl6LongName.class);
         if (longName != null) {

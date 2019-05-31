@@ -112,6 +112,8 @@
     <executor implementation="edument.perl6idea.run.Perl6ProfileExecutor"/>
     <projectViewNodeDecorator implementation="edument.perl6idea.coverage.Perl6ProjectViewCoverageDecorator"/>
     <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6CompleteRefactoringSupportProvider"/>
+    <inlineActionHandler implementation="edument.perl6idea.refactoring.inline.variable.Perl6InlineVariableActionHandler"/>
+    <inlineActionHandler implementation="edument.perl6idea.refactoring.inline.call.Perl6InlineCallActionHandler"/>
   </extensions>
 
   <actions>
