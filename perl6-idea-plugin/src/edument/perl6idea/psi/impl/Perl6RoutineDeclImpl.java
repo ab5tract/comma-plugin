@@ -110,11 +110,12 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         return findChildByType(LONG_NAME);
     }
 
+    @NotNull
     @Override
     public PsiElement[] getContent() {
         Perl6StatementList statementList = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
         if (statementList == null)
-            return new PsiElement[0];
+            return PsiElement.EMPTY_ARRAY;
         return statementList.getChildren();
     }
 

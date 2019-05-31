@@ -50,7 +50,7 @@ public class Perl6InlineRoutineProcessor extends Perl6InlineProcessor {
     @NotNull
     @Override
     protected UsageInfo[] findUsages() {
-        if (myInlineThisOnly) {
+        if (myInlineThisOnly && myCall != null) {
             return new UsageInfo[]{new UsageInfo(myCall)};
         }
         Set<UsageInfo> usages = new HashSet<>();
@@ -144,6 +144,8 @@ public class Perl6InlineRoutineProcessor extends Perl6InlineProcessor {
     }
 
     private static void unwrapLastReturnStatement(PsiElement[] blockNodes) {
+        if (blockNodes.length == 0)
+            return;
         PsiElement blockNode = blockNodes[blockNodes.length - 1];
         PsiElement returnStatement = blockNode.getFirstChild();
         if (returnStatement instanceof Perl6SubCall && ((Perl6SubCall)returnStatement).getCallName().equals("return")) {
@@ -163,7 +165,9 @@ public class Perl6InlineRoutineProcessor extends Perl6InlineProcessor {
     private static PsiElement createReplacement(Project project, P6CodeBlockCall call, PsiElement[] blockCopy, Perl6RoutineDecl decl) {
         PsiElement inserter;
 
-        if (blockCopy.length == 1) {
+        if (blockCopy.length == 0) {
+            return CompletePerl6ElementFactory.createNil(project);
+        } else if (blockCopy.length == 1) {
             Perl6Statement singleStatement = (Perl6Statement)blockCopy[0];
 
             inserter = singleStatement.getFirstChild().copy();

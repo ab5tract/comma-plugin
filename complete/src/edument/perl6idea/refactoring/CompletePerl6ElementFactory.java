@@ -40,6 +40,11 @@ public class CompletePerl6ElementFactory extends Perl6ElementFactory {
         return "my $a = do {\n" + blockTextBuilder.toString() + "\n}";
     }
 
+
+    public static Perl6TypeName createNil(Project project) {
+        return produceElement(project, "Nil", Perl6TypeName.class);
+    }
+
     public static Perl6ParenthesizedExpr createParenthesesExpr(PsiElement argument) {
         return produceElement(argument.getProject(),
                               String.format("(%s)", argument.getText()),

@@ -4,6 +4,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.StubBasedPsiElement;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
@@ -14,5 +15,6 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     String getRoutineName();
     boolean isPrivate();
     boolean isStubbed();
+    @NotNull
     PsiElement[] getContent();
 }

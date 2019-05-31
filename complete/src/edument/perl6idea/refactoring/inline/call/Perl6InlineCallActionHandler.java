@@ -67,11 +67,6 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
             reportError(project, editor, "return statement interrupts the execution flow");
                 return;
         }
-        PsiElement[] routineContent = routine.getContent();
-        if (routineContent == null || routineContent.length == 0) {
-            reportError(project, editor, "Refactoring cannot be applied to empty routine");
-            return;
-        }
 
         PsiElement refElement = null;
         if (reference != null) {

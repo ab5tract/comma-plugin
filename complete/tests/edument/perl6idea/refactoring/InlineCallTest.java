@@ -98,6 +98,10 @@ public class InlineCallTest extends LightPlatformCodeInsightFixtureTestCase {
         doTest();
     }
 
+    public void testEmptyRoutineIsReplacedWithNil() {
+        doTest();
+    }
+
     public void testCannotInlineProto() {
         assertThrows(
             CommonRefactoringUtil.RefactoringErrorHintException.class,
