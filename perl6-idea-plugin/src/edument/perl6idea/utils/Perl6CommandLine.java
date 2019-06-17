@@ -91,7 +91,7 @@ public class Perl6CommandLine {
             p.waitFor();
             if (died.get()) return null;
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error(e);
+            LOG.warn(e);
             return null;
         }
         return results;
