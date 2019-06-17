@@ -1,6 +1,7 @@
 package edument.perl6idea.project;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.application.TransactionGuard;
@@ -36,7 +37,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Perl6ProjectStructureConfigurable extends BaseConfigurable implements SearchableConfigurable,
+public class Perl6ProjectStructureConfigurable extends BaseConfigurable implements Disposable,
+                                                                                   SearchableConfigurable,
                                                                                    Place.Navigator, Configurable.NoMargin,
                                                                                    Configurable.NoScroll {
     private static final Logger LOG = Logger.getInstance(Perl6ProjectStructureConfigurable.class);
@@ -122,8 +124,8 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         };
 
         final DefaultActionGroup toolbarGroup = new DefaultActionGroup();
-        toolbarGroup.add(new BackAction(myComponent));
-        toolbarGroup.add(new ForwardAction(myComponent));
+        toolbarGroup.add(new BackAction(myComponent, this));
+        toolbarGroup.add(new ForwardAction(myComponent, this));
         final ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("ProjectStructure", toolbarGroup, true);
         toolbar.setTargetComponent(myComponent);
         myToolbarComponent = toolbar.getComponent();
@@ -173,6 +175,9 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     public StructureConfigurableContext getContext() {
         return myContext;
     }
+
+    @Override
+    public void dispose() {}
 
     private static Place createPlaceFor(Configurable configurable) {
         return new Place().putPath(CATEGORY, configurable);

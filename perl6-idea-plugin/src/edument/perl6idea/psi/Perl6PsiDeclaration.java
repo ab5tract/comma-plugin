@@ -6,6 +6,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.symbols.Perl6SymbolContributor;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierOwner, Perl6SymbolContributor {
@@ -15,6 +16,12 @@ public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierO
         List<Perl6Trait> traits = PsiTreeUtil.getChildrenOfTypeAsList(this, Perl6Trait.class);
         Perl6StatementList list = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
         if (list == null) return traits;
+
+        // If empty list was returned, it is immutable,
+        // so we need to make it mutable before checking other statements
+        if (traits.size() == 0)
+            traits = new ArrayList<>();
+
         for (PsiElement statement : list.getChildren()) {
             if (!(statement instanceof Perl6Statement)) continue;
             PsiElement statementFirstChild = statement.getFirstChild();

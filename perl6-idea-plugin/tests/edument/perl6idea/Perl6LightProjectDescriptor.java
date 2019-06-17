@@ -25,7 +25,9 @@ public class Perl6LightProjectDescriptor extends LightProjectDescriptor {
         VirtualFile srcRoot;
         try {
             VirtualFile child = root.findChild(srcPath);
-            srcRoot = child != null ? child : root.createChildDirectory(this, srcPath);
+            if (child != null)
+                child.delete(this);
+            srcRoot = root.createChildDirectory(this, srcPath);
             cleanSourceRoot(srcRoot);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -37,9 +39,8 @@ public class Perl6LightProjectDescriptor extends LightProjectDescriptor {
     private void cleanSourceRoot(VirtualFile contentRoot) throws IOException {
         LocalFileSystem vfs = (LocalFileSystem) contentRoot.getFileSystem();
         for (VirtualFile child : contentRoot.getChildren()) {
-            if (!vfs.exists(child))
-                vfs.createChildFile(this, contentRoot, child.getName());
-            child.delete(this);
+            if (vfs.exists(child))
+                child.delete(this);
         }
     }
 }

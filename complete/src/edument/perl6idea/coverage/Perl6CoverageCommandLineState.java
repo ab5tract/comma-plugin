@@ -38,7 +38,6 @@ public class Perl6CoverageCommandLineState extends Perl6RunCommandLineState {
         Map<String, String> env = new HashMap<>(runConfiguration.getEnvs());
         env.put("MVM_SPESH_DISABLE", "1"); // Avoid MoarVM bug
         env.put("MVM_COVERAGE_LOG", coverageDir.getAbsolutePath() + "/coverage.%d");
-        System.out.println(coverageDir.getAbsolutePath());
         cmd.withEnvironment(env);
     }
 

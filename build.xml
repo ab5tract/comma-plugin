@@ -8,7 +8,6 @@
 
   <target name="cleanup">
     <delete dir="${out.dir}" failonerror="false"/>
-    <delete file="perl6-idea-plugin/resources/META-INF/plugin.xml" failonerror="false"/>
   </target>
 
   <target name="init">
@@ -20,7 +19,7 @@
     <attribute name="script" />
     <sequential>
       <java failonerror="true" jar="${project.home}/lib/ant/lib/ant-launcher.jar" fork="true">
-        <jvmarg line="-Xmx612m -XX:MaxPermSize=152m -Didea.build.number=${idea.build.number} &quot;-DideaPath=${idea.path}&quot;"/>
+        <jvmarg line="-Xmx2048m -Didea.build.number=${idea.build.number} &quot;-DideaPath=${idea.path}&quot;"/>
         <sysproperty key="java.awt.headless" value="true"/>
         <arg line="&quot;-Dgant.script=@{script}&quot;"/>
         <arg line="&quot;-Dteamcity.build.tempDir=${tmp.dir}&quot;"/>
@@ -32,19 +31,19 @@
     </sequential>
   </macrodef>
 
-  <target name="complete-build" depends="init,cleanup">
+  <target name="complete-build" depends="init">
       <call_gant script="${comma.home}/build/comma_complete_build.gant"/>
   </target>
 
-  <target name="community-build" depends="init,cleanup">
+  <target name="community-build" depends="init">
       <call_gant script="${comma.home}/build/comma_community_build.gant"/>
   </target>
 
-  <target name="complete-plugin-build" depends="init,cleanup">
+  <target name="complete-plugin-build" depends="init">
       <call_gant script="${comma.home}/build/perl6_complete_plugin_build.gant"/>
   </target>
 
-  <target name="community-plugin-build" depends="init,cleanup">
+  <target name="community-plugin-build" depends="init">
       <call_gant script="${comma.home}/build/perl6_community_plugin_build.gant"/>
   </target>
 
@@ -58,5 +57,5 @@
 
   <target name="test" depends="init,test-community,test-complete"/>
 
-  <target name="all" depends="cleanup, complete-build"/>
+  <target name="all" depends="complete-build"/>
 </project>

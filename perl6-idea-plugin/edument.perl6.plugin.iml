@@ -11,7 +11,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.sandbox" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
-    <orderEntry type="jdk" jdkName="IDEA jdk" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="library" name="tcServiceMessages" level="project" />
     <orderEntry type="module" module-name="intellij.java" />
     <orderEntry type="module" module-name="intellij.java.resources" />
@@ -19,6 +19,7 @@
     <orderEntry type="module" module-name="intellij.java.impl" />
     <orderEntry type="module" module-name="intellij.platform.core" />
     <orderEntry type="module" module-name="intellij.platform.core.impl" />
+    <orderEntry type="module" module-name="intellij.platform.coverage" />
     <orderEntry type="module" module-name="intellij.platform.debugger" />
     <orderEntry type="module" module-name="intellij.platform.debugger.impl" />
     <orderEntry type="module" module-name="intellij.platform.editor" />
@@ -65,10 +66,14 @@
     <orderEntry type="module" module-name="intellij.java.testFramework" scope="TEST" />
     <orderEntry type="module" module-name="intellij.java.compiler" />
     <orderEntry type="library" name="http-client" level="project" />
-    <orderEntry type="library" name="com.miglayout:miglayout-swing:5.1" level="project" />
     <orderEntry type="library" name="gson" level="project" />
     <orderEntry type="module" module-name="intellij.java.impl" />
     <orderEntry type="library" name="sqlite" level="project" />
     <orderEntry type="library" name="swingx" level="project" />
+    <orderEntry type="library" name="miglayout-swing" level="project" />
+    <orderEntry type="module" module-name="intellij.platform.vcs.impl" />
+    <orderEntry type="library" name="org.junit.platform:junit-platform-launcher:1.4.2" level="project" />
+    <orderEntry type="library" name="org.junit.jupiter:junit-jupiter-engine:5.4.2" level="project" />
+    <orderEntry type="library" name="org.junit.vintage:junit-vintage-engine:5.4.2" level="project" />
   </component>
 </module>
