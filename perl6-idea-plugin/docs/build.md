@@ -24,7 +24,7 @@ Do the following steps inside a work-related directory, for example, `comma`.
 #### How to build a plugin
 
 While in the `comma-build` directory.
-* `ant community-build-plugin` or `ant complete-build-plugin` for Community version or Complete version.
+* `ant community-plugin-build` or `ant complete-plugin-build` for Community version or Complete version.
 * The plugin will be placed in `../out/commaCT/artifacts/CT-plugins/` and `out/commaCP/artifacts/CP-plugins/` directories relatively.
 
 #### How to build a standalone Comma
