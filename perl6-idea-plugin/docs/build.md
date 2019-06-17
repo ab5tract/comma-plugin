@@ -7,7 +7,7 @@ Currently, Comma works with 191.6707 Intellij revision/branch.
 Do the following steps inside a work-related directory, for example, `comma`.
 * `git clone https://github.com/edument/intellij-community.git`
 * `cd intellij-community`
-* `git checkout comma-191.6707`
+* `git checkout comma-191`
 * Do steps from `intellij-community` repo [README](https://github.com/JetBrains/intellij-community/#opening-the-intellij-source-code-for-build): creating `IDEA jdk` JDK and setting it to the project, running `getPlugins.sh` script.
 * `git clone https://github.com/edumentab/perl6-idea-plugin.git comma-build` (so the structure is `intellij-community/comma-build`)
 * Make sure that revisions of android-related repo are the same as the IDEA checkout, 191.6707.
