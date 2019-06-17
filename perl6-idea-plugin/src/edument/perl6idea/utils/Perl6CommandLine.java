@@ -6,6 +6,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.CharsetToolkit;
+import edument.perl6idea.run.Perl6DebuggableConfiguration;
+import edument.perl6idea.run.Perl6RunConfiguration;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
@@ -117,7 +119,7 @@ public class Perl6CommandLine {
         }
     }
 
-    public static List<String> populateDebugCommandLine(Project project, int debugPort) {
+    public static List<String> populateDebugCommandLine(Project project, Perl6DebuggableConfiguration runConfiguration) {
         List<String> command = new ArrayList<>();
         Perl6SdkType projectSdk = Perl6SdkType.getInstance();
         Map<String, String> moarBuildConfiguration = projectSdk.getMoarBuildConfiguration(project);
@@ -126,12 +128,13 @@ public class Perl6CommandLine {
         }
         String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", "");
         command.add(prefix + "/bin/moar");
-        command.add("--debug-port=" + debugPort);
-        command.add("--debug-suspend");
+        command.add("--debug-port=" + runConfiguration.getDebugPort());
+        if (runConfiguration.isStartSuspended())
+            command.add("--debug-suspend");
         command.add("--libpath=" + prefix + "/share/nqp/lib");
-        command.add("--libpath=" + prefix + "/share/perl6/lib");
-        command.add("--libpath=" + prefix + "/share/perl6/runtime");
-        command.add(prefix + "/share/perl6/runtime/perl6.moarvm");
+        command.add("--libpath=" + prefix + "/lib/perl6/lib");
+        command.add("--libpath=" + prefix + "/lib/perl6/runtime");
+        command.add(prefix + "/lib/perl6/runtime/perl6.moarvm");
         return command;
     }
 }

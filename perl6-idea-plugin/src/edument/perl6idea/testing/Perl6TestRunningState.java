@@ -74,7 +74,7 @@ public class Perl6TestRunningState extends CommandLineState {
         if (isDebugging) {
             command = Perl6CommandLine.populateDebugCommandLine(
               getEnvironment().getProject(),
-              ((Perl6DebuggableConfiguration)getEnvironment().getRunProfile()).getDebugPort());
+              ((Perl6DebuggableConfiguration)getEnvironment().getRunProfile()));
         } else {
             Project project = getEnvironment().getProject();
             if (project.getBasePath() == null) throw new ExecutionException("SDK is not set");
