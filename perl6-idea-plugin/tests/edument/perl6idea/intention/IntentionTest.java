@@ -110,6 +110,10 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Create");
     }
 
+    public void testPrivateMethodHasPrivateVariableArgumentUpdated() {
+        executeIntention("Create");
+    }
+
     public void testColonPairSimplification() {
         executeIntention("Convert");
     }

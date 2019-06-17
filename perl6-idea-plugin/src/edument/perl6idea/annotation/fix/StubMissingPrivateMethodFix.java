@@ -139,7 +139,7 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
                 arg.getNode().getElementType() == UNV_WHITE_SPACE ||
                 arg instanceof Perl6Infix) continue;
             if (arg instanceof Perl6Variable)
-                parameters.add(((Perl6Variable)arg).getVariableName());
+                parameters.add(preprocessName(((Perl6Variable)arg).getVariableName()));
             else if (arg instanceof Perl6PostfixApplication && arg.getLastChild() instanceof Perl6MethodCall)
                 parameters.add("$" + ((Perl6MethodCall)arg.getLastChild()).getCallName().substring(1));
             else if (arg instanceof Perl6SubCall && arg.getFirstChild() instanceof Perl6SubCallName)
@@ -154,6 +154,12 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
                 parameters.add("$p");
         }
         resolveConflicts(parameters);
+    }
+
+    private static String preprocessName(String name) {
+        return Perl6Variable.getTwigil(name) == '!' ?
+               Perl6Variable.getSigil(name) + name.substring(2) :
+               name;
     }
 
     private static String processColonpair(PsiElement arg) {
