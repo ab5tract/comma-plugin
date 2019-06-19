@@ -145,8 +145,7 @@ public class Perl6DebugThread extends Thread {
         try {
             client.suspend().get();
             Perl6ThreadDescriptor[] threads = getThreads();
-            Perl6DebugEventStop stopEvent =
-                    new Perl6DebugEventStop(threads, 1, mySession, this);
+            Perl6DebugEventStop stopEvent = new Perl6DebugEventStop(threads, 0, mySession, this);
             myExecutor.execute(stopEvent);
         } catch (CancellationException | InterruptedException | ExecutionException e) {
             LOG.error(e);
@@ -223,7 +222,7 @@ public class Perl6DebugThread extends Thread {
 
     @NotNull
     private Perl6ValueDescriptor convertDescriptor(String k, Lexical v) {
-        Perl6ValueDescriptor descriptor = null;
+        Perl6ValueDescriptor descriptor;
         switch (v.getKind()) {
             case INT:
                 descriptor = new Perl6NativeValueDescriptor(k, "int",
@@ -249,7 +248,7 @@ public class Perl6DebugThread extends Thread {
         return descriptor;
     }
 
-    /* Some types recieve special handling to show them in a nicer way. */
+    /* Some types receive special handling to show them in a nicer way. */
     private String presentableDescriptionForType(ObjValue ov, boolean recurse) {
         try {
             if (!ov.isConcrete())
