@@ -37,6 +37,8 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     private String scriptName;
     private String moduleName;
     private String entryPointName;
+    private boolean websocketSupport;
+    private boolean templatingSupport;
 
     @Override
     public String getName() {
@@ -49,7 +51,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     }
 
     @Override
-    public void setupRootModel(ModifiableRootModel model) {
+    public void setupRootModel(@NotNull ModifiableRootModel model) {
         ContentEntry contentEntry = doAddContentEntry(model);
         if (contentEntry == null) return;
         List<Pair<String, String>> sourcePaths = getSourcePaths();
@@ -89,6 +91,12 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                         stubTest(sourcePath,
                                 "00-sanity.t",
                                 Collections.singletonList(moduleName));
+                    break;
+                case CRO_WEB_APPLICATION:
+                    if (sourcePath.endsWith("lib"))
+                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty",
+                                   false);
+
                     break;
             }
         }
@@ -189,7 +197,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     private static void writeCodeToPath(Path codePath, List<String> lines) {
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
-                if (Files.notExists(codePath.getParent()))
+                if (!codePath.getParent().toFile().exists())
                     Files.createDirectories(codePath.getParent());
                 Files.write(codePath, lines, StandardCharsets.UTF_8);
             } catch (IOException e) {
@@ -222,6 +230,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 mySourcePaths.add(Pair.create(getContentEntryPath(), ""));
                 break;
             case PERL6_MODULE:
+            case CRO_WEB_APPLICATION:
                 addPath(mySourcePaths, "lib");
                 addPath(mySourcePaths, "t");
                 break;
@@ -282,6 +291,14 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
 
     void setScriptName(String scriptName) {
         this.scriptName = scriptName;
+    }
+
+    void setTemplatingSupport(boolean templatingSupport) {
+        this.templatingSupport = templatingSupport;
+    }
+
+    void setWebsocketSupport(boolean websocketSupport) {
+        this.websocketSupport = websocketSupport;
     }
 
     //@Nullable

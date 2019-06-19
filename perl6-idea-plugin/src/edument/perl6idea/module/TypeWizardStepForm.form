@@ -31,9 +31,10 @@
                 <item value="Perl 6 script"/>
                 <item value="Perl 6 module"/>
                 <item value="Perl 6 application"/>
+                <item value="Cro web application"/>
               </model>
               <opaque value="false"/>
-              <selectedIndex value="0"/>
+              <selectedIndex value="-1"/>
               <selectionMode value="0"/>
               <visibleRowCount value="3"/>
             </properties>

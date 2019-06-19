@@ -17,11 +17,20 @@ import java.awt.*;
 
 class Perl6ModuleWizardStep extends ModuleWizardStep {
     private final Perl6ModuleBuilder builder;
-    private JPanel myMainPanel;
-    private JTextField myScriptName;
-    private JTextField myModuleName;
-    private JTextField myEntryName;
     private Perl6ProjectType currentType;
+    private JPanel myMainPanel;
+    // Script fields
+    private JTextField myScriptName;
+
+    // Module fields
+    private JTextField myModuleName;
+
+    // Application fields
+    private JTextField myEntryName;
+
+    // Cro application fields
+    private JCheckBox myWebsocketSupport = new JCheckBox();
+    private JCheckBox myTemplatingSUpport = new JCheckBox();
 
     Perl6ModuleWizardStep(Perl6ModuleBuilder builder) {
         this.builder = builder;
@@ -47,13 +56,23 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
                 myMainPanel.add(moduleName);
                 break;
             }
-            default: {
+            case PERL6_APPLICATION: {
                 myModuleName = new JBTextField(40);
                 myMainPanel.add(new JLabel("Module name"));
                 myMainPanel.add(myModuleName, "wrap");
                 myEntryName = new JBTextField(40);
                 myMainPanel.add(new JLabel("Entry point name"));
                 myMainPanel.add(myEntryName);
+                break;
+            }
+            default: {
+                myModuleName = new JBTextField(40);
+                myMainPanel.add(new JLabel("Module name"));
+                myMainPanel.add(myModuleName, "wrap");
+                myMainPanel.add(new JLabel("WebSocket support"));
+                myMainPanel.add(myWebsocketSupport, "wrap");
+                myMainPanel.add(new JLabel("Templating support"));
+                myMainPanel.add(myTemplatingSUpport, "wrap");
                 break;
             }
         }
@@ -76,9 +95,10 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
                 checkScriptName();
                 break;
             case PERL6_MODULE:
+            case CRO_WEB_APPLICATION:
                 checkModuleName();
                 break;
-            default:
+            case PERL6_APPLICATION:
                 checkModuleName();
                 checkEntryPointName();
                 break;
@@ -119,6 +139,11 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
             case PERL6_APPLICATION:
                 builder.setModuleName(myModuleName.getText());
                 builder.setEntryPointName(myEntryName.getText());
+                break;
+            case CRO_WEB_APPLICATION:
+                builder.setModuleName(myModuleName.getText());
+                builder.setWebsocketSupport(myWebsocketSupport.isSelected());
+                builder.setTemplatingSupport(myTemplatingSUpport.isSelected());
                 break;
         }
     }
