@@ -132,7 +132,7 @@ public class Perl6CommandLine {
         if (runConfiguration.isStartSuspended())
             command.add("--debug-suspend");
         command.add("--libpath=" + prefix + "/share/nqp/lib");
-        command.add("--libpath=" + prefix + "/lib/perl6/lib");
+        command.add("--libpath=" + prefix + "/lib/nqp/lib");
         command.add("--libpath=" + prefix + "/lib/perl6/runtime");
         command.add(prefix + "/lib/perl6/runtime/perl6.moarvm");
         return command;
