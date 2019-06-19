@@ -1,4 +1,4 @@
-package edument.perl6idea.module;
+package edument.perl6idea.metadata;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.*;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.module.Perl6ModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;

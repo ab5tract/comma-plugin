@@ -6,7 +6,7 @@ import com.intellij.openapi.options.ex.SingleConfigurableEditor;
 import com.intellij.openapi.options.newEditor.SettingsDialog;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import edument.perl6idea.project.Perl6ProjectStructureConfigurable;
+import edument.perl6idea.project.structure.Perl6ProjectStructureConfigurable;
 import org.jetbrains.annotations.NotNull;
 
 public class ShowPerl6ProjectStructureAction extends AnAction {

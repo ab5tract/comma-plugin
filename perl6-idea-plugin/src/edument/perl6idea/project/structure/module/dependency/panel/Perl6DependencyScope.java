@@ -1,4 +1,4 @@
-package edument.perl6idea.module;
+package edument.perl6idea.project.structure.module.dependency.panel;
 
 public enum Perl6DependencyScope {
     DEPENDS("depends"),

@@ -1,4 +1,4 @@
-package edument.perl6idea.module;
+package edument.perl6idea.project.structure.module;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
@@ -7,6 +7,7 @@ import com.intellij.openapi.module.ModuleConfigurationEditor;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
 import com.intellij.util.ArrayUtil;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;

@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.filetypes.Perl6TestFileType;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6ProjectType;
 import org.jetbrains.annotations.NotNull;

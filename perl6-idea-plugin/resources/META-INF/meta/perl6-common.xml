@@ -99,7 +99,7 @@
 
   <module-components>
     <component>
-      <implementation-class>edument.perl6idea.module.Perl6MetaDataComponent</implementation-class>
+      <implementation-class>edument.perl6idea.metadata.Perl6MetaDataComponent</implementation-class>
     </component>
     <component>
       <implementation-class>edument.perl6idea.event.ModuleMetaChangeListener</implementation-class>

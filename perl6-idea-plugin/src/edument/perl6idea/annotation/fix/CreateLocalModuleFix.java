@@ -1,7 +1,6 @@
 package edument.perl6idea.annotation.fix;
 
 import com.intellij.codeInsight.intention.IntentionAction;
-import com.intellij.ide.util.projectWizard.ModuleBuilderFactory;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.module.Module;
@@ -12,7 +11,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.module.Perl6MetaDataComponent;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.Perl6ModuleBuilder;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;

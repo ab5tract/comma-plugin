@@ -13,7 +13,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
 import com.intellij.util.messages.MessageBusConnection;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
-import edument.perl6idea.module.Perl6MetaDataComponent;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

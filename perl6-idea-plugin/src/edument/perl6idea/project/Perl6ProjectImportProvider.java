@@ -1,4 +1,4 @@
-package edument.perl6idea.module;
+package edument.perl6idea.project;
 
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.ide.util.projectWizard.ProjectNameStep;
@@ -8,6 +8,8 @@ import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.projectImport.ProjectImportProvider;
+import edument.perl6idea.module.Perl6ModuleBuilder;
+import edument.perl6idea.module.Perl6ProjectBuilder;
 import net.miginfocom.swing.MigLayout;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Nullable;
