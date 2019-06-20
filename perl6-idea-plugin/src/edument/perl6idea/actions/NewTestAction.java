@@ -9,7 +9,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
-import edument.perl6idea.module.Perl6ModuleBuilder;
+import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
 import edument.perl6idea.utils.Patterns;
 
 import java.nio.file.Paths;
@@ -72,7 +72,7 @@ public class NewTestAction extends AnAction {
             testPath = Paths.get(path.getPath(), "t").toString();
         }
 
-        testPath = Perl6ModuleBuilder.stubTest(Paths.get(testPath), fileName, Collections.emptyList());
+        testPath = Perl6ModuleBuilderModule.stubTest(Paths.get(testPath), fileName, Collections.emptyList());
         VirtualFile testFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(testPath);
         assert testFile != null;
         FileEditorManager.getInstance(project).openFile(testFile, true);

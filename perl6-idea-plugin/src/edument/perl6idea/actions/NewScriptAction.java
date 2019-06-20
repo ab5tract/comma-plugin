@@ -3,13 +3,11 @@ package edument.perl6idea.actions;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.InputValidator;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
-import edument.perl6idea.module.Perl6ModuleBuilder;
-import edument.perl6idea.utils.Patterns;
+import edument.perl6idea.module.builder.Perl6ModuleBuilderScript;
 
 import java.nio.file.Paths;
 
@@ -57,7 +55,7 @@ public class NewScriptAction extends AnAction {
         }
         assert scriptPath != null;
 
-        scriptPath = Perl6ModuleBuilder.stubScript(
+        scriptPath = Perl6ModuleBuilderScript.stubScript(
           Paths.get(scriptPath), fileName, shouldFill);
         VirtualFile scriptFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(scriptPath);
         assert scriptFile != null;

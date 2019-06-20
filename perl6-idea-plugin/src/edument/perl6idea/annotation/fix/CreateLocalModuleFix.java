@@ -12,7 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
-import edument.perl6idea.module.Perl6ModuleBuilder;
+import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,7 +62,7 @@ public class CreateLocalModuleFix implements IntentionAction {
             throw new IncorrectOperationException();
 
 
-        String newModulePath = Perl6ModuleBuilder.stubModule(
+        String newModulePath = Perl6ModuleBuilderModule.stubModule(
             module.getComponent(Perl6MetaDataComponent.class),
             Paths.get(moduleLibraryPath),
             moduleName, false, true,
