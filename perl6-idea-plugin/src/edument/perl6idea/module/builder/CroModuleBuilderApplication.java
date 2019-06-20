@@ -27,11 +27,9 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     @Override
     public void setupRootModelOfPath(@NotNull ModifiableRootModel model, Path path) {
         Perl6MetaDataComponent metaData = model.getModule().getComponent(Perl6MetaDataComponent.class);
-        VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
-
         Path directoryName = path.getFileName();
         if (Objects.equals(directoryName.toString(), "lib")) {
-            stubRoutes();
+            stubRoutes(metaData, path, myWebsocketSupport, myTemplatingSUpport);
         } else if (Objects.equals(directoryName.toString(), "t")) {
             Perl6ModuleBuilderModule.stubTest(path, "00-sanity.t", Collections.singletonList(myModuleName));
         } else {
@@ -52,8 +50,28 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         return new String[]{"lib", "t", ""};
     }
 
-    private void stubRoutes() {
-        // TODO
+    private void stubRoutes(Perl6MetaDataComponent metaData, Path path, boolean websocketSupport, boolean templatingSUpport) {
+        VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
+        String routesModulePath = Perl6ModuleBuilderModule.stubModule(metaData, path, "Routes", true, false,
+                                            sourceRoot == null ? null : sourceRoot.getParent(), "Empty", false);
+        VirtualFile routesFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(routesModulePath);
+
+        InputStream dockerFileTemplateStream = getClass().getClassLoader().getResourceAsStream(
+            websocketSupport ? "templates/WebsocketRoutes.pm6.template" : "templates/Routes.pm6.template");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(dockerFileTemplateStream, StandardCharsets.UTF_8));
+        StringJoiner routesText = new StringJoiner("\n");
+
+        try {
+            while (reader.ready()) {
+                routesText.add(reader.readLine());
+            }
+            dockerFileTemplateStream.close();
+            routesFile.setBinaryContent(routesText.toString().getBytes(StandardCharsets.UTF_8));
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void stubCroDockerfile(Path sourcePath) {
