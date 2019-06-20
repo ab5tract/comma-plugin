@@ -72,7 +72,7 @@ public class NewTestAction extends AnAction {
             testPath = Paths.get(path.getPath(), "t").toString();
         }
 
-        testPath = Perl6ModuleBuilder.stubTest(testPath, fileName, Collections.emptyList());
+        testPath = Perl6ModuleBuilder.stubTest(Paths.get(testPath), fileName, Collections.emptyList());
         VirtualFile testFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(testPath);
         assert testFile != null;
         FileEditorManager.getInstance(project).openFile(testFile, true);

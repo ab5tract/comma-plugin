@@ -11,7 +11,6 @@ import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
@@ -23,8 +22,7 @@ import edument.perl6idea.utils.Perl6ProjectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,52 +57,102 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         Perl6MetaDataComponent metaData = model.getModule().getComponent(Perl6MetaDataComponent.class);
         if (sourcePaths.size() < 1) return;
         for (final Pair<String, String> sourcePathPair : sourcePaths) {
-            String sourcePath = sourcePathPair.first;
-            File directory = new File(sourcePath);
+            Path sourcePath = Paths.get(sourcePathPair.first);
+            File directory = sourcePath.toFile();
             if (!directory.exists() && !directory.mkdirs()) {
                 throw new IllegalStateException("Could not create directory: " + directory);
             }
-            VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemDependentName(sourcePath));
+            VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(sourcePath.toFile());
             if (sourceRoot != null) {
-                contentEntry.addSourceFolder(sourceRoot, sourcePath.endsWith("/t") || sourcePath.endsWith("\\t"), sourcePathPair.second);
+                contentEntry.addSourceFolder(sourceRoot, sourcePathPair.second.equals("t"), sourcePathPair.second);
             }
             switch (type) {
                 case PERL6_SCRIPT:
                     stubScript(sourcePath, scriptName, true);
                     break;
                 case PERL6_MODULE:
-                    if (sourcePath.endsWith("lib")) {
+                    if (sourcePathPair.second.equals("lib")) {
                         stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty",
                                    false);
                     }
-                    if (sourcePath.endsWith("t"))
+                    if (sourcePathPair.second.equals("t"))
                         stubTest(sourcePath, "00-sanity.t",
                                  Collections.singletonList(moduleName));
                     break;
                 case PERL6_APPLICATION:
-                    if (sourcePath.endsWith("lib")) {
+                    if (sourcePathPair.second.equals("lib")) {
                         stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty",
                                    false);
                     }
-                    if (sourcePath.endsWith("bin"))
+                    if (sourcePathPair.second.equals("bin"))
                         stubEntryPoint(sourcePath);
-                    if (sourcePath.endsWith("t"))
+                    if (sourcePathPair.second.equals("t"))
                         stubTest(sourcePath,
                                 "00-sanity.t",
                                 Collections.singletonList(moduleName));
                     break;
                 case CRO_WEB_APPLICATION:
-                    if (sourcePath.endsWith("lib"))
-                        stubModule(metaData, sourcePath, moduleName, true, false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty",
-                                   false);
-
+                    if (sourcePathPair.second.equals("lib")) {
+                        //    stubRoutes(metaData, sourcePath, moduleName, true, false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty", false);
+                    } else if (sourcePathPair.second.equals("t")) {
+                    } else {
+                        stubCroDockerfile(sourcePath);
+                        stubCroServiceFile(sourcePath);
+                    }
                     break;
             }
         }
     }
 
-    private void stubEntryPoint(String moduleLibraryPath) {
-        Path entryPath = Paths.get(moduleLibraryPath, entryPointName);
+    private void stubCroDockerfile(Path sourcePath) {
+        Path dockerFilePath = sourcePath.resolve("Dockerfile");
+        InputStream dockerFileTemplateStream = getClass().getClassLoader().getResourceAsStream("templates/CroDockerfile");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(dockerFileTemplateStream, StandardCharsets.UTF_8));
+        List<String> lines = new ArrayList<>();
+
+        try {
+            while (reader.ready()) {
+                lines.add(reader.readLine());
+            }
+            dockerFileTemplateStream.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        writeCodeToPath(dockerFilePath, lines);
+    }
+
+    private void stubCroServiceFile(Path sourcePath) {
+        String HOST_VARIABLE = convertToEnvName(moduleName) + "_HOST";
+        String PORT_VARIABLE = convertToEnvName(moduleName) + "_PORT";
+        Path croServiceFilePath = sourcePath.resolve( "service.p6");
+        InputStream serviceTemplateStream = getClass().getClassLoader().getResourceAsStream("templates/service.p6.template");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(serviceTemplateStream, StandardCharsets.UTF_8));
+        List<String> lines = new ArrayList<>();
+
+        try {
+            while (reader.ready()) {
+                String line = reader.readLine();
+                line = line.replaceAll("\\$\\$HOST_VARIABLE\\$\\$", HOST_VARIABLE);
+                line = line.replaceAll("\\$\\$PORT_VARIABLE\\$\\$", PORT_VARIABLE);
+                lines.add(line);
+            }
+            reader.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        writeCodeToPath(croServiceFilePath, lines);
+    }
+
+    private static String convertToEnvName(String name) {
+        return name.replaceAll("[^\\w_]", "_");
+    }
+
+    private void stubEntryPoint(Path moduleLibraryPath) {
+        Path entryPath = moduleLibraryPath.resolve(entryPointName);
         List<String> lines = Arrays.asList(
                 "#!/usr/bin/env perl6",
                 String.format("use %s;", moduleName)
@@ -112,7 +160,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         writeCodeToPath(entryPath, lines);
     }
 
-    public static String stubModule(Perl6MetaDataComponent metaData, String moduleLibraryPath,
+    public static String stubModule(Perl6MetaDataComponent metaData, Path moduleLibraryPath,
                                     String moduleName, boolean firstModule, boolean shouldOpenEditor,
                                     VirtualFile root, String moduleType, boolean isUnitScoped) {
         if (firstModule) {
@@ -128,7 +176,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 metaData.addNamespaceToProvides(moduleName);
             });
         }
-        String modulePath = Paths.get(moduleLibraryPath, moduleName.split("::")) + "." + Perl6ModuleFileType.INSTANCE.getDefaultExtension();
+        String modulePath = Paths.get(moduleLibraryPath.toString(), moduleName.split("::")) + "." + Perl6ModuleFileType.INSTANCE.getDefaultExtension();
         new File(modulePath).getParentFile().mkdirs();
         writeCodeToPath(Paths.get(modulePath), getModuleCodeByType(moduleType, moduleName, isUnitScoped));
         if (moduleType.equals("Monitor")) {
@@ -170,11 +218,11 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         }
     }
 
-    public static String stubTest(String testDirectoryPath, String fileName, List<String> imports) {
-        Path testPath = Paths.get(testDirectoryPath, fileName);
+    public static String stubTest(Path testDirectoryPath, String fileName, List<String> imports) {
+        Path testPath = testDirectoryPath.resolve(fileName);
         // If no extension, add default `.t`
         if (!testPath.toString().contains("."))
-            testPath = Paths.get(testDirectoryPath, fileName + "." + Perl6TestFileType.INSTANCE.getDefaultExtension());
+            testPath = Paths.get(testDirectoryPath.toString(), fileName + "." + Perl6TestFileType.INSTANCE.getDefaultExtension());
         List<String> lines = new LinkedList<>();
         imports.forEach(i -> lines.add(String.format("use %s;", i)));
         lines.addAll(Arrays.asList("use Test;", "", "done-testing;"));
@@ -182,7 +230,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         return testPath.toString();
     }
 
-    public static String stubScript(String moduleLibraryPath, String scriptName, boolean shouldFill) {
+    public static String stubScript(Path moduleLibraryPath, String scriptName, boolean shouldFill) {
         if (!scriptName.endsWith(".pl6") && !scriptName.endsWith(Perl6ScriptFileType.INSTANCE.getDefaultExtension()))
             scriptName += "." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
         List<String> lines = Arrays.asList(
@@ -190,7 +238,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 "", "",
                 "sub MAIN() { }"
         );
-        Path path = Paths.get(moduleLibraryPath, scriptName);
+        Path path = moduleLibraryPath.resolve(scriptName);
         writeCodeToPath(path, shouldFill ? lines : new ArrayList<>());
         return path.toString();
     }
@@ -228,10 +276,9 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         if (mySourcePaths.size() != 0) return mySourcePaths;
         switch (type) {
             case PERL6_SCRIPT:
-                mySourcePaths.add(Pair.create(getContentEntryPath(), ""));
+                addPath(mySourcePaths, "");
                 break;
             case PERL6_MODULE:
-            case CRO_WEB_APPLICATION:
                 addPath(mySourcePaths, "lib");
                 addPath(mySourcePaths, "t");
                 break;
@@ -239,6 +286,11 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                 addPath(mySourcePaths, "lib");
                 addPath(mySourcePaths, "t");
                 addPath(mySourcePaths, "bin");
+                break;
+            case CRO_WEB_APPLICATION:
+                addPath(mySourcePaths, "");
+                addPath(mySourcePaths, "lib");
+                addPath(mySourcePaths, "t");
                 break;
         }
         return mySourcePaths;

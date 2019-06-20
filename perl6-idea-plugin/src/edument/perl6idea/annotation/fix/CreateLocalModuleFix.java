@@ -64,7 +64,7 @@ public class CreateLocalModuleFix implements IntentionAction {
 
         String newModulePath = Perl6ModuleBuilder.stubModule(
             module.getComponent(Perl6MetaDataComponent.class),
-            moduleLibraryPath,
+            Paths.get(moduleLibraryPath),
             moduleName, false, true,
             moduleLibraryRoot.getParent(), "", false);
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(newModulePath).toFile());

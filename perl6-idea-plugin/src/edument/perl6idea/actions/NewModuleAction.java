@@ -77,7 +77,7 @@ public class NewModuleAction extends AnAction {
         String moduleType = dialog.getModuleType();
         boolean isUnitScoped = dialog.isUnitModule();
         String modulePath = Perl6ModuleBuilder.stubModule(
-            metaData, myBaseDir, moduleName, !metaData.isMetaDataExist(),
+            metaData, Paths.get(myBaseDir), moduleName, !metaData.isMetaDataExist(),
             true, null, moduleType, isUnitScoped);
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(modulePath).toFile());
         if (moduleFile != null) {

@@ -11,6 +11,8 @@ import com.intellij.psi.PsiFile;
 import edument.perl6idea.module.Perl6ModuleBuilder;
 import edument.perl6idea.utils.Patterns;
 
+import java.nio.file.Paths;
+
 public class NewScriptAction extends AnAction {
     @Override
     public void update(AnActionEvent e) {
@@ -64,10 +66,10 @@ public class NewScriptAction extends AnAction {
                 if (((PsiFile) navigatable).getParent() != null)
                     scriptPath = ((PsiFile) navigatable).getParent().getVirtualFile().getPath();
         }
+        assert scriptPath != null;
 
         scriptPath = Perl6ModuleBuilder.stubScript(
-                scriptPath != null ? scriptPath :
-                project.getBaseDir().getCanonicalPath(), fileName, shouldFill);
+          Paths.get(scriptPath), fileName, shouldFill);
         VirtualFile scriptFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(scriptPath);
         assert scriptFile != null;
         FileEditorManager.getInstance(project).openFile(scriptFile, true);
