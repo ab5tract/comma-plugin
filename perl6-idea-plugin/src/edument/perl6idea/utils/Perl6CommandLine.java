@@ -4,13 +4,15 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import edument.perl6idea.run.Perl6DebuggableConfiguration;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
