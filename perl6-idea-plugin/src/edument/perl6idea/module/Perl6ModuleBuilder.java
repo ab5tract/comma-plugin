@@ -56,16 +56,16 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         }
     }
 
-    @NotNull
-    private static Path addSourceRoot(ContentEntry contentEntry, Pair<String, String> sourcePathPair) {
+    private Path addSourceRoot(ContentEntry contentEntry, Pair<String, String> sourcePathPair) {
         Path sourcePath = Paths.get(sourcePathPair.first, sourcePathPair.second);
         File directory = sourcePath.toFile();
         if (!directory.exists() && !directory.mkdirs()) {
             throw new IllegalStateException("Could not create directory: " + directory);
         }
-        VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(sourcePath.toFile());
-        if (sourceRoot != null) {
-            contentEntry.addSourceFolder(sourceRoot, sourcePathPair.second.equals("t"), sourcePathPair.second);
+        if (myBuilder.shouldBeMarkedAsRoot(sourcePathPair.second)) {
+            VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(sourcePath.toFile());
+            if (sourceRoot != null)
+                contentEntry.addSourceFolder(sourceRoot, sourcePathPair.second.equals("t"), sourcePathPair.second);
         }
         return sourcePath;
     }

@@ -1,6 +1,9 @@
 package edument.perl6idea.module.builder;
 
+import com.intellij.ide.util.projectWizard.ModuleNameLocationSettings;
+import com.intellij.ide.util.projectWizard.SettingsStep;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
@@ -46,7 +49,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
 
     @Override
     public String[] getSourceDirectories() {
-        return new String[]{"lib", "t"};
+        return new String[]{"lib", "t", ""};
     }
 
     private void stubRoutes() {
@@ -97,6 +100,18 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     }
 
     private static String convertToEnvName(String name) {
-        return name.replaceAll("[^\\w_]", "_");
+        return name.replaceAll("[^\\w_]", "_").toUpperCase(Locale.ENGLISH);
+    }
+
+    @Override
+    public void modifySettingsStep(SettingsStep step) {
+        final ModuleNameLocationSettings nameField = step.getModuleNameLocationSettings();
+        if (myModuleName != null && nameField != null)
+            nameField.setModuleName(StringUtil.sanitizeJavaIdentifier(myModuleName));
+    }
+
+    @Override
+    public boolean shouldBeMarkedAsRoot(String directoryName) {
+        return !directoryName.isEmpty();
     }
 }

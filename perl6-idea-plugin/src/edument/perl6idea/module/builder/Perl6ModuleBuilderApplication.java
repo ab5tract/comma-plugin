@@ -20,10 +20,10 @@ public class Perl6ModuleBuilderApplication implements Perl6ModuleBuilderGeneric 
 
     @Override
     public void setupRootModelOfPath(@NotNull ModifiableRootModel model, Path path) {
-        Perl6MetaDataComponent metaData = model.getModule().getComponent(Perl6MetaDataComponent.class);
-        VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
         Path directoryName = path.getFileName();
         if (Objects.equals(directoryName.toString(), "lib")) {
+            Perl6MetaDataComponent metaData = model.getModule().getComponent(Perl6MetaDataComponent.class);
+            VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
             Perl6ModuleBuilderModule.stubModule(metaData, path, myModuleName, true, false,
                                                 sourceRoot == null ? null : sourceRoot.getParent(), "Empty", false);
         } else if (Objects.equals(directoryName.toString(), "bin")) {

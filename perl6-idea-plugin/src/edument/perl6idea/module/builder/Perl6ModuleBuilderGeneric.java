@@ -27,4 +27,8 @@ public interface Perl6ModuleBuilderGeneric {
     }
 
     default void modifySettingsStep(SettingsStep step) {}
+
+    default boolean shouldBeMarkedAsRoot(String directoryName) {
+        return true;
+    }
 }
