@@ -17,12 +17,15 @@ import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.filetypes.Perl6TestFileType;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
+import edument.perl6idea.module.builder.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6ProjectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,7 +34,8 @@ import java.util.*;
 
 public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuilder {
     private static Logger LOG = Logger.getInstance(Perl6ModuleBuilder.class);
-    private Perl6ProjectType type = Perl6ProjectType.PERL6_SCRIPT;
+    private Perl6ProjectType myModuleType = Perl6ProjectType.PERL6_SCRIPT;
+    private Perl6ModuleBuilderGeneric myBuilder = new Perl6ModuleBuilderScript();
     private List<Pair<String, String>> mySourcePaths = new ArrayList<>();
     private String scriptName;
     private String moduleName;
@@ -66,7 +70,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
             if (sourceRoot != null) {
                 contentEntry.addSourceFolder(sourceRoot, sourcePathPair.second.equals("t"), sourcePathPair.second);
             }
-            switch (type) {
+            switch (myModuleType) {
                 case PERL6_SCRIPT:
                     stubScript(sourcePath, scriptName, true);
                     break;
@@ -101,6 +105,24 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
                     }
                     break;
             }
+        }
+    }
+
+    protected void updateBuilder() {
+        Map<Perl6ProjectType, Class<?>> typeToBuilderPairs = new HashMap<>();
+        typeToBuilderPairs.put(Perl6ProjectType.PERL6_SCRIPT, Perl6ModuleBuilderScript.class);
+        typeToBuilderPairs.put(Perl6ProjectType.PERL6_MODULE, Perl6ModuleBuilderModule.class);
+        typeToBuilderPairs.put(Perl6ProjectType.PERL6_APPLICATION, Perl6ModuleBuilderApplication.class);
+        typeToBuilderPairs.put(Perl6ProjectType.CRO_WEB_APPLICATION, CroModuleBuilderApplication.class);
+        Class<?> currentTypeBuilder = typeToBuilderPairs.get(myModuleType);
+        if (currentTypeBuilder.isInstance(myBuilder))
+            return;
+        try {
+            Constructor<?> constructor = currentTypeBuilder.getConstructor();
+            myBuilder = (Perl6ModuleBuilderGeneric)constructor.newInstance();
+        }
+        catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            LOG.error("Could not update builder", e);
         }
     }
 
@@ -273,39 +295,13 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
 
     @Override
     public List<Pair<String, String>> getSourcePaths() {
-        if (mySourcePaths.size() != 0) return mySourcePaths;
-        switch (type) {
-            case PERL6_SCRIPT:
-                addPath(mySourcePaths, "");
-                break;
-            case PERL6_MODULE:
-                addPath(mySourcePaths, "lib");
-                addPath(mySourcePaths, "t");
-                break;
-            case PERL6_APPLICATION:
-                addPath(mySourcePaths, "lib");
-                addPath(mySourcePaths, "t");
-                addPath(mySourcePaths, "bin");
-                break;
-            case CRO_WEB_APPLICATION:
-                addPath(mySourcePaths, "");
-                addPath(mySourcePaths, "lib");
-                addPath(mySourcePaths, "t");
-                break;
-        }
-        return mySourcePaths;
+        updateBuilder();
+        return myBuilder.getSourcePaths(getContentEntryPath());
     }
 
     @Override
     public void setSourcePaths(List<Pair<String, String>> sourcePaths) {
         mySourcePaths = sourcePaths;
-    }
-
-    private void addPath(List<Pair<String, String>> paths, String dirName) {
-        String contentEntryPath = getContentEntryPath();
-        if (contentEntryPath == null) return;
-        String path = Paths.get(contentEntryPath, dirName).toString();
-        paths.add(Pair.create(path, ""));
     }
 
     @Override
@@ -326,12 +322,12 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         return step;
     }
 
-    Perl6ProjectType getType() {
-        return type;
+    Perl6ProjectType getPerl6ModuleType() {
+        return myModuleType;
     }
 
-    void setType(Perl6ProjectType type) {
-        this.type = type;
+    void setPerl6ModuleType(Perl6ProjectType type) {
+        this.myModuleType = type;
     }
 
     void setEntryPointName(String entryPointName) {

@@ -34,7 +34,7 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
 
     Perl6ModuleWizardStep(Perl6ModuleBuilder builder) {
         this.builder = builder;
-        this.currentType = builder.getType();
+        this.currentType = builder.getPerl6ModuleType();
         updateInputs();
     }
 
@@ -44,7 +44,7 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
         Border margin = JBUI.Borders.empty(10);
         myMainPanel.setBorder(new CompoundBorder(border, margin));
         myMainPanel.setLayout(new MigLayout());
-        switch (builder.getType()) {
+        switch (builder.getPerl6ModuleType()) {
             case PERL6_SCRIPT:
                 myScriptName = new JBTextField(40);
                 LabeledComponent<JTextField> scriptName = LabeledComponent.create(myScriptName, "Script name", BorderLayout.WEST);
@@ -81,8 +81,8 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
     @Override
     public JComponent getComponent() {
         // If the module type was changed, we need to re-draw UI
-        if (builder.getType() != currentType) {
-            currentType = builder.getType();
+        if (builder.getPerl6ModuleType() != currentType) {
+            currentType = builder.getPerl6ModuleType();
             updateInputs();
         }
         return myMainPanel;
@@ -90,7 +90,7 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
 
     @Override
     public boolean validate() throws ConfigurationException {
-        switch (builder.getType()) {
+        switch (builder.getPerl6ModuleType()) {
             case PERL6_SCRIPT:
                 checkScriptName();
                 break;
@@ -129,7 +129,7 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
 
     @Override
     public void updateDataModel() {
-        switch (builder.getType()) {
+        switch (builder.getPerl6ModuleType()) {
             case PERL6_SCRIPT:
                 builder.setScriptName(myScriptName.getText());
                 break;
