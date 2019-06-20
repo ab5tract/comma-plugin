@@ -2,6 +2,7 @@ package edument.perl6idea.module.builder;
 
 import com.intellij.ide.util.projectWizard.ModuleNameLocationSettings;
 import com.intellij.ide.util.projectWizard.SettingsStep;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -11,15 +12,13 @@ import edument.perl6idea.module.Perl6ModuleWizardStep;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 
 public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
+    private static final Logger LOG = Logger.getInstance(CroModuleBuilderApplication.class);
     private String myModuleName;
     private boolean myWebsocketSupport;
     private boolean myTemplatingSUpport;
@@ -50,71 +49,42 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         return new String[]{"lib", "t", ""};
     }
 
-    private void stubRoutes(Perl6MetaDataComponent metaData, Path path, boolean websocketSupport, boolean templatingSUpport) {
+    private static void stubRoutes(Perl6MetaDataComponent metaData, Path path, boolean websocketSupport, boolean templatingSUpport) {
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
         String routesModulePath = Perl6ModuleBuilderModule.stubModule(metaData, path, "Routes", true, false,
                                             sourceRoot == null ? null : sourceRoot.getParent(), "Empty", false);
         VirtualFile routesFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(routesModulePath);
 
-        InputStream dockerFileTemplateStream = getClass().getClassLoader().getResourceAsStream(
+        List<String> routesTemplateLines = Perl6Utils.getResourceAsLines(
             websocketSupport ? "templates/WebsocketRoutes.pm6.template" : "templates/Routes.pm6.template");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(dockerFileTemplateStream, StandardCharsets.UTF_8));
-        StringJoiner routesText = new StringJoiner("\n");
-
         try {
-            while (reader.ready()) {
-                routesText.add(reader.readLine());
-            }
-            dockerFileTemplateStream.close();
-            routesFile.setBinaryContent(routesText.toString().getBytes(StandardCharsets.UTF_8));
+            routesFile.setBinaryContent(
+                String.join("\n", routesTemplateLines).getBytes(StandardCharsets.UTF_8)
+            );
         }
-        catch (IOException e) {
-            e.printStackTrace();
+        catch (IOException|NullPointerException e) {
+            LOG.error(e);
         }
-
     }
 
-    private void stubCroDockerfile(Path sourcePath) {
+    private static void stubCroDockerfile(Path sourcePath) {
         Path dockerFilePath = sourcePath.resolve("Dockerfile");
-        InputStream dockerFileTemplateStream = getClass().getClassLoader().getResourceAsStream("templates/CroDockerfile");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(dockerFileTemplateStream, StandardCharsets.UTF_8));
-        List<String> lines = new ArrayList<>();
-
-        try {
-            while (reader.ready()) {
-                lines.add(reader.readLine());
-            }
-            dockerFileTemplateStream.close();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Perl6Utils.writeCodeToPath(dockerFilePath, lines);
+        Perl6Utils.writeCodeToPath(dockerFilePath, Perl6Utils.getResourceAsLines("templates/CroDockerfile"));
     }
 
-    private void stubCroServiceFile(Path sourcePath, String moduleName) {
+    private static void stubCroServiceFile(Path sourcePath, String moduleName) {
         String HOST_VARIABLE = convertToEnvName(moduleName) + "_HOST";
         String PORT_VARIABLE = convertToEnvName(moduleName) + "_PORT";
         Path croServiceFilePath = sourcePath.resolve( "service.p6");
-        InputStream serviceTemplateStream = getClass().getClassLoader().getResourceAsStream("templates/service.p6.template");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(serviceTemplateStream, StandardCharsets.UTF_8));
-        List<String> lines = new ArrayList<>();
 
-        try {
-            while (reader.ready()) {
-                String line = reader.readLine();
-                line = line.replaceAll("\\$\\$HOST_VARIABLE\\$\\$", HOST_VARIABLE);
-                line = line.replaceAll("\\$\\$PORT_VARIABLE\\$\\$", PORT_VARIABLE);
-                lines.add(line);
-            }
-            reader.close();
+        List<String> templateContent = Perl6Utils.getResourceAsLines("templates/service.p6.template");
+        // Iterate over template lines, replacing stubs with actual data
+        for (int i = 0; i < templateContent.size(); i++) {
+            templateContent.set(i, templateContent.get(i)
+                .replaceAll("\\$\\$HOST_VARIABLE\\$\\$", HOST_VARIABLE)
+                .replaceAll("\\$\\$PORT_VARIABLE\\$\\$", PORT_VARIABLE));
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Perl6Utils.writeCodeToPath(croServiceFilePath, lines);
+        Perl6Utils.writeCodeToPath(croServiceFilePath, templateContent);
     }
 
     private static String convertToEnvName(String name) {

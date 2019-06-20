@@ -62,9 +62,7 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
             }
         }
         if (moduleLibraryPath.endsWith("lib")) {
-            ApplicationManager.getApplication().invokeLater(() -> {
-                metaData.addNamespaceToProvides(moduleName);
-            });
+            ApplicationManager.getApplication().invokeLater(() -> metaData.addNamespaceToProvides(moduleName));
         }
         String modulePath = Paths.get(moduleLibraryPath.toString(), moduleName.split("::")) + "." + Perl6ModuleFileType.INSTANCE.getDefaultExtension();
         new File(modulePath).getParentFile().mkdirs();

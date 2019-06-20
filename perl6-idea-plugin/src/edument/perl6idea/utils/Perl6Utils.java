@@ -3,15 +3,12 @@ package edument.perl6idea.utils;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
-import edument.perl6idea.module.Perl6ModuleBuilder;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Perl6Utils {
@@ -24,7 +21,7 @@ public class Perl6Utils {
                     Files.createDirectories(codePath.getParent());
                 Files.write(codePath, lines, StandardCharsets.UTF_8);
             } catch (IOException e) {
-                Logger.getInstance(Perl6ModuleBuilder.class).error(e);
+                LOG.error(e);
             }
         });
     }
@@ -54,5 +51,20 @@ public class Perl6Utils {
                 LOG.error(e);
             }
         }
+    }
+
+    public static List<String> getResourceAsLines(String filepath) {
+        List<String> lines = new ArrayList<>();
+        try (
+            InputStream resourceFileStream = getClass().getClassLoader().getResourceAsStream(filepath);
+            BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(resourceFileStream, StandardCharsets.UTF_8));
+        ) {
+            while (inputStreamReader.ready())
+                lines.add(inputStreamReader.readLine());
+        }
+        catch (IOException e) {
+            LOG.error(e);
+        }
+        return lines;
     }
 }
