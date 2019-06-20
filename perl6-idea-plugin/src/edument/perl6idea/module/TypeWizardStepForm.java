@@ -42,8 +42,6 @@ public class TypeWizardStepForm extends ModuleWizardStep implements Disposable {
 
     public void createUIComponents() {
         basePanel = new JBPanel<>();
-        panel1 = new JBPanel<>();
-        panel2 = new JBPanel<>();
         list1 = new JBList();
         description = new JBLabel();
         list1.addListSelectionListener(e -> {
