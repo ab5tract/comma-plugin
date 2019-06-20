@@ -189,9 +189,11 @@ public class Perl6SdkType extends SdkType {
         if (subs == null) return null;
         for (String line : subs) {
             int equalsPosition = line.indexOf('=');
-            String key = line.substring(0, equalsPosition);
-            String value = line.substring(equalsPosition + 1);
-            buildConfig.put(key, value);
+            if (equalsPosition > 0) {
+                String key = line.substring(0, equalsPosition);
+                String value = line.substring(equalsPosition + 1);
+                buildConfig.put(key, value);
+            }
         }
         moarBuildConfig = buildConfig;
         return moarBuildConfig;
