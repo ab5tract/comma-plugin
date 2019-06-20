@@ -209,7 +209,7 @@ public class Perl6SdkType extends SdkType {
     public List<Perl6Symbol> getCoreSettingSymbols(Perl6PsiElement element) {
         if (setting != null)
             return setting;
-        File coreSymbols = Perl6Utils.getResourceAsFile(this, "symbols/perl6-core-symbols.p6");
+        File coreSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-core-symbols.p6");
         String perl6path = getSdkHomeByElement(element);
         if (perl6path == null) {
             LOG.warn("getCoreSettingSymbols is called without Perl 6 SDK set, using fallback");
@@ -240,7 +240,7 @@ public class Perl6SdkType extends SdkType {
     }
 
     private List<Perl6Symbol> getFallback() {
-        File fallback = Perl6Utils.getResourceAsFile(this, "symbols/CORE.fallback");
+        File fallback = Perl6Utils.getResourceAsFile("symbols/CORE.fallback");
         if (fallback == null) LOG.error("getCoreSettingSymbols is called with corrupted resources bundle");
 
         try {
@@ -280,7 +280,7 @@ public class Perl6SdkType extends SdkType {
 
     private List<Perl6Symbol> loadModuleSymbols(Project project, String directive, String name) {
         String homePath = getSdkHomeByProject(project);
-        File moduleSymbols = Perl6Utils.getResourceAsFile(this, "symbols/perl6-module-symbols.p6");
+        File moduleSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-module-symbols.p6");
         if (homePath == null) {
             LOG.warn(new ExecutionException("SDK path is not set"));
             return new ArrayList<>();

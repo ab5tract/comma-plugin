@@ -3,6 +3,7 @@ package edument.perl6idea.utils;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -26,43 +27,42 @@ public class Perl6Utils {
         });
     }
 
-    public static File getResourceAsFile(Object object, String resourcePath) {
-        InputStream in = object.getClass().getClassLoader().getResourceAsStream(resourcePath);
-        FileOutputStream out = null;
+    @Nullable
+    public static File getResourceAsFile(String resourcePath) {
+        File tempFile;
         try {
-            if (in == null) return null;
-            File tempFile = FileUtil.createTempFile(String.valueOf(in.hashCode()), ".tmp");
+            tempFile = FileUtil.createTempFile("comma", ".tmp");
             tempFile.deleteOnExit();
-            out = new FileOutputStream(tempFile);
-            //copy stream
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1)
-                out.write(buffer, 0, bytesRead);
-            return tempFile;
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             LOG.error(e);
             return null;
-        } finally {
-            try {
-                if (in != null) in.close();
-                if (out != null) out.close();
-            } catch (IOException e) {
-                LOG.error(e);
-            }
         }
+
+        try (
+            InputStream in = Perl6Utils.class.getClassLoader().getResourceAsStream(resourcePath);
+            FileOutputStream out = new FileOutputStream(tempFile);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+        ) {
+            String line;
+            while ((line = reader.readLine()) != null)
+                out.write(line.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            LOG.error(e);
+        }
+        return tempFile;
     }
 
     public static List<String> getResourceAsLines(String filepath) {
         List<String> lines = new ArrayList<>();
         try (
-            InputStream resourceFileStream = getClass().getClassLoader().getResourceAsStream(filepath);
+            InputStream resourceFileStream = Perl6Utils.class.getClassLoader().getResourceAsStream(filepath);
             BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(resourceFileStream, StandardCharsets.UTF_8));
         ) {
             while (inputStreamReader.ready())
                 lines.add(inputStreamReader.readLine());
         }
-        catch (IOException e) {
+        catch (IOException|NullPointerException e) {
             LOG.error(e);
         }
         return lines;
