@@ -34,17 +34,6 @@ public class NewScriptAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(CommonDataKeys.PROJECT);
         if (project == null) return;
-        InputValidator validator = new InputValidator() {
-            @Override
-            public boolean checkInput(String inputString) {
-                return inputString.matches(Patterns.SCRIPT_PATTERN);
-            }
-
-            @Override
-            public boolean canClose(String inputString) {
-                return inputString.matches(Patterns.SCRIPT_PATTERN);
-            }
-        };
 
         NewScriptDialog dialog = new NewScriptDialog(project, false);
         boolean isOk = dialog.showAndGet();
