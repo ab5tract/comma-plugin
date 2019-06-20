@@ -1,4 +1,4 @@
-package edument.perl6idea.module;
+package edument.perl6idea.project;
 
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.diagnostic.Logger;
@@ -23,6 +23,7 @@ import com.intellij.packaging.artifacts.ModifiableArtifactModel;
 import com.intellij.projectImport.ProjectImportBuilder;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
+import edument.perl6idea.module.Perl6ModuleType;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

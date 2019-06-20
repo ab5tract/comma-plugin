@@ -9,7 +9,6 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.projectImport.ProjectImportProvider;
 import edument.perl6idea.module.Perl6ModuleBuilder;
-import edument.perl6idea.module.Perl6ProjectBuilder;
 import net.miginfocom.swing.MigLayout;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Nullable;
