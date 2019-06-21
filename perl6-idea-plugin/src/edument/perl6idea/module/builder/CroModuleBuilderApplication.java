@@ -14,10 +14,12 @@ import edument.perl6idea.module.Perl6ModuleWizardStep;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
@@ -60,16 +62,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     private static void stubRoutes(Perl6MetaDataComponent metaData, Path path, CroAppTemplateConfig conf) {
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
         String templateContent = String.join("\n", Perl6Utils.getResourceAsLines(CRO_RESOURCE_PREFIX + "Routes.pm6"));
-        String importLine = "";
-        String routeLine = "";
-        if (conf.websocketSupport) {
-            String wsContent = String.join("\n", Perl6Utils.getResourceAsLines(CRO_RESOURCE_PREFIX + "ws.parts"));
-            importLine = "\n" + wsContent.split("--")[0];
-            routeLine = "\n" + wsContent.split("--")[1];
-        }
-        templateContent = templateContent
-            .replace("$$WS_IMPORT$$", StringUtil.trimEnd(importLine, "\n"))
-            .replace("$$WS_ROUTE$$", routeLine);
+        templateContent = populateRouteVariables(templateContent, conf.websocketSupport, "ws.parts", "WS");
+        templateContent = populateRouteVariables(templateContent, conf.templatingSupport, "crotmp.parts", "CROTMP");
         try {
             metaData.createStubMetaFile(conf.moduleName, sourceRoot.getParent(), false);
             addCroDependencies(metaData, conf);
@@ -81,6 +75,24 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         catch (IOException|NullPointerException e) {
             LOG.error(e);
         }
+    }
+
+    @NotNull
+    private static String populateRouteVariables(String templateContent,
+                                                 boolean featureSupport,
+                                                 String partsFileName,
+                                                 String featurePrefix) {
+        String importLine = "";
+        String routeLine = "";
+        if (featureSupport) {
+            String wsContent = String.join("\n", Perl6Utils.getResourceAsLines(CRO_RESOURCE_PREFIX + partsFileName));
+            importLine = "\n" + wsContent.split("--")[0];
+            routeLine = "\n" + wsContent.split("--")[1];
+        }
+        templateContent = templateContent
+            .replace(String.format("$$%s_IMPORT$$", featurePrefix), StringUtil.trimEnd(importLine, "\n"))
+            .replace(String.format("$$%s_ROUTE$$", featurePrefix), routeLine);
+        return templateContent;
     }
 
     private static void addCroDependencies(Perl6MetaDataComponent metaData, CroAppTemplateConfig conf) {
@@ -110,7 +122,10 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     private void stubTemplatesDirectory(Path sourcePath, CroAppTemplateConfig conf) {
         Path directoryPath = sourcePath.resolve("templates");
         try {
-            Files.createDirectory(directoryPath);
+            Path templatesDirectoryPath = Files.createDirectory(directoryPath);
+            File greetFile = Perl6Utils.getResourceAsFile(CRO_RESOURCE_PREFIX + "greet.crotmp");
+            if (greetFile != null)
+                Files.move(Paths.get(greetFile.getPath()), templatesDirectoryPath.resolve("greet.crotmp"));
         }
         catch (IOException e) {
             Logger.getInstance(CroModuleBuilderApplication.class).warn(e);
