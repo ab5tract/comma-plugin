@@ -2,6 +2,8 @@ package edument.perl6idea.module.builder;
 
 import com.intellij.ide.util.projectWizard.ModuleNameLocationSettings;
 import com.intellij.ide.util.projectWizard.SettingsStep;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.text.StringUtil;
@@ -66,6 +68,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
             .replace("$$WS_ROUTE$$", routeLine);
         try {
             metaData.createStubMetaFile(conf.moduleName, sourceRoot.getParent(), false);
+            addCroDependencies(metaData, conf);
             VirtualFile routesFile = sourceRoot.findOrCreateChildData(CroModuleBuilderApplication.class, "Routes.pm6");
             routesFile.setBinaryContent(
                 String.join("\n", templateContent).getBytes(StandardCharsets.UTF_8)
@@ -74,6 +77,16 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         catch (IOException|NullPointerException e) {
             LOG.error(e);
         }
+    }
+
+    private static void addCroDependencies(Perl6MetaDataComponent metaData, CroAppTemplateConfig conf) {
+        ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(
+            () -> {
+                metaData.addDepends("Cro::HTTP");
+                if (conf.websocketSupport)
+                    metaData.addDepends("Cro::WebSocket");
+            }
+        ));
     }
 
     private static void stubCroDockerfile(Path sourcePath, CroAppTemplateConfig conf) {
