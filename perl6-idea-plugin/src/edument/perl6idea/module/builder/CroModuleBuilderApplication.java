@@ -62,7 +62,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
             routeLine = "\n" + wsContent.split("--")[1];
         }
         templateContent = templateContent
-            .replace("$$WS_IMPORT$$", importLine)
+            .replace("$$WS_IMPORT$$", StringUtil.trimEnd(importLine, "\n"))
             .replace("$$WS_ROUTE$$", routeLine);
         try {
             metaData.createStubMetaFile(conf.moduleName, sourceRoot.getParent(), false);
