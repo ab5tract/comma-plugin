@@ -49,7 +49,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         return new String[]{"lib", "t", ""};
     }
 
-    private static void stubRoutes(Perl6MetaDataComponent metaData, Path path, boolean websocketSupport, boolean templatingSUpport) {
+    private static void stubRoutes(Perl6MetaDataComponent metaData, Path path, boolean websocketSupport, boolean templatingSupport) {
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
         String routesModulePath = Perl6ModuleBuilderModule.stubModule(metaData, path, "Routes", true, false,
                                             sourceRoot == null ? null : sourceRoot.getParent(), "Empty", false);
