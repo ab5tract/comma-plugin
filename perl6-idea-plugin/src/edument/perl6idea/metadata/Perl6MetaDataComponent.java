@@ -266,7 +266,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(() -> {
             try {
                 JSONObject meta = getStubMetaObject(moduleName);
-                VirtualFile metaFile = finalFirstRoot.createChildData(this, META6_JSON_NAME);
+                VirtualFile metaFile = finalFirstRoot.findOrCreateChildData(this, META6_JSON_NAME);
                 metaFile.setBinaryContent(MetaDataJSONSerializer.serializer(meta).getBytes(CharsetToolkit.UTF8_CHARSET));
                 myMeta = meta;
                 myMetaFile = metaFile;
