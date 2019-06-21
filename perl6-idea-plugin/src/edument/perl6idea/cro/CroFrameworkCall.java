@@ -64,29 +64,32 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
     }
 
     private void renderParameter(StringBuilder buffer, Perl6Parameter param) {
-        if (param.isNamed()) {
-            // If the first argument is named, then we've no path, so make sure we
-            // have a leading /.
-            if (buffer.length() == 0)
-                buffer.append("/");
-        }
-        else {
+        // We'll only deal with positional parameters, which are part of the
+        // route path.
+        if (param.isPositional()) {
             buffer.append("/");
             String varName = param.getVariableName();
-            if (varName != null && !varName.isEmpty()) {
-                buffer.append(" <");
+            boolean haveVarName = varName != null && !varName.isEmpty();
+            if (param.isSlurpy()) {
+                buffer.append("{");
+                if (haveVarName)
+                    buffer.append(varName);
+                buffer.append("*}");
+            }
+            else if (haveVarName) {
+                buffer.append("{");
                 buffer.append(varName);
-                buffer.append("> ");
+                if (param.isOptional())
+                    buffer.append("?");
+                buffer.append("}");
             }
             else {
                 Perl6PsiElement value = param.getValueConstraint();
                 if (value instanceof Perl6StrLiteral) {
-                    buffer.append(" ");
                     buffer.append(((Perl6StrLiteral)value).getStringText());
-                    buffer.append(" ");
                 }
                 else {
-                    buffer.append(" ? ");
+                    buffer.append("<unknown>");
                 }
             }
         }
