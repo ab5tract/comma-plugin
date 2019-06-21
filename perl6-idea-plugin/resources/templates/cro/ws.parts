@@ -1,12 +1,5 @@
-use Cro::HTTP::Router;
 use Cro::HTTP::Router::WebSocket;
-
-sub routes() is export {
-    route {
-        get -> {
-            content 'text/html', "<h1> Cro::Test </h1>";
-        }
-
+--
         my $chat = Supplier.new;
         get -> 'chat' {
             web-socket -> $incoming {
@@ -20,5 +13,4 @@ sub routes() is export {
                 }
             }
         }
-    }
-}
+--
