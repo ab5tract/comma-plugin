@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
@@ -94,7 +95,17 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
 
     @Override
     public boolean isPositional() {
-        return findChildByClass(Perl6ParameterVariableImpl.class) != null;
+        // If it's declared as a named parameter, it certainly isn't positional.
+        if (findChildByClass(Perl6NamedParameterImpl.class) != null)
+            return false;
+
+        // If it's slurpy and has the % sigil, it's also named.
+        PsiElement quant = findChildByType(PARAMETER_QUANTIFIER);
+        if (quant != null && quant.getText().equals("*") && getVariableName().startsWith("%"))
+            return false;
+
+        // Any other case is positional.
+        return true;
     }
 
     @Override
@@ -106,6 +117,32 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     public Perl6PsiElement getValueConstraint() {
         Perl6ValueConstraint constraint = findChildByClass(Perl6ValueConstraint.class);
         return constraint == null ? null : PsiTreeUtil.getChildOfType(constraint, Perl6PsiElement.class);
+    }
+
+    @Override
+    public boolean isSlurpy() {
+        PsiElement quant = findChildByType(PARAMETER_QUANTIFIER);
+        return quant != null &&
+               (quant.getText().equals("*") || quant.getText().equals("**"));
+    }
+
+    @Override
+    public boolean isOptional() {
+        // Certainly optional if it has a default.
+        if (findChildByClass(Perl6ParameterDefault.class) != null)
+            return true;
+
+        // If there's a quantifier and it's ?, that is decisively optional;
+        // any other quantifier implies non-optional (slurpy, required, etc.)
+        PsiElement quant = findChildByType(PARAMETER_QUANTIFIER);
+        if (quant != null) {
+            if (quant.equals("?"))
+                return true;
+            return false;
+        }
+
+        // Otherwise, positional defaults to required, and named to not.
+        return isPositional();
     }
 
     @Override
