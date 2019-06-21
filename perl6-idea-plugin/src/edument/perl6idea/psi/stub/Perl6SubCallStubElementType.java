@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 public class Perl6SubCallStubElementType extends IStubElementType<Perl6SubCallStub, Perl6SubCall> {
     public Perl6SubCallStubElementType() {
@@ -29,9 +30,11 @@ public class Perl6SubCallStubElementType extends IStubElementType<Perl6SubCallSt
         String calleeName = call.getCalleeName();
         Map<String, String> frameworkData = new HashMap<>();
         for (Perl6FrameworkCall ext : extensions) {
-            String name = ext.getFrameworkName();
-            for (Map.Entry<String, String> entry : ext.getFrameworkData(call).entrySet()) {
-                frameworkData.put(name + "." + entry.getKey(), entry.getValue());
+            if (ext.isApplicable(call)) {
+                String name = ext.getFrameworkName();
+                for (Map.Entry<String, String> entry : ext.getFrameworkData(call).entrySet()) {
+                    frameworkData.put(name + "." + entry.getKey(), entry.getValue());
+                }
             }
         }
         return new Perl6SubCallStubImpl(parentStub, calleeName, frameworkData);
@@ -70,6 +73,16 @@ public class Perl6SubCallStubElementType extends IStubElementType<Perl6SubCallSt
 
     @Override
     public void indexStub(@NotNull Perl6SubCallStub stub, @NotNull IndexSink sink) {
-
+        Perl6FrameworkCall[] extensions = Perl6FrameworkCall.EP_NAME.getExtensions();
+        Map<String, String> allFrameworkData = stub.getAllFrameworkData();
+        for (Perl6FrameworkCall ext : extensions) {
+            String prefix = ext.getFrameworkName();
+            Map<String, String> frameworkData = new HashMap<>();
+            for (Map.Entry<String, String> entry : allFrameworkData.entrySet())
+                if (entry.getKey().startsWith(prefix + "."))
+                    frameworkData.put(entry.getKey().substring(prefix.length() + 1), entry.getValue());
+            if (!frameworkData.isEmpty())
+                ext.indexStub(stub, frameworkData, sink);
+        }
     }
 }

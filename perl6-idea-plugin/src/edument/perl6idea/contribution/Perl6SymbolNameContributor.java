@@ -5,6 +5,7 @@ import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.ArrayUtil;
+import edument.perl6idea.extensions.Perl6FrameworkCall;
 import edument.perl6idea.psi.stub.index.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,6 +23,11 @@ public class Perl6SymbolNameContributor implements ChooseByNameContributor {
         result.addAll(Perl6AllRegexesStubIndex.getInstance().getAllKeys(project));
         result.addAll(Perl6AllAttributesStubIndex.getInstance().getAllKeys(project));
         result.addAll(Perl6AllConstantsStubIndex.getInstance().getAllKeys(project));
+
+        Perl6FrameworkCall[] extensions = Perl6FrameworkCall.EP_NAME.getExtensions();
+        for (Perl6FrameworkCall ext : extensions)
+            ext.contributeSymbolNames(project, result);
+
         return result.toArray(ArrayUtil.EMPTY_STRING_ARRAY);
     }
 
@@ -53,6 +59,10 @@ public class Perl6SymbolNameContributor implements ChooseByNameContributor {
         Perl6AllConstantsStubIndex constantIndex = Perl6AllConstantsStubIndex.getInstance();
         for (String constant : Filtering.simpleMatch(constantIndex.getAllKeys(project), pattern))
             results.addAll(constantIndex.get(constant, project, GlobalSearchScope.projectScope(project)));
+
+        Perl6FrameworkCall[] extensions = Perl6FrameworkCall.EP_NAME.getExtensions();
+        for (Perl6FrameworkCall ext : extensions)
+            ext.contributeSymbolItems(project, pattern, results);
 
         return results.toArray(NavigationItem.EMPTY_NAVIGATION_ITEM_ARRAY);
     }

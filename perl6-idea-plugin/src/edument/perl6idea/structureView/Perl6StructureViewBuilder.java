@@ -9,6 +9,7 @@ import com.intellij.psi.PsiFile;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6PsiElement;
+import edument.perl6idea.psi.Perl6SubCall;
 import edument.perl6idea.psi.impl.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +30,7 @@ public class Perl6StructureViewBuilder extends TreeBasedStructureViewBuilder {
                 .withSuitableClasses(Perl6File.class, Perl6PackageDecl.class,
                                      Perl6RegexDeclImpl.class, Perl6RoutineDeclImpl.class,
                                      Perl6ConstantImpl.class, Perl6VariableDeclImpl.class,
-                                     Perl6SubsetImpl.class, Perl6EnumImpl.class);
+                                     Perl6SubsetImpl.class, Perl6EnumImpl.class,
+                                     Perl6SubCall.class);
     }
 }

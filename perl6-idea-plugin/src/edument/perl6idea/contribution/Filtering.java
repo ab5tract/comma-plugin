@@ -3,7 +3,7 @@ package edument.perl6idea.contribution;
 import java.util.ArrayList;
 import java.util.Collection;
 
-class Filtering {
+public class Filtering {
     public static Collection<String> typeMatch(Collection<String> in, String pattern) {
         String[] patternParts = pattern.toLowerCase().split("::");
         Collection<String> result = new ArrayList<>();

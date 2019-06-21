@@ -21,6 +21,8 @@ public class Perl6Icons {
     public static final Icon ENUM = IconLoader.getIcon("/icons/enum.png");
     public static final Icon PACKAGE = IconLoader.getIcon("/icons/package.png");
 
+    public static final Icon CRO = IconLoader.getIcon("/icons/cro.png");
+
     public static Icon iconForPackageDeclarator(String declarator) {
         switch (declarator) {
             case "module":

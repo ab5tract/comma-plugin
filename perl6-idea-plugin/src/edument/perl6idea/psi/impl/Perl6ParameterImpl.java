@@ -103,6 +103,12 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     }
 
     @Override
+    public Perl6PsiElement getValueConstraint() {
+        Perl6ValueConstraint constraint = findChildByClass(Perl6ValueConstraint.class);
+        return constraint == null ? null : PsiTreeUtil.getChildOfType(constraint, Perl6PsiElement.class);
+    }
+
+    @Override
     public void contributeSymbols(Perl6SymbolCollector collector) {
         Perl6TermDefinition defterm = findChildByClass(Perl6TermDefinition.class);
         if (defterm != null) {

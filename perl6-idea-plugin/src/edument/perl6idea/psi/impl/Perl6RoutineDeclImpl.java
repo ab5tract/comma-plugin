@@ -120,6 +120,14 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
+    public Perl6Parameter[] getParams() {
+        Perl6Signature sig = findChildByClass(Perl6Signature.class);
+        if (sig != null)
+            return sig.getParameters();
+        return new Perl6Parameter[]{};
+    }
+
+    @Override
     public String getName() {
         Perl6RoutineDeclStub stub = getStub();
         if (stub != null)

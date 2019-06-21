@@ -1,10 +1,16 @@
 package edument.perl6idea.extensions;
 
+import com.intellij.navigation.ItemPresentation;
+import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.extensions.ExtensionPointName;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.stubs.IndexSink;
+import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.Perl6SubCall;
+import edument.perl6idea.psi.impl.Perl6SubCallImpl;
 import edument.perl6idea.psi.stub.Perl6SubCallStub;
 
+import java.util.List;
 import java.util.Map;
 
 /** Implemented to provide support for DSL-style declarations provided by a
@@ -27,5 +33,14 @@ public abstract class Perl6FrameworkCall {
 
     /** Called for applicable calls when indexing, to allow for addition
      * to framework indexes. */
-    public abstract void indexStub(Perl6SubCallStub stub, IndexSink sink);
+    public abstract void indexStub(Perl6SubCallStub stub, Map<String, String> frameworkData, IndexSink sink);
+
+    /** Called to contribute any additional symbol names for Go To Symbol. */
+    public abstract void contributeSymbolNames(Project project, List<String> results);
+
+    /** Called to contribute any additional navigation items for Go To Symbol. */
+    public abstract void contributeSymbolItems(Project project, String pattern, List<NavigationItem> results);
+
+    /** Get a presentation for the framework call. */
+    public abstract ItemPresentation getPresentation(Perl6PsiElement call, Map<String, String> frameworkData);
 }

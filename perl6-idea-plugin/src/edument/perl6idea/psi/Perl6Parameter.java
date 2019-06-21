@@ -10,4 +10,5 @@ public interface Perl6Parameter extends Perl6PsiElement, Perl6PsiDeclaration {
     PsiElement getInitializer();
     boolean isPositional();
     boolean isNamed();
+    Perl6PsiElement getValueConstraint();
 }
