@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -39,6 +40,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
             stubCroDockerfile(path, conf);
             stubCroServiceFile(path, conf);
             stubCroYAML(path, conf);
+            if (myTemplatingSUpport)
+                stubTemplatesDirectory(path, conf);
         }
     }
 
@@ -86,6 +89,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
                 metaData.addDepends("Cro::HTTP");
                 if (conf.websocketSupport)
                     metaData.addDepends("Cro::WebSocket");
+                if (conf.templatingSupport)
+                    metaData.addDepends("Cro::WebApp");
             }
         ));
     }
@@ -98,8 +103,18 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         stubFileByResource(sourcePath, conf, "service.p6", "service.p6");
     }
 
-    private void stubCroYAML(Path sourcePath, CroAppTemplateConfig conf) {
+    private static void stubCroYAML(Path sourcePath, CroAppTemplateConfig conf) {
         stubFileByResource(sourcePath, conf, ".cro.yml", "cro.yml");
+    }
+
+    private void stubTemplatesDirectory(Path sourcePath, CroAppTemplateConfig conf) {
+        Path directoryPath = sourcePath.resolve("templates");
+        try {
+            Files.createDirectory(directoryPath);
+        }
+        catch (IOException e) {
+            Logger.getInstance(CroModuleBuilderApplication.class).warn(e);
+        }
     }
 
     private static void stubFileByResource(Path sourcePath, CroAppTemplateConfig conf, String targetFileName, String resourceFileName) {
