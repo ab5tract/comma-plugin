@@ -41,6 +41,9 @@ public abstract class Perl6FrameworkCall {
     /** Called to contribute any additional navigation items for Go To Symbol. */
     public abstract void contributeSymbolItems(Project project, String pattern, List<NavigationItem> results);
 
-    /** Get a presentation for the framework call. */
-    public abstract ItemPresentation getPresentation(Perl6PsiElement call, Map<String, String> frameworkData);
+    /** Get a presentation for the framework call in Go To Symbol context. */
+    public abstract ItemPresentation getNavigatePresentation(Perl6PsiElement call, Map<String, String> frameworkData);
+
+    /** Get a presentation for the framework call in Structure View context. */
+    public abstract ItemPresentation getStructureViewPresentation(Perl6PsiElement call, Map<String, String> frameworkData);
 }

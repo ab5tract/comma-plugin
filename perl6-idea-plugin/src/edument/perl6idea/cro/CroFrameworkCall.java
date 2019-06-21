@@ -113,7 +113,7 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
     }
 
     @Override
-    public ItemPresentation getPresentation(Perl6PsiElement call, Map<String, String> frameworkData) {
+    public ItemPresentation getNavigatePresentation(Perl6PsiElement call, Map<String, String> frameworkData) {
         return new ItemPresentation() {
             @Nullable
             @Override
@@ -125,6 +125,29 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
             @Override
             public String getLocationString() {
                 return call.getEnclosingPerl6ModuleName();
+            }
+
+            @Nullable
+            @Override
+            public Icon getIcon(boolean unused) {
+                return Perl6Icons.CRO;
+            }
+        };
+    }
+
+    @Override
+    public ItemPresentation getStructureViewPresentation(Perl6PsiElement call, Map<String, String> frameworkData) {
+        return new ItemPresentation() {
+            @Nullable
+            @Override
+            public String getPresentableText() {
+                return frameworkData.get("method").toUpperCase() + " " + frameworkData.get("path");
+            }
+
+            @Nullable
+            @Override
+            public String getLocationString() {
+                return null;
             }
 
             @Nullable

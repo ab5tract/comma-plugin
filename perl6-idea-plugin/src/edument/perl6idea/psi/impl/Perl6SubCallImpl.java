@@ -91,13 +91,13 @@ public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> 
                     if (entry.getKey().startsWith(prefix + "."))
                         frameworkData.put(entry.getKey().substring(prefix.length() + 1), entry.getValue());
                 if (!frameworkData.isEmpty())
-                    return ext.getPresentation(this, frameworkData);
+                    return ext.getNavigatePresentation(this, frameworkData);
             }
         }
         else {
             for (Perl6FrameworkCall ext : extensions)
                 if (ext.isApplicable(this))
-                    return ext.getPresentation(this, ext.getFrameworkData(this));
+                    return ext.getNavigatePresentation(this, ext.getFrameworkData(this));
         }
         return null;
     }

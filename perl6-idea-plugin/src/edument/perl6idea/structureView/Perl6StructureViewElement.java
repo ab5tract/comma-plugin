@@ -3,31 +3,78 @@ package edument.perl6idea.structureView;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.extensions.Perl6FrameworkCall;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Perl6StructureViewElement implements StructureViewTreeElement {
     private final Perl6PsiElement element;
+    private ItemPresentation calculatedPresentation;
 
     public Perl6StructureViewElement(Perl6PsiElement element) {
         this.element = element;
+    }
+
+    public Perl6StructureViewElement(Perl6PsiElement element, ItemPresentation calculatedPresentation) {
+        this.element = element;
+        this.calculatedPresentation = calculatedPresentation;
     }
 
     @NotNull
     @Override
     public TreeElement[] getChildren() {
         List<StructureViewTreeElement> structureElements = new ArrayList<>();
-        if (element instanceof Perl6PsiScope)
-            for (Perl6PsiElement decl : ((Perl6PsiScope)element).getDeclarations())
-                if (applicable(decl))
+        if (element instanceof Perl6PsiScope) {
+            // Add declarations.
+            List<Perl6PsiDeclaration> declarations = ((Perl6PsiScope)element).getDeclarations();
+            Set<Perl6PsiDeclaration> declSet = new HashSet<>();
+            for (Perl6PsiDeclaration decl : declarations) {
+                if (applicable(decl)) {
                     structureElements.add(new Perl6StructureViewElement(decl));
+                    declSet.add(decl);
+                }
+            }
+
+            // Look through statements to see if there's any DSL-like framework
+            // calls.
+            Perl6FrameworkCall[] extensions = Perl6FrameworkCall.EP_NAME.getExtensions();
+            collectFrameworkCalls(structureElements, extensions, declSet, element);
+        }
         return structureElements.toArray(StructureViewTreeElement.EMPTY_ARRAY);
+    }
+
+    private static void collectFrameworkCalls(List<StructureViewTreeElement> structureElements,
+                                              Perl6FrameworkCall[] extensions,
+                                              Set<Perl6PsiDeclaration> stoppers,
+                                              Perl6PsiElement search) {
+        // If we hit a stopper, don't enter it; it's another declaration in the tree.
+        if (stoppers.contains(search))
+            return;
+
+        // See if this element is a DSL call.
+        if (search instanceof Perl6SubCall) {
+            Perl6SubCall call = (Perl6SubCall)search;
+            for (Perl6FrameworkCall ext : extensions) {
+                if (ext.isApplicable(call)) {
+                    ItemPresentation presentation = ext.getStructureViewPresentation(call, ext.getFrameworkData(call));
+                    structureElements.add(new Perl6StructureViewElement(call, presentation));
+                    return;
+                }
+            }
+        }
+
+        // Otherwise, walk children.
+        Perl6PsiElement[] children = PsiTreeUtil.getChildrenOfType(search, Perl6PsiElement.class);
+        if (children != null)
+            for (Perl6PsiElement child : children)
+                collectFrameworkCalls(structureElements, extensions, stoppers, child);
     }
 
     private static boolean applicable(Perl6PsiElement child) {
@@ -45,6 +92,8 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
     @NotNull
     @Override
     public ItemPresentation getPresentation() {
+        if (calculatedPresentation != null)
+            return calculatedPresentation;
         if (element instanceof Perl6File) {
             return new ItemPresentation() {
                 @Override
