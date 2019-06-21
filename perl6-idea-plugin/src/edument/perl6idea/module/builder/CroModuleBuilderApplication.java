@@ -25,12 +25,12 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     private static final Logger LOG = Logger.getInstance(CroModuleBuilderApplication.class);
     private String myModuleName;
     private boolean myWebsocketSupport;
-    private boolean myTemplatingSUpport;
+    private boolean myTemplatingSupport;
 
     @Override
     public void setupRootModelOfPath(@NotNull ModifiableRootModel model, Path path) {
         Path directoryName = path.getFileName();
-        CroAppTemplateConfig conf = new CroAppTemplateConfig(myModuleName, myWebsocketSupport, myTemplatingSUpport);
+        CroAppTemplateConfig conf = new CroAppTemplateConfig(myModuleName, myWebsocketSupport, myTemplatingSupport);
         if (Objects.equals(directoryName.toString(), "lib")) {
             Perl6MetaDataComponent metaData = model.getModule().getComponent(Perl6MetaDataComponent.class);
             stubRoutes(metaData, path, conf);
@@ -40,7 +40,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
             stubCroDockerfile(path, conf);
             stubCroServiceFile(path, conf);
             stubCroYAML(path, conf);
-            if (myTemplatingSUpport)
+            if (myTemplatingSupport)
                 stubTemplatesDirectory(path, conf);
         }
     }
@@ -49,7 +49,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     public void loadFromDialogData(Map<String, String> data) {
         myModuleName = data.get(Perl6ModuleWizardStep.MODULE_NAME);
         myWebsocketSupport = Boolean.parseBoolean(data.get(Perl6ModuleWizardStep.WEBSOCKET_SUPPORT));
-        myTemplatingSUpport = Boolean.parseBoolean(data.get(Perl6ModuleWizardStep.TEMPLATE_SUPPORT));
+        myTemplatingSupport = Boolean.parseBoolean(data.get(Perl6ModuleWizardStep.TEMPLATE_SUPPORT));
     }
 
     @Override
