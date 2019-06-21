@@ -1,0 +1,15 @@
+---
+id: "$$MODULE_NAME$$"
+cro: 1
+name: "$$MODULE_NAME$$"
+endpoints:
+  -
+    id: http
+    name: HTTP
+    protocol: http
+    host-env: $$HOST_VARIABLE$$
+    port-env: $$PORT_VARIABLE$$
+links:  []
+entrypoint: service.p6
+env:  []
+...

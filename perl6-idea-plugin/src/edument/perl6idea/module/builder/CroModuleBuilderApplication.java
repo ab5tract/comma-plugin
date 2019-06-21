@@ -38,6 +38,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         } else {
             stubCroDockerfile(path, conf);
             stubCroServiceFile(path, conf);
+            stubCroYAML(path, conf);
         }
     }
 
@@ -90,16 +91,21 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     }
 
     private static void stubCroDockerfile(Path sourcePath, CroAppTemplateConfig conf) {
-        Path dockerFilePath = sourcePath.resolve("Dockerfile");
-        String dockerfilePath = CRO_RESOURCE_PREFIX + "Dockerfile";
-        List<String> templateContent = getAndUnstubResource(dockerfilePath, conf);
-        Perl6Utils.writeCodeToPath(dockerFilePath, templateContent);
+        stubFileByResource(sourcePath, conf, "Dockerfile", "Dockerfile");
     }
 
     private static void stubCroServiceFile(Path sourcePath, CroAppTemplateConfig conf) {
-        Path croServiceFilePath = sourcePath.resolve( "service.p6");
-        List<String> templateContent = getAndUnstubResource(CRO_RESOURCE_PREFIX + "service.p6", conf);
-        Perl6Utils.writeCodeToPath(croServiceFilePath, templateContent);
+        stubFileByResource(sourcePath, conf, "service.p6", "service.p6");
+    }
+
+    private void stubCroYAML(Path sourcePath, CroAppTemplateConfig conf) {
+        stubFileByResource(sourcePath, conf, ".cro.yml", "cro.yml");
+    }
+
+    private static void stubFileByResource(Path sourcePath, CroAppTemplateConfig conf, String targetFileName, String resourceFileName) {
+        Path targetPath = sourcePath.resolve(targetFileName);
+        List<String> templateContent = getAndUnstubResource(CRO_RESOURCE_PREFIX + resourceFileName, conf);
+        Perl6Utils.writeCodeToPath(targetPath, templateContent);
     }
 
     @NotNull
@@ -112,7 +118,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
             templateContent.set(i, templateContent.get(i)
                 .replaceAll("\\$\\$HOST_VARIABLE\\$\\$", HOST_VARIABLE)
                 .replaceAll("\\$\\$PORT_VARIABLE\\$\\$", PORT_VARIABLE)
-                .replaceAll("\\$\\$DOCKER_IMAGE\\$\\$", DOCKER_IMAGE));
+                .replaceAll("\\$\\$DOCKER_IMAGE\\$\\$", DOCKER_IMAGE)
+                .replaceAll("\\$\\$MODULE_NAME\\$\\$", conf.moduleName));
         }
         return templateContent;
     }
