@@ -53,10 +53,6 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
 
     private static void stubRoutes(Perl6MetaDataComponent metaData, Path path, CroAppTemplateConfig conf) {
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
-        String routesModulePath = Perl6ModuleBuilderModule.stubModule(metaData, path, "Routes", true, false,
-                                            sourceRoot == null ? null : sourceRoot.getParent(), "Empty", false);
-        VirtualFile routesFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(routesModulePath);
-
         String templateContent = String.join("\n", Perl6Utils.getResourceAsLines(CRO_RESOURCE_PREFIX + "Routes.pm6"));
         String importLine = "";
         String routeLine = "";
@@ -69,6 +65,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
             .replace("$$WS_IMPORT$$", importLine)
             .replace("$$WS_ROUTE$$", routeLine);
         try {
+            metaData.createStubMetaFile(conf.moduleName, sourceRoot.getParent(), false);
+            VirtualFile routesFile = sourceRoot.findOrCreateChildData(CroModuleBuilderApplication.class, "Routes.pm6");
             routesFile.setBinaryContent(
                 String.join("\n", templateContent).getBytes(StandardCharsets.UTF_8)
             );

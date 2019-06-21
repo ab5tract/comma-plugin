@@ -2,7 +2,6 @@ package edument.perl6idea.module;
 
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.containers.hash.HashMap;
@@ -14,7 +13,6 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
-import java.awt.*;
 import java.util.Map;
 
 public class Perl6ModuleWizardStep extends ModuleWizardStep {

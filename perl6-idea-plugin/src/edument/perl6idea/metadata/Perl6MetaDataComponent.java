@@ -245,7 +245,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         return String.join("::", symbolParts);
     }
 
-    public void createStubMetaFile(VirtualFile firstRoot, boolean shouldOpenEditor) throws IOException {
+    public void createStubMetaFile(String moduleName, VirtualFile firstRoot, boolean shouldOpenEditor) throws IOException {
         if (firstRoot == null)
             firstRoot = calculateMetaParent();
         if (firstRoot == null) {
@@ -265,7 +265,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         VirtualFile finalFirstRoot = firstRoot;
         ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(() -> {
             try {
-                JSONObject meta = getStubMetaObject();
+                JSONObject meta = getStubMetaObject(moduleName);
                 VirtualFile metaFile = finalFirstRoot.createChildData(this, META6_JSON_NAME);
                 metaFile.setBinaryContent(MetaDataJSONSerializer.serializer(meta).getBytes(CharsetToolkit.UTF8_CHARSET));
                 myMeta = meta;
@@ -293,10 +293,10 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         return null;
     }
 
-    private JSONObject getStubMetaObject() {
+    private static JSONObject getStubMetaObject(String moduleName) {
         return new JSONObject()
             .put("perl", "6.*")
-            .put("name", myModule.getName())
+            .put("name", moduleName)
             .put("version", "0.1")
             .put("description", "Write me!")
             .put("auth", "Write me!")
@@ -430,7 +430,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 try {
                     notification.expire();
                     if (myModule.isDisposed()) return;
-                    createStubMetaFile(null, true);
+                    createStubMetaFile(myModule.getName(), null, true);
                 }
                 catch (IOException e1) {
                     Notifications.Bus.notify(new Notification(

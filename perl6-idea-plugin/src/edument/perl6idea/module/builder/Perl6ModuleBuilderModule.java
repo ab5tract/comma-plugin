@@ -55,7 +55,7 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
                                     VirtualFile root, String moduleType, boolean isUnitScoped) {
         if (firstModule) {
             try {
-                metaData.createStubMetaFile(root, shouldOpenEditor);
+                metaData.createStubMetaFile(moduleName, root, shouldOpenEditor);
             }
             catch (IOException e) {
                 LOG.warn(e);

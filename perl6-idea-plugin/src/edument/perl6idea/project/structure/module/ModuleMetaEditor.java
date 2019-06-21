@@ -186,7 +186,7 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     private void saveFields() throws IOException {
         Perl6MetaDataComponent metaData = myModule.getComponent(Perl6MetaDataComponent.class);
         if (!metaData.isMetaDataExist()) {
-            metaData.createStubMetaFile(null, false);
+            metaData.createStubMetaFile(myModule.getName(), null, false);
         }
         ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(() -> {
             metaData.setName(myNameField.getText());
