@@ -67,9 +67,10 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         }
     }
 
-    private static void stubCroDockerfile(Path sourcePath) {
+    private static void stubCroDockerfile(Path sourcePath, boolean websocketSupport) {
         Path dockerFilePath = sourcePath.resolve("Dockerfile");
-        Perl6Utils.writeCodeToPath(dockerFilePath, Perl6Utils.getResourceAsLines("templates/CroDockerfile"));
+        String dockerfilePath = String.format("templates/%s", websocketSupport ? "WebsocketCroDockerfile" : "CroDockerfile");
+        Perl6Utils.writeCodeToPath(dockerFilePath, Perl6Utils.getResourceAsLines(dockerfilePath));
     }
 
     private static void stubCroServiceFile(Path sourcePath, String moduleName) {
