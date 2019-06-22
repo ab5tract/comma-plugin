@@ -45,8 +45,10 @@ public class Perl6Utils {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
         ) {
             String line;
-            while ((line = reader.readLine()) != null)
+            while ((line = reader.readLine()) != null) {
                 out.write(line.getBytes(StandardCharsets.UTF_8));
+                out.write("\n".getBytes(StandardCharsets.UTF_8));
+            }
         } catch (IOException e) {
             LOG.error(e);
         }
