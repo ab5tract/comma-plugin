@@ -37,7 +37,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
             Perl6MetaDataComponent metaData = model.getModule().getComponent(Perl6MetaDataComponent.class);
             stubRoutes(metaData, path, conf);
         } else if (Objects.equals(directoryName.toString(), "t")) {
-            Perl6ModuleBuilderModule.stubTest(path, "00-sanity.t", Collections.singletonList(myModuleName));
+            stubCroTest(path, conf);
         } else {
             stubCroDockerfile(path, conf);
             stubCroServiceFile(path, conf);
@@ -62,8 +62,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     private static void stubRoutes(Perl6MetaDataComponent metaData, Path path, CroAppTemplateConfig conf) {
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
         String templateContent = String.join("\n", Perl6Utils.getResourceAsLines(CRO_RESOURCE_PREFIX + "Routes.pm6"));
-        templateContent = populateRouteVariables(templateContent, conf.websocketSupport, "ws.parts", "WS");
-        templateContent = populateRouteVariables(templateContent, conf.templatingSupport, "crotmp.parts", "CROTMP");
+        templateContent = populateRouteVariables(templateContent, conf.websocketSupport, "ws.parts", "WS", conf);
+        templateContent = populateRouteVariables(templateContent, conf.templatingSupport, "crotmp.parts", "CROTMP", conf);
         try {
             metaData.createStubMetaFile(conf.moduleName, sourceRoot.getParent(), false);
             addCroDependencies(metaData, conf);
@@ -81,7 +81,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     private static String populateRouteVariables(String templateContent,
                                                  boolean featureSupport,
                                                  String partsFileName,
-                                                 String featurePrefix) {
+                                                 String featurePrefix,
+                                                 CroAppTemplateConfig conf) {
         String importLine = "";
         String routeLine = "";
         if (featureSupport) {
@@ -91,7 +92,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         }
         templateContent = templateContent
             .replace(String.format("$$%s_IMPORT$$", featurePrefix), StringUtil.trimEnd(importLine, "\n"))
-            .replace(String.format("$$%s_ROUTE$$", featurePrefix), routeLine);
+            .replace(String.format("$$%s_ROUTE$$", featurePrefix), routeLine)
+            .replaceAll("\\$\\$MODULE_NAME\\$\\$", conf.moduleName);
         return templateContent;
     }
 
@@ -99,12 +101,17 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(
             () -> {
                 metaData.addDepends("Cro::HTTP");
+                metaData.addTestDepends("Cro::HTTP::Test");
                 if (conf.websocketSupport)
                     metaData.addDepends("Cro::WebSocket");
                 if (conf.templatingSupport)
                     metaData.addDepends("Cro::WebApp");
             }
         ));
+    }
+
+    private static void stubCroTest(Path sourcePath, CroAppTemplateConfig conf) {
+        stubFileByResource(sourcePath, conf, "00-sanity.t", "00-sanity.t");
     }
 
     private static void stubCroDockerfile(Path sourcePath, CroAppTemplateConfig conf) {
