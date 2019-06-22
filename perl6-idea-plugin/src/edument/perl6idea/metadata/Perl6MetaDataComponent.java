@@ -175,7 +175,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         if (dependsArray.toList().contains(name))
             return;
         dependsArray.put(name);
-        myMeta.put("depends", dependsArray);
+        myMeta.put(key, dependsArray);
         saveFile();
     }
 
