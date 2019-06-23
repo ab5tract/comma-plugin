@@ -282,14 +282,20 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
             // Now add uncovered lines up to the end of this statement.
             if (!seen) {
-                int endLine = document.getLineNumber(stmt.getTextOffset() +
-                        stmt.getText().replaceFirst("\\s+$", "").length() - 1);
-                for (int i = startLine + 1; i <= endLine; i++) {
-                    if (!covered.contains(i)) {
-                        covered.add(i);
-                        if (spanned != null)
-                            spanned.add(i);
+                try {
+                    int endLine = document.getLineNumber(stmt.getTextOffset() +
+                                                         stmt.getText().replaceFirst("\\s+$", "").length() - 1);
+                    for (int i = startLine + 1; i <= endLine; i++) {
+                        if (!covered.contains(i)) {
+                            covered.add(i);
+                            if (spanned != null)
+                                spanned.add(i);
+                        }
                     }
+                }
+                catch (IndexOutOfBoundsException ignored) {
+                    // Code piece was updated in the middle of building statement line map,
+                    // so just ignore the exception until next rebuilding
                 }
             }
         }
