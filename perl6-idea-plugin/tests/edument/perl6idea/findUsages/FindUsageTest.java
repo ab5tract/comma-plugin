@@ -20,9 +20,6 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
         return new Perl6LightProjectDescriptor();
     }
 
-    // When declarator has different PsiElement comparing to usage,
-    // it is not counted in this test, yet it is correctly resolved
-
     public void testVariableDefinition() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("VariableDefinition.p6");
         assertEquals(3, usageInfos.size());
@@ -52,17 +49,17 @@ public class FindUsageTest extends LightCodeInsightFixtureTestCase {
 
     public void testVariableFromParameter1() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("VariableFromParameter.p6");
-        assertEquals(2, usageInfos.size());
+        assertEquals(3, usageInfos.size());
     }
 
     public void testVariableFromParameter2() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("VariableFromParameterOnDeclaration.p6");
-        assertEquals(2, usageInfos.size());
+        assertEquals(3, usageInfos.size());
     }
 
     public void testVariableWithDashFromParameter() {
         Collection<UsageInfo> usageInfos = myFixture.testFindUsages("VariableWithDashFromParameter.p6");
-        assertEquals(2, usageInfos.size());
+        assertEquals(3, usageInfos.size());
     }
 
     public void testPrivateAttributeOfClass() {
