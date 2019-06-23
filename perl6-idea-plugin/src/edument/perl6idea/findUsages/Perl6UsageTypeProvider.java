@@ -7,6 +7,18 @@ import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.Nullable;
 
 public class Perl6UsageTypeProvider implements UsageTypeProvider {
+    public static final UsageType SUBROUTINE_CALL_USAGE = new UsageType("Subroutine call usage");
+    public static final UsageType METHOD_CALL_USAGE = new UsageType("Method call usage");
+    public static final UsageType VARIABLE_USAGE = new UsageType("Variable usage");
+    public static final UsageType INHERITANCE_USAGE = new UsageType("Inheritance usage");
+    public static final UsageType DECLARATION_TYPE_RESTRICTION_USAGE = new UsageType("Declaration type restriction usage");
+    public static final UsageType PARAMETER_TYPE_RESTRICTION_USAGE = new UsageType("Parameter type restriction usage");
+    public static final UsageType RETURN_TYPE_RESTRICTION_USAGE = new UsageType("Return type restriction usage");
+    public static final UsageType COMPOSITION_USAGE = new UsageType("Composition usage");
+    public static final UsageType TRAIT_USAGE = new UsageType("Trait usage");
+    public static final UsageType USE_MODULE_USAGE = new UsageType("Use module usage");
+    public static final UsageType NEED_MODULE_USAGE = new UsageType("Need module usage");
+
     @Nullable
     @Override
     public UsageType getUsageType(PsiElement element) {
@@ -37,47 +49,47 @@ public class Perl6UsageTypeProvider implements UsageTypeProvider {
     private static UsageType handleModuleName(PsiElement element) {
         PsiElement parent = element.getParent();
         if (parent instanceof Perl6UseStatement) {
-            return new UsageType("Use module usage");
+            return USE_MODULE_USAGE;
         }
         else if (parent instanceof Perl6NeedStatement) {
-            return new UsageType("Need module usage");
+            return NEED_MODULE_USAGE;
         }
         return null;
     }
 
     private static UsageType handleIsTraitName() {
-        return new UsageType("Inheritance usage");
+        return INHERITANCE_USAGE;
     }
 
     private static UsageType handleSubCallName() {
-        return new UsageType("Subroutine call usage");
+        return SUBROUTINE_CALL_USAGE;
     }
 
     private static UsageType handleMethodCall() {
-        return new UsageType("Method call usage");
+        return METHOD_CALL_USAGE;
     }
 
     private static UsageType handleVariable() {
-        return new UsageType("Variable usage");
+        return VARIABLE_USAGE;
     }
 
     private static UsageType handleTypeName(PsiElement element) {
         PsiElement parent = element.getParent();
         if (parent instanceof Perl6ScopedDecl) {
-            return new UsageType("Declaration type restriction usage");
+            return DECLARATION_TYPE_RESTRICTION_USAGE;
         }
         else if (parent instanceof Perl6Parameter) {
-            return new UsageType("Parameter type restriction usage");
+            return PARAMETER_TYPE_RESTRICTION_USAGE;
         }
         else if (parent instanceof Perl6ReturnConstraint) {
-            return new UsageType("Return type restriction usage");
+            return RETURN_TYPE_RESTRICTION_USAGE;
         }
         else if (parent instanceof Perl6Trait) {
             if (((Perl6Trait)parent).getTraitModifier().equals("does")) {
-                return new UsageType("Composition usage");
+                return COMPOSITION_USAGE;
             }
             else {
-                return new UsageType("Trait usage");
+                return TRAIT_USAGE;
             }
         }
         return null;
