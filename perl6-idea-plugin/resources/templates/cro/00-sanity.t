@@ -2,8 +2,6 @@ use Cro::HTTP::Test;
 use Test;
 use Routes;
 
-plan *;
-
 test-service routes, {
     test get('/'),
             status => 200,
