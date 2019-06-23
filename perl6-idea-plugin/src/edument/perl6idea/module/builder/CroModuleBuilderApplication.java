@@ -66,11 +66,18 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         templateContent = populateRouteVariables(templateContent, conf.templatingSupport, "crotmp.parts", "CROTMP", conf);
         try {
             metaData.createStubMetaFile(conf.moduleName, sourceRoot.getParent(), false);
-            addCroDependencies(metaData, conf);
-            VirtualFile routesFile = sourceRoot.findOrCreateChildData(CroModuleBuilderApplication.class, "Routes.pm6");
+
+            String modulePath = Perl6ModuleBuilderModule.stubModule(metaData, path,
+                                                conf.moduleName + "::Routes",
+                                                true, false, sourceRoot.getParent(),
+                                                "Empty", false);
+            VirtualFile routesFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(modulePath));
+            if (routesFile == null)
+                return;
             routesFile.setBinaryContent(
                 String.join("\n", templateContent).getBytes(StandardCharsets.UTF_8)
             );
+            addCroDependencies(metaData, conf);
         }
         catch (IOException|NullPointerException e) {
             LOG.error(e);
