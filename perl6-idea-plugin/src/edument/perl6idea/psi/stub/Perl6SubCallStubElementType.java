@@ -27,7 +27,7 @@ public class Perl6SubCallStubElementType extends IStubElementType<Perl6SubCallSt
     @Override
     public Perl6SubCallStub createStub(@NotNull Perl6SubCall call, StubElement parentStub) {
         Perl6FrameworkCall[] extensions = Perl6FrameworkCall.EP_NAME.getExtensions();
-        String calleeName = call.getCalleeName();
+        String calleeName = call.getCallName();
         Map<String, String> frameworkData = new HashMap<>();
         for (Perl6FrameworkCall ext : extensions) {
             if (ext.isApplicable(call)) {

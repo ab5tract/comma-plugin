@@ -35,7 +35,7 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
         // We can't resolve the symbol at indexing time to check if it's coming from
         // the Cro HTTP router, so we just go on callee name and it having a single
         // sub argument for now.
-        String calleeName = call.getCalleeName();
+        String calleeName = call.getCallName();
         return ROUTE_VERBS.contains(calleeName) && getRouteSignature(call) != null;
     }
 
@@ -57,7 +57,7 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
         if (params != null) {
             for (Perl6Parameter param : params)
                 renderParameter(buffer, param);
-            result.put("method", call.getCalleeName());
+            result.put("method", call.getCallName());
             result.put("path", buffer.length() == 0 ? "/" : buffer.toString());
         }
         return result;

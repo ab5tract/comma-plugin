@@ -67,12 +67,6 @@ public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> 
     }
 
     @Override
-    public String getCalleeName() {
-        Perl6SubCallName callName = findChildByClass(Perl6SubCallName.class);
-        return callName == null ? "" : callName.getText();
-    }
-
-    @Override
     public String getName() {
         ItemPresentation presentation = getPresentation();
         return presentation == null ? getCallName() : presentation.getPresentableText();
