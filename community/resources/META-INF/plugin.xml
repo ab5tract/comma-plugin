@@ -100,6 +100,14 @@
        on how to target different products -->
   <depends>com.intellij.modules.lang</depends>
 
+  <extensionPoints>
+    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/extensionPoints/*)"/>
+  </extensionPoints>
+
+  <extensions defaultExtensionNs="edument.perl6idea">
+    <frameworkCall implementation="edument.perl6idea.cro.CroFrameworkCall"/>
+  </extensions>
+
   <extensions defaultExtensionNs="com.intellij">
     <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
     <configurationType implementation="edument.perl6idea.run.Perl6CommunityRunConfigurationType"/>

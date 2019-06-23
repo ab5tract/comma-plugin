@@ -17,4 +17,5 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     boolean isStubbed();
     @NotNull
     PsiElement[] getContent();
+    Perl6Parameter[] getParams();
 }

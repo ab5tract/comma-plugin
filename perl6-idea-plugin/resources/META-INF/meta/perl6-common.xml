@@ -1,4 +1,9 @@
 <idea-plugin>
+  <extensionPoints>
+    <extensionPoint qualifiedName="edument.perl6idea.frameworkCall"
+                    interface="edument.perl6idea.extensions.Perl6FrameworkCall" />
+  </extensionPoints>
+
   <extensions defaultExtensionNs="com.intellij">
     <fileTypeFactory implementation="edument.perl6idea.filetypes.Perl6FileTypeFactory"/>
     <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
@@ -80,6 +85,7 @@
     <codeInsight.lineMarkerProvider language="Perl6" implementationClass="edument.perl6idea.providers.Perl6LineMarkerProvider"/>
     <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor" />
     <programRunner implementation="edument.perl6idea.timeline.Perl6TimelineRunner"/>
+    <stubIndex implementation="edument.perl6idea.cro.CroRouteIndex"/>
   </extensions>
 
   <actions>

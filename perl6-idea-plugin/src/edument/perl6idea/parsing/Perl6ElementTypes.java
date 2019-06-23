@@ -18,6 +18,7 @@ public interface Perl6ElementTypes {
     IStubElementType NEED_STATEMENT = new Perl6NeedStatementStubElementType();
     IStubElementType TYPE_NAME = new Perl6TypeNameStubElementType();
     IStubElementType TRAIT = new Perl6TraitStubElementType();
+    IStubElementType SUB_CALL = new Perl6SubCallStubElementType();
     IElementType ALSO = new Perl6ElementType("ALSO");
     IElementType ARRAY_COMPOSER = new Perl6ElementType("ARRAY_COMPOSER");
     IElementType ARRAY_INDEX = new Perl6ElementType("ARRAY_INDEX");
@@ -130,7 +131,6 @@ public interface Perl6ElementTypes {
     IElementType STATEMENT_MOD_LOOP = new Perl6ElementType("STATEMENT_MOD_LOOP");
     IElementType STRING_LITERAL = new Perl6ElementType("STRING_LITERAL");
     IElementType STUB_CODE = new Perl6ElementType("STUB_CODE");
-    IElementType SUB_CALL = new Perl6ElementType("SUB_CALL");
     IElementType SUB_CALL_NAME = new Perl6ElementType("SUB_CALL_NAME");
     IElementType SUPPLY = new Perl6ElementType("SUPPLY");
     IElementType TERM = new Perl6ElementType("TERM");
