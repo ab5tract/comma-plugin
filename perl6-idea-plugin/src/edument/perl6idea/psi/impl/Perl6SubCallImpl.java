@@ -95,4 +95,8 @@ public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> 
         }
         return null;
     }
+
+    public String toString() {
+        return getClass().getSimpleName() + "(Perl6:SUB_CALL)";
+    }
 }
