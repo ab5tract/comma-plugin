@@ -9,11 +9,13 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import edument.perl6idea.annotation.fix.CreateLocalModuleFix;
 import edument.perl6idea.annotation.fix.MissingModuleFix;
-import edument.perl6idea.module.Perl6MetaDataComponent;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.psi.Perl6ModuleName;
 import edument.perl6idea.utils.Perl6ModuleListFetcher;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class UsedModuleAnnotator implements Annotator {
@@ -52,7 +54,11 @@ public class UsedModuleAnnotator implements Annotator {
             return;
         }
 
-        for (String dependency : metaData.getDepends(true)) {
+        List<String> dependencies = new ArrayList<>();
+        dependencies.addAll(metaData.getDepends(true));
+        dependencies.addAll(metaData.getTestDepends(true));
+        dependencies.addAll(metaData.getBuildDepends(true));
+        for (String dependency : dependencies) {
             Set<String> providesOfDependency = Perl6ModuleListFetcher.getProvidesByModule(project, dependency);
             // If a module is in dependencies list, do nothing
             if (providesOfDependency.contains(moduleName))

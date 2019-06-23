@@ -1,0 +1,5 @@
+use Cro::WebApp::Template;
+--
+        get -> 'greet', $name {
+            template 'templates/greet.crotmp', { :$name }
+        }

@@ -2,9 +2,9 @@ package edument.perl6idea.module;
 
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
+import com.intellij.util.containers.hash.HashMap;
 import com.intellij.util.ui.JBUI;
 import edument.perl6idea.utils.Patterns;
 import edument.perl6idea.utils.Perl6ProjectType;
@@ -13,20 +13,26 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
-import java.awt.*;
+import java.util.Map;
 
-class Perl6ModuleWizardStep extends ModuleWizardStep {
+public class Perl6ModuleWizardStep extends ModuleWizardStep {
+    public static final String SCRIPT_NAME = "SCRIPT_NAME";
+    public static final String MODULE_NAME = "MODULE_NAME";
+    public static final String ENTRY_POINT_NAME = "ENTRY_POINT_NAME";
+    public static final String WEBSOCKET_SUPPORT = "WEBSOCKET_SUPPORT";
+    public static final String TEMPLATE_SUPPORT = "TEMPLATE_SUPPORT";
+
     private final Perl6ModuleBuilder builder;
     private Perl6ProjectType currentType;
     private JPanel myMainPanel;
     // Script fields
-    private JTextField myScriptName;
+    private JTextField myScriptName = new JBTextField(40);
 
     // Module fields
-    private JTextField myModuleName;
+    private JTextField myModuleName = new JBTextField(40);
 
     // Application fields
-    private JTextField myEntryName;
+    private JTextField myEntryName = new JBTextField(40);;
 
     // Cro application fields
     private JCheckBox myWebsocketSupport = new JCheckBox();
@@ -34,7 +40,7 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
 
     Perl6ModuleWizardStep(Perl6ModuleBuilder builder) {
         this.builder = builder;
-        this.currentType = builder.getType();
+        this.currentType = builder.getPerl6ModuleType();
         updateInputs();
     }
 
@@ -44,29 +50,24 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
         Border margin = JBUI.Borders.empty(10);
         myMainPanel.setBorder(new CompoundBorder(border, margin));
         myMainPanel.setLayout(new MigLayout());
-        switch (builder.getType()) {
+        switch (builder.getPerl6ModuleType()) {
             case PERL6_SCRIPT:
-                myScriptName = new JBTextField(40);
-                LabeledComponent<JTextField> scriptName = LabeledComponent.create(myScriptName, "Script name", BorderLayout.WEST);
-                myMainPanel.add(scriptName);
+                myMainPanel.add(new JLabel("Script name"));
+                myMainPanel.add(myScriptName, "wrap");
                 break;
             case PERL6_MODULE: {
-                myModuleName = new JBTextField(40);
-                LabeledComponent<JTextField> moduleName = LabeledComponent.create(myModuleName, "Module name", BorderLayout.WEST);
-                myMainPanel.add(moduleName);
+                myMainPanel.add(new JLabel("Module name"));
+                myMainPanel.add(myModuleName, "wrap");
                 break;
             }
             case PERL6_APPLICATION: {
-                myModuleName = new JBTextField(40);
                 myMainPanel.add(new JLabel("Module name"));
                 myMainPanel.add(myModuleName, "wrap");
-                myEntryName = new JBTextField(40);
                 myMainPanel.add(new JLabel("Entry point name"));
                 myMainPanel.add(myEntryName);
                 break;
             }
             default: {
-                myModuleName = new JBTextField(40);
                 myMainPanel.add(new JLabel("Module name"));
                 myMainPanel.add(myModuleName, "wrap");
                 myMainPanel.add(new JLabel("WebSocket support"));
@@ -81,8 +82,8 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
     @Override
     public JComponent getComponent() {
         // If the module type was changed, we need to re-draw UI
-        if (builder.getType() != currentType) {
-            currentType = builder.getType();
+        if (builder.getPerl6ModuleType() != currentType) {
+            currentType = builder.getPerl6ModuleType();
             updateInputs();
         }
         return myMainPanel;
@@ -90,7 +91,7 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
 
     @Override
     public boolean validate() throws ConfigurationException {
-        switch (builder.getType()) {
+        switch (builder.getPerl6ModuleType()) {
             case PERL6_SCRIPT:
                 checkScriptName();
                 break;
@@ -129,22 +130,12 @@ class Perl6ModuleWizardStep extends ModuleWizardStep {
 
     @Override
     public void updateDataModel() {
-        switch (builder.getType()) {
-            case PERL6_SCRIPT:
-                builder.setScriptName(myScriptName.getText());
-                break;
-            case PERL6_MODULE:
-                builder.setModuleName(myModuleName.getText());
-                break;
-            case PERL6_APPLICATION:
-                builder.setModuleName(myModuleName.getText());
-                builder.setEntryPointName(myEntryName.getText());
-                break;
-            case CRO_WEB_APPLICATION:
-                builder.setModuleName(myModuleName.getText());
-                builder.setWebsocketSupport(myWebsocketSupport.isSelected());
-                builder.setTemplatingSupport(myTemplatingSUpport.isSelected());
-                break;
-        }
+        Map<String, String> formData = new HashMap<>();
+        formData.put(SCRIPT_NAME, myScriptName.getText());
+        formData.put(MODULE_NAME, myModuleName.getText());
+        formData.put(ENTRY_POINT_NAME, myEntryName.getText());
+        formData.put(WEBSOCKET_SUPPORT, String.valueOf(myWebsocketSupport.isSelected()));
+        formData.put(TEMPLATE_SUPPORT, String.valueOf(myTemplatingSUpport.isSelected()));
+        builder.updateLocalBuilder(formData);
     }
 }

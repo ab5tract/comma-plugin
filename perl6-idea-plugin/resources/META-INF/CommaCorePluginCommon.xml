@@ -28,15 +28,15 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <projectImportProvider implementation="com.intellij.ide.util.projectWizard.ModuleImportProvider"/>
-<!--    <applicationService serviceInterface="com.intellij.openapi.module.ModuleTypeManager"-->
-<!--                        serviceImplementation="edument.perl6idea.module.Perl6ModuleTypeManager"/>-->
-    <projectImportProvider implementation="edument.perl6idea.module.Perl6ProjectImportProvider"/>
+    <applicationService serviceInterface="com.intellij.openapi.module.ModuleTypeManager"
+                        serviceImplementation="edument.perl6idea.module.Perl6ModuleTypeManager" overrides="true"/>
+    <projectImportProvider implementation="edument.perl6idea.project.Perl6ProjectImportProvider"/>
     <applicationService serviceImplementation="com.intellij.ide.util.newProjectWizard.SelectTemplateSettings"/>
     <applicationService serviceInterface="com.intellij.openapi.roots.ui.OrderEntryAppearanceService"
                         serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
     <applicationService serviceImplementation="com.intellij.ide.projectWizard.ProjectCategoryUsagesCollector"/>
     <projectWizard.projectCategory implementation="edument.perl6idea.module.Perl6ModuleTypeCategory"/>
-    <projectService serviceImplementation="edument.perl6idea.project.Perl6ProjectStructureConfigurable"/>
+    <projectService serviceImplementation="edument.perl6idea.project.structure.Perl6ProjectStructureConfigurable"/>
     <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable"/>
     <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectLibrariesConfigurable"/>
     <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleStructureConfigurable"/>
@@ -56,7 +56,7 @@
                         serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.GlobalProjectStructureProblemsSettings"/>
     <favoritesListProvider implementation="com.intellij.ide.bookmarks.BookmarksFavoriteListProvider"/>
     <favoritesListProvider implementation="com.intellij.xdebugger.impl.breakpoints.BreakpointsFavoriteListProvider"/>
-    <moduleConfigurationEditorProvider implementation="edument.perl6idea.module.Perl6ModuleConfigurationEditorProvider" order="FIRST"/>
+    <moduleConfigurationEditorProvider implementation="edument.perl6idea.project.structure.module.Perl6ModuleConfigurationEditorProvider" order="FIRST"/>
     <projectViewPane implementation="com.intellij.ide.projectView.impl.ProjectViewPane"/>
     <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
     <OrderRootTypeUI key="JAVADOC"

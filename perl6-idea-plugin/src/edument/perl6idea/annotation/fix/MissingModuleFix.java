@@ -8,8 +8,7 @@ import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.module.Perl6MetaDataComponent;
-import edument.perl6idea.utils.Perl6ModuleListFetcher;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 

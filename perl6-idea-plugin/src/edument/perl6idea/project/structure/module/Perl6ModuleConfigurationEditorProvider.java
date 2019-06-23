@@ -1,4 +1,4 @@
-package edument.perl6idea.module;
+package edument.perl6idea.project.structure.module;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleConfigurationEditor;
@@ -6,6 +6,7 @@ import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationEditorProvider;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
+import edument.perl6idea.module.Perl6ModuleType;
 
 import java.util.ArrayList;
 import java.util.List;

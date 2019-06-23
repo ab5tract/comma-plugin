@@ -4,14 +4,15 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import edument.perl6idea.run.Perl6DebuggableConfiguration;
-import edument.perl6idea.run.Perl6RunConfiguration;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,33 +53,6 @@ public class Perl6CommandLine {
         } catch (IOException e) {
             LOG.error(e);
             throw new ExecutionException("Could not get execution script");
-        }
-    }
-
-    public static File getResourceAsFile(Object object, String resourcePath) {
-        InputStream in = object.getClass().getClassLoader().getResourceAsStream(resourcePath);
-        FileOutputStream out = null;
-        try {
-            if (in == null) return null;
-            File tempFile = FileUtil.createTempFile(String.valueOf(in.hashCode()), ".tmp");
-            tempFile.deleteOnExit();
-            out = new FileOutputStream(tempFile);
-            //copy stream
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1)
-                out.write(buffer, 0, bytesRead);
-            return tempFile;
-        } catch (IOException e) {
-            LOG.error(e);
-            return null;
-        } finally {
-            try {
-                if (in != null) in.close();
-                if (out != null) out.close();
-            } catch (IOException e) {
-                LOG.error(e);
-            }
         }
     }
 

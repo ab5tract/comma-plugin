@@ -1,4 +1,4 @@
-package edument.perl6idea.project;
+package edument.perl6idea.project.structure;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.application.ApplicationManager;

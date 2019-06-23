@@ -1,4 +1,4 @@
-package edument.perl6idea.module;
+package edument.perl6idea.project.structure.module.dependency.panel;
 
 import com.intellij.openapi.util.Comparing;
 

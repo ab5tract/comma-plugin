@@ -1,10 +1,14 @@
-package edument.perl6idea.module;
+package edument.perl6idea.project.structure.module;
 
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.roots.ModuleRootEvent;
 import com.intellij.openapi.roots.ModuleRootListener;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
 import com.intellij.openapi.roots.ui.configuration.ModuleElementsEditor;
+import com.intellij.openapi.util.text.StringUtil;
+import edument.perl6idea.project.structure.module.dependency.panel.Perl6DependenciesPanelImpl;
+import edument.perl6idea.project.structure.module.dependency.panel.Perl6DependencyTableItem;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +41,9 @@ public class Perl6ModuleDependenciesEditor extends ModuleElementsEditor implemen
         Perl6MetaDataComponent metaData = getState().getRootModel().getModule().getComponent(Perl6MetaDataComponent.class);
         if (!metaData.isMetaDataExist()) {
             try {
-                metaData.createStubMetaFile(null, false);
+                metaData.createStubMetaFile(
+                    StringUtil.sanitizeJavaIdentifier(getState().getProject().getName()),
+                    null, false);
             }
             catch (IOException e) {
                 throw new ConfigurationException("Cannot create META6.json file");
@@ -62,6 +68,7 @@ public class Perl6ModuleDependenciesEditor extends ModuleElementsEditor implemen
         myPanel.getModel().saveState();
     }
 
+    @Override
     public boolean isModified() {
         return myPanel.isModified();
     }
@@ -72,7 +79,7 @@ public class Perl6ModuleDependenciesEditor extends ModuleElementsEditor implemen
     }
 
     @Override
-    public void rootsChanged(ModuleRootEvent event) {
+    public void rootsChanged(@NotNull ModuleRootEvent event) {
         if (myPanel != null) myPanel.rootsChanged();
     }
 

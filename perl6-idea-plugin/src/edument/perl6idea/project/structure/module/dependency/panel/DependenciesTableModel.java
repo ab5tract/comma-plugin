@@ -1,10 +1,11 @@
-package edument.perl6idea.module;
+package edument.perl6idea.project.structure.module.dependency.panel;
 
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ItemRemovable;
 import com.intellij.util.ui.ListTableModel;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;

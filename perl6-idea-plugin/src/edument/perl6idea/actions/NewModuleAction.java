@@ -6,10 +6,8 @@ import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 import com.intellij.openapi.editor.actionSystem.EditorActionManager;
-import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.module.Module;
@@ -20,8 +18,8 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
-import edument.perl6idea.module.Perl6MetaDataComponent;
-import edument.perl6idea.module.Perl6ModuleBuilder;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
+import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -78,8 +76,8 @@ public class NewModuleAction extends AnAction {
         String moduleName = dialog.getModuleName();
         String moduleType = dialog.getModuleType();
         boolean isUnitScoped = dialog.isUnitModule();
-        String modulePath = Perl6ModuleBuilder.stubModule(
-            metaData, myBaseDir, moduleName, !metaData.isMetaDataExist(),
+        String modulePath = Perl6ModuleBuilderModule.stubModule(
+            metaData, Paths.get(myBaseDir), moduleName, !metaData.isMetaDataExist(),
             true, null, moduleType, isUnitScoped);
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(modulePath).toFile());
         if (moduleFile != null) {

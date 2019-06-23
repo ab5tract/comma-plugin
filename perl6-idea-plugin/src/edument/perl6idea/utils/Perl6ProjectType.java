@@ -36,6 +36,8 @@ public enum Perl6ProjectType {
     }
 
     public static Perl6ProjectType fromTypeLabel(String label) {
+        if (label == null)
+            return PERL6_SCRIPT;
         switch (label) {
             case "Perl 6 script":
                 return PERL6_SCRIPT;

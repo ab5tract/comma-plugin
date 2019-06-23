@@ -1,4 +1,4 @@
-package edument.perl6idea.project;
+package edument.perl6idea.project.structure;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.Disposable;

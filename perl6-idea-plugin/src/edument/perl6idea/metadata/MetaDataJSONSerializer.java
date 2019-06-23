@@ -1,4 +1,4 @@
-package edument.perl6idea.module;
+package edument.perl6idea.metadata;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

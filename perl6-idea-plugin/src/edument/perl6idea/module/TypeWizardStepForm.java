@@ -37,19 +37,17 @@ public class TypeWizardStepForm extends ModuleWizardStep implements Disposable {
     @Override
     public void updateDataModel() {
         String selectedType = getSelectedType();
-        builder.setType(Perl6ProjectType.fromTypeLabel(selectedType));
+        builder.setPerl6ModuleType(Perl6ProjectType.fromTypeLabel(selectedType));
     }
 
     public void createUIComponents() {
         basePanel = new JBPanel<>();
-        panel1 = new JBPanel<>();
-        panel2 = new JBPanel<>();
         list1 = new JBList();
         description = new JBLabel();
         list1.addListSelectionListener(e -> {
             if (e.getValueIsAdjusting()) return;
             Perl6ProjectType type = Perl6ProjectType.fromTypeLabel(getSelectedType());
-            builder.setType(type);
+            builder.setPerl6ModuleType(type);
             description.setText("<html>" + Perl6ProjectType.getDescription(type) + "</html>");
         });
     }

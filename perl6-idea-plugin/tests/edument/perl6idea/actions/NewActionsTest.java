@@ -7,11 +7,12 @@ import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6LightProjectDescriptor;
-import edument.perl6idea.module.Perl6ModuleBuilder;
-import org.jetbrains.annotations.SystemIndependent;
+import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
+import edument.perl6idea.module.builder.Perl6ModuleBuilderScript;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
@@ -22,9 +23,9 @@ public class NewActionsTest extends LightPlatformCodeInsightFixtureTestCase {
     }
 
     public void testNewScriptAction() {
-        @SystemIndependent String basePath = getProject().getBasePath();
-        Perl6ModuleBuilder.stubScript(basePath, "test.p6", true);
-        File path = Paths.get(basePath, "test.p6").toFile();
+        Path basePath = Paths.get(getProject().getBasePath());
+        Perl6ModuleBuilderScript.stubScript(basePath, "test.p6", true);
+        File path = basePath.resolve("test.p6").toFile();
         assertTrue(path.exists());
     }
 
@@ -59,8 +60,8 @@ public class NewActionsTest extends LightPlatformCodeInsightFixtureTestCase {
     public void testNewTestAction() {
         Project p = getProject();
         String basePath = p.getBasePath();
-        Perl6ModuleBuilder.stubTest(basePath + "/t", "10-sanity", Collections.emptyList());
-        Perl6ModuleBuilder.stubTest(basePath + "/t", "20-sanity.t", Collections.emptyList());
+        Perl6ModuleBuilderModule.stubTest(Paths.get(basePath, "t"), "10-sanity", Collections.emptyList());
+        Perl6ModuleBuilderModule.stubTest(Paths.get(basePath, "t"), "20-sanity.t", Collections.emptyList());
         assertTrue(Paths.get(basePath, "t", "10-sanity.t").toFile().exists());
         assertTrue(Paths.get(basePath, "t", "20-sanity.t").toFile().exists());
     }

@@ -1,4 +1,4 @@
-package edument.perl6idea.module;
+package edument.perl6idea.metadata;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.*;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.module.Perl6ModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -174,7 +175,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         if (dependsArray.toList().contains(name))
             return;
         dependsArray.put(name);
-        myMeta.put("depends", dependsArray);
+        myMeta.put(key, dependsArray);
         saveFile();
     }
 
@@ -244,7 +245,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         return String.join("::", symbolParts);
     }
 
-    public void createStubMetaFile(VirtualFile firstRoot, boolean shouldOpenEditor) throws IOException {
+    public void createStubMetaFile(String moduleName, VirtualFile firstRoot, boolean shouldOpenEditor) throws IOException {
         if (firstRoot == null)
             firstRoot = calculateMetaParent();
         if (firstRoot == null) {
@@ -264,10 +265,9 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         VirtualFile finalFirstRoot = firstRoot;
         ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(() -> {
             try {
-                JSONObject meta = getStubMetaObject();
-                VirtualFile metaFile = finalFirstRoot.createChildData(this, META6_JSON_NAME);
-                metaFile.setBinaryContent(meta.toString(4).getBytes(CharsetToolkit.UTF8_CHARSET));
-
+                JSONObject meta = getStubMetaObject(moduleName);
+                VirtualFile metaFile = finalFirstRoot.findOrCreateChildData(this, META6_JSON_NAME);
+                metaFile.setBinaryContent(MetaDataJSONSerializer.serializer(meta).getBytes(CharsetToolkit.UTF8_CHARSET));
                 myMeta = meta;
                 myMetaFile = metaFile;
 
@@ -293,10 +293,10 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         return null;
     }
 
-    private JSONObject getStubMetaObject() {
+    private static JSONObject getStubMetaObject(String moduleName) {
         return new JSONObject()
             .put("perl", "6.*")
-            .put("name", myModule.getName())
+            .put("name", moduleName)
             .put("version", "0.1")
             .put("description", "Write me!")
             .put("auth", "Write me!")
@@ -430,7 +430,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 try {
                     notification.expire();
                     if (myModule.isDisposed()) return;
-                    createStubMetaFile(null, true);
+                    createStubMetaFile(myModule.getName(), null, true);
                 }
                 catch (IOException e1) {
                     Notifications.Bus.notify(new Notification(
