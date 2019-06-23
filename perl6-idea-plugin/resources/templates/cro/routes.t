@@ -1,6 +1,6 @@
 use Cro::HTTP::Test;
 use Test;
-use Routes;
+use $$MODULE_NAME$$::Routes;
 
 test-service routes, {
     test get('/'),

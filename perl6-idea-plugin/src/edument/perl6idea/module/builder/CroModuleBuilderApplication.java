@@ -118,15 +118,15 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     }
 
     private static void stubCroTest(Path sourcePath, CroAppTemplateConfig conf) {
-        stubFileByResource(sourcePath, conf, "00-sanity.t", "00-sanity.t");
+        stubFileByResource(sourcePath, conf, "routes.t", null);
     }
 
     private static void stubCroDockerfile(Path sourcePath, CroAppTemplateConfig conf) {
-        stubFileByResource(sourcePath, conf, "Dockerfile", "Dockerfile");
+        stubFileByResource(sourcePath, conf, "Dockerfile", null);
     }
 
     private static void stubCroServiceFile(Path sourcePath, CroAppTemplateConfig conf) {
-        stubFileByResource(sourcePath, conf, "service.p6", "service.p6");
+        stubFileByResource(sourcePath, conf, "service.p6", null);
     }
 
     private static void stubCroYAML(Path sourcePath, CroAppTemplateConfig conf) {
@@ -148,7 +148,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
 
     private static void stubFileByResource(Path sourcePath, CroAppTemplateConfig conf, String targetFileName, String resourceFileName) {
         Path targetPath = sourcePath.resolve(targetFileName);
-        List<String> templateContent = getAndUnstubResource(CRO_RESOURCE_PREFIX + resourceFileName, conf);
+        String resourceName = resourceFileName == null ? targetFileName : resourceFileName;
+        List<String> templateContent = getAndUnstubResource(CRO_RESOURCE_PREFIX + resourceName, conf);
         Perl6Utils.writeCodeToPath(targetPath, templateContent);
     }
 
