@@ -366,7 +366,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testStubbedMethodFromRoleImplementedAsAccessor() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "role R { method baz {...}; method bar {...}; method foo {...} }; <error descr=\"Composed roles require to implement methods: bar, baz\">class C does R</error> { my $.baz; has $.foo; has $!bar;}");
+                                  "role R { method baz {...}; method bar {...}; method foo {...} }; class <error descr=\"Composed roles require to implement methods: bar, baz\">C does R </error>{ my $.baz; has $.foo; has $!bar;}");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
