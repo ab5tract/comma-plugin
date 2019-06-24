@@ -19,7 +19,7 @@ Do the following steps inside a work-related directory, for example, `comma`.
 * A `Unregistered VCS root detected` for `comma-bulid` will appear - let IDEA add this root.
 * At this point, `json` and`tap4j` dependencies may be missing.
   * Open `Project Structure` -> `Libraries` and add them manually using `From Maven` submenu.
-  * Maven coordinates are: `org.tap4j:tap4j:4.3`, `org.json:json:20171018`. Add them to the `edument.perl6.plugin` module.
+  * Maven coordinates are: `org.tap4j:tap4j:4.3`, `org.json:json:20171018`, `org.yaml:snakeyaml:1.21`. Add them to the `edument.perl6.plugin` module.
 
 #### How to build a plugin
 
