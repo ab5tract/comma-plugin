@@ -43,8 +43,8 @@ public class Perl6CompleteRunConfigurationType extends ConfigurationTypeBase {
     private static class Perl6CompleteRunConfiguration extends Perl6RunConfiguration {
         public Perl6CompleteRunConfiguration(Project project,
                                              ConfigurationFactory factory,
-                                             String script) {
-            super(project, factory, script);
+                                             String name) {
+            super(project, factory, name);
         }
 
         @Nullable
