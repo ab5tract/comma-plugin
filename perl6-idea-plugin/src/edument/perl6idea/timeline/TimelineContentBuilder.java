@@ -68,6 +68,7 @@ public class TimelineContentBuilder extends RunTab {
     private void addTimelineTab(TimelineClient client) {
         TimelineView timeline = new TimelineView();
         Content content = myUi.createContent(TIMELINE_CONTENT_ID, timeline, "Timeline", null, null);
+        content.setPreferredFocusableComponent(timeline);
         content.setCloseable(false);
         myUi.addContent(content, 0, PlaceInGrid.center, false);
 
