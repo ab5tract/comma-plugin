@@ -6,7 +6,7 @@ Currently, Comma is based upon 191 Intellij revision/branch.
 Perl 6 Comma plugin supports versions in range from 145 (2016.1) to 191 (2019.1).
 
 Do the following steps inside a work-related directory, for example, `comma`.
-* `git clone https://github.com/edument/intellij-community.git`
+* `git clone https://github.com/edumentab/intellij-community.git`
 * `cd intellij-community`
 * `git checkout comma-191`
 * Do steps from `intellij-community` repo [README](https://github.com/JetBrains/intellij-community/#opening-the-intellij-source-code-for-build): creating `IDEA jdk` JDK and setting it to the project, running `getPlugins.sh` script.
