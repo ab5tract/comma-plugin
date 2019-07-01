@@ -7,6 +7,7 @@ import javax.swing.*;
 public class Perl6Icons {
     public static final Icon CAMELIA_13x13 = IconLoader.getIcon("/icons/camelia-13x13.png");
     public static final Icon CAMELIA = IconLoader.getIcon("/icons/camelia.png");
+    public static final Icon RUN_WITH_TIMELINE = IconLoader.getIcon("/icons/run_timeline_icon.png");
     public static final Icon SUB = IconLoader.getIcon("/icons/sub.png");
     public static final Icon METHOD = IconLoader.getIcon("/icons/method.png");
     public static final Icon REGEX = IconLoader.getIcon("/icons/regex.png");

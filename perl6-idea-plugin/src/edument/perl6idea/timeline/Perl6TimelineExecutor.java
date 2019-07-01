@@ -39,7 +39,7 @@ public class Perl6TimelineExecutor extends Executor {
 
     @NotNull
     public Icon getIcon() {
-        return Perl6Icons.CAMELIA;
+        return Perl6Icons.RUN_WITH_TIMELINE;
     }
 
     public Icon getDisabledIcon() {
