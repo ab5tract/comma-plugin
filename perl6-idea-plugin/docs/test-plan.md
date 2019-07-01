@@ -73,28 +73,28 @@ For the last opened project.
 - [ ] Type a couple of if-else statements, check it is formatted on e.g. brace closing
 
 * Modules
-- [x] Create a new module under `lib/Test`, `First`. Name field has `Test::` prefix. Check `META6.json` for `provides` section update
-- [x] Delete `lib/Test/First.pm6`. Check `META6.json` is updated
-- [x] Move `Test::Test` to `t`. Check `META6.json` is updated
-- [x] Create new module in `t/` named `Foo::Bar`. Check if `META6.json`is the same
+- [ ] Create a new module under `lib/Test`, `First`. Name field has `Test::` prefix. Check `META6.json` for `provides` section update
+- [ ] Delete `lib/Test/First.pm6`. Check `META6.json` is updated
+- [ ] Move `Test::Test` to `t`. Check `META6.json` is updated
+- [ ] Create new module in `t/` named `Foo::Bar`. Check if `META6.json`is the same
 
 * Tests
 
-- [x] Create new test, `one` in `t/`. It has highlighting and is named `one.t`
-- [x] Create new test, `two.t6` in `t/`. It has highlighting and is named `one.t6`
-- [x] Create new test, `three.t` in `t/`. It has highlighting and is named `three.t`
-- [x] Create new test in `bin/`, `foo`. It is created and has `foo.t` as its name
-- [x] Create new test in `lib/Test`, `foo`. It is created and has `foo.t` as its name
-- [x] `META6.json` is not affected by tests
+- [ ] Create new test, `one` in `t/`. It has highlighting and is named `one.t`
+- [ ] Create new test, `two.t6` in `t/`. It has highlighting and is named `one.t6`
+- [ ] Create new test, `three.t` in `t/`. It has highlighting and is named `three.t`
+- [ ] Create new test in `bin/`, `foo`. It is created and has `foo.t` as its name
+- [ ] Create new test in `lib/Test`, `foo`. It is created and has `foo.t` as its name
+- [ ] `META6.json` is not affected by tests
 
 * Scripts
 
-- [x] Create new script in `bin/`, `a`. It is created, has a default template and named as `a.p6`
-- [x] Create new script in `bin/`, `b.p6`. It is created, has a default template and named as `b.p6`
-- [x] Create new script in `bin/`, `c.pl6`. It is created, has a default template and named as `c.pl6`
-- [x] Create new script in `lib/Test`, `a`. It is created, has a default template and named as `a.p6`
-- [x] Create new script in `lib/Test`, `a`. It is created, has a default template and named as `a.p6`
-- [x] Create new script in `t/`, `a`. It is created, has a default template and named as `a.p6`
+- [ ] Create new script in `bin/`, `a`. It is created, has a default template and named as `a.p6`
+- [ ] Create new script in `bin/`, `b.p6`. It is created, has a default template and named as `b.p6`
+- [ ] Create new script in `bin/`, `c.pl6`. It is created, has a default template and named as `c.pl6`
+- [ ] Create new script in `lib/Test`, `a`. It is created, has a default template and named as `a.p6`
+- [ ] Create new script in `lib/Test`, `a`. It is created, has a default template and named as `a.p6`
+- [ ] Create new script in `t/`, `a`. It is created, has a default template and named as `a.p6`
 
 * Misc
 
