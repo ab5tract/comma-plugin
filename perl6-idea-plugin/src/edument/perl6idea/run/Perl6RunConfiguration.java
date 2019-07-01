@@ -38,7 +38,7 @@ abstract public class Perl6RunConfiguration extends LocatableConfigurationBase i
     private boolean myStartSuspended;
     private int myDebugPort;
 
-    Perl6RunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
+    public Perl6RunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
         super(project, factory, name);
     }
 
@@ -56,11 +56,11 @@ abstract public class Perl6RunConfiguration extends LocatableConfigurationBase i
         return script == null ? null : script.getName();
     }
 
-    String getScriptPath() {
+    public String getScriptPath() {
         return scriptPath;
     }
 
-    void setScriptPath(String myScriptPath) {
+    public void setScriptPath(String myScriptPath) {
         this.scriptPath = myScriptPath;
     }
 

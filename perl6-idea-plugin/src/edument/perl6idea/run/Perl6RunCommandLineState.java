@@ -20,7 +20,7 @@ public class Perl6RunCommandLineState extends CommandLineState {
     protected List<String> command = new LinkedList<>();
     protected Perl6RunConfiguration runConfiguration;
 
-    protected Perl6RunCommandLineState(ExecutionEnvironment environment) {
+    public Perl6RunCommandLineState(ExecutionEnvironment environment) {
         super(environment);
         runConfiguration = (Perl6RunConfiguration)getEnvironment().getRunProfile();
     }

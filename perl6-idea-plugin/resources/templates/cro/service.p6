@@ -1,6 +1,6 @@
 use Cro::HTTP::Log::File;
 use Cro::HTTP::Server;
-use Routes;
+use $$MODULE_NAME$$::Routes;
 
 my Cro::Service $http = Cro::HTTP::Server.new(
     http => <1.1>,
