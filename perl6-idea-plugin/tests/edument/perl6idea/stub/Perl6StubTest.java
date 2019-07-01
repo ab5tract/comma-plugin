@@ -204,6 +204,11 @@ public class Perl6StubTest extends LightCodeInsightFixtureTestCase {
                         "    TYPE_NAME:Perl6TypeNameStubImpl\n");
     }
 
+    public void testEmptyConstant() {
+        doTest("constant = 1;",
+               "Perl6FileStubImpl\n");
+    }
+
     public void testStubbedRoleUsageInComposition() {
         StubElement e = doTest("my role Base { method mmm {}; method bbb {}; }; class C does Base { method ddd {}; };",
                 "Perl6FileStubImpl\n" +
