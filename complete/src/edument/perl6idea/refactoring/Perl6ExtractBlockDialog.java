@@ -269,9 +269,12 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
         @Override
         public void setValueAt(Object newValue, int rowIndex, int columnIndex) {
             switch (columnIndex) {
-                case 0:
-                case 1: {
+                case 0: {
                     myVars[rowIndex].parameterName = (String)newValue;
+                    break;
+                }
+                case 1: {
+                    myVars[rowIndex].type = (String)newValue;
                     break;
                 }
                 case PASSED_AS_PARAMETER_COLUMN_INDEX:
