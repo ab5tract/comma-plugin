@@ -1,10 +1,19 @@
 package edument.perl6idea.commenter;
 
 import com.intellij.codeInsight.generation.actions.CommentByLineCommentAction;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import org.jetbrains.annotations.NotNull;
 
 public class CommenterTest extends LightCodeInsightFixtureTestCase {
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
+    }
+
     public void testCommenter() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<caret>say 'foo';");
         CommentByLineCommentAction commentAction = new CommentByLineCommentAction();

@@ -1,12 +1,19 @@
 package edument.perl6idea.actions;
 
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
 public class Perl6StatementMoveTest extends LightPlatformCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/mover";
+    }
+
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
     }
 
     public void testSimple() {

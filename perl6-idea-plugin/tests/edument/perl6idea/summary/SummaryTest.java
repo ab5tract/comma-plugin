@@ -1,11 +1,20 @@
 package edument.perl6idea.summary;
 
 import com.intellij.psi.PsiElement;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6RoutineDecl;
+import org.jetbrains.annotations.NotNull;
 
 public class SummaryTest extends LightCodeInsightFixtureTestCase {
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
+    }
+
     public void doTest(String code, String result) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, code);
         PsiElement el = myFixture.getElementAtCaret();

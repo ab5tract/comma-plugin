@@ -21,6 +21,7 @@ public class Perl6LightProjectDescriptor extends LightProjectDescriptor {
         return srcRoot;
     }
 
+    @Override
     protected VirtualFile doCreateSourceRoot(VirtualFile root, String srcPath) {
         VirtualFile srcRoot;
         try {

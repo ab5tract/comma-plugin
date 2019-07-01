@@ -5,13 +5,21 @@ import com.intellij.codeInsight.editorActions.smartEnter.SmartEnterProcessors;
 import com.intellij.openapi.application.Result;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import edument.perl6idea.Perl6Language;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
+    }
+
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/smartEnter";

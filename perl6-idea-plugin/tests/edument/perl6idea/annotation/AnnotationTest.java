@@ -4,9 +4,12 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.sdk.Perl6SdkType;
+import org.jetbrains.annotations.NotNull;
 
 public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     private Sdk testSdk;
@@ -14,6 +17,12 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/annotation";
+    }
+
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
     }
 
     @Override

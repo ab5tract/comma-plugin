@@ -1,7 +1,9 @@
 package edument.perl6idea.intention;
 
 import com.intellij.codeInsight.intention.IntentionAction;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +11,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class IntentionTest extends LightCodeInsightFixtureTestCase {
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
+    }
+
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/intention";

@@ -5,13 +5,16 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.StubBuilder;
 import com.intellij.psi.impl.DebugUtil;
 import com.intellij.psi.stubs.StubElement;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +23,12 @@ import java.util.stream.Collectors;
 
 public class Perl6StubTest extends LightCodeInsightFixtureTestCase {
     private StubBuilder myBuilder;
+
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
+    }
 
     @Override
     protected void setUp() throws Exception {
