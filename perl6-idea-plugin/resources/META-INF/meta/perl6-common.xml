@@ -86,7 +86,6 @@
     <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor" />
     <programRunner implementation="edument.perl6idea.timeline.Perl6TimelineRunner"/>
     <stubIndex implementation="edument.perl6idea.cro.CroRouteIndex"/>
-    <moduleExtension implementation="com.intellij.openapi.roots.LanguageLevelModuleExtensionImpl"/>
   </extensions>
 
   <actions>
