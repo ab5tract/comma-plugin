@@ -1,5 +1,6 @@
 package edument.perl6idea.psi.stub;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
@@ -50,5 +51,10 @@ public class Perl6ConstantStubElementType extends IStubElementType<Perl6Constant
     @Override
     public void indexStub(@NotNull Perl6ConstantStub stub, @NotNull IndexSink sink) {
         sink.occurrence(Perl6StubIndexKeys.ALL_CONSTANTS, stub.getConstantName());
+    }
+
+    @Override
+    public boolean shouldCreateStub(ASTNode node) {
+        return ((Perl6Constant)node.getPsi()).getConstantName() != null;
     }
 }
