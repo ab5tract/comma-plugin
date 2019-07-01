@@ -98,7 +98,7 @@ For the last opened project.
 
 * Misc
 
-Here we test various cases of functionality that must be visibily present,
+Here we test various cases of functionality that must be visibly present,
 thus ensuring our `plugin.xml` and other metadata files were loaded and processed by
 the Idea or that Comma contains all necessary classes.
 
