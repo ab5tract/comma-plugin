@@ -71,6 +71,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
                                                 conf.moduleName + "::Routes",
                                                 true, false, sourceRoot.getParent(),
                                                 "Empty", false);
+            metaData.setName(conf.moduleName);
             VirtualFile routesFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(modulePath));
             if (routesFile == null)
                 return;
