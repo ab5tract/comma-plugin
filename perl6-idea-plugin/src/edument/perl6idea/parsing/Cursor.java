@@ -376,6 +376,8 @@ public abstract class Cursor<TCursor extends Cursor> {
         // Save original token and token start; note we're in lookahead.
         int origTokenStart = stack.tokenStart;
         IElementType origToken = stack.token;
+        List<Heredoc> origHeredocs = stack.heredocs.isEmpty() ? null : new ArrayList<>(stack.heredocs);
+        int origHeredocDelimStart = stack.heredocDelimStart;
         stack.inLookahead++;
 
         // Run ignoring any tokens, until we leave the base.
@@ -410,6 +412,9 @@ public abstract class Cursor<TCursor extends Cursor> {
         // Restore original token and token start; note we left lookahead.
         stack.token = origToken;
         stack.tokenStart = origTokenStart;
+        if (origHeredocs != null)
+            stack.heredocs = origHeredocs;
+        stack.heredocDelimStart = origHeredocDelimStart;
         stack.inLookahead--;
 
         // Return lookahead result.
@@ -611,8 +616,6 @@ public abstract class Cursor<TCursor extends Cursor> {
 
     public boolean dequeueHeredoc() {
         if (stack.heredocs.isEmpty())
-            return false;
-        if (stack.inLookahead > 0)
             return false;
         Heredoc h = stack.heredocs.remove(0);
         for (String restore : saveLang)
