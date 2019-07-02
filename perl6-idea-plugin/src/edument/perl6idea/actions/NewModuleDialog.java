@@ -14,7 +14,7 @@ public class NewModuleDialog extends DialogWrapper {
     private JPanel myPanel;
     private JCheckBox myIsUnitScopedCheckBox;
 
-    protected NewModuleDialog(@Nullable Project project,
+    public NewModuleDialog(@Nullable Project project,
                               boolean canBeParent,
                               String prefix) {
         super(project, canBeParent);
