@@ -59,11 +59,14 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     @Override
     public String inferType() {
         String text = getText();
-        // Special cases
-        if (text.equals("$!")) return "Exception";
-        if (text.equals("$/")) return "Match";
+        // Special cases, regex
         if (text.substring(1).chars().allMatch(Character::isDigit)) return "Match";
         if (text.startsWith("$<") && text.endsWith(">")) return "Match";
+
+        // Check if known by definition
+        String type = Perl6FileImpl.VARIABLE_SYMBOLS.get(text);
+        if (type != null)
+            return type;
 
         // Check if typed
         // Firstly get definition

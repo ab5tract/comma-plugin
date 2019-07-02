@@ -31,17 +31,59 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
-    private static final Perl6Symbol[] UNIT_SYMBOLS = new Perl6Symbol[] {
-        new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$?FILE"),
-        new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$?LINE"),
-        new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$?LANG"),
-        new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "%?RESOURCES"),
-        new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$?PACKAGE"),
-        new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$=pod"),
-        new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$_"),
-        new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$/"),
-        new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$!")
-    };
+    public static final Map<String, String> VARIABLE_SYMBOLS = new HashMap<>();
+
+    static {
+        // compile time variables
+        VARIABLE_SYMBOLS.put("$?FILE", "Str");
+        VARIABLE_SYMBOLS.put("$?LINE", "Int");
+        VARIABLE_SYMBOLS.put("$?LANG", null);
+        VARIABLE_SYMBOLS.put("%?RESOURCES", null);
+        VARIABLE_SYMBOLS.put("$?PACKAGE", null);
+        // pod vars
+        VARIABLE_SYMBOLS.put("$=pod", "Array");
+        // special variables
+        VARIABLE_SYMBOLS.put("$_", null);
+        VARIABLE_SYMBOLS.put("$/", "Match");
+        VARIABLE_SYMBOLS.put("$!", "Exception");
+        // dynamic variables
+        VARIABLE_SYMBOLS.put("$*ARGFILES", null);
+        VARIABLE_SYMBOLS.put("@*ARGS", "Array");
+        VARIABLE_SYMBOLS.put("&*ARGS-TO-CAPTURE", null);
+        //VARIABLE_SYMBOLS.put("&*GENERATE-USAGE", null);
+        VARIABLE_SYMBOLS.put("$*IN", "IO::Special");
+        VARIABLE_SYMBOLS.put("$*OUT", "IO::Special");
+        VARIABLE_SYMBOLS.put("$*ERR", "IO::Special");
+        VARIABLE_SYMBOLS.put("%*ENV", "Hash");
+        VARIABLE_SYMBOLS.put("$*REPO", null);
+        VARIABLE_SYMBOLS.put("$*INIT-DISTANT", "Instant");
+        VARIABLE_SYMBOLS.put("$*TZ", "Int");
+        VARIABLE_SYMBOLS.put("$*CWD", "IO::Path");
+        VARIABLE_SYMBOLS.put("$*KERNEL", "Kernel");
+        VARIABLE_SYMBOLS.put("$*DISTRO", "Distro");
+        VARIABLE_SYMBOLS.put("$*VM", "VM");
+        VARIABLE_SYMBOLS.put("$*PERL", "Perl");
+        VARIABLE_SYMBOLS.put("$*PID", "Int");
+        VARIABLE_SYMBOLS.put("$*PROGRAM-NAME", "Str");
+        VARIABLE_SYMBOLS.put("$*PROGRAM", "IO::Path");
+        VARIABLE_SYMBOLS.put("&*EXIT", null);
+        VARIABLE_SYMBOLS.put("$*EXECUTABLE", "IO::Path");
+        VARIABLE_SYMBOLS.put("$*EXECUTABLE-NAME", "Str");
+        VARIABLE_SYMBOLS.put("$*USER", "IntStr");
+        VARIABLE_SYMBOLS.put("$*GROUP", "IntStr");
+        VARIABLE_SYMBOLS.put("$*HOMEDRIVE", null);
+        VARIABLE_SYMBOLS.put("$*HOMEPATH", null);
+        VARIABLE_SYMBOLS.put("$*HOME", "IO::Path");
+        VARIABLE_SYMBOLS.put("$*SPEC", "IO::Spec");
+        VARIABLE_SYMBOLS.put("$*TMPDIR", "IO::Path");
+        VARIABLE_SYMBOLS.put("$*THREAD", "Thread");
+        VARIABLE_SYMBOLS.put("$*SCHEDULER", "ThreadPoolScheduler");
+        VARIABLE_SYMBOLS.put("$*SAMPLER", null);
+        VARIABLE_SYMBOLS.put("$*USAGE", null);
+        VARIABLE_SYMBOLS.put("$*COLLATION", "Collaction");
+        VARIABLE_SYMBOLS.put("$*TOLERANCE", "Num");
+        VARIABLE_SYMBOLS.put("$*DEFAULT-READ-ELEMS", "Int");
+    }
 
     public Perl6FileImpl(FileViewProvider viewProvider) {
         super(viewProvider, Perl6Language.INSTANCE);
@@ -181,8 +223,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     @Override
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
-        for (Perl6Symbol symbol : UNIT_SYMBOLS) {
-            collector.offerSymbol(symbol);
+        for (String symbol : VARIABLE_SYMBOLS.keySet()) {
+            collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, symbol));
             if (collector.isSatisfied())
                 return;
         }
