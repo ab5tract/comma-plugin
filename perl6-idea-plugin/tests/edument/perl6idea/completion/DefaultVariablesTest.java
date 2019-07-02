@@ -138,7 +138,6 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        System.out.println(vars);
         assertTrue(vars.containsAll((assertTrue)));
         for (String falsePositive : assertFalse)
             assertFalse(vars.contains(falsePositive));
