@@ -1,6 +1,7 @@
 package edument.perl6idea.annotation.fix;
 
 import com.intellij.codeInsight.intention.IntentionAction;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.module.Module;
@@ -14,6 +15,7 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.actions.NewModuleDialog;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
+import edument.perl6idea.psi.Perl6ModuleName;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,9 +23,9 @@ import java.nio.file.Paths;
 
 public class CreateLocalModuleFix implements IntentionAction {
     private final Module module;
-    private final String moduleName;
+    private final Perl6ModuleName moduleName;
 
-    public CreateLocalModuleFix(Module module, String name) {
+    public CreateLocalModuleFix(Module module, Perl6ModuleName name) {
         this.module = module;
         this.moduleName = name;
     }
@@ -62,7 +64,7 @@ public class CreateLocalModuleFix implements IntentionAction {
         if (moduleLibraryPath == null)
             throw new IncorrectOperationException();
 
-        NewModuleDialog dialog = new NewModuleDialog(project, false, moduleName);
+        NewModuleDialog dialog = new NewModuleDialog(project, false, moduleName.getText());
         boolean isOk = dialog.showAndGet();
         if (!isOk) return;
 
@@ -72,10 +74,20 @@ public class CreateLocalModuleFix implements IntentionAction {
             dialog.getModuleName(), false, true,
             moduleLibraryRoot.getParent(), dialog.getModuleType(), false);
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(newModulePath).toFile());
+
+        // If the user changed stubbed module name in form,
+        // we update its usage too
+        if (!dialog.getModuleName().equals(moduleName.getText())) {
+            ApplicationManager.getApplication().runWriteAction(() -> {
+                moduleName.setName(dialog.getModuleName());
+            });
+        }
+
         if (moduleFile != null) {
             OpenFileDescriptor descriptor = new OpenFileDescriptor(project, moduleFile);
             descriptor.navigate(true);
         }
+
     }
 
     @Override
