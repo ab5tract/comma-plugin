@@ -64,9 +64,9 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         if (text.startsWith("$<") && text.endsWith(">")) return "Match";
 
         // Check if known by definition
-        String type = Perl6FileImpl.VARIABLE_SYMBOLS.get(text);
-        if (type != null)
-            return type;
+        String typeByDefinition = Perl6FileImpl.VARIABLE_SYMBOLS.get(text);
+        if (typeByDefinition != null)
+            return typeByDefinition;
 
         // Check if typed
         // Firstly get definition
