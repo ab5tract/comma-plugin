@@ -108,7 +108,7 @@ public class Perl6CommandLine {
         command.add("--libpath=" + prefix + "/share/nqp/lib");
         command.add("--libpath=" + prefix + "/share/perl6/lib");
         command.add("--libpath=" + prefix + "/share/perl6/runtime");
-        command.add(prefix + "/lib/perl6/runtime/perl6.moarvm");
+        command.add(prefix + "/share/perl6/runtime/perl6.moarvm");
         return command;
     }
 }
