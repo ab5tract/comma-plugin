@@ -486,9 +486,14 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
-    public void testFromPerl5Module() {
+    public void testFromPerl5ModuleParens() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use Foo::Bar:from('Perl5')");
+        myFixture.checkHighlighting(false, false, false, false);
+    }
+
+    public void testFromPerl5ModuleAngles() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use Foo::Bar:from<Perl5>");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting(false, false, false, false);
     }
 
     public void testSigspaceAnnotator() {
