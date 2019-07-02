@@ -243,8 +243,40 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(true, false, true, false);
     }
 
+    public void testLiteralRange() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for 5..10 {}");
+        myFixture.checkHighlighting(true, false, true, false);
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a; my $b; for $a..$b {}");
+        myFixture.checkHighlighting(true, false, true, false);
+    }
+
     public void testRangeWithNewlineIsCompleted() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "0\n..\n1");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"Range can be simplified\">0\n..\n1</weak_warning>");
+        myFixture.checkHighlighting(true, false, true, false);
+    }
+
+    public void testZeroToNRange() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for <weak_warning descr=\"Range can be simplified\">0..9</weak_warning> {}");
+        myFixture.checkHighlighting(true, false, true, false);
+    }
+
+    public void testZeroToExclusiveNRange() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for <weak_warning descr=\"Range can be simplified\">0..^10</weak_warning> {}");
+        myFixture.checkHighlighting(true, false, true, false);
+    }
+
+    public void testZeroToVarRange() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $n = 5; for <weak_warning descr=\"Range can be simplified\">0..^$n</weak_warning> {}");
+        myFixture.checkHighlighting(true, false, true, false);
+    }
+
+    public void testZeroToExclusiveVarRange() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $n = 5; for <weak_warning descr=\"Range can be simplified\">0..$n-1</weak_warning> {}");
+        myFixture.checkHighlighting(true, false, true, false);
+    }
+
+    public void testZeroToExclusiveVarInParensRange() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $n = 5; for <weak_warning descr=\"Range can be simplified\">0..($n-1)</weak_warning> {}");
         myFixture.checkHighlighting(true, false, true, false);
     }
 

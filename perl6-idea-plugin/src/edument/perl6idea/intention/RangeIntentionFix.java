@@ -11,15 +11,7 @@ import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import static edument.perl6idea.parsing.Perl6TokenTypes.*;
-
 public class RangeIntentionFix extends PsiElementBaseIntentionAction implements IntentionAction {
-    static final Set<String> OPS = new HashSet<>(Arrays.asList("..", "..^"));
-
     @NotNull
     @Override
     public String getText() {
@@ -77,47 +69,7 @@ public class RangeIntentionFix extends PsiElementBaseIntentionAction implements 
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-        if (!(element.getNode().getElementType() == INFIX || // ..
-              element.getNode().getElementType() == INTEGER_LITERAL || // numbers
-              element.getNode().getElementType() == VARIABLE || // $foo
-              element.getNode().getElementType() == PARENTHESES_OPEN || // (
-              element.getNode().getElementType() == PARENTHESES_CLOSE)) // )
-            return false;
-
-        Perl6InfixApplication application = PsiTreeUtil.getParentOfType(element, Perl6InfixApplication.class);
-        if (application == null)
-            return false;
-
-        PsiElement infix = PsiTreeUtil.getChildOfType(application, Perl6Infix.class);
-        if (infix == null) return false;
-        String op = infix.getText();
-        if (!OPS.contains(op)) return false;
-        // Get and check possible siblings
-        PsiElement temp = infix.getNextSibling();
-        while (temp != null) {
-            if (temp instanceof Perl6IntLiteral || temp instanceof Perl6Variable ||
-                temp instanceof Perl6InfixApplication || temp instanceof Perl6ParenthesizedExpr)
-                break;
-            temp = temp.getNextSibling();
-        }
-
-        PsiElement prev = PsiTreeUtil.getPrevSiblingOfType(infix, Perl6IntLiteral.class);
-        Perl6InfixApplication infixInParens = null;
-        if (temp instanceof Perl6ParenthesizedExpr)
-            infixInParens = PsiTreeUtil.findChildOfType(temp, Perl6InfixApplication.class);
-        return prev != null && prev.getText().equals("0") && // Basic condition
-               // Int condition
-               (temp instanceof Perl6IntLiteral && (infix.getText().equals("..") || infix.getText().equals("..^")) ||
-                // Var condition
-                temp instanceof Perl6Variable && infix.getText().equals("..^") ||
-                // Infix, possible `0..$n-1`
-                temp instanceof Perl6InfixApplication && infix.getText().equals("..") ||
-                // Parens, possible ..($n-1)
-                temp instanceof Perl6ParenthesizedExpr && infix.getText().equals("..") &&
-                ( // inner parens expr
-                  infixInParens != null && checkInfix(infixInParens.getChildren())
-                )
-               );
+        return true;
     }
 
     @Nls
