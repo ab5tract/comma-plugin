@@ -49,8 +49,6 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         // dynamic variables
         VARIABLE_SYMBOLS.put("$*ARGFILES", null);
         VARIABLE_SYMBOLS.put("@*ARGS", "Array");
-        VARIABLE_SYMBOLS.put("&*ARGS-TO-CAPTURE", null);
-        //VARIABLE_SYMBOLS.put("&*GENERATE-USAGE", null);
         VARIABLE_SYMBOLS.put("$*IN", "IO::Special");
         VARIABLE_SYMBOLS.put("$*OUT", "IO::Special");
         VARIABLE_SYMBOLS.put("$*ERR", "IO::Special");
@@ -79,8 +77,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         VARIABLE_SYMBOLS.put("$*THREAD", "Thread");
         VARIABLE_SYMBOLS.put("$*SCHEDULER", "ThreadPoolScheduler");
         VARIABLE_SYMBOLS.put("$*SAMPLER", null);
-        VARIABLE_SYMBOLS.put("$*USAGE", null);
-        VARIABLE_SYMBOLS.put("$*COLLATION", "Collaction");
+        VARIABLE_SYMBOLS.put("$*COLLATION", "Collation");
         VARIABLE_SYMBOLS.put("$*TOLERANCE", "Num");
         VARIABLE_SYMBOLS.put("$*DEFAULT-READ-ELEMS", "Int");
     }
