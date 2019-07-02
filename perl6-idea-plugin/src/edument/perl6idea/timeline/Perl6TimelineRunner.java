@@ -35,7 +35,7 @@ public class Perl6TimelineRunner extends DefaultProgramRunner {
 
     private static RunContentDescriptor showRunContent(ExecutionResult execute,
                                                        ExecutionEnvironment env,
-                                                       TimelineClient client) {
+                                                       TimelineClient client) throws ExecutionException {
         return execute != null
                 ? new TimelineContentBuilder(execute, env).showRunContent(env.getContentToReuse(), client)
                 : null;

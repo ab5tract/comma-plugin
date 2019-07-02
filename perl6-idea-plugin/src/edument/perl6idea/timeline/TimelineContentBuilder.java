@@ -1,5 +1,6 @@
 package edument.perl6idea.timeline;
 
+import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.execution.configurations.RunProfile;
@@ -22,50 +23,30 @@ import com.intellij.ui.content.Content;
 import edument.perl6idea.timeline.client.ClientEvent;
 import edument.perl6idea.timeline.client.TimelineClient;
 import edument.perl6idea.timeline.client.TimelineEventListener;
+import edument.perl6idea.ui.CustomConsoleRunTab;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class TimelineContentBuilder extends RunTab {
+public class TimelineContentBuilder extends CustomConsoleRunTab {
     private final static String TIMELINE_CONTENT_ID = "TimelineContent";
-    private ExecutionResult myExecutionResult;
 
     public TimelineContentBuilder(@NotNull ExecutionResult executionResult,
                                   @NotNull ExecutionEnvironment environment) {
-        super(environment.getProject(), GlobalSearchScope.allScope(environment.getProject()),
-              environment.getRunner().getRunnerId(), "Timeline",
-              environment.getRunProfile().getName());
-        myEnvironment = environment;
-        myExecutionResult = executionResult;
-        myUi.getDefaults()
-            .initTabDefaults(0, "Timeline", null)
-            .initTabDefaults(1, "Console", null);
+        super(environment, executionResult, "Timeline");
     }
 
-    public RunContentDescriptor showRunContent(@Nullable RunContentDescriptor reuseContent,
-                                               TimelineClient client) {
-        RunContentDescriptor descriptor = createDescriptor(client);
-        Disposer.register(descriptor, this);
-        Disposer.register(myProject, descriptor);
-        RunContentManagerImpl.copyContentAndBehavior(descriptor, reuseContent);
-        myRunContentDescriptor = descriptor;
-        return descriptor;
+    @Override
+    protected String getCustomTabText() {
+        return "Timeline";
     }
 
-    @NotNull
-    private RunContentDescriptor createDescriptor(TimelineClient client) {
-        final RunProfile profile = myEnvironment.getRunProfile();
-        if (ApplicationManager.getApplication().isUnitTestMode()) {
-            return new RunContentDescriptor(profile, myExecutionResult, myUi);
-        }
-        RunContentDescriptor contentDescriptor = new RunContentDescriptor(profile, myExecutionResult, myUi);
-        addTimelineTab(client);
-        addConsoleTab(profile, contentDescriptor);
-        return contentDescriptor;
-    }
-
-    private void addTimelineTab(TimelineClient client) {
+    @Override
+    protected void addCustomTab(Object clientObject) throws ExecutionException {
+        if (!(clientObject instanceof TimelineClient))
+            throw new ExecutionException("Expected TimelineClient, got " + clientObject.getClass() + " instead");
+        TimelineClient client = (TimelineClient)clientObject;
         TimelineView timeline = new TimelineView();
         Content content = myUi.createContent(TIMELINE_CONTENT_ID, timeline, "Timeline", null, null);
         content.setPreferredFocusableComponent(timeline);
@@ -97,23 +78,5 @@ public class TimelineContentBuilder extends RunTab {
                 timeline.endLiveUpdates();
             }
         });
-    }
-
-    private void addConsoleTab(RunProfile profile, RunContentDescriptor contentDescriptor) {
-        final ExecutionConsole console = myExecutionResult.getExecutionConsole();
-        Content content = myUi.createContent(ExecutionConsole.CONSOLE_CONTENT_ID, console.getComponent(),
-                                             "Console",
-                                             AllIcons.Debugger.Console,
-                                             console.getPreferredFocusableComponent());
-        content.setCloseable(false);
-        myUi.addContent(content, 1, PlaceInGrid.bottom, false);
-        if (profile instanceof RunConfigurationBase) {
-            if (console instanceof ObservableConsoleView && !ApplicationManager.getApplication().isUnitTestMode()) {
-                ((ObservableConsoleView)console).addChangeListener(
-                        new RunContentBuilder.ConsoleToFrontListener((RunConfigurationBase)profile,
-                                myProject, myEnvironment.getExecutor(), contentDescriptor, myUi),
-                        this);
-            }
-        }
     }
 }
