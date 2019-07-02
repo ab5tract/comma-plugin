@@ -7,16 +7,18 @@ import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.annotation.fix.CreateLocalModuleFix;
 import edument.perl6idea.annotation.fix.MissingModuleFix;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
+import edument.perl6idea.psi.Perl6ColonPair;
+import edument.perl6idea.psi.Perl6LongName;
 import edument.perl6idea.psi.Perl6ModuleName;
+import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.utils.Perl6ModuleListFetcher;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class UsedModuleAnnotator implements Annotator {
     @Override
@@ -24,7 +26,21 @@ public class UsedModuleAnnotator implements Annotator {
         if (!(element instanceof Perl6ModuleName))
             return;
 
-        String moduleName = element.getText();
+        Perl6LongName moduleNameNode = PsiTreeUtil.findChildOfType(element, Perl6LongName.class);
+        if (moduleNameNode == null)
+            return;
+        String moduleName = moduleNameNode.getFirstChild().getText();
+
+        Collection<Perl6ColonPair> params = PsiTreeUtil.findChildrenOfType(moduleNameNode, Perl6ColonPair.class);
+        for (Perl6ColonPair colonPair : params) {
+            String key = colonPair.getKey();
+            Perl6Statement statement = colonPair.getStatement();
+            if (statement == null)
+                continue;
+            if (Objects.equals(key, "from") && Objects.equals(statement.getText(), "Perl5"))
+                return;
+        }
+
         // We don't need to annotate late-bound modules
         if (moduleName.startsWith("::")) return;
         if (Perl6ModuleListFetcher.PREINSTALLED_MODULES.contains(moduleName))
