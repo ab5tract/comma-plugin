@@ -533,6 +533,10 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         doTestContainsAll("enum A <One Two>; say A::Two.<caret>", ".enums", ".acos");
     }
 
+    public void testDynamicVariableMethodCompletion() {
+        doTestContainsAll("$*COLLATION.<caret>", ".secondary", ".set");
+    }
+
     public void testRecursiveVariableCompletion() {
         assertNoThrowable(() -> {
             myFixture.configureByText(Perl6ScriptFileType.INSTANCE,

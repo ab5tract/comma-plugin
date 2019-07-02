@@ -27,29 +27,29 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
     public void testCompletion() {
         doFileTest("DefaultTestData1.pm6",
                    Arrays.asList("$_", "$/", "$!", "$=pod", "$?FILE", "$?LANG", "$?LINE", "$?PACKAGE"),
-                   Collections.singletonList("$=finish"), 8);
+                   Collections.singletonList("$=finish"));
     }
 
     public void testCompletionResources() {
         doFileTest("DefaultTestData2.pm6",
                    Arrays.asList("%?RESOURCES", "%hash"),
-                   Collections.emptyList(), 4);
+                   Collections.emptyList());
     }
 
     public void testCompletionInClass() {
         doFileTest("DefaultTestData3.pm6",
                    Arrays.asList("$?CLASS", "$?PACKAGE"),
-                   Collections.singletonList("$?ROLE"), null);
+                   Collections.singletonList("$?ROLE"));
     }
 
     public void testCompletionInRole() {
-        doFileTest("DefaultTestData4.pm6", Arrays.asList("$?CLASS", "$?PACKAGE", "$?ROLE"), Collections.emptyList(), null);
+        doFileTest("DefaultTestData4.pm6", Arrays.asList("$?CLASS", "$?PACKAGE", "$?ROLE"), Collections.emptyList());
     }
 
     public void testCompletionInGrammar() {
         doFileTest("DefaultTestData5.pm6",
                    Arrays.asList("$?CLASS", "$?PACKAGE"),
-                   Collections.singletonList("$?ROLE"), null);
+                   Collections.singletonList("$?ROLE"));
     }
 
     public void testCompletionInBlock() {
@@ -94,32 +94,53 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testPodFinishInBlockCompletion() {
-
         doTextTest("if True {\nsay $=<caret>\n}\n\n=for finish\n\n",
                    Arrays.asList("$=pod", "$=finish"),
                    Collections.emptyList());
     }
 
+    public void testMAINDynamic() {
+        doTextTest("sub MAIN { say $*<caret> }",
+                   Arrays.asList("$*USAGE", "$*THREAD"),
+                   Collections.emptyList());
+    }
+
+    public void testGenerateUsageDynamic() {
+        doTextTest("sub GENERATE-USAGE { say &*<caret> }",
+                   Collections.singletonList("&*GENERATE-USAGE"),
+                   Collections.singletonList("&*ARGS-TO-CAPTURE"));
+    }
+
+    public void testArgsToCaptureDynamic() {
+        doTextTest("sub ARGS-TO-CAPTURE { say &*<caret> }",
+                   Collections.singletonList("&*ARGS-TO-CAPTURE"),
+                   Collections.singletonList("&*GENERATE-USAGE"));
+    }
+
+    public void testDynamicVariables() {
+        doTextTest("$*<caret>",
+                   Arrays.asList("$*THREAD", "$*USER", "$*TZ", "$*COLLATION"),
+                   Collections.singletonList("$*USAGE"));
+    }
+
     private void doTextTest(String text, @Nullable List<String> assertTrue, @Nullable List<String> assertFalse) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
-        doTest(assertTrue, assertFalse, null);
+        doTest(assertTrue, assertFalse);
     }
 
 
-    private void doFileTest(String filename, @Nullable List<String> assertTrue, @Nullable List<String> assertFalse, @Nullable Integer size) {
+    private void doFileTest(String filename, @Nullable List<String> assertTrue, @Nullable List<String> assertFalse) {
         myFixture.configureByFile(filename);
-        doTest(assertTrue, assertFalse, size);
+        doTest(assertTrue, assertFalse);
     }
 
-    private void doTest(@Nullable List<String> assertTrue, @Nullable List<String> assertFalse, @Nullable Integer size) {
+    private void doTest(@Nullable List<String> assertTrue, @Nullable List<String> assertFalse) {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
+        System.out.println(vars);
         assertTrue(vars.containsAll((assertTrue)));
-        for (String falsePositive : assertFalse) {
+        for (String falsePositive : assertFalse)
             assertFalse(vars.contains(falsePositive));
-        }
-        if (size != null)
-            assertEquals(size.intValue(), vars.size());
     }
 }
