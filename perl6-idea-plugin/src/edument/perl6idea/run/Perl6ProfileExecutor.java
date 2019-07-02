@@ -40,7 +40,7 @@ public class Perl6ProfileExecutor extends Executor {
 
     @NotNull
     public Icon getIcon() {
-            return Perl6Icons.CAMELIA;
+            return Perl6Icons.CAMELIA_STOPWATCH;
 	}
 
     public Icon getDisabledIcon() {
