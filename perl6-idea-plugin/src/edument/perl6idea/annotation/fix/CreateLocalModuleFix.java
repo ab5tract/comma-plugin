@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.actions.NewModuleDialog;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
 import org.jetbrains.annotations.Nls;
@@ -61,12 +62,15 @@ public class CreateLocalModuleFix implements IntentionAction {
         if (moduleLibraryPath == null)
             throw new IncorrectOperationException();
 
+        NewModuleDialog dialog = new NewModuleDialog(project, false, moduleName);
+        boolean isOk = dialog.showAndGet();
+        if (!isOk) return;
 
         String newModulePath = Perl6ModuleBuilderModule.stubModule(
             module.getComponent(Perl6MetaDataComponent.class),
             Paths.get(moduleLibraryPath),
-            moduleName, false, true,
-            moduleLibraryRoot.getParent(), "", false);
+            dialog.getModuleName(), false, true,
+            moduleLibraryRoot.getParent(), dialog.getModuleType(), false);
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(newModulePath).toFile());
         if (moduleFile != null) {
             OpenFileDescriptor descriptor = new OpenFileDescriptor(project, moduleFile);
@@ -76,6 +80,6 @@ public class CreateLocalModuleFix implements IntentionAction {
 
     @Override
     public boolean startInWriteAction() {
-        return true;
+        return false;
     }
 }
