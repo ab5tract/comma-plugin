@@ -6,9 +6,10 @@ import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
@@ -24,115 +25,121 @@ public class DefaultVariablesTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testCompletion() {
-        myFixture.configureByFile("DefaultTestData1.pm6");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.containsAll(
-          Arrays.asList("$_", "$/", "$!", "$=pod", "$?FILE",
-                        "$?LANG", "$?LINE", "$?PACKAGE")));
-        assertFalse(vars.contains("$=finish"));
-        assertEquals(8, vars.size());
+        doFileTest("DefaultTestData1.pm6",
+                   Arrays.asList("$_", "$/", "$!", "$=pod", "$?FILE", "$?LANG", "$?LINE", "$?PACKAGE"),
+                   Collections.singletonList("$=finish"));
     }
 
     public void testCompletionResources() {
-        myFixture.configureByFile("DefaultTestData2.pm6");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("%?RESOURCES", "%hash")));
-        assertEquals(4, vars.size());
+        doFileTest("DefaultTestData2.pm6",
+                   Arrays.asList("%?RESOURCES", "%hash"),
+                   Collections.emptyList());
     }
 
     public void testCompletionInClass() {
-        myFixture.configureByFile("DefaultTestData3.pm6");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$?CLASS", "$?PACKAGE")));
-        assertFalse(vars.contains("$?ROLE"));
+        doFileTest("DefaultTestData3.pm6",
+                   Arrays.asList("$?CLASS", "$?PACKAGE"),
+                   Collections.singletonList("$?ROLE"));
     }
 
     public void testCompletionInRole() {
-        myFixture.configureByFile("DefaultTestData4.pm6");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$?CLASS", "$?PACKAGE", "$?ROLE")));
+        doFileTest("DefaultTestData4.pm6", Arrays.asList("$?CLASS", "$?PACKAGE", "$?ROLE"), Collections.emptyList());
     }
 
     public void testCompletionInGrammar() {
-        myFixture.configureByFile("DefaultTestData5.pm6");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$?CLASS", "$?PACKAGE")));
-        assertFalse(vars.contains("$?ROLE"));
+        doFileTest("DefaultTestData5.pm6",
+                   Arrays.asList("$?CLASS", "$?PACKAGE"),
+                   Collections.singletonList("$?ROLE"));
     }
 
     public void testCompletionInBlock() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $x = { &?<caret>");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.contains("&?BLOCK"));
-        assertFalse(vars.contains("&?ROUTINE"));
+        doTextTest("my $x = { &?<caret>",
+                   Collections.singletonList("&?BLOCK"),
+                   Collections.singletonList("&?ROUTINE"));
     }
 
     public void testCompletionInPointyBlock() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $x = -> $y { &?<caret>");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.contains("&?BLOCK"));
-        assertFalse(vars.contains("&?ROUTINE"));
+        doTextTest("my $x = -> $y { &?<caret>",
+                   Collections.singletonList("&?BLOCK"),
+                   Collections.singletonList("&?ROUTINE"));
     }
 
     public void testCompletionInSub() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo() { &?<caret>");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("&?ROUTINE", "&?BLOCK")));
+        doTextTest("sub foo() { &?<caret>",
+                   Arrays.asList("&?ROUTINE", "&?BLOCK"),
+                   Collections.emptyList()
+        );
     }
 
-    public void testNamedArgsHashComplietionInMethod() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "method foo() { %<caret>");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.contains("%_"));
+    public void testNamedArgsHashCompletionInMethod() {
+        doTextTest("method foo() { %<caret>",
+                   Collections.singletonList("%_"), Collections.emptyList());
     }
 
-    public void testNamedArgsHashComplietionInSubmethod() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "submethod foo() { %<caret>");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.contains("%_"));
+    public void testNamedArgsHashCompletionInSubmethod() {
+        doTextTest("submethod foo() { %<caret>",
+                   Collections.singletonList("%_"), Collections.emptyList());
     }
 
-    public void testNamedArgsHashComplietionInSub() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo() { %<caret>");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertFalse(vars.contains("%_"));
+    public void testNamedArgsHashCompletionInSub() {
+        doTextTest("sub foo() { %<caret>",
+                   Collections.emptyList(),
+                   Collections.singletonList("%_"));
     }
 
     public void testPodFinishCompletion() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say $=<caret>\n\n=for finish\n\n");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$=pod", "$=finish")));
+        doTextTest("say $=<caret>\n\n=for finish\n\n",
+                   Arrays.asList("$=pod", "$=finish"),
+                   Collections.emptyList());
     }
 
-    public void testPodFinishInBlockComplection() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "if True {\nsay $=<caret>\n}\n\n=for finish\n\n");
+    public void testPodFinishInBlockCompletion() {
+        doTextTest("if True {\nsay $=<caret>\n}\n\n=for finish\n\n",
+                   Arrays.asList("$=pod", "$=finish"),
+                   Collections.emptyList());
+    }
+
+    public void testMAINDynamic() {
+        doTextTest("sub MAIN { say $*<caret> }",
+                   Arrays.asList("$*USAGE", "$*THREAD"),
+                   Collections.emptyList());
+    }
+
+    public void testGenerateUsageDynamic() {
+        doTextTest("sub GENERATE-USAGE { say &*<caret> }",
+                   Collections.singletonList("&*GENERATE-USAGE"),
+                   Collections.singletonList("&*ARGS-TO-CAPTURE"));
+    }
+
+    public void testArgsToCaptureDynamic() {
+        doTextTest("sub ARGS-TO-CAPTURE { say &*<caret> }",
+                   Collections.singletonList("&*ARGS-TO-CAPTURE"),
+                   Collections.singletonList("&*GENERATE-USAGE"));
+    }
+
+    public void testDynamicVariables() {
+        doTextTest("$*<caret>",
+                   Arrays.asList("$*THREAD", "$*USER", "$*TZ", "$*COLLATION"),
+                   Collections.singletonList("$*USAGE"));
+    }
+
+    private void doTextTest(String text, @Nullable List<String> assertTrue, @Nullable List<String> assertFalse) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
+        doTest(assertTrue, assertFalse);
+    }
+
+
+    private void doFileTest(String filename, @Nullable List<String> assertTrue, @Nullable List<String> assertFalse) {
+        myFixture.configureByFile(filename);
+        doTest(assertTrue, assertFalse);
+    }
+
+    private void doTest(@Nullable List<String> assertTrue, @Nullable List<String> assertFalse) {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$=pod", "$=finish")));
+        assertTrue(vars.containsAll((assertTrue)));
+        for (String falsePositive : assertFalse)
+            assertFalse(vars.contains(falsePositive));
     }
 }

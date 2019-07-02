@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCKOID;
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
@@ -236,9 +237,17 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         for (String sym : ROUTINE_SYMBOLS)
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, sym, this));
+        String routineName = getRoutineName();
         String routineKind = getRoutineKind();
         if (routineKind.equals("method") || routineKind.equals("submethod")) {
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "%_", this));
+        }
+        if (Objects.equals(routineName, "MAIN")) {
+            collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$*USAGE"));
+        } else if (Objects.equals(routineName, "GENERATE-USAGE")) {
+            collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "&*GENERATE-USAGE"));
+        } else if (Objects.equals(routineName, "ARGS-TO-CAPTURE")) {
+            collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "&*ARGS-TO-CAPTURE"));
         }
     }
 }

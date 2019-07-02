@@ -29,14 +29,12 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertTrue(vars.containsAll(Collections.singletonList("$a")));
-        assertEquals(9, vars.size());
 
         myFixture.type("a;\n@");
         myFixture.complete(CompletionType.BASIC, 1);
         vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertTrue(vars.containsAll(Arrays.asList("@b1", "@b2")));
-        assertEquals(2, vars.size());
 
         myFixture.type("b1;\n%cooo");
         myFixture.complete(CompletionType.BASIC, 1);
@@ -68,7 +66,6 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertTrue(vars.containsAll(Arrays.asList("$name1", "$name2")));
-        assertEquals(2, vars.size());
     }
 
     public void testAttributeCompletionWithInnerClasses() {
