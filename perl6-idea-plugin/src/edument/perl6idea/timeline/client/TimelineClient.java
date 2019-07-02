@@ -37,7 +37,10 @@ public class TimelineClient {
     private CompletableFuture<AsynchronousSocketChannel> establishConnection() {
         CompletableFuture<AsynchronousSocketChannel> outcome = new CompletableFuture<>();
         attemptConnection(outcome, Executors.newScheduledThreadPool(1),
-                          new LinkedList<>(Arrays.asList(0.0, 0.5, 0.5, 1.0, 2.0, 2.0, 4.0, 4.0, 4.0, 4.0)));
+                          new LinkedList<>(Arrays.asList(
+                                  0.0, 0.5, 0.5, 1.0,
+                                  2.0, 2.0, 2.0, 2.0,
+                                  4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0)));
         return outcome;
     }
 
