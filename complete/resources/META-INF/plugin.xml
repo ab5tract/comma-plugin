@@ -32,42 +32,45 @@
 
   <change-notes><![CDATA[
     <ul>
-        <li>Add a visualizer for <code>Log::Timeline</code> output. That module provides for
-        insertion of event and task logging into code, and then monitoring to
-        see - live - what is happening. This is especially useful for
-        visualizing asynchronous workflows and understanding parallelization.
-        The upcoming Cro release will including logging of request pipelines.</li>
-
-        <li>Add &#39;Inline Variable and &#39;Inline Call&#39; refactoring. It detects cases
-        when inlining is impossible, rewrites the code to be inlined to
-        match with the new place (e.g. rewrites positional and named
-        parameters with those from the call) and offers a preview of the
-        places where the refactoring will be applied.</li>
-
-        <li>Add an annotator that detects use of <code>if .defined</code> and similar,
-        providing a quickfix to replace it with an <code>with</code>/<code>orwith</code>/<code>without</code>
-        construction</li>
-
-        <li>Fix parsing of traits placed immediately after a type, for example,
-        <code>Str is encoded(&#39;utf8&#39;)</code></li>
-
-        <li>Fix parsing of a constant declaration with an explicit type, for
-        example, <code>our Int constant A</code></li>
-
-        <li>Fix parsing of indented Pod6 statements</li>
-
-        <li>Fix an exception related to coverage support</li>
-
-        <li>Fix a case when an annotator that suggests methods from roles that
-        have to be implemented did not consider multi methods and attribute
-        accessors</li>
-
-        <li>Fix a case when an annotator that suggests simpler syntax for Pair
-        literals wrongly recognized <code>:foo{$foo}</code> as an opportunity for
-        rewriting to <code>:$foo</code></li>
-
-        <li>Fix a bug where the <code>t</code> directory was marked as a Source Directory
-        instead of a Test Directory on Windows</li>
+<li>Comma is now based on the 2019.01 version of IntelliJ platform. The
+plugin keeps backward compatibility with previous versions starting
+from 2017.03.</li>
+<li>Add a Cro Application project template with options to use
+templating and WebSocket. This generates a project structure similar
+to the &#39;cro stub&#39; one, including Dockerfile, routes setup, &#39;.cro.yml&#39;
+for the &#39;cro&#39; command line tool, and example tests using Cro::HTTP::Test.</li>
+<li>Add a Cro Service run configuration type which allows running a Cro
+service based on manual configuration or data taken from a &#39;.cro.yml&#39;
+file.</li>
+<li>Cro routes are now shown in Structure View (Ctrl + F12) for easier navigation
+to routes within a file.</li>
+<li>Cro routes are indexed and can be seen in Navigate to Symbol (Ctrl+Alt+Shift+N).</li>
+<li>The range literal simplification quickfix is now accompanied with a weak warning annotator.</li>
+<li>Modules with &#39;:from<Perl5>&#39; are no longer annotated as unknown.</li>
+<li>The quickfix that stubs a local module from a &#39;use&#39; statement now prompts the user for
+the name and module type. The new module name is suggested automatically and, if changed,
+the &#39;use&#39; statement will reflect the change.</li>
+<li>Add completion for dynamic variables defined by Perl 6.</li>
+<li>Imrpove the timeline run tab UI.</li>
+<li>Add support for the Pause action in the debugger.</li>
+<li>The debugger&#39;s &#39;start suspended&#39; setting in the Perl 6 Run Configuration
+now works.</li>
+<li>On project creation, META6.json files are created with attributes
+sorted.</li>
+<li>The annotator that detects usage of modules outside of META6.json now
+considers build and test dependencies.</li>
+<li>If the specified SDK of a project is missing at its specified paths,
+it leads to a warning instead of an exception.</li>
+<li>Fix the generated signature of a private method stubbed from its usage
+using a quickfix, when private attributes are passed as arguments.</li>
+<li>Fix parsing of heredoc text that starts with an infix operator.</li>
+<li>Fix a bug with META6.json being created with an incorrect module name.</li>
+<li>Fix a rare exception occuring at new project creation.</li>
+<li>Fix an exception in the Extract Code refactoring triggered by
+changing of the parameter type.</li>
+<li>Fix a rare exception caused by the presence of nameless constants in
+code.</li>
+<li>Fix a possible exception on project SDK change.</li>
     </ul>
   ]]>
   </change-notes>
