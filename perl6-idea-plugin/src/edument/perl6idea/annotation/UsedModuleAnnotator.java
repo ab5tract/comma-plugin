@@ -34,10 +34,7 @@ public class UsedModuleAnnotator implements Annotator {
         Collection<Perl6ColonPair> params = PsiTreeUtil.findChildrenOfType(moduleNameNode, Perl6ColonPair.class);
         for (Perl6ColonPair colonPair : params) {
             String key = colonPair.getKey();
-            Perl6Statement statement = colonPair.getStatement();
-            if (statement == null)
-                continue;
-            if (Objects.equals(key, "from") && Objects.equals(statement.getText(), "Perl5"))
+            if (Objects.equals(key, "from"))
                 return;
         }
 
