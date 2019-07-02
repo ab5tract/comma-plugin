@@ -73,7 +73,7 @@ public class UsedModuleAnnotator implements Annotator {
         else {
             holder
                 .createErrorAnnotation(element, String.format("Cannot find %s in the ecosystem", moduleName))
-                .registerFix(new CreateLocalModuleFix(module, moduleName));
+                .registerFix(new CreateLocalModuleFix(module, (Perl6ModuleName)element));
         }
     }
 }
