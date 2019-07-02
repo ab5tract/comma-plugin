@@ -71,14 +71,20 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
                                                 conf.moduleName + "::Routes",
                                                 true, false, sourceRoot.getParent(),
                                                 "Empty", false);
-            metaData.setName(conf.moduleName);
+
             VirtualFile routesFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(modulePath));
             if (routesFile == null)
                 return;
             routesFile.setBinaryContent(
                 String.join("\n", templateContent).getBytes(StandardCharsets.UTF_8)
             );
-            addCroDependencies(metaData, conf);
+            ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(
+                () -> {
+                    if (metaData.isMetaDataExist()) {
+                        metaData.setName(conf.moduleName);
+                        addCroDependencies(metaData, conf);
+                    }
+                }));
         }
         catch (IOException|NullPointerException e) {
             LOG.error(e);
@@ -106,16 +112,12 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     }
 
     private static void addCroDependencies(Perl6MetaDataComponent metaData, CroAppTemplateConfig conf) {
-        ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(
-            () -> {
-                metaData.addDepends("Cro::HTTP");
-                metaData.addTestDepends("Cro::HTTP::Test");
-                if (conf.websocketSupport)
-                    metaData.addDepends("Cro::WebSocket");
-                if (conf.templatingSupport)
-                    metaData.addDepends("Cro::WebApp");
-            }
-        ));
+        metaData.addDepends("Cro::HTTP");
+        metaData.addTestDepends("Cro::HTTP::Test");
+        if (conf.websocketSupport)
+            metaData.addDepends("Cro::WebSocket");
+        if (conf.templatingSupport)
+            metaData.addDepends("Cro::WebApp");
     }
 
     private static void stubCroTest(Path sourcePath, CroAppTemplateConfig conf) {
