@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 
 public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEventsConverter {
     public static final Pattern EXPECTED_GOT_PATTERN = Pattern.compile("expected: (.+?)\ngot: (.+?)\n", Pattern.DOTALL);
+    public static final String TEST_HARNESS_PREFIX = "TEST_HARNESS_PREFIX";
+    public static final String FILE_COMMAND = "file";
     private final String myBaseUrl;
     @NotNull
     private TapConsumer myConsumer;
@@ -47,8 +49,8 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         }
 
         if (outputType == ProcessOutputTypes.STDOUT || outputType == ProcessOutputTypes.STDERR) {
-            if (text.startsWith("====")) {
-                currentFile = text.substring(4, text.length() - 1);
+            if (text.startsWith(String.join(" ", TEST_HARNESS_PREFIX, FILE_COMMAND))) {
+                currentFile = text.substring(TEST_HARNESS_PREFIX.length() + FILE_COMMAND.length() + 2); // 2 spaces length
                 if (!currentTap.isEmpty())
                     processTapOutput();
             } else {

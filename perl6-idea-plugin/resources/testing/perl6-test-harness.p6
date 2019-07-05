@@ -1,5 +1,7 @@
 my @args = @*ARGS;
 
+constant TEST_HARNESS_PREFIX = 'TEST_HARNESS_PREFIX';
+
 # Gather and sort test files.
 my @test-files;
 my @todo = 't'.IO;
@@ -54,7 +56,7 @@ react {
 
             whenever $proc.start(:$ENV) -> $exit {
                 say $output;
-                say "====$file";
+                say "{TEST_HARNESS_PREFIX} file $file";
                 try $*OUT.flush;
                 if $cov-file && $cov-file.IO.e {
                     %coverage-index{$file} = $cov-file;
