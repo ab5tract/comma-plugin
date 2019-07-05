@@ -139,6 +139,10 @@ public class Perl6ElementFactory {
         return produceElement(project, ":" + text, Perl6ColonPair.class);
     }
 
+    public static Perl6FatArrow createFatArrow(Project project, String key, PsiElement value) {
+        return produceElement(project, String.format("%s => %s", key, value.getText()), Perl6FatArrow.class);
+    }
+
     public static Perl6LoopStatement createLoop(Project project, PsiElement block) {
         return produceElement(project, "loop " + block.getText(), Perl6LoopStatement.class);
     }

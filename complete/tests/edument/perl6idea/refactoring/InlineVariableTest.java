@@ -96,6 +96,10 @@ public class InlineVariableTest extends LightPlatformCodeInsightFixtureTestCase 
         doTest();
     }
 
+    public void testInlineIntoNamedArg() {
+        doTest();
+    }
+
     public void testAttributeVariableException() {
         assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
                      "Cannot perform inline refactoring: attributes of class are used that are not available at inlining location",
