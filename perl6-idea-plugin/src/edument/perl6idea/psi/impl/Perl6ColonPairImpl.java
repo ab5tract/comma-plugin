@@ -27,7 +27,7 @@ public class Perl6ColonPairImpl extends ASTWrapperPsiElement implements Perl6Col
         if (sibling.getNode().getElementType() == COLON_PAIR)
             return sibling.getText();
         else if (sibling instanceof Perl6Variable) {
-            String nameWithSigils = ((Perl6Variable)sibling).getName();
+            String nameWithSigils = ((Perl6Variable)sibling).getVariableName();
             if (nameWithSigils != null) {
                 int sigilIndex = Perl6Variable.getTwigil(nameWithSigils) == ' ' ? 1 : 2;
                 return nameWithSigils.substring(sigilIndex);
