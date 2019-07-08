@@ -1,4 +1,4 @@
-package edument.perl6idea.profiler;
+package edument.perl6idea.profiler.run;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -8,6 +8,7 @@ import com.intellij.execution.runners.DefaultProgramRunner;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import edument.perl6idea.profiler.ui.ProfileContentBuilder;
 import edument.perl6idea.run.Perl6RunConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -1,4 +1,4 @@
-package edument.perl6idea.profiler;
+package edument.perl6idea.profiler.ui;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -14,6 +14,7 @@ import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.Function;
 import com.intellij.util.PlatformIcons;
+import edument.perl6idea.profiler.model.*;
 import edument.perl6idea.psi.Perl6File;
 
 import javax.swing.*;

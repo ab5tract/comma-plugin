@@ -1,9 +1,10 @@
-package edument.perl6idea.profiler;
+package edument.perl6idea.profiler.ui;
 
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import edument.perl6idea.profiler.run.Perl6ProfileTask;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;

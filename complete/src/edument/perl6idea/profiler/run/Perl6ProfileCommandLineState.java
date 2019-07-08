@@ -1,4 +1,4 @@
-package edument.perl6idea.profiler;
+package edument.perl6idea.profiler.run;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.runners.ExecutionEnvironment;

@@ -1,4 +1,4 @@
-package edument.perl6idea.profiler;
+package edument.perl6idea.profiler.ui;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -7,6 +7,7 @@ import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.layout.PlaceInGrid;
 import com.intellij.ui.content.Content;
+import edument.perl6idea.profiler.run.Perl6ProfileCommandLineState;
 import edument.perl6idea.ui.CustomConsoleRunTab;
 import org.jetbrains.annotations.NotNull;
 

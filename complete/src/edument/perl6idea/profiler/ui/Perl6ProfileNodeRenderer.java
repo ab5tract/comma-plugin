@@ -1,9 +1,10 @@
-package edument.perl6idea.profiler;
+package edument.perl6idea.profiler.ui;
 
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
+import edument.perl6idea.profiler.model.Perl6ProfileModel;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
