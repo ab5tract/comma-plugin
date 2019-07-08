@@ -9,26 +9,27 @@ import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowAnchor;
-import com.intellij.openapi.wm.ToolWindowManager;
-import edument.perl6idea.Perl6Icons;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class Perl6ProfileTask extends Task.Modal {
+public class Perl6ProfileTask extends Task.Backgroundable {
     public static final Logger LOG = Logger.getInstance(Perl6ProfileTask.class);
+    private final ProfilerView myProfilerView;
     private File sqlDataFile;
     private Perl6ProfileData myProfileData;
 
-    public Perl6ProfileTask(Project project, String data, boolean canBeCancelled, File file) {
+    public Perl6ProfileTask(Project project,
+                            String data,
+                            boolean canBeCancelled,
+                            File file,
+                            ProfilerView profilerView) {
         super(project, data, canBeCancelled);
         sqlDataFile = file;
+        myProfilerView = profilerView;
     }
 
     @Override
@@ -44,6 +45,7 @@ public class Perl6ProfileTask extends Task.Modal {
         }
     }
 
+    @Override
     public void run(@NotNull ProgressIndicator indicator) {
         try {
             indicator.setIndeterminate(false);
@@ -57,15 +59,17 @@ public class Perl6ProfileTask extends Task.Modal {
             myProfileData.initialize();
             indicator.setText("Profile data processing is finished");
             indicator.setFraction(1);
-            //createProfileToolWindow();
-            ApplicationManager.getApplication().invokeLater(() -> createProfileToolWindow(myProfileData));
+            ApplicationManager.getApplication().invokeLater(() -> {
+                Perl6ProfileResultsPanel view = new Perl6ProfileResultsPanel(myProject, myProfileData);
+                myProfilerView.setView(view.getPanel());
+            });
         }
         catch (SQLException | IOException e) {
             onCancel();
-            LOG.warn(e);
             Notifications.Bus.notify(
                 new Notification("Perl 6 Profiler", "Error during profiling data procession",
                                  e.getMessage(), NotificationType.ERROR));
+            myProfilerView.setView(new JLabel("Could not collect profiling results"));
             throw new ProcessCanceledException();
         } finally {
             if (sqlDataFile != null) {
@@ -73,21 +77,5 @@ public class Perl6ProfileTask extends Task.Modal {
                 sqlDataFile = null;
             }
         }
-    }
-
-    private void createProfileToolWindow(Perl6ProfileData data) {
-        ToolWindow window = ToolWindowManager.getInstance(myProject).registerToolWindow(
-            "Perl 6 profiling tool window",
-            true,
-            ToolWindowAnchor.BOTTOM
-        );
-        window.setIcon(Perl6Icons.CAMELIA_13x13);
-        window.activate(() -> {
-            JComponent component = window.getComponent();
-            JPanel panel = new JPanel(new BorderLayout());
-            Perl6ProfileView view = new Perl6ProfileView(myProject, data);
-            panel.add(view.getPanel(), BorderLayout.CENTER);
-            component.add(panel);
-        });
     }
 }

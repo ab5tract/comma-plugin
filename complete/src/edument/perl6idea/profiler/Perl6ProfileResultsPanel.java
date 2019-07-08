@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Perl6ProfileView extends JPanel {
-    public static final Logger LOG = Logger.getInstance(Perl6ProfileView.class);
+public class Perl6ProfileResultsPanel extends JPanel {
+    public static final Logger LOG = Logger.getInstance(Perl6ProfileResultsPanel.class);
     protected Project myProject;
     protected Perl6ProfileData myProfileData;
     protected String myBaseProjectPath;
@@ -43,7 +43,7 @@ public class Perl6ProfileView extends JPanel {
     private JSeparator separator2;
     private final Perl6ProfileNodeRenderer myProfileNodeRenderer;
 
-    public Perl6ProfileView(Project project, Perl6ProfileData profileData) {
+    public Perl6ProfileResultsPanel(Project project, Perl6ProfileData profileData) {
         myProject = project;
         myProfileData = profileData;
         myBaseProjectPath = myProject.getBaseDir().getCanonicalPath();
