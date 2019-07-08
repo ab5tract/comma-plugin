@@ -61,8 +61,8 @@ public abstract class CustomConsoleRunTab extends RunTab {
             return new RunContentDescriptor(profile, myExecutionResult, myUi);
         }
         RunContentDescriptor contentDescriptor = new RunContentDescriptor(profile, myExecutionResult, myUi);
-        addConsoleTab(profile, contentDescriptor);
         addCustomTab(uiUpdater);
+        addConsoleTab(profile, contentDescriptor);
         return contentDescriptor;
     }
 
