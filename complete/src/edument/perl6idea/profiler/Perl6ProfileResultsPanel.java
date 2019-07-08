@@ -1,5 +1,6 @@
 package edument.perl6idea.profiler;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -77,7 +78,7 @@ public class Perl6ProfileResultsPanel extends JPanel {
         popupMenu.addPopupMenuListener(new PopupMenuListener() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                SwingUtilities.invokeLater(() -> {
+                ApplicationManager.getApplication().invokeLater(() -> {
                     Point point = SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table);
                     int rowAtPoint = table.rowAtPoint(point);
                     int columnAtPoint = table.columnAtPoint(point);
