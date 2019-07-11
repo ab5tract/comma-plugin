@@ -19,14 +19,14 @@ public class Perl6SubCallReference extends PsiReferenceBase<Perl6SubCallName> {
     @Override
     public PsiElement resolve() {
         Perl6SubCallName call = getElement();
-        Perl6Symbol symbol = call.resolveSymbol(Perl6SymbolKind.Routine, call.getCallName());
+        Perl6Symbol symbol = call.resolveLexicalSymbol(Perl6SymbolKind.Routine, call.getCallName());
         return symbol != null ? symbol.getPsi() : null;
     }
 
     @NotNull
     @Override
     public Object[] getVariants() {
-        return getElement().getSymbolVariants(Perl6SymbolKind.Routine, Perl6SymbolKind.TypeOrConstant)
+        return getElement().getLexicalSymbolVariants(Perl6SymbolKind.Routine, Perl6SymbolKind.TypeOrConstant)
                            .stream()
                            .map(sym -> sym.getName())
                            .toArray();

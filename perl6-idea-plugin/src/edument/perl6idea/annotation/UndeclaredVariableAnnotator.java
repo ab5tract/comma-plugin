@@ -50,7 +50,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
             return;
 
         // Otherwise, try to resolve it.
-        Perl6Symbol resolved = ref.resolveSymbol(Perl6SymbolKind.Variable, variableName);
+        Perl6Symbol resolved = ref.resolveLexicalSymbol(Perl6SymbolKind.Variable, variableName);
         if (resolved == null) {
             // Straight resolution failure
             holder.createErrorAnnotation(element,

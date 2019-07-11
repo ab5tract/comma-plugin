@@ -40,7 +40,7 @@ public class Perl6LabelImpl extends ASTWrapperPsiElement implements Perl6Label {
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
         collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, this));
     }
 }

@@ -60,7 +60,7 @@ public class Perl6ConstantImpl extends Perl6MemberStubBasedPsi<Perl6ConstantStub
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
         String name = getName();
         if (name != null && !name.isEmpty()) {
             char sigil = name.charAt(0);

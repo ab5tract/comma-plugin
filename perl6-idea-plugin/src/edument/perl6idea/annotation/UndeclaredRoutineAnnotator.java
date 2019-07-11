@@ -22,7 +22,7 @@ public class UndeclaredRoutineAnnotator implements Annotator {
         String subName = call.getCallName();
         if (subName == null) return;
 
-        Perl6Symbol resolved = call.resolveSymbol(Perl6SymbolKind.Routine, subName);
+        Perl6Symbol resolved = call.resolveLexicalSymbol(Perl6SymbolKind.Routine, subName);
         if (resolved == null) {
             Annotation annotation = holder.createErrorAnnotation(
               element,

@@ -66,8 +66,8 @@ public class Perl6EnumImpl extends Perl6TypeStubBasedPsi<Perl6EnumStub> implemen
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
-        super.contributeSymbols(collector);
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
+        super.contributeLexicalSymbols(collector);
         String enumName = getEnumName();
         List<String> enumValues = getEnumValues();
         for (String type : enumValues) {

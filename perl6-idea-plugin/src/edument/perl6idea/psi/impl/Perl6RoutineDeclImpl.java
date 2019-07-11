@@ -25,7 +25,8 @@ import java.util.Objects;
 import static edument.perl6idea.parsing.Perl6ElementTypes.BLOCKOID;
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 
-public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDeclStub> implements Perl6RoutineDecl, Perl6SignatureHolder, PsiMetaOwner {
+public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDeclStub>
+        implements Perl6RoutineDecl, Perl6SignatureHolder, PsiMetaOwner {
     private static final String[] ROUTINE_SYMBOLS = { "$/", "$!", "$_", "&?ROUTINE", "&?BLOCK" };
 
     public Perl6RoutineDeclImpl(@NotNull ASTNode node) {
@@ -172,8 +173,40 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
-        offerRoutineSymbols(collector, getRoutineName(), this);
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
+        String name = getRoutineName();
+        String scope = getScope();
+        if (!name.equals("<anon>") && (scope.equals("my") || scope.equals("our"))) {
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
+                    this, "&" + name));
+        }
+    }
+
+    @Override
+    public void contributeMOPSymbols(Perl6SymbolCollector collector, boolean privatesVisible, boolean submethodsVisible) {
+        String name = getRoutineName();
+        String scope = getScope();
+        if (!name.equals("<anon>") && scope.equals("has")) {
+            String routineKind = getRoutineKind();
+            boolean visible;
+            boolean isPrivate = name.startsWith("!");
+            if (isPrivate) {
+                // Private. Checked first as in theory a private submethod could exist.
+                visible = privatesVisible;
+            }
+            else if (routineKind.equals("submethod")) {
+                // It's a submethod; only contribute if they are visible here.
+                visible = submethodsVisible;
+            }
+            else {
+                // Normal method.
+                visible = true;
+            }
+            if (visible)
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this,
+                        isPrivate ? name : "." + name));
+        }
     }
 
     @Nullable
@@ -211,26 +244,6 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };
-    }
-
-    public static void offerRoutineSymbols(Perl6SymbolCollector collector, String name, Perl6RoutineDecl decl) {
-        if (decl.getRoutineName().equals("<anon>")) return;
-        if (decl.getRoutineKind().equals("method") || decl.getRoutineKind().equals("submethod")) {
-            // Do not contribute submethods if restricted
-            if (decl.getRoutineKind().equals("submethod") && !collector.areInternalPartsCollected()) return;
-            // Do not contribute private methods if restricted
-            if (name.startsWith("!") && !collector.areInternalPartsCollected()) return;
-            // Contribute name with prefix, so `.foo` can be matched, not `foo`,
-            // private methods have `!` as name part already
-            if (!name.startsWith("!")) name = "." + name;
-            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, decl, name));
-        } else {
-            if (decl.getScope().equals("my") || decl.getScope().equals("our")) {
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, decl));
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
-                                                                     decl, "&" + name));
-            }
-        }
     }
 
     @Override

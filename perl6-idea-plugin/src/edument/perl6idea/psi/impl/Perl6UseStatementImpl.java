@@ -33,7 +33,7 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
         String name = getModuleName();
         if (name != null) {
             Project project = getProject();
@@ -46,9 +46,11 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
             if (found.size() > 0) {
                 Perl6File file = found.iterator().next();
                 for (Perl6PsiDeclaration export : file.getExports()) {
-                    export.contributeSymbols(collector);
-                    if (collector.isSatisfied())
-                        return;
+                    if (export instanceof Perl6LexicalSymbolContributor) {
+                        ((Perl6LexicalSymbolContributor)export).contributeLexicalSymbols(collector);
+                        if (collector.isSatisfied())
+                            return;
+                    }
                 }
                 Set<String> seen = new HashSet<>();
                 seen.add(name);
@@ -79,9 +81,11 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                 PsiFile psiFile = PsiManager.getInstance(getProject()).findFile(file);
                 if (psiFile instanceof Perl6File) {
                     for (Perl6PsiDeclaration export : ((Perl6File)psiFile).getExports()) {
-                        export.contributeSymbols(collector);
-                        if (collector.isSatisfied())
-                            return;
+                        if (export instanceof Perl6LexicalSymbolContributor) {
+                            ((Perl6LexicalSymbolContributor)export).contributeLexicalSymbols(collector);
+                            if (collector.isSatisfied())
+                                return;
+                        }
                     }
                     Set<String> seen = new HashSet<>();
                     seen.add(name);

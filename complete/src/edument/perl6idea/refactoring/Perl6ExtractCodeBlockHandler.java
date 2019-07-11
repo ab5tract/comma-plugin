@@ -423,7 +423,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         }
 
         // Try to see if we have such routine accessible in new scope
-        Perl6Symbol routineSymbol = parentToCreateAt.resolveSymbol(Perl6SymbolKind.Routine, call.getCallName());
+        Perl6Symbol routineSymbol = parentToCreateAt.resolveLexicalSymbol(Perl6SymbolKind.Routine, call.getCallName());
         // If it is not or if it points to another routine with the same name, pass a lexical sub in
         return routineSymbol == null || routineSymbol.getPsi() == null || !call.getManager()
                                                                                .areElementsEquivalent(routineSymbol.getPsi(), decl);
@@ -488,7 +488,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         }
 
         // We are checking whether a variable will be available from outer scope in scope where new block is created
-        boolean isAvailableLexically = parentToCreateAt.resolveSymbol(Perl6SymbolKind.Variable, usedVariable.getVariableName()) != null;
+        boolean isAvailableLexically = parentToCreateAt.resolveLexicalSymbol(Perl6SymbolKind.Variable, usedVariable.getVariableName()) != null;
         String type = usedVariable.getVariableName().startsWith("$") ? usedVariable.inferType() : "";
         return new Perl6VariableData(usedVariable.getVariableName(), type, isAvailableLexically, !isAvailableLexically);
     }

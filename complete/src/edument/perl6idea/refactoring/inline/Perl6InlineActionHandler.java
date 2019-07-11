@@ -60,11 +60,11 @@ abstract public class Perl6InlineActionHandler extends InlineActionHandler {
 
             Perl6Symbol declFromInlineLocation = null;
             if (inlineePart instanceof Perl6Variable)
-                declFromInlineLocation = ((Perl6PsiElement)call).resolveSymbol(Perl6SymbolKind.Variable,
-                                                                     ((Perl6Variable)inlineePart).getVariableName());
+                declFromInlineLocation = ((Perl6PsiElement)call).resolveLexicalSymbol(Perl6SymbolKind.Variable,
+                                                                                      ((Perl6Variable)inlineePart).getVariableName());
             else if (inlineePart instanceof Perl6SubCall) {
-                declFromInlineLocation = ((Perl6PsiElement)call).resolveSymbol(Perl6SymbolKind.Routine,
-                                                                     ((Perl6SubCall)inlineePart).getCallName());
+                declFromInlineLocation = ((Perl6PsiElement)call).resolveLexicalSymbol(Perl6SymbolKind.Routine,
+                                                                                      ((Perl6SubCall)inlineePart).getCallName());
             }
             // If it is a lexical that isn't available at inlining myElement, throw it as wrong
             if (declFromInlineLocation == null || declFromInlineLocation.getPsi() == null) {

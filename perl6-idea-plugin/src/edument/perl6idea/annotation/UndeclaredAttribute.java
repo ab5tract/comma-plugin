@@ -4,7 +4,11 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
+import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
@@ -20,8 +24,12 @@ public class UndeclaredAttribute implements Annotator {
 
         PsiReference reference = variable.getReference();
         if (reference == null) return;
-        Perl6Symbol symbol = variable.resolveSymbol(Perl6SymbolKind.Variable, variable.getVariableName());
-        if (symbol == null)
+        Perl6PackageDecl enclosingPackage = PsiTreeUtil.getParentOfType(element, Perl6PackageDeclImpl.class);
+        if (enclosingPackage == null)
+            return;
+        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(variableName, Perl6SymbolKind.Variable);
+        enclosingPackage.contributeMOPSymbols(collector, true, true);
+        if (collector.getResult() == null)
             holder.createErrorAnnotation(
                     element,
                     String.format("Attribute %s is used, but not declared", variableName));

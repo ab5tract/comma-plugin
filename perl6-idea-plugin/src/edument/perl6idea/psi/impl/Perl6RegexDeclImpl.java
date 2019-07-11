@@ -99,16 +99,24 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
+        String name = getName();
         String scope = getScope();
-        if (scope.equals("my") || scope.equals("our") || scope.equals("has")) {
-            String name = getName();
-            if (name != null) {
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Regex, this));
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
-                    this, "&" + name));
-            }
+        if (name != null && (scope.equals("my") || scope.equals("our"))) {
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Regex, this));
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
+                this, "&" + name));
+        }
+    }
+
+    @Override
+    public void contributeMOPSymbols(Perl6SymbolCollector collector, boolean privatesVisible, boolean submethodsVisible) {
+        String name = getName();
+        String scope = getScope();
+        if (name != null && scope.equals("has")) {
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Regex, this));
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
         }
     }
 }

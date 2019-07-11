@@ -39,7 +39,7 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
     public PsiElement resolve() {
         Perl6PsiElement ref = getElement();
         String typeName = ref.getText();
-        Perl6Symbol result = ref.resolveSymbol(Perl6SymbolKind.TypeOrConstant, typeName);
+        Perl6Symbol result = ref.resolveLexicalSymbol(Perl6SymbolKind.TypeOrConstant, typeName);
         if (result != null) {
             PsiElement psi = result.getPsi();
             if (psi != null) {

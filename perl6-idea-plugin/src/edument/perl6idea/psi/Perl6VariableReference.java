@@ -3,7 +3,10 @@ package edument.perl6idea.psi;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
+import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
@@ -18,18 +21,28 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     @Override
     public PsiElement resolve() {
         Perl6Variable var = getElement();
-        Perl6Symbol symbol = var.resolveSymbol(Perl6SymbolKind.Variable, var.getVariableName());
-        if (symbol != null) {
-            PsiElement psi = symbol.getPsi();
-            if (psi != null) {
-                if (psi.getContainingFile() != var.getContainingFile())
-                    return psi;
-                if (psi.getTextOffset() > var.getTextOffset()) {
-                    if (Perl6Variable.getSigil(var.getVariableName()) == '&' || Perl6Variable.getTwigil(var.getVariableName()) == '!')
+        String name = var.getVariableName();
+        if (Perl6Variable.getTwigil(name) == '!') {
+            // Attribute; resolve through MOP.
+            Perl6PackageDecl enclosingPackage = PsiTreeUtil.getParentOfType(var, Perl6PackageDeclImpl.class);
+            if (enclosingPackage != null) {
+                Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, Perl6SymbolKind.Variable);
+                enclosingPackage.contributeMOPSymbols(collector, true, true);
+                Perl6Symbol symbol = collector.getResult();
+                if (symbol != null)
+                    return symbol.getPsi();
+            }
+        }
+        else {
+            // Lexical; resolve through lexpad.
+            Perl6Symbol symbol = var.resolveLexicalSymbol(Perl6SymbolKind.Variable, name);
+            if (symbol != null) {
+                PsiElement psi = symbol.getPsi();
+                if (psi != null) {
+                    if (psi.getContainingFile() != var.getContainingFile())
                         return psi;
-                }
-                else {
-                    return psi;
+                    if (psi.getTextOffset() <= var.getTextOffset() || Perl6Variable.getSigil(name) == '&')
+                        return psi;
                 }
             }
         }
@@ -39,7 +52,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        return getElement().getSymbolVariants(Perl6SymbolKind.Variable)
+        return getElement().getLexicalSymbolVariants(Perl6SymbolKind.Variable)
                .stream()
                .filter(this::isDeclaredAfterCurrentPosition)
                .map(sym -> sym.getName())

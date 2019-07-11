@@ -14,10 +14,7 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
-import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
-import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +22,8 @@ import java.util.*;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
-public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub> implements Perl6VariableDecl, PsiMetaOwner {
+public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub>
+        implements Perl6VariableDecl, PsiMetaOwner {
     public Perl6VariableDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -260,14 +258,46 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
-        String name = getName();
-        if (name != null && name.length() > 1) {
-            Perl6TermDefinition defterm = getTerm();
-            if (defterm != null)
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, this));
-            else
-                offerVariableSymbols(collector, name, this);
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
+        if (!getScope().equals("has")) {
+            String name = getName();
+            if (name != null && name.length() > 1) {
+                Perl6TermDefinition defterm = getTerm();
+                if (defterm != null) {
+                    collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, this));
+                }
+                else {
+                    collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+                    if (collector.isSatisfied()) return;
+                    if (name.startsWith("&"))
+                        collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
+                                this, name.substring(1)));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void contributeMOPSymbols(Perl6SymbolCollector collector, boolean privatesVisible,
+                                     boolean submethodsVisible) {
+        if (getScope().equals("has")) {
+            String name = getName();
+            if (name != null && name.length() >= 2) {
+                if (Perl6Variable.getTwigil(name) == '!' && privatesVisible) {
+                    collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+                }
+                else if (Perl6Variable.getTwigil(name) == '.') {
+                    collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+                    if (collector.isSatisfied()) return;
+                    if (privatesVisible) {
+                        collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
+                                this, name.substring(0, 1) + "!" + name.substring(2)));
+                        if (collector.isSatisfied()) return;
+                    }
+                    collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self.foo;
+                            Perl6SymbolKind.Method, this, '.' + name.substring(2)));
+                }
+            }
         }
     }
 
@@ -311,45 +341,6 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };
-    }
-
-    public static void offerVariableSymbols(Perl6SymbolCollector collector, String name, Perl6VariableDecl var) {
-        boolean isInstanceScoped = var.getScope().equals("has");
-        // Contribute usual attributes or private if allowed
-        String askerKind = collector.enclosingPackageKind();
-        // If private variable and we collect internals, it is class asking for composed variable or whatever that gets its own parts (level == 1)
-        // then contribute, or contribute if it is not a private variable
-        if (Perl6Variable.getTwigil(name) == '!' && collector.areInternalPartsCollected() &&
-            (askerKind != null && askerKind.equals("class") || collector.getNestingLevel() == 0) ||
-            Perl6Variable.getTwigil(name) != '!')
-            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, var, isInstanceScoped));
-        if (collector.isSatisfied()) return;
-
-        // if it's $.foo, contribute $!foo too
-        if (Perl6Variable.getTwigil(name) == '.' && collector.areInternalPartsCollected())
-            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
-                                                                 var, name.substring(0, 1) + "!" + name.substring(2)));
-        if (collector.isSatisfied()) return;
-
-        // Offer routine if `&name`;
-        if (name.startsWith("&") && var.getScope().equals("my"))
-            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
-                     var, name.substring(1)));
-        if (collector.isSatisfied()) return;
-
-        // Offer self-centered symbols
-        if (isInstanceScoped && Perl6Variable.getTwigil(name) == '.') {
-            if (Perl6Variable.getTwigil(name) == '.') {
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self!foo;
-                    Perl6SymbolKind.Method, var, '!' + name.substring(2)));
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self.foo;
-                    Perl6SymbolKind.Method, var, '.' + name.substring(2)));
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer $.foo;
-                    Perl6SymbolKind.Method, var,
-                    Perl6Variable.getSigil(var.getVariableName()) + '.' + var.getVariableName().substring(2)
-                ));
-            }
-        }
     }
 
     private Perl6Variable getVariable() {

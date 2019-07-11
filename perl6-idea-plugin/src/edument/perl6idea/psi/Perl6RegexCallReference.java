@@ -26,7 +26,7 @@ public class Perl6RegexCallReference extends PsiReferenceBase<Perl6RegexCall> {
     @Override
     public PsiElement resolve() {
         Perl6RegexCall call = getElement();
-        Perl6Symbol symbol = call.resolveSymbol(Perl6SymbolKind.Regex, call.getText());
+        Perl6Symbol symbol = call.resolveLexicalSymbol(Perl6SymbolKind.Regex, call.getText());
         return symbol != null ? symbol.getPsi() : null;
     }
 
@@ -34,11 +34,11 @@ public class Perl6RegexCallReference extends PsiReferenceBase<Perl6RegexCall> {
     @Override
     public Object[] getVariants() {
         List<String> result = getElement()
-            .getSymbolVariants(Perl6SymbolKind.Regex)
+            .getLexicalSymbolVariants(Perl6SymbolKind.Regex)
             .stream()
             .map(sym -> sym.getName()).collect(toList());
         result.addAll(
-            getElement().getSymbolVariants(Perl6SymbolKind.Method)
+            getElement().getLexicalSymbolVariants(Perl6SymbolKind.Method)
                         .stream()
                         // Filter out external symbols for regex-calls
                         .filter(symbol -> !symbol.isExternal() )
