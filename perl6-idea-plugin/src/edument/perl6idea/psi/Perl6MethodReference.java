@@ -184,23 +184,6 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
         return basicMethods;
     }
 
-    private static List<String> completePackageMethod(Perl6PackageDecl decl, String kind, String packageName) {
-        Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-        collector.setEnclosingPackageKind(kind);
-        collector.setEnclosingPackageName(packageName);
-        decl.contributeScopeSymbols(collector);
-        MuAnyMethods(decl, collector);
-        return collector.getVariants().stream().map(s -> s.getName()).collect(Collectors.toList());
-    }
-
-    private static Object resolvePackageMethod(Perl6PackageDecl decl, String name, String kind, String packageName) {
-        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, Perl6SymbolKind.Method);
-        collector.setEnclosingPackageKind(kind);
-        collector.setEnclosingPackageName(packageName);
-        decl.contributeScopeSymbols(collector);
-        return collector.getResult();
-    }
-
     static class Caller {
         private String name;
         private Object element;
