@@ -171,7 +171,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     private void contributeFromElders(Perl6SymbolCollector collector, boolean privatesVisible, boolean submethodsVisible) {
         Perl6PackageDeclStub stub = getStub();
         List<Pair<String, Perl6PackageDecl>> perl6PackageDecls = new ArrayList<>();
-        List<String> externals = new ArrayList<>();
+        List<Pair<String, String>> externals = new ArrayList<>();
         boolean isAny = true;
         boolean isMu = true;
         boolean isGrammar = getPackageKind().equals("grammar");
@@ -193,7 +193,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                     Perl6PackageDecl decl = (Perl6PackageDecl) indexables.get(0);
                     perl6PackageDecls.add(Pair.create(traitStub.getTraitModifier(), decl));
                 } else {
-                    externals.add(name);
+                    externals.add(Pair.create(traitStub.getTraitModifier(), name));
                 }
                 isAny = !name.equals("Mu");
             }
@@ -208,8 +208,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 PsiReference ref = element.getReference();
                 if (ref == null) continue;
                 PsiElement decl = ref.resolve();
-                if (decl != null) perl6PackageDecls.add(Pair.create(trait.getTraitModifier(), (Perl6PackageDecl)decl));
-                else externals.add(trait.getTraitName());
+                if (decl != null)
+                    perl6PackageDecls.add(Pair.create(trait.getTraitModifier(), (Perl6PackageDecl)decl));
+                else
+                    externals.add(Pair.create(trait.getTraitModifier(), trait.getTraitName()));
                 if (trait.getTraitName().equals("Mu"))
                     isAny = false;
             }
@@ -240,47 +242,31 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             typeRef.contributeScopeSymbols(collector);
             if (collector.isSatisfied()) return;
         }
-        // TODO Need to refactor externals further to get this right
-    //    for (String extType : externals) {
-    //        // It can be either external perl6PackageDecl or non-existent one
-    //        // Firstly, chop off possible parametrized roles
-    //        int index = extType.indexOf('[');
-    //        if (index != -1)
-    //            extType = extType.substring(0, index);
-    //        contributeExternalPackage(collector, extType);
-    //        if (collector.isSatisfied()) return;
-    //    }
+        for (Pair<String, String> pair : externals) {
+            // It can be either external perl6PackageDecl or non-existent one
+            boolean isDoes = pair.first.equals("does");
+            String extType = pair.second;
+            // Chop off possible parametrized roles
+            int index = extType.indexOf('[');
+            if (index != -1)
+                extType = extType.substring(0, index);
+            contributeExternalPackage(collector, extType, isDoes && privatesVisible, isDoes && submethodsVisible);
+            if (collector.isSatisfied()) return;
+        }
     }
 
-    //private void contributeExternalPackage(Perl6SymbolCollector collector, String typeName) {
-    //    Perl6VariantsSymbolCollector extCollector =
-    //            new Perl6VariantsSymbolCollector(Perl6SymbolKind.ExternalPackage);
-    //    applyExternalSymbolCollector(extCollector);
-    //    for (Perl6Symbol pack : extCollector.getVariants()) {
-    //        Perl6ExternalPackage externalPackage = (Perl6ExternalPackage)pack;
-    //        if (!(pack.getName().equals(typeName))) continue;
-    //        if (((Perl6ExternalPackage)pack).getPackageKind() == Perl6PackageKind.ROLE) {
-    //            for (String sym : externalPackage.privateMethods()) {
-    //                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, sym));
-    //                if (collector.isSatisfied()) return;
-    //            }
-    //        }
-    //        for (String sym : externalPackage.methods()) {
-    //            collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, "." + sym));
-    //            if (collector.isSatisfied()) return;
-    //        }
-    //        for (String var : externalPackage.attributes()) {
-    //            if (((Perl6ExternalPackage)pack).getPackageKind() == Perl6PackageKind.CLASS &&
-    //                Perl6Variable.getTwigil(var) == '!') continue;
-    //            collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Variable, var));
-    //            if (collector.isSatisfied()) return;
-    //            if (Perl6Variable.getTwigil(var) == '.')
-    //                collector.offerSymbol(new Perl6ExternalSymbol( // Offer self.foo;
-    //                                      Perl6SymbolKind.Method, '.' + var.substring(2)));
-    //            if (collector.isSatisfied()) return;
-    //        }
-    //    }
-    //}
+    private void contributeExternalPackage(Perl6SymbolCollector collector, String typeName,
+                                           boolean privatesVisible, boolean submethodsVisible) {
+        Perl6VariantsSymbolCollector extCollector =
+                new Perl6VariantsSymbolCollector(Perl6SymbolKind.ExternalPackage);
+        applyExternalSymbolCollector(extCollector);
+        for (Perl6Symbol pack : extCollector.getVariants()) {
+            Perl6ExternalPackage externalPackage = (Perl6ExternalPackage)pack;
+            if (!(pack.getName().equals(typeName)))
+                continue;
+            externalPackage.contributeMOPSymbols(collector, privatesVisible, submethodsVisible);
+        }
+    }
 
     @Override
     public void contributeNestedPackagesWithPrefix(Perl6SymbolCollector collector, String prefix) {
