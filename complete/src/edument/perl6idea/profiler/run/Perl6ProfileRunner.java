@@ -9,9 +9,12 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import edument.perl6idea.profiler.ui.ProfileContentBuilder;
+import edument.perl6idea.run.Perl6ProfileExecutor;
 import edument.perl6idea.run.Perl6RunConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class Perl6ProfileRunner extends DefaultProgramRunner {
     @NotNull
@@ -22,7 +25,8 @@ public class Perl6ProfileRunner extends DefaultProgramRunner {
 
     @Override
     public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile) {
-        return profile instanceof Perl6RunConfiguration;
+        return Objects.equals(Perl6ProfileExecutor.EXECUTOR_ID, executorId) &&
+               profile instanceof Perl6RunConfiguration;
     }
 
     @Nullable

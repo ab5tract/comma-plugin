@@ -2,6 +2,7 @@ package edument.perl6idea.profiler.model;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.Function;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +44,54 @@ public class Perl6ProfileData {
         }
     }
 
+    public void cancel() {
+        // A race?
+        if (connection == null)
+            return;
+
+        try {
+            connection.close();
+            connection = null;
+        }
+        catch (SQLException e) {
+            LOG.warn(e);
+            connection = null;
+        }
+    }
+
+    public Perl6ProfileCall getProfileCallById(int callId, int max, @Nullable Perl6ProfileCall parent) {
+        String sql = "SELECT c.id AS id, c.inclusive_time AS inclusive, " +
+                     "r.name AS name " +
+                     "FROM calls c JOIN routines r ON c.routine_id = r.id " +
+                     "WHERE (c.parent_id = ? and c.inclusive_time > 1) or c.id = ? " +
+                     "ORDER BY c.id ASC;";
+        Perl6ProfileCall root = new Perl6ProfileCall();
+        if (parent != null)
+            root.parent = parent;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, callId);
+            statement.setInt(2, callId);
+            ResultSet set = statement.executeQuery();
+            // For every callee
+            List<Perl6ProfileCall> calleeList = new ArrayList<>();
+            while (set.next()) {
+                int id = set.getInt("id");
+                int time = set.getInt("inclusive");
+                String name = set.getString("name");
+                if (id == callId) {
+                    root.name = name;
+                    root.time = time;
+                } else if (max > 0) {
+                    calleeList.add(getProfileCallById(id, max - 1, root));
+                }
+            }
+            root.callees = calleeList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return root;
+    }
+
     public List<Perl6ProfilerNode> getNavigationNodes() throws SQLException {
         List<Perl6ProfilerNode> nodes = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
@@ -72,21 +121,6 @@ public class Perl6ProfileData {
                 calls.getInt("exclusive_time"),
                 calls.getInt("entries")
             ));
-        }
-    }
-
-    public void cancel() {
-        // A race?
-        if (connection == null)
-            return;
-
-        try {
-            connection.close();
-            connection = null;
-        }
-        catch (SQLException e) {
-            LOG.warn(e);
-            connection = null;
         }
     }
 
