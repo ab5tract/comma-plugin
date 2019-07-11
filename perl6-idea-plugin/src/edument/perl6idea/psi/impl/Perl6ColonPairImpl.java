@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6ColonPair;
 import edument.perl6idea.psi.Perl6Statement;
+import edument.perl6idea.psi.Perl6Variable;
 import org.jetbrains.annotations.NotNull;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.COLON_PAIR;
@@ -25,6 +26,13 @@ public class Perl6ColonPairImpl extends ASTWrapperPsiElement implements Perl6Col
         PsiElement sibling = getFirstChild().getNextSibling();
         if (sibling.getNode().getElementType() == COLON_PAIR)
             return sibling.getText();
+        else if (sibling instanceof Perl6Variable) {
+            String nameWithSigils = ((Perl6Variable)sibling).getVariableName();
+            if (nameWithSigils != null) {
+                int sigilIndex = Perl6Variable.getTwigil(nameWithSigils) == ' ' ? 1 : 2;
+                return nameWithSigils.substring(sigilIndex);
+            }
+        }
         return null;
     }
 
