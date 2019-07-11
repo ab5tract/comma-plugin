@@ -236,7 +236,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             Perl6PackageDecl typeRef = pair.second;
             String mod = pair.first;
             boolean isDoes = mod.equals("does");
-            typeRef.contributeMOPSymbols(collector, isDoes && privatesVisible, isDoes & submethodsVisible);
+            typeRef.contributeMOPSymbols(collector, isDoes && privatesVisible, isDoes && submethodsVisible);
             typeRef.contributeScopeSymbols(collector);
             if (collector.isSatisfied()) return;
         }
