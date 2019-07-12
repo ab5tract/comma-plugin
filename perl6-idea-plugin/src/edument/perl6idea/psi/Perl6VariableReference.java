@@ -25,7 +25,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
         String name = var.getVariableName();
         if (name == null)
             return null;
-        if (Perl6Variable.getTwigil(name) == '!') {
+        char twigil = Perl6Variable.getTwigil(name);
+        if (twigil == '!' || twigil == '.') {
             // Attribute; resolve through MOP.
             Perl6PackageDecl enclosingPackage = var.getSelfType();
             if (enclosingPackage != null) {
