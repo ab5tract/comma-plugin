@@ -1,9 +1,7 @@
 package edument.perl6idea.psi;
 
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReferenceBase;
-import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.containers.ContainerUtil;
@@ -17,12 +15,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.SELF;
 
-public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
+public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall> {
     public Perl6MethodReference(Perl6MethodCallImpl call) {
-        super(call, new TextRange(0, call.getCallName().length()));
+        super(call, new TextRange(0, call.getCallName().length()), false);
     }
 
     static class CallInfo {
@@ -70,14 +69,19 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
         }
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public PsiElement resolve() {
+    public ResolveResult[] multiResolve(boolean incompleteCode) {
         Perl6MethodCall call = getElement();
         List<Perl6Symbol> method = getMethodsForType(call, getCallInfo(call), true);
-        return method.size() != 0
-                ? (method.get(0) == null ? null : method.get(0).getPsi())
-                : null;
+        if (method == null || method.isEmpty())
+            return ResolveResult.EMPTY_ARRAY;
+        return method.stream()
+                .map(s -> s.getPsi())
+                .filter(p -> p != null)
+                .map(p -> new PsiElementResolveResult(p))
+                .collect(Collectors.toList())
+                .toArray(ResolveResult.EMPTY_ARRAY);
     }
 
     @NotNull
@@ -158,7 +162,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
             Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(
                     callinfo.getMethodName(), Perl6SymbolKind.Method);
             enclosingPackage.contributeMOPSymbols(collector, symbolsAllowed);
-            return Collections.singletonList(collector.getResult());
+            return collector.getResults();
         }
         else {
             Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);

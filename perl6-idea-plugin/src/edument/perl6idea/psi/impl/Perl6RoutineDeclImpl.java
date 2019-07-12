@@ -213,9 +213,16 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
                 // Normal method.
                 visible = true;
             }
-            if (visible)
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this,
-                        isPrivate ? name : "." + name));
+            if (visible) {
+                String multiness = getMultiness();
+                boolean isProto = multiness.equals("proto");
+                Perl6ExplicitAliasedSymbol sym = new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this,
+                        isPrivate ? name : "." + name);
+                if (isProto || multiness.equals("multi"))
+                    collector.offerMultiSymbol(sym, isProto);
+                else
+                    collector.offerSymbol(sym);
+            }
         }
     }
 
