@@ -5,8 +5,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.impl.Perl6RegexCallImpl;
+import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,14 +39,17 @@ public class Perl6RegexCallReference extends PsiReferenceBase<Perl6RegexCall> {
             .getLexicalSymbolVariants(Perl6SymbolKind.Regex)
             .stream()
             .map(sym -> sym.getName()).collect(toList());
-        result.addAll(
-            getElement().getLexicalSymbolVariants(Perl6SymbolKind.Method)
-                        .stream()
-                        // Filter out external symbols for regex-calls
-                        .filter(symbol -> !symbol.isExternal() )
-                        // Delete first `.`, as we already have one in method (e.g. `.alpha`)
-                        .map(sym -> sym.getName().substring(1)).collect(toList())
-        );
+        Perl6PackageDecl selfType = getElement().getSelfType();
+        if (selfType != null) {
+            Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
+            selfType.contributeMOPSymbols(collector, new MOPSymbolsAllowed(false, false, true, false));
+            result.addAll(collector.getVariants()
+                    .stream()
+                    // Filter out external symbols for regex-calls
+                    .filter(symbol -> !symbol.isExternal() )
+                    // Delete first `.`, as we already have one in method (e.g. `.alpha`)
+                    .map(sym -> sym.getName().substring(1)).collect(toList()));
+        }
         result.addAll(Arrays.asList(PREDEFINED_METHODS));
         return result.toArray();
     }

@@ -113,7 +113,7 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
         String scope = getScope();
         if (name != null && scope.equals("has")) {
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Regex, this));
-            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this, "." + name));
         }
     }
 }

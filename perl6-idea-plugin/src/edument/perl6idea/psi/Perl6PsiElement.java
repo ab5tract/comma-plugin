@@ -102,13 +102,18 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         Perl6PsiElement current = this;
         boolean foundMethod = false;
         while (current != null) {
-            current = PsiTreeUtil.getParentOfType(current, Perl6RoutineDecl.class, Perl6PackageDecl.class);
+            current = PsiTreeUtil.getParentOfType(current, Perl6RoutineDecl.class, Perl6RegexDecl.class, Perl6PackageDecl.class);
             if (current instanceof Perl6PackageDecl)
                 return foundMethod ? (Perl6PackageDecl)current : null;
             if (foundMethod) // Method not directly in package
                 return null;
             if (current instanceof Perl6RoutineDecl) {
                 String scope = ((Perl6RoutineDecl)current).getScope();
+                if (scope != null && scope.equals("has"))
+                    foundMethod = true;
+            }
+            else if (current instanceof Perl6RegexDecl) {
+                String scope = ((Perl6RegexDecl)current).getScope();
                 if (scope != null && scope.equals("has"))
                     foundMethod = true;
             }
