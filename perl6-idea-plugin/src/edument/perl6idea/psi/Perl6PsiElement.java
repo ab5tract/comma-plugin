@@ -79,22 +79,6 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
 
     default void applyLexicalSymbolCollector(Perl6SymbolCollector collector) {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(this, Perl6PsiScope.class);
-
-        // XXX Is this relevant any more?
-        // Avoid bottomless recursion:
-        // If we are trying to resolve (hence apply) Perl6TypeName, the method may be called from class,
-        // so `scope` points to this PackageDecl, and calling `contributeMOPSymbols` on that
-        // will cycle itself.
-        // But if is not a TypeName inside of Trait, we are safe to complete/resolve;
-        //boolean insideOfTrait = getParent() instanceof Perl6Trait;
-        //boolean packageTrait = false;
-        //if (insideOfTrait) {
-        //    packageTrait = getParent().getParent() instanceof Perl6PackageDecl || getParent().getParent() instanceof Perl6Also;
-        //}
-        //
-        //if ((this instanceof Perl6TypeName || this instanceof Perl6IsTraitName) && packageTrait)
-        //    scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
-
         while (scope != null) {
             for (Perl6LexicalSymbolContributor cont : scope.getSymbolContributors()) {
                 cont.contributeLexicalSymbols(collector);
@@ -110,6 +94,26 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
 
     default String inferType() {
         return "Any";
+    }
+
+    default Perl6PackageDecl getSelfType() {
+        // There's only a self type if we're inside of a method. To see that, walk routines
+        // and package parents.
+        Perl6PsiElement current = this;
+        boolean foundMethod = false;
+        while (current != null) {
+            current = PsiTreeUtil.getParentOfType(current, Perl6RoutineDecl.class, Perl6PackageDecl.class);
+            if (current instanceof Perl6PackageDecl)
+                return foundMethod ? (Perl6PackageDecl)current : null;
+            if (foundMethod) // Method not directly in package
+                return null;
+            if (current instanceof Perl6RoutineDecl) {
+                String scope = ((Perl6RoutineDecl)current).getScope();
+                if (scope != null && scope.equals("has"))
+                    foundMethod = true;
+            }
+        }
+        return null;
     }
 
     @Nullable

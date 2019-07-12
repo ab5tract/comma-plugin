@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
@@ -31,7 +30,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             return null;
         if (Perl6Variable.getTwigil(name) == '!') {
             // Attribute; resolve through MOP.
-            Perl6PackageDecl enclosingPackage = PsiTreeUtil.getParentOfType(var, Perl6PackageDeclImpl.class);
+            Perl6PackageDecl enclosingPackage = var.getSelfType();
             if (enclosingPackage != null) {
                 Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, Perl6SymbolKind.Variable);
                 enclosingPackage.contributeMOPSymbols(collector, true, true);
@@ -60,7 +59,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     @Override
     public Object[] getVariants() {
         List<Perl6Symbol> syms = new ArrayList<>(getElement().getLexicalSymbolVariants(Perl6SymbolKind.Variable));
-        Perl6PackageDecl enclosingPackage = PsiTreeUtil.getParentOfType(getElement(), Perl6PackageDeclImpl.class);
+        Perl6PackageDecl enclosingPackage = getElement().getSelfType();
         if (enclosingPackage != null) {
             Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Variable);
             enclosingPackage.contributeMOPSymbols(collector, true, true);
