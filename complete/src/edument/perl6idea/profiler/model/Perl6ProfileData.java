@@ -123,6 +123,20 @@ public class Perl6ProfileData {
         return nodes;
     }
 
+    public List<Perl6ProfileThread> getThreads() {
+        List<Perl6ProfileThread> threadList = new ArrayList<>();
+        try (Statement statement = connection.createStatement()) {
+            ResultSet threads = statement
+                .executeQuery("SELECT thread_id AS id, root_node AS rootNodeID FROM profile WHERE rootNodeID IS NOT NULL ORDER BY id ASC;");
+            while (threads.next()) {
+                threadList.add(new Perl6ProfileThread(threads.getInt("id"), threads.getInt("rootNodeID")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return threadList;
+    }
+
     private static void convertProfilerNodes(List<Perl6ProfilerNode> nodes, ResultSet calls) throws SQLException {
         while (calls.next()) {
             nodes.add(new Perl6ProfilerNode(

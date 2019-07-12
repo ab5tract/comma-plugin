@@ -174,6 +174,13 @@ public class Perl6ProfileCallGraph extends JPanel {
         g.drawLine(SIDE_OFFSET, height - 5, getWidth() - SIDE_OFFSET, height - 5);
     }
 
+    public void switchToThread(int newRootID) {
+        myRoot = myProfileData.getProfileCallById(newRootID, 15, null);
+        repaint();
+        JScrollBar scrollBar = myScroll.getVerticalScrollBar();
+        scrollBar.setValue(scrollBar.getMaximum());
+    }
+
     private static Color getBrighterColor(Color color) {
         return ColorHelper.adjustColor(color, 9);
     }
