@@ -1,35 +1,131 @@
 package edument.perl6idea.profiler.ui;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.awt.RelativePoint;
 import edument.perl6idea.profiler.model.Perl6ProfileCall;
+import edument.perl6idea.profiler.model.Perl6ProfileData;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Perl6ProfileCallGraph extends JPanel {
     public static final int SIDE_OFFSET = 10;
     public static final int ITEM_HEIGHT = 16;
     public static final int START_Y_OFFSET = 26;
-    public static final Color BASIC_ROOT_COLOR = JBColor.ORANGE;
+    public static final Color BASIC_ROOT_COLOR = Color.ORANGE;
     private final Project myProject;
-    private final Perl6ProfileCall myRoot;
+    private final Perl6ProfileData myProfileData;
+    private final JScrollPane myScroll;
+    private Perl6ProfileCall myRoot;
+    private Rectangle graphSizes;
+    private Queue<CallItem> callItems = new ConcurrentLinkedQueue<>();
+    private Rectangle myRootPosition;
+    private int maxHeight = START_Y_OFFSET;
 
-    public Perl6ProfileCallGraph(Project project, Perl6ProfileCall call) {
+    public Perl6ProfileCallGraph(Project project, Perl6ProfileData profileData, JScrollPane scrollPane) {
         myProject = project;
-        myRoot = call;
+        myScroll = scrollPane;
+        myProfileData = profileData;
+        myRoot = profileData.getProfileCallById(1, 15, null);
+        addMouseEventHandlers();
+    }
+
+    private void addMouseEventHandlers() {
+        MouseAdapter clickAdapterHandler = new MouseAdapter() {
+            private CallItem currentTooltipCall;
+            private JBPopup currentPopup;
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Point point = e.getPoint();
+                if (e.getButton() == MouseEvent.BUTTON1 && graphSizes.contains(point)) {
+                    for (CallItem item : callItems) {
+                        if (item.contains(point)) {
+                            boolean isAscendingToParent = myRootPosition.y > point.y;
+                            myRoot = myProfileData.getProfileCallById(item.myCall.id, 15, item.myCall.parent);
+                            repaint();
+                            int startOfUpdatedRootNode = myRootPosition.y;
+                            JScrollBar scrollBar = myScroll.getVerticalScrollBar();
+                            int offset = 2 * ITEM_HEIGHT;
+                            if (isAscendingToParent) {
+                                int scrollTo = Math.max(0, startOfUpdatedRootNode - offset);
+                                //System.out.println("Ascending to parent: scrolling to " + scrollTo);
+                                scrollBar.setValue(scrollTo);
+                            } else {
+                                int min = Math.min(scrollBar.getMaximum(), startOfUpdatedRootNode + offset);
+                                scrollBar.setValue(min);
+                                //System.out.println("Descending to child: scrolling to " + min);
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if (e.getButton() != 0)
+                    return;
+                maybeShowTooltip(e.getPoint());
+            }
+
+            private void maybeShowTooltip(Point point) {
+                if (graphSizes.contains(point)) {
+                    for (CallItem item : callItems) {
+                        if (item.contains(point)) {
+                            if (item != currentTooltipCall) {
+                                closeActiveTooltip();
+                                showTooltip(point, item);
+                            }
+                            return;
+                        }
+                    }
+                }
+                closeActiveTooltip();
+            }
+
+            private void showTooltip(Point point, CallItem item) {
+                currentTooltipCall = item;
+                JBPopup popup = JBPopupFactory.getInstance()
+                    .createComponentPopupBuilder(new CallGraphTooltip(currentTooltipCall), null)
+                    .setFocusOwners(new Component[] { Perl6ProfileCallGraph.this })
+                    .createPopup();
+                currentPopup = popup;
+                popup.show(new RelativePoint(Perl6ProfileCallGraph.this, point));
+            }
+
+            private void closeActiveTooltip() {
+                if (currentTooltipCall != null) {
+                    currentPopup.cancel();
+                    Disposer.dispose(currentPopup);
+                    currentPopup = null;
+                    currentTooltipCall = null;
+                }
+            }
+        };
+        addMouseListener(clickAdapterHandler);
+        addMouseMotionListener(clickAdapterHandler);
     }
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+        callItems = new ConcurrentLinkedQueue<>();
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         paintGraph(g2d);
+        graphSizes = new Rectangle(SIDE_OFFSET, START_Y_OFFSET, getWidth() - 2 * SIDE_OFFSET, getHeight() - START_Y_OFFSET);
     }
 
     private void paintGraph(Graphics2D g) {
@@ -42,9 +138,13 @@ public class Perl6ProfileCallGraph extends JPanel {
         // Draw root
         g.setColor(BASIC_ROOT_COLOR);
         drawCall(g, myRoot, SIDE_OFFSET, getWidth() - 2 * SIDE_OFFSET, currentY);
+        myRootPosition = new Rectangle(SIDE_OFFSET, currentY, getWidth() - 2 * SIDE_OFFSET, ITEM_HEIGHT);
         currentY += ITEM_HEIGHT;
 
         drawChildren(g, myRoot, BASIC_ROOT_COLOR, SIDE_OFFSET, getWidth() - 2 * SIDE_OFFSET, currentY);
+        Dimension size = new Dimension(800, START_Y_OFFSET + maxHeight);
+        setPreferredSize(size);
+        revalidate();
     }
 
     private int drawParentBreadcrumbs(Graphics2D g, int height) {
@@ -57,7 +157,7 @@ public class Perl6ProfileCallGraph extends JPanel {
                 nextParent = nextParent.parent;
             }
             for (Perl6ProfileCall call : parents) {
-                // drawCall(g, call, )
+                drawCall(g, call, SIDE_OFFSET, getWidth() - 2 * SIDE_OFFSET, currentItemHeight);
                 currentItemHeight += ITEM_HEIGHT;
             }
         }
@@ -66,7 +166,7 @@ public class Perl6ProfileCallGraph extends JPanel {
 
     private void drawAxis(Graphics2D g, int height) {
         g.setColor(JBColor.BLACK);
-        String overallTimeString = String.format("Time: %s μs", myRoot.time);
+        String overallTimeString = String.format("Time: %s μs", myRoot.inclusiveTime);
         Rectangle2D timeLabelRect = g.getFontMetrics().getStringBounds(overallTimeString, g);
         int textStartX = (int)(((getWidth() - 2 * SIDE_OFFSET) / 2) - timeLabelRect.getWidth() / 2);
         int textStartY = (int)(height - timeLabelRect.getHeight());
@@ -82,7 +182,12 @@ public class Perl6ProfileCallGraph extends JPanel {
         return ColorHelper.adjustColor(color, -9);
     }
 
-    private static boolean drawCall(Graphics2D g, Perl6ProfileCall root, int startX, int callRectWidth, int height) {
+    private boolean drawCall(Graphics2D g, Perl6ProfileCall root, int startX, int callRectWidth, int height) {
+        callItems.add(new CallItem(new Rectangle(startX, height, callRectWidth, ITEM_HEIGHT), root));
+        if (height > maxHeight) {
+            maxHeight = height;
+        }
+
         Color background = g.getColor();
         String callName = root.name.isEmpty() ? "<anon>" : root.name;
 
@@ -140,15 +245,17 @@ public class Perl6ProfileCallGraph extends JPanel {
         return null;
     }
 
-    private static void drawChildren(Graphics2D g, Perl6ProfileCall call, Color color, int callStartX, int maxItemWidth, int lineHeight) {
+    private void drawChildren(Graphics2D g, Perl6ProfileCall call, Color color, int callStartX, int maxItemWidth, int lineHeight) {
         // We need to move to the right for every child, starting from far left point of the parent
         int currentX = callStartX;
         // We print children recursively depth-first, so need to re-apply level color on every next item
         Color currentLevelColor = g.getColor();
+        if (call.callees == null)
+            return;
         for (Perl6ProfileCall childCall : call.callees) {
             g.setColor(currentLevelColor);
             // We need to calculate x - where to start, and width - how long it is
-            int width = (int)(maxItemWidth * ((float)childCall.time / call.time));
+            int width = (int)(maxItemWidth * ((float)childCall.inclusiveTime / call.inclusiveTime));
             if (width == 0)
                 continue;
             if (drawCall(g, childCall, currentX, width, lineHeight)) {
@@ -239,6 +346,20 @@ public class Perl6ProfileCallGraph extends JPanel {
                 s = (max - min) / (2 - max - min);
 
             return new float[]{h, s * 100, l * 100};
+        }
+    }
+
+    public class CallItem {
+        private final Rectangle myArea;
+        public final Perl6ProfileCall myCall;
+
+        public CallItem(Rectangle area, Perl6ProfileCall call) {
+            myArea = area;
+            myCall = call;
+        }
+
+        public boolean contains(Point point) {
+            return myArea.contains(point);
         }
     }
 }

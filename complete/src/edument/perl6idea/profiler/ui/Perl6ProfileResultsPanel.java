@@ -18,18 +18,20 @@ public class Perl6ProfileResultsPanel extends JPanel {
 
     public Perl6ProfileResultsPanel(Project project,
                                     Perl6ProfileData profileData) {
+        super(new BorderLayout());
         myProject = project;
         myProfileData = profileData;
         myTabbedPaneWrapper = new JBTabbedPane();
         myTabbedPaneWrapper.addTab("Routines", getRoutinesTab());
         myTabbedPaneWrapper.addTab("Call Graph", getCallGraphTab());
-        setLayout(new BorderLayout());
         add(new JScrollPane(myTabbedPaneWrapper), BorderLayout.CENTER);
     }
 
     private Component getCallGraphTab() {
-        Perl6ProfileCall rootCall = myProfileData.getProfileCallById(1, 15, null);
-        myCallGraphView = new JBScrollPane(new Perl6ProfileCallGraph(myProject, rootCall));
+        JScrollPane pane = new JBScrollPane();
+        Perl6ProfileCallGraph view = new Perl6ProfileCallGraph(myProject, myProfileData, pane);
+        pane.setViewportView(view);
+        myCallGraphView = pane;
         return myCallGraphView;
     }
 

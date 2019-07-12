@@ -60,12 +60,14 @@ public class Perl6ProfileData {
     }
 
     public Perl6ProfileCall getProfileCallById(int callId, int max, @Nullable Perl6ProfileCall parent) {
-        String sql = "SELECT c.id AS id, c.inclusive_time AS inclusive, " +
-                     "r.name AS name " +
+        String sql = "SELECT c.id AS id, c.inclusive_time AS inclusive, c.entries as entries, " +
+                     "c.spesh_entries AS spesh_entries, c.inlined_entries AS inlined_entries, " +
+                     "r.name AS name, r.file AS file, r.line AS line " +
                      "FROM calls c JOIN routines r ON c.routine_id = r.id " +
                      "WHERE (c.parent_id = ? and c.inclusive_time > 1) or c.id = ? " +
                      "ORDER BY c.id ASC;";
         Perl6ProfileCall root = new Perl6ProfileCall();
+        root.id = callId;
         if (parent != null)
             root.parent = parent;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -74,18 +76,27 @@ public class Perl6ProfileData {
             ResultSet set = statement.executeQuery();
             // For every callee
             List<Perl6ProfileCall> calleeList = new ArrayList<>();
+            boolean hasMoreChildren = false;
             while (set.next()) {
                 int id = set.getInt("id");
-                int time = set.getInt("inclusive");
-                String name = set.getString("name");
                 if (id == callId) {
-                    root.name = name;
-                    root.time = time;
-                } else if (max > 0) {
-                    calleeList.add(getProfileCallById(id, max - 1, root));
+                    root.name = set.getString("name");
+                    root.filename = set.getString("file");
+                    root.line = set.getString("line");
+                    root.inclusiveTime = set.getInt("inclusive");
+                    root.entries = set.getInt("entries");
+                    root.inlinedEntries = set.getInt("inlined_entries");
+                    root.speshEntries = set.getInt("spesh_entries");
+                } else {
+                    hasMoreChildren = true;
+                    if (max > 0)
+                        calleeList.add(getProfileCallById(id, max - 1, root));
                 }
             }
-            root.callees = calleeList;
+            if (max == 0 && hasMoreChildren)
+                root.callees = null;
+            else
+                root.callees = calleeList;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -96,8 +107,10 @@ public class Perl6ProfileData {
         List<Perl6ProfilerNode> nodes = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
             ResultSet calls = statement
-                .executeQuery("SELECT r.id, r.file, r.line, r.name, SUM(c.inclusive_time) as inclusive_time, " +
-                              "SUM(c.exclusive_time) as exclusive_time, SUM(c.entries) as entries " +
+                .executeQuery("SELECT r.id, r.file, r.line, r.name, " +
+                              "total(case when rec_depth = 0 then inclusive_time else 0 end) as inclusive_time, " +
+                              "total(exclusive_time) as exclusive_time, " +
+                              "SUM(c.entries) as entries " +
                               "FROM calls c INNER JOIN routines r ON c.routine_id == r.id " +
                               "GROUP BY r.id ORDER BY c.inclusive_time DESC");
             convertProfilerNodes(nodes, calls);
