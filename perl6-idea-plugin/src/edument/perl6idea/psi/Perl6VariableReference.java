@@ -9,8 +9,13 @@ import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     public Perl6VariableReference(Perl6Variable var) {
@@ -22,6 +27,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     public PsiElement resolve() {
         Perl6Variable var = getElement();
         String name = var.getVariableName();
+        if (name == null)
+            return null;
         if (Perl6Variable.getTwigil(name) == '!') {
             // Attribute; resolve through MOP.
             Perl6PackageDecl enclosingPackage = PsiTreeUtil.getParentOfType(var, Perl6PackageDeclImpl.class);
@@ -52,7 +59,14 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        return getElement().getLexicalSymbolVariants(Perl6SymbolKind.Variable)
+        List<Perl6Symbol> syms = new ArrayList<>(getElement().getLexicalSymbolVariants(Perl6SymbolKind.Variable));
+        Perl6PackageDecl enclosingPackage = PsiTreeUtil.getParentOfType(getElement(), Perl6PackageDeclImpl.class);
+        if (enclosingPackage != null) {
+            Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Variable);
+            enclosingPackage.contributeMOPSymbols(collector, true, true);
+            syms.addAll(collector.getVariants());
+        }
+        return syms
                .stream()
                .filter(this::isDeclaredAfterCurrentPosition)
                .map(sym -> sym.getName())
