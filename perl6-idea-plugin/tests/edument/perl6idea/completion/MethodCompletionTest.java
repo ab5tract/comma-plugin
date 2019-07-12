@@ -198,7 +198,7 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testAccessors3() {
-        doTestContainsAll("class Foo { has $.foo; method !a { self!<caret> } }", "!a", "!foo");
+        doTestContainsAll("class Foo { has $.foo; method !x() { }; method !a { self!<caret> } }", "!a", "!x");
     }
 
     public void testMethodsFromParametrizedRole() {
