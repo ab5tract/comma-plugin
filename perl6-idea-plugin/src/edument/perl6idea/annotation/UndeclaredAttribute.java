@@ -9,6 +9,7 @@ import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6Variable;
 import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
+import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
 import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
@@ -38,7 +39,8 @@ public class UndeclaredAttribute implements Annotator {
             return;
         }
         Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(variableName, Perl6SymbolKind.Variable);
-        enclosingPackage.contributeMOPSymbols(collector, true, true);
+        enclosingPackage.contributeMOPSymbols(collector, new MOPSymbolsAllowed(
+                true, true, true, enclosingPackage.getPackageKind().equals("role")));
         if (collector.getResult() == null)
             holder.createErrorAnnotation(
                     element,

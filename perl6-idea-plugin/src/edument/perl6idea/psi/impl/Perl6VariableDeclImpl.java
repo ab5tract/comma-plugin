@@ -278,18 +278,17 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
-    public void contributeMOPSymbols(Perl6SymbolCollector collector, boolean privatesVisible,
-                                     boolean submethodsVisible) {
+    public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         if (getScope().equals("has")) {
             String name = getName();
             if (name != null && name.length() >= 2) {
-                if (Perl6Variable.getTwigil(name) == '!' && privatesVisible) {
+                if (Perl6Variable.getTwigil(name) == '!' && symbolsAllowed.privateAttributesVisible) {
                     collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
                 }
                 else if (Perl6Variable.getTwigil(name) == '.') {
                     collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
                     if (collector.isSatisfied()) return;
-                    if (privatesVisible) {
+                    if (symbolsAllowed.privateAttributesVisible) {
                         collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
                                 this, name.substring(0, 1) + "!" + name.substring(2)));
                         if (collector.isSatisfied()) return;

@@ -184,7 +184,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
-    public void contributeMOPSymbols(Perl6SymbolCollector collector, boolean privatesVisible, boolean submethodsVisible) {
+    public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         String name = getRoutineName();
         String scope = getScope();
         if (!name.equals("<anon>") && scope.equals("has")) {
@@ -193,11 +193,11 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
             boolean isPrivate = name.startsWith("!");
             if (isPrivate) {
                 // Private. Checked first as in theory a private submethod could exist.
-                visible = privatesVisible;
+                visible = symbolsAllowed.privateMethodsVisible;
             }
             else if (routineKind.equals("submethod")) {
                 // It's a submethod; only contribute if they are visible here.
-                visible = submethodsVisible;
+                visible = symbolsAllowed.submethodsVisible;
             }
             else {
                 // Normal method.

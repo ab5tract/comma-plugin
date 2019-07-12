@@ -6,10 +6,7 @@ import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
-import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
-import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +30,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             Perl6PackageDecl enclosingPackage = var.getSelfType();
             if (enclosingPackage != null) {
                 Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, Perl6SymbolKind.Variable);
-                enclosingPackage.contributeMOPSymbols(collector, true, true);
+                enclosingPackage.contributeMOPSymbols(collector, new MOPSymbolsAllowed(
+                        true, true, true, enclosingPackage.getPackageKind().equals("role")));
                 Perl6Symbol symbol = collector.getResult();
                 if (symbol != null)
                     return symbol.getPsi();
@@ -62,7 +60,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
         Perl6PackageDecl enclosingPackage = getElement().getSelfType();
         if (enclosingPackage != null) {
             Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Variable);
-            enclosingPackage.contributeMOPSymbols(collector, true, true);
+            enclosingPackage.contributeMOPSymbols(collector, new MOPSymbolsAllowed(
+                    true, true, true, enclosingPackage.getPackageKind().equals("role")));
             syms.addAll(collector.getVariants());
         }
         return syms

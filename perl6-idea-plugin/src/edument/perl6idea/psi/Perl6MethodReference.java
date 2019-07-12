@@ -153,15 +153,16 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
 
     @NotNull
     private static List getMethodsFromPsiType(CallInfo callinfo, boolean isSingle, Perl6PackageDecl enclosingPackage, boolean privatesVisible) {
+        MOPSymbolsAllowed symbolsAllowed = new MOPSymbolsAllowed(privatesVisible, true, privatesVisible, false);
         if (isSingle) {
             Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(
                     callinfo.getMethodName(), Perl6SymbolKind.Method);
-            enclosingPackage.contributeMOPSymbols(collector, privatesVisible, true);
+            enclosingPackage.contributeMOPSymbols(collector, symbolsAllowed);
             return Collections.singletonList(collector.getResult());
         }
         else {
             Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-            enclosingPackage.contributeMOPSymbols(collector, privatesVisible, true);
+            enclosingPackage.contributeMOPSymbols(collector, symbolsAllowed);
             return ContainerUtil.map(collector.getVariants(), Perl6Symbol::getName);
         }
     }

@@ -82,9 +82,9 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     }
 
     @Override
-    public void contributeMOPSymbols(Perl6SymbolCollector collector, boolean privatesVisible, boolean submethodsVisible) {
-        contributeInternals(collector, privatesVisible, submethodsVisible);
-        contributeFromElders(collector, privatesVisible, submethodsVisible);
+    public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
+        contributeInternals(collector, symbolsAllowed);
+        contributeFromElders(collector, symbolsAllowed);
     }
 
     // TODO Re-instate trusts support somehow
@@ -106,17 +106,17 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         return trusts;
     }
 
-    private void contributeInternals(Perl6SymbolCollector collector, boolean privatesVisible, boolean submethodsVisible) {
+    private void contributeInternals(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         Perl6PackageDeclStub stub = getStub();
         if (stub != null) {
             for (StubElement nestedStub : stub.getChildrenStubs()) {
                 if (nestedStub instanceof Perl6RoutineDeclStub) {
                     Perl6RoutineDeclStub declStub = (Perl6RoutineDeclStub)nestedStub;
-                    if (declStub.isPrivate() && !privatesVisible)
+                    if (declStub.isPrivate() && !symbolsAllowed.privateMethodsVisible)
                         continue;
-                    if (declStub.getRoutineKind().equals("submethod") && !submethodsVisible)
+                    if (declStub.getRoutineKind().equals("submethod") && !symbolsAllowed.submethodsVisible)
                         continue;
-                    declStub.getPsi().contributeMOPSymbols(collector, privatesVisible, submethodsVisible);
+                    declStub.getPsi().contributeMOPSymbols(collector, symbolsAllowed);
                     if (collector.isSatisfied()) return;
                 }
                 else if (nestedStub instanceof Perl6ScopedDeclStub) {
@@ -127,13 +127,13 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                             Perl6VariableDeclStub declStub = (Perl6VariableDeclStub)var;
                             if (!declStub.getScope().equals("has"))
                                 continue;
-                            declStub.getPsi().contributeMOPSymbols(collector, privatesVisible, submethodsVisible);
+                            declStub.getPsi().contributeMOPSymbols(collector, symbolsAllowed);
                             if (collector.isSatisfied()) return;
                         }
                     }
                 } else if (nestedStub instanceof Perl6RegexDeclStub) {
                     Perl6RegexDeclStub declStub = (Perl6RegexDeclStub)nestedStub;
-                    declStub.getPsi().contributeMOPSymbols(collector, privatesVisible, submethodsVisible);
+                    declStub.getPsi().contributeMOPSymbols(collector, symbolsAllowed);
                     if (collector.isSatisfied()) return;
                 }
             }
@@ -146,29 +146,29 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             PsiElement firstChild = child.getFirstChild();
             if (firstChild instanceof Perl6RoutineDecl) {
                 Perl6RoutineDecl decl = (Perl6RoutineDecl)firstChild;
-                decl.contributeMOPSymbols(collector, privatesVisible, submethodsVisible);
+                decl.contributeMOPSymbols(collector, symbolsAllowed);
             }
             else if (firstChild instanceof Perl6MultiDecl) {
                 Perl6RoutineDecl maybeDecl = PsiTreeUtil.getChildOfType(firstChild, Perl6RoutineDecl.class);
                 if (maybeDecl != null)
-                    maybeDecl.contributeMOPSymbols(collector, privatesVisible, submethodsVisible);
+                    maybeDecl.contributeMOPSymbols(collector, symbolsAllowed);
             }
             else if (firstChild instanceof Perl6ScopedDecl) {
                 Perl6ScopedDecl decl = (Perl6ScopedDecl)firstChild;
                 if (decl.getScope().equals("has")) {
                     Perl6VariableDecl varDecl = PsiTreeUtil.getChildOfType(decl, Perl6VariableDecl.class);
                     if (varDecl != null)
-                        varDecl.contributeMOPSymbols(collector, privatesVisible, submethodsVisible);
+                        varDecl.contributeMOPSymbols(collector, symbolsAllowed);
                 }
             }
             else if (firstChild instanceof Perl6RegexDecl) {
-                ((Perl6RegexDecl)firstChild).contributeMOPSymbols(collector, privatesVisible, submethodsVisible);
+                ((Perl6RegexDecl)firstChild).contributeMOPSymbols(collector, symbolsAllowed);
             }
             if (collector.isSatisfied()) return;
         }
     }
 
-    private void contributeFromElders(Perl6SymbolCollector collector, boolean privatesVisible, boolean submethodsVisible) {
+    private void contributeFromElders(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         Perl6PackageDeclStub stub = getStub();
         List<Pair<String, Perl6PackageDecl>> perl6PackageDecls = new ArrayList<>();
         List<Pair<String, String>> externals = new ArrayList<>();
@@ -238,7 +238,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             Perl6PackageDecl typeRef = pair.second;
             String mod = pair.first;
             boolean isDoes = mod.equals("does");
-            typeRef.contributeMOPSymbols(collector, isDoes && privatesVisible, isDoes && submethodsVisible);
+            typeRef.contributeMOPSymbols(collector, isDoes ? symbolsAllowed.does() : symbolsAllowed.is());
             typeRef.contributeScopeSymbols(collector);
             if (collector.isSatisfied()) return;
         }
@@ -250,13 +250,13 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             int index = extType.indexOf('[');
             if (index != -1)
                 extType = extType.substring(0, index);
-            contributeExternalPackage(collector, extType, isDoes && privatesVisible, isDoes && submethodsVisible);
+            contributeExternalPackage(collector, extType, isDoes ? symbolsAllowed.does() : symbolsAllowed.is());
             if (collector.isSatisfied()) return;
         }
     }
 
     private void contributeExternalPackage(Perl6SymbolCollector collector, String typeName,
-                                           boolean privatesVisible, boolean submethodsVisible) {
+                                           MOPSymbolsAllowed symbolsAllowed) {
         Perl6VariantsSymbolCollector extCollector =
                 new Perl6VariantsSymbolCollector(Perl6SymbolKind.ExternalPackage);
         applyExternalSymbolCollector(extCollector);
@@ -264,7 +264,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             Perl6ExternalPackage externalPackage = (Perl6ExternalPackage)pack;
             if (!(pack.getName().equals(typeName)))
                 continue;
-            externalPackage.contributeMOPSymbols(collector, privatesVisible, submethodsVisible);
+            externalPackage.contributeMOPSymbols(collector, symbolsAllowed);
         }
     }
 

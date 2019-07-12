@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,8 +16,7 @@ public class Perl6AlsoImpl extends ASTWrapperPsiElement implements Perl6Also {
     }
 
     @Override
-    public void contributeMOPSymbols(Perl6SymbolCollector collector, boolean privatesVisible,
-                                     boolean submethodsVisible) {
+    public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         Perl6Trait trait = getTrait();
         if (trait == null) return;
 
@@ -30,7 +30,7 @@ public class Perl6AlsoImpl extends ASTWrapperPsiElement implements Perl6Also {
             if (resolve == null) return;
             if (!(resolve instanceof Perl6PackageDecl)) return;
             ((Perl6PackageDecl)resolve).contributeMOPSymbols(collector,
-                    privatesVisible && mod.equals("does"), submethodsVisible && mod.equals("does"));
+                    mod.equals("does") ? symbolsAllowed.does() : symbolsAllowed.is());
         }
     }
 
