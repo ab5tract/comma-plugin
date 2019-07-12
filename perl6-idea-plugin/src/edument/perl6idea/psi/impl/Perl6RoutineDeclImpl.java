@@ -168,6 +168,11 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         return getRoutineKind().equals("sub") ? "my" : "has";
     }
 
+    public String getMultiness() {
+        PsiElement parent = getParent();
+        return parent instanceof Perl6MultiDecl ? ((Perl6MultiDecl)parent).getMultiness() : "only";
+    }
+
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:ROUTINE_DECLARATION)";
     }
@@ -177,7 +182,12 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         String name = getRoutineName();
         String scope = getScope();
         if (!name.equals("<anon>") && (scope.equals("my") || scope.equals("our"))) {
-            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
+            String multiness = getMultiness();
+            boolean isProto = multiness.equals("proto");
+            if (isProto || multiness.equals("multi"))
+                collector.offerMultiSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this), isProto);
+            else
+                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
                     this, "&" + name));
         }

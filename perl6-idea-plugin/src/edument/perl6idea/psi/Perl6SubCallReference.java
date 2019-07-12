@@ -2,7 +2,9 @@ package edument.perl6idea.psi;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementResolveResult;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.ResolveResult;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.impl.Perl6SubCallNameImpl;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
@@ -10,17 +12,28 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Perl6SubCallReference extends PsiReferenceBase<Perl6SubCallName> {
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Perl6SubCallReference extends PsiReferenceBase.Poly<Perl6SubCallName> {
     public Perl6SubCallReference(Perl6SubCallNameImpl call) {
-        super(call, new TextRange(0, call.getTextLength()));
+        super(call, new TextRange(0, call.getTextLength()), false);
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public PsiElement resolve() {
+    public ResolveResult[] multiResolve(boolean incompleteCode) {
         Perl6SubCallName call = getElement();
-        Perl6Symbol symbol = call.resolveLexicalSymbol(Perl6SymbolKind.Routine, call.getCallName());
-        return symbol != null ? symbol.getPsi() : null;
+        List<Perl6Symbol> symbol = call.resolveLexicalSymbolAllowingMulti(Perl6SymbolKind.Routine, call.getCallName());
+        if (symbol != null) {
+            return symbol.stream()
+                    .map(s -> s.getPsi())
+                    .filter(p -> p != null)
+                    .map(p -> new PsiElementResolveResult(p))
+                    .collect(Collectors.toList())
+                    .toArray(ResolveResult.EMPTY_ARRAY);
+        }
+        return ResolveResult.EMPTY_ARRAY;
     }
 
     @NotNull

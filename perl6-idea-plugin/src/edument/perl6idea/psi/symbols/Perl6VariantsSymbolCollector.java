@@ -18,6 +18,13 @@ public class Perl6VariantsSymbolCollector implements Perl6SymbolCollector {
     }
 
     @Override
+    public void offerMultiSymbol(Perl6Symbol symbol, boolean isProto) {
+        String name = symbol.getName();
+        if (wantedKinds.contains(symbol.getKind()) && !seen.containsKey(name))
+            seen.put(name, symbol);
+    }
+
+    @Override
     public boolean isSatisfied() {
         return false;
     }

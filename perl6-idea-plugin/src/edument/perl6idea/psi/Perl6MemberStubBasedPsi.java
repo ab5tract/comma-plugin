@@ -63,12 +63,18 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
             @Override
             public String getLocationString() {
                 switch (getScope()) {
-                    case "my":
-                        return "lexical in " + enclosingPackage();
-                    case "our":
-                        return "global in " + getEnclosingPerl6ModuleName();
-                    case "has":
-                        return "in " + enclosingPackage();
+                    case "my": {
+                        String encName = enclosingPackage();
+                        return encName == null ? "" : "lexical in " + encName;
+                    }
+                    case "our": {
+                        String name = getEnclosingPerl6ModuleName();
+                        return name == null ? "" : "global in " + name;
+                    }
+                    case "has": {
+                        String encName = enclosingPackage();
+                        return encName == null ? "" : "in " + encName;
+                    }
                     default:
                         return getEnclosingPerl6ModuleName();
                 }

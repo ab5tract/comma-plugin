@@ -11,6 +11,7 @@ import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
@@ -43,6 +44,13 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, kind);
         applyLexicalSymbolCollector(collector);
         return collector.getResult();
+    }
+
+    default List<Perl6Symbol> resolveLexicalSymbolAllowingMulti(Perl6SymbolKind kind, String name) {
+        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, kind);
+        applyLexicalSymbolCollector(collector);
+        List<Perl6Symbol> results = collector.getResults();
+        return results.isEmpty() ? null : results;
     }
 
     default Collection<Perl6Symbol> getLexicalSymbolVariants(Perl6SymbolKind... kinds) {
