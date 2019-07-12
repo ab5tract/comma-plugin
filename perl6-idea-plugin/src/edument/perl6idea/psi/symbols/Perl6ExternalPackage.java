@@ -84,7 +84,7 @@ public class Perl6ExternalPackage implements Perl6Symbol, Perl6MOPSymbolContribu
         }
         if (symbolsAllowed.privateMethodsVisible) {
             for (String method : privateMethods) {
-                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, "." + method));
+                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, method));
                 if (collector.isSatisfied()) return;
             }
         }
