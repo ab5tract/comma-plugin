@@ -5,10 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.impl.Perl6RegexCallImpl;
-import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
-import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +24,23 @@ public class Perl6RegexCallReference extends PsiReferenceBase<Perl6RegexCall> {
     @Nullable
     @Override
     public PsiElement resolve() {
+        // First look for it lexically.
         Perl6RegexCall call = getElement();
         Perl6Symbol symbol = call.resolveLexicalSymbol(Perl6SymbolKind.Regex, call.getText());
-        return symbol != null ? symbol.getPsi() : null;
+        if (symbol != null)
+            return symbol.getPsi();
+
+        // Otherwise, through the MOP.
+        Perl6PackageDecl selfType = call.getSelfType();
+        if (selfType != null) {
+            Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector("." + call.getText(), Perl6SymbolKind.Method);
+            selfType.contributeMOPSymbols(collector, new MOPSymbolsAllowed(false, false, true, false));
+            symbol = collector.getResult();
+            if (symbol != null)
+                return symbol.getPsi();
+        }
+
+        return null;
     }
 
     @NotNull
