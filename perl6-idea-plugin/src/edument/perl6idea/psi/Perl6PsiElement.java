@@ -97,25 +97,30 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
     }
 
     default Perl6PackageDecl getSelfType() {
-        // There's only a self type if we're inside of a method. To see that, walk routines
-        // and package parents.
+        // There's only a self type if we're inside of a method or in the declaration of
+        // an attribute.
         Perl6PsiElement current = this;
-        boolean foundMethod = false;
+        boolean foundSelfProvider = false;
         while (current != null) {
-            current = PsiTreeUtil.getParentOfType(current, Perl6RoutineDecl.class, Perl6RegexDecl.class, Perl6PackageDecl.class);
+            current = PsiTreeUtil.getParentOfType(current, Perl6RoutineDecl.class, Perl6RegexDecl.class, Perl6PackageDecl.class, Perl6VariableDecl.class);
             if (current instanceof Perl6PackageDecl)
-                return foundMethod ? (Perl6PackageDecl)current : null;
-            if (foundMethod) // Method not directly in package
+                return foundSelfProvider ? (Perl6PackageDecl)current : null;
+            if (foundSelfProvider)
                 return null;
             if (current instanceof Perl6RoutineDecl) {
                 String scope = ((Perl6RoutineDecl)current).getScope();
                 if (scope != null && scope.equals("has"))
-                    foundMethod = true;
+                    foundSelfProvider = true;
             }
             else if (current instanceof Perl6RegexDecl) {
                 String scope = ((Perl6RegexDecl)current).getScope();
                 if (scope != null && scope.equals("has"))
-                    foundMethod = true;
+                    foundSelfProvider = true;
+            }
+            else if (current instanceof Perl6VariableDecl) {
+                String scope = ((Perl6VariableDecl)current).getScope();
+                if (scope != null && scope.equals("has"))
+                    foundSelfProvider = true;
             }
         }
         return null;
