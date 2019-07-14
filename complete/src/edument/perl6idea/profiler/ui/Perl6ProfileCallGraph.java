@@ -21,15 +21,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Perl6ProfileCallGraph extends JPanel {
     public static final int SIDE_OFFSET = 10;
-    public static final int ITEM_HEIGHT = 16;
-    public static final int START_Y_OFFSET = 26;
     public static final Color BASIC_ROOT_COLOR = JBColor.BLUE;
+    public int myItemHeight;
     private final Perl6ProfileData myProfileData;
     private final Perl6ProfileCallGraphPanel myGraphPanel;
     private Perl6ProfileCall myRoot;
     private Rectangle graphSizes;
     private Queue<CallItem> callItems = new ConcurrentLinkedQueue<>();
-    private int maxHeight = START_Y_OFFSET;
+    private int maxHeight = 0;
     private JScrollPane myScroll;
     private int myRootHeight;
 
@@ -111,14 +110,16 @@ public class Perl6ProfileCallGraph extends JPanel {
         super.paint(g);
         callItems = new ConcurrentLinkedQueue<>();
         maxHeight = -1;
+        // We set a single item height to be a height of a character and 8 additional pixels for up and down margin
+        myItemHeight = (int)(g.getFontMetrics().getStringBounds("A", g).getHeight() + 6);
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         paintGraph(g2d);
-        graphSizes = new Rectangle(SIDE_OFFSET, START_Y_OFFSET, getWidth() - 2 * SIDE_OFFSET, getHeight() - START_Y_OFFSET);
+        graphSizes = new Rectangle(SIDE_OFFSET, 0, getWidth() - 2 * SIDE_OFFSET, getHeight());
     }
 
     private void paintGraph(Graphics2D g) {
-        int currentY = START_Y_OFFSET;
+        int currentY = 0;
         boolean shouldScroll = false;
 
         currentY = drawParentBreadcrumbs(g, currentY);
@@ -131,14 +132,14 @@ public class Perl6ProfileCallGraph extends JPanel {
             shouldScroll = true;
         }
         drawCall(g, myRoot, SIDE_OFFSET, getWidth() - 2 * SIDE_OFFSET, currentY);
-        currentY += ITEM_HEIGHT;
+        currentY += myItemHeight;
 
         drawChildren(g, myRoot, BASIC_ROOT_COLOR, SIDE_OFFSET, getWidth() - 2 * SIDE_OFFSET, currentY);
-        Dimension size = new Dimension(getParent().getWidth(), START_Y_OFFSET + maxHeight);
+        Dimension size = new Dimension(getParent().getWidth(), maxHeight);
         setPreferredSize(size);
         revalidate();
         if (shouldScroll)
-            myScroll.getVerticalScrollBar().setValue(myRootHeight - 3 * ITEM_HEIGHT);
+            myScroll.getVerticalScrollBar().setValue(myRootHeight - 3 * myItemHeight);
     }
 
     private int drawParentBreadcrumbs(Graphics2D g, int height) {
@@ -153,7 +154,7 @@ public class Perl6ProfileCallGraph extends JPanel {
             }
             for (Perl6ProfileCall call : parents) {
                 drawCall(g, call, SIDE_OFFSET, getWidth() - 2 * SIDE_OFFSET, currentItemHeight);
-                currentItemHeight += ITEM_HEIGHT;
+                currentItemHeight += myItemHeight;
             }
         }
         return currentItemHeight;
@@ -180,7 +181,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     }
 
     private boolean drawCall(Graphics2D g, Perl6ProfileCall root, int startX, int callRectWidth, int height) {
-        callItems.add(new CallItem(new Rectangle(startX, height, callRectWidth, ITEM_HEIGHT), root));
+        callItems.add(new CallItem(new Rectangle(startX, height, callRectWidth, myItemHeight), root));
         if (height > maxHeight) {
             maxHeight = height;
         }
@@ -189,11 +190,11 @@ public class Perl6ProfileCallGraph extends JPanel {
         String callName = root.name.isEmpty() ? "<anon>" : root.name;
 
         // Draw a filled rectangle
-        g.fillRect(startX, height, callRectWidth, ITEM_HEIGHT);
+        g.fillRect(startX, height, callRectWidth, myItemHeight);
 
         // Draw a border
         g.setColor(JBColor.BLACK);
-        g.drawRect(startX, height, callRectWidth, ITEM_HEIGHT);
+        g.drawRect(startX, height, callRectWidth, myItemHeight);
 
 
         // Draw text
@@ -210,7 +211,7 @@ public class Perl6ProfileCallGraph extends JPanel {
 
         Rectangle2D labelRect = fm.getStringBounds(callName, g);
         int textStartX = startX + (int)(callRectWidth / 2 - (labelRect.getCenterX()));
-        int textStartY = (int)(height + ITEM_HEIGHT / 2 - labelRect.getCenterY());
+        int textStartY = (int)(height + myItemHeight / 2 - labelRect.getCenterY());
         g.drawString(callName, textStartX, textStartY);
 
         // Reset color to background one once we drew border and label
@@ -265,7 +266,7 @@ public class Perl6ProfileCallGraph extends JPanel {
                 continue;
             if (drawCall(g, childCall, currentX, width, lineHeight)) {
                 g.setColor(getBrighterColor(color));
-                drawChildren(g, childCall, getBrighterColor(color), currentX, width, lineHeight + ITEM_HEIGHT);
+                drawChildren(g, childCall, getBrighterColor(color), currentX, width, lineHeight + myItemHeight);
             }
             currentX += width;
         }
