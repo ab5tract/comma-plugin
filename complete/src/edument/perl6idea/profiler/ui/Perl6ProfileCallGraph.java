@@ -31,7 +31,6 @@ public class Perl6ProfileCallGraph extends JPanel {
     private Perl6ProfileCall myRoot;
     private Rectangle graphSizes;
     private Queue<CallItem> callItems = new ConcurrentLinkedQueue<>();
-    private Rectangle myRootPosition;
     private int maxHeight = START_Y_OFFSET;
 
     public Perl6ProfileCallGraph(Project project, Perl6ProfileData profileData, JScrollPane scrollPane) {
@@ -53,21 +52,8 @@ public class Perl6ProfileCallGraph extends JPanel {
                 if (e.getButton() == MouseEvent.BUTTON1 && graphSizes.contains(point)) {
                     for (CallItem item : callItems) {
                         if (item.contains(point)) {
-                            boolean isAscendingToParent = myRootPosition.y > point.y;
                             myRoot = myProfileData.getProfileCallById(item.myCall.id, 15, item.myCall.parent);
                             repaint();
-                            int startOfUpdatedRootNode = myRootPosition.y;
-                            JScrollBar scrollBar = myScroll.getVerticalScrollBar();
-                            int offset = 2 * ITEM_HEIGHT;
-                            if (isAscendingToParent) {
-                                int scrollTo = Math.max(0, startOfUpdatedRootNode - offset);
-                                //System.out.println("Ascending to parent: scrolling to " + scrollTo);
-                                scrollBar.setValue(scrollTo);
-                            } else {
-                                int min = Math.min(scrollBar.getMaximum(), startOfUpdatedRootNode + offset);
-                                scrollBar.setValue(min);
-                                //System.out.println("Descending to child: scrolling to " + min);
-                            }
                         }
                     }
                 }
@@ -122,6 +108,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         callItems = new ConcurrentLinkedQueue<>();
+        maxHeight = -1;
         Graphics2D g2d = (Graphics2D)g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         paintGraph(g2d);
@@ -137,14 +124,16 @@ public class Perl6ProfileCallGraph extends JPanel {
 
         // Draw root
         g.setColor(BASIC_ROOT_COLOR);
+        // We will use that to scroll to root after painting is done
+        int rootHeight = currentY;
         drawCall(g, myRoot, SIDE_OFFSET, getWidth() - 2 * SIDE_OFFSET, currentY);
-        myRootPosition = new Rectangle(SIDE_OFFSET, currentY, getWidth() - 2 * SIDE_OFFSET, ITEM_HEIGHT);
         currentY += ITEM_HEIGHT;
 
         drawChildren(g, myRoot, BASIC_ROOT_COLOR, SIDE_OFFSET, getWidth() - 2 * SIDE_OFFSET, currentY);
-        Dimension size = new Dimension(800, START_Y_OFFSET + maxHeight);
+        Dimension size = new Dimension(getParent().getWidth(), START_Y_OFFSET + maxHeight);
         setPreferredSize(size);
         revalidate();
+        myScroll.getVerticalScrollBar().setValue(rootHeight - 3 * ITEM_HEIGHT);
     }
 
     private int drawParentBreadcrumbs(Graphics2D g, int height) {
