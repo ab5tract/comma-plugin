@@ -129,7 +129,6 @@ public class Perl6ProfileCallGraph extends JPanel {
         Dimension size = new Dimension(getParent().getWidth(), START_Y_OFFSET + maxHeight);
         setPreferredSize(size);
         revalidate();
-        myScroll.getVerticalScrollBar().setValue(rootHeight - 3 * ITEM_HEIGHT);
     }
 
     private int drawParentBreadcrumbs(Graphics2D g, int height) {
