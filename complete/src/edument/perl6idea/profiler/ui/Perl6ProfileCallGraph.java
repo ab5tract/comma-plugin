@@ -1,6 +1,5 @@
 package edument.perl6idea.profiler.ui;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
@@ -26,17 +25,18 @@ public class Perl6ProfileCallGraph extends JPanel {
     public static final int START_Y_OFFSET = 26;
     public static final Color BASIC_ROOT_COLOR = JBColor.BLUE;
     private final Perl6ProfileData myProfileData;
-    private final JScrollPane myScroll;
+    private final Perl6ProfileCallGraphPanel myGraphPanel;
     private Perl6ProfileCall myRoot;
     private Rectangle graphSizes;
     private Queue<CallItem> callItems = new ConcurrentLinkedQueue<>();
     private int maxHeight = START_Y_OFFSET;
 
-    public Perl6ProfileCallGraph(Perl6ProfileData profileData, JScrollPane scrollPane) {
-        myScroll = scrollPane;
+    public Perl6ProfileCallGraph(Perl6ProfileData profileData, Perl6ProfileCallGraphPanel panel) {
+        myGraphPanel = panel;
         myProfileData = profileData;
         myRoot = profileData.getProfileCallById(1, 15, null);
         addMouseEventHandlers();
+        updateAxis();
     }
 
     private void addMouseEventHandlers() {
@@ -52,6 +52,7 @@ public class Perl6ProfileCallGraph extends JPanel {
                         if (item.contains(point)) {
                             myRoot = myProfileData.getProfileCallById(item.myCall.id, 15, item.myCall.parent);
                             repaint();
+                            updateAxis();
                         }
                     }
                 }
@@ -149,20 +150,15 @@ public class Perl6ProfileCallGraph extends JPanel {
         return currentItemHeight;
     }
 
-    private void drawAxis(Graphics2D g, int height) {
-        g.setColor(JBColor.BLACK);
+    private void updateAxis() {
         String overallTimeString = String.format("Time: %s μs", myRoot.inclusiveTime);
-        Rectangle2D timeLabelRect = g.getFontMetrics().getStringBounds(overallTimeString, g);
-        int textStartX = (int)(((getWidth() - 2 * SIDE_OFFSET) / 2) - timeLabelRect.getWidth() / 2);
-        int textStartY = (int)(height - timeLabelRect.getHeight());
-        g.drawString(overallTimeString, textStartX, textStartY);
-        g.drawLine(SIDE_OFFSET, height - 5, getWidth() - SIDE_OFFSET, height - 5);
+        myGraphPanel.getTimeLabel().setText(overallTimeString);
     }
 
     public void switchToThread(int newRootID) {
         myRoot = myProfileData.getProfileCallById(newRootID, 15, null);
         repaint();
-        JScrollBar scrollBar = myScroll.getVerticalScrollBar();
+        JScrollBar scrollBar = myGraphPanel.getScrollPane().getVerticalScrollBar();
         scrollBar.setValue(scrollBar.getMaximum());
     }
 

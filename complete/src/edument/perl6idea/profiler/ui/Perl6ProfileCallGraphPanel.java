@@ -15,34 +15,48 @@ import java.util.List;
 
 public class Perl6ProfileCallGraphPanel extends JPanel {
     private final Perl6ProfileData myProfileData;
+    private final JBScrollPane myScrollPane;
+    private final Perl6ProfileCallGraph myProfileCallGraph;
     private List<Perl6ProfileThread> myThreads;
+    private JLabel myTimeLabel;
 
     public Perl6ProfileCallGraphPanel(Perl6ProfileData data) {
         super(new BorderLayout());
         myProfileData = data;
-        add(new JLabel("Axis Value"), BorderLayout.NORTH);
+
+        // Create chart configuration means
+        JPanel configPanel = createConfigPanel();
+        add(configPanel, BorderLayout.NORTH);
 
         // Prepare chart area
-        JScrollPane pane = new JBScrollPane();
-        Perl6ProfileCallGraph view = new Perl6ProfileCallGraph(data, pane);
-        pane.setViewportView(view);
-        add(pane, BorderLayout.CENTER);
-        // Create chart configuration means
-        JPanel configPanel = createConfigPanel(view);
-        add(configPanel, BorderLayout.NORTH);
+        myScrollPane = new JBScrollPane();
+        myProfileCallGraph = new Perl6ProfileCallGraph(data, this);
+        myScrollPane.setViewportView(myProfileCallGraph);
+        add(myScrollPane, BorderLayout.CENTER);
     }
 
-    private JPanel createConfigPanel(Perl6ProfileCallGraph view) {
-        JPanel configPanel = new JPanel(new BorderLayout());
-        LabeledComponent<JComboBox> threadBox = prepareThreadBox(view);
-        configPanel.add(threadBox, BorderLayout.WEST);
-        configPanel.add(new JLabel("AXIS LABEL TIME"), BorderLayout.CENTER);
-        configPanel.add(new JComboBox<>(), BorderLayout.EAST);
+    private JPanel createConfigPanel() {
+        JPanel configPanel = new JPanel(new GridBagLayout());
+
+        LabeledComponent<JComboBox> threadBox = prepareThreadBox();
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridwidth = 3;
+        c.gridx = 0;
+        c.gridy = 0;
+        configPanel.add(threadBox, c);
+
+        myTimeLabel = new JLabel();
+        myTimeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        c.weightx = 0.5;
+        c.gridx = 1;
+        c.gridy = 0;
+        configPanel.add(myTimeLabel, c);
+
         return configPanel;
     }
 
     @NotNull
-    private LabeledComponent<JComboBox> prepareThreadBox(Perl6ProfileCallGraph view) {
+    private LabeledComponent<JComboBox> prepareThreadBox() {
         LabeledComponent<JComboBox> threadBox = new LabeledComponent<>();
         threadBox.setLabelLocation(BorderLayout.WEST);
         threadBox.setText("Thread");
@@ -56,10 +70,18 @@ public class Perl6ProfileCallGraphPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int threadIndex = comboBox.getSelectedIndex();
-                view.switchToThread(myThreads.get(threadIndex).rootNodeID);
+                myProfileCallGraph.switchToThread(myThreads.get(threadIndex).rootNodeID);
             }
         });
         threadBox.setComponent(comboBox);
         return threadBox;
+    }
+
+    public JBScrollPane getScrollPane() {
+        return myScrollPane;
+    }
+
+    public JLabel getTimeLabel() {
+        return myTimeLabel;
     }
 }
