@@ -196,13 +196,14 @@ public class Perl6ProfileCallGraph extends JPanel {
         g.setColor(JBColor.BLACK);
         g.drawRect(startX, height, callRectWidth, myItemHeight);
 
-
         // Draw text
         // Set a contrast color
         g.setColor(getComplimentaryColor(background));
         // Get sizes of name label
         FontMetrics fm = g.getFontMetrics();
         // Check if name fits in this width and try to minimify if not
+        if (root.callees == null)
+            callName += "...";
         callName = minifyRoutineName(g, callRectWidth, callName, fm);
 
         // If no name is returned, just not enough width, skip whole node
@@ -217,7 +218,7 @@ public class Perl6ProfileCallGraph extends JPanel {
         // Reset color to background one once we drew border and label
         g.setColor(background);
         // Return if we should draw children of this call
-        return callName.length() > 1;
+        return callName.length() > 1 && root.callees != null;
     }
 
     private static Color getComplimentaryColor(Color color) {
@@ -256,8 +257,6 @@ public class Perl6ProfileCallGraph extends JPanel {
         int currentX = callStartX;
         // We print children recursively depth-first, so need to re-apply level color on every next item
         Color currentLevelColor = g.getColor();
-        if (call.callees == null)
-            return;
         for (Perl6ProfileCall childCall : call.callees) {
             g.setColor(currentLevelColor);
             // We need to calculate x - where to start, and width - how long it is
