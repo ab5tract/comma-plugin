@@ -24,7 +24,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     public static final int SIDE_OFFSET = 10;
     public static final int ITEM_HEIGHT = 16;
     public static final int START_Y_OFFSET = 26;
-    public static final Color BASIC_ROOT_COLOR = Color.ORANGE;
+    public static final Color BASIC_ROOT_COLOR = JBColor.BLUE;
     private final Project myProject;
     private final Perl6ProfileData myProfileData;
     private final JScrollPane myScroll;
@@ -148,6 +148,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     }
 
     private int drawParentBreadcrumbs(Graphics2D g, int height) {
+        g.setColor(JBColor.LIGHT_GRAY);
         int currentItemHeight = height;
         if (myRoot.parent != null) {
             Deque<Perl6ProfileCall> parents = new ArrayDeque<>();
@@ -182,7 +183,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     }
 
     private static Color getBrighterColor(Color color) {
-        return ColorHelper.adjustColor(color, 9);
+        return ColorHelper.adjustColor(color, 8);
     }
 
     private static Color getDarkerColor(Color color) {
@@ -202,10 +203,13 @@ public class Perl6ProfileCallGraph extends JPanel {
         g.fillRect(startX, height, callRectWidth, ITEM_HEIGHT);
 
         // Draw a border
-        g.setColor(Color.BLACK);
+        g.setColor(JBColor.BLACK);
         g.drawRect(startX, height, callRectWidth, ITEM_HEIGHT);
 
+
         // Draw text
+        // Set a contrast color
+        g.setColor(getComplimentaryColor(background));
         // Get sizes of name label
         FontMetrics fm = g.getFontMetrics();
         // Check if name fits in this width and try to minimify if not
@@ -224,6 +228,11 @@ public class Perl6ProfileCallGraph extends JPanel {
         g.setColor(background);
         // Return if we should draw children of this call
         return callName.length() > 1;
+    }
+
+    private Color getComplimentaryColor(Color color) {
+        double y = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
+        return y >= 128 ? Color.BLACK : Color.WHITE;
     }
 
     @Nullable
