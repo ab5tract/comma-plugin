@@ -25,7 +25,6 @@ public class Perl6ProfileCallGraph extends JPanel {
     public static final int ITEM_HEIGHT = 16;
     public static final int START_Y_OFFSET = 26;
     public static final Color BASIC_ROOT_COLOR = JBColor.BLUE;
-    private final Project myProject;
     private final Perl6ProfileData myProfileData;
     private final JScrollPane myScroll;
     private Perl6ProfileCall myRoot;
@@ -33,8 +32,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     private Queue<CallItem> callItems = new ConcurrentLinkedQueue<>();
     private int maxHeight = START_Y_OFFSET;
 
-    public Perl6ProfileCallGraph(Project project, Perl6ProfileData profileData, JScrollPane scrollPane) {
-        myProject = project;
+    public Perl6ProfileCallGraph(Perl6ProfileData profileData, JScrollPane scrollPane) {
         myScroll = scrollPane;
         myProfileData = profileData;
         myRoot = profileData.getProfileCallById(1, 15, null);
@@ -117,8 +115,6 @@ public class Perl6ProfileCallGraph extends JPanel {
 
     private void paintGraph(Graphics2D g) {
         int currentY = START_Y_OFFSET;
-
-        drawAxis(g, currentY);
 
         currentY = drawParentBreadcrumbs(g, currentY);
 
@@ -219,7 +215,7 @@ public class Perl6ProfileCallGraph extends JPanel {
         return callName.length() > 1;
     }
 
-    private Color getComplimentaryColor(Color color) {
+    private static Color getComplimentaryColor(Color color) {
         double y = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
         return y >= 128 ? Color.BLACK : Color.WHITE;
     }
