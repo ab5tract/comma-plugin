@@ -24,6 +24,7 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
         return new Perl6MethodReference(this);
     }
 
+    @NotNull
     @Override
     public String getCallName() {
         PsiElement name = findChildByType(LONG_NAME);
