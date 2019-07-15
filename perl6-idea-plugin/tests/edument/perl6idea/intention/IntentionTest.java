@@ -169,7 +169,7 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
     public void testGrepFirstFixWhateverMany() {
         executeIntention("Replace");
     }
-    //
+
     public void testGrepFirstFixBlockMany() {
         executeIntention("Replace");
     }

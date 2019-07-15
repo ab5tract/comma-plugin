@@ -726,5 +726,10 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "[Nil, Nil, 42, Nil].foo-call<weak_warning descr=\"Can be simplified into a single first method call\">.grep({ .foo }).first()</weak_warning>.say()");
         myFixture.checkHighlighting();
+
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, ".grep(5 ~~ 10).first");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, ".grep(*.defined).first(*.bar)");
+        myFixture.checkHighlighting();
     }
 }
