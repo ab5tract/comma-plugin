@@ -1,0 +1,3 @@
+class C {
+    has $.foo is required;
+}

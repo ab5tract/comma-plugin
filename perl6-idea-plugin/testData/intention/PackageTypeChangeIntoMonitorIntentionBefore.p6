@@ -1,3 +1,3 @@
 {
-  modul<caret>e Foo {}
+    modul<caret>e Foo {}
 }

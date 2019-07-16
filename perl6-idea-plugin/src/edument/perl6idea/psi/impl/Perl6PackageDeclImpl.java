@@ -53,6 +53,12 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         return getName();
     }
 
+    @Nullable
+    @Override
+    public PsiElement getPackageKeywordNode() {
+        return getDeclarator();
+    }
+
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:PACKAGE_DECLARATION)";
     }

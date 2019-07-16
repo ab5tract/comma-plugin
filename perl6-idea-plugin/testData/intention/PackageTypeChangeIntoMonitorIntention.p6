@@ -1,4 +1,4 @@
 use OO::Monitors;
 {
-  monitor Foo {}
+    monitor Foo {}
 }

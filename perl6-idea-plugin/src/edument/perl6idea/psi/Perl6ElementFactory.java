@@ -186,4 +186,17 @@ public class Perl6ElementFactory {
         Perl6MethodCall methodCall = produceElement(project, String.format("self%sa();", isPrivate ? "!" : "."), Perl6MethodCall.class);
         return methodCall.getCallOperatorNode();
     }
+
+    public static Perl6Trait createTrait(Project project, String modifier, String name) {
+        return produceElement(project, createTraitText(modifier, name), Perl6Trait.class);
+    }
+
+    private static String createTraitText(String modifier, String name) {
+        return String.format("my $a %s %s;", modifier, name);
+    }
+
+    public static PsiElement createPackageDeclarator(Project project, String type) {
+        Perl6PackageDecl packageDecl = produceElement(project, String.format("%s {}", type), Perl6PackageDecl.class);
+        return packageDecl.getPackageKeywordNode();
+    }
 }

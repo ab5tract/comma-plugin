@@ -190,6 +190,22 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Change");
     }
 
+    public void testAttributeRequiredOnlyHas() {
+        checkIntentionAbsence("Make required");
+    }
+
+    public void testAttributeRequiredNoDoubling() {
+        checkIntentionAbsence("Make required");
+    }
+
+    public void testAttributeRequiredNoTraits() {
+        executeIntention("Make required");
+    }
+
+    public void testAttributeRequiredTraits() {
+        executeIntention("Make required");
+    }
+
     public void testWithoutConstructionFix() {
         executeIntention("Use");
     }

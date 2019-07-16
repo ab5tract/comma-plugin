@@ -10,12 +10,15 @@ import com.intellij.openapi.ui.popup.IPopupChooserBuilder;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.annotation.fix.AddMonitorModuleFix;
 import edument.perl6idea.parsing.Perl6TokenTypes;
+import edument.perl6idea.psi.Perl6ElementFactory;
+import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
@@ -63,17 +66,24 @@ public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction im
     private static void invokeImpl(Project project, Editor editor, PsiElement element, String type) {
         WriteCommandAction.runWriteCommandAction(
             project, () -> {
-                editor.getDocument().replaceString(
-                    element.getTextOffset(), element.getTextOffset() + element.getTextLength(), type);
-                PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
-                if (type.equals("monitor")) {
-                    Perl6PsiElement perl6PsiElement = PsiTreeUtil.getParentOfType(element, Perl6PsiElement.class);
-                    if (perl6PsiElement == null)
-                        return;
+                boolean shouldAddMonitorUsage = false;
+
+                PsiFile containingFile = element.getContainingFile();
+                Perl6PsiElement perl6PsiElement = PsiTreeUtil.getParentOfType(element, Perl6PsiElement.class);
+                if (perl6PsiElement != null) {
                     Perl6Symbol metamodelSymbol = perl6PsiElement.resolveSymbol(Perl6SymbolKind.TypeOrConstant, "MetamodelX::MonitorHOW");
-                    if (metamodelSymbol == null || metamodelSymbol.isExternal()) {
-                        new AddMonitorModuleFix().invoke(project, editor, element.getContainingFile());
-                    }
+                    shouldAddMonitorUsage = type.equals("monitor") && (metamodelSymbol == null || !metamodelSymbol.isExternal());
+                }
+
+                Perl6PackageDecl decl = PsiTreeUtil.getParentOfType(element, Perl6PackageDecl.class);
+                PsiElement declarator = decl.getPackageKeywordNode();
+                declarator.replace(Perl6ElementFactory.createPackageDeclarator(project, type));
+
+                PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
+
+                if (shouldAddMonitorUsage) {
+                    new AddMonitorModuleFix().invoke(project, editor, containingFile);
+                    PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
                 }
             });
     }
