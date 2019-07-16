@@ -1,0 +1,3 @@
+mo<caret>dule Foo {
+
+}

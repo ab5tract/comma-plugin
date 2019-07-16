@@ -154,6 +154,14 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Use");
     }
 
+    public void testPackageTypeChangeIntention() {
+        executeIntention("Change");
+    }
+
+    public void testPackageTypeChangeIntoMonitorIntention() {
+        executeIntention("Change");
+    }
+
     public void testWithoutConstructionFix() {
         executeIntention("Use");
     }
