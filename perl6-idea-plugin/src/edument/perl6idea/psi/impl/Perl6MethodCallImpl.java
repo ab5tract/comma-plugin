@@ -5,10 +5,14 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
+import org.apache.velocity.runtime.parser.node.ASTNotNode;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.METHOD_CALL_NAME;
@@ -40,20 +44,32 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
 
     @Override
     public String getCallOperator() {
-        ASTNode op = findChildByType(METHOD_CALL_OPERATOR);
+        PsiElement op = getCallOperatorNode();
         return op == null ? "" : op.getText();
     }
 
+    @Nullable
     @Override
-    public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        name = StringUtil.trimStart(name, "!");
-        Perl6LongName call = Perl6ElementFactory.createMethodCallName(getProject(), name);
+    public PsiElement getCallOperatorNode() {
+        return findChildByType(METHOD_CALL_OPERATOR);
+    }
+
+    @Override
+    public PsiElement setName(@NotNull String newName) throws IncorrectOperationException {
+        Perl6LongName newLongName = Perl6ElementFactory.createMethodCallName(getProject(), StringUtil.trimStart(newName, "!"));
         Perl6LongName longName = findChildByClass(Perl6LongName.class);
-        if (longName != null) {
-            ASTNode keyNode = longName.getNode();
-            ASTNode newKeyNode = call.getNode();
-            getNode().replaceChild(keyNode, newKeyNode);
-        }
+        if (longName != null)
+            longName.replace(newLongName);
+
+        String oldOperator = getCallOperator();
+        // If it is private and stays private OR if it is public and stays public
+        if (oldOperator.equals("!") && newName.startsWith("!") || oldOperator.equals(".") && !newName.startsWith("!"))
+            return this;
+
+        PsiElement newOperator = Perl6ElementFactory.createMethodCallOperator(getProject(), newName.startsWith("!"));
+        PsiElement operatorNode = getCallOperatorNode();
+        if (operatorNode != null)
+            operatorNode.replace(newOperator);
         return this;
     }
 }

@@ -1,0 +1,4 @@
+class Foo {
+    method !private {}
+    method public { self!private }
+}

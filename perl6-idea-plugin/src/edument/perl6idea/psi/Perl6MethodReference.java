@@ -250,7 +250,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
     }
 
     @Override
-    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         PsiElement resolved = resolve();
         Perl6MethodCall call = myElement;
         if (resolved instanceof Perl6LongName && !call.getCallName().startsWith("!"))

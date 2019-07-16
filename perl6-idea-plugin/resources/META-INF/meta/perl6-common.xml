@@ -88,6 +88,11 @@
       <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
       <category>Perl 6 Intentions</category>
     </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.MakeMethodPublicIntention</className>
+      <category>Perl 6 Intentions</category>
+    </intentionAction>
+
   </extensions>
 
   <actions>

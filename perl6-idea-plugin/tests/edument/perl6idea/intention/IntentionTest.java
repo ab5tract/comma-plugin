@@ -174,6 +174,14 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Replace");
     }
 
+    public void testMakeMethodPublicIntention() {
+        executeIntention("Make");
+    }
+
+    public void testMakeMethodPublicIntentionIsForPrivateOnly() {
+        checkIntentionAbsence("Make");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }

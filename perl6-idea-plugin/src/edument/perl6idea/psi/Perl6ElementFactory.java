@@ -68,6 +68,14 @@ public class Perl6ElementFactory {
         return String.format("class A is %s;", name);
     }
 
+    public static Perl6LongName createRoutineName(Project project, String name) {
+        return produceElement(project, getRoutineNameText(name), Perl6LongName.class);
+    }
+
+    private static String getRoutineNameText(String name) {
+        return String.format("sub %s() {}", name);
+    }
+
     public static Perl6LongName createMethodCallName(Project project, String name) {
         return produceElement(project, getMethodCallNameText(name), Perl6LongName.class);
     }
@@ -172,5 +180,10 @@ public class Perl6ElementFactory {
         StringJoiner signature = new StringJoiner(", ");
         parameters.stream().map(PsiElement::getText).forEach(signature::add);
         return "sub foo(" + signature.toString() + ") {}";
+    }
+
+    public static PsiElement createMethodCallOperator(Project project, boolean isPrivate) {
+        Perl6MethodCall methodCall = produceElement(project, String.format("self%sa();", isPrivate ? "!" : "."), Perl6MethodCall.class);
+        return methodCall.getCallOperatorNode();
     }
 }
