@@ -1,3 +1,3 @@
-mo<caret>dule Foo {
+ro<caret>le Foo {
 
 }

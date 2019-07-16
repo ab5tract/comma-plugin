@@ -41,6 +41,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         SdkConfigurationUtil.removeSdk(testSdk);
         super.tearDown();
     }
+
     public void testUndeclaredVariableAnnotatorReallyUndeclared() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable $foo is not declared\">$foo</error>;");
         myFixture.checkHighlighting(false, false, true, true);

@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.IPopupChooserBuilder;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.ColoredListCellRenderer;
@@ -61,18 +62,20 @@ public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction im
 
     private static void invokeImpl(Project project, Editor editor, PsiElement element, String type) {
         WriteCommandAction.runWriteCommandAction(
-            project, () ->
+            project, () -> {
                 editor.getDocument().replaceString(
-                    element.getTextOffset(), element.getTextOffset() + element.getTextLength(), type));
-        if (type.equals("monitor")) {
-            Perl6PsiElement perl6PsiElement = PsiTreeUtil.getParentOfType(element, Perl6PsiElement.class);
-            if (perl6PsiElement == null)
-                return;
-            Perl6Symbol metamodelSymbol = perl6PsiElement.resolveSymbol(Perl6SymbolKind.TypeOrConstant, "MetamodelX::MonitorHOW");
-            if (metamodelSymbol == null || metamodelSymbol.isExternal()) {
-                new AddMonitorModuleFix().invoke(project, editor, element.getContainingFile());
-            }
-        }
+                    element.getTextOffset(), element.getTextOffset() + element.getTextLength(), type);
+                PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
+                if (type.equals("monitor")) {
+                    Perl6PsiElement perl6PsiElement = PsiTreeUtil.getParentOfType(element, Perl6PsiElement.class);
+                    if (perl6PsiElement == null)
+                        return;
+                    Perl6Symbol metamodelSymbol = perl6PsiElement.resolveSymbol(Perl6SymbolKind.TypeOrConstant, "MetamodelX::MonitorHOW");
+                    if (metamodelSymbol == null || metamodelSymbol.isExternal()) {
+                        new AddMonitorModuleFix().invoke(project, editor, element.getContainingFile());
+                    }
+                }
+            });
     }
 
     @Override

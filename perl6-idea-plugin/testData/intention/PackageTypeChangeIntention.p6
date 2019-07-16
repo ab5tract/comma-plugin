@@ -1,3 +1,3 @@
-module Foo {
+grammar Foo {
 
 }
