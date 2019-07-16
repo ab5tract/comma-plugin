@@ -83,6 +83,11 @@
     <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor" />
     <programRunner implementation="edument.perl6idea.timeline.Perl6TimelineRunner"/>
     <stubIndex implementation="edument.perl6idea.cro.CroRouteIndex"/>
+
+    <intentionAction>
+      <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
+      <category>Perl 6 Intentions</category>
+    </intentionAction>
   </extensions>
 
   <actions>
