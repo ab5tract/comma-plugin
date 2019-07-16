@@ -73,7 +73,7 @@ public class Perl6ElementFactory {
     }
 
     private static String getRoutineNameText(String name) {
-        return String.format("sub %s() {}", name);
+        return String.format("method %s() {}", name);
     }
 
     public static Perl6LongName createMethodCallName(Project project, String name) {
