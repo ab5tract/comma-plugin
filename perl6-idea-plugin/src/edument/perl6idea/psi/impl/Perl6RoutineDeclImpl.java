@@ -43,8 +43,13 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         if (stub != null)
             return stub.getRoutineKind();
 
-        PsiElement declarator = findChildByType(Perl6TokenTypes.ROUTINE_DECLARATOR);
+        PsiElement declarator = getDeclaratorNode();
         return declarator == null ? "sub" : declarator.getText();
+    }
+
+    @Override
+    public PsiElement getDeclaratorNode() {
+        return findChildByType(Perl6TokenTypes.ROUTINE_DECLARATOR);
     }
 
     @Override

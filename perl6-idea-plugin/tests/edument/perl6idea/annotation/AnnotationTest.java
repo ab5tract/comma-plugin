@@ -707,6 +707,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+<<<<<<< HEAD
     public void testGrepFirstWhateverStarAnnotation() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "[Nil, Nil, 42, Nil]<weak_warning descr=\"Can be simplified into a single first method call\">.grep(*.defined).first</weak_warning>.say");
         myFixture.checkHighlighting();
@@ -735,6 +736,12 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1..*)<weak_warning descr=\"Can be simplified into a single first method call\">.grep(* > 2).first</weak_warning>;");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1..*)<weak_warning descr=\"Can be simplified into a single first method call\">.grep({ $_ > 2 }).first</weak_warning>;");
+        myFixture.checkHighlighting();
+    }
+
+    public void testSubmethodBUILDAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { <warning descr=\"BUILD should be declared as a submethod\">method BUILD {}</warning>; submethod BUILD {} }; class B { <warning descr=\"TWEAK should be declared as a submethod\">method TWEAK {}</warning>; submethod TWEAK {} }; sub BUILD {}; sub TWEAK {};");
         myFixture.checkHighlighting();
     }
 }

@@ -234,6 +234,10 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         checkIntentionAbsence("Make");
     }
 
+    public void testMakeMethodSubmethod() {
+        executeIntention("Make submethod");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
