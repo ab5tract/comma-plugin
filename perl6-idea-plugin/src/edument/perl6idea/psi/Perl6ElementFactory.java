@@ -204,4 +204,8 @@ public class Perl6ElementFactory {
         Perl6RoutineDecl routineDecl = produceElement(project, String.format("%s a() {}", type), Perl6RoutineDecl.class);
         return routineDecl.getDeclaratorNode();
     }
+
+    public static Perl6VariableDecl createVariableDecl(Project project, String scope, String name) {
+        return produceElement(project, String.format("%s %s;", scope, name), Perl6VariableDecl.class);
+    }
 }

@@ -238,6 +238,10 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Make submethod");
     }
 
+    public void testArrayInitializationRemoval() {
+        executeIntention("Remove redundant");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }

@@ -56,6 +56,7 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.SimplifiedRangeAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.GrepFirstAnnotation"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.BuiltinSubmethodAnnotation"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.EmptyArrayInitialization"/>
     <stubElementTypeHolder class="edument.perl6idea.parsing.Perl6ElementTypes"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.ProjectModulesStubIndex"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex"/>

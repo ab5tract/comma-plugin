@@ -744,4 +744,17 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
                                   "class A { <warning descr=\"BUILD should be declared as a submethod\">method BUILD {}</warning>; submethod BUILD {} }; class B { <warning descr=\"TWEAK should be declared as a submethod\">method TWEAK {}</warning>; submethod TWEAK {} }; sub BUILD {}; sub TWEAK {};");
         myFixture.checkHighlighting();
     }
+
+    public void testEmptyArrayInitializeAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <weak_warning descr=\"Initialization of empty array is redundant\">[]</weak_warning>");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <weak_warning descr=\"Initialization of empty array is redundant\">()</weak_warning>");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = [1,2,3]");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1)");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = [];");
+        myFixture.checkHighlighting();
+    }
 }

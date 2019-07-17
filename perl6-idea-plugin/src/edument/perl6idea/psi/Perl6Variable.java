@@ -22,6 +22,8 @@ public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, 
     String getTypeBySigil(String text, @Nullable  PsiElement declaration);
 
     static char getSigil(String text) {
+        if (text.length() < 1)
+            return ' ';
         switch (text.charAt(0)) {
             case '$': return '$';
             case '@': return '@';
