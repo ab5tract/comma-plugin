@@ -258,6 +258,22 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Use $*EXECUTABLE");
     }
 
+    public void testUnparenSimple() {
+        executeIntention("Remove parentheses");
+    }
+
+    public void testUnparenInfix() {
+        executeIntention("Remove parentheses");
+    }
+
+    public void testUnparenInitializer() {
+        executeIntention("Remove parentheses");
+    }
+
+    public void testEmptyUnparenNotAllowed() {
+        checkIntentionAbsence("Remove parentheses");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }

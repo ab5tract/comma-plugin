@@ -1,0 +1,1 @@
+my @foo = (<caret>42);
