@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BuiltinSubmethodAnnotation implements Annotator {
+public class BuiltinSubmethodAnnotaor implements Annotator {
     private static final List<String> SHOULD_BE_SUBMETHOD_NAMES = new ArrayList<>(Arrays.asList("BUILD", "TWEAK"));
 
     @Override

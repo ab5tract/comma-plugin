@@ -10,7 +10,7 @@ import edument.perl6idea.psi.Perl6Variable;
 import edument.perl6idea.psi.Perl6VariableDecl;
 import org.jetbrains.annotations.NotNull;
 
-public class EmptyArrayInitialization implements Annotator {
+public class EmptyArrayInitializationAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6VariableDecl))

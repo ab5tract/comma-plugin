@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class NonInheritableComposableDeclAnnotation implements Annotator {
+public class NonInheritableComposableDeclAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6PackageDecl)) return;

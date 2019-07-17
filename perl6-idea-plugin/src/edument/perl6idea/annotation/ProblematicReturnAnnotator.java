@@ -7,7 +7,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
-public class ProblematicReturn implements Annotator {
+public class ProblematicReturnAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof Perl6SubCall) {

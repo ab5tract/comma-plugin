@@ -15,7 +15,7 @@ import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 
-public class UndeclaredAttribute implements Annotator {
+public class UndeclaredAttributeAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         // Filter out anything except attribute usages.

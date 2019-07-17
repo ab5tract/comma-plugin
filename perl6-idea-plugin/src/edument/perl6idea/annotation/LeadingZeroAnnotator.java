@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6IntLiteral;
 import org.jetbrains.annotations.NotNull;
 
-public class LeadingZeroAnnotation implements Annotator {
+public class LeadingZeroAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
         if (psiElement instanceof Perl6IntLiteral) {
