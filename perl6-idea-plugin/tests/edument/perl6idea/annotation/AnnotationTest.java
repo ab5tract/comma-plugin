@@ -768,4 +768,10 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await Promise.anyof(Promise.kept, Promise.kept);");
         myFixture.checkHighlighting();
     }
+
+    public void testPerl6ExecutableAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "say <warning descr=\"If Perl 6 executable is meant, consider using $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows etc)\">'perl6'</warning>; run <warning descr=\"If Perl 6 executable is meant, consider using $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows etc)\">'perl6'</warning>; run <warning descr=\"If Perl 6 executable is meant, consider using $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows etc)\">\"perl6\"</warning>;");
+        myFixture.checkHighlighting();
+    }
 }

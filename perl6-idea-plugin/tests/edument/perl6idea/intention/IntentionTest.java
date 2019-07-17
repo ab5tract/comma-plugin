@@ -254,6 +254,10 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Unwrap Promise.allof");
     }
 
+    public void testPerl6ExecutableStrFix() {
+        executeIntention("Use $*EXECUTABLE");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
