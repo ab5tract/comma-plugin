@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements Perl6PostfixApplication {
     public Perl6PostfixApplicationImpl(@NotNull ASTNode node) {
@@ -25,6 +26,18 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
             return tryToCalculateMethodReturnType((Perl6MethodCall)last);
         }
         return null;
+    }
+
+    @Nullable
+    @Override
+    public PsiElement getCaller() {
+        return getFirstChild();
+    }
+
+    @Nullable
+    @Override
+    public PsiElement getPostfix() {
+        return getLastChild();
     }
 
     private static String tryToCalculateMethodReturnType(Perl6MethodCall last) {

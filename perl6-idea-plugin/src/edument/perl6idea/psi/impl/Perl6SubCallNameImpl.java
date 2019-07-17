@@ -17,8 +17,9 @@ public class Perl6SubCallNameImpl extends ASTWrapperPsiElement implements Perl6S
         return new Perl6SubCallReference(this);
     }
 
+    @NotNull
     @Override
     public String getCallName() {
-        return this.getText();
+        return getText();
     }
 }

@@ -162,14 +162,14 @@ public class Perl6ElementFactory {
         return PsiTreeUtil.findChildOfType(dummyFile, clazz);
     }
 
-    public static Perl6InfixApplication createInfixApplication(Project project, List<PsiElement> parts) {
-        return produceElement(project, getInfixApplicationText(parts), Perl6InfixApplication.class);
+    public static Perl6InfixApplication createInfixApplication(Project project, String infix, List<PsiElement> parts) {
+        return produceElement(project, getInfixApplicationText(infix, parts), Perl6InfixApplication.class);
     }
 
-    private static String getInfixApplicationText(List<PsiElement> parts) {
-        StringJoiner infix = new StringJoiner(", ");
-        parts.stream().map(PsiElement::getText).forEach(infix::add);
-        return infix.toString() + ";";
+    private static String getInfixApplicationText(String infix, List<PsiElement> parts) {
+        StringJoiner infixJoiner = new StringJoiner(infix);
+        parts.stream().map(PsiElement::getText).forEach(infixJoiner::add);
+        return infixJoiner.toString() + ";";
     }
 
     public static Perl6Signature createRoutineSignature(Project project, List<Perl6Parameter> parameters) {

@@ -42,6 +42,7 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
         return PsiTreeUtil.getParentOfType(this, Perl6PostfixApplication.class);
     }
 
+    @NotNull
     @Override
     public String getCallOperator() {
         PsiElement op = getCallOperatorNode();

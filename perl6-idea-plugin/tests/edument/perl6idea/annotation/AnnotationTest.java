@@ -757,4 +757,15 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = [];");
         myFixture.checkHighlighting();
     }
+
+    public void testAwaitAllOffAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await Promise.allof;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await Promise<warning descr=\"Promise.allof call is redundant with await\">.allof(Promise.kept)</warning>;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await Promise<warning descr=\"Promise.allof call is redundant with await\">.allof(Promise.kept, Promise.kept)</warning>;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await Promise.anyof(Promise.kept, Promise.kept);");
+        myFixture.checkHighlighting();
+    }
 }
