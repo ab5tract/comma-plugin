@@ -285,6 +285,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     }
 
     private VirtualFile calculateMetaParent() {
+        if (myModule == null)
+            return null;
         VirtualFile[] sourceRoots = ModuleRootManager.getInstance(myModule).getSourceRoots();
         for (VirtualFile root : sourceRoots) {
             if (!root.getName().equals("lib")) continue;
