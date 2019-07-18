@@ -771,7 +771,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testPerl6ExecutableAnnotation() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "say <warning descr=\"If Perl 6 executable is meant, consider using $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows etc)\">'perl6'</warning>; run <warning descr=\"If Perl 6 executable is meant, consider using $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows etc)\">'perl6'</warning>; run <warning descr=\"If Perl 6 executable is meant, consider using $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows etc)\">\"perl6\"</warning>;");
+                                  "say <warning descr=\"If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">'perl6'</warning>; run <warning descr=\"If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">'perl6'</warning>; run <warning descr=\"If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">\"perl6\"</warning>;");
         myFixture.checkHighlighting();
     }
 }

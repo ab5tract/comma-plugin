@@ -15,7 +15,7 @@ public class Perl6ExecutableStringAnnotator implements Annotator {
 
         if (((Perl6StrLiteral)element).getStringText().equals("perl6"))
             holder
-                .createWarningAnnotation(element, "If Perl 6 executable is meant, consider using $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows etc)")
+                .createWarningAnnotation(element, "If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)")
                 .registerFix(new UseExecutableDynamicVariableFix(element));
     }
 }
