@@ -9,9 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class Perl6ProfileData {
@@ -59,48 +57,50 @@ public class Perl6ProfileData {
         }
     }
 
-    public Perl6ProfileCall getProfileCallById(int callId, int max, @Nullable Perl6ProfileCall parent) {
-        String sql = "SELECT c.id AS id, c.inclusive_time AS inclusive, c.entries as entries, " +
-                     "c.spesh_entries AS spesh_entries, c.inlined_entries AS inlined_entries, " +
-                     "r.name AS name, r.file AS file, r.line AS line " +
-                     "FROM calls c JOIN routines r ON c.routine_id = r.id " +
-                     "WHERE (c.parent_id = ? and c.inclusive_time > 1) or c.id = ? " +
-                     "ORDER BY c.id ASC;";
-        Perl6ProfileCall root = new Perl6ProfileCall();
-        root.id = callId;
+    public Perl6ProfileCall getProfileCallById(int callId, int maxRecursion, @Nullable Perl6ProfileCall parent) {
+        String sql = "WITH EXPR (REC_LEVEL, PARENT_ID, CALL_ID, INCLUSIVE, ENTRIES, SPESH, INLINE, NAME, FILE, LINE) AS ( " +
+                     "SELECT 1, ROOT.PARENT_ID, ROOT.id, ROOT.inclusive_time, ROOT.entries, ROOT.spesh_entries, ROOT.inlined_entries,"  +
+                     "r.name, r.file, r.line " +
+                     "FROM calls ROOT JOIN routines r ON ROOT.routine_id = r.id " +
+                     "WHERE ROOT.id = ?" +
+                     "UNION ALL " +
+                     "SELECT (REC_LEVEL + 1), CHILD.PARENT_ID, CHILD.id, CHILD.inclusive_time, CHILD.entries, CHILD.spesh_entries, CHILD.inlined_entries, " +
+                     "r.name, r.file, r.line " +
+                     "FROM EXPR PARENT, calls CHILD JOIN routines r ON CHILD.routine_id = r.id " +
+                     "WHERE PARENT.call_id = CHILD.parent_id AND REC_LEVEL < ? " +
+                     ") SELECT DISTINCT PARENT_ID, CALL_ID, INCLUSIVE, ENTRIES, SPESH, INLINE, NAME, FILE, LINE " +
+                     "FROM EXPR ORDER BY CALL_ID; ";
+
+        Map<Integer, Perl6ProfileCall> profileCallMap = new HashMap<>();
         if (parent != null)
-            root.parent = parent;
+            profileCallMap.put(parent.id, parent);
+
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, callId);
-            statement.setInt(2, callId);
+            statement.setInt(2, maxRecursion);
+
             ResultSet set = statement.executeQuery();
-            // For every callee
-            List<Perl6ProfileCall> calleeList = new ArrayList<>();
-            boolean hasMoreChildren = false;
             while (set.next()) {
-                int id = set.getInt("id");
-                if (id == callId) {
-                    root.name = set.getString("name");
-                    root.filename = set.getString("file");
-                    root.line = set.getString("line");
-                    root.inclusiveTime = set.getInt("inclusive");
-                    root.entries = set.getInt("entries");
-                    root.inlinedEntries = set.getInt("inlined_entries");
-                    root.speshEntries = set.getInt("spesh_entries");
-                } else {
-                    hasMoreChildren = true;
-                    if (max > 0)
-                        calleeList.add(getProfileCallById(id, max - 1, root));
+                int parentID = set.getInt(1);
+                Perl6ProfileCall call = new Perl6ProfileCall(
+                    set.getInt(2),
+                    set.getInt(3), set.getInt(4),
+                    set.getInt(5), set.getInt(6),
+                    set.getString(7), set.getString(8), set.getString(9)
+                );
+                Perl6ProfileCall parentCallInMap = profileCallMap.get(parentID);
+                if (parentCallInMap != null) {
+                    parentCallInMap.callees.add(call);
+                    call.setParent(parentCallInMap);
                 }
+                profileCallMap.put(call.id, call);
             }
-            if (max == 0 && hasMoreChildren)
-                root.callees = null;
-            else
-                root.callees = calleeList;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn(e);
+            return null;
         }
-        return root;
+
+        return profileCallMap.get(callId);
     }
 
     public List<Perl6ProfilerNode> getNavigationNodes() throws SQLException {

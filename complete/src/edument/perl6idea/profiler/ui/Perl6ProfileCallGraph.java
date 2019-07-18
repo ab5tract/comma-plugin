@@ -36,7 +36,7 @@ public class Perl6ProfileCallGraph extends JPanel {
         myScroll = panel.getScrollPane();
         myGraphPanel = panel;
         myProfileData = profileData;
-        myRoot = profileData.getProfileCallById(1, 15, null);
+        myRoot = profileData.getProfileCallById(0, 15, null);
         addMouseEventHandlers();
         updateAxis();
     }
