@@ -106,6 +106,10 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Create");
     }
 
+    public void testPrivateMethodStubbingFromUnfinishedVariable() {
+        executeIntention("Create");
+    }
+
     public void testOrderOfNamedVariablesInCallIsFixed() {
         executeIntention("Create");
     }

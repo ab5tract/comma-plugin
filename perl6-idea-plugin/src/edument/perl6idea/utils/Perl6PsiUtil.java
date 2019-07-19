@@ -2,6 +2,9 @@ package edument.perl6idea.utils;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
+import edument.perl6idea.psi.Perl6ElementFactory;
+import edument.perl6idea.psi.Perl6Statement;
+import edument.perl6idea.psi.Perl6UnterminatedStatement;
 import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
@@ -19,5 +22,14 @@ public class Perl6PsiUtil {
         while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE)))
             temp = toRight ? temp.getNextSibling() : temp.getPrevSibling();
         return temp;
+    }
+
+    public static void terminateStatement(PsiElement element) {
+        if (!(element instanceof Perl6Statement))
+            return;
+
+        Perl6Statement statement = (Perl6Statement)element;
+        PsiElement untermMarker = statement.getLastChild();
+        untermMarker.replace(Perl6ElementFactory.createStatementFromText(element.getProject(), ";").getLastChild());
     }
 }

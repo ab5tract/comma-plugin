@@ -1,0 +1,1 @@
+class Foo{has $.a = self!fo<caret>o(1234)}
