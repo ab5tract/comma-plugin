@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6ElementFactory;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.SCOPE_DECLARATOR;
+import static edument.perl6idea.parsing.Perl6TokenTypes.VARIABLE;
 
 public class MakeAttributeRequiredIntention extends PsiElementBaseIntentionAction implements IntentionAction {
     @Override
@@ -46,7 +48,8 @@ public class MakeAttributeRequiredIntention extends PsiElementBaseIntentionActio
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-        if (element.getNode().getElementType() != SCOPE_DECLARATOR)
+        IElementType elementType = element.getNode().getElementType();
+        if (elementType != SCOPE_DECLARATOR && elementType != VARIABLE)
             return false;
 
         Perl6ScopedDecl decl = PsiTreeUtil.getParentOfType(element, Perl6ScopedDecl.class);
@@ -55,6 +58,10 @@ public class MakeAttributeRequiredIntention extends PsiElementBaseIntentionActio
 
         Perl6VariableDecl variableDecl = PsiTreeUtil.getChildOfType(decl, Perl6VariableDecl.class);
         if (variableDecl == null)
+            return false;
+
+        PsiElement init = variableDecl.getInitializer();
+        if (init != null)
             return false;
 
         List<Perl6Trait> traits = variableDecl.getTraits();
