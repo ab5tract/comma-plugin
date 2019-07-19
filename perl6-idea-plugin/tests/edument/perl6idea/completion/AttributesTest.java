@@ -156,4 +156,29 @@ public class AttributesTest extends LightCodeInsightFixtureTestCase {
         assertFalse(vars.contains("$!b"));
         assertFalse(vars.contains("$.b"));
     }
+
+    public void testPrivateAbsenceFromInnerClassUsingSigilAccess() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Foo { has $.foo1; my class Bar { method test { $!f<caret>; } } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertEmpty(vars);
+    }
+
+    public void testPrivateAbsenceFromInnerClassUsingSelfAccess() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Foo { has $.foo1; has $.foo2; my class Bar { method test { self!f<caret>; } } }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertEmpty(vars);
+    }
+
+    public void testPrivateVariableAbsenceFromOutside() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class Foo { has $.foo1; has $.foo2; }; Foo!f<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertEmpty(vars);
+    }
+
 }
