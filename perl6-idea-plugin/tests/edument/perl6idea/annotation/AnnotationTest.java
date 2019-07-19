@@ -758,17 +758,6 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
-    public void testAwaitAllOffAnnotation() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await Promise.allof;");
-        myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await Promise<warning descr=\"Promise.allof call is redundant with await\">.allof(Promise.kept)</warning>;");
-        myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await Promise<warning descr=\"Promise.allof call is redundant with await\">.allof(Promise.kept, Promise.kept)</warning>;");
-        myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await Promise.anyof(Promise.kept, Promise.kept);");
-        myFixture.checkHighlighting();
-    }
-
     public void testPerl6ExecutableAnnotation() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "say <warning descr=\"If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">'perl6'</warning>; run <warning descr=\"If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">'perl6'</warning>; run <warning descr=\"If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">\"perl6\"</warning>;");

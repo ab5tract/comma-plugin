@@ -1,1 +1,0 @@
-await Promise.all<caret>of($p1, $p2)

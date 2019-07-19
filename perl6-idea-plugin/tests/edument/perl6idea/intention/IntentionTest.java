@@ -242,15 +242,15 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Remove redundant");
     }
 
-    public void testAwaitAllOffUnwrapArray() {
+    public void testAwaitAllOfUnwrapArray() {
         executeIntention("Unwrap Promise.allof");
     }
 
-    public void testAwaitAllOffUnwrapInfix() {
+    public void testAwaitAllOfUnwrapInfix() {
         executeIntention("Unwrap Promise.allof");
     }
 
-    public void testAwaitAllOffUnwrapPrefix() {
+    public void testAwaitAllOfUnwrapPrefix() {
         executeIntention("Unwrap Promise.allof");
     }
 

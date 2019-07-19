@@ -1,0 +1,1 @@
+awa<caret>it Promise.allof(@a);
