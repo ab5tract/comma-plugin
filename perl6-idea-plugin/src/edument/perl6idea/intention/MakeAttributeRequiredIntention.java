@@ -48,10 +48,6 @@ public class MakeAttributeRequiredIntention extends PsiElementBaseIntentionActio
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-        IElementType elementType = element.getNode().getElementType();
-        if (elementType != SCOPE_DECLARATOR && elementType != VARIABLE)
-            return false;
-
         Perl6ScopedDecl decl = PsiTreeUtil.getParentOfType(element, Perl6ScopedDecl.class);
         if (decl == null || !Objects.equals(decl.getScope(), "has"))
             return false;
