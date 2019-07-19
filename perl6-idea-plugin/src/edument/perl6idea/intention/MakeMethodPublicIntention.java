@@ -35,7 +35,8 @@ public class MakeMethodPublicIntention extends PsiElementBaseIntentionAction imp
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-        if (element.getNode().getElementType() != Perl6TokenTypes.ROUTINE_DECLARATOR)
+        if (element.getNode().getElementType() != Perl6TokenTypes.ROUTINE_DECLARATOR &&
+            element.getNode().getElementType() != Perl6TokenTypes.ROUTINE_NAME)
             return false;
 
         Perl6RoutineDecl decl = PsiTreeUtil.getParentOfType(element, Perl6RoutineDecl.class);

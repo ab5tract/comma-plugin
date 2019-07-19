@@ -230,6 +230,10 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Make");
     }
 
+    public void testMakeMethodPublicOnNameIntention() {
+        executeIntention("Make");
+    }
+
     public void testMakeMethodPublicIntentionIsForPrivateOnly() {
         checkIntentionAbsence("Make");
     }
