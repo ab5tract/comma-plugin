@@ -168,7 +168,11 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         return getRoutineKind().equals("sub") ? "my" : "has";
     }
 
+    @Override
     public String getMultiness() {
+        Perl6RoutineDeclStub stub = getStub();
+        if (stub != null)
+            return stub.getMultiness();
         PsiElement parent = getParent();
         return parent instanceof Perl6MultiDecl ? ((Perl6MultiDecl)parent).getMultiness() : "only";
     }

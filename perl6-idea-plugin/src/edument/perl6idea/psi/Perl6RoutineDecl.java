@@ -21,4 +21,6 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     @NotNull
     PsiElement[] getContent();
     Perl6Parameter[] getParams();
+
+    String getMultiness();
 }
