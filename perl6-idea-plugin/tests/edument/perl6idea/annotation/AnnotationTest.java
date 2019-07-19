@@ -745,14 +745,18 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
-    public void testEmptyArrayInitializeAnnotation() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <weak_warning descr=\"Initialization of empty array is redundant\">[]</weak_warning>");
+    public void testEmptyInitializeAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <weak_warning descr=\"Initialization of empty Array is redundant\">[]</weak_warning>");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <weak_warning descr=\"Initialization of empty array is redundant\">()</weak_warning>");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <weak_warning descr=\"Initialization of empty Array is redundant\">()</weak_warning>");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = [1,2,3]");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my %a = <weak_warning descr=\"Initialization of empty Hash is redundant\">()</weak_warning>");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1)");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my %a = <weak_warning descr=\"Initialization of empty Hash is redundant\">{}</weak_warning>");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = [1,2,3]; my %b = (1,2);");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1); my %b = {1};");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = [];");
         myFixture.checkHighlighting();

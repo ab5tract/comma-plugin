@@ -4,13 +4,10 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.annotation.fix.RemoveInitializerFix;
-import edument.perl6idea.psi.Perl6ArrayComposer;
-import edument.perl6idea.psi.Perl6ParenthesizedExpr;
-import edument.perl6idea.psi.Perl6Variable;
-import edument.perl6idea.psi.Perl6VariableDecl;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
-public class EmptyArrayInitializationAnnotator implements Annotator {
+public class EmptyInitializationAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6VariableDecl))
@@ -18,21 +15,24 @@ public class EmptyArrayInitializationAnnotator implements Annotator {
 
         Perl6VariableDecl decl = (Perl6VariableDecl)element;
         String name = decl.getVariableName();
-        if (Perl6Variable.getSigil(name) != '@')
+        char sigil = Perl6Variable.getSigil(name);
+        if (sigil != '@' && sigil != '%')
             return;
 
         boolean shouldAnnotate = false;
         PsiElement initializer = decl.getInitializer();
 
-        if (initializer instanceof Perl6ArrayComposer) {
+        if (sigil == '@' && initializer instanceof Perl6ArrayComposer) {
             shouldAnnotate = ((Perl6ArrayComposer)initializer).getElements().length == 0;
         } else if (initializer instanceof Perl6ParenthesizedExpr) {
             shouldAnnotate = ((Perl6ParenthesizedExpr)initializer).getElements().length == 0;
+        } else if (sigil == '%' && initializer instanceof Perl6BlockOrHash) {
+            shouldAnnotate = ((Perl6BlockOrHash)initializer).getElements().length == 0;
         }
 
         if (shouldAnnotate)
             holder
-                .createWeakWarningAnnotation(initializer, "Initialization of empty array is redundant")
+                .createWeakWarningAnnotation(initializer, String.format("Initialization of empty %s is redundant", sigil == '@' ? "Array" : "Hash"))
                 .registerFix(new RemoveInitializerFix(decl));
     }
 }

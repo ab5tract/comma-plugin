@@ -58,7 +58,7 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.BuiltinSubmethodAnnotation"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.EmptyArrayInitialization"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.BuiltinSubmethodAnnotaor"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.EmptyArrayInitializationAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.EmptyInitializationAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.Perl6ExecutableStringAnnotator"/>
     <stubElementTypeHolder class="edument.perl6idea.parsing.Perl6ElementTypes"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.ProjectModulesStubIndex"/>
