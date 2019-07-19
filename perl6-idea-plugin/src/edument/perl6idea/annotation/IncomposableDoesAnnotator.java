@@ -21,7 +21,7 @@ public class IncomposableDoesAnnotator implements Annotator {
         if (trait == null) return;
         if (!trait.getTraitModifier().equals("does")) return;
 
-        PsiElement declaration = PsiTreeUtil.getParentOfType(trait, Perl6PackageDecl.class);
+        Perl6PackageDecl declaration = PsiTreeUtil.getParentOfType(trait, Perl6PackageDecl.class);
         if (declaration == null) return;
 
         Perl6TypeName typeName = PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class);
@@ -33,14 +33,14 @@ public class IncomposableDoesAnnotator implements Annotator {
         PsiElement composedDeclaration = ref.resolve();
         if (!(composedDeclaration instanceof Perl6PackageDecl)) return;
 
-        if (((Perl6PackageDecl)declaration).getPackageKind().equals("role") &&
+        if (declaration.getPackageKind().equals("role") &&
             ((Perl6PackageDecl)composedDeclaration).getPackageKind().equals("class")) {
             holder.createErrorAnnotation(trait, "Role cannot compose a class")
-                  .registerFix(new ChangeDoesToIsFix(trait.getTextOffset()));
-        } else if (((Perl6PackageDecl)declaration).getPackageKind().equals("class") &&
+                  .registerFix(new ChangeDoesToIsFix(trait));
+        } else if (declaration.getPackageKind().equals("class") &&
                    ((Perl6PackageDecl)composedDeclaration).getPackageKind().equals("class")) {
             holder.createErrorAnnotation(trait, "Class cannot compose a class")
-                  .registerFix(new ChangeDoesToIsFix(trait.getTextOffset()));
+                  .registerFix(new ChangeDoesToIsFix(trait));
         }
     }
 }

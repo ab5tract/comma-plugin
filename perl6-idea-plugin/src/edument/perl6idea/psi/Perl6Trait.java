@@ -9,4 +9,5 @@ public interface Perl6Trait extends StubBasedPsiElement<Perl6TraitStub>, Perl6Ps
     String getTraitName();
     @Nullable
     Perl6TypeName getCompositionTypeName();
+    void changeTraitMod(String newMod);
 }

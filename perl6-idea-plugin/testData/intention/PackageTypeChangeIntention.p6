@@ -1,3 +1,3 @@
-grammar Foo {
+class Foo {
 
 }

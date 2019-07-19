@@ -10,6 +10,8 @@ import edument.perl6idea.psi.symbols.Perl6MOPSymbolContributor;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public interface Perl6PackageDecl extends Perl6PsiScope, Perl6PsiDeclaration,
                                           StubBasedPsiElement<Perl6PackageDeclStub>,
                                           Perl6IndexableType, PsiNamedElement, P6Extractable,
@@ -19,4 +21,6 @@ public interface Perl6PackageDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     @Nullable
     PsiElement getPackageKeywordNode();
     void contributeNestedPackagesWithPrefix(Perl6SymbolCollector collector, String prefix);
+    List<Perl6PackageDecl> collectChildren();
+    List<Perl6PackageDecl> collectParents();
 }

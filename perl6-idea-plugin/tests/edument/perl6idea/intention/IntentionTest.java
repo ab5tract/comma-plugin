@@ -190,6 +190,18 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Change");
     }
 
+    public void testPackageTypeChangeOnTypeNameIntention() {
+        executeIntention("Change");
+    }
+
+    public void testPackageTypeChangesInheritanceIntention() {
+        executeIntention("Change");
+    }
+
+    public void testPackageTypeChangesInheritanceComposition() {
+        executeIntention("Change");
+    }
+
     public void testAttributeRequiredOnlyHas() {
         checkIntentionAbsence("Make required");
     }

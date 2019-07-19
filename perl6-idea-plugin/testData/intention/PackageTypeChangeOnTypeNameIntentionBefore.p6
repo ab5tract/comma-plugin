@@ -1,0 +1,1 @@
+class Fo<caret>o {}

@@ -348,6 +348,53 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
     }
 
+    @Override
+    public List<Perl6PackageDecl> collectParents() {
+        List<Perl6PackageDecl> parents = new ArrayList<>();
+        for (Perl6Trait trait : getTraits()) {
+            Perl6IsTraitName isTrait = PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
+            if (isTrait != null) {
+                PsiElement resolved = isTrait.getReference().resolve();
+                if (resolved instanceof Perl6PackageDecl)
+                    parents.add((Perl6PackageDecl)resolved);
+            }
+            else {
+                Perl6TypeName doesTrait = PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class);
+                if (doesTrait != null) {
+                    PsiElement resolved = doesTrait.getReference().resolve();
+                    if (resolved instanceof Perl6PackageDecl)
+                        parents.add((Perl6PackageDecl)resolved);
+                }
+            }
+        }
+        return parents;
+    }
+
+    @Override
+    public List<Perl6PackageDecl> collectChildren() {
+        List<Perl6PackageDecl> children = new ArrayList<>();
+        Perl6GlobalTypeStubIndex instance = Perl6GlobalTypeStubIndex.getInstance();
+        Project project = getProject();
+        String name = getPackageName();
+        Collection<String> keys = instance.getAllKeys(project);
+        for (String key : keys) {
+            Collection<Perl6IndexableType> psi = instance.get(key, project, GlobalSearchScope.allScope(project));
+            if (psi.size() == 1) {
+                for (Perl6IndexableType type : psi) {
+                    if (!(type instanceof Perl6PackageDecl))
+                        continue;
+                    Perl6Trait childTrait = ((Perl6PackageDecl)type).findTrait("does", name);
+                    if (childTrait != null)
+                        children.add((Perl6PackageDecl)type);
+                    childTrait = ((Perl6PackageDecl)type).findTrait("is", name);
+                    if (childTrait != null)
+                        children.add((Perl6PackageDecl)type);
+                }
+            }
+        }
+        return children;
+    }
+
     @Nullable
     @Override
     public PsiMetaData getMetaData() {

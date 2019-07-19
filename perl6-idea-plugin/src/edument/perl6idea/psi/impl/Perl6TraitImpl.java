@@ -4,6 +4,7 @@ import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.parsing.Perl6TokenTypes;
+import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6Trait;
 import edument.perl6idea.psi.Perl6TypeName;
 import edument.perl6idea.psi.stub.Perl6TraitStub;
@@ -43,6 +44,11 @@ public class Perl6TraitImpl extends StubBasedPsiElementBase<Perl6TraitStub> impl
         PsiElement typeName = findChildByType(TYPE_NAME);
         return isName != null ? isName.getText() :
                typeName != null ? typeName.getText() : "";
+    }
+
+    @Override
+    public void changeTraitMod(String newMod) {
+        replace(Perl6ElementFactory.createTrait(getProject(), newMod, getTraitName()));
     }
 
     @Nullable

@@ -11,6 +11,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.util.IncorrectOperationException;
@@ -20,6 +21,7 @@ import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6PsiElement;
+import edument.perl6idea.psi.Perl6Trait;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.utils.Perl6Constants;
@@ -57,6 +59,10 @@ public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction im
             // For testing just take the next element in list
             options = new ArrayList<>(Perl6Constants.PACKAGE_TYPES.keySet());
             String newType = options.get(options.indexOf(element.getText()) % (options.size() - 1) + 1);
+            if (element.getText().equals("role"))
+                newType = "class";
+            else if (element.getText().equals("class"))
+                newType = "role";
             invokeImpl(project, editor, element, newType);
         } else {
             builder.createPopup().showInBestPositionFor(editor);
@@ -76,6 +82,7 @@ public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction im
                 }
 
                 Perl6PackageDecl decl = PsiTreeUtil.getParentOfType(element, Perl6PackageDecl.class);
+                String oldType = decl.getPackageKind();
                 PsiElement declarator = decl.getPackageKeywordNode();
                 declarator.replace(Perl6ElementFactory.createPackageDeclarator(project, type));
 
@@ -85,12 +92,39 @@ public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction im
                     new AddMonitorModuleFix().invoke(project, editor, containingFile);
                     PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
                 }
+
+                updateChildren(decl, oldType, type);
             });
+    }
+
+    private static void updateChildren(Perl6PackageDecl decl, String oldType, String newType) {
+        if (!(oldType.equals("class") && newType.equals("role")) &&
+            !(oldType.equals("role") && newType.equals("class")))
+            return;
+
+        List<Perl6PackageDecl> children = decl.collectChildren();
+
+        String packageName = decl.getPackageName();
+
+        for (Perl6PackageDecl child : children) {
+            for (Perl6Trait trait : child.getTraits()) {
+                String modifier = trait.getTraitModifier();
+                String name = trait.getTraitName();
+                if (oldType.equals("class") && modifier.equals("is") && name.equals(packageName))
+                    trait.changeTraitMod("does");
+                else if (oldType.equals("role") && modifier.equals("does") && name.equals(packageName))
+                    trait.changeTraitMod("is");
+            }
+        }
     }
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
-        return element.getNode().getElementType() == Perl6TokenTypes.PACKAGE_DECLARATOR;
+        IElementType elementType = element.getNode().getElementType();
+        if (elementType == Perl6TokenTypes.PACKAGE_DECLARATOR)
+            return true;
+        PsiElement parent = element.getParent();
+        return elementType == Perl6TokenTypes.NAME && parent instanceof Perl6PackageDecl;
     }
 
     @NotNull
