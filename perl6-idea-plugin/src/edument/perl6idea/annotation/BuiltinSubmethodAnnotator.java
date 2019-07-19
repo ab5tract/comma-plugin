@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BuiltinSubmethodAnnotaor implements Annotator {
+public class BuiltinSubmethodAnnotator implements Annotator {
     private static final List<String> SHOULD_BE_SUBMETHOD_NAMES = new ArrayList<>(Arrays.asList("BUILD", "TWEAK"));
 
     @Override
@@ -26,7 +26,7 @@ public class BuiltinSubmethodAnnotaor implements Annotator {
 
         if (routineDecl.getRoutineKind().equals("method"))
             holder
-                .createWarningAnnotation(element, String.format("%s should be declared as a submethod", name))
+                .createWarningAnnotation(routineDecl.getDeclaratorNode(), String.format("%s should be declared as a submethod", name))
                 .registerFix(new MakeSubmethodFix(routineDecl));
     }
 }

@@ -741,7 +741,7 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testSubmethodBUILDAnnotation() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "class A { <warning descr=\"BUILD should be declared as a submethod\">method BUILD {}</warning>; submethod BUILD {} }; class B { <warning descr=\"TWEAK should be declared as a submethod\">method TWEAK {}</warning>; submethod TWEAK {} }; sub BUILD {}; sub TWEAK {};");
+                                  "class A { <warning descr=\"BUILD should be declared as a submethod\">method</warning> BUILD {}; submethod BUILD {} }; class B { <warning descr=\"TWEAK should be declared as a submethod\">method</warning> TWEAK {}; submethod TWEAK {} }; sub BUILD {}; sub TWEAK {};");
         myFixture.checkHighlighting();
     }
 
