@@ -1,0 +1,1 @@
+[Nil, 42].first(*.defined);

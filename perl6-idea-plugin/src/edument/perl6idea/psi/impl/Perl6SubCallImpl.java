@@ -43,6 +43,7 @@ public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> 
         return findChildByClass(Perl6SubCallName.class);
     }
 
+    @NotNull
     @Override
     public String getCallName() {
         Perl6SubCallName name = getSubCallNameNode();

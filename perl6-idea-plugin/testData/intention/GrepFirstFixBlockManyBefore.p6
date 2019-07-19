@@ -1,0 +1,1 @@
+[Nil].grep({ $_.foo.bar<caret> }).first;

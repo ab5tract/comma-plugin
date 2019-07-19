@@ -1,0 +1,1 @@
+[Nil].grep(*.foo.defined).f<caret>irst;

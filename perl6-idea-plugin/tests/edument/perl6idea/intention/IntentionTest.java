@@ -162,6 +162,18 @@ public class IntentionTest extends LightCodeInsightFixtureTestCase {
         executeIntention("Use");
     }
 
+    public void testGrepFirstFixWhateverSingle() {
+        executeIntention("Replace");
+    }
+
+    public void testGrepFirstFixWhateverMany() {
+        executeIntention("Replace");
+    }
+
+    public void testGrepFirstFixBlockMany() {
+        executeIntention("Replace");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
