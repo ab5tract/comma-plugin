@@ -2,13 +2,13 @@ package edument.perl6idea.psi;
 
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolContributor;
+import edument.perl6idea.psi.symbols.Perl6LexicalSymbolContributor;
 
 import java.util.*;
 
 public interface Perl6PsiScope extends Perl6PsiElement {
-    default List<Perl6SymbolContributor> getSymbolContributors() {
-        List<Perl6SymbolContributor> results = new ArrayList<>();
+    default List<Perl6LexicalSymbolContributor> getSymbolContributors() {
+        List<Perl6LexicalSymbolContributor> results = new ArrayList<>();
         Queue<Perl6PsiElement> visit = new LinkedList<>();
         visit.add(this);
         while (!visit.isEmpty()) {
@@ -17,8 +17,8 @@ public interface Perl6PsiScope extends Perl6PsiElement {
             if (current == this) {
                 addChildren = true;
             } else {
-                if (current instanceof Perl6SymbolContributor)
-                    results.add((Perl6SymbolContributor)current);
+                if (current instanceof Perl6LexicalSymbolContributor)
+                    results.add((Perl6LexicalSymbolContributor)current);
                 if (!(current instanceof Perl6PsiScope))
                     addChildren = true;
             }

@@ -6,18 +6,10 @@ import com.intellij.psi.PsiNamedElement;
 public class Perl6ExplicitSymbol implements Perl6Symbol {
     private Perl6SymbolKind kind;
     private PsiNamedElement psi;
-    private boolean isInstanceScoped;
 
     public Perl6ExplicitSymbol(Perl6SymbolKind kind, PsiNamedElement psi) {
         this.kind = kind;
         this.psi = psi;
-        this.isInstanceScoped = false;
-    }
-
-    public Perl6ExplicitSymbol(Perl6SymbolKind kind, PsiNamedElement psi, boolean isInstanceScoped) {
-        this.kind = kind;
-        this.psi = psi;
-        this.isInstanceScoped = isInstanceScoped;
     }
 
     @Override
@@ -48,10 +40,5 @@ public class Perl6ExplicitSymbol implements Perl6Symbol {
     @Override
     public boolean isImplicitlyDeclared() {
         return false;
-    }
-
-    @Override
-    public boolean isInstanceScoped() {
-        return isInstanceScoped;
     }
 }

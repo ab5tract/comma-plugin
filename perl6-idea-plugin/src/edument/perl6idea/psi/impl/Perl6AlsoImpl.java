@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,28 +16,21 @@ public class Perl6AlsoImpl extends ASTWrapperPsiElement implements Perl6Also {
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
+    public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         Perl6Trait trait = getTrait();
         if (trait == null) return;
 
         String mod = trait.getTraitModifier();
-        PsiElement typeName = getTypeName();
-        if (typeName == null) return;
-        PsiReference ref = typeName.getReference();
-        if (ref == null) return;
-        PsiElement resolve = ref.resolve();
-        if (resolve == null) return;
-        if (!(resolve instanceof Perl6PackageDecl)) return;
-
-        /* also declaration can be in the middle of package block
-         * so it is possible that not all internal elements are gathered yet
-         * because of this we temporarily set flag to false if trait is `is`,
-         * but restore it afterwards */
-        boolean areCollected = collector.areInternalPartsCollected();
         if (mod.equals("is") || mod.equals("does")) {
-            collector.setAreInternalPartsCollected(mod.equals("does"));
-            ((Perl6PackageDecl)resolve).contributeScopeSymbols(collector);
-            collector.setAreInternalPartsCollected(areCollected);
+            PsiElement typeName = getTypeName();
+            if (typeName == null) return;
+            PsiReference ref = typeName.getReference();
+            if (ref == null) return;
+            PsiElement resolve = ref.resolve();
+            if (resolve == null) return;
+            if (!(resolve instanceof Perl6PackageDecl)) return;
+            ((Perl6PackageDecl)resolve).contributeMOPSymbols(collector,
+                    mod.equals("does") ? symbolsAllowed.does() : symbolsAllowed.is());
         }
     }
 

@@ -3,13 +3,13 @@ package edument.perl6idea.psi;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.symbols.Perl6SymbolContributor;
+import edument.perl6idea.psi.symbols.Perl6LexicalSymbolContributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierOwner, Perl6SymbolContributor {
+public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierOwner {
     String getScope();
 
     default List<Perl6Trait> getTraits() {

@@ -146,7 +146,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
         Perl6TermDefinition defterm = findChildByClass(Perl6TermDefinition.class);
         if (defterm != null) {
             String name = defterm.getText();

@@ -26,6 +26,9 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
 
     @Override
     public String getScope() {
+        T stub = getStub();
+        if (stub instanceof Perl6DeclStub)
+            return ((Perl6DeclStub)stub).getScope();
         PsiElement parent = getParent();
         return parent instanceof Perl6ScopedDecl ? ((Perl6ScopedDecl)parent).getScope() : defaultScope();
     }
@@ -60,12 +63,18 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
             @Override
             public String getLocationString() {
                 switch (getScope()) {
-                    case "my":
-                        return "lexical in " + enclosingPackage();
-                    case "our":
-                        return "global in " + getEnclosingPerl6ModuleName();
-                    case "has":
-                        return "in " + enclosingPackage();
+                    case "my": {
+                        String encName = enclosingPackage();
+                        return encName == null ? "" : "lexical in " + encName;
+                    }
+                    case "our": {
+                        String name = getEnclosingPerl6ModuleName();
+                        return name == null ? "" : "global in " + name;
+                    }
+                    case "has": {
+                        String encName = enclosingPackage();
+                        return encName == null ? "" : "in " + encName;
+                    }
                     default:
                         return getEnclosingPerl6ModuleName();
                 }

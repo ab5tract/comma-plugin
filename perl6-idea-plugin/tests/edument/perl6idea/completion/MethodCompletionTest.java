@@ -198,7 +198,7 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testAccessors3() {
-        doTestContainsAll("class Foo { has $.foo; method !a { self!<caret> } }", "!a", "!foo");
+        doTestContainsAll("class Foo { has $.foo; method !x() { }; method !a { self!<caret> } }", "!a", "!x");
     }
 
     public void testMethodsFromParametrizedRole() {
@@ -543,5 +543,27 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
                                       "my $foo = $foo.<caret>");
             myFixture.complete(CompletionType.BASIC, 1);
         });
+    }
+
+    public void testPrivateMethodsAreNotVisibleFromOutside() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A { method !test2 {}; method !test {} }; A!<caret>;");
+        complete(true);
+    }
+
+    public void testPrivateMethodsAreNotLeakedIntoLexicalClasses() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A { method !test {}; my class B { method a { self!<caret> } } }");
+        complete(true);
+    }
+
+    public void testAccessorsPrivacy1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { has $.test; my class B { method a { self!te<caret> } } }");
+        complete(true);
+    }
+
+    public void testAccessorsPrivacy2() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class A { has $.test; my class B { method a { self.te<caret> } } }");
+        complete(true);
     }
 }

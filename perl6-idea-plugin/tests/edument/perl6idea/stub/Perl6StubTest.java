@@ -11,6 +11,7 @@ import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.stub.*;
+import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
@@ -231,7 +232,7 @@ public class Perl6StubTest extends LightCodeInsightFixtureTestCase {
         StubElement stub = (StubElement) e.getChildrenStubs().get(1);
         Perl6PackageDecl decl = (Perl6PackageDecl) stub.getPsi();
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-        decl.contributeScopeSymbols(collector);
+        decl.contributeMOPSymbols(collector, new MOPSymbolsAllowed(false, false, false , false));
         List<String> names = collector.getVariants().stream().map(Perl6Symbol::getName).collect(Collectors.toList());
         assertTrue(names.containsAll(Arrays.asList(".ddd", ".mmm", ".bbb")));
     }

@@ -6,10 +6,12 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
@@ -38,15 +40,22 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         return StringUtil.trimStart(libraryName, "lib::");
     }
 
-    default Perl6Symbol resolveSymbol(Perl6SymbolKind kind, String name) {
+    default Perl6Symbol resolveLexicalSymbol(Perl6SymbolKind kind, String name) {
         Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, kind);
-        applySymbolCollector(collector);
+        applyLexicalSymbolCollector(collector);
         return collector.getResult();
     }
 
-    default Collection<Perl6Symbol> getSymbolVariants(Perl6SymbolKind... kinds) {
+    default List<Perl6Symbol> resolveLexicalSymbolAllowingMulti(Perl6SymbolKind kind, String name) {
+        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, kind);
+        applyLexicalSymbolCollector(collector);
+        List<Perl6Symbol> results = collector.getResults();
+        return results.isEmpty() ? null : results;
+    }
+
+    default Collection<Perl6Symbol> getLexicalSymbolVariants(Perl6SymbolKind... kinds) {
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(kinds);
-        applySymbolCollector(collector);
+        applyLexicalSymbolCollector(collector);
         return collector.getVariants();
     }
 
@@ -67,8 +76,8 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
                 if (statement.getTextOffset() > this.getTextOffset()) break;
                 for (PsiElement maybeImport : statement.getChildren()) {
                     if (!(maybeImport instanceof Perl6UseStatement || maybeImport instanceof Perl6NeedStatement)) continue;
-                    Perl6SymbolContributor cont = (Perl6SymbolContributor)maybeImport;
-                    cont.contributeSymbols(collector);
+                    Perl6LexicalSymbolContributor cont = (Perl6LexicalSymbolContributor)maybeImport;
+                    cont.contributeLexicalSymbols(collector);
                     if (collector.isSatisfied()) return;
                 }
             }
@@ -76,48 +85,53 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         }
     }
 
-    default void applySymbolCollector(Perl6SymbolCollector collector) {
+    default void applyLexicalSymbolCollector(Perl6SymbolCollector collector) {
         Perl6PsiScope scope = PsiTreeUtil.getParentOfType(this, Perl6PsiScope.class);
-        // XXX
-        // Avoid bottomless recursion:
-        // If we are trying to resolve (hence apply) Perl6TypeName, the method may be called from class,
-        // so `scope` points to this PackageDecl, and calling `contributeSymbols` on that
-        // will cycle itself.
-        // But if is not a TypeName inside of Trait, we are safe to complete/resolve;
-        boolean insideOfTrait = getParent() instanceof Perl6Trait;
-        boolean packageTrait = false;
-        if (insideOfTrait) {
-            packageTrait = getParent().getParent() instanceof Perl6PackageDecl || getParent().getParent() instanceof Perl6Also;
-        }
-
-        if ((this instanceof Perl6TypeName || this instanceof Perl6IsTraitName) && packageTrait)
-            scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         while (scope != null) {
-            for (Perl6SymbolContributor cont : scope.getSymbolContributors()) {
-                cont.contributeSymbols(collector);
+            for (Perl6LexicalSymbolContributor cont : scope.getSymbolContributors()) {
+                cont.contributeLexicalSymbols(collector);
                 if (collector.isSatisfied())
                     return;
             }
             scope.contributeScopeSymbols(collector);
             if (collector.isSatisfied())
                 return;
-
-            // lexical sub is bind to outer method, so can have package symbols,
-            // but a lexical sub without method wrapper cannot
-            if (scope instanceof Perl6RoutineDecl) {
-                Perl6PsiScope outerScope = PsiTreeUtil.getParentOfType(scope, Perl6RoutineDecl.class, Perl6PackageDecl.class);
-                if (outerScope instanceof Perl6PackageDecl && ((Perl6RoutineDecl) scope).getRoutineKind().equals("sub")) {
-                    collector.increasePackageDepth();
-                    collector.setAreInternalPartsCollected(false);
-                }
-            } else if (scope instanceof Perl6PackageDecl)
-                collector.increasePackageDepth();
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
     }
 
     default String inferType() {
         return "Any";
+    }
+
+    default Perl6PackageDecl getSelfType() {
+        // There's only a self type if we're inside of a method or in the declaration of
+        // an attribute.
+        Perl6PsiElement current = this;
+        boolean foundSelfProvider = false;
+        while (current != null) {
+            current = PsiTreeUtil.getParentOfType(current, Perl6RoutineDecl.class, Perl6RegexDecl.class, Perl6PackageDecl.class, Perl6VariableDecl.class);
+            if (current instanceof Perl6PackageDecl)
+                return foundSelfProvider ? (Perl6PackageDecl)current : null;
+            if (foundSelfProvider)
+                return null;
+            if (current instanceof Perl6RoutineDecl) {
+                String scope = ((Perl6RoutineDecl)current).getScope();
+                if (scope != null && scope.equals("has"))
+                    foundSelfProvider = true;
+            }
+            else if (current instanceof Perl6RegexDecl) {
+                String scope = ((Perl6RegexDecl)current).getScope();
+                if (scope != null && scope.equals("has"))
+                    foundSelfProvider = true;
+            }
+            else if (current instanceof Perl6VariableDecl) {
+                String scope = ((Perl6VariableDecl)current).getScope();
+                if (scope != null && scope.equals("has"))
+                    foundSelfProvider = true;
+            }
+        }
+        return null;
     }
 
     @Nullable

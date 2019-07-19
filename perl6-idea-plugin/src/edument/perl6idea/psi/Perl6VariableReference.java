@@ -3,11 +3,15 @@ package edument.perl6idea.psi;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     public Perl6VariableReference(Perl6Variable var) {
@@ -18,18 +22,32 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     @Override
     public PsiElement resolve() {
         Perl6Variable var = getElement();
-        Perl6Symbol symbol = var.resolveSymbol(Perl6SymbolKind.Variable, var.getVariableName());
-        if (symbol != null) {
-            PsiElement psi = symbol.getPsi();
-            if (psi != null) {
-                if (psi.getContainingFile() != var.getContainingFile())
-                    return psi;
-                if (psi.getTextOffset() > var.getTextOffset()) {
-                    if (Perl6Variable.getSigil(var.getVariableName()) == '&' || Perl6Variable.getTwigil(var.getVariableName()) == '!')
+        String name = var.getVariableName();
+        if (name == null)
+            return null;
+        char twigil = Perl6Variable.getTwigil(name);
+        if (twigil == '!' || twigil == '.') {
+            // Attribute; resolve through MOP.
+            Perl6PackageDecl enclosingPackage = var.getSelfType();
+            if (enclosingPackage != null) {
+                Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, Perl6SymbolKind.Variable);
+                enclosingPackage.contributeMOPSymbols(collector, new MOPSymbolsAllowed(
+                        true, true, true, enclosingPackage.getPackageKind().equals("role")));
+                Perl6Symbol symbol = collector.getResult();
+                if (symbol != null)
+                    return symbol.getPsi();
+            }
+        }
+        else {
+            // Lexical; resolve through lexpad.
+            Perl6Symbol symbol = var.resolveLexicalSymbol(Perl6SymbolKind.Variable, name);
+            if (symbol != null) {
+                PsiElement psi = symbol.getPsi();
+                if (psi != null) {
+                    if (psi.getContainingFile() != var.getContainingFile())
                         return psi;
-                }
-                else {
-                    return psi;
+                    if (psi.getTextOffset() <= var.getTextOffset() || Perl6Variable.getSigil(name) == '&')
+                        return psi;
                 }
             }
         }
@@ -39,7 +57,15 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        return getElement().getSymbolVariants(Perl6SymbolKind.Variable)
+        List<Perl6Symbol> syms = new ArrayList<>(getElement().getLexicalSymbolVariants(Perl6SymbolKind.Variable));
+        Perl6PackageDecl enclosingPackage = getElement().getSelfType();
+        if (enclosingPackage != null) {
+            Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Variable);
+            enclosingPackage.contributeMOPSymbols(collector, new MOPSymbolsAllowed(
+                    true, true, true, enclosingPackage.getPackageKind().equals("role")));
+            syms.addAll(collector.getVariants());
+        }
+        return syms
                .stream()
                .filter(this::isDeclaredAfterCurrentPosition)
                .map(sym -> sym.getName())

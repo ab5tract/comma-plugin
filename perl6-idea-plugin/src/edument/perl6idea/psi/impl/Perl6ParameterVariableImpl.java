@@ -86,7 +86,7 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
         String name = getName();
         if (name.length() > 1) {
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));

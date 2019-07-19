@@ -3,6 +3,7 @@ role Baz1 {
     has $.visible;
 
     method !private {}
+    method !private2 {}
     method visible {}
 }
 

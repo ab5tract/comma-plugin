@@ -24,7 +24,8 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
     @NotNull
     @Override
     public Perl6RoutineDeclStub createStub(@NotNull Perl6RoutineDecl psi, StubElement parentStub) {
-         return new Perl6RoutineDeclStubImpl(parentStub, psi.getRoutineName(), psi.getRoutineKind(), psi.isPrivate(), psi.isExported());
+         return new Perl6RoutineDeclStubImpl(parentStub, psi.getRoutineName(), psi.getRoutineKind(),
+                                             psi.isPrivate(), psi.isExported(), psi.getMultiness());
     }
 
     @NotNull
@@ -39,6 +40,7 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
         dataStream.writeName(stub.getRoutineKind());
         dataStream.writeBoolean(stub.isPrivate());
         dataStream.writeBoolean(stub.isExported());
+        dataStream.writeName(stub.getMultiness());
     }
 
     @NotNull
@@ -48,7 +50,9 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
         StringRef routineKindRef = dataStream.readName();
         boolean isPrivate = dataStream.readBoolean();
         boolean exported = dataStream.readBoolean();
-        return new Perl6RoutineDeclStubImpl(parentStub, routineNameRef.getString(), routineKindRef.getString(), isPrivate, exported);
+        StringRef multiness = dataStream.readName();
+        return new Perl6RoutineDeclStubImpl(parentStub, routineNameRef.getString(), routineKindRef.getString(), isPrivate,
+                exported, multiness.getString());
     }
 
     @Override

@@ -8,10 +8,7 @@ import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6RegexDeclStub;
 import edument.perl6idea.psi.stub.Perl6RegexDeclStubElementType;
-import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
-import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,16 +96,24 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
+        String name = getName();
         String scope = getScope();
-        if (scope.equals("my") || scope.equals("our") || scope.equals("has")) {
-            String name = getName();
-            if (name != null) {
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Regex, this));
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
-                    this, "&" + name));
-            }
+        if (name != null && (scope.equals("my") || scope.equals("our"))) {
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Regex, this));
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
+                this, "&" + name));
+        }
+    }
+
+    @Override
+    public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
+        String name = getName();
+        String scope = getScope();
+        if (name != null && scope.equals("has")) {
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Regex, this));
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this, "." + name));
         }
     }
 }

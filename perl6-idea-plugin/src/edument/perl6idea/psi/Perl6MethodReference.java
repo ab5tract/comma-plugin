@@ -1,11 +1,10 @@
 package edument.perl6idea.psi;
 
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReferenceBase;
-import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.impl.Perl6MethodCallImpl;
 import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.symbols.*;
@@ -20,108 +19,191 @@ import java.util.stream.Collectors;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.SELF;
 
-public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
+public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall> {
     public Perl6MethodReference(Perl6MethodCallImpl call) {
-        super(call, new TextRange(0, call.getCallName().length()));
+        super(call, new TextRange(0, call.getCallName().length()), false);
     }
 
-    @Nullable
+    static class CallInfo {
+        private final String targetTypeName;
+        private final Object targetTypeElement;
+        private final String methodName;
+        private boolean trustNeeded = false;
+
+        public CallInfo(String targetTypeName, Object targetTypeElement, String methodName) {
+            this.targetTypeName = targetTypeName;
+            this.targetTypeElement = targetTypeElement;
+            this.methodName = methodName;
+        }
+
+        public CallInfo(String targetTypeName, Object targetTypeElement, String methodName, boolean trustNeeded) {
+            this(targetTypeName, targetTypeElement, methodName);
+            this.trustNeeded = trustNeeded;
+        }
+
+        boolean isSelf() {
+            return targetTypeName.equals("self");
+        }
+
+        boolean isTypeName() {
+            return targetTypeElement instanceof Perl6TypeName;
+        }
+
+        public String getTargetTypeName() {
+            return targetTypeName;
+        }
+
+        public Object getTargetTypeElement() {
+            return targetTypeElement;
+        }
+
+        /**
+         * Gets the method name with a . or ! prefix.
+         */
+        public String getMethodName() {
+            return methodName;
+        }
+
+        public boolean isTrustNeeded() {
+            return trustNeeded;
+        }
+    }
+
+    @NotNull
     @Override
-    public PsiElement resolve() {
+    public ResolveResult[] multiResolve(boolean incompleteCode) {
         Perl6MethodCall call = getElement();
-        List<Perl6Symbol> method = getMethodsForType(call, getCallerType(call), true);
-        if (method.size() != 0) {
-            return method.get(0) == null ? null : method.get(0).getPsi();
-        } else return null;
+        List<Perl6Symbol> method = getMethodsForType(call, getCallInfo(call), true);
+        if (method == null || method.isEmpty())
+            return ResolveResult.EMPTY_ARRAY;
+        return method.stream()
+                .map(s -> s.getPsi())
+                .filter(p -> p != null)
+                .map(p -> new PsiElementResolveResult(p))
+                .collect(Collectors.toList())
+                .toArray(ResolveResult.EMPTY_ARRAY);
     }
 
     @NotNull
     @Override
     public Object[] getVariants() {
         Perl6MethodCall call = getElement();
-        List<String> methods = getMethodsForType(call, getCallerType(call), false);
+        List<String> methods = getMethodsForType(call, getCallInfo(call), false);
         if (call.getCallOperator().equals("!"))
-            methods = methods.stream().filter(name -> name.startsWith("!")).collect(Collectors.toList());
+            methods = ContainerUtil.filter(methods, name -> name.startsWith("!"));
         return methods.toArray();
     }
 
-    private static Caller getCallerType(Perl6MethodCall call) {
+    /**
+     * Calculates the type that we are calling the method on.
+     */
+    private static CallInfo getCallInfo(Perl6MethodCall call) {
+        // Check if the targetTypeName contains an explicitly qualified part.
+        String name = call.getCallName();
+        if (name.length() >= 5) { // Minimum case is !A::m
+            boolean isPrivate = name.charAt(0) == '!';
+            int lastSep = name.lastIndexOf("::");
+            if (lastSep >= 0) {
+                String typeName = name.substring(1, lastSep);
+                String shortName = name.substring(0, 1) + name.substring(lastSep + 2);
+                return new CallInfo(typeName, null, shortName, isPrivate);
+            }
+        }
+
         PsiElement firstElement = call.findElementAt(0);
         if (firstElement != null && firstElement.getNode().getElementType() == SELF)
-            return new Caller("self", null);
+            return new CallInfo("self", null, name);
 
-        // Based on previous element decide what type methods we want
+        // Based on previous targetTypeElement decide what type methods we want
         PsiElement prev = call.getPrevSibling();
 
         if (prev instanceof PsiWhiteSpace)
-            return new Caller("self", null);
+            return new CallInfo("self", null, name);
 
         if (prev == null) // .foo
-            return new Caller("Mu", null);
+            return new CallInfo("Mu", null, name);
 
         if (prev instanceof Perl6PsiElement) {
             Perl6PsiElement element = (Perl6PsiElement) prev;
             String type = element.inferType();
             type = type == null ? "Mu" : type;
-            return new Caller(type, prev);
+            return new CallInfo(type, prev, name);
         }
         else
             return null;
     }
 
-    private static List getMethodsForType(Perl6MethodCall call, Caller caller, boolean isSingle) {
-        if (caller == null) return new ArrayList();
-        if (caller.isSelf()) {
-            return isSingle ?
-                   Collections.singletonList(call.resolveSymbol(Perl6SymbolKind.Method, call.getCallName())) :
-                   call.getSymbolVariants(Perl6SymbolKind.Method).stream().map(Perl6Symbol::getName).collect(Collectors.toList());
-        } else {
+    private static List getMethodsForType(Perl6MethodCall call, CallInfo callInfo, boolean isSingle) {
+        if (callInfo == null)
+            return new ArrayList();
+        if (callInfo.isSelf()) {
+            Perl6PackageDecl enclosingPackage = PsiTreeUtil.getParentOfType(call, Perl6PackageDeclImpl.class);
+            if (enclosingPackage != null)
+                return getMethodsFromPsiType(callInfo, isSingle, enclosingPackage, true);
+            return new ArrayList();
+        }
+        else {
             String name;
-            if (caller.isTypeName()) {
-                Perl6TypeName typeName = (Perl6TypeName)caller.getElement();
+            if (callInfo.isTypeName()) {
+                Perl6TypeName typeName = (Perl6TypeName)callInfo.getTargetTypeElement();
                 name = typeName.getTypeName();
-            } else {
-                name = caller.getName();
             }
-            return getMethodsByTypeName(call, name, isSingle);
+            else {
+                name = callInfo.getTargetTypeName();
+            }
+            return getMethodsByTypeName(call, callInfo, name, isSingle);
         }
     }
 
-    private static List getMethodsByTypeName(Perl6MethodCall call, String name, boolean isSingle) {
-        Perl6Symbol type = call.resolveSymbol(Perl6SymbolKind.TypeOrConstant, name);
-        Perl6PackageDecl enclosingPackage = PsiTreeUtil.getParentOfType(call, Perl6PackageDeclImpl.class);
-        String kind = null, packageName = null;
-        if (enclosingPackage != null) {
-            kind = enclosingPackage.getPackageKind();
-            packageName = enclosingPackage.getPackageName();
+    @NotNull
+    private static List getMethodsFromPsiType(CallInfo callinfo, boolean isSingle, Perl6PackageDecl enclosingPackage, boolean privatesVisible) {
+        MOPSymbolsAllowed symbolsAllowed = new MOPSymbolsAllowed(privatesVisible, privatesVisible, true, false);
+        if (isSingle) {
+            Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(
+                    callinfo.getMethodName(), Perl6SymbolKind.Method);
+            enclosingPackage.contributeMOPSymbols(collector, symbolsAllowed);
+            return collector.getResults();
         }
+        else {
+            Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
+            enclosingPackage.contributeMOPSymbols(collector, symbolsAllowed);
+            return ContainerUtil.map(collector.getVariants(), Perl6Symbol::getName);
+        }
+    }
+
+    private static List getMethodsByTypeName(Perl6MethodCall call, CallInfo callInfo, String typeName, boolean isSingle) {
+        Perl6Symbol type = call.resolveLexicalSymbol(Perl6SymbolKind.TypeOrConstant, typeName);
         if (type != null) { // If we know that type, even as external
             PsiElement base = type.getPsi();
             Perl6PackageDecl decl = null;
-            if (base instanceof Perl6PackageDecl)
+            if (base instanceof Perl6PackageDecl) {
                 decl = (Perl6PackageDecl)base;
+            }
             else if (base instanceof Perl6Subset) {
                 Perl6Subset subset = (Perl6Subset)base;
                 // Get original type of subset
                 decl = subset.getSubsetBaseType();
                 String newName = subset.getSubsetBaseTypeName();
-                name = newName != null ? newName : "Any";
-            } else if (base instanceof Perl6Enum) {
+                typeName = newName != null ? newName : "Any";
+            }
+            else if (base instanceof Perl6Enum) {
                 if (!isSingle) {
-                    List<String> enumMethods = tryToCompleteExternalTypeMethods("Int", call);
-                    enumMethods.addAll(tryToCompleteExternalTypeMethods("Enumeration", call));
+                    List<String> enumMethods = tryToCompleteExternalTypeMethods("Int", call, callInfo);
+                    enumMethods.addAll(tryToCompleteExternalTypeMethods("Enumeration", call, callInfo));
                     return enumMethods;
                 }
             }
-            if (decl != null) { // Not external type
-                return isSingle ?
-                       Collections.singletonList(resolvePackageMethod(decl, call.getCallName(), kind, packageName)) :
-                       completePackageMethod(decl, kind, packageName);
-            } else {
-                return isSingle ? Collections.EMPTY_LIST :
-                       tryToCompleteExternalTypeMethods(name, call);
+            if (decl != null) {
+                // Not external type
+                return getMethodsFromPsiType(callInfo, isSingle, decl, callInfo.isTrustNeeded());
             }
-        } else { // We don't know that type, assume it is derived from Mu/Any
+            else {
+                return isSingle ? Collections.EMPTY_LIST :
+                       tryToCompleteExternalTypeMethods(typeName, call, callInfo);
+            }
+        } else {
+            // We don't know that type, assume it is derived from Mu/Any. No privates or
+            // attributes there, so simple.
             return isSingle ? Collections.EMPTY_LIST : MuAnyMethods(call, null);
         }
     }
@@ -133,11 +215,12 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
                 collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
         for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", element).methods())
             collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
-        return collector.getVariants().stream().map(Perl6Symbol::getName).collect(Collectors.toList());
+        return ContainerUtil.map(collector.getVariants(), Perl6Symbol::getName);
     }
 
-    private static List<String> tryToCompleteExternalTypeMethods(String name, Perl6PsiElement element) {
-        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, Perl6SymbolKind.ExternalPackage);
+    private static List<String> tryToCompleteExternalTypeMethods(String typeName, Perl6PsiElement element,
+                                                                 CallInfo callInfo) {
+        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(typeName, Perl6SymbolKind.ExternalPackage);
         int baseOffset = element.getTextOffset();
         element = (Perl6PsiElement)element.getParent();
         outer:
@@ -146,7 +229,7 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
                 if (child instanceof Perl6Statement) child = child.getFirstChild();
                 if ((child instanceof Perl6UseStatement || child instanceof Perl6NeedStatement) &&
                     child.getTextOffset() < baseOffset) {
-                    ((Perl6SymbolContributor)child).contributeSymbols(collector);
+                    ((Perl6LexicalSymbolContributor)child).contributeLexicalSymbols(collector);
                     if (collector.isSatisfied()) break outer;
                 }
             }
@@ -162,49 +245,8 @@ public class Perl6MethodReference extends PsiReferenceBase<Perl6MethodCall> {
         // From external types we get "raw" method names, so should be prepended with `.`
         // While our local packages properly export already prepended named
         List<String> basicMethods = MuAnyMethods(element, null);
-        basicMethods.addAll(type.methods().stream().map(s -> '.' + s).collect(Collectors.toList()));
+        basicMethods.addAll(ContainerUtil.map(type.methods(), s -> '.' + s));
         return basicMethods;
-    }
-
-    private static List<String> completePackageMethod(Perl6PackageDecl decl, String kind, String packageName) {
-        Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-        collector.setEnclosingPackageKind(kind);
-        collector.setEnclosingPackageName(packageName);
-        decl.contributeScopeSymbols(collector);
-        MuAnyMethods(decl, collector);
-        return collector.getVariants().stream().map(s -> s.getName()).collect(Collectors.toList());
-    }
-
-    private static Object resolvePackageMethod(Perl6PackageDecl decl, String name, String kind, String packageName) {
-        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, Perl6SymbolKind.Method);
-        collector.setEnclosingPackageKind(kind);
-        collector.setEnclosingPackageName(packageName);
-        decl.contributeScopeSymbols(collector);
-        return collector.getResult();
-    }
-
-    static class Caller {
-        private String name;
-        private Object element;
-
-        public Caller(String name, Object element) {
-            this.name = name;
-            this.element = element;
-        }
-
-        boolean isSelf() {
-            return name.equals("self");
-        }
-        boolean isTypeName() {
-            return element instanceof Perl6TypeName;
-        }
-
-        public Object getElement() {
-            return element;
-        }
-        public String getName() {
-            return name;
-        }
     }
 
     @Override

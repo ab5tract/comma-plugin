@@ -27,7 +27,7 @@ public class Perl6NeedStatementImpl extends StubBasedPsiElementBase<Perl6NeedSta
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
         // We cannot contribute based on stubs when indexing is in progress
         if (DumbService.isDumb(getProject())) return;
         for (String name : getModuleNames()) {

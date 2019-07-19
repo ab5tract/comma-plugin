@@ -19,7 +19,7 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
     public PsiElement resolve() {
         Perl6PsiElement ref = getElement();
         String typeName = ref.getText();
-        Perl6Symbol result = ref.resolveSymbol(Perl6SymbolKind.TypeOrConstant, typeName);
+        Perl6Symbol result = ref.resolveLexicalSymbol(Perl6SymbolKind.TypeOrConstant, typeName);
         if (result != null) {
             PsiElement psi = result.getPsi();
             if (psi != null) {
@@ -38,7 +38,7 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
     @Override
     public Object[] getVariants() {
         Perl6PsiElement ref = getElement();
-        return ref.getSymbolVariants(Perl6SymbolKind.TypeOrConstant)
+        return ref.getLexicalSymbolVariants(Perl6SymbolKind.TypeOrConstant)
             .stream()
             .filter(this::declarationInScope)
             .map(symbol -> symbol.getName())

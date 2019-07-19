@@ -14,10 +14,7 @@ import edument.perl6idea.psi.stub.Perl6PackageDeclStubElementType;
 import edument.perl6idea.psi.stub.Perl6SubsetStubElementType;
 import edument.perl6idea.psi.stub.Perl6TypeStub;
 import edument.perl6idea.psi.stub.impl.Perl6PackageDeclStubImpl;
-import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
-import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +23,7 @@ import javax.swing.*;
 import static edument.perl6idea.parsing.Perl6TokenTypes.NAME;
 
 public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStub> extends StubBasedPsiElementBase<T>
-        implements Perl6PsiDeclaration {
+        implements Perl6PsiDeclaration, Perl6LexicalSymbolContributor {
     public Perl6TypeStubBasedPsi(@NotNull T stub,
                                  @NotNull IStubElementType nodeType) {
         super(stub, nodeType);
@@ -132,7 +129,7 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
     }
 
     @Override
-    public void contributeSymbols(Perl6SymbolCollector collector) {
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
         if (getName() == null) return;
         collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, this));
         if (!collector.isSatisfied()) {
