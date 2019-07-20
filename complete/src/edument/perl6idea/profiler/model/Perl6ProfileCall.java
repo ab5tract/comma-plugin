@@ -6,8 +6,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Perl6ProfileCall {
+    Pattern CALL_MODULE_PATTERN = Pattern.compile("\\((.+)\\)$");
+
     private int id;
     private int routineID;
     @Nullable
@@ -55,6 +59,15 @@ public class Perl6ProfileCall {
         return name.isEmpty() ? "<anon>" : name;
     }
 
+    @Nullable
+    public String getModuleName() {
+        Matcher matcher = CALL_MODULE_PATTERN.matcher(filename);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
     public String getOriginalFile() {
         return filename;
     }
@@ -63,17 +76,27 @@ public class Perl6ProfileCall {
         return line;
     }
 
-    public String getFilename() {
-        return renderFilename() + ":" + line;
+    public String getFilename(String basePath) {
+        return renderFilename(basePath) + ":" + line;
     }
 
-    private String renderFilename() {
+    private String renderFilename(String basePath) {
         if (filename.endsWith(".nqp")) {
             return "<nqp>";
         } else if (filename.startsWith("SETTING:")) {
             return "<CORE SETTING>";
         } else {
-            return Paths.get(filename).getFileName().toString();
+            String shortFileName = filename;
+            Matcher match = CALL_MODULE_PATTERN.matcher(shortFileName);
+
+            if (match.find())
+                shortFileName = shortFileName.substring(0, match.start() - 1);
+
+            if (shortFileName.startsWith(basePath)) {
+                return shortFileName.substring(basePath.length());
+            } else {
+                return shortFileName;
+            }
         }
     }
 
@@ -119,10 +142,10 @@ public class Perl6ProfileCall {
     }
 
     public float inlined() {
-        return inlinedEntries / entries;
+        return (float)inlinedEntries / (float)entries;
     }
 
     public float spesh() {
-        return speshEntries / entries;
+        return (float)speshEntries / (float)entries;
     }
 }

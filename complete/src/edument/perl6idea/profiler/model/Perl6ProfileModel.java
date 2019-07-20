@@ -1,5 +1,7 @@
 package edument.perl6idea.profiler.model;
 
+import com.intellij.openapi.project.Project;
+
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
     protected static final ArrayList<String> COLUMN_NAMES = new ArrayList<>(
         Arrays.asList("Name", "File", "Inclusive (μs)", "Entries")
     );
+    protected final String myBaseProjectPath;
     protected int inclusiveSum;
     protected List<Perl6ProfileCall> nodes;
     protected boolean showRealFileNames = false;
@@ -25,7 +28,8 @@ public class Perl6ProfileModel extends AbstractTableModel {
         return 4;
     }
 
-    public Perl6ProfileModel(List<Perl6ProfileCall> routines) {
+    public Perl6ProfileModel(Project project, List<Perl6ProfileCall> routines) {
+        myBaseProjectPath = project.getBasePath();
         nodes = routines;
         calculatePercentage();
     }
@@ -43,7 +47,9 @@ public class Perl6ProfileModel extends AbstractTableModel {
             case 0:
                 return profilerNode.getName();
             case 1:
-                return showRealFileNames ? profilerNode.getOriginalFile() : profilerNode.getFilename();
+                return showRealFileNames
+                       ? profilerNode.getOriginalFile()
+                       : profilerNode.getFilename(myBaseProjectPath);
             case 2:
                 return profilerNode.getInclusiveTime();
             default:

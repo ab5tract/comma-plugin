@@ -160,13 +160,13 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
 
     private void updateCalleeTable(int callId) {
         List<Perl6ProfileCall> calleeList = myProfileData.getCalleeListByCallId(callId);
-        calleeTable.setModel(new Perl6ProfileModel(calleeList));
+        calleeTable.setModel(new Perl6ProfileModel(myProject, calleeList));
         calleeTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
     }
 
     private void updateCallerTable(int callId) {
         List<Perl6ProfileCall> callerList = myProfileData.getCallerListByCallId(callId);
-        callerTable.setModel(new Perl6ProfileModel(callerList));
+        callerTable.setModel(new Perl6ProfileModel(myProject, callerList));
         callerTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
     }
 
@@ -213,7 +213,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
             return;
         }
         // Setup a model
-        Perl6ProfileNavigationModel model = new Perl6ProfileNavigationModel(calls);
+        Perl6ProfileNavigationModel model = new Perl6ProfileNavigationModel(myProject, calls);
         callsNavigation.setModel(model);
         // Single selection + default sort for all columns
         callsNavigation.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

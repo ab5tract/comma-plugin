@@ -23,7 +23,7 @@ public class Perl6ProfileResultsPanel extends JPanel {
     }
 
     private Component getCallGraphTab() {
-        return new Perl6ProfileCallGraphPanel(myProfileData);
+        return new Perl6ProfileCallGraphPanel(myProject, myProfileData);
     }
 
     private Component getRoutinesTab() {

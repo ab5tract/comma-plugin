@@ -69,4 +69,18 @@ public class Perl6Utils {
         }
         return lines;
     }
+
+    public static String formatDelimiters(int originalText, String delimiter, int each) {
+        String text = new StringBuilder(String.valueOf(originalText)).reverse().toString();
+        StringBuilder builder = new StringBuilder(text.length() + text.length() / each + 1);
+        int index = 0;
+        while (index < text.length())  {
+            builder.append(text, index, Math.min(index + 3, text.length()));
+            index += each;
+
+            if (index < text.length())
+                builder.append(delimiter);
+        }
+        return builder.reverse().toString();
+    }
 }

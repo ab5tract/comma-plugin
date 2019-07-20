@@ -1,5 +1,6 @@
 package edument.perl6idea.profiler.ui;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.ui.components.JBScrollPane;
@@ -20,7 +21,7 @@ public class Perl6ProfileCallGraphPanel extends JPanel {
     private List<Perl6ProfileThread> myThreads;
     private JLabel myTimeLabel;
 
-    public Perl6ProfileCallGraphPanel(Perl6ProfileData data) {
+    public Perl6ProfileCallGraphPanel(Project project, Perl6ProfileData data) {
         super(new BorderLayout());
         myProfileData = data;
 
@@ -30,7 +31,7 @@ public class Perl6ProfileCallGraphPanel extends JPanel {
 
         // Prepare chart area
         myScrollPane = new JBScrollPane();
-        myProfileCallGraph = new Perl6ProfileCallGraph(data, this);
+        myProfileCallGraph = new Perl6ProfileCallGraph(project, data, this);
         myScrollPane.setViewportView(myProfileCallGraph);
         add(myScrollPane, BorderLayout.CENTER);
     }

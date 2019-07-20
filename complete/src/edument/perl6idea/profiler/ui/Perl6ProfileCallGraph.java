@@ -1,5 +1,6 @@
 package edument.perl6idea.profiler.ui;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
@@ -7,6 +8,7 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.awt.RelativePoint;
 import edument.perl6idea.profiler.model.Perl6ProfileCall;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -22,6 +24,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Perl6ProfileCallGraph extends JPanel {
     public static final int SIDE_OFFSET = 10;
     public static final Color BASIC_ROOT_COLOR = JBColor.BLUE;
+    private final Project myProject;
     public int myItemHeight;
     private final Perl6ProfileData myProfileData;
     private final Perl6ProfileCallGraphPanel myGraphPanel;
@@ -32,7 +35,10 @@ public class Perl6ProfileCallGraph extends JPanel {
     private JScrollPane myScroll;
     private int myRootHeight;
 
-    public Perl6ProfileCallGraph(Perl6ProfileData profileData, Perl6ProfileCallGraphPanel panel) {
+    public Perl6ProfileCallGraph(Project project,
+                                 Perl6ProfileData profileData,
+                                 Perl6ProfileCallGraphPanel panel) {
+        myProject = project;
         myScroll = panel.getScrollPane();
         myGraphPanel = panel;
         myProfileData = profileData;
@@ -85,7 +91,8 @@ public class Perl6ProfileCallGraph extends JPanel {
             private void showTooltip(Point point, CallItem item) {
                 currentTooltipCall = item;
                 JBPopup popup = JBPopupFactory.getInstance()
-                    .createComponentPopupBuilder(new CallGraphTooltip(currentTooltipCall), null)
+                    .createComponentPopupBuilder(
+                        new CallGraphTooltipUI(myProject, currentTooltipCall).getPanel(), null)
                     .setFocusOwners(new Component[] { Perl6ProfileCallGraph.this })
                     .createPopup();
                 currentPopup = popup;
@@ -161,7 +168,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     }
 
     private void updateAxis() {
-        String overallTimeString = String.format("Time: %s μs", myRoot.getInclusiveTime());
+        String overallTimeString = String.format("Time: %s μs", Perl6Utils.formatDelimiters(myRoot.getInclusiveTime(), ",", 3));
         myGraphPanel.getTimeLabel().setText(overallTimeString);
     }
 
