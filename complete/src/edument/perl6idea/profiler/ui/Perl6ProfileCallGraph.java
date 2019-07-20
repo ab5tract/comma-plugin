@@ -173,7 +173,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     }
 
     private static Color getBrighterColor(Color color) {
-        return ColorHelper.adjustColor(color, 8);
+        return ColorHelper.adjustColor(color, 3);
     }
 
     private static Color getDarkerColor(Color color) {
