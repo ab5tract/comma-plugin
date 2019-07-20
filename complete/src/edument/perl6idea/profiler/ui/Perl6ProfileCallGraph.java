@@ -17,6 +17,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -183,8 +184,8 @@ public class Perl6ProfileCallGraph extends JPanel {
         return ColorHelper.adjustColor(color, 3);
     }
 
-    private static Color getDarkerColor(Color color) {
-        return ColorHelper.adjustColor(color, -9);
+    private static Color convertToGrayscale(Color color) {
+        return ColorHelper.makeGrayscale(color);
     }
 
     private boolean drawCall(Graphics2D g, Perl6ProfileCall root, int startX, int callRectWidth, int height) {
@@ -197,8 +198,11 @@ public class Perl6ProfileCallGraph extends JPanel {
         String callName = root.getName();
 
         // Draw a filled rectangle
+        if (root.isExternal(myProject.getBasePath())) {
+            Color newColor = convertToGrayscale(g.getColor());
+            g.setColor(newColor);
+        }
         g.fillRect(startX, height, callRectWidth, myItemHeight);
-
         // Draw a border
         g.setColor(JBColor.BLACK);
         g.drawRect(startX, height, callRectWidth, myItemHeight);
@@ -358,6 +362,13 @@ public class Perl6ProfileCallGraph extends JPanel {
                 s = (max - min) / (2 - max - min);
 
             return new float[]{h, s * 100, l * 100};
+        }
+
+        public static Color makeGrayscale(Color color) {
+            float[] hsl = RGBtoHSL(color);
+            hsl[0] = 0;
+            hsl[1] = 0;
+            return HSLtoRGB(hsl);
         }
     }
 

@@ -80,6 +80,10 @@ public class Perl6ProfileCall {
         return renderFilename(basePath) + ":" + line;
     }
 
+    public boolean isExternal(String basePath) {
+        return !filename.startsWith(basePath);
+    }
+
     private String renderFilename(String basePath) {
         if (filename.endsWith(".nqp")) {
             return "<nqp>";
