@@ -9,7 +9,7 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
         Arrays.asList("Name", "File", "Inclusive (μs)", "Exclusive (μs)", "Entries")
     );
 
-    public Perl6ProfileNavigationModel(List<Perl6ProfilerNode> calls) {
+    public Perl6ProfileNavigationModel(List<Perl6ProfileCall> calls) {
         super(calls);
     }
 
@@ -33,7 +33,7 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        Perl6ProfilerNode profilerNode = nodes.get(row);
+        Perl6ProfileCall profilerNode = nodes.get(row);
         switch (column) {
             case 0:
                 return profilerNode.getName();
@@ -44,7 +44,7 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
             case 3:
                 return profilerNode.getExclusiveTime();
             default:
-                return profilerNode.getCallCount();
+                return profilerNode.getEntriesCount();
         }
     }
 

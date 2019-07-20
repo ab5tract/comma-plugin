@@ -11,7 +11,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
         Arrays.asList("Name", "File", "Inclusive (μs)", "Entries")
     );
     protected int inclusiveSum;
-    protected List<Perl6ProfilerNode> nodes;
+    protected List<Perl6ProfileCall> nodes;
     protected boolean showRealFileNames = false;
     protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
@@ -25,7 +25,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
         return 4;
     }
 
-    public Perl6ProfileModel(List<Perl6ProfilerNode> routines) {
+    public Perl6ProfileModel(List<Perl6ProfileCall> routines) {
         nodes = routines;
         calculatePercentage();
     }
@@ -38,7 +38,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        Perl6ProfilerNode profilerNode = nodes.get(row);
+        Perl6ProfileCall profilerNode = nodes.get(row);
         switch (column) {
             case 0:
                 return profilerNode.getName();
@@ -47,7 +47,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
             case 2:
                 return profilerNode.getInclusiveTime();
             default:
-                return profilerNode.getCallCount();
+                return profilerNode.getEntriesCount();
         }
     }
 
@@ -79,7 +79,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
     }
 
     public int getNodeId(int row) {
-        return nodes.get(row).getCallRoutineId();
+        return nodes.get(row).getRoutineID();
     }
 
     public String getNodeName(int row) {
@@ -104,8 +104,8 @@ public class Perl6ProfileModel extends AbstractTableModel {
 
     public int getNavigationIndexByCallId(int id) {
         for (int i = 0, size = nodes.size(); i < size; i++) {
-            Perl6ProfilerNode node = nodes.get(i);
-            if (node.getCallRoutineId() == id)
+            Perl6ProfileCall node = nodes.get(i);
+            if (node.getRoutineID() == id)
                 return i;
         }
         return -1;

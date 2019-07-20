@@ -159,13 +159,13 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     }
 
     private void updateCalleeTable(int callId) {
-        List<Perl6ProfilerNode> calleeList = myProfileData.getCalleeListByCallId(callId);
+        List<Perl6ProfileCall> calleeList = myProfileData.getCalleeListByCallId(callId);
         calleeTable.setModel(new Perl6ProfileModel(calleeList));
         calleeTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
     }
 
     private void updateCallerTable(int callId) {
-        List<Perl6ProfilerNode> callerList = myProfileData.getCallerListByCallId(callId);
+        List<Perl6ProfileCall> callerList = myProfileData.getCallerListByCallId(callId);
         callerTable.setModel(new Perl6ProfileModel(callerList));
         callerTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
     }
@@ -173,6 +173,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     private void setupNavigationSelectorListener(JBTable table) {
         table.addMouseListener(
             new MouseAdapter() {
+                @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getButton() != MouseEvent.BUTTON1)
                         return;
@@ -203,7 +204,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     }
 
     private void setupNavigation() {
-        List<Perl6ProfilerNode> calls;
+        List<Perl6ProfileCall> calls;
         try {
             calls = myProfileData.getNavigationNodes();
         }
@@ -229,6 +230,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
         });
         callsNavigation.addMouseListener(
             new MouseAdapter() {
+                @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getButton() != MouseEvent.BUTTON1)
                         return;

@@ -52,7 +52,7 @@ public class Perl6ProfileCallGraph extends JPanel {
                 if (e.getButton() == MouseEvent.BUTTON1 && graphSizes.contains(point)) {
                     for (CallItem item : callItems) {
                         if (item.contains(point)) {
-                            myRoot = myProfileData.getProfileCallById(item.myCall.id, 15, item.myCall.parent);
+                            myRoot = myProfileData.getProfileCallById(item.myCall.getId(), 15, item.myCall.getParent());
                             repaint();
                             updateAxis();
                         }
@@ -145,12 +145,12 @@ public class Perl6ProfileCallGraph extends JPanel {
     private int drawParentBreadcrumbs(Graphics2D g, int height) {
         g.setColor(JBColor.LIGHT_GRAY);
         int currentItemHeight = height;
-        if (myRoot.parent != null) {
+        if (myRoot.getParent() != null) {
             Deque<Perl6ProfileCall> parents = new ArrayDeque<>();
-            Perl6ProfileCall nextParent = myRoot.parent;
+            Perl6ProfileCall nextParent = myRoot.getParent();
             while (nextParent != null) {
                 parents.addFirst(nextParent);
-                nextParent = nextParent.parent;
+                nextParent = nextParent.getParent();
             }
             for (Perl6ProfileCall call : parents) {
                 drawCall(g, call, SIDE_OFFSET, getWidth() - 2 * SIDE_OFFSET, currentItemHeight);
@@ -161,7 +161,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     }
 
     private void updateAxis() {
-        String overallTimeString = String.format("Time: %s μs", myRoot.inclusiveTime);
+        String overallTimeString = String.format("Time: %s μs", myRoot.getInclusiveTime());
         myGraphPanel.getTimeLabel().setText(overallTimeString);
     }
 
@@ -187,7 +187,7 @@ public class Perl6ProfileCallGraph extends JPanel {
         }
 
         Color background = g.getColor();
-        String callName = root.name.isEmpty() ? "<anon>" : root.name;
+        String callName = root.getName();
 
         // Draw a filled rectangle
         g.fillRect(startX, height, callRectWidth, myItemHeight);
@@ -202,7 +202,7 @@ public class Perl6ProfileCallGraph extends JPanel {
         // Get sizes of name label
         FontMetrics fm = g.getFontMetrics();
         // Check if name fits in this width and try to minimify if not
-        if (root.callees == null)
+        if (root.getCallees() == null)
             callName += "...";
         callName = minifyRoutineName(g, callRectWidth, callName, fm);
 
@@ -218,7 +218,7 @@ public class Perl6ProfileCallGraph extends JPanel {
         // Reset color to background one once we drew border and label
         g.setColor(background);
         // Return if we should draw children of this call
-        return callName.length() > 1 && root.callees != null;
+        return callName.length() > 1 && root.getCallees() != null;
     }
 
     private static Color getComplimentaryColor(Color color) {
@@ -257,10 +257,10 @@ public class Perl6ProfileCallGraph extends JPanel {
         int currentX = callStartX;
         // We print children recursively depth-first, so need to re-apply level color on every next item
         Color currentLevelColor = g.getColor();
-        for (Perl6ProfileCall childCall : call.callees) {
+        for (Perl6ProfileCall childCall : call.getCallees()) {
             g.setColor(currentLevelColor);
             // We need to calculate x - where to start, and width - how long it is
-            int width = (int)(maxItemWidth * ((float)childCall.inclusiveTime / call.inclusiveTime));
+            int width = (int)(maxItemWidth * ((float)childCall.getInclusiveTime() / call.getInclusiveTime()));
             if (width == 0)
                 continue;
             if (drawCall(g, childCall, currentX, width, lineHeight)) {

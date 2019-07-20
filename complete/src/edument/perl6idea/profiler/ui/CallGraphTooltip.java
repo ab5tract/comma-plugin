@@ -28,11 +28,11 @@ public class CallGraphTooltip extends JPanel {
     private String createText() {
         StringJoiner joiner = new StringJoiner("\n");
         Perl6ProfileCall call = myCall.myCall;
-        String name = call.name.isEmpty() ? "<anon>" : call.name;
-        joiner.add(String.format("* %s (%s:%s)", name, call.filename, call.line));
-        joiner.add(String.format("Total: %s μs", call.inclusiveTime));
-        joiner.add(String.format("Entries: %s", call.entries));
-        if (call.entries != 1)
+        String name = call.getName();
+        joiner.add(String.format("* %s (%s:%s)", name, call.getFilename(), call.getLine()));
+        joiner.add(String.format("Total: %s μs", call.getInclusiveTime()));
+        joiner.add(String.format("Entries: %s", call.getEntriesCount()));
+        if (call.getEntriesCount() != 1)
             joiner.add(String.format("Per entry: %s μs", call.averageCallTime()));
         joiner.add(String.format("Inlined: %s%%", call.inlined()));
         joiner.add(String.format("Spesh: %s%%", call.spesh()));

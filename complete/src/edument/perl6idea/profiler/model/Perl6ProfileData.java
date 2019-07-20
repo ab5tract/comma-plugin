@@ -58,22 +58,22 @@ public class Perl6ProfileData {
     }
 
     public Perl6ProfileCall getProfileCallById(int callId, int maxRecursion, @Nullable Perl6ProfileCall parent) {
-        String sql = "WITH EXPR (REC_LEVEL, PARENT_ID, CALL_ID, INCLUSIVE, ENTRIES, SPESH, INLINE, NAME, FILE, LINE) AS ( " +
-                     "SELECT 1, ROOT.PARENT_ID, ROOT.id, ROOT.inclusive_time, ROOT.entries, ROOT.spesh_entries, ROOT.inlined_entries,"  +
+        String sql = "WITH EXPR (REC_LEVEL, PARENT_ID, CALL_ID, ROUTINE_ID, INCLUSIVE, EXCLUSIVE, ENTRIES, SPESH, INLINE, NAME, FILE, LINE) AS ( " +
+                     "SELECT 1, ROOT.PARENT_ID, ROOT.id, ROOT.routine_id, ROOT.inclusive_time, ROOT.exclusive_time, ROOT.entries, ROOT.spesh_entries, ROOT.inlined_entries,"  +
                      "r.name, r.file, r.line " +
                      "FROM calls ROOT JOIN routines r ON ROOT.routine_id = r.id " +
                      "WHERE ROOT.id = ?" +
                      "UNION ALL " +
-                     "SELECT (REC_LEVEL + 1), CHILD.PARENT_ID, CHILD.id, CHILD.inclusive_time, CHILD.entries, CHILD.spesh_entries, CHILD.inlined_entries, " +
+                     "SELECT (REC_LEVEL + 1), CHILD.PARENT_ID, CHILD.id, CHILD.ROUTINE_ID, CHILD.inclusive_time, CHILD.exclusive_time, CHILD.entries, CHILD.spesh_entries, CHILD.inlined_entries, " +
                      "r.name, r.file, r.line " +
                      "FROM EXPR PARENT, calls CHILD JOIN routines r ON CHILD.routine_id = r.id " +
                      "WHERE PARENT.call_id = CHILD.parent_id AND REC_LEVEL < ? " +
-                     ") SELECT DISTINCT PARENT_ID, CALL_ID, INCLUSIVE, ENTRIES, SPESH, INLINE, NAME, FILE, LINE " +
+                     ") SELECT DISTINCT PARENT_ID, CALL_ID, ROUTINE_ID, INCLUSIVE, EXCLUSIVE, ENTRIES, SPESH, INLINE, NAME, FILE, LINE " +
                      "FROM EXPR ORDER BY CALL_ID; ";
 
         Map<Integer, Perl6ProfileCall> profileCallMap = new HashMap<>();
         if (parent != null)
-            profileCallMap.put(parent.id, parent);
+            profileCallMap.put(parent.getId(), parent);
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, callId);
@@ -83,17 +83,21 @@ public class Perl6ProfileData {
             while (set.next()) {
                 int parentID = set.getInt(1);
                 Perl6ProfileCall call = new Perl6ProfileCall(
-                    set.getInt(2),
-                    set.getInt(3), set.getInt(4),
-                    set.getInt(5), set.getInt(6),
-                    set.getString(7), set.getString(8), set.getString(9)
+                    // ID, PARENT ID
+                    set.getInt(2), set.getInt(3),
+                    // INCLUSIVE, EXCLUSIVE
+                    set.getInt(4), set.getInt(5),
+                    // ENTRIES, SPESH, INLINE
+                    set.getInt(6), set.getInt(7), set.getInt(8),
+                    // NAME, FILE, LINE
+                    set.getString(9), set.getString(10), set.getInt(11)
                 );
                 Perl6ProfileCall parentCallInMap = profileCallMap.get(parentID);
                 if (parentCallInMap != null) {
-                    parentCallInMap.callees.add(call);
+                    parentCallInMap.addCallee(call);
                     call.setParent(parentCallInMap);
                 }
-                profileCallMap.put(call.id, call);
+                profileCallMap.put(call.getId(), call);
             }
         } catch (SQLException e) {
             LOG.warn(e);
@@ -103,8 +107,8 @@ public class Perl6ProfileData {
         return profileCallMap.get(callId);
     }
 
-    public List<Perl6ProfilerNode> getNavigationNodes() throws SQLException {
-        List<Perl6ProfilerNode> nodes = new ArrayList<>();
+    public List<Perl6ProfileCall> getNavigationNodes() throws SQLException {
+        List<Perl6ProfileCall> nodes = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
             ResultSet calls = statement
                 .executeQuery("SELECT r.id, r.file, r.line, r.name, " +
@@ -137,24 +141,21 @@ public class Perl6ProfileData {
         return threadList;
     }
 
-    private static void convertProfilerNodes(List<Perl6ProfilerNode> nodes, ResultSet calls) throws SQLException {
+    private static void convertProfilerNodes(List<Perl6ProfileCall> nodes, ResultSet calls) throws SQLException {
         while (calls.next()) {
-            nodes.add(new Perl6ProfilerNode(
-                calls.getInt("id"),
-                calls.getString("file"),
-                calls.getInt("line"),
-                calls.getString("name"),
-                calls.getInt("inclusive_time"),
-                calls.getInt("exclusive_time"),
-                calls.getInt("entries")
+            nodes.add(new Perl6ProfileCall(
+                -1, calls.getInt("id"),
+                calls.getInt("inclusive_time"), calls.getInt("exclusive_time"),
+                calls.getInt("entries"), -1, -1,
+                calls.getString("name"), calls.getString("file"), calls.getInt("line")
             ));
         }
     }
 
-    private List<Perl6ProfilerNode> getRelatedCallNodes(int id, boolean wantCallers) {
+    private List<Perl6ProfileCall> getRelatedCallNodes(int id, boolean wantCallers) {
         try {
             if (!connection.isClosed()) {
-                List<Perl6ProfilerNode> calleeList = new ArrayList<>();
+                List<Perl6ProfileCall> calleeList = new ArrayList<>();
                 String sql = RELATED_CALL_NODES_SQL.fun(
                     wantCallers ?
                     "FROM calls pc JOIN calls c ON c.id == pc.parent_id " :
@@ -173,11 +174,11 @@ public class Perl6ProfileData {
         return new ArrayList<>();
     }
 
-    public List<Perl6ProfilerNode> getCalleeListByCallId(int id) {
+    public List<Perl6ProfileCall> getCalleeListByCallId(int id) {
         return getRelatedCallNodes(id,false);
     }
 
-    public List<Perl6ProfilerNode> getCallerListByCallId(int id) {
+    public List<Perl6ProfileCall> getCallerListByCallId(int id) {
         return getRelatedCallNodes(id, true);
     }
 }
