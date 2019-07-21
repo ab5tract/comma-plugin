@@ -18,6 +18,11 @@ import java.util.List;
 public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
     private Sdk testSdk;
 
+    @Override
+    protected String getTestDataPath() {
+        return "perl6-idea-plugin/testData/completion";
+    }
+
     @NotNull
     @Override
     protected LightProjectDescriptor getProjectDescriptor() {
@@ -141,5 +146,12 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> types = myFixture.getLookupElementStrings();
         assertNotNull(types);
+    }
+
+    public void testEnumsAreExportedByDefault() {
+        myFixture.configureByFiles("IdeaFoo/Bar9.pm6", "IdeaFoo/Baz.pm6");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertTrue(vars.containsAll(Arrays.asList("ENUM::ONE", "ENUM::TWO")));
     }
 }
