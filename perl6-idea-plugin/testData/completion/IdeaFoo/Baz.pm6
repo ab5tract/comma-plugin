@@ -32,3 +32,5 @@ class Foo::Bar::Baz {
 
 sub foo-one {}
 sub foo-two is export {}
+
+enum ENUM <ONE TWO>;
