@@ -1,0 +1,1 @@
+aw<caret>ait Promise.allof($p1, $p2)

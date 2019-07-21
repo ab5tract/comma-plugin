@@ -1,0 +1,3 @@
+{
+    modul<caret>e Foo {}
+}

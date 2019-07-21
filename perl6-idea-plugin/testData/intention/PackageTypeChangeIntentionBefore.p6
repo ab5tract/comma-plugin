@@ -1,0 +1,3 @@
+ro<caret>le Foo {
+
+}

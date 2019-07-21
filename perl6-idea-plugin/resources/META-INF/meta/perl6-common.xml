@@ -29,10 +29,10 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NullRegexAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredVariableAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredRoutineAnnotator"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredPrivateMethod"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredAttribute"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredPrivateMethodAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredAttributeAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.editor.SigSpaceAnnotator"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.LeadingZeroAnnotation"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.LeadingZeroAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MethodNotOnRangeAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingUnitKeywordAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.PodFormatAnnotator"/>
@@ -47,14 +47,17 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MyScopedVariableExportedAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.IncomposableDoesAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MonitorUsageAnnotator"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NonInheritableComposableDeclAnnotation"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.ProblematicReturn"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NonInheritableComposableDeclAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.ProblematicReturnAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingThingsAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NamedPairArgumentAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.IdiomaticLoopAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.WithConstructionAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.SimplifiedRangeAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.GrepFirstAnnotation"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.BuiltinSubmethodAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.EmptyInitializationAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.Perl6ExecutableStringAnnotator"/>
     <stubElementTypeHolder class="edument.perl6idea.parsing.Perl6ElementTypes"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.ProjectModulesStubIndex"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex"/>
@@ -83,6 +86,27 @@
     <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor" />
     <programRunner implementation="edument.perl6idea.timeline.Perl6TimelineRunner"/>
     <stubIndex implementation="edument.perl6idea.cro.CroRouteIndex"/>
+
+    <intentionAction>
+      <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
+      <category>Perl 6 Intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.MakeMethodPublicIntention</className>
+      <category>Perl 6 Intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.MakeAttributeRequiredIntention</className>
+      <category>Perl 6 Intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.UnparenthesizeIntention</className>
+      <category>Perl 6 Intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.UnwrapPromiseAllOfIntention</className>
+      <category>Perl 6 Intentions</category>
+    </intentionAction>
   </extensions>
 
   <actions>

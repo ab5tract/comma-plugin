@@ -12,7 +12,7 @@ import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6Self;
 import org.jetbrains.annotations.NotNull;
 
-public class UndeclaredPrivateMethod implements Annotator {
+public class UndeclaredPrivateMethodAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6MethodCall))

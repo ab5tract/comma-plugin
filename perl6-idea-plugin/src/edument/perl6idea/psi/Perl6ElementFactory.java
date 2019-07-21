@@ -68,6 +68,14 @@ public class Perl6ElementFactory {
         return String.format("class A is %s;", name);
     }
 
+    public static Perl6LongName createRoutineName(Project project, String name) {
+        return produceElement(project, getRoutineNameText(name), Perl6LongName.class);
+    }
+
+    private static String getRoutineNameText(String name) {
+        return String.format("method %s() {}", name);
+    }
+
     public static Perl6LongName createMethodCallName(Project project, String name) {
         return produceElement(project, getMethodCallNameText(name), Perl6LongName.class);
     }
@@ -154,14 +162,14 @@ public class Perl6ElementFactory {
         return PsiTreeUtil.findChildOfType(dummyFile, clazz);
     }
 
-    public static Perl6InfixApplication createInfixApplication(Project project, List<PsiElement> parts) {
-        return produceElement(project, getInfixApplicationText(parts), Perl6InfixApplication.class);
+    public static Perl6InfixApplication createInfixApplication(Project project, String infix, List<PsiElement> parts) {
+        return produceElement(project, getInfixApplicationText(infix, parts), Perl6InfixApplication.class);
     }
 
-    private static String getInfixApplicationText(List<PsiElement> parts) {
-        StringJoiner infix = new StringJoiner(", ");
-        parts.stream().map(PsiElement::getText).forEach(infix::add);
-        return infix.toString() + ";";
+    private static String getInfixApplicationText(String infix, List<PsiElement> parts) {
+        StringJoiner infixJoiner = new StringJoiner(infix);
+        parts.stream().map(PsiElement::getText).forEach(infixJoiner::add);
+        return infixJoiner.toString() + ";";
     }
 
     public static Perl6Signature createRoutineSignature(Project project, List<Perl6Parameter> parameters) {
@@ -172,5 +180,32 @@ public class Perl6ElementFactory {
         StringJoiner signature = new StringJoiner(", ");
         parameters.stream().map(PsiElement::getText).forEach(signature::add);
         return "sub foo(" + signature.toString() + ") {}";
+    }
+
+    public static PsiElement createMethodCallOperator(Project project, boolean isPrivate) {
+        Perl6MethodCall methodCall = produceElement(project, String.format("self%sa();", isPrivate ? "!" : "."), Perl6MethodCall.class);
+        return methodCall.getCallOperatorNode();
+    }
+
+    public static Perl6Trait createTrait(Project project, String modifier, String name) {
+        return produceElement(project, createTraitText(modifier, name), Perl6Trait.class);
+    }
+
+    private static String createTraitText(String modifier, String name) {
+        return String.format("my $a %s %s;", modifier, name);
+    }
+
+    public static PsiElement createPackageDeclarator(Project project, String type) {
+        Perl6PackageDecl packageDecl = produceElement(project, String.format("%s {}", type), Perl6PackageDecl.class);
+        return packageDecl.getPackageKeywordNode();
+    }
+
+    public static PsiElement createRoutineDeclarator(Project project, String type) {
+        Perl6RoutineDecl routineDecl = produceElement(project, String.format("%s a() {}", type), Perl6RoutineDecl.class);
+        return routineDecl.getDeclaratorNode();
+    }
+
+    public static Perl6VariableDecl createVariableDecl(Project project, String scope, String name) {
+        return produceElement(project, String.format("%s %s;", scope, name), Perl6VariableDecl.class);
     }
 }

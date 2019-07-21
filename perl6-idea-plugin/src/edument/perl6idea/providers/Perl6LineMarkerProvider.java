@@ -11,10 +11,8 @@ import com.intellij.util.NotNullFunction;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.parsing.Perl6TokenTypes;
-import edument.perl6idea.psi.Perl6IsTraitName;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6Trait;
-import edument.perl6idea.psi.Perl6TypeName;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6IndexableType;
 import org.jetbrains.annotations.NotNull;
@@ -37,8 +35,8 @@ public class Perl6LineMarkerProvider extends RelatedItemLineMarkerProvider {
 
         List<PsiElement> targets = new ArrayList<>();
 
-        collectParents(decl, targets);
-        collectChildren(decl, targets);
+        targets.addAll(decl.collectParents());
+        targets.addAll(decl.collectChildren());
 
         if (targets.size() > 0)
             result.add(NavigationGutterIconBuilder
@@ -47,47 +45,6 @@ public class Perl6LineMarkerProvider extends RelatedItemLineMarkerProvider {
                            .setTooltipText("Navigate to subtypes and supertypes")
                            .createLineMarkerInfo(element)
             );
-    }
-
-    private static void collectParents(Perl6PackageDecl decl, List<PsiElement> targets) {
-        for (Perl6Trait trait : decl.getTraits()) {
-            Perl6IsTraitName isTrait = PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
-            if (isTrait != null) {
-                PsiElement resolved = isTrait.getReference().resolve();
-                if (resolved != null)
-                    targets.add(resolved);
-            }
-            else {
-                Perl6TypeName doesTrait = PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class);
-                if (doesTrait != null) {
-                    PsiElement resolved = doesTrait.getReference().resolve();
-                    if (resolved != null)
-                        targets.add(resolved);
-                }
-            }
-        }
-    }
-
-    private static void collectChildren(Perl6PackageDecl decl, List<PsiElement> targets) {
-        Perl6GlobalTypeStubIndex instance = Perl6GlobalTypeStubIndex.getInstance();
-        Project project = decl.getProject();
-        String name = decl.getPackageName();
-        Collection<String> keys = instance.getAllKeys(project);
-        for (String key : keys) {
-            Collection<Perl6IndexableType> psi = instance.get(key, project, GlobalSearchScope.allScope(project));
-            if (psi.size() == 1) {
-                for (Perl6IndexableType type : psi) {
-                    if (!(type instanceof Perl6PackageDecl))
-                        continue;
-                    Perl6Trait childTrait = ((Perl6PackageDecl)type).findTrait("does", name);
-                    if (childTrait != null)
-                        targets.add(type);
-                    childTrait = ((Perl6PackageDecl)type).findTrait("is", name);
-                    if (childTrait != null)
-                        targets.add(type);
-                }
-            }
-        }
     }
 
     @Nullable

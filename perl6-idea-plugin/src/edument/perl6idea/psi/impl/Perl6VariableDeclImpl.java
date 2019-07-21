@@ -182,7 +182,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             } else {
                 // Otherwise, create a new application and use it
                 Perl6InfixApplication newApplication = Perl6ElementFactory.
-                        createInfixApplication(getProject(), initPartsToPreserve);
+                        createInfixApplication(getProject(), ", ", initPartsToPreserve);
                 getInitializer().replace(newApplication);
             }
 

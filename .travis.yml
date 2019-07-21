@@ -17,6 +17,7 @@ addons:
     packages:
     - rakudo-pkg
 script:
+- zef install OO::Monitors
 - (cd intellij-community/comma-build/perl6-idea-plugin/tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
 - (cd intellij-community/comma-build/perl6-idea-plugin/tools/symbol-script-module && zef install .)
 - (cd intellij-community/comma-build/perl6-idea-plugin/tools/symbol-script-module && perl6 symbol-script-test.p6)
