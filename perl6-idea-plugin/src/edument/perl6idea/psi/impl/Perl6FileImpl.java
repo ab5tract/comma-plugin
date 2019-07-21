@@ -176,6 +176,13 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                         }
                     }
                 }
+                else if (current instanceof Perl6Enum) {
+                    Perl6Enum perl6Enum = (Perl6Enum)current;
+                    String scope = perl6Enum.getScope();
+                    if (scope.equals("our")) {
+                        perl6Enum.contributeLexicalSymbols(collector);
+                    }
+                }
                 else if (current instanceof Perl6UseStatement) {
                     Perl6UseStatement use = (Perl6UseStatement)current;
                     contributeTransitive(collector, seen, use.getModuleName());
