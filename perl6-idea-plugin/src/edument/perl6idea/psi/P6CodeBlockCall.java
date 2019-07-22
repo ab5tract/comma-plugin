@@ -24,6 +24,7 @@ public interface P6CodeBlockCall extends PsiNamedElement {
         while (node != null) {
             if (node instanceof PsiWhiteSpace ||
                 node.getNode().getElementType() == UNV_WHITE_SPACE ||
+                node.getNode().getElementType() == INVOCANT_MARKER ||
                 node.getNode().getElementType() == PARENTHESES_OPEN ||
                 node.getNode().getElementType() == PARENTHESES_CLOSE ||
                 node.getNode().getElementType() == METHOD_CALL_OPERATOR) {

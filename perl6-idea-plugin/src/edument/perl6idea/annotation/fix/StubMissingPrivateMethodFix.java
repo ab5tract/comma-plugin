@@ -16,11 +16,13 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.refactoring.NewCodeBlockData;
 import edument.perl6idea.refactoring.Perl6CodeBlockType;
 import edument.perl6idea.refactoring.Perl6VariableData;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+import static edument.perl6idea.parsing.Perl6ElementTypes.UNTERMINATED_STATEMENT;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 public class StubMissingPrivateMethodFix implements IntentionAction {
@@ -54,74 +56,47 @@ public class StubMissingPrivateMethodFix implements IntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
         Perl6PackageDecl packageDecl = PsiTreeUtil.getParentOfType(myCall, Perl6PackageDecl.class);
-        Perl6StatementList list = packageDecl == null ?
-                                  null :
-                                  PsiTreeUtil.findChildOfType(packageDecl, Perl6StatementList.class);
+        Perl6StatementList list = PsiTreeUtil.findChildOfType(packageDecl, Perl6StatementList.class);
         if (packageDecl == null || list == null) {
             CommonRefactoringUtil.showErrorHint(project, editor, "Cannot stub private method without enclosing class",
                                                 "Stubbing private method", null);
             return;
         }
 
-        Perl6RoutineDecl decl = null;
-        PsiElement answer = myCall.getParent();
-        do {
-            if (answer == null || answer instanceof Perl6PackageDecl) break;
-            if (answer instanceof Perl6RoutineDecl)
-                decl = (Perl6RoutineDecl)answer;
-            answer = answer.getParent();
-        } while (true);
+        PsiElement anchor = null;
+        PsiElement temp = myCall;
+        while (temp != null && !(temp instanceof Perl6PackageDecl)) {
+            temp = temp.getParent();
+            if (temp instanceof Perl6RoutineDecl) {
+                anchor = temp;
+            }
+        }
+        anchor = anchor != null ? PsiTreeUtil.getParentOfType(anchor, Perl6Statement.class, false) : Perl6PsiUtil.skipSpaces(list.getLastChild(), false);
+        if (anchor == null) {
+            CommonRefactoringUtil.showErrorHint(project, editor, "Cannot stub private method: can't find suitable anchor",
+                                                "Stubbing private method", null);
+            return;
+        }
 
-        PsiElement anchor = decl != null ? PsiTreeUtil.getParentOfType(decl, Perl6Statement.class) : list.getLastChild();
+        if (anchor.getLastChild().getNode().getElementType() == UNTERMINATED_STATEMENT) {
+            Perl6PsiUtil.terminateStatement(anchor);
+        }
 
         List<String> parameters = new ArrayList<>();
-        // There are more than 1 parameter, so infix
-        PsiElement infixArgumentList = PsiTreeUtil.getChildOfType(myCall, Perl6InfixApplication.class);
-        if (infixArgumentList != null)
-            populateParameters(parameters, infixArgumentList.getChildren());
-        // There might be only one parameter
-        PsiElement possibleArg = PsiTreeUtil.getChildOfType(myCall, Perl6LongName.class);
-
-        boolean openParenIsPassed = false;
-        /* We iterate over children of call
-        * Skip all elements until it's open parentheses
-        * When it's done, set flag to true and continue
-        * Between open paren and actual arg might be white space, skip those
-        * It's useless to search if there are no sibling left, or it's closing paren,
-        * or there are no name yet (possibleArg is null right from the start)
-        */
-        while (parameters.size() == 0) {
-            if (possibleArg == null || possibleArg.getNode().getElementType() == PARENTHESES_CLOSE)
-                break;
-            IElementType elementType = possibleArg.getNode().getElementType();
-            if (elementType == PARENTHESES_OPEN || elementType == INVOCANT_MARKER) {
-                openParenIsPassed = true;
-            }
-            else if (openParenIsPassed &&
-                     !(possibleArg instanceof PsiWhiteSpace) &&
-                     elementType != UNV_WHITE_SPACE) {
-                populateParameters(parameters, new PsiElement[]{possibleArg});
-                break;
-            }
-            possibleArg = possibleArg.getNextSibling();
-        }
-
+        populateParameters(parameters, myCall.getCallArguments());
         parameters = moveNamedsAfterPositionals(parameters);
+
         NewCodeBlockData data =
                 new NewCodeBlockData(
-                        Perl6CodeBlockType.PRIVATEMETHOD, "",
-                        myName, "", parameters.stream().map(n -> new Perl6VariableData(n, "", false, true)).toArray(Perl6VariableData[]::new));
-        PsiElement newMethod = Perl6ElementFactory.createNamedCodeBlock(project, data, new ArrayList<>());
-        anchor = anchor == null ? null : anchor.getNextSibling();
-        if (anchor == null) {
-            list.getNode().addChild(newMethod.getNode());
-        } else {
-            addPossibleNewline(list, anchor);
-            list.getNode().addChild(newMethod.getNode(), anchor.getNode());
-        }
+                        Perl6CodeBlockType.PRIVATEMETHOD, "", myName, "",
+                        parameters.stream().map(n -> new Perl6VariableData(n, "", false, true)).toArray(Perl6VariableData[]::new));
+        Perl6Statement newMethod = Perl6ElementFactory.createNamedCodeBlock(project, data, new ArrayList<>());
+
+        PsiElement newlyAddedMethod = list.addAfter(newMethod, anchor);
+
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
-        CodeStyleManager.getInstance(project).reformatNewlyAddedElement(list.getNode(), newMethod.getNode());
-        allowRename(newMethod, editor);
+        CodeStyleManager.getInstance(project).reformatNewlyAddedElement(list.getNode(), newlyAddedMethod.getNode());
+        allowRename(newlyAddedMethod, editor);
     }
 
     private static void allowRename(PsiElement newMethod, Editor editor) {
