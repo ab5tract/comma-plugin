@@ -158,4 +158,11 @@ public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestC
             handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
         });
     }
+
+    public void testNonpostfixCallExtraction() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = %foo{.fo<caret>o};");
+        Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$foo");
+        handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
+        myFixture.checkResult("my $foo = .foo;\nmy $a = %foo{$foo};");
+    }
 }
