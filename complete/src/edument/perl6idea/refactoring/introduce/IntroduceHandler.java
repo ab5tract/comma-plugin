@@ -126,6 +126,8 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
                 break;
             if (elementAtCaret instanceof P6Extractable)
                 expressions.add(elementAtCaret);
+            if (elementAtCaret instanceof Perl6MethodCall && !(elementAtCaret.getParent() instanceof Perl6PostfixApplication))
+                expressions.add(elementAtCaret);
             elementAtCaret = elementAtCaret.getParent();
         }
 
