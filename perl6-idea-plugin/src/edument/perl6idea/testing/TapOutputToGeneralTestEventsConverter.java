@@ -15,6 +15,7 @@ import org.tap4j.model.*;
 import org.tap4j.util.DirectiveValues;
 import org.tap4j.util.StatusValues;
 
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.List;
 import java.util.StringJoiner;
@@ -68,7 +69,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             TestSet set;
             String testSuiteStarted = ServiceMessageBuilder
                 .testSuiteStarted(currentFile)
-                .addAttribute("locationHint", myBaseUrl + "/" + currentFile)
+                .addAttribute("locationHint", Paths.get(myBaseUrl, currentFile).toString())
                 .toString();
             handleMessageSend(testSuiteStarted);
             try {
