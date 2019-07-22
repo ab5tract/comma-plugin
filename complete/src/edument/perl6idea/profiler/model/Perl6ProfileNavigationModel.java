@@ -1,4 +1,6 @@
-package edument.perl6idea.profiler;
+package edument.perl6idea.profiler.model;
+
+import com.intellij.openapi.project.Project;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,8 +11,8 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
         Arrays.asList("Name", "File", "Inclusive (μs)", "Exclusive (μs)", "Entries")
     );
 
-    public Perl6ProfileNavigationModel(List<Perl6ProfilerNode> calls) {
-        super(calls);
+    public Perl6ProfileNavigationModel(Project project, List<Perl6ProfileCall> calls) {
+        super(project, calls);
     }
 
     @Override
@@ -33,18 +35,20 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
 
     @Override
     public Object getValueAt(int row, int column) {
-        Perl6ProfilerNode profilerNode = nodes.get(row);
+        Perl6ProfileCall profilerNode = nodes.get(row);
         switch (column) {
             case 0:
                 return profilerNode.getName();
             case 1:
-                return showRealFileNames ? profilerNode.getOriginalFile() : profilerNode.getFilename();
+                return showRealFileNames
+                       ? profilerNode.getOriginalFile()
+                       : profilerNode.getFilename(myBaseProjectPath);
             case 2:
                 return profilerNode.getInclusiveTime();
             case 3:
                 return profilerNode.getExclusiveTime();
             default:
-                return profilerNode.getCallCount();
+                return profilerNode.getEntriesCount();
         }
     }
 

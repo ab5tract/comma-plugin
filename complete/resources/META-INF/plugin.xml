@@ -97,7 +97,7 @@ code.</li>
     <configurationType implementation="edument.perl6idea.cro.run.Perl6CompleteCroRunConfigurationType"/>
     <programRunner implementation="edument.perl6idea.coverage.Perl6CoverageRunner"/>
     <projectViewNodeDecorator implementation="edument.perl6idea.coverage.Perl6ProjectViewCoverageDecorator"/>
-    <programRunner implementation="edument.perl6idea.profiler.Perl6ProfileRunner"/>
+    <programRunner implementation="edument.perl6idea.profiler.run.Perl6ProfileRunner"/>
     <executor implementation="edument.perl6idea.run.Perl6ProfileExecutor"/>
     <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6CompleteRefactoringSupportProvider"/>
     <inlineActionHandler implementation="edument.perl6idea.refactoring.inline.variable.Perl6InlineVariableActionHandler"/>

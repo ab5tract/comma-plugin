@@ -1,4 +1,4 @@
-package edument.perl6idea.profiler;
+package edument.perl6idea.profiler.model;
 
 import javax.swing.*;
 import javax.swing.table.TableRowSorter;

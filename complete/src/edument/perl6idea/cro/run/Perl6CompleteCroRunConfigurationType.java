@@ -12,7 +12,7 @@ import com.intellij.openapi.project.Project;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.coverage.Perl6CoverageCommandLineState;
 import edument.perl6idea.debugger.Perl6DebugCommandLineState;
-import edument.perl6idea.profiler.Perl6ProfileCommandLineState;
+import edument.perl6idea.profiler.run.Perl6ProfileCommandLineState;
 import edument.perl6idea.run.Perl6ProfileExecutor;
 import edument.perl6idea.run.Perl6RunCommandLineState;
 import edument.perl6idea.timeline.Perl6TimelineCommandLineState;

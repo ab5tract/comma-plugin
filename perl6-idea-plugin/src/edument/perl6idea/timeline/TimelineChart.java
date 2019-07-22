@@ -3,6 +3,7 @@ package edument.perl6idea.timeline;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.util.Consumer;
@@ -265,7 +266,7 @@ public class TimelineChart extends JPanel {
             private void closeActiveTooltip() {
                 if (currentTooltipLogged != null) {
                     currentPopup.cancel();
-                    currentPopup.dispose();
+                    Disposer.dispose(currentPopup);
                     currentPopup = null;
                     currentTooltipLogged = null;
                 }

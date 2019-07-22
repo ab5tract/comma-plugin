@@ -1,5 +1,6 @@
-package edument.perl6idea.profiler;
+package edument.perl6idea.profiler.ui;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -13,6 +14,7 @@ import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.Function;
 import com.intellij.util.PlatformIcons;
+import edument.perl6idea.profiler.model.*;
 import edument.perl6idea.psi.Perl6File;
 
 import javax.swing.*;
@@ -26,8 +28,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class Perl6ProfileView extends JPanel {
-    public static final Logger LOG = Logger.getInstance(Perl6ProfileView.class);
+public class Perl6ProfileRoutinesPanel extends JPanel {
+    public static final Logger LOG = Logger.getInstance(Perl6ProfileRoutinesPanel.class);
     protected Project myProject;
     protected Perl6ProfileData myProfileData;
     protected String myBaseProjectPath;
@@ -43,7 +45,7 @@ public class Perl6ProfileView extends JPanel {
     private JSeparator separator2;
     private final Perl6ProfileNodeRenderer myProfileNodeRenderer;
 
-    public Perl6ProfileView(Project project, Perl6ProfileData profileData) {
+    public Perl6ProfileRoutinesPanel(Project project, Perl6ProfileData profileData) {
         myProject = project;
         myProfileData = profileData;
         myBaseProjectPath = myProject.getBaseDir().getCanonicalPath();
@@ -77,7 +79,7 @@ public class Perl6ProfileView extends JPanel {
         popupMenu.addPopupMenuListener(new PopupMenuListener() {
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                SwingUtilities.invokeLater(() -> {
+                ApplicationManager.getApplication().invokeLater(() -> {
                     Point point = SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table);
                     int rowAtPoint = table.rowAtPoint(point);
                     int columnAtPoint = table.columnAtPoint(point);
@@ -157,20 +159,21 @@ public class Perl6ProfileView extends JPanel {
     }
 
     private void updateCalleeTable(int callId) {
-        List<Perl6ProfilerNode> calleeList = myProfileData.getCalleeListByCallId(callId);
-        calleeTable.setModel(new Perl6ProfileModel(calleeList));
+        List<Perl6ProfileCall> calleeList = myProfileData.getCalleeListByCallId(callId);
+        calleeTable.setModel(new Perl6ProfileModel(myProject, calleeList));
         calleeTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
     }
 
     private void updateCallerTable(int callId) {
-        List<Perl6ProfilerNode> callerList = myProfileData.getCallerListByCallId(callId);
-        callerTable.setModel(new Perl6ProfileModel(callerList));
+        List<Perl6ProfileCall> callerList = myProfileData.getCallerListByCallId(callId);
+        callerTable.setModel(new Perl6ProfileModel(myProject, callerList));
         callerTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
     }
 
     private void setupNavigationSelectorListener(JBTable table) {
         table.addMouseListener(
             new MouseAdapter() {
+                @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getButton() != MouseEvent.BUTTON1)
                         return;
@@ -201,7 +204,7 @@ public class Perl6ProfileView extends JPanel {
     }
 
     private void setupNavigation() {
-        List<Perl6ProfilerNode> calls;
+        List<Perl6ProfileCall> calls;
         try {
             calls = myProfileData.getNavigationNodes();
         }
@@ -210,7 +213,7 @@ public class Perl6ProfileView extends JPanel {
             return;
         }
         // Setup a model
-        Perl6ProfileNavigationModel model = new Perl6ProfileNavigationModel(calls);
+        Perl6ProfileNavigationModel model = new Perl6ProfileNavigationModel(myProject, calls);
         callsNavigation.setModel(model);
         // Single selection + default sort for all columns
         callsNavigation.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -227,6 +230,7 @@ public class Perl6ProfileView extends JPanel {
         });
         callsNavigation.addMouseListener(
             new MouseAdapter() {
+                @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getButton() != MouseEvent.BUTTON1)
                         return;

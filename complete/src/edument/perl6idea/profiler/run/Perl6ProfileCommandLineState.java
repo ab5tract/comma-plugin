@@ -1,14 +1,12 @@
-package edument.perl6idea.profiler;
+package edument.perl6idea.profiler.run;
 
 import com.intellij.execution.ExecutionException;
-import com.intellij.execution.process.KillableColoredProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.wm.ToolWindowManager;
 import edument.perl6idea.run.Perl6RunCommandLineState;
 import edument.perl6idea.sdk.Perl6SdkType;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,10 +18,6 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
 
     public Perl6ProfileCommandLineState(ExecutionEnvironment environment) {
         super(environment);
-        // Un-register previously created tool window to avoid double registering
-        ApplicationManager.getApplication().invokeLater(() -> {
-            ToolWindowManager.getInstance(environment.getProject()).unregisterToolWindow("Perl 6 profiling tool window");
-        });
     }
 
     @Override
@@ -45,8 +39,8 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
         setInterpreterParameters();
     }
 
-    @Override
-    protected void setListeners(KillableColoredProcessHandler handler) {
-        handler.addProcessListener(new ProfileTerminationListener(tempFile, getEnvironment().getProject()));
+    @Nullable
+    public File getProfileResultsFile() {
+        return tempFile;
     }
 }
