@@ -189,6 +189,7 @@ public class Perl6DebugThread extends Thread {
             client.contextHandle(thread.threadId, i)
                     .thenApply(v -> client.contextLexicals(v).thenApply(lex -> {
                         result[finalI].setLexicals(convertLexicals(lex));
+                        mySession.rebuildViews();
                         client.releaseHandle(new int[]{v});
                         return null;
                     }));
