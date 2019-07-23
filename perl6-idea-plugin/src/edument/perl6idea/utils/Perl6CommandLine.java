@@ -101,14 +101,14 @@ public class Perl6CommandLine {
             return null;
         }
         String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", "");
-        command.add(prefix + "/bin/moar");
+        command.add(Paths.get(prefix, "bin", "moar").toString());
         command.add("--debug-port=" + runConfiguration.getDebugPort());
         if (runConfiguration.isStartSuspended())
             command.add("--debug-suspend");
-        command.add("--libpath=" + prefix + "/share/nqp/lib");
-        command.add("--libpath=" + prefix + "/share/perl6/lib");
-        command.add("--libpath=" + prefix + "/share/perl6/runtime");
-        command.add(prefix + "/share/perl6/runtime/perl6.moarvm");
+        command.add("--libpath=" + Paths.get(prefix, "share", "nqp", "lib"));
+        command.add("--libpath=" + Paths.get(prefix, "share", "perl6", "lib"));
+        command.add("--libpath=" + Paths.get(prefix,"share", "perl6", "runtime"));
+        command.add(Paths.get(prefix, "share", "perl6", "runtime", "perl6.moarvm").toString());
         return command;
     }
 }
