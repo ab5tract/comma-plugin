@@ -65,6 +65,11 @@ public class Perl6DebugThread extends Thread {
             if (runConfiguration.isStartSuspended())
                 mySession.positionReached(new Perl6SuspendContext(getThreads(), 0, mySession, this));
         } catch (CancellationException | InterruptedException | TimeoutException | ExecutionException e) {
+            // If the program has finished too early, do not prompt an odd message
+            // when we mis-interpret this situation
+            if (mySession.isStopped()) {
+                return;
+            }
             Notification notification = new Notification("Perl 6 Debugger", "Connection Error", "Could not connect to debug server",
                                                          NotificationType.ERROR);
             Notifications.Bus.notify(notification,  mySession.getProject());
