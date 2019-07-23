@@ -69,7 +69,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             TestSet set;
             String testSuiteStarted = ServiceMessageBuilder
                 .testSuiteStarted(currentFile)
-                .addAttribute("locationHint", Paths.get(myBaseUrl, currentFile).toString())
+                .addAttribute("locationHint", myBaseUrl + "/" + currentFile).toString()
                 .toString();
             handleMessageSend(testSuiteStarted);
             try {
