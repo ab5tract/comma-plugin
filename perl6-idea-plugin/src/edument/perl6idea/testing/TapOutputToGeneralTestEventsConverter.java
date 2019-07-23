@@ -50,7 +50,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
         if (outputType == ProcessOutputTypes.STDOUT || outputType == ProcessOutputTypes.STDERR) {
             if (text.startsWith(String.join(" ", TEST_HARNESS_PREFIX, FILE_COMMAND))) {
-                currentFile = text.substring(TEST_HARNESS_PREFIX.length() + FILE_COMMAND.length() + 2); // 2 spaces length
+                currentFile = text.substring(TEST_HARNESS_PREFIX.length() + FILE_COMMAND.length() + 2, text.length() - 1); // 2 == spaces length
                 if (!currentTap.isEmpty())
                     processTapOutput();
             } else {
