@@ -274,6 +274,7 @@ public class Perl6SdkType extends SdkType {
     }
 
     public void invalidateCaches() {
+        moarBuildConfig = null;
         setting = null;
         settingClasses = null;
         useNameCache = new ConcurrentHashMap<>();
