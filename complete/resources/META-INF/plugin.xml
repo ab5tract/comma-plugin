@@ -82,7 +82,7 @@
 
 <li>Fix a bug in the Extract Variable refactoring that generated incorrect code when user tried to extract a method call with an implicit caller (e.g. my <code>$a = %foo{.bar}</code> with <code>.bar</code> extracted)</li>
 
-<li>Fix a bug when on debugging after an Sdk change a Perl 6 prefix of previous one was used</li>
+<li>Fix a bug where debugging after an SDK change used the Perl 6 prefix of the previous SDK</li>
 </ul>
   ]]>
   </change-notes>

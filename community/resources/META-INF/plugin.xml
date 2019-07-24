@@ -134,7 +134,7 @@
 
 <li>Fix a bug where the 't' directory was marked as a Source Directory instead of Test Directory on Window</li>
 
-<li>Fix a bug when on debugging after an Sdk change a Perl 6 prefix of previous one was used</li>
+<li>Fix a bug where debugging after an SDK change used the Perl 6 prefix of the previous SDK</li>
 </ul>
   ]]></change-notes>
 
