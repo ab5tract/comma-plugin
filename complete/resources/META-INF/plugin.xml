@@ -31,47 +31,59 @@
   </description>
 
   <change-notes><![CDATA[
-    <ul>
-<li>Comma is now based on the 2019.01 version of IntelliJ platform. The
-plugin keeps backward compatibility with previous versions starting
-from 2017.03.</li>
-<li>Add a Cro Application project template with options to use
-templating and WebSocket. This generates a project structure similar
-to the &#39;cro stub&#39; one, including Dockerfile, routes setup, &#39;.cro.yml&#39;
-for the &#39;cro&#39; command line tool, and example tests using Cro::HTTP::Test.</li>
-<li>Add a Cro Service run configuration type which allows running a Cro
-service based on manual configuration or data taken from a &#39;.cro.yml&#39;
-file.</li>
-<li>Cro routes are now shown in Structure View (Ctrl + F12) for easier navigation
-to routes within a file.</li>
-<li>Cro routes are indexed and can be seen in Navigate to Symbol (Ctrl+Alt+Shift+N).</li>
-<li>The range literal simplification quickfix is now accompanied with a weak warning annotator.</li>
-<li>Modules with &#39;:from<Perl5>&#39; are no longer annotated as unknown.</li>
-<li>The quickfix that stubs a local module from a &#39;use&#39; statement now prompts the user for
-the name and module type. The new module name is suggested automatically and, if changed,
-the &#39;use&#39; statement will reflect the change.</li>
-<li>Add completion for dynamic variables defined by Perl 6.</li>
-<li>Imrpove the timeline run tab UI.</li>
-<li>Add support for the Pause action in the debugger.</li>
-<li>The debugger&#39;s &#39;start suspended&#39; setting in the Perl 6 Run Configuration
-now works.</li>
-<li>On project creation, META6.json files are created with attributes
-sorted.</li>
-<li>The annotator that detects usage of modules outside of META6.json now
-considers build and test dependencies.</li>
-<li>If the specified SDK of a project is missing at its specified paths,
-it leads to a warning instead of an exception.</li>
-<li>Fix the generated signature of a private method stubbed from its usage
-using a quickfix, when private attributes are passed as arguments.</li>
-<li>Fix parsing of heredoc text that starts with an infix operator.</li>
-<li>Fix a bug with META6.json being created with an incorrect module name.</li>
-<li>Fix a rare exception occuring at new project creation.</li>
-<li>Fix an exception in the Extract Code refactoring triggered by
-changing of the parameter type.</li>
-<li>Fix a rare exception caused by the presence of nameless constants in
-code.</li>
-<li>Fix a possible exception on project SDK change.</li>
-    </ul>
+<ul>
+<li>Add a new Call Graph view to the profiler results: it displays the graph of calls in a particular thread, allowing one to look into the hierarchy, see information about callers, callees, and other profiler data</li>
+
+<li>Improve the UI of the profiler tab view: support buttons like Stop and Re-run, and show Console output in a separate tab</li>
+
+<li>Fix a lot of issues related to symbol resolution and completion: numerous false positive cases were fixed, and a call to a multi method now suggests to choose an appropriate candidate instead of jumping to the first one. Performance of resolution was greatly increased for large projects</li>
+
+<li>Fix debugger support on Windows (also requires upcoming Rakudo point release 2019.07.1)</li>
+
+<li>Support block comments (<code>Ctrl+Shift+/</code>)</li>
+
+<li>Add an annotation that suggests to replace redundant grep.first call chains into a single first call</li>
+
+<li>Add an intention (<code>Alt+Enter</code>) allowing to change a Perl 6 package's type (e.g. turn grammar into class or role into monitor)</li>
+
+<li>Add an intention to make private methods public: it updates both the private method definition and all its calls</li>
+
+<li>Add an intention to make an attribute required if it does not have a default value</li>
+
+<li>Add an annotation warning about BUILD and TWEAK being declared as methods instead of submethod, which is a common mistake, and a quickfix to change it</li>
+
+<li>Add an annotation warning about redundant Array and Hash initialization (e.g. <code>my @a = []</code> or <code>my %a = ()</code>) and a quickfix to remove the empty initializer</li>
+
+<li>Add an intention to replace the await Promise.allof construction with a plain await call</li>
+
+<li>Add an annotation warning about <code>"perl6"</code> usage in string literals that is common for running a new Perl 6 process and suggest to change it into multiplatform <code>$*EXECUTABLE.absolute</code> call with a quickfix</li>
+
+<li>Add an intention allowing to unparenthesize an expression</li>
+
+<li>Add new icon for Profile run configuration</li>
+
+<li>Deprecation warnings no longer break the displaying of test results when using the test runner</li>
+
+<li>When, during debugging, a breakpoint is reached, the top stack frame now always shows its lexicals immediately</li>
+
+<li>Fix misleading error notification about failed connection when the Perl 6 process to debug exits before debug server was able to connect</li>
+
+<li>Fix inlining of variables into a colonpair (e.g. for a <code>:$a</code> variable <code>my $a = 5</code> is inlined as <code>a =&gt; 5</code>)</li>
+
+<li>Fix a possible rare exception when anonymous variables are used</li>
+
+<li>Fix an incorrect behavior related to the colonpair form of argument passing to a call when multiple arguments were handled as a single one, which mostly affects refactorings like Inline Code Block and some annotators</li>
+
+<li>Fix a possible exception in the annotator that offers a quickfix to stub a private method using an unknown call</li>
+
+<li>Fix a rare exception related to <code>META6.json</code> handling</li>
+
+<li>Fix resolution and completion of an Enumeration that is not marked as is export</li>
+
+<li>Fix a bug in the Extract Variable refactoring that generated incorrect code when user tried to extract a method call with an implicit caller (e.g. my <code>$a = %foo{.bar}</code> with <code>.bar</code> extracted)</li>
+
+<li>Fix a bug when on debugging after an Sdk change a Perl 6 prefix of previous one was used</li>
+</ul>
   ]]>
   </change-notes>
 
