@@ -15,7 +15,7 @@ public class Perl6IfStatementImpl extends ASTWrapperPsiElement implements Perl6I
 
     @Override
     public String getLeadingStatementControl() {
-        PsiElement control = this.findChildByType(STATEMENT_CONTROL);
+        PsiElement control = findChildByType(STATEMENT_CONTROL);
         return control == null ? "" : control.getText();
     }
 }
