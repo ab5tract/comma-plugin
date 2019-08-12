@@ -1,0 +1,3 @@
+supply {
+    whenever  {emit $_;}
+}

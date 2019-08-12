@@ -1,0 +1,1 @@
+<selection>my $nice-value = $_;</selection>

@@ -1,0 +1,1 @@
+<selection>my $a = +"qwer";</selection>
