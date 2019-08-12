@@ -8,11 +8,12 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.psi.PsiElement;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.surrountWith.descriptors.surrounder.*;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class Perl6SurroundWithTest extends LightCodeInsightFixtureTestCase {
     @NotNull
@@ -97,11 +98,16 @@ public class Perl6SurroundWithTest extends LightCodeInsightFixtureTestCase {
 
     private void doTest(Surrounder surrounder) {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
-        SurroundDescriptor descriptor = ContainerUtil.getFirstItem(LanguageSurrounders.INSTANCE.allForLanguage(Perl6Language.INSTANCE));
-        assertNotNull(descriptor);
+        List<SurroundDescriptor> descriptors = LanguageSurrounders.INSTANCE.allForLanguage(Perl6Language.INSTANCE);
         SelectionModel selectionModel = getEditor().getSelectionModel();
-        PsiElement[] elements = descriptor.getElementsToSurround(
-            getFile(), selectionModel.getSelectionStart(), selectionModel.getSelectionEnd());
+        PsiElement[] elements = null;
+        for (SurroundDescriptor descriptor : descriptors) {
+            elements = descriptor.getElementsToSurround(
+                getFile(), selectionModel.getSelectionStart(), selectionModel.getSelectionEnd());
+            if (elements.length > 0)
+                break;
+        }
+        assertNotNull(elements);
         assertTrue(surrounder.isApplicable(elements));
         SurroundWithHandler.invoke(getProject(), getEditor(), getFile(), surrounder);
         myFixture.checkResultByFile(getTestName(true) + ".p6");
