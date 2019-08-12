@@ -230,7 +230,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         return !checkEnd.endsWith(";") && !checkEnd.endsWith("}");
     }
 
-    private boolean isInHashOrArrayLiteral(ASTNode node) {
+    private static boolean isInHashOrArrayLiteral(ASTNode node) {
         PsiElement psi = node.getPsi();
         // Should be infix:<,>.
         if (psi instanceof Perl6InfixApplication && psi.getChildren().length >= 2 &&
