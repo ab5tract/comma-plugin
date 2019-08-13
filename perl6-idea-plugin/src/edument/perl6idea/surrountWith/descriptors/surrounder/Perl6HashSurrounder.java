@@ -15,8 +15,8 @@ public class Perl6HashSurrounder extends Perl6ControlSurrounder<Perl6BlockOrHash
     }
 
     @Override
-    protected void postprocess(Perl6BlockOrHash surrounder, Project project) {
-        surrounder.replace(Perl6ElementFactory.createStatementFromText(project, surrounder.getText() + ";"));
+    protected boolean isExpression() {
+        return true;
     }
 
     @Override

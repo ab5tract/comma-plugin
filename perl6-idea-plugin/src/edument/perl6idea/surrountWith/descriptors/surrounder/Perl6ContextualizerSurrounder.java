@@ -1,9 +1,7 @@
 package edument.perl6idea.surrountWith.descriptors.surrounder;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6SemiList;
 
 public abstract class Perl6ContextualizerSurrounder<T extends PsiElement> extends Perl6Surrounder<T> {
@@ -26,7 +24,7 @@ public abstract class Perl6ContextualizerSurrounder<T extends PsiElement> extend
     }
 
     @Override
-    protected void postprocess(T surrounder, Project project) {
-        surrounder.replace(Perl6ElementFactory.createStatementFromText(project, surrounder.getText() + ";"));
+    protected boolean isExpression() {
+        return true;
     }
 }

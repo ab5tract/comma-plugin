@@ -7,13 +7,14 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.psi.Perl6Block;
+import edument.perl6idea.psi.Perl6Do;
 import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6Heredoc;
-import edument.perl6idea.psi.Perl6Statement;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,9 +54,17 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
      * */
     protected abstract PsiElement getAnchor(T surrounder);
 
+    protected boolean isExpression() {
+        return false;
+    }
+
     @Nullable
     @Override
     public TextRange surroundElements(@NotNull Project project, @NotNull Editor editor, @NotNull PsiElement[] statements) throws IncorrectOperationException {
+        if (!myIsStatement && statements.length > 1) {
+            throw new IncorrectOperationException("Cannot surround this expression");
+        }
+
         // Prepare managers to reformat
         CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(project);
         PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
@@ -67,7 +76,62 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
             return null;
 
         // Insert statements to surround into surrounder
+        PsiElement[] elementsToInsert = prepareSurroundedStatements(project, statements);
+        insertStatements(surrounder, elementsToInsert);
+
+        if (myIsStatement) {
+            // Obtain list of statements and add the new one
+            PsiElement container = statements[0].getParent();
+            container = codeStyleManager.reformat(container);
+            String surrounderText = surrounder.getText();
+            // If it needs a semicolon to be valid expression,
+            // e.g. `if` block's closing bracket is valid, but not a hash one
+            if (isExpression())
+                surrounderText += ";";
+            PsiElement statement = container.addBefore(Perl6ElementFactory.createStatementFromText(project, surrounderText), statements[0]);
+            // Regain surrounder node out of statement so we could process it later
+            surrounder = PsiTreeUtil.findChildOfType(statement, type);
+            // Delete elements we surrounded
+            container.deleteChildRange(statements[0], statements[statements.length - 1]);
+        }
+        else {
+            PsiElement toReplace = statements[0];
+            toReplace = codeStyleManager.reformat(toReplace);
+            // Create a do wrapper
+            Perl6Do doWrapper = Perl6ElementFactory.createDoStatement(project);
+            Perl6Block block = PsiTreeUtil.getParentOfType(doWrapper.getBlock(), Perl6Block.class);
+            // Replace block of `do` with our single expression
+            block.replace(surrounder);
+            // Replace element with wrapper
+            toReplace = toReplace.replace(doWrapper);
+            // Regain surrounder node we need to process
+            surrounder = PsiTreeUtil.findChildOfType(toReplace, type);
+        }
+
+        documentManager.doPostponedOperationsAndUnblockDocument(document);
+        documentManager.commitDocument(document);
+
+        // Try to get a topic to delete
+        PsiElement anchor = getAnchor(surrounder);
+        if (anchor == null)
+            return surrounder.getTextRange();
+
+        TextRange range = anchor.getTextRange();
+        TextRange textRange = new TextRange(range.getStartOffset(), range.getStartOffset());
+        document.deleteString(range.getStartOffset(), range.getEndOffset());
+        editor.getCaretModel().moveToOffset(range.getStartOffset());
+        return textRange;
+    }
+
+    @NotNull
+    private static PsiElement[] prepareSurroundedStatements(@NotNull Project project,
+                                                            @NotNull PsiElement[] statements) {
+        // Here we adjust statements that we will be surrounding so that they form
+        // a correct resulting output
         PsiElement[] elementsToInsert;
+        // If last statement is Heredoc, we need to add a newline after it
+        // because otherwise closing element of surrounder will be added
+        // and Heredoc terminator will be broken
         if (statements[statements.length-1] instanceof Perl6Heredoc) {
             List<PsiElement> list = new ArrayList<>(Arrays.asList(statements));
             list.add(Perl6ElementFactory.createNewLine(project));
@@ -75,40 +139,6 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
         } else {
             elementsToInsert = statements;
         }
-        insertStatements(surrounder, elementsToInsert);
-
-        // Get a container and add surrounder into it
-        PsiElement container = statements[0].getParent();
-        container = codeStyleManager.reformat(container);
-        PsiElement statement = container.addBefore(Perl6ElementFactory.createStatementFromText(project, surrounder.getText()), statements[0]);
-        surrounder = PsiTreeUtil.findChildOfType(statement, type);
-        int offset = surrounder.getTextOffset();
-
-        // Delete children range, then unblock and commit document
-        container.deleteChildRange(statements[0], statements[statements.length - 1]);
-        documentManager.doPostponedOperationsAndUnblockDocument(document);
-        documentManager.commitDocument(document);
-
-        // After calls to documentManager, old elements might not exist, so we
-        // finding our surrounder again using a known offset to actually delete its topic
-        // and provide a text range to move caret to.
-        surrounder = PsiTreeUtil.getParentOfType(container.getContainingFile().findElementAt(offset), type);
-        postprocess(surrounder, project);
-
-        // Try to get a topic to delete
-        if (surrounder == null)
-            return null;
-        PsiElement anchor = getAnchor(surrounder);
-        if (anchor != null) {
-            TextRange range = anchor.getTextRange();
-            TextRange textRange = new TextRange(range.getStartOffset(), range.getStartOffset());
-            document.deleteString(range.getStartOffset(), range.getEndOffset());
-            editor.getCaretModel().moveToOffset(range.getStartOffset());
-            return textRange;
-        }
-
-        return surrounder.getTextRange();
+        return elementsToInsert;
     }
-
-    protected void postprocess(T surrounder, Project project) {}
 }

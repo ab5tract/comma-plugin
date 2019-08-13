@@ -33,8 +33,8 @@ public class Perl6ArraySurrounder extends Perl6Surrounder<Perl6ArrayComposer> {
     }
 
     @Override
-    protected void postprocess(Perl6ArrayComposer surrounder, Project project) {
-        surrounder.replace(Perl6ElementFactory.createStatementFromText(project, surrounder.getText() + ";"));
+    protected boolean isExpression() {
+        return true;
     }
 
     @Override
