@@ -13,6 +13,7 @@ import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.surrountWith.descriptors.surrounder.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Perl6SurroundWithTest extends LightCodeInsightFixtureTestCase {
@@ -96,6 +97,10 @@ public class Perl6SurroundWithTest extends LightCodeInsightFixtureTestCase {
         doTest(new Perl6HashContextSurrounder(true));
     }
 
+    public void testIfStatementExpression() {
+        doTest(new Perl6IfSurrounder(false));
+    }
+
     private void doTest(Surrounder surrounder) {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
         List<SurroundDescriptor> descriptors = LanguageSurrounders.INSTANCE.allForLanguage(Perl6Language.INSTANCE);
@@ -108,6 +113,7 @@ public class Perl6SurroundWithTest extends LightCodeInsightFixtureTestCase {
                 break;
         }
         assertNotNull(elements);
+        assertFalse(elements.length == 0);;
         assertTrue(surrounder.isApplicable(elements));
         SurroundWithHandler.invoke(getProject(), getEditor(), getFile(), surrounder);
         myFixture.checkResultByFile(getTestName(true) + ".p6");
