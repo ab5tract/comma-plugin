@@ -4,34 +4,54 @@ import com.intellij.lang.surroundWith.SurroundDescriptor;
 import com.intellij.lang.surroundWith.Surrounder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.psi.P6Extractable;
+import edument.perl6idea.psi.Perl6Statement;
+import edument.perl6idea.psi.Perl6StatementList;
 import edument.perl6idea.surrountWith.descriptors.surrounder.*;
 import org.jetbrains.annotations.NotNull;
 
+import static edument.perl6idea.parsing.Perl6TokenTypes.STATEMENT_TERMINATOR;
+
 public class Perl6ExpressionSurroundDescriptor implements SurroundDescriptor {
     private static final Surrounder[] SURROUNDERS = {
-        //new Perl6IfSurrounder(false),
-        //new Perl6WithSurrounder(false),
-        //new Perl6UnlessSurrounder(false),
-        //new Perl6WithoutSurrounder(false),
-        //new Perl6GivenSurrounder(false),
-        //new Perl6ForSurrounder(false),
-        //new Perl6WheneverSurrounder(false),
-        //new Perl6WhenSurrounder(false),
-        //new Perl6TrySurrounder(false),
-        //new Perl6TryCatchWhenSurrounder(false),
-        //new Perl6TryCatchDefaultSurrounder(false),
-        //new Perl6StartSurrounder(false),
-        //new Perl6PointyBlockSurrounder(false),
-        //new Perl6HashSurrounder(false),
-        //new Perl6ArraySurrounder(false),
-        //new Perl6ArrayContextSurrounder(false),
-        //new Perl6HashContextSurrounder(false)
+        new Perl6IfSurrounder(false),
+        new Perl6WithSurrounder(false),
+        new Perl6UnlessSurrounder(false),
+        new Perl6WithoutSurrounder(false),
+        new Perl6GivenSurrounder(false),
+        new Perl6ForSurrounder(false),
+        new Perl6WheneverSurrounder(false),
+        new Perl6WhenSurrounder(false),
+        new Perl6TrySurrounder(false),
+        new Perl6TryCatchWhenSurrounder(false),
+        new Perl6TryCatchDefaultSurrounder(false),
+        new Perl6StartSurrounder(false),
+        new Perl6PointyBlockSurrounder(false),
+        new Perl6HashSurrounder(false),
+        new Perl6ArraySurrounder(false),
+        new Perl6ArrayContextSurrounder(false),
+        new Perl6HashContextSurrounder(false)
     };
 
     @NotNull
     @Override
     public PsiElement[] getElementsToSurround(PsiFile file, int startOffset, int endOffset) {
-        return new PsiElement[0];
+        PsiElement start = file.findElementAt(startOffset);
+        PsiElement end = file.findElementAt(endOffset);
+        if (end == null || end.getNode().getElementType() == STATEMENT_TERMINATOR)
+            end = file.findElementAt(endOffset == file.getTextLength() ? endOffset : endOffset - 1);
+
+        if (start == null || end == null)
+            return PsiElement.EMPTY_ARRAY;
+
+        PsiElement parent = PsiTreeUtil.findCommonParent(start, end);
+        while (parent != null && !(parent instanceof Perl6StatementList || parent instanceof Perl6Statement || parent.getParent() instanceof Perl6Statement)) {
+            if (parent instanceof P6Extractable)
+                return new PsiElement[]{parent};
+            parent = parent.getParent();
+        }
+        return PsiElement.EMPTY_ARRAY;
     }
 
     @NotNull
