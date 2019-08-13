@@ -4,7 +4,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiParserFacade;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.refactoring.NewCodeBlockData;
@@ -289,5 +288,13 @@ public class Perl6ElementFactory {
 
     public static PsiElement createNewLine(Project project) {
         return PsiParserFacade.SERVICE.getInstance(project).createWhiteSpaceFromText("\n");
+    }
+
+    public static Perl6Do createDoStatement(Project project) {
+        return produceElement(project, createDoBlockText(), Perl6Do.class);
+    }
+
+    private static String createDoBlockText() {
+        return "do {}";
     }
 }
