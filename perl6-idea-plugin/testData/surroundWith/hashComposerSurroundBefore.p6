@@ -1,2 +1,2 @@
-my %h := <selection>a => 5,
+<selection>my %h := a => 5,
                     foo => 10</selection>;
