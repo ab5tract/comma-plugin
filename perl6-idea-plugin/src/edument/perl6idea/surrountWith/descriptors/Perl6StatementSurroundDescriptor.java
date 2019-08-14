@@ -10,6 +10,7 @@ import edument.perl6idea.psi.Perl6Heredoc;
 import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6StatementList;
 import edument.perl6idea.surrountWith.descriptors.surrounder.*;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,8 +67,8 @@ public class Perl6StatementSurroundDescriptor implements SurroundDescriptor {
         if (exprStart == null)
             return PsiElement.EMPTY_ARRAY;
 
-        PsiElement exprEnd = file.findElementAt(endOffset);
-        // If at the end of the file, need to take previous offset
+        PsiElement exprEnd = Perl6PsiUtil.skipSpaces(file.findElementAt(endOffset), false);
+
         // because potentially we are surrounding the last statement
         if (file.getTextLength() == endOffset || exprEnd != null && exprEnd.getNode().getElementType() == STATEMENT_TERMINATOR)
             exprEnd = file.findElementAt(endOffset == 0 ? 0 : endOffset - 1);
