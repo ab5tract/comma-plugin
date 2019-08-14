@@ -10,6 +10,9 @@ import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.surrountWith.descriptors.Perl6RegexGroupSurrounder;
+import edument.perl6idea.surrountWith.descriptors.Perl6RegexNamedSurrounder;
+import edument.perl6idea.surrountWith.descriptors.Perl6RegexPositionalSurrounder;
 import edument.perl6idea.surrountWith.descriptors.surrounder.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -118,6 +121,18 @@ public class Perl6SurroundWithTest extends LightCodeInsightFixtureTestCase {
 
     public void testHashContextExpr() {
         doTest(new Perl6HashContextSurrounder(false));
+    }
+
+    public void testRegexGroup() {
+        doTest(new Perl6RegexGroupSurrounder());
+    }
+
+    public void testRegexPositional() {
+        doTest(new Perl6RegexPositionalSurrounder());
+    }
+
+    public void testRegexNamed() {
+        doTest(new Perl6RegexNamedSurrounder());
     }
 
     private void doTest(Surrounder surrounder) {

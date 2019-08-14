@@ -5,10 +5,7 @@ import com.intellij.lang.surroundWith.Surrounder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.P6Extractable;
-import edument.perl6idea.psi.Perl6Heredoc;
-import edument.perl6idea.psi.Perl6Statement;
-import edument.perl6idea.psi.Perl6StatementList;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.surrountWith.descriptors.surrounder.*;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +73,7 @@ public class Perl6StatementSurroundDescriptor implements SurroundDescriptor {
             return PsiElement.EMPTY_ARRAY;
 
         PsiElement expr = PsiTreeUtil.findCommonParent(exprStart, exprEnd);
-        if (expr == null)
+        if (expr == null || expr instanceof Perl6Regex)
             return PsiElement.EMPTY_ARRAY;
 
         while (expr != null && !(expr.getParent() instanceof Perl6Statement || expr instanceof Perl6Statement || expr instanceof Perl6StatementList)) {

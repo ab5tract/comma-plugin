@@ -297,4 +297,12 @@ public class Perl6ElementFactory {
     private static String createDoBlockText() {
         return "do {}";
     }
+
+    public static Perl6RegexAtom createRegexGroup(Project project, boolean isCapture) {
+        return produceElement(project, isCapture ? "/()/" : "/[]/", Perl6RegexAtom.class);
+    }
+
+    public static PsiElement createRegexVariable(Project project) {
+        return produceElement(project, "/$<x> = [ ] /", Perl6RegexAtom.class);
+    }
 }
