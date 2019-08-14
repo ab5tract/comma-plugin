@@ -9,6 +9,7 @@ import edument.perl6idea.psi.P6Extractable;
 import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6StatementList;
 import edument.perl6idea.surrountWith.descriptors.surrounder.*;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.STATEMENT_TERMINATOR;
@@ -38,10 +39,9 @@ public class Perl6ExpressionSurroundDescriptor implements SurroundDescriptor {
     @Override
     public PsiElement[] getElementsToSurround(PsiFile file, int startOffset, int endOffset) {
         PsiElement start = file.findElementAt(startOffset);
-        PsiElement end = file.findElementAt(endOffset);
-        if (end == null || end.getNode().getElementType() == STATEMENT_TERMINATOR)
-            end = file.findElementAt(endOffset == file.getTextLength() ? endOffset : endOffset - 1);
-
+        PsiElement end = file.findElementAt(endOffset == 0 ? 0 : endOffset - 1);
+        start = Perl6PsiUtil.skipSpaces(start, true);
+        end = Perl6PsiUtil.skipSpaces(end, false);
         if (start == null || end == null)
             return PsiElement.EMPTY_ARRAY;
 
