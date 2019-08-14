@@ -58,6 +58,10 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
         return false;
     }
 
+    protected boolean isControl() {
+        return true;
+    }
+
     @Nullable
     @Override
     public TextRange surroundElements(@NotNull Project project, @NotNull Editor editor, @NotNull PsiElement[] statements) throws IncorrectOperationException {
@@ -98,14 +102,20 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
             PsiElement toReplace = statements[0];
             toReplace = codeStyleManager.reformat(toReplace);
             // Create a do wrapper
-            Perl6Do doWrapper = Perl6ElementFactory.createDoStatement(project);
-            Perl6Block block = PsiTreeUtil.getParentOfType(doWrapper.getBlock(), Perl6Block.class);
-            // Replace block of `do` with our single expression
-            block.replace(surrounder);
+            PsiElement replacement = null;
+            if (isControl()) {
+                Perl6Do doWrapper = Perl6ElementFactory.createDoStatement(project);
+                Perl6Block block = PsiTreeUtil.getParentOfType(doWrapper.getBlock(), Perl6Block.class);
+                // Replace block of `do` with our single expression
+                block.replace(surrounder);
+                replacement = doWrapper;
+            } else {
+                replacement = surrounder;
+            }
             // Replace element with wrapper
-            toReplace = toReplace.replace(doWrapper);
+            toReplace = toReplace.replace(replacement);
             // Regain surrounder node we need to process
-            surrounder = PsiTreeUtil.findChildOfType(toReplace, type);
+            surrounder = PsiTreeUtil.findChildOfType(toReplace, type, false);
         }
 
         documentManager.doPostponedOperationsAndUnblockDocument(document);

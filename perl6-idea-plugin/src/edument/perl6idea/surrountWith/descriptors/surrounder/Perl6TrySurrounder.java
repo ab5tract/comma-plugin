@@ -18,4 +18,9 @@ public class Perl6TrySurrounder extends Perl6ControlSurrounder<Perl6Try> {
     public String getTemplateDescription() {
         return "try";
     }
+
+    @Override
+    protected boolean isControl() {
+        return false;
+    }
 }

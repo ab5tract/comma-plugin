@@ -38,6 +38,11 @@ public class Perl6ArraySurrounder extends Perl6Surrounder<Perl6ArrayComposer> {
     }
 
     @Override
+    protected boolean isControl() {
+        return false;
+    }
+
+    @Override
     public String getTemplateDescription() {
         return "[ ]";
     }

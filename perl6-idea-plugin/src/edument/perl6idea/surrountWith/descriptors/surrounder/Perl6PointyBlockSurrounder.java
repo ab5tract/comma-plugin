@@ -18,4 +18,9 @@ public class Perl6PointyBlockSurrounder extends Perl6ControlSurrounder<Perl6Poin
     public String getTemplateDescription() {
         return "-> {}";
     }
+
+    @Override
+    protected boolean isControl() {
+        return false;
+    }
 }

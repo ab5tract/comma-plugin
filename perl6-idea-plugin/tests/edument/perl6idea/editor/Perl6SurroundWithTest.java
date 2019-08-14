@@ -13,7 +13,6 @@ import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.surrountWith.descriptors.surrounder.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Perl6SurroundWithTest extends LightCodeInsightFixtureTestCase {
@@ -97,8 +96,28 @@ public class Perl6SurroundWithTest extends LightCodeInsightFixtureTestCase {
         doTest(new Perl6HashContextSurrounder(true));
     }
 
-    public void testIfStatementExpression() {
+    public void testIfExpr() {
         doTest(new Perl6IfSurrounder(false));
+    }
+
+    public void testUnlessExpr() {
+        doTest(new Perl6UnlessSurrounder(false));
+    }
+
+    public void testTryExpr() {
+        doTest(new Perl6TrySurrounder(false));
+    }
+
+    public void testStartExpr() {
+        doTest(new Perl6StartSurrounder(false));
+    }
+
+    public void testPointyBlockExpr() {
+        doTest(new Perl6PointyBlockSurrounder(false));
+    }
+
+    public void testHashContextExpr() {
+        doTest(new Perl6HashContextSurrounder(false));
     }
 
     private void doTest(Surrounder surrounder) {

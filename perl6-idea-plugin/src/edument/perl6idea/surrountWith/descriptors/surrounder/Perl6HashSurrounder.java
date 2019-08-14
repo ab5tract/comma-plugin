@@ -20,6 +20,11 @@ public class Perl6HashSurrounder extends Perl6ControlSurrounder<Perl6BlockOrHash
     }
 
     @Override
+    protected boolean isControl() {
+        return false;
+    }
+
+    @Override
     public String getTemplateDescription() {
         return "{ }";
     }

@@ -18,4 +18,9 @@ public class Perl6StartSurrounder extends Perl6ControlSurrounder<Perl6Start> {
     public String getTemplateDescription() {
         return "start";
     }
+
+    @Override
+    protected boolean isControl() {
+        return false;
+    }
 }

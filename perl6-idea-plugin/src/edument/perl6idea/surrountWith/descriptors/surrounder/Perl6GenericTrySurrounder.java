@@ -37,4 +37,9 @@ public abstract class Perl6GenericTrySurrounder<T extends P6Control> extends Per
     protected PsiElement getAnchor(T surrounder) {
         return null;
     }
+
+    @Override
+    protected boolean isControl() {
+        return false;
+    }
 }

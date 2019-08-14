@@ -27,4 +27,9 @@ public abstract class Perl6ContextualizerSurrounder<T extends PsiElement> extend
     protected boolean isExpression() {
         return true;
     }
+
+    @Override
+    protected boolean isControl() {
+        return false;
+    }
 }
