@@ -630,7 +630,7 @@ public class TimelineChart extends JPanel {
             g.drawLine(curTickX, topY, curTickX, topY + tickDashSize);
 
             // Paint the number.
-            String number = String.format("%.3G", startTime + i * tickInterval);
+            String number = String.format("%.4G", startTime + i * tickInterval);
             TextLayout layout = new TextLayout(number, font, fontRenderContext);
             int numberWidth = (int)layout.getBounds().getWidth();
             g.drawString(number, curTickX - (numberWidth / 2), topY + tickDashSize + labelPadding + textHeight);
