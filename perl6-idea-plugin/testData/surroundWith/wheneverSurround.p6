@@ -1,3 +1,5 @@
 supply {
-    whenever  {emit $_;}
+    whenever  {
+        emit $_;
+    }
 }
