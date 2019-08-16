@@ -1,3 +1,5 @@
 sub foo {
-    try {die "No way!";}
+    try {
+        die "No way!";
+    }
 }

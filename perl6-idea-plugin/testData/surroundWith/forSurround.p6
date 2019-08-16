@@ -1,3 +1,5 @@
 sub long-list-print(@a) {
-    for  {.say;}
+    for  {
+        .say;
+    }
 }

@@ -1,11 +1,11 @@
 package edument.perl6idea.surrountWith.descriptors.surrounder;
 
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.P6Conditional;
-import edument.perl6idea.psi.Perl6ConditionalBranch;
-import edument.perl6idea.psi.Perl6Statement;
-import edument.perl6idea.psi.Perl6StatementList;
+import edument.perl6idea.psi.*;
+
+import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public abstract class Perl6ConditionalSurrounder<T extends P6Conditional> extends Perl6Surrounder<T> {
     public Perl6ConditionalSurrounder(boolean isStatement) {
@@ -18,7 +18,9 @@ public abstract class Perl6ConditionalSurrounder<T extends P6Conditional> extend
         for (Perl6ConditionalBranch branch : branches) {
             Perl6StatementList list = PsiTreeUtil.findChildOfType(branch.block, Perl6StatementList.class);
             if (list != null) {
+                list.add(Perl6ElementFactory.createNewLine(list.getProject()));
                 list.addRange(statements[0], statements[statements.length - 1]);
+                list.add(Perl6ElementFactory.createNewLine(list.getProject()));
             }
         }
     }

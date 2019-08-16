@@ -1,6 +1,10 @@
-try {my $long-lines = q:to/END/;
-HEREDOC
+try {
+    my $long-lines = q:to/END/;
+    HEREDOC
 END
 
-CATCH {when  {}}}
+    CATCH {
+        when  {}
+    }
+}
 my $foo;

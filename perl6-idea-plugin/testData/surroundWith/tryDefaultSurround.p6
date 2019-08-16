@@ -1,2 +1,6 @@
-try {my $a = +"qwer";
-CATCH {default {}}}
+try {
+    my $a = +"qwer";
+    CATCH {
+        default {}
+    }
+}

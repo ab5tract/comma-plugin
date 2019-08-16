@@ -1,3 +1,5 @@
-[gather {
-    take 42;
-}];
+[
+    gather {
+        take 42;
+    }
+];

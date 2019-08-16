@@ -1,3 +1,5 @@
-unless  {class AAAA {
-    has $.foo;
-}}
+unless  {
+    class AAAA {
+        has $.foo;
+    }
+}

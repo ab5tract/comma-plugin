@@ -30,8 +30,8 @@ public interface P6Control extends Perl6PsiElement {
         Perl6StatementList list = PsiTreeUtil.findChildOfType(getBlock(), Perl6StatementList.class);
         if (list == null)
             return;
-        for (PsiElement statement : statements) {
-            list.add(statement);
-        }
+        list.add(Perl6ElementFactory.createNewLine(list.getProject()));
+        for (PsiElement statement : statements) list.add(statement);
+        list.add(Perl6ElementFactory.createNewLine(list.getProject()));
     }
 }

@@ -1,1 +1,3 @@
-given  {my $nice-value = $_;}
+given  {
+    my $nice-value = $_;
+}
