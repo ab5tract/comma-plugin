@@ -146,7 +146,7 @@ public class Perl6ProfileCall {
     }
 
     public float inlined() {
-        return (float)inlinedEntries / (float)entries;
+        return 100.0f * ((float)inlinedEntries / (float)entries);
     }
 
     public float spesh() {
