@@ -136,7 +136,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
         // any other quantifier implies non-optional (slurpy, required, etc.)
         PsiElement quant = findChildByType(PARAMETER_QUANTIFIER);
         if (quant != null) {
-            if (quant.equals("?"))
+            if (quant.getText().equals("?"))
                 return true;
             return false;
         }
