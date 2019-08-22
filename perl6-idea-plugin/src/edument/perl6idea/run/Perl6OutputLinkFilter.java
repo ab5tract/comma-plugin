@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Perl6OutputLinkFilter implements Filter {
-    private static final Pattern FILE_PATTERN = Pattern.compile("\\s+in \\w+ \\w+ at (\\S+) line (\\d+)");
+    private static final Pattern FILE_PATTERN = Pattern.compile("\\s*?in (?:\\S+)(?: \\S+?)? +at (\\S+)(?: \\(\\S*\\))? line (\\d+)");
     private final Project myProject;
     private VirtualFile baseDir;
     private String baseDirPath;
