@@ -1,14 +1,23 @@
 package edument.perl6idea.signatures;
 
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6Signature;
 import edument.perl6idea.psi.Perl6SubCall;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
 public class Perl6SignatureComparatorTest extends LightCodeInsightFixtureTestCase {
+    @NotNull
+    @Override
+    protected LightProjectDescriptor getProjectDescriptor() {
+        return new Perl6LightProjectDescriptor();
+    }
+
     private void doTest(String sig, String args, Consumer<Perl6Signature.SignatureCompareResult> asserts) {
         doTest(sig, args, true, asserts);
     }
