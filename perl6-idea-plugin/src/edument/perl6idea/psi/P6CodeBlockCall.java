@@ -11,8 +11,8 @@ public interface P6CodeBlockCall extends PsiNamedElement {
     @NotNull
     String getCallName();
 
-    // For calls that have mandatory prefix parts, for example, method calls have caller,
-    // returns a whole element to work with when we want to change the whole expression,
+    // For calls that have mandatory prefix parts, for example, method calls have a caller,
+    // method returns a whole element to work with when we want to change the whole expression,
     // not only call's part.
     PsiElement getWholeCallNode();
 
@@ -27,7 +27,8 @@ public interface P6CodeBlockCall extends PsiNamedElement {
                 node.getNode().getElementType() == INVOCANT_MARKER ||
                 node.getNode().getElementType() == PARENTHESES_OPEN ||
                 node.getNode().getElementType() == PARENTHESES_CLOSE ||
-                node.getNode().getElementType() == METHOD_CALL_OPERATOR) {
+                node.getNode().getElementType() == METHOD_CALL_OPERATOR ||
+                node.getNode().getElementType() == NULL_TERM) {
                 node = node.getNextSibling();
                 continue;
             } else if (node instanceof Perl6LongName ||
