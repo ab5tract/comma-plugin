@@ -3,6 +3,7 @@ package edument.perl6idea;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.lang.parameterInfo.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.ResolveResult;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class Perl6ParameterInfoHandler implements ParameterInfoHandler<Perl6SubCall, Perl6RoutineDecl> {
+public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlockCall, Perl6RoutineDecl> {
     @Override
     public boolean couldShowInLookup() {
         return true;
@@ -29,20 +30,27 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<Perl6SubC
 
     @Nullable
     @Override
-    public Perl6SubCall findElementForParameterInfo(@NotNull CreateParameterInfoContext context) {
+    public P6CodeBlockCall findElementForParameterInfo(@NotNull CreateParameterInfoContext context) {
         int offset = context.getOffset();
         PsiElement element = context.getFile().findElementAt(offset == 0 ? 0 : offset - 1);
-        return PsiTreeUtil.getParentOfType(element, Perl6SubCall.class, false);
+        return PsiTreeUtil.getParentOfType(element, P6CodeBlockCall.class, false);
     }
 
     @Override
-    public void showParameterInfo(@NotNull Perl6SubCall element, @NotNull CreateParameterInfoContext context) {
-        Perl6SubCallName name = PsiTreeUtil.findChildOfType(element, Perl6SubCallName.class);
-        if (name == null) return;
-        PsiReference ref = name.getReference();
-        if (!(ref instanceof Perl6SubCallReference)) return;
+    public void showParameterInfo(@NotNull P6CodeBlockCall element, @NotNull CreateParameterInfoContext context) {
+        PsiReference ref;
+
+        if (element instanceof Perl6MethodCall) {
+            ref = element.getReference();
+        } else {
+            Perl6SubCallName name = PsiTreeUtil.findChildOfType(element, Perl6SubCallName.class);
+            if (name == null) return;
+            ref = name.getReference();
+        }
+
+        if (!(ref instanceof PsiPolyVariantReference)) return;
         List<Perl6RoutineDecl> decls = new ArrayList<>();
-        ResolveResult[] resolvedDecls = ((Perl6SubCallReference)ref).multiResolve(false);
+        ResolveResult[] resolvedDecls = ((PsiPolyVariantReference)ref).multiResolve(false);
         for (ResolveResult decl : resolvedDecls) {
             PsiElement declNode = decl.getElement();
             if (declNode instanceof Perl6RoutineDecl) {
@@ -62,7 +70,7 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<Perl6SubC
     }
 
     @Override
-    public void updateParameterInfo(@NotNull final Perl6SubCall parameterOwner, @NotNull UpdateParameterInfoContext context) {
+    public void updateParameterInfo(@NotNull final P6CodeBlockCall parameterOwner, @NotNull UpdateParameterInfoContext context) {
     }
 
     @Override
@@ -73,7 +81,7 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<Perl6SubC
         Perl6Parameter[] parameters = signatureNode.getParameters();
 
         // Obtain call and arguments
-        Perl6SubCall owner = (Perl6SubCall)context.getParameterOwner();
+        P6CodeBlockCall owner = (P6CodeBlockCall)context.getParameterOwner();
         PsiElement[] arguments = owner.getCallArguments();
 
         // Compare

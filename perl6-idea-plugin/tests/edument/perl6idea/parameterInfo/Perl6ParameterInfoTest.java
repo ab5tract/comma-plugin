@@ -5,6 +5,7 @@ import com.intellij.testFramework.utils.parameterInfo.MockCreateParameterInfoCon
 import com.intellij.testFramework.utils.parameterInfo.MockParameterInfoUIContext;
 import edument.perl6idea.Perl6ParameterInfoHandler;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import edument.perl6idea.psi.P6CodeBlockCall;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6SubCall;
 
@@ -18,10 +19,13 @@ public class Perl6ParameterInfoTest extends LightCodeInsightFixtureTestCase {
         for (String signature : text.split(" \\|\\|\\| "))
             builder.append(String.format("multi a(%s); ", signature));
         builder.append("a(").append(args).append("<caret>");
+        doTest(builder.toString(), checks);
+    }
 
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, builder.toString());
+    private void doTest(String text, Consumer<MockParameterInfoUIContext>... checks) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         MockCreateParameterInfoContext createContext = new MockCreateParameterInfoContext(getEditor(), getFile());
-        Perl6SubCall owner = HANDLER.findElementForParameterInfo(createContext);
+        P6CodeBlockCall owner = HANDLER.findElementForParameterInfo(createContext);
         HANDLER.showParameterInfo(owner, createContext);
         Object[] items = createContext.getItemsToShow();
         assertNotNull(items);
@@ -70,5 +74,12 @@ public class Perl6ParameterInfoTest extends LightCodeInsightFixtureTestCase {
         doTest("$a, *@b ||| $a, $b", "42, 43, 44",
                context -> assertParameterInfo(context, true, "$a, *@b", 4, 7),
                context -> assertParameterInfo(context, false, "$a, $b", 0, 0));
+    }
+
+    public void testMethodParameterInfo() {
+        doTest("class A { multi method a($a) {}; multi method a($a, :$foo) {}; multi method a(:$best) { self.a(:!best<caret> } }; ",
+               context -> assertParameterInfo(context, false, "$a",0, 0),
+               context -> assertParameterInfo(context, false, "$a, :$foo",0, 0),
+               context -> assertParameterInfo(context, true, ":$best",0, 0));
     }
 }
