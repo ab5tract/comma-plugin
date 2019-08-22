@@ -110,6 +110,9 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
 
     @Override
     public boolean isNamed() {
+        PsiElement quant = findChildByType(PARAMETER_QUANTIFIER);
+        if (quant != null && quant.getText().equals("*") && getVariableName().startsWith("%"))
+            return true;
         return findChildByClass(Perl6NamedParameterImpl.class) != null;
     }
 
@@ -142,7 +145,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
         }
 
         // Otherwise, positional defaults to required, and named to not.
-        return isPositional();
+        return !isPositional();
     }
 
     @Override
