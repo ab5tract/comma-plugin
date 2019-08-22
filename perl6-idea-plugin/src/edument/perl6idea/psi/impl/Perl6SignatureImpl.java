@@ -78,8 +78,8 @@ public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Sig
                 else {
                     if (!parameter.isOptional() && isCompleteCall) {
                         failMatch(result, new Pair<>(posArgIndex, MatchFailureReason.NOT_ENOUGH_ARGS));
-                        break;
                     }
+                    break;
                 }
             }
             else if (parameter.isNamed()) {

@@ -122,6 +122,10 @@ public class Perl6SignatureComparatorTest extends LightCodeInsightFixtureTestCas
     }
 
     public void testIncompleteCalls() {
+        doTest("$a, *@foo", "", false, (res) -> {
+            assertTrue(res.isAccepted());
+            assertEquals(0, res.getNextParameterIndex());
+        });
         doTest("$a?", "", true, (res) -> assertTrue(res.isAccepted()));
         doTest("$a", "", false, (res) -> assertTrue(res.isAccepted()));
         doTest("$a, $b", "", false, (res) -> assertTrue(res.isAccepted()));
