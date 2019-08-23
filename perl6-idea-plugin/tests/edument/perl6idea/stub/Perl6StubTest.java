@@ -141,7 +141,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
         Perl6PackageDeclStub packageDeclStub = (Perl6PackageDeclStub) childrenStubs.get(0);
         assertEquals("class", packageDeclStub.getPackageKind());
         childrenStubs = packageDeclStub.getChildrenStubs();
-        assertEquals(childrenStubs.size(), 4);
+        assertEquals(4, childrenStubs.size());
         Perl6RoutineDeclStub routine1 = (Perl6RoutineDeclStub) childrenStubs.get(0);
         Perl6RoutineDeclStub routine2 = (Perl6RoutineDeclStub) childrenStubs.get(1);
         assertFalse(routine1.isPrivate());
@@ -159,7 +159,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
         childrenStubs = scopedDeclStub1.getChildrenStubs();
         assertEquals(1, childrenStubs.size());
         Perl6VariableDeclStub variableDeclStub1 = (Perl6VariableDeclStub) childrenStubs.get(0);
-        assertEquals(new String[]{"$!foo"}, variableDeclStub1.getVariableNames());
+        assertEquals("$!foo", variableDeclStub1.getVariableNames()[0]);
         assertNull(variableDeclStub1.getVariableType());
 
         // Test of second attr
@@ -169,7 +169,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
         Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub) childrenStubs.get(0);
         assertEquals("Int", typeNameStub.getTypeName());
         Perl6VariableDeclStub variableDeclStub2 = (Perl6VariableDeclStub) childrenStubs.get(1);
-        assertEquals(new String[]{"$.bar"}, variableDeclStub1.getVariableNames());
+        assertEquals("$.bar", variableDeclStub2.getVariableNames()[0]);
         assertEquals("Int", variableDeclStub2.getVariableType());
     }
 
