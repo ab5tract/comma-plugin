@@ -64,9 +64,9 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
 
     @Nullable
     @Override
-    public Perl6SubCall findElementForUpdatingParameterInfo(@NotNull UpdateParameterInfoContext context) {
+    public P6CodeBlockCall findElementForUpdatingParameterInfo(@NotNull UpdateParameterInfoContext context) {
         PsiElement owner = context.getParameterOwner();
-        return owner.getTextRange().contains(context.getOffset() - 1) ? (Perl6SubCall)owner : null;
+        return owner.getTextRange().contains(context.getOffset() - 1) ? (P6CodeBlockCall)owner : null;
     }
 
     @Override
