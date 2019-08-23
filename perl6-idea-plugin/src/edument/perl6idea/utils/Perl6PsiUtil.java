@@ -2,6 +2,7 @@ package edument.perl6idea.utils;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
+import edument.perl6idea.psi.Perl6Comment;
 import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6UnterminatedStatement;
@@ -19,7 +20,7 @@ public class Perl6PsiUtil {
     @Nullable
     public static PsiElement skipSpaces(PsiElement node, boolean toRight) {
         PsiElement temp = node;
-        while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE)))
+        while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE) || temp instanceof Perl6Comment))
             temp = toRight ? temp.getNextSibling() : temp.getPrevSibling();
         return temp;
     }
