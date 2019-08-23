@@ -5,6 +5,7 @@ import com.intellij.execution.filters.OpenFileHyperlinkInfo;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
@@ -24,7 +25,7 @@ public class Perl6OutputLinkFilter implements Filter {
 
     @Nullable
     @Override
-    public Result applyFilter(String line, int entireLength) {
+    public Result applyFilter(@NotNull String line, int entireLength) {
         if (baseDirPath == null) return null;
         int startPoint = entireLength - line.length();
         Matcher matcher = FILE_PATTERN.matcher(line);
