@@ -82,7 +82,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             return stub.getVariableNames();
         Perl6Signature signature = PsiTreeUtil.getChildOfType(this, Perl6Signature.class);
         if (signature == null) {
-            return new String[]{getName()};
+            String name = getName();
+            return name != null ? new String[]{name} : ArrayUtil.EMPTY_STRING_ARRAY;
         } else {
             List<String> names = ContainerUtil.map(PsiTreeUtil.findChildrenOfType(signature, Perl6Variable.class), v -> v.getVariableName());
             return ArrayUtil.toStringArray(names);
