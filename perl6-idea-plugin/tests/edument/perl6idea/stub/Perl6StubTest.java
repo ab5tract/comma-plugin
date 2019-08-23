@@ -159,7 +159,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
         childrenStubs = scopedDeclStub1.getChildrenStubs();
         assertEquals(1, childrenStubs.size());
         Perl6VariableDeclStub variableDeclStub1 = (Perl6VariableDeclStub) childrenStubs.get(0);
-        assertEquals("$!foo", variableDeclStub1.getVariableName());
+        assertEquals(new String[]{"$!foo"}, variableDeclStub1.getVariableNames());
         assertNull(variableDeclStub1.getVariableType());
 
         // Test of second attr
@@ -169,7 +169,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
         Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub) childrenStubs.get(0);
         assertEquals("Int", typeNameStub.getTypeName());
         Perl6VariableDeclStub variableDeclStub2 = (Perl6VariableDeclStub) childrenStubs.get(1);
-        assertEquals("$.bar", variableDeclStub2.getVariableName());
+        assertEquals(new String[]{"$.bar"}, variableDeclStub1.getVariableNames());
         assertEquals("Int", variableDeclStub2.getVariableType());
     }
 

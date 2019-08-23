@@ -14,7 +14,10 @@ public class EmptyInitializationAnnotator implements Annotator {
             return;
 
         Perl6VariableDecl decl = (Perl6VariableDecl)element;
-        String name = decl.getVariableName();
+        String[] names = decl.getVariableNames();
+        if (names.length != 1)
+            return;
+        String name = names[0];
         char sigil = Perl6Variable.getSigil(name);
         if (sigil != '@' && sigil != '%')
             return;
@@ -33,6 +36,6 @@ public class EmptyInitializationAnnotator implements Annotator {
         if (shouldAnnotate)
             holder
                 .createWeakWarningAnnotation(initializer, String.format("Initialization of empty %s is redundant", sigil == '@' ? "Array" : "Hash"))
-                .registerFix(new RemoveInitializerFix(decl));
+                .registerFix(new RemoveInitializerFix(decl, name));
     }
 }

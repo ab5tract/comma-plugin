@@ -10,7 +10,6 @@ import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.contribution.Filtering;
 import edument.perl6idea.extensions.Perl6FrameworkCall;
 import edument.perl6idea.psi.*;
-import edument.perl6idea.psi.impl.Perl6SubCallImpl;
 import edument.perl6idea.psi.stub.Perl6SubCallStub;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +62,7 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
         return result;
     }
 
-    private void renderParameter(StringBuilder buffer, Perl6Parameter param) {
+    private static void renderParameter(StringBuilder buffer, Perl6Parameter param) {
         // We'll only deal with positional parameters, which are part of the
         // route path.
         if (param.isPositional()) {

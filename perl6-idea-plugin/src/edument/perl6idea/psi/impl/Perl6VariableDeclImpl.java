@@ -11,14 +11,17 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
@@ -49,7 +52,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (varScope.equals("my") || varScope.equals("state")) {
             Perl6StatementList parent = PsiTreeUtil.getParentOfType(this, Perl6StatementList.class);
             if (parent != null)
-                return new LocalSearchScope(parent, getVariableName());
+                return new LocalSearchScope(parent);
         }
         return super.getUseScope();
     }
@@ -58,9 +61,9 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public String getName() {
         Perl6VariableDeclStub stub = getStub();
         if (stub != null)
-            return stub.getVariableName();
+            return stub.getVariableNames()[0];
         PsiElement nameIdent = getNameIdentifier();
-        return nameIdent != null ? nameIdent.getText() : "";
+        return nameIdent != null ? nameIdent.getText() : null;
     }
 
     @Override
@@ -73,8 +76,17 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
-    public String getVariableName() {
-        return getName();
+    public String[] getVariableNames() {
+        Perl6VariableDeclStub stub = getStub();
+        if (stub != null)
+            return stub.getVariableNames();
+        Perl6Signature signature = PsiTreeUtil.getChildOfType(this, Perl6Signature.class);
+        if (signature == null) {
+            return new String[]{getName()};
+        } else {
+            List<String> names = ContainerUtil.map(PsiTreeUtil.findChildrenOfType(signature, Perl6Variable.class), v -> v.getVariableName());
+            return ArrayUtil.toStringArray(names);
+        }
     }
 
     @Override
@@ -229,18 +241,15 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     private String resolveAssign() {
         PsiElement infix = PsiTreeUtil.getChildOfType(this, Perl6InfixImpl.class);
         if (infix == null || !infix.getText().equals("=")) return null;
-        PsiElement value = infix.getNextSibling();
-        while (value instanceof PsiWhiteSpace || (value != null && value.getNode().getElementType() == UNV_WHITE_SPACE) ||
-                value instanceof Perl6Comment)
-            value = value.getNextSibling();
+        PsiElement value = Perl6PsiUtil.skipSpaces(infix.getNextSibling(), true);
         if (value instanceof Perl6Variable) {
             String variableName = ((Perl6Variable)value).getVariableName();
-            if (Objects.equals(variableName, getVariableName())) {
+            if (Objects.equals(variableName, getVariableNames()[0])) {
                 return null;
             }
         } else if (value instanceof Perl6PostfixApplication) {
             if (value.getFirstChild() instanceof Perl6Variable)
-                if (Objects.equals(((Perl6Variable)value.getFirstChild()).getVariableName(), getVariableName())) {
+                if (Objects.equals(((Perl6Variable)value.getFirstChild()).getVariableName(), getVariableNames()[0])) {
                     return null;
                 }
         }

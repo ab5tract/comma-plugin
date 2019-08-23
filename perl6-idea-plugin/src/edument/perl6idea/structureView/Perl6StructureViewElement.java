@@ -196,7 +196,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
             return new ItemPresentation() {
                 @Override
                 public String getPresentableText() {
-                    return ((Perl6VariableDecl)element).getVariableName();
+                    return String.join(", ", ((Perl6VariableDecl)element).getVariableNames());
                 }
 
                 @Nullable

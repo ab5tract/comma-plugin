@@ -7,6 +7,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.annotation.fix.StubMissingMethodsFix;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -42,9 +43,11 @@ public class MissingRoleMethodAnnotator implements Annotator {
             } else if (decl instanceof Perl6VariableDecl) {
                 Perl6VariableDecl variableDecl = (Perl6VariableDecl)decl;
                 if (Objects.equals(variableDecl.getScope(), "has")) {
-                    String name = variableDecl.getVariableName();
-                    if (Perl6Variable.getTwigil(name) == '.') {
-                        methodsToImplement.remove(name.substring(2));
+                    String[] names = variableDecl.getVariableNames();
+                    for (String name : names) {
+                        if (Perl6Variable.getTwigil(name) == '.') {
+                            methodsToImplement.remove(name.substring(2));
+                        }
                     }
                 }
             }
@@ -58,12 +61,7 @@ public class MissingRoleMethodAnnotator implements Annotator {
             if (blockoid == null) return;
             int end = blockoid.getTextOffset();
             holder.createErrorAnnotation(new TextRange(start, end), String.format("Composed roles require to implement methods: %s", names))
-                  .registerFix(new StubMissingMethodsFix(packageDecl,
-                                                         methodsToImplement
-                                                             .values()
-                                                             .stream()
-                                                             .map(p -> p.second)
-                                                             .collect(Collectors.toList())));
+                  .registerFix(new StubMissingMethodsFix(packageDecl, ContainerUtil.map(methodsToImplement.values(), p -> p.second)));
         }
     }
 

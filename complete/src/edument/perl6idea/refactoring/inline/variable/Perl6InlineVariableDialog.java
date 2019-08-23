@@ -27,7 +27,7 @@ public class Perl6InlineVariableDialog extends Perl6InlineDialog {
     protected String getNameLabelText() {
         String variableName = "unrecognized element";
         if (myVariableDecl instanceof Perl6VariableDecl)
-            variableName = ((Perl6VariableDecl)myVariableDecl).getVariableName();
+            variableName = ((Perl6VariableDecl)myVariableDecl).getVariableNames()[0];
         else if (myVariableDecl instanceof Perl6ParameterVariable)
             variableName = ((Perl6ParameterVariable)myVariableDecl).getName();
         return "Inline " + variableName;
