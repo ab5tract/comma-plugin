@@ -36,7 +36,7 @@ public class Perl6OutputLinkFilter implements Filter {
                     return null;
                 OpenFileDescriptor fileDescriptor =
                     new OpenFileDescriptor(myProject, file,
-                                           Integer.parseInt(matcher.group(2)), 0);
+                                           Integer.parseInt(matcher.group(2)) - 1, 0);
                 return new Result(startPoint + matcher.start(1),
                                   startPoint + matcher.end(1),
                                   new OpenFileHyperlinkInfo(fileDescriptor));
