@@ -94,8 +94,10 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
         for (int i = 0, length = parameters.length; i < length; i++) {
             Perl6Parameter param = parameters[i];
             String paramText = param.getText();
-            if (i == compare.getNextParameterIndex() && compare.isAccepted()) startOffset = signatureTextBuilder.length();
-            if (startOffset != 0) startOffset += 2;
+            if (i == compare.getNextParameterIndex() && compare.isAccepted()) {
+                startOffset = signatureTextBuilder.length();
+                if (startOffset != 0) startOffset += 2;
+            }
             signatureTextBuilder.add(paramText);
             if (i == compare.getNextParameterIndex() && compare.isAccepted()) endOffset = signatureTextBuilder.length();
         }
