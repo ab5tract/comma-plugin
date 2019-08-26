@@ -19,15 +19,21 @@ public class ModuleNameCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testPragmaCompletion() {
-        doTest("exp", "experimental");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use exp<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> names = myFixture.getLookupElementStrings();
+        assertNull(names);
     }
 
     public void testVersionCompletion() {
-        doTest("v6", "v6.c");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use v6<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> names = myFixture.getLookupElementStrings();
+        assertEmpty(names);
     }
 
     public void testLibraryCompletion1() {
-        doTest("Te", "Test");
+        doTest("Tes", "Test");
     }
 
     public void testLibraryCompletion2() {
