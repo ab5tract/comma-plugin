@@ -91,15 +91,21 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
         int startOffset = 0;
         int endOffset = 0;
 
+        String text = context.getParameterOwner().getText();
+        boolean shouldNotJump = !text.endsWith(",");
+        int nextParameter = compare.getNextParameterIndex();
+        if (shouldNotJump)
+            nextParameter = nextParameter == 0 ? 0 : nextParameter - 1;
+
         for (int i = 0, length = parameters.length; i < length; i++) {
             Perl6Parameter param = parameters[i];
             String paramText = param.getText();
-            if (i == compare.getNextParameterIndex() && compare.isAccepted()) {
+            if (i == nextParameter && compare.isAccepted()) {
                 startOffset = signatureTextBuilder.length();
                 if (startOffset != 0) startOffset += 2;
             }
             signatureTextBuilder.add(paramText);
-            if (i == compare.getNextParameterIndex() && compare.isAccepted()) endOffset = signatureTextBuilder.length();
+            if (i == nextParameter && compare.isAccepted()) endOffset = signatureTextBuilder.length();
         }
 
         context.setUIComponentEnabled(compare.isAccepted());
