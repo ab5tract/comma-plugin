@@ -127,6 +127,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testUndeclaredMultiAttributeAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A { has ($!a, $!asdrf) }");
+        myFixture.checkHighlighting();
+    }
+
     public void testDeclaredExternalAttributeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
         myFixture.checkHighlighting();
