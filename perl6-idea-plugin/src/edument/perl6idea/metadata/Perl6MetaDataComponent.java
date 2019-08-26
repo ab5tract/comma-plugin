@@ -249,6 +249,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         if (firstRoot == null)
             firstRoot = calculateMetaParent();
         if (firstRoot == null) {
+            if (myModule == null)
+                return;
             VirtualFile file = FileChooser.chooseFile(
                 FileChooserDescriptorFactory.createSingleFolderDescriptor(),
                 myModule.getProject(), myModule.getProject().getBaseDir());
