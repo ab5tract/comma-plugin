@@ -103,7 +103,7 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
         }
 
         context.setUIComponentEnabled(compare.isAccepted());
-        context.setupUIComponentPresentation(signatureTextBuilder.toString(), startOffset, endOffset, !compare.isAccepted(), false, false,
+        context.setupUIComponentPresentation(signatureTextBuilder.toString().trim(), startOffset, endOffset, !compare.isAccepted(), false, false,
                                              context.getDefaultParameterColor());
     }
 }

@@ -91,4 +91,9 @@ public class Perl6ParameterInfoTest extends LightCodeInsightFixtureTestCase {
                context -> assertParameterInfo(context, false, "$a, :$foo",0, 0),
                context -> assertParameterInfo(context, true, ":$best",0, 0));
     }
+
+    public void testOffset() {
+        doTest("Int $tran, Int $dataset, Str $module-key, Hash :$defaults?, :$apply-defaults = True --> Int", "1, 2,",
+               context -> assertParameterInfo(context, true, "Int $tran, Int $dataset, Str $module-key, Hash :$defaults?, :$apply-defaults = True", 25, 40));
+    }
 }
