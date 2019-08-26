@@ -3,5 +3,7 @@ sub foo(:$named1, :$named2) {
     say "Second was $named2";
 }
 
-do {say "First was "First"";
-say "Second was "Second"";};
+do {
+    say "First was "First"";
+    say "Second was "Second"";
+};

@@ -4,6 +4,8 @@ sub foo {
     return 14;
 }
 
-say 10 + do {say 14;
-15;
-14;} + 20;
+say 10 + do {
+    say 14;
+    15;
+    14;
+} + 20;
