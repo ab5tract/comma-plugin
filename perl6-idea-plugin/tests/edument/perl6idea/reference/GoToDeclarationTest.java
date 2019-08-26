@@ -156,6 +156,14 @@ public class GoToDeclarationTest extends CommaFixtureTestCase {
                 });
     }
 
+    public void testMultiVariableDeclaration() {
+        doTest("class A { has ($.aaa, $.bbb); method { say $!a<caret>aa } }", 1,
+               Perl6Variable.class, (var) -> {
+                assertNotNull(var);
+                assertEquals("($.aaa, $.bbb)", var.getText());
+            });
+    }
+
     public void doTest(String text, int offset, Class<? extends Perl6PsiElement> clazz, Consumer<PsiElement> check) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - offset);
