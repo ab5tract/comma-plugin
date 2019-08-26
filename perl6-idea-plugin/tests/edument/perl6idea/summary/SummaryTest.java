@@ -1,80 +1,92 @@
 package edument.perl6idea.summary;
 
-import com.intellij.psi.PsiElement;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.CommaFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6RoutineDecl;
-import org.jetbrains.annotations.NotNull;
+import edument.perl6idea.psi.Perl6VariableDecl;
+import edument.perl6idea.structureView.Perl6StructureViewElement;
 
 public class SummaryTest extends CommaFixtureTestCase {
-    public void doTest(String code, String result) {
+    private void doTestRoutine(String code, String result) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, code);
-        PsiElement el = myFixture.getElementAtCaret();
-        assert el instanceof Perl6RoutineDecl;
-        Perl6RoutineDecl decl = (Perl6RoutineDecl)el;
-        assertEquals(result, decl.summarySignature());
+        Perl6RoutineDecl el = PsiTreeUtil.getParentOfType(myFixture.getElementAtCaret(), Perl6RoutineDecl.class, false);
+        assertNotNull(el);
+        assertEquals(result, el.summarySignature());
+    }
+
+    private void doTestVariable(String code, String result) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, code);
+        Perl6VariableDecl el = PsiTreeUtil.getParentOfType(myFixture.getElementAtCaret(), Perl6VariableDecl.class, false);
+        assertNotNull(el);
+        assertEquals(result, new Perl6StructureViewElement(el).getPresentation().getPresentableText());
+    }
+
+    public void testSingleVariable() {
+        doTestVariable("has $.ab<caret>cd-abcd", "$.abcd-abcd");
+    }
+
+    public void testManyVariables() {
+        doTestVariable("has ($.a, $.b, $.as<caret>df, $!qwer)", "$.a, $.b, $.asdf, $!qwer");
     }
 
     public void testSingleSigil() {
-        doTest("sub f<caret>oo($a) {}", "($)");
+        doTestRoutine("sub f<caret>oo($a) {}", "($)");
     }
 
     public void testMultiplySigils() {
-        doTest("sub f<caret>oo($a, @b, %c, &d) {}", "($, @, %, &)");
+        doTestRoutine("sub f<caret>oo($a, @b, %c, &d) {}", "($, @, %, &)");
     }
 
     public void testTypedVariable() {
-        doTest("sub f<caret>oo(Int $a) {}", "(Int $)");
+        doTestRoutine("sub f<caret>oo(Int $a) {}", "(Int $)");
     }
 
     public void testTypedVariable2() {
-        doTest("sub f<caret>oo(Int $a, Backtrace $foo) {}", "(Int $, Backtrace $)");
+        doTestRoutine("sub f<caret>oo(Int $a, Backtrace $foo) {}", "(Int $, Backtrace $)");
     }
 
     public void testSlurpy() {
-        doTest("sub f<caret>oo($a, %b, *@c) {}", "($, %, *@)");
+        doTestRoutine("sub f<caret>oo($a, %b, *@c) {}", "($, %, *@)");
     }
 
     public void testOptional() {
-        doTest("sub f<caret>oo($a, $y?) {}", "($, $?)");
+        doTestRoutine("sub f<caret>oo($a, $y?) {}", "($, $?)");
     }
 
     public void testNameds() {
-        doTest("sub f<caret>oo($a, :$foo) {}", "($, :$foo)");
-        doTest("sub f<caret>oo(:$a!, Int :$b) {}", "(:$a!, Int :$b)");
+        doTestRoutine("sub f<caret>oo($a, :$foo) {}", "($, :$foo)");
+        doTestRoutine("sub f<caret>oo(:$a!, Int :$b) {}", "(:$a!, Int :$b)");
     }
 
     public void testNamedsAlias() {
-        doTest("sub f<caret>oo(:a($b)) {}", "(:$a)");
-        doTest("sub f<caret>oo(:a(:$b)) {}", "(:a(:$b))");
+        doTestRoutine("sub f<caret>oo(:a($b)) {}", "(:$a)");
+        doTestRoutine("sub f<caret>oo(:a(:$b)) {}", "(:a(:$b))");
     }
 
     public void testCaptureArgs() {
-        doTest("sub f<caret>oo(|c) {}", "(|)");
+        doTestRoutine("sub f<caret>oo(|c) {}", "(|)");
     }
 
     public void testTermArgs() {
-        doTest("sub f<caret>oo(\\a) {}", "(\\a)");
+        doTestRoutine("sub f<caret>oo(\\a) {}", "(\\a)");
     }
 
     public void testSubSignatures() {
-        doTest("sub f<caret>oo([$head, *@tail]) {}", "(@)");
-        doTest("sub f<caret>oo((:$x, :$y)) {}", "($)");
+        doTestRoutine("sub f<caret>oo([$head, *@tail]) {}", "(@)");
+        doTestRoutine("sub f<caret>oo((:$x, :$y)) {}", "($)");
     }
 
     public void testReturn() {
-        doTest("sub f<caret>oo(Int $x --> Int) {}", "(Int $ --> Int)");
-        doTest("sub f<caret>oo(Int $x) returns Int {}", "(Int $ --> Int)");
-        doTest("sub f<caret>oo(Int $x) of Int {}", "(Int $ --> Int)");
+        doTestRoutine("sub f<caret>oo(Int $x --> Int) {}", "(Int $ --> Int)");
+        doTestRoutine("sub f<caret>oo(Int $x) returns Int {}", "(Int $ --> Int)");
+        doTestRoutine("sub f<caret>oo(Int $x) of Int {}", "(Int $ --> Int)");
     }
 
     public void testInvalidCases() {
-        doTest("sub f<caret>oo(-- > Int) {}", "()");
-        doTest("sub f<caret>oo(-->) {}", "()");
-        doTest("sub f<caret>oo(Int $a) return A {}", "(Int $)");
-        doTest("sub f<caret>oo {}", "()");
+        doTestRoutine("sub f<caret>oo(-- > Int) {}", "()");
+        doTestRoutine("sub f<caret>oo(-->) {}", "()");
+        doTestRoutine("sub f<caret>oo(Int $a) return A {}", "(Int $)");
+        doTestRoutine("sub f<caret>oo {}", "()");
     }
 }
