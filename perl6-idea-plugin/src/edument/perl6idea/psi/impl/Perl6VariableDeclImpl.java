@@ -354,6 +354,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     private Perl6Variable getVariable() {
+        if (findChildByClass(Perl6Signature.class) != null)
+            return null;
         return findChildByClass(Perl6Variable.class);
     }
 

@@ -64,6 +64,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testFalsePositive1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"my ($a) = $x; my $x = 1, 2;");
+        myFixture.checkHighlighting();
+    }
+
     public void testAnonymousVariables() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"my $; my @; my %; my &; say $; say @; say %; say &;");
         myFixture.checkHighlighting();
