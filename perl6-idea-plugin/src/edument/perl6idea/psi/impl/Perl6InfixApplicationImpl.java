@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static edument.perl6idea.parsing.Perl6ElementTypes.NULL_TERM;
+
 public class Perl6InfixApplicationImpl extends ASTWrapperPsiElement implements Perl6InfixApplication {
     public Perl6InfixApplicationImpl(@NotNull ASTNode node) {
         super(node);
@@ -30,11 +32,11 @@ public class Perl6InfixApplicationImpl extends ASTWrapperPsiElement implements P
         for (int i = 0, infixesLength = infixes.length; i < infixesLength; i++) {
             Perl6Infix infix = infixes[i];
             PsiElement left = infix.skipWhitespacesBackward();
-            if (left != null)
+            if (left != null && left.getNode().getElementType() != NULL_TERM)
                 operands.add(left);
             if (i + 1 == infixesLength) {
                 PsiElement right = infix.skipWhitespacesForward();
-                if (right != null)
+                if (right != null && right.getNode().getElementType() != NULL_TERM)
                     operands.add(right);
             }
         }
