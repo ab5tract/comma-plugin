@@ -1,0 +1,5 @@
+supply {
+    whenever  {
+        emit $_;
+    }
+}

@@ -28,19 +28,6 @@ public class CompletePerl6ElementFactory extends Perl6ElementFactory {
                              data.containsExpression ? "" : ";");
     }
 
-    public static Perl6Do createDoBlock(Project project, PsiElement[] blockCopy) {
-        return produceElement(project, createDoBlockText(blockCopy), Perl6Do.class);
-    }
-
-    private static String createDoBlockText(PsiElement[] blockCopy) {
-        StringBuilder blockTextBuilder = new StringBuilder();
-        for (PsiElement statement : blockCopy) {
-            blockTextBuilder.append(statement.getText());
-        }
-        return "my $a = do {\n" + blockTextBuilder.toString() + "\n}";
-    }
-
-
     public static Perl6TypeName createNil(Project project) {
         return produceElement(project, "Nil", Perl6TypeName.class);
     }

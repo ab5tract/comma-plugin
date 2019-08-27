@@ -3,6 +3,7 @@ package edument.perl6idea.psi;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
+import com.intellij.psi.PsiParserFacade;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.refactoring.NewCodeBlockData;
@@ -13,6 +14,9 @@ import java.util.List;
 import java.util.StringJoiner;
 
 public class Perl6ElementFactory {
+    public static final String ARRAY_CONTEXTUALIZER = "@";
+    public static final String HASH_CONTEXTUALIZER = "%";
+
     public static Perl6Statement createStatementFromText(Project project, String def) {
         return produceElement(project, def, Perl6Statement.class);
     }
@@ -207,5 +211,98 @@ public class Perl6ElementFactory {
 
     public static Perl6VariableDecl createVariableDecl(Project project, String scope, String name) {
         return produceElement(project, String.format("%s %s;", scope, name), Perl6VariableDecl.class);
+    }
+
+    public static Perl6IfStatement createIfStatement(Project project, boolean isIf, int numberOfBranches) {
+        return produceElement(project, createIfStatementText(isIf, numberOfBranches), Perl6IfStatement.class);
+    }
+
+    private static String createIfStatementText(boolean isIf, int numberOfBranches) {
+        StringJoiner ifText = new StringJoiner("\n");
+        ifText.add(String.format("%s True {}", isIf ? "if" : "with"));
+        numberOfBranches--;
+        while (numberOfBranches > 1) {
+            ifText.add(String.format("%s True {}", isIf ? "elsif" : "orwith"));
+            numberOfBranches--;
+        }
+        if (numberOfBranches == 1)
+            ifText.add("else {}");
+        return ifText.toString();
+    }
+
+    public static Perl6UnlessStatement createUnlessStatement(Project project) {
+        return produceElement(project, "unless False {}", Perl6UnlessStatement.class);
+    }
+
+    public static Perl6GivenStatement createGivenStatement(Project project) {
+        return produceElement(project, "given $_ {}", Perl6GivenStatement.class);
+    }
+
+    public static Perl6WithoutStatement createWithoutStatement(Project project) {
+        return produceElement(project, "without $_ {}", Perl6WithoutStatement.class);
+    }
+
+    public static Perl6ForStatement createForStatement(Project project) {
+        return produceElement(project, "for $_ {}", Perl6ForStatement.class);
+    }
+
+    public static Perl6WheneverStatement createWheneverStatement(Project project) {
+        return produceElement(project, "whenever $_ {}", Perl6WheneverStatement.class);
+    }
+
+    public static Perl6WhenStatement createWhenStatement(Project project) {
+        return produceElement(project, "when $_ {}", Perl6WhenStatement.class);
+    }
+
+    public static Perl6Try createTryStatement(Project project) {
+        return produceElement(project, "try {}", Perl6Try.class);
+    }
+
+    public static Perl6DefaultStatement createDefaultStatement(Project project) {
+        return produceElement(project, "default {}", Perl6DefaultStatement.class);
+    }
+
+    public static Perl6Start createStartStatement(Project project) {
+        return produceElement(project, "start {}", Perl6Start.class);
+    }
+
+    public static Perl6PointyBlock createPointyBlock(Project project) {
+        return produceElement(project, "-> $_ {}", Perl6PointyBlock.class);
+    }
+
+    public static Perl6BlockOrHash createBlockOrHash(Project project) {
+        return produceElement(project, "{}", Perl6BlockOrHash.class);
+    }
+
+    public static Perl6Contextualizer createContextualizer(Project project, String contextualizer) {
+        return produceElement(project, String.format("%s();", contextualizer), Perl6Contextualizer.class);
+    }
+
+    public static Perl6ArrayComposer createArrayComposer(Project project) {
+        return produceElement(project, "[]", Perl6ArrayComposer.class);
+    }
+
+    public static Perl6CatchStatement createCatchStatement(Project project) {
+        return produceElement(project, "CATCH {}", Perl6CatchStatement.class);
+    }
+
+    public static PsiElement createNewLine(Project project) {
+        return PsiParserFacade.SERVICE.getInstance(project).createWhiteSpaceFromText("\n");
+    }
+
+    public static Perl6Do createDoStatement(Project project) {
+        return produceElement(project, createDoBlockText(), Perl6Do.class);
+    }
+
+    private static String createDoBlockText() {
+        return "do {}";
+    }
+
+    public static Perl6RegexAtom createRegexGroup(Project project, boolean isCapture) {
+        return produceElement(project, isCapture ? "/()/" : "/[]/", Perl6RegexAtom.class);
+    }
+
+    public static PsiElement createRegexVariable(Project project) {
+        return produceElement(project, "/$<x> = [ ] /", Perl6RegexAtom.class);
     }
 }

@@ -177,7 +177,9 @@ public class Perl6InlineRoutineProcessor extends Perl6InlineProcessor {
                 inserter = CompletePerl6ElementFactory.createParenthesesExpr(inserter);
         }
         else {
-            inserter = CompletePerl6ElementFactory.createDoBlock(project, blockCopy);
+            Perl6Do doStatement = Perl6ElementFactory.createDoStatement(project);
+            doStatement.addStatements(blockCopy);
+            inserter = doStatement;
         }
         updateVariables(call, inserter, decl);
         return inserter;

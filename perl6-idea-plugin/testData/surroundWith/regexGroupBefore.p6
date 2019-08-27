@@ -1,0 +1,1 @@
+/<selection>\d+ 'file'</selection> {$*A = True}/

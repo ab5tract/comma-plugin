@@ -1,0 +1,5 @@
+gather {
+  take -> {
+      "MY STRING"
+  };
+}

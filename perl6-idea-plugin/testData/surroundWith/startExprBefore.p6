@@ -1,0 +1,1 @@
+my @list = await Promise.anyof(<selection>long-call(1,2,3)</selection>, Promise.in(5));
