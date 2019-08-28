@@ -133,6 +133,7 @@ public class InlineVariableTest extends LightPlatformCodeInsightFixtureTestCase 
     private void doTest() {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
         Perl6InlineVariableActionHandler action = new Perl6InlineVariableActionHandler();
+        assertTrue(action.isEnabledOnElement(myFixture.getElementAtCaret()));
         action.inlineElement(getProject(), myFixture.getEditor(), myFixture.getElementAtCaret());
         myFixture.checkResultByFile(getTestName(true) + ".p6");
     }
