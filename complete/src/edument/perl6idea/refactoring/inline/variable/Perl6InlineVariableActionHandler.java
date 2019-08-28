@@ -22,15 +22,12 @@ import java.util.Objects;
 public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
     @Override
     public boolean canInlineElement(PsiElement element) {
-        return element instanceof Perl6VariableDecl &&
-               element.getNavigationElement() instanceof Perl6VariableDecl &&
+        return (element instanceof Perl6VariableDecl || element instanceof Perl6ParameterVariable) &&
                element.getLanguage() instanceof Perl6Language;
     }
 
     @Override
     public void inlineElement(Project project, Editor editor, PsiElement element) {
-        PsiElement variableDecl = element.getNavigationElement();
-
         PsiReference reference = editor != null ?
                                  TargetElementUtil.findReference(editor, editor.getCaretModel().getOffset()) : null;
 
@@ -58,7 +55,7 @@ public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
         }
 
         Collection<PsiReference> usages = invokedOnDeclaration ?
-                                          ReferencesSearch.search(variableDecl, GlobalSearchScope.projectScope(project)).findAll() :
+                                          ReferencesSearch.search(element, GlobalSearchScope.projectScope(project)).findAll() :
                                           Collections.singletonList(reference);
 
         for (PsiReference callRef : usages) {
@@ -70,7 +67,7 @@ public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
         }
 
         try {
-            checkUnresolvedElements((Perl6PsiElement)variableDecl, reference);
+            checkUnresolvedElements((Perl6PsiElement)element, reference);
         }
         catch (IllegalInlineeException ex) {
             reportError(project, editor, ex.toString());
@@ -82,7 +79,7 @@ public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
             refElement = reference.getElement();
         }
 
-        Perl6InlineVariableDialog dialog = new Perl6InlineVariableDialog(project, variableDecl, refElement, editor, invokedOnDeclaration);
+        Perl6InlineVariableDialog dialog = new Perl6InlineVariableDialog(project, element, refElement, editor, invokedOnDeclaration);
         if (ApplicationManager.getApplication().isUnitTestMode()) {
             dialog.doAction();
         } else {
