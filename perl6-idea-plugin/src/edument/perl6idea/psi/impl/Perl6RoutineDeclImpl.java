@@ -196,8 +196,9 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
                 collector.offerMultiSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this), isProto);
             else
                 collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, this));
-            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
-                    this, "&" + name));
+            if (!collector.isSatisfied())
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
+                                                                     this, "&" + name));
         }
     }
 
@@ -273,8 +274,10 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
     @Override
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
-        for (String sym : ROUTINE_SYMBOLS)
+        for (String sym : ROUTINE_SYMBOLS) {
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, sym, this));
+            if (collector.isSatisfied()) return;
+        }
         String routineName = getRoutineName();
         String routineKind = getRoutineKind();
         if (routineKind.equals("method") || routineKind.equals("submethod")) {

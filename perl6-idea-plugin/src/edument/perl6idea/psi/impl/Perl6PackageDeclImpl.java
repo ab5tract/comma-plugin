@@ -90,6 +90,8 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     @Override
     public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         contributeInternals(collector, symbolsAllowed);
+        if (collector.isSatisfied())
+            return;
         contributeFromElders(collector, symbolsAllowed);
     }
 
@@ -245,6 +247,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             String mod = pair.first;
             boolean isDoes = mod.equals("does");
             typeRef.contributeMOPSymbols(collector, isDoes ? symbolsAllowed.does() : symbolsAllowed.is());
+            if (collector.isSatisfied()) return;
             typeRef.contributeScopeSymbols(collector);
             if (collector.isSatisfied()) return;
         }

@@ -121,6 +121,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             Queue<Stub> visit = new LinkedList<>();
             visit.add(stub);
             while (!visit.isEmpty()) {
+                if (collector.isSatisfied())
+                    return;
                 Stub current = visit.remove();
                 boolean addChildren = false;
                 if (current == stub) {
@@ -135,7 +137,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                             Perl6PackageDecl psi = nested.getPsi();
                             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
                                 psi, topName));
-                            psi.contributeNestedPackagesWithPrefix(collector, topName + "::");
+                            if (!collector.isSatisfied())
+                                psi.contributeNestedPackagesWithPrefix(collector, topName + "::");
                         }
                     }
                 }
@@ -287,6 +290,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
      * does not have an entry is not "interesting" statement (e.g. one that is meaningful
      * in coverage or could be hit by a breakpoint).
      */
+    @Override
     public Map<Integer, List<Integer>> getStatementLineMap() {
         Map<Integer, List<Integer>> result = new HashMap<>();
         Set<Integer> covered = new HashSet<>();
