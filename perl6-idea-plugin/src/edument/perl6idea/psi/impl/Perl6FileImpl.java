@@ -162,6 +162,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             Queue<Perl6PsiElement> visit = new LinkedList<>();
             visit.add(this);
             while (!visit.isEmpty()) {
+                if (collector.isSatisfied())
+                    return;
                 Perl6PsiElement current = visit.remove();
                 boolean addChildren = false;
                 if (current == this) {
@@ -175,7 +177,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                         if (topName != null && !topName.isEmpty()) {
                             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
                                 nested, topName));
-                            nested.contributeNestedPackagesWithPrefix(collector, topName + "::");
+                            if (!collector.isSatisfied())
+                                nested.contributeNestedPackagesWithPrefix(collector, topName + "::");
                         }
                     }
                 }
