@@ -5,7 +5,10 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.ResolveResult;
+import com.intellij.psi.impl.source.resolve.reference.impl.PsiMultiReference;
 import edument.perl6idea.annotation.fix.StubMissingPrivateMethodFix;
 import edument.perl6idea.psi.Perl6MethodCall;
 import edument.perl6idea.psi.Perl6RoutineDecl;
@@ -25,9 +28,10 @@ public class UndeclaredPrivateMethodAnnotator implements Annotator {
         if (!methodName.startsWith("!")) return;
 
         PsiReference reference = call.getReference();
-        if (reference == null) return;
-        PsiElement declaration = reference.resolve();
-        if (declaration != null) return;
+        if (!(reference instanceof PsiPolyVariantReference)) return;
+        ResolveResult[] declaration = ((PsiPolyVariantReference)reference).multiResolve(false);
+        if (declaration.length != 0)
+            return;
         PsiElement prev = call.getPrevSibling();
         if (prev instanceof Perl6RoutineDecl) {
             holder.createErrorAnnotation(
