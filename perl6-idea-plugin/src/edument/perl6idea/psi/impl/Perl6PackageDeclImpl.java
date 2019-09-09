@@ -267,7 +267,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     private void contributeExternalPackage(Perl6SymbolCollector collector, String typeName,
                                            MOPSymbolsAllowed symbolsAllowed) {
         Perl6SingleResolutionSymbolCollector extCollector =
-                new Perl6SingleResolutionSymbolCollector(typeName, Perl6SymbolKind.ExternalPackage);
+                new Perl6SingleResolutionSymbolCollector(typeName, Perl6SymbolKind.TypeOrConstant);
         applyExternalSymbolCollector(extCollector);
         Perl6Symbol collectorResult = extCollector.getResult();
         if (collectorResult != null && collectorResult.getPsi() instanceof Perl6PackageDecl) {

@@ -59,7 +59,6 @@ public class ExternalPerl6File implements Perl6File {
 
     private PsiNamedElement createExternalSymbolPsi(Perl6Symbol symbol) {
         switch (symbol.getKind()) {
-            case ExternalPackage:
             case TypeOrConstant: {
                 if (symbol instanceof Perl6ExternalPackage)
                     return new ExternalPerl6PackageDecl(myProject, this, symbol);

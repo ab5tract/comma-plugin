@@ -32,7 +32,6 @@ public class Perl6ExternalNamesParser {
                 else processNonSub(line);
             } else if (line.startsWith("R:") || line.startsWith("C:")) {
                 finishCurrentPackage();
-                result.add(new Perl6ExternalSymbol(Perl6SymbolKind.TypeOrConstant, line.substring(2)));
                 currentPackage = new Perl6ExternalPackage(
                         line.substring(2),
                         line.charAt(0) == 'R'

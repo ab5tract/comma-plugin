@@ -24,7 +24,7 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
 
     @Override
     public String getPackageKind() {
-        return null;
+        return mySymbol.getPackageKind() == Perl6PackageKind.CLASS ? "class" : "role";
     }
 
     @Override
