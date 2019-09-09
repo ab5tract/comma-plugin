@@ -10,6 +10,7 @@ import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,16 +46,8 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             return targetTypeName.equals("self");
         }
 
-        boolean isTypeName() {
-            return targetTypeElement instanceof Perl6TypeName;
-        }
-
         public String getTargetTypeName() {
             return targetTypeElement instanceof Perl6TypeName ? ((Perl6TypeName)targetTypeElement).getTypeName() : targetTypeName;
-        }
-
-        public Object getTargetTypeElement() {
-            return targetTypeElement;
         }
 
         /**
@@ -150,8 +143,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
     private static Collection<Perl6Symbol> getMethodsFromPsiType(CallInfo callinfo, boolean isSingle, Perl6PackageDecl enclosingPackage, boolean privatesVisible) {
         MOPSymbolsAllowed symbolsAllowed = new MOPSymbolsAllowed(privatesVisible, privatesVisible, true, false);
         if (isSingle) {
-            Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(
-                    callinfo.getMethodName(), Perl6SymbolKind.Method);
+            Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(callinfo.getMethodName(), Perl6SymbolKind.Method);
             enclosingPackage.contributeMOPSymbols(collector, symbolsAllowed);
             return collector.getResults();
         }
@@ -162,46 +154,42 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
         }
     }
 
-    private static Collection<Perl6Symbol> getMethodsByTypeName(Perl6MethodCall call, CallInfo callInfo,boolean isSingle) {
+    private static Collection<Perl6Symbol> getMethodsByTypeName(Perl6MethodCall call, CallInfo callInfo, boolean isSingle) {
         String typeName = callInfo.getTargetTypeName();
         Perl6Symbol type = call.resolveLexicalSymbol(Perl6SymbolKind.TypeOrConstant, typeName);
         if (type != null) { // If we know that type, even as an external one
-            PsiElement base = type.getPsi();
-            Perl6PackageDecl decl = null;
-            if (base instanceof Perl6PackageDecl) {
-                decl = (Perl6PackageDecl)base;
-            }
-            else if (base instanceof Perl6Subset) {
-                Perl6Subset subset = (Perl6Subset)base;
+            PsiElement psiDeclaration = type.getPsi();
+            Perl6PackageDecl decl;
+            if (psiDeclaration instanceof Perl6PackageDecl) {
+                return getMethodsFromPsiType(callInfo, isSingle, (Perl6PackageDecl)psiDeclaration, callInfo.isTrustNeeded());
+            } else if (psiDeclaration instanceof Perl6Subset) {
+                Perl6Subset subset = (Perl6Subset)psiDeclaration;
                 // Get original type of subset
                 decl = subset.getSubsetBaseType();
-                String newName = subset.getSubsetBaseTypeName();
-                typeName = newName != null ? newName : "Any";
-            }
-            else if (base instanceof Perl6Enum) {
+                if (decl == null) {
+                    return tryToCompleteExternalTypeMethods("Any", call);
+                } else {
+                    return getMethodsFromPsiType(callInfo, isSingle, decl, callInfo.isTrustNeeded());
+                }
+            } else if (psiDeclaration instanceof Perl6Enum) {
                 if (!isSingle) {
                     Collection<Perl6Symbol> intMethods = tryToCompleteExternalTypeMethods("Int", call);
                     Collection<Perl6Symbol> enumerationMethods = tryToCompleteExternalTypeMethods("Enumeration", call);
                     return Stream.concat(intMethods.stream(), enumerationMethods.stream()).collect(Collectors.toCollection(ArrayList::new));
                 }
             }
-            if (decl != null) {
-                // Not external type
-                return getMethodsFromPsiType(callInfo, isSingle, decl, callInfo.isTrustNeeded());
-            }
-            else {
-                return isSingle ? Collections.emptyList() :
-                       tryToCompleteExternalTypeMethods(typeName, call);
-            }
+            // We never reach this
+            return new ArrayList<>();
         } else {
             // We don't know that type, assume it is derived from Mu/Any. No privates or
             // attributes there, so simple
-            return isSingle ? Collections.emptyList(): MuAnyMethods(call);
+            return isSingle ? Collections.emptyList(): MuAnyMethods(call, null);
         }
     }
 
-    private static Collection<Perl6Symbol> MuAnyMethods(Perl6PsiElement element) {
-        Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
+    public static Collection<Perl6Symbol> MuAnyMethods(Perl6PsiElement element, @Nullable Perl6VariantsSymbolCollector collector) {
+        if (collector == null)
+            collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
         Perl6PackageDecl any = Perl6SdkType.getInstance().getCoreSettingSymbol("Any", element);
         if (any != null)
             any.contributeMOPSymbols(collector, new MOPSymbolsAllowed(true, true, true, true));
@@ -212,34 +200,16 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
     }
 
     private static Collection<Perl6Symbol> tryToCompleteExternalTypeMethods(String typeName, Perl6PsiElement element) {
-        Perl6SingleResolutionSymbolCollector externalPackageCollector = new Perl6SingleResolutionSymbolCollector(typeName, Perl6SymbolKind.ExternalPackage);
-        Perl6VariantsSymbolCollector methodsCollector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-        int baseOffset = element.getTextOffset();
-        element = (Perl6PsiElement)element.getParent();
-        outer:
-        while (element != null) {
-            for (PsiElement child : element.getChildren()) {
-                if (child instanceof Perl6Statement) child = child.getFirstChild();
-                if ((child instanceof Perl6UseStatement || child instanceof Perl6NeedStatement) &&
-                    child.getTextOffset() < baseOffset) {
-                    ((Perl6LexicalSymbolContributor)child).contributeLexicalSymbols(externalPackageCollector);
-                    if (externalPackageCollector.isSatisfied()) break outer;
-                }
-            }
-            if (element instanceof Perl6File) {
-                ((Perl6File)element).contributeScopeSymbols(externalPackageCollector);
-                break;
-            }
-            element = (Perl6PsiElement)element.getParent();
-        }
-
+        Perl6SingleResolutionSymbolCollector externalPackageCollector = new Perl6SingleResolutionSymbolCollector(typeName, Perl6SymbolKind.TypeOrConstant);
+        element.applyExternalSymbolCollector(externalPackageCollector);
         Perl6Symbol type = externalPackageCollector.getResult();
-        if (type != null && type.getPsi() instanceof Perl6PackageDecl) {
-            Perl6PackageDecl packageDecl = (Perl6PackageDecl)type.getPsi();
-            packageDecl.contributeMOPSymbols(methodsCollector, new MOPSymbolsAllowed(
-                true, true, true, true));
-        }
-        MuAnyMethods(element).forEach(method -> methodsCollector.offerSymbol(method));
+        if (type == null || !(type.getPsi() instanceof Perl6PackageDecl))
+            return MuAnyMethods(element, null);
+
+        Perl6VariantsSymbolCollector methodsCollector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
+        Perl6PackageDecl packageDecl = (Perl6PackageDecl)type.getPsi();
+        packageDecl.contributeMOPSymbols(methodsCollector, new MOPSymbolsAllowed(true, true, true, true));
+        MuAnyMethods(element, methodsCollector);
         return methodsCollector.getVariants();
     }
 
