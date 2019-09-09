@@ -216,7 +216,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 PsiReference ref = element.getReference();
                 if (ref == null) continue;
                 PsiElement decl = ref.resolve();
-                if (decl != null)
+                if (decl instanceof Perl6PackageDecl)
                     perl6PackageDecls.add(Pair.create(trait.getTraitModifier(), (Perl6PackageDecl)decl));
                 else
                     externals.add(Pair.create(trait.getTraitModifier(), trait.getTraitName()));
@@ -266,13 +266,12 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     private void contributeExternalPackage(Perl6SymbolCollector collector, String typeName,
                                            MOPSymbolsAllowed symbolsAllowed) {
-        Perl6VariantsSymbolCollector extCollector =
-                new Perl6VariantsSymbolCollector(Perl6SymbolKind.ExternalPackage);
+        Perl6SingleResolutionSymbolCollector extCollector =
+                new Perl6SingleResolutionSymbolCollector(typeName, Perl6SymbolKind.ExternalPackage);
         applyExternalSymbolCollector(extCollector);
-        for (Perl6Symbol pack : extCollector.getVariants()) {
-            Perl6ExternalPackage externalPackage = (Perl6ExternalPackage)pack;
-            if (!(pack.getName().equals(typeName)))
-                continue;
+        Perl6Symbol collectorResult = extCollector.getResult();
+        if (collectorResult != null && collectorResult.getPsi() instanceof Perl6PackageDecl) {
+            Perl6PackageDecl externalPackage = (Perl6PackageDecl)collectorResult.getPsi();
             externalPackage.contributeMOPSymbols(collector, symbolsAllowed);
         }
     }

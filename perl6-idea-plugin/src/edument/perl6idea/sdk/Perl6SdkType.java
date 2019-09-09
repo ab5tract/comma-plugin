@@ -10,10 +10,15 @@ import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.SystemInfo;
-import com.intellij.psi.PsiElement;
+import com.intellij.psi.*;
+import com.intellij.testFramework.LightVirtualFile;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PsiElement;
-import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.external.ExternalPerl6File;
+import edument.perl6idea.psi.symbols.Perl6ExternalPackage;
+import edument.perl6idea.psi.symbols.Perl6PackageKind;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jdom.Element;
@@ -39,13 +44,14 @@ public class Perl6SdkType extends SdkType {
     private Map<String, Perl6ExternalPackage> settingClasses = null;
     private Map<String, String> moarBuildConfig;
     private Map<String, List<Perl6Symbol>> useNameCache = new ConcurrentHashMap<>();
+    private Map<String, Perl6File> useNameFileCache = new ConcurrentHashMap<>();
     private Map<String, List<Perl6Symbol>> needNameCache = new ConcurrentHashMap<>();
 
     private Perl6SdkType() {
         super(NAME);
     }
 
-    public static Perl6SdkType getInstance() {
+  public static Perl6SdkType getInstance() {
         return SdkType.findInstance(Perl6SdkType.class);
     }
 
@@ -261,6 +267,18 @@ public class Perl6SdkType extends SdkType {
         return parser.result();
     }
 
+    public Perl6File getFileForUse(Project project, String name) {
+        if (useNameFileCache == null)
+            return null;
+        return useNameFileCache.computeIfAbsent(name, n -> constructExternalPsiFile(project, "use", n));
+    }
+
+    private static Perl6File constructExternalPsiFile(Project project, String directive, String name) {
+        List<Perl6Symbol> symbols = loadModuleSymbols(project, directive, name);
+        LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
+        return new ExternalPerl6File(project, dummy, symbols);
+    }
+
     public List<Perl6Symbol> getNamesForUse(Project project, String name) {
         if (useNameCache == null)
             return new ArrayList<>();
@@ -281,7 +299,7 @@ public class Perl6SdkType extends SdkType {
         needNameCache = new ConcurrentHashMap<>();
     }
 
-    private List<Perl6Symbol> loadModuleSymbols(Project project, String directive, String name) {
+    private static List<Perl6Symbol> loadModuleSymbols(Project project, String directive, String name) {
         String homePath = getSdkHomeByProject(project);
         File moduleSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-module-symbols.p6");
         if (homePath == null) {
