@@ -1,7 +1,5 @@
 package edument.perl6idea.psi.symbols;
 
-import com.intellij.openapi.diagnostic.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
