@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +75,7 @@ public class Perl6CommandLine {
     }
 
     private static void readFromProcess(List<String> results, AtomicBoolean died, Process p, Semaphore readerDone) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
         try {
             String result;
             while ((result = reader.readLine()) != null)
