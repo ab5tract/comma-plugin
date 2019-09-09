@@ -59,19 +59,19 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     private void doTestContainsAll(String text, String... contains) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         List<String> methods = complete(false);
-        assertTrue(methods.containsAll(Arrays.asList(contains)));
+        assertContainsElements(methods, contains);
     }
 
     private void doTestContainsAllTwoFiles(String fileA, String fileB, String... contains) {
         myFixture.configureByFiles(fileA, fileB);
         List<String> methods = complete(false);
-        assertTrue(methods.containsAll(Arrays.asList(contains)));
+        assertContainsElements(methods, contains);
     }
 
     private void doTestNotContainsAll(String text, String... contains) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         List<String> methods = complete(false);
-        assertFalse(methods.containsAll(Arrays.asList(contains)));
+        assertDoesntContain(methods, contains);
     }
 
     public void testMethodOnSelfCompletion() {
@@ -373,8 +373,9 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     public void testMethodAsARuleInGrammarCompletion1() {
         doTestContainsAll("grammar B { method panic() {}; regex regex-a { <.<caret> } }", "panic");
     }
+
     public void testMethodAsARuleInGrammarCompletion2() {
-        doTestNotContainsAll("grammar B { method panic() {}; regex regex-a { <.<caret> } }", "orig");
+        doTestContainsAll("grammar B { method panic() {}; regex regex-a { <.<caret> } }", "orig");
     }
 
     public void testGrammarFromSelfHasCursorMethods() {
