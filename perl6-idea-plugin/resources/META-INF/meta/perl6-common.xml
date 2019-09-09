@@ -88,6 +88,7 @@
     <programRunner implementation="edument.perl6idea.timeline.Perl6TimelineRunner"/>
     <stubIndex implementation="edument.perl6idea.cro.CroRouteIndex"/>
     <codeInsight.parameterInfo language="Perl6" implementationClass="edument.perl6idea.Perl6ParameterInfoHandler"/>
+    <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
 
     <intentionAction>
       <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>

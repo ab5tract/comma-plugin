@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SdkChangeListener extends ProjectExtension {
+    @Override
     public void projectSdkChanged(@Nullable Sdk sdk) {
         Perl6SdkType.getInstance().invalidateCaches();
     }
