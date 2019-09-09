@@ -20,10 +20,9 @@ public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollecto
     @Override
     public void offerSymbol(Perl6Symbol symbol) {
         // If already satisfied, then we're done.
-        if (satisfied) {
-            Logger.getInstance(Perl6SingleResolutionSymbolCollector.class).warn(new Throwable("Collector is not short-circuited"));
+        if (satisfied)
             return;
-        }
+
         // Otherwise, see if it matches.
         if (symbol != null &&
                 Objects.equals(symbol.getKind(), wantedKind) &&
