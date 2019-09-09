@@ -51,7 +51,7 @@ public class TraitCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Collections.singletonList("rw")));
+        assertContainsElements(vars, "rw");
         assertEquals(5, vars.size());
     }
 
@@ -60,7 +60,7 @@ public class TraitCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Collections.singletonList("export")));
+        assertContainsElements(vars, "export");
         assertEquals(6, vars.size());
     }
 
@@ -69,7 +69,7 @@ public class TraitCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Collections.singletonList("export")));
+        assertContainsElements(vars, "export");
         assertEquals(6, vars.size());
     }
 
@@ -78,7 +78,7 @@ public class TraitCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Collections.singletonList("Int")));
+        assertContainsElements(vars, "Int");
     }
 
     public void testExportTraitAbsenceForMyScopedVariables() {

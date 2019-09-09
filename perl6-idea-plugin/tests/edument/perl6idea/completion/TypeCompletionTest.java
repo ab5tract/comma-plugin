@@ -51,7 +51,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("Instant", "Int")));
+        assertContainsElements(vars, Arrays.asList("Instant", "Int"));
     }
 
     public void testMultipartTypesFromSetting() {
@@ -59,7 +59,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("IO::Path", "IO::Handle")));
+        assertContainsElements(vars, Arrays.asList("IO::Path", "IO::Handle"));
     }
 
     public void testSanityNoNativeCallWithoutImport() {
@@ -75,7 +75,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU")));
+        assertContainsElements(vars, Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU"));
     }
 
     public void testNeedGlobalSymbol() {
@@ -83,7 +83,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU")));
+        assertContainsElements(vars, Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU"));
     }
 
     public void testUseFindsExportedSymbol() {
@@ -91,7 +91,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("long", "longlong")));
+        assertContainsElements(vars, Arrays.asList("long", "longlong"));
     }
 
     public void testNeedDoesNotFindExportedSymbol() {
@@ -107,7 +107,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.contains("Interesting"));
+        assertContainsElements(vars, "Interesting");
     }
 
     public void testSimpleDeclaredTypeMy() {
@@ -115,7 +115,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.contains("Interesting"));
+        assertContainsElements(vars, "Interesting");
     }
 
     public void testNestedTypesOutside() {
@@ -124,10 +124,8 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("Interesting", "Interesting::Nested",
-            "Interesting::Nested::Deeper")));
-        assertFalse(vars.contains("Lexical"));
-        assertFalse(vars.contains("Interested::Lexical"));
+        assertContainsElements(vars, Arrays.asList("Interesting", "Interesting::Nested", "Interesting::Nested::Deeper"));
+        assertDoesntContain(vars, "Lexical", "INterested::Lexical");
     }
 
     public void testNestedTypesInside() {
@@ -136,9 +134,10 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("Interesting", "Interesting::InterNested",
-            "Interesting::InterNested::InterDeeper", "InterNested", "InterNested::InterDeeper", "InterLexical")));
-        assertFalse(vars.contains("Interested::InterLexical"));
+        assertContainsElements(vars, Arrays.asList("Interesting", "Interesting::InterNested",
+                                                   "Interesting::InterNested::InterDeeper",
+                                                   "InterNested", "InterNested::InterDeeper", "InterLexical"));
+        assertDoesntContain(vars, "Interested::InterLexical");
     }
 
     public void testAnonymousClassIsSafeToComplete() {
@@ -152,6 +151,6 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFiles("IdeaFoo/Bar9.pm6", "IdeaFoo/Baz.pm6");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
-        assertTrue(vars.containsAll(Arrays.asList("ENUM::ONE", "ENUM::TWO")));
+        assertContainsElements(vars, Arrays.asList("ENUM::ONE", "ENUM::TWO"));
     }
 }
