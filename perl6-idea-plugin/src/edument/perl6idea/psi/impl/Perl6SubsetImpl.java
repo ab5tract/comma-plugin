@@ -33,8 +33,9 @@ public class Perl6SubsetImpl extends Perl6TypeStubBasedPsi<Perl6SubsetStub> impl
         PsiReference ref = type.getReference();
         if (ref == null) return null;
         PsiElement resolved = ref.resolve();
-        if (resolved == null) return null;
-        return (Perl6PackageDecl)resolved;
+        if (resolved instanceof Perl6PackageDecl)
+            return (Perl6PackageDecl)resolved;
+        return null;
     }
 
     @Override

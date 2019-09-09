@@ -1,5 +1,7 @@
 package edument.perl6idea.psi.symbols;
 
+import com.intellij.openapi.diagnostic.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,9 +20,10 @@ public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollecto
     @Override
     public void offerSymbol(Perl6Symbol symbol) {
         // If already satisfied, then we're done.
-        if (satisfied)
+        if (satisfied) {
+            Logger.getInstance(Perl6SingleResolutionSymbolCollector.class).warn(new Throwable("Collector is not short-circuited"));
             return;
-
+        }
         // Otherwise, see if it matches.
         if (symbol != null &&
                 Objects.equals(symbol.getKind(), wantedKind) &&

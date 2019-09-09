@@ -59,9 +59,11 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                 Set<String> seen = new HashSet<>();
                 seen.add(name);
                 file.contributeGlobals(collector, seen);
+                if (collector.isSatisfied())
+                    return;
             }
             else {
-                Perl6File file = Perl6SdkType.getInstance().getFileForUse(project, name);
+                Perl6File file = Perl6SdkType.getInstance().getPsiFileForModule(project, "use", name);
                 if (file != null) {
                     file.contributeGlobals(collector, new HashSet<>());
                     if (collector.isSatisfied())

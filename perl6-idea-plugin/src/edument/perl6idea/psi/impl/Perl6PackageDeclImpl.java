@@ -225,21 +225,21 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             }
         }
 
-        if (isAny)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Any", this).methods()) {
-                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
-                if (collector.isSatisfied()) return;
-            }
-        if (isMu)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this).methods()) {
-                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
-                if (collector.isSatisfied()) return;
-            }
-        if (isGrammar)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Cursor", this).methods()) {
-                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
-                if (collector.isSatisfied()) return;
-            }
+        if (isAny) {
+            Perl6PackageDecl any = Perl6SdkType.getInstance().getCoreSettingSymbol("Any", this);
+            if (any != null)
+                any.contributeMOPSymbols(collector, new MOPSymbolsAllowed(true, true, true, true));
+        }
+        if (isMu) {
+            Perl6PackageDecl mu = Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this);
+            if (mu != null)
+                mu.contributeMOPSymbols(collector, new MOPSymbolsAllowed(true, true, true, true));
+        }
+        if (isGrammar) {
+            Perl6PackageDecl cursor = Perl6SdkType.getInstance().getCoreSettingSymbol("Cursor", this);
+            if (cursor != null)
+                cursor.contributeMOPSymbols(collector, new MOPSymbolsAllowed(true, true, true, true));
+        }
 
         for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
             // Local perl6PackageDecl

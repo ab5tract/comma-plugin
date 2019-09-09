@@ -223,11 +223,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         }
         else {
             // We only have globals, not exports, transitively available.
-            for (Perl6Symbol sym : Perl6SdkType.getInstance().getNamesForNeed(project, name)) {
-                collector.offerSymbol(sym);
-                if (collector.isSatisfied())
-                    return;
-            }
+            Perl6File needFile = Perl6SdkType.getInstance().getPsiFileForModule(project, "need", name);
+            needFile.contributeGlobals(collector, new HashSet<>());
         }
     }
 
@@ -238,11 +235,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             if (collector.isSatisfied())
                 return;
         }
-        for (Perl6Symbol symbol : Perl6SdkType.getInstance().getCoreSettingSymbols(this)) {
-            collector.offerSymbol(symbol);
-            if (collector.isSatisfied())
-                return;
-        }
+        Perl6SdkType.getInstance().getCoreSettingFile(this).contributeGlobals(collector, new HashSet<>());
+        if (collector.isSatisfied())
+            return;
         PsiElement list = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
         if (list == null) return;
         PsiElement finish = PsiTreeUtil.findChildOfType(list, PodBlockFinish.class);

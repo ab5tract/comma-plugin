@@ -9,20 +9,27 @@ import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implements Perl6VariableDecl {
     private final Perl6Symbol mySymbol;
 
-    public ExternalPerl6VariableDecl(Project project, ExternalPerl6File file, Perl6Symbol symbol) {
+    public ExternalPerl6VariableDecl(Project project, PsiElement parent, Perl6Symbol symbol) {
         myProject = project;
-        myParent = file;
+        myParent = parent;
         mySymbol = symbol;
     }
 
     @Override
     public String getVariableName() {
-        return null;
+        return mySymbol.getName();
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return mySymbol.getName();
     }
 
     @Override

@@ -1,23 +1,29 @@
 package edument.perl6idea.sdk;
 
+import com.intellij.openapi.project.Project;
+import com.intellij.testFramework.LightVirtualFile;
+import edument.perl6idea.psi.Perl6PackageDecl;
+import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
 import edument.perl6idea.psi.symbols.*;
 
 import java.util.*;
 
 public class Perl6ExternalNamesParser {
-    private final List<String> names;
+    private final List<String> myInputStrings;
+    private final Project myProject;
     private List<Perl6Symbol> result = new ArrayList<>();
     private Perl6ExternalPackage currentPackage = null;
     private Set<String> seen = new HashSet<>();
-    private Map<String, Perl6ExternalPackage> externalClasses = new HashMap<>();
+    private Map<String, Perl6PackageDecl> externalClasses = new HashMap<>();
 
-    public Perl6ExternalNamesParser(List<String> names) {
-        this.names = names;
+    public Perl6ExternalNamesParser(Project project, List<String> input) {
+        myProject = project;
+        myInputStrings = input;
         parseNames();
     }
 
     private void parseNames() {
-        for (String line : names) {
+        for (String line : myInputStrings) {
             if (line.startsWith("D:") || line.startsWith("V:") ||
                 line.startsWith("E:") || line.startsWith("S:")) {
                 finishCurrentPackage();
@@ -50,7 +56,7 @@ public class Perl6ExternalNamesParser {
         if (currentPackage == null) return;
         if (!seen.contains(currentPackage.getName())) {
             result.add(currentPackage);
-            externalClasses.put(currentPackage.getName(), currentPackage);
+            externalClasses.put(currentPackage.getName(), new ExternalPerl6PackageDecl(myProject, null, currentPackage));
             seen.add(currentPackage.getName());
         }
         currentPackage = null;
@@ -73,7 +79,7 @@ public class Perl6ExternalNamesParser {
         return result;
     }
 
-    public Map<String, Perl6ExternalPackage> getExternal() {
+    public Map<String, Perl6PackageDecl> getPackages() {
         return externalClasses;
     }
 }

@@ -88,11 +88,15 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     @Override
     public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         for (String methodName : mySymbol.methods()) {
-            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Method, new ExternalPerl6RoutineDecl(myProject, myParent, new Perl6ExternalSymbol(Perl6SymbolKind.Method, methodName))));
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Method, new ExternalPerl6RoutineDecl(myProject, myParent, new Perl6ExternalSymbol(Perl6SymbolKind.Method, "." + methodName))));
             if (collector.isSatisfied()) return;
         }
         for (String privateMethodName : mySymbol.privateMethods()) {
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Method, new ExternalPerl6RoutineDecl(myProject, myParent, new Perl6ExternalSymbol(Perl6SymbolKind.Method, privateMethodName))));
+            if (collector.isSatisfied()) return;
+        }
+        for (String variable : mySymbol.attributes()) {
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, new ExternalPerl6VariableDecl(myProject, myParent, new Perl6ExternalSymbol(Perl6SymbolKind.Variable, variable))));
             if (collector.isSatisfied()) return;
         }
     }
