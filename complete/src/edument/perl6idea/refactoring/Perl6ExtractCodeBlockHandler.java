@@ -20,6 +20,7 @@ import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.external.ExternalPerl6RoutineDecl;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.utils.Perl6PsiUtil;
@@ -353,16 +354,14 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         but considering that variable list rarely is too large and
         the refactoring call is not a hot operation, it is likely good enough
         */
-        for (int i = 0, size = usedVariables.size(); i < size; i++) {
-            Perl6Variable var = usedVariables.get(i);
+        for (Perl6Variable var : usedVariables) {
             PsiReference ref = var.getReference();
             assert ref != null;
             PsiElement decl = ref.resolve();
             String name = var.getVariableName();
 
             boolean isDuplicate = false;
-            for (int i1 = 0, size1 = deduplicatedVars.size(); i1 < size1; i1++) {
-                Perl6Variable each = deduplicatedVars.get(i1);
+            for (Perl6Variable each : deduplicatedVars) {
                 if (each.getVariableName().equals(name)) {
                     PsiReference eachRef = each.getReference();
                     assert eachRef != null;
@@ -412,7 +411,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         PsiElement decl = ref.resolve();
         // Declaration that the call invokes
         // if there is no declaration, it's not local
-        if (decl == null)
+        if (decl == null || decl instanceof ExternalPerl6RoutineDecl)
             return false;
 
         // If declared as one of the statements - skip this particular call name
