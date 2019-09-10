@@ -2,7 +2,7 @@ use MONKEY;
 
 my %seen{Mu};
 
-EVAL "\{\n    @*ARGS[0] @*ARGS[1];\n" ~ Q:to/END/;
+EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
     for MY::.kv -> $_, \object {
         # Ignore a few things.
         when '$_' | '$/' | '$!' | '&MONKEY-SEE-NO-EVAL' { }

@@ -271,15 +271,15 @@ public class Perl6SdkType extends SdkType {
         return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME), parser.result());
     }
 
-    public Perl6File getPsiFileForModule(Project project, String directive, String name) {
-        Map<String, Perl6File> cache = directive.equals("use") ? useNameFileCache : needNameFileCache;
+    public Perl6File getPsiFileForModule(Project project, String name, String invocation) {
+        Map<String, Perl6File> cache = invocation.startsWith("use") ? useNameFileCache : needNameFileCache;
         if (cache == null)
             return null;
-        return cache.computeIfAbsent(name, n -> constructExternalPsiFile(project, directive, n));
+        return cache.computeIfAbsent(name, n -> constructExternalPsiFile(project, n, invocation));
     }
 
-    private static Perl6File constructExternalPsiFile(Project project, String directive, String name) {
-        List<Perl6Symbol> symbols = loadModuleSymbols(project, directive, name);
+    private static Perl6File constructExternalPsiFile(Project project, String name, String invocation) {
+        List<Perl6Symbol> symbols = loadModuleSymbols(project, invocation);
         LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
         return new ExternalPerl6File(project, dummy, symbols);
     }
@@ -292,7 +292,7 @@ public class Perl6SdkType extends SdkType {
         needNameFileCache = new ConcurrentHashMap<>();
     }
 
-    private static List<Perl6Symbol> loadModuleSymbols(Project project, String directive, String name) {
+    private static List<Perl6Symbol> loadModuleSymbols(Project project, String invocation) {
         String homePath = getSdkHomeByProject(project);
         File moduleSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-module-symbols.p6");
         if (homePath == null) {
@@ -303,11 +303,10 @@ public class Perl6SdkType extends SdkType {
             return new ArrayList<>();
         }
         GeneralCommandLine cmd = Perl6CommandLine.getPerl6CommandLine(
-            System.getProperty("java.io.tmpdir"),
+            project.getBasePath(),
             homePath);
         cmd.addParameter(moduleSymbols.getPath());
-        cmd.addParameter(directive);
-        cmd.addParameter(name);
+        cmd.addParameter(invocation);
 
         List<String> symbols = Perl6CommandLine.execute(cmd);
         return symbols == null ? new ArrayList<>() : new Perl6ExternalNamesParser(project, symbols).result();
