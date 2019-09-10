@@ -41,7 +41,7 @@ public class Perl6NeedStatementImpl extends StubBasedPsiElementBase<Perl6NeedSta
                 file.contributeGlobals(collector, seen);
             }
             else {
-                Perl6File file = Perl6SdkType.getInstance().getPsiFileForModule(project, "need", name);
+                Perl6File file = Perl6SdkType.getInstance().getPsiFileForModule(project, name, getText());
                 if (file != null) {
                     file.contributeGlobals(collector, new HashSet<>());
                 }
