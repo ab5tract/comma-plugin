@@ -60,7 +60,7 @@ public class Perl6ExternalNamesParser {
                         break;
                     }
                     case "e": {
-                        Perl6PackageDecl psi = new ExternalPerl6PackageDecl(myProject, myFile, "class", j.getString("n"), "Enumeration");
+                        Perl6PackageDecl psi = new ExternalPerl6PackageDecl(myProject, myFile, "class", j.getString("n"), j.getString("t"));
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
                     }

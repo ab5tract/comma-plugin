@@ -273,7 +273,7 @@ sub describer(@elems, $name, Mu \object) {
     } elsif object.HOW.WHAT ~~ Metamodel::ParametricRoleGroupHOW {
         describe-OOP(@elems, $name, "ro", object);
     } elsif object.HOW.WHAT ~~ Metamodel::EnumHOW {
-        @elems.push: %( k => "e", n => $name, t => object.^name, vs => object.^enum_values );
+        @elems.push: %( k => "e", n => $name, t => object.^name );
     } elsif object.HOW.WHAT ~~ Metamodel::SubsetHOW {
         @elems.push: %( k => "ss", n => $name, t => object.^name, b => object.^refinee.^name );
     }
