@@ -144,11 +144,6 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
-    public void testDeclaredExternalPrivateMethodAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role A does NativeCall::Native { method !a {} }; class B does A { method b { self!setup; } }");
-        myFixture.checkHighlighting(false, false, true, true);
-    }
-
     public void testUndeclaredAttributeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { has $!a; }; class B does A { method b { say <error descr=\"Attribute $!b is used, but not declared\">$!b</error>; } }");
         myFixture.checkHighlighting(false, false, true, true);
@@ -161,6 +156,8 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testDeclaredExternalAttributeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
+        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role A does NativeCall::Native { method !a {} }; class B does A { method b { self!setup; } }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 
