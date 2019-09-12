@@ -59,13 +59,10 @@ public class Perl6ExternalNamesParser {
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, psi));
                         break;
                     }
-                    case "e": {
+                    case "e":
+                    case "ss": {
                         Perl6PackageDecl psi = new ExternalPerl6PackageDecl(myProject, myFile, "class", j.getString("n"), j.getString("t"));
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
-                        break;
-                    }
-                    case "ss": {
-                        // TODO subsets
                         break;
                     }
                     case "c":

@@ -8,6 +8,7 @@ import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class EnumTest extends LightFixtureCompletionTestCase {
@@ -33,6 +34,10 @@ public class EnumTest extends LightFixtureCompletionTestCase {
 
     public void testExternalEnum() {
         doTest("SeekTy<caret>", Arrays.asList("SeekType", "SeekType::SeekFromBeginning", "SeekType::SeekFromCurrent", "SeekType::SeekFromEnd"), 4);
+    }
+
+    public void testExternalSubset() {
+        doTest("UIn<caret>", Collections.singletonList("UInt"), 5);
     }
 
     public void doTest(String text, List<String> values, int len) {

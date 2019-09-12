@@ -275,7 +275,7 @@ sub describer(@elems, $name, Mu \object) {
     } elsif object.HOW.WHAT ~~ Metamodel::EnumHOW {
         @elems.push: %( k => "e", n => $name, t => object.^name );
     } elsif object.HOW.WHAT ~~ Metamodel::SubsetHOW {
-        @elems.push: %( k => "ss", n => $name, t => object.^name, b => object.^refinee.^name );
+        @elems.push: %( k => "ss", n => $name, b => object.^refinee.^name );
     }
 }
 
