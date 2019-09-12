@@ -6,30 +6,32 @@ import com.intellij.psi.stubs.IStubElementType;
 import edument.perl6idea.psi.Perl6Variable;
 import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
-import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implements Perl6VariableDecl {
-    private final Perl6Symbol mySymbol;
+    private String myName;
+    private String myScope;
+    private String myType;
 
-    public ExternalPerl6VariableDecl(Project project, PsiElement parent, Perl6Symbol symbol) {
+    public ExternalPerl6VariableDecl(Project project, PsiElement parent, String name, String scope, String type) {
         myProject = project;
         myParent = parent;
-        mySymbol = symbol;
+        myName = name;
+        myScope = scope;
+        myType = type;
     }
 
     @Override
     public String getVariableName() {
-        return mySymbol.getName();
+        return getName();
     }
 
     @NotNull
     @Override
     public String getName() {
-        return mySymbol.getName();
+        return myName;
     }
 
     @Override
@@ -66,7 +68,12 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
 
     @Override
     public String getScope() {
-        return null;
+        return myScope;
+    }
+
+    @Override
+    public String inferType() {
+        return myType;
     }
 
     @Nullable
@@ -77,11 +84,42 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
 
     @Override
     public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
+        if (getScope().equals("has"))
+            return;
 
+        String name = getName();
+        if (name.length() <= 1)
+            return;
+
+        // Our scoped term definitions are not yet implemented in rakudo
+        collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+        if (collector.isSatisfied()) return;
+        if (name.startsWith("&"))
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
+                                                                 this, name.substring(1)));
     }
 
     @Override
     public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
+        if (!getScope().equals("has"))
+            return;
 
+        String name = getName();
+        if (name.length() < 3)
+            return;
+
+        if (Perl6Variable.getTwigil(name) == '!' && symbolsAllowed.privateAttributesVisible) {
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+        } else if (Perl6Variable.getTwigil(name) == '.') {
+            collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+            if (collector.isSatisfied()) return;
+            if (symbolsAllowed.privateAttributesVisible) {
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
+                                                                     this, name.substring(0, 1) + "!" + name.substring(2)));
+                if (collector.isSatisfied()) return;
+            }
+            collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self.foo;
+                                                                  Perl6SymbolKind.Method, this, '.' + name.substring(2)));
+        }
     }
 }

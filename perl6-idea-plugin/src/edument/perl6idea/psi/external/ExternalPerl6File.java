@@ -29,16 +29,14 @@ import java.util.*;
 public class ExternalPerl6File implements Perl6File {
     private final Project myProject;
     private final FileViewProvider myViewProvider;
-    private final List<Perl6Symbol> mySymbols;
     private final VirtualFile myFile;
+    private List<Perl6Symbol> mySymbols = new ArrayList<>();
 
     public ExternalPerl6File(Project project,
-                             VirtualFile file,
-                             List<Perl6Symbol> symbols) {
+                             VirtualFile file) {
         myProject = project;
         myViewProvider = PsiManager.getInstance(project).findViewProvider(file);
         myFile = file;
-        mySymbols = symbols;
     }
 
     @Override
@@ -47,33 +45,16 @@ public class ExternalPerl6File implements Perl6File {
         return new ArrayList<>();
     }
 
+    public void setSymbols(List<Perl6Symbol> symbols) {
+        mySymbols = symbols;
+    }
+
     @Override
     public void contributeGlobals(Perl6SymbolCollector collector, Set<String> seen) {
         for (Perl6Symbol symbol : mySymbols) {
-            PsiNamedElement externalSymbolPsi = createExternalSymbolPsi(symbol);
-            collector.offerSymbol(new Perl6ExplicitSymbol(symbol.getKind(), externalSymbolPsi));
+            collector.offerSymbol(symbol);
             if (collector.isSatisfied())
                 return;
-        }
-    }
-
-    private PsiNamedElement createExternalSymbolPsi(Perl6Symbol symbol) {
-        switch (symbol.getKind()) {
-            case TypeOrConstant: {
-                if (symbol instanceof Perl6ExternalPackage)
-                    return new ExternalPerl6PackageDecl(myProject, this, symbol);
-                else
-                    return new ExternalPerl6Constant(myProject, this, symbol.getName());
-            }
-            case Routine:
-                return new ExternalPerl6RoutineDecl(myProject, this, symbol);
-            case Variable:
-                return new ExternalPerl6VariableDecl(myProject, this, symbol);
-            case Regex:
-                return new ExternalPerl6RegexDecl(myProject, this, symbol);
-            default: {
-                return null;
-            }
         }
     }
 

@@ -243,7 +243,7 @@ public class Perl6SdkType extends SdkType {
                 return getFallback(project);
             }
 
-            return setting = makeSettingSymbols(project, settingLines);
+            return setting = makeSettingSymbols(project, String.join("\n", settingLines));
         } catch (ExecutionException e) {
             LOG.error(e);
             return getFallback(project);
@@ -254,21 +254,23 @@ public class Perl6SdkType extends SdkType {
         File fallback = Perl6Utils.getResourceAsFile("symbols/CORE.fallback");
         if (fallback == null) {
             LOG.error("getCoreSettingFile is called with corrupted resources bundle");
-            return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME), new ArrayList<>());
+            return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
         }
 
         try {
-            return setting = makeSettingSymbols(project, Files.readAllLines(fallback.toPath(), StandardCharsets.UTF_8));
+            return setting = makeSettingSymbols(project, new String(Files.readAllBytes(fallback.toPath()), StandardCharsets.UTF_8));
         } catch (IOException e) {
             LOG.error(e);
-            return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME), new ArrayList<>());
+            return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
         }
     }
 
-    private Perl6File makeSettingSymbols(Project project, List<String> settingLines) {
-        Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(project, settingLines);
+    private Perl6File makeSettingSymbols(Project project, String settingLines) {
+        ExternalPerl6File perl6File = new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
+        Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(project, perl6File, settingLines).parse();
+        perl6File.setSymbols(parser.result());
         settingClasses = parser.getPackages();
-        return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME), parser.result());
+        return perl6File;
     }
 
     public Perl6File getPsiFileForModule(Project project, String name, String invocation) {
@@ -279,9 +281,11 @@ public class Perl6SdkType extends SdkType {
     }
 
     private static Perl6File constructExternalPsiFile(Project project, String name, String invocation) {
-        List<Perl6Symbol> symbols = loadModuleSymbols(project, invocation);
         LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
-        return new ExternalPerl6File(project, dummy, symbols);
+        ExternalPerl6File perl6File = new ExternalPerl6File(project, dummy);
+        List<Perl6Symbol> symbols = loadModuleSymbols(project, perl6File, invocation);
+        perl6File.setSymbols(symbols);
+        return perl6File;
     }
 
     public void invalidateCaches() {
@@ -292,7 +296,7 @@ public class Perl6SdkType extends SdkType {
         needNameFileCache = new ConcurrentHashMap<>();
     }
 
-    private static List<Perl6Symbol> loadModuleSymbols(Project project, String invocation) {
+    private static List<Perl6Symbol> loadModuleSymbols(Project project, Perl6File perl6File, String invocation) {
         String homePath = getSdkHomeByProject(project);
         File moduleSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-module-symbols.p6");
         if (homePath == null) {
@@ -309,6 +313,6 @@ public class Perl6SdkType extends SdkType {
         cmd.addParameter(invocation);
 
         List<String> symbols = Perl6CommandLine.execute(cmd);
-        return symbols == null ? new ArrayList<>() : new Perl6ExternalNamesParser(project, symbols).result();
+        return symbols == null ? new ArrayList<>() : new Perl6ExternalNamesParser(project, perl6File, String.join("\n", symbols)).parse().result();
     }
 }

@@ -144,12 +144,12 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                 }
                 else if (current instanceof Perl6UseStatementStub) {
                     Perl6UseStatementStub use = (Perl6UseStatementStub)current;
-                    contributeTransitive(collector, seen, use.getModuleName());
+                    contributeTransitive(collector, seen, "use", use.getModuleName());
                 }
                 else if (current instanceof Perl6NeedStatementStub) {
                     Perl6NeedStatementStub need = (Perl6NeedStatementStub)current;
                     for (String name : need.getModuleNames())
-                        contributeTransitive(collector, seen, name);
+                        contributeTransitive(collector, seen, "need", name);
                 }
                 else {
                     addChildren = true;
@@ -191,12 +191,12 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                 }
                 else if (current instanceof Perl6UseStatement) {
                     Perl6UseStatement use = (Perl6UseStatement)current;
-                    contributeTransitive(collector, seen, use.getModuleName());
+                    contributeTransitive(collector, seen, "use", use.getModuleName());
                 }
                 else if (current instanceof Perl6NeedStatement) {
                     Perl6NeedStatement need = (Perl6NeedStatement)current;
                     for (String name : need.getModuleNames())
-                        contributeTransitive(collector, seen, name);
+                        contributeTransitive(collector, seen, "need", name);
                 }
                 else if (!(current instanceof Perl6PsiScope)) {
                     addChildren = true;
@@ -209,7 +209,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         }
     }
 
-    private void contributeTransitive(Perl6SymbolCollector collector, Set<String> seen, String name) {
+    private void contributeTransitive(Perl6SymbolCollector collector, Set<String> seen, String directive, String name) {
         if (name == null || seen.contains(name))
             return;
         seen.add(name);
@@ -223,7 +223,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         }
         else {
             // We only have globals, not exports, transitively available.
-            Perl6File needFile = Perl6SdkType.getInstance().getPsiFileForModule(project, "need", name);
+            Perl6File needFile = Perl6SdkType.getInstance().getPsiFileForModule(project, name,directive + " " + name);
             needFile.contributeGlobals(collector, new HashSet<>());
         }
     }
