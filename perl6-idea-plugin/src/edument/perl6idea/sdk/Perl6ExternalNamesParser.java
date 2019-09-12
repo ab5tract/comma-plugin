@@ -2,10 +2,7 @@ package edument.perl6idea.sdk;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import edument.perl6idea.psi.Perl6File;
-import edument.perl6idea.psi.Perl6PackageDecl;
-import edument.perl6idea.psi.Perl6RoutineDecl;
-import edument.perl6idea.psi.Perl6VariableDecl;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
 import edument.perl6idea.psi.external.ExternalPerl6RoutineDecl;
 import edument.perl6idea.psi.external.ExternalPerl6VariableDecl;
@@ -63,7 +60,8 @@ public class Perl6ExternalNamesParser {
                         break;
                     }
                     case "e": {
-                        // TODO enums
+                        Perl6PackageDecl psi = new ExternalPerl6PackageDecl(myProject, myFile, "class", j.getString("n"), "Enumeration");
+                        result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
                     }
                     case "ss": {

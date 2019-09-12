@@ -31,12 +31,16 @@ public class EnumTest extends LightFixtureCompletionTestCase {
         doTest("enum Phospho <\nFoo1\nFoo2\n>; my Phosph<caret>", Arrays.asList("Phospho", "Phospho::Foo1", "Phospho::Foo2"), 3);
     }
 
+    public void testExternalEnum() {
+        doTest("SeekTy<caret>", Arrays.asList("SeekType", "SeekType::SeekFromBeginning", "SeekType::SeekFromCurrent", "SeekType::SeekFromEnd"), 4);
+    }
+
     public void doTest(String text, List<String> values, int len) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> types = myFixture.getLookupElementStrings();
         assertNotNull(types);
+        assertContainsElements(types, values);
         assertEquals(len, types.size());
-        assertTrue(types.containsAll(values));
     }
 }

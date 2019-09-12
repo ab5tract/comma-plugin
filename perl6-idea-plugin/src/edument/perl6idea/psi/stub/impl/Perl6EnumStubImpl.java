@@ -7,14 +7,14 @@ import edument.perl6idea.psi.Perl6Enum;
 import edument.perl6idea.psi.stub.Perl6EnumStub;
 import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
-import java.util.List;
+import java.util.Collection;
 
 public class Perl6EnumStubImpl extends StubBase<Perl6Enum> implements Perl6EnumStub {
     private final String enumName;
     private boolean isExported;
-    private List<String> myEnumValues;
+    private Collection<String> myEnumValues;
 
-    public Perl6EnumStubImpl(StubElement stub, String name, boolean exported, List<String> enumValues) {
+    public Perl6EnumStubImpl(StubElement stub, String name, boolean exported, Collection<String> enumValues) {
         super(stub, Perl6ElementTypes.ENUM);
         enumName = name;
         isExported = exported;
@@ -39,7 +39,7 @@ public class Perl6EnumStubImpl extends StubBase<Perl6Enum> implements Perl6EnumS
     }
 
     @Override
-    public List<String> getEnumValues() {
+    public Collection<String> getEnumValues() {
         return myEnumValues;
     }
 }
