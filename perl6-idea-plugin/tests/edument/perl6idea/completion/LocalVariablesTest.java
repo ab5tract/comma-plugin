@@ -28,7 +28,7 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Collections.singletonList("$a")));
+        assertContainsElements(vars, Collections.singletonList("$a"));
 
         myFixture.type("a;\n@");
         myFixture.complete(CompletionType.BASIC, 1);
@@ -40,14 +40,14 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("%coool1", "%coool2")));
+        assertContainsElements(vars, Arrays.asList("%coool1", "%coool2"));
         assertEquals(2, vars.size());
 
         myFixture.type("1;\n&doooooooo");
         myFixture.complete(CompletionType.BASIC, 1);
         vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("&dooooooood1", "&dooooooood2")));
+        assertContainsElements(vars, Arrays.asList("&dooooooood1", "&dooooooood2"));
         assertEquals(2, vars.size());
     }
 
@@ -56,7 +56,7 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("&sec", "&sech")));
+        assertContainsElements(vars, Arrays.asList("&sec", "&sech"));
         assertEquals(2, vars.size());
     }
 
@@ -65,7 +65,7 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$name1", "$name2")));
+        assertContainsElements(vars, Arrays.asList("$name1", "$name2"));
     }
 
     public void testAttributeCompletionWithInnerClasses() {
@@ -74,7 +74,7 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$!", "$!xyz")));
+        assertContainsElements(vars, Arrays.asList("$!", "$!xyz"));
         assertEquals(2, vars.size());
     }
 

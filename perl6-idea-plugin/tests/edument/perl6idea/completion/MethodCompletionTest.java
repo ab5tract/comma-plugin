@@ -375,15 +375,11 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     }
 
     public void testMethodAsARuleInGrammarCompletion2() {
-        doTestContainsAll("grammar B { method panic() {}; regex regex-a { <.<caret> } }", "orig");
+        doTestContainsAll("grammar B { method panic() {}; regex regex-a { <.<caret> } }", "ast");
     }
 
     public void testGrammarFromSelfHasCursorMethods() {
-        doTestContainsAll("grammar B { method panic() {}; method foo() { self.<caret> }; regex regex-a { <?> } }", ".orig", ".target");
-    }
-
-    public void testInheritedGrammarMethodsCompletion() {
-        doTestContainsAll("grammar A { method a { self.<caret> } }", ".orig", ".pos");
+        doTestContainsAll("grammar B { method panic() {}; method foo() { self.<caret> }; regex regex-a { <?> } }", ".ast", ".panic");
     }
 
     public void testGeneralizedMethodInferenceOnKeyword() {

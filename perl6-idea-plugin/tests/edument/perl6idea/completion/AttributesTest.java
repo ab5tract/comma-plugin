@@ -82,7 +82,7 @@ public class AttributesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$!", "$!a", "$!setup", "$!is-clone")));
+        assertContainsElements(vars, Arrays.asList("$!", "$!a", "$!setup", "$!is-clone"));
     }
 
     public void testOuterFileAttributes() {

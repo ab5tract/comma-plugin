@@ -52,7 +52,7 @@ public class SubCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Collections.singletonList("foo")));
+        assertContainsElements(vars, "foo");
         assertEquals(2, vars.size());
     }
 
@@ -68,7 +68,7 @@ public class SubCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Collections.singletonList("foo")));
+        assertContainsElements(vars, "foo");
         assertEquals(2, vars.size());
     }
 
@@ -77,7 +77,7 @@ public class SubCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("sec", "sech", "set")));
+        assertContainsElements(vars, Arrays.asList("sec", "sech", "set"));
         assertEquals(17, vars.size());
     }
 
@@ -86,7 +86,7 @@ public class SubCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("is-approx", "is-deeply", "isa-ok")));
+        assertContainsElements(vars, Arrays.asList("is-approx", "is-deeply", "isa-ok"));
         assertEquals(4, vars.size());
     }
 
