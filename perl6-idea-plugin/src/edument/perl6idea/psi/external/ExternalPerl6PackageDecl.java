@@ -67,12 +67,12 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
 
     @Override
     public List<Perl6PackageDecl> collectChildren() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public List<Perl6PackageDecl> collectParents() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override

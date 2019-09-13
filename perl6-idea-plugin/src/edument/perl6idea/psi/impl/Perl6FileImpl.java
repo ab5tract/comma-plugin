@@ -86,6 +86,11 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         super(viewProvider, Perl6Language.INSTANCE);
     }
 
+    @Override
+    public boolean isReal() {
+        return true;
+    }
+
     @NotNull
     @Override
     public FileType getFileType() {

@@ -2,10 +2,9 @@ package edument.perl6idea.providers;
 
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
+import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
 import com.intellij.navigation.GotoRelatedItem;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.NotNullFunction;
 import com.intellij.util.containers.ContainerUtil;
@@ -13,11 +12,9 @@ import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6Trait;
-import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
-import edument.perl6idea.psi.stub.index.Perl6IndexableType;
+import edument.perl6idea.psi.external.Perl6ExternalPsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.codeInsight.navigation.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,8 +32,16 @@ public class Perl6LineMarkerProvider extends RelatedItemLineMarkerProvider {
 
         List<PsiElement> targets = new ArrayList<>();
 
-        targets.addAll(decl.collectParents());
-        targets.addAll(decl.collectChildren());
+        for (Perl6PackageDecl parent : decl.collectParents()) {
+            if (parent instanceof Perl6ExternalPsiElement)
+                continue;
+            targets.add(parent);
+        }
+        for (Perl6PackageDecl child : decl.collectChildren()) {
+            if (child instanceof Perl6ExternalPsiElement)
+                continue;
+            targets.add(child);
+        }
 
         if (targets.size() > 0)
             result.add(NavigationGutterIconBuilder

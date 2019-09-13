@@ -40,6 +40,11 @@ public class ExternalPerl6File implements Perl6File {
     }
 
     @Override
+    public boolean isReal() {
+        return false;
+    }
+
+    @Override
     public List<Perl6PsiDeclaration> getExports() {
         // For external files, all work is done by `contributeGlobals`
         return new ArrayList<>();
