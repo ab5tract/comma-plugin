@@ -1,4 +1,4 @@
-package output;
+package edument.perl6idea.output;
 
 import com.intellij.execution.filters.Filter;
 import com.intellij.ide.DataManager;
