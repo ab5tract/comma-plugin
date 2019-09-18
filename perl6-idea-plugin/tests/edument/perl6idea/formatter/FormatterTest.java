@@ -8,23 +8,14 @@ import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import org.jetbrains.annotations.NotNull;
 
-public class FormatterTest extends LightCodeInsightFixtureTestCase {
+public class FormatterTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/formatter";
   }
-
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
 
     public void testBasicFormatting() {
         myFixture.configureByFiles("basic.in.p6");
@@ -61,7 +52,7 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
         CommandProcessor.getInstance().executeCommand(getProject(), () -> {
             EditorActionManager actionManager = EditorActionManager.getInstance();
             EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
-            actionHandler.execute(getEditor(), null, DataManager.getInstance().getDataContextFromFocus().getResult());
+            actionHandler.execute(myFixture.getEditor(), null, DataManager.getInstance().getDataContextFromFocus().getResult());
         }, "", null);
         myFixture.checkResult("{\n\n}\n<caret>");
     }
@@ -106,7 +97,7 @@ public class FormatterTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkResultByFile("hash.out.p6");
     }
 
-    /* Would be ideal to get this one to work also. */
+    /* TODO Would be ideal to get this one to work also. */
     /*public void testMultilineHashWithMultilineValueFormatting() {
         myFixture.configureByFiles("hash-multiline-values.in.p6");
         WriteCommandAction.runWriteCommandAction(null, () -> {

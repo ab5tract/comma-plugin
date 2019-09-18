@@ -1,49 +1,16 @@
 package edument.perl6idea.completion;
 
 import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
-import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import edument.perl6idea.sdk.Perl6SdkType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class AttributesTest extends LightCodeInsightFixtureTestCase {
-    private Sdk testSdk;
-
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
+public class AttributesTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/completion";
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            String homePath = Perl6SdkType.getInstance().suggestHomePath();
-            assertNotNull("Found a perl6 in path to use in tests", homePath);
-            testSdk = SdkConfigurationUtil.createAndAddSDK(homePath, Perl6SdkType.getInstance());
-            ProjectRootManager.getInstance(myModule.getProject()).setProjectSdk(testSdk);
-        });
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        SdkConfigurationUtil.removeSdk(testSdk);
-        super.tearDown();
     }
 
     public void testOwnAttributes() {

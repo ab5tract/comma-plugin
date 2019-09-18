@@ -3,12 +3,13 @@ package edument.perl6idea.refactoring;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import com.intellij.testFramework.UsefulTestCase;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.Perl6ConstantExtractionHandlerMock;
 import edument.perl6idea.Perl6VariableExtractionHandlerMock;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.refactoring.introduce.variable.Perl6IntroduceVariableHandler;
 
-public class ExtractDeclarationTest extends LightPlatformCodeInsightFixtureTestCase {
+public class ExtractDeclarationTest extends CommaFixtureTestCase {
     public void testExpressionVariableExtraction() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say pi; say 1<selection>0 + 5</selection>0; say 10 + 50;");
         Perl6IntroduceVariableHandler handler = new Perl6VariableExtractionHandlerMock(null,  "$foo");

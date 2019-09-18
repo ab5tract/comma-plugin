@@ -1,23 +1,14 @@
 package edument.perl6idea.completion;
 
 import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.codeInsight.completion.LightFixtureCompletionTestCase;
-import com.intellij.testFramework.LightProjectDescriptor;
-import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class EnumTest extends LightFixtureCompletionTestCase {
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
+public class EnumTest extends CommaFixtureTestCase {
     public void testEnumCompletionStringLiteral() {
         doTest("enum Phospho <FooName1 FooName2>; my FooName<caret>",
                Arrays.asList("FooName1", "FooName2", "Phospho::FooName1", "Phospho::FooName2"), 4);

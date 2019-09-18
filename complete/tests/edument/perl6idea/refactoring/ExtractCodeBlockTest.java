@@ -11,13 +11,14 @@ import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCa
 import com.intellij.util.Consumer;
 import com.intellij.util.Function;
 import com.intellij.util.Producer;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.psi.*;
 import junit.framework.TestCase;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ExtractCodeBlockTest extends LightPlatformCodeInsightFixtureTestCase {
+public class ExtractCodeBlockTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/block-extract";

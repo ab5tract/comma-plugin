@@ -19,7 +19,8 @@ import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PsiDeclaration;
-import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +28,9 @@ import javax.swing.*;
 import java.util.*;
 
 public class ExternalPerl6File implements Perl6File {
-    private final Project myProject;
-    private final FileViewProvider myViewProvider;
-    private final VirtualFile myFile;
+    private Project myProject;
+    private FileViewProvider myViewProvider;
+    private VirtualFile myFile;
     private List<Perl6Symbol> mySymbols = new ArrayList<>();
 
     public ExternalPerl6File(Project project,
