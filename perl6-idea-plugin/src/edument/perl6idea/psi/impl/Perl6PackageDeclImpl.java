@@ -225,22 +225,18 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             }
         }
 
-        if (isAny) {
-            Perl6PackageDecl any = Perl6SdkType.getInstance().getCoreSettingSymbol("Any", this);
-            if (any != null)
-                any.contributeMOPSymbols(collector, new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role")));
-        }
-        if (isMu) {
-            Perl6PackageDecl mu = Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this);
-            if (mu != null)
-                mu.contributeMOPSymbols(collector, new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role")));
-        }
-        if (isGrammar) {
-            Perl6PackageDecl cursor = Perl6SdkType.getInstance().getCoreSettingSymbol("Cursor", this);
-            if (cursor != null)
-                cursor.contributeMOPSymbols(collector, new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role")));
-        }
+        // Contribute implicit symbols from Any/Mu and Cursor for grammars
+        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(this);
+        MOPSymbolsAllowed allowed = new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role"));
 
+        if (isAny)
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
+        if (isMu)
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
+        if (isGrammar)
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cursor", allowed);
+
+        // Contribute from explicit parents, either local or external
         for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
             // Local perl6PackageDecl
             Perl6PackageDecl typeRef = pair.second;

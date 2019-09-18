@@ -17,7 +17,7 @@ import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.external.ExternalPerl6File;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
+import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jdom.Element;
@@ -33,10 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Perl6SdkType extends SdkType {
@@ -44,10 +41,16 @@ public class Perl6SdkType extends SdkType {
     public static final String SETTING_FILE_NAME = "SETTINGS.pm6";
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
     private Map<String, String> moarBuildConfig;
+
+    // Symbol caches
+    private Map<String, String> useNameSymbolCache = new ConcurrentHashMap<>();
     private Map<String, Perl6File> useNameFileCache = new ConcurrentHashMap<>();
+
+    private Map<String, String> needNameSymbolCache = new ConcurrentHashMap<>();
     private Map<String, Perl6File> needNameFileCache = new ConcurrentHashMap<>();
+
+    private String settingSymbols;
     private Perl6File setting;
-    private Map<String, Perl6PackageDecl> settingClasses = null;
 
     private Perl6SdkType() {
         super(NAME);
@@ -208,13 +211,6 @@ public class Perl6SdkType extends SdkType {
         return moarBuildConfig;
     }
 
-    @Nullable
-    public Perl6PackageDecl getCoreSettingSymbol(String name, Perl6PsiElement element) {
-        if (settingClasses == null)
-            getCoreSettingFile(element);
-        return settingClasses.get(name);
-    }
-
     public Perl6File getCoreSettingFile(Perl6PsiElement element) {
         if (setting != null)
             return setting;
@@ -269,7 +265,6 @@ public class Perl6SdkType extends SdkType {
         ExternalPerl6File perl6File = new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
         Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(project, perl6File, settingLines).parse();
         perl6File.setSymbols(parser.result());
-        settingClasses = parser.getPackages();
         return perl6File;
     }
 
@@ -291,7 +286,6 @@ public class Perl6SdkType extends SdkType {
     public void invalidateCaches() {
         moarBuildConfig = null;
         setting = null;
-        settingClasses = null;
         useNameFileCache = new ConcurrentHashMap<>();
         needNameFileCache = new ConcurrentHashMap<>();
     }
@@ -314,5 +308,18 @@ public class Perl6SdkType extends SdkType {
 
         List<String> symbols = Perl6CommandLine.execute(cmd);
         return symbols == null ? new ArrayList<>() : new Perl6ExternalNamesParser(project, perl6File, String.join("\n", symbols)).parse().result();
+    }
+
+    public static void contributeParentSymbolsFromCore(@NotNull Perl6SymbolCollector collector,
+                                                        Perl6File coreSetting,
+                                                        String parentName,
+                                                       MOPSymbolsAllowed allowed) {
+        Perl6SingleResolutionSymbolCollector parentCollector =
+          new Perl6SingleResolutionSymbolCollector(parentName, Perl6SymbolKind.TypeOrConstant);
+        coreSetting.contributeGlobals(parentCollector, new HashSet<>());
+        if (parentCollector.isSatisfied()) {
+            Perl6PackageDecl decl = (Perl6PackageDecl)parentCollector.getResult().getPsi();
+            decl.contributeMOPSymbols(collector, allowed);
+        }
     }
 }

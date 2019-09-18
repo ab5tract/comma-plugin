@@ -190,12 +190,12 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
     public static Collection<Perl6Symbol> MuAnyMethods(Perl6PsiElement element, @Nullable Perl6VariantsSymbolCollector collector) {
         if (collector == null)
             collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-        Perl6PackageDecl any = Perl6SdkType.getInstance().getCoreSettingSymbol("Any", element);
-        if (any != null)
-            any.contributeMOPSymbols(collector, new MOPSymbolsAllowed(true, true, true, true));
-        Perl6PackageDecl mu = Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", element);
-        if (mu != null)
-            mu.contributeMOPSymbols(collector, new MOPSymbolsAllowed(true, true, true, true));
+
+        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(element);
+        MOPSymbolsAllowed symbolsAllowed = new MOPSymbolsAllowed(true, true, true, true);
+        Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", symbolsAllowed);
+        Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", symbolsAllowed);
+
         return collector.getVariants();
     }
 
