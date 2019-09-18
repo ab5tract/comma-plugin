@@ -2,11 +2,16 @@ package edument.perl6idea.sdk;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.Perl6File;
+import edument.perl6idea.psi.Perl6PackageDecl;
+import edument.perl6idea.psi.Perl6RoutineDecl;
+import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
 import edument.perl6idea.psi.external.ExternalPerl6RoutineDecl;
 import edument.perl6idea.psi.external.ExternalPerl6VariableDecl;
-import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,24 +20,32 @@ import org.json.JSONObject;
 import java.util.*;
 
 public class Perl6ExternalNamesParser {
-    private final String myJson;
+    private JSONArray myJson;
     private final Project myProject;
     private final Perl6File myFile;
     private List<Perl6Symbol> result = new ArrayList<>();
-    private Set<String> seen = new HashSet<>();
     private Map<String, Perl6PackageDecl> externalClasses = new HashMap<>();
 
-    public Perl6ExternalNamesParser(Project project, Perl6File file, String json) {
+    public Perl6ExternalNamesParser(Project project, Perl6File file, JSONArray json) {
         myProject = project;
         myFile = file;
         myJson = json;
     }
 
+    public Perl6ExternalNamesParser(Project project, Perl6File file, String json) {
+        myProject = project;
+        myFile = file;
+        try {
+            myJson = new JSONArray(json);
+        } catch (JSONException e) {
+            Logger.getInstance(Perl6ExternalNamesParser.class).warn(e);
+            myJson = new JSONArray();
+        }
+    }
+
     public Perl6ExternalNamesParser parse() {
         try {
-            if (myJson.length() < 2) return this;
-            JSONArray file = new JSONArray(myJson);
-            for (Object object : file) {
+            for (Object object : myJson) {
                 if (!(object instanceof JSONObject)) continue;
 
                 JSONObject j = (JSONObject)object;
