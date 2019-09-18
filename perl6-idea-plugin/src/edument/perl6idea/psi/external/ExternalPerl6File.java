@@ -380,7 +380,7 @@ public class ExternalPerl6File implements Perl6File {
 
     @Override
     public String toString() {
-        return null;
+        return myFile.getName();
     }
 
     @Override
