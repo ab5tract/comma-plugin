@@ -21741,7 +21741,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
-                this.bsFailMark(10);
+                this.bsFailMark(11);
                 this.bsMark(1);
                 if (!(this.literal("package"))) {
                     if (this.backtrack()) {
@@ -21750,8 +21750,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(10);
-                this.state = 10;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 1:
@@ -21763,8 +21763,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(10);
-                this.state = 10;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 2:
@@ -21776,8 +21776,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(10);
-                this.state = 10;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 3:
@@ -21789,8 +21789,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(10);
-                this.state = 10;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 4:
@@ -21803,8 +21803,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                     }
                 }
                 this.assignDynamicVariable("$*IS_ROLE", 1);
-                this.bsCommit(10);
-                this.state = 10;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 5:
@@ -21816,8 +21816,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(10);
-                this.state = 10;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 6:
@@ -21829,8 +21829,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(10);
-                this.state = 10;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 7:
@@ -21842,8 +21842,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(10);
-                this.state = 10;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 8:
@@ -21855,11 +21855,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.bsCommit(10);
-                this.state = 10;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 9:
+                this.bsMark(10);
                 if (!(this.literal("actor"))) {
                     if (this.backtrack()) {
                         continue;
@@ -21867,10 +21868,22 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.state = 10;
+                this.bsCommit(11);
+                this.state = 11;
                 continue;
 
             case 10:
+                if (!(this.literal("model"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 11;
+                continue;
+
+            case 11:
                 return -1;
 
             }
