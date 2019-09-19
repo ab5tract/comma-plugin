@@ -19,8 +19,10 @@ import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PsiDeclaration;
+import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,7 +60,16 @@ public class ExternalPerl6File implements Perl6File {
     @Override
     public void contributeGlobals(Perl6SymbolCollector collector, Set<String> seen) {
         for (Perl6Symbol symbol : mySymbols) {
-            collector.offerSymbol(symbol);
+            if (symbol.getKind() == Perl6SymbolKind.Routine) {
+                Perl6RoutineDecl psi = (Perl6RoutineDecl)symbol.getPsi();
+                if (psi.getMultiness().equals("once")) {
+                    collector.offerSymbol(symbol);
+                } else {
+                    collector.offerMultiSymbol(symbol, psi.getMultiness().equals("proto"));
+                }
+            } else {
+                collector.offerSymbol(symbol);
+            }
             if (collector.isSatisfied())
                 return;
         }
