@@ -38,7 +38,14 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
 
     @Override
     public String getRoutineKind() {
-        return myKind;
+        switch (myKind) {
+            case "m":
+                return "method";
+            case "sm":
+                return "submethod";
+            default:
+                return "sub";
+        }
     }
 
     @Override
@@ -70,8 +77,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
 
     @Override
     public Perl6Parameter[] getParams() {
-        System.out.println("Get params!");
-        return new Perl6Parameter[0];
+        return mySignature.getParameters();
     }
 
     @Override
