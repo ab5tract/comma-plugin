@@ -1,3 +1,4 @@
+use JSON::Fast;
 use Test;
 
 plan *;
@@ -5,33 +6,41 @@ plan *;
 constant $MODULE-SCRIPT = '../../resources/symbols/perl6-module-symbols.p6';
 
 subtest {
-    my $proc = run $*EXECUTABLE, $MODULE-SCRIPT, 'use', 'NativeCall', :out;
+    my $proc = run $*EXECUTABLE, $MODULE-SCRIPT, 'use NativeCall', :out;
     my $output = $proc.out.slurp(:close);
-    # Subs, constants, types
-    like $output, /'V:&explicitly-manage'/, 'Subroutine is exported';
+    my $data;
+    lives-ok { $data = from-json $output }, "Can parse json";
+    #    # Subs, constants, types
+    ok $data.first({ $_<n> eq "explicitly-manage" && $_<k> eq "s" && $_<m> == 0 }), 'Subroutine is exported';
     # Roles
-    like $output, /'R:Native'/, 'Native role is exported';
-    like $output, /'R:Native' .+? '!setup'/, 'Native role private methods are exported';
-    like $output, /'R:Native' .+? 'CALL-ME'/, 'Native role methods are exported';
-    like $output, /'R:Native' .+? '$!arity'/, 'Native role attributes are exported';
+    my $native = $data.first({ $_<n> eq "NativeCall::Native" });
+    ok $native, 'Native role is exported';
+    ok $native<a>.first({ $_<n> eq '$!setup' && $_<t> eq "int" }), 'Native private attributes are exported';
+    ok $native<m>.first({ $_<n> eq 'CALL-ME' && $_<k> eq 'm' && $_<m> == 0 && $_<s><p> eqv ['|args is raw'] && $_<s><r> eq 'Mu'}), 'Native role methods are exported';
+    ok $native<m>.first({ $_<n> eq '!setup' && $_<k> eq 'm' && $_<m> == 0 && $_<s><r> eq 'Mu' && $_<s><p> eqv ['*%_'] }), 'Native role methods are exported';
     # Classes
-    like $output, /'C:CArray'/, 'CArray class is exported';
-    like $output, /'C:CArray' .+? 'AT-POS'/, 'CArray class methods are exported';
+    $native = $data.first({ $_<n> eq 'CArray' });
+    ok $native, 'CArray class is exported';
+    ok $native<m>.first({ $_<n> eq 'AT-POS' }), 'CArray class methods are exported';
     # Exports
     subtest {
-        like $output, /'C:Pointer'/;
-        like $output, /'C:OpaquePointer'/;
-        like $output, /'C:NativeCall::Types::Pointer'/;
-        like $output, /'NativeCall::EXPORT::types::Pointer'/;
-        like $output, /'NativeCall::EXPORT::DEFAULT::Pointer'/;
-        like $output, /'NativeCall::EXPORT::ALL::Pointer'/;
+      ok $data.first({ $_<n> eq 'Pointer' });
+      ok $data.first({ $_<n> eq 'OpaquePointer' });
+      ok $data.first({ $_<n> eq 'NativeCall::Types::Pointer' });
+      ok $data.first({ $_<n> eq 'NativeCall::EXPORT::types::Pointer' });
+      ok $data.first({ $_<n> eq 'NativeCall::EXPORT::DEFAULT::Pointer' });
+      ok $data.first({ $_<n> eq 'NativeCall::EXPORT::ALL::Pointer' });
     }, 'Various symbols to access Pointer are exported';
 }, 'Module script test';
 
 subtest {
-    my $proc = run $*EXECUTABLE, $MODULE-SCRIPT, 'use', 'SymbolScriptModule', :out;
+    my $proc = run $*EXECUTABLE, $MODULE-SCRIPT, 'use SymbolScriptModule', :out;
     my $output = $proc.out.slurp(:close);
-    like $output, /'V:$test-variable'/, 'Module variable is exported';
+    my $data;
+    lives-ok { $data = from-json $output }, 'Can parse json';
+    ok $data[0]<n> eq '$test-variable';
+    ok $data[0]<k> eq 'v';
+    ok $data[0]<t> eq 'Any';
 }
 
 done-testing;
