@@ -2542,7 +2542,7 @@ grammar MAIN {
 
     token package_kind {
         'package' || 'module' || 'class' || 'grammar' || 'role' { $*IS_ROLE = 1 } ||
-        'knowhow' || 'native' || 'slang' || 'monitor' || 'actor'
+        'knowhow' || 'native' || 'slang' || 'monitor' || 'actor' || 'model'
     }
 
     token package_def {
