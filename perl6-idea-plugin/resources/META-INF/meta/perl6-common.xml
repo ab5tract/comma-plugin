@@ -144,6 +144,9 @@
     <component>
       <implementation-class>edument.perl6idea.utils.Perl6ModuleListFetcher</implementation-class>
     </component>
+    <component>
+      <implementation-class>edument.perl6idea.sdk.Perl6SdkCacheManager</implementation-class>
+    </component>
   </project-components>
 
 </idea-plugin>
