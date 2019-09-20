@@ -53,7 +53,7 @@ public class Perl6ExternalNamesParser {
                 switch (j.getString("k")) {
                     case "n": {
                         Perl6PackageDecl psi = new ExternalPerl6PackageDecl(
-                            myProject, myFile, "", j.getString("n"), j.getString("t"));
+                            myProject, myFile, "", j.getString("n"), j.getString("t"), "");
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
                     }
@@ -74,7 +74,7 @@ public class Perl6ExternalNamesParser {
                     }
                     case "e":
                     case "ss": {
-                        Perl6PackageDecl psi = new ExternalPerl6PackageDecl(myProject, myFile, "class", j.getString("n"), j.getString("t"));
+                        Perl6PackageDecl psi = new ExternalPerl6PackageDecl(myProject, myFile, "class", j.getString("n"), j.getString("t"), "A");
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
                     }
@@ -106,7 +106,7 @@ public class Perl6ExternalNamesParser {
 
                         Perl6PackageDecl psi = new ExternalPerl6PackageDecl(
                             myProject, myFile, j.getString("k"),
-                            j.getString("n"), j.getString("t"),
+                            j.getString("n"), j.getString("t"), j.getString("b"),
                             routines, attrs);
                         externalClasses.put(psi.getName(), psi);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));

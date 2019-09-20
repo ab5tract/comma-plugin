@@ -9,6 +9,7 @@ import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,21 +20,41 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     private final String myType;
     private List<Perl6RoutineDecl> myRoutines = new ArrayList<>();
     private List<Perl6VariableDecl> myAttributes = new ArrayList<>();
+    private String myBase;
     private String myPackageKind;
     private String myName;
 
-    public ExternalPerl6PackageDecl(Project project, Perl6File file, String kind, String name, String type,
-                                    List<Perl6RoutineDecl> routines,
-                                    List<Perl6VariableDecl> attrs) {
-        this(project, file, kind, name, type);
+    public ExternalPerl6PackageDecl(Project project, Perl6File file, String kind, String name, String type, String base,
+                                    List<Perl6RoutineDecl> routines, List<Perl6VariableDecl> attrs) {
+        this(project, file, kind, name, type, base);
         myRoutines = routines;
         myAttributes = attrs;
     }
 
-    public ExternalPerl6PackageDecl(Project project, Perl6File file, String kind, String name, String type) {
+    public ExternalPerl6PackageDecl(Project project, Perl6File file, String kind, String name, String type, String base) {
         myProject = project;
         myParent = file;
-        myPackageKind = kind;
+        switch (kind) {
+            case "ro":
+                myPackageKind = "role";
+                break;
+            case "c":
+                myPackageKind = "c";
+                break;
+        }
+        switch (base) {
+            case "M":
+                myBase = "Mu";
+                break;
+            case "A":
+                myBase = "Any";
+                break;
+            case "C":
+                myBase = "Cool";
+                break;
+            default:
+                myBase = base;
+        }
         myName = name;
         myType = type;
     }
@@ -119,6 +140,31 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
         for (Perl6VariableDecl variable : myAttributes) {
             variable.contributeMOPSymbols(collector, symbolsAllowed);
             if (collector.isSatisfied()) return;
+        }
+        if (myBase.isEmpty())
+            return;
+        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(this);
+        MOPSymbolsAllowed allowed = new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role"));
+
+        // Add additional methods from Mu/Any/Cool as we don't
+        // have a more complex structure for parents for now
+
+        if (myName.equals("Mu"))
+            return;
+
+        // Everything is Mu
+        Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
+        // If base is not Mu, add Any...
+        if (!myBase.equals("Mu")) {
+            if (myName.equals("Any"))
+                return;
+
+            // If base is either Cool or Any, get Any...
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
+
+            // If base is Cool, add Cool
+            if (!myName.equals("Cool") && myBase.equals("Cool"))
+                Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cool", allowed);
         }
     }
 }
