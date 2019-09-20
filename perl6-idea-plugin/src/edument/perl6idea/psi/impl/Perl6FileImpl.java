@@ -49,9 +49,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         // dynamic variables
         VARIABLE_SYMBOLS.put("$*ARGFILES", null);
         VARIABLE_SYMBOLS.put("@*ARGS", "Array");
-        VARIABLE_SYMBOLS.put("$*IN", "IO::Special");
-        VARIABLE_SYMBOLS.put("$*OUT", "IO::Special");
-        VARIABLE_SYMBOLS.put("$*ERR", "IO::Special");
+        VARIABLE_SYMBOLS.put("$*IN", "IO::Handle");
+        VARIABLE_SYMBOLS.put("$*OUT", "IO::Handle");
+        VARIABLE_SYMBOLS.put("$*ERR", "IO::Handle");
         VARIABLE_SYMBOLS.put("%*ENV", "Hash");
         VARIABLE_SYMBOLS.put("$*REPO", null);
         VARIABLE_SYMBOLS.put("$*INIT-DISTANT", "Instant");
