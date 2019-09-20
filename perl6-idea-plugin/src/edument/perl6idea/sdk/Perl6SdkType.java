@@ -12,6 +12,7 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.psi.PsiElement;
 import com.intellij.testFramework.LightVirtualFile;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PackageDecl;
@@ -53,6 +54,8 @@ public class Perl6SdkType extends SdkType {
 
     private JSONArray settingJson;
     private Perl6File setting;
+    private boolean mySettingsStarted = false;
+    private Set<String> myPackageStarted = ContainerUtil.newConcurrentSet();
 
     private Perl6SdkType() {
         super(NAME);
@@ -232,18 +235,24 @@ public class Perl6SdkType extends SdkType {
         }
 
         try {
-            GeneralCommandLine cmd = Perl6CommandLine.pushFile(
+            if (!mySettingsStarted) {
+                GeneralCommandLine cmd = Perl6CommandLine.pushFile(
                     Perl6CommandLine.getPerl6CommandLine(
-                            System.getProperty("java.io.tmpdir"),
-                            perl6path),
+                        System.getProperty("java.io.tmpdir"),
+                        perl6path),
                     coreSymbols);
-            List<String> settingLines = Perl6CommandLine.execute(cmd);
-            if (settingLines == null) {
-                LOG.warn("getCoreSettingFile got no symbols from Perl 6, using fallback");
-                return getFallback(project);
+                Thread thread = new Thread(() -> {
+                    mySettingsStarted = true;
+                    List<String> settingLines = Perl6CommandLine.execute(cmd);
+                    if (settingLines == null) {
+                        LOG.warn("getCoreSettingFile got no symbols from Perl 6, using fallback");
+                        getFallback(project);
+                    }
+                    setting = makeSettingSymbols(project, String.join("\n", settingLines));
+                });
+                thread.start();
             }
-
-            return setting = makeSettingSymbols(project, String.join("\n", settingLines));
+            return new ExternalPerl6File(project, new LightVirtualFile("DUMMY"));
         } catch (ExecutionException e) {
             LOG.error(e);
             return getFallback(project);
@@ -288,11 +297,19 @@ public class Perl6SdkType extends SdkType {
         // If we have anything in file cache, return it
         if (cache.containsKey(name))
             return cache.get(name);
-        // if not, check if we have symbol cache, if yes, parse, save and return it
-        if (symbolCache.containsKey(name))
-            return cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, symbolCache.get(n)));
-        // if no symbol cache, compute as usual
-        return cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, invocation));
+
+        if (!myPackageStarted.contains(name)) {
+            myPackageStarted.add(name);
+            Thread thread = new Thread(() -> {
+                // if not, check if we have symbol cache, if yes, parse, save and return it
+                if (symbolCache.containsKey(name))
+                    cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, symbolCache.get(n)));
+                // if no symbol cache, compute as usual
+                cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, invocation));
+            });
+            thread.start();
+        }
+        return new ExternalPerl6File(project, new LightVirtualFile("DUMMY"));
     }
 
     private static Perl6File constructExternalPsiFile(Project project, String name, JSONArray externalsJSON) {
@@ -318,6 +335,8 @@ public class Perl6SdkType extends SdkType {
     }
 
     public void invalidateFileCache() {
+        myPackageStarted = ContainerUtil.newConcurrentSet();
+        mySettingsStarted = false;
         useNameFileCache = new ConcurrentHashMap<>();
         needNameFileCache = new ConcurrentHashMap<>();
         setting = null;
