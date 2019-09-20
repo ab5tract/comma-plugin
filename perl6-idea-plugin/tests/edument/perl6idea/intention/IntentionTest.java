@@ -152,11 +152,13 @@ public class IntentionTest extends CommaFixtureTestCase {
         executeIntention("Change");
     }
 
-    public void testPackageTypeChangeIntoMonitorIntention() {
+    public void testPackageTypeChangeIntoMonitorIntention() throws InterruptedException {
+        ensureModuleIsLoaded("OO::Monitors");
         executeIntention("Change");
     }
 
-    public void testPackageTypeChangeIntoMonitorPresent() {
+    public void testPackageTypeChangeIntoMonitorPresent() throws InterruptedException {
+        ensureModuleIsLoaded("OO::Monitors");
         executeIntention("Change");
     }
 

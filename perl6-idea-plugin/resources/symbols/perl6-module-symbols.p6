@@ -290,9 +290,8 @@ sub describer(@elems, $name, Mu \object) {
 }
 
 sub describe-OOP(@elems, $name, $kind, Mu \object) {
-    my $b = $kind eq 'c'
-            ?? object.isa(Cool) ?? 'C' !! object.isa(Any) ?? 'A' !! 'M'
-            !! object ~~ Cool ?? 'C' !! object ~~ Any ?? 'A' !! 'M';
+    use nqp;
+    my $b = nqp::istype(object, Cool) ?? 'C' !! nqp::istype(object, Any) ?? 'A' !! 'M';
     my %class = k => $kind, n => $name, t => object.^name, :$b;
     my @privates;
     if $kind eq "ro" {

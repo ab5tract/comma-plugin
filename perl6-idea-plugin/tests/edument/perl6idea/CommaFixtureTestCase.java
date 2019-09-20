@@ -6,11 +6,12 @@ import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
 public class CommaFixtureTestCase extends LightPlatformCodeInsightFixtureTestCase {
-    private Sdk testSdk;
+    protected Sdk testSdk;
 
     @NotNull
     @Override
@@ -21,6 +22,15 @@ public class CommaFixtureTestCase extends LightPlatformCodeInsightFixtureTestCas
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/completion";
+    }
+
+    protected void ensureModuleIsLoaded(String moduleName) throws InterruptedException {
+        Perl6SdkType sdkType = (Perl6SdkType)testSdk.getSdkType();
+        Perl6File file = sdkType.getPsiFileForModule(getProject(), moduleName, "use " + moduleName);
+        while (file.getName().equals("DUMMY")) {
+            Thread.sleep(1000);
+            file = sdkType.getPsiFileForModule(getProject(), moduleName, "use " + moduleName);
+        }
     }
 
     @Override
