@@ -285,6 +285,8 @@ public class Perl6SdkType extends SdkType {
     }
 
     private static Perl6File makeSettingSymbols(Project project, JSONArray settingJson) {
+        if (project.isDisposed())
+            return null;
         ExternalPerl6File perl6File = new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
         Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(project, perl6File, settingJson).parse();
         perl6File.setSymbols(parser.result());
