@@ -266,16 +266,13 @@ public class Perl6SdkType extends SdkType {
     }
 
     private Perl6File makeSettingSymbols(Project project, String json) {
-        JSONArray settingPackages;
         try {
-            settingJson = settingPackages = new JSONArray(json);
+            settingJson = new JSONArray(json);
+            return makeSettingSymbols(project, settingJson);
         } catch (JSONException e) {
-            settingPackages = new JSONArray();
+            Logger.getInstance(Perl6SdkType.class).warn(e);
         }
-        ExternalPerl6File perl6File = new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
-        Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(project, perl6File, settingPackages).parse();
-        perl6File.setSymbols(parser.result());
-        return perl6File;
+        return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
     }
 
     private static Perl6File makeSettingSymbols(Project project, JSONArray settingJson) {
