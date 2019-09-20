@@ -47,7 +47,8 @@ public class SubCompletionTest extends CommaFixtureTestCase {
         assertEquals(17, vars.size());
     }
 
-    public void testCompletionFromImport() {
+    public void testCompletionFromImport() throws InterruptedException {
+        ensureModuleIsLoaded("Test");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use Test;\nis-<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();

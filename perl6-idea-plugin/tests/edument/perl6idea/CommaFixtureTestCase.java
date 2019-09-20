@@ -25,11 +25,15 @@ public class CommaFixtureTestCase extends LightPlatformCodeInsightFixtureTestCas
     }
 
     protected void ensureModuleIsLoaded(String moduleName) throws InterruptedException {
+        ensureModuleIsLoaded(moduleName, "use");
+    }
+
+    protected void ensureModuleIsLoaded(String moduleName, String invocation) throws InterruptedException {
         Perl6SdkType sdkType = (Perl6SdkType)testSdk.getSdkType();
-        Perl6File file = sdkType.getPsiFileForModule(getProject(), moduleName, "use " + moduleName);
+        Perl6File file = sdkType.getPsiFileForModule(getProject(), moduleName, invocation + " " + moduleName);
         while (file.getName().equals("DUMMY")) {
-            Thread.sleep(1000);
-            file = sdkType.getPsiFileForModule(getProject(), moduleName, "use " + moduleName);
+            Thread.sleep(100);
+            file = sdkType.getPsiFileForModule(getProject(), moduleName, invocation + " " + moduleName);
         }
     }
 

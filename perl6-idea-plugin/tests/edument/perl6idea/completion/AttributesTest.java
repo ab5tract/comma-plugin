@@ -43,7 +43,8 @@ public class AttributesTest extends CommaFixtureTestCase {
         assertEquals(5, vars.size());
     }
 
-    public void testExternalAttributes() {
+    public void testExternalAttributes() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "use NativeCall; class A does NativeCall::Native { has $!a; method a() { say $!<caret> } }");
         myFixture.complete(CompletionType.BASIC, 1);

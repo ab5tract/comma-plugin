@@ -98,7 +98,8 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
         doTestContainsAll("Int.<caret>", ".Range");
     }
 
-    public void testMethodOnTypeFromModule() {
+    public void testMethodOnTypeFromModule() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         doTestContainsAll("use NativeCall; Pointer.<caret>", ".of");
     }
 
@@ -119,11 +120,13 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
                           "!a", "!bar");
     }
 
-    public void testPrivateMethodFromExternalRoleCompletion() {
+    public void testPrivateMethodFromExternalRoleCompletion() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         doTestContainsAll("use NativeCall; role Foo does NativeCall::Native { method bar { self!<caret> } }", "!setup");
     }
 
-    public void testCorrectImportGathering() {
+    public void testCorrectImportGathering() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         // We don't get methods from NativeCall in another block, so `!setup` is not available
         doTestNotContainsAll("class Foo { { use NativeCall; }; class Bar does NativeCall::Native { method !b {}; method !a { self!<caret> } } }", "!setup");
     }
@@ -167,7 +170,8 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
         doTestContainsAll("class Foo { has $.foo; method !x() { }; method !a { self!<caret> } }", "!a", "!x");
     }
 
-    public void testMethodsFromParametrizedRole() {
+    public void testMethodsFromParametrizedRole() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         doTestContainsAll("use NativeCall; role Foo does NativeCall::Native[Foo, lib-path] { method bar { self!<caret> } }", "!setup");
     }
 

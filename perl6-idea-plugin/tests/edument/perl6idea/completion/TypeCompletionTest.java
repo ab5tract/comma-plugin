@@ -37,7 +37,8 @@ public class TypeCompletionTest extends CommaFixtureTestCase {
         assertEmpty(vars);
     }
 
-    public void testUseGlobalSymbol() {
+    public void testUseGlobalSymbol() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; say NativeCal<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
@@ -45,7 +46,8 @@ public class TypeCompletionTest extends CommaFixtureTestCase {
         assertContainsElements(vars, Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU"));
     }
 
-    public void testNeedGlobalSymbol() {
+    public void testNeedGlobalSymbol() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall", "need");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "need NativeCall; say NativeCal<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
@@ -53,7 +55,8 @@ public class TypeCompletionTest extends CommaFixtureTestCase {
         assertContainsElements(vars, Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU"));
     }
 
-    public void testUseFindsExportedSymbol() {
+    public void testUseFindsExportedSymbol() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; my lon<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
@@ -61,7 +64,8 @@ public class TypeCompletionTest extends CommaFixtureTestCase {
         assertContainsElements(vars, Arrays.asList("long", "longlong"));
     }
 
-    public void testNeedDoesNotFindExportedSymbol() {
+    public void testNeedDoesNotFindExportedSymbol() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall", "need");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "need NativeCall; my lon<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
