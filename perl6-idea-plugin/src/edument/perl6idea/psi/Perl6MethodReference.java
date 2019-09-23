@@ -191,7 +191,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
         if (collector == null)
             collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
 
-        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(element);
+        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(element.getProject());
         MOPSymbolsAllowed symbolsAllowed = new MOPSymbolsAllowed(true, true, true, true);
         Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", symbolsAllowed);
         Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", symbolsAllowed);

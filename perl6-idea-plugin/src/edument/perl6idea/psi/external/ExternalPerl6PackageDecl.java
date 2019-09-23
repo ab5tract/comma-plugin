@@ -143,7 +143,7 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
         }
         if (myBase.isEmpty())
             return;
-        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(this);
+        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(getProject());
         MOPSymbolsAllowed allowed = new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role"));
 
         // Add additional methods from Mu/Any/Cool as we don't

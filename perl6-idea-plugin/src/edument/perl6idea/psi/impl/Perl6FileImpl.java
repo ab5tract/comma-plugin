@@ -240,7 +240,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             if (collector.isSatisfied())
                 return;
         }
-        Perl6SdkType.getInstance().getCoreSettingFile(this).contributeGlobals(collector, new HashSet<>());
+        Perl6SdkType.getInstance().getCoreSettingFile(getProject()).contributeGlobals(collector, new HashSet<>());
         if (collector.isSatisfied())
             return;
         PsiElement list = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);

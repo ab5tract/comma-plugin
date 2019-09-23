@@ -226,7 +226,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
 
         // Contribute implicit symbols from Any/Mu and Cursor for grammars
-        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(this);
+        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(getProject());
         MOPSymbolsAllowed allowed = new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role"));
 
         if (isAny)

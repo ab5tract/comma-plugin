@@ -216,15 +216,14 @@ public class Perl6SdkType extends SdkType {
         return moarBuildConfig;
     }
 
-    public Perl6File getCoreSettingFile(Perl6PsiElement element) {
+    public Perl6File getCoreSettingFile(Project project) {
         if (setting != null)
             return setting;
         if (settingJson != null)
-            return setting = makeSettingSymbols(element.getProject(), settingJson);
+            return setting = makeSettingSymbols(project, settingJson);
 
-        Project project = element.getProject();
         File coreSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-core-symbols.p6");
-        String perl6path = getSdkHomeByElement(element);
+        String perl6path = getSdkHomeByProject(project);
 
         if (perl6path == null || coreSymbols == null) {
             String errorMessage = perl6path == null
