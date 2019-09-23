@@ -3,6 +3,7 @@ package edument.perl6idea.sdk;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -264,14 +265,16 @@ public class Perl6SdkType extends SdkType {
     }
 
     private static void triggerCodeAnalysis(Project project) {
-        FileEditor[] editors = FileEditorManager.getInstance(project).getSelectedEditors();
-        for (FileEditor editor : editors) {
-            if (editor != null && editor.getFile() != null) {
-                PsiFile psiFile = PsiManager.getInstance(project).findFile(editor.getFile());
-                if (psiFile != null)
-                    DaemonCodeAnalyzer.getInstance(project).restart(psiFile);
+        ApplicationManager.getApplication().runReadAction(() -> {
+            FileEditor[] editors = FileEditorManager.getInstance(project).getSelectedEditors();
+            for (FileEditor editor : editors) {
+                if (editor != null && editor.getFile() != null) {
+                    PsiFile psiFile = PsiManager.getInstance(project).findFile(editor.getFile());
+                    if (psiFile != null)
+                        DaemonCodeAnalyzer.getInstance(project).restart(psiFile);
+                }
             }
-        }
+        });
     }
 
     private Perl6File getFallback(Project project) {
