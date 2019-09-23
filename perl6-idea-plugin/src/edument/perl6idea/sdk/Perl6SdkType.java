@@ -1,8 +1,11 @@
 package edument.perl6idea.sdk;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
@@ -11,12 +14,13 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PackageDecl;
-import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.external.ExternalPerl6File;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.utils.Perl6CommandLine;
@@ -248,6 +252,7 @@ public class Perl6SdkType extends SdkType {
                         getFallback(project);
                     }
                     setting = makeSettingSymbols(project, String.join("\n", settingLines));
+                    triggerCodeAnalysis(project);
                 });
                 thread.start();
             }
@@ -255,6 +260,17 @@ public class Perl6SdkType extends SdkType {
         } catch (ExecutionException e) {
             LOG.error(e);
             return getFallback(project);
+        }
+    }
+
+    private static void triggerCodeAnalysis(Project project) {
+        FileEditor[] editors = FileEditorManager.getInstance(project).getSelectedEditors();
+        for (FileEditor editor : editors) {
+            if (editor != null && editor.getFile() != null) {
+                PsiFile psiFile = PsiManager.getInstance(project).findFile(editor.getFile());
+                if (psiFile != null)
+                    DaemonCodeAnalyzer.getInstance(project).restart(psiFile);
+            }
         }
     }
 
@@ -307,6 +323,7 @@ public class Perl6SdkType extends SdkType {
                     cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, symbolCache.get(n)));
                 // if no symbol cache, compute as usual
                 cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, invocation));
+                triggerCodeAnalysis(project);
             });
             thread.start();
         }
