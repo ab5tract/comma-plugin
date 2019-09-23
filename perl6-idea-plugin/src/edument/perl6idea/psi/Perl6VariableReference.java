@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
@@ -65,11 +66,18 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                     true, true, true, enclosingPackage.getPackageKind().equals("role")));
             syms.addAll(collector.getVariants());
         }
-        return syms
-               .stream()
-               .filter(this::isDeclaredAfterCurrentPosition)
-               .map(sym -> sym.getName())
-               .toArray();
+        List<String> names = new ArrayList<>();
+        for (Perl6Symbol sym : syms) {
+            if (!isDeclaredAfterCurrentPosition(sym))
+                continue;
+
+            if (sym.getPsi() instanceof Perl6VariableDecl) {
+                names.addAll(Arrays.asList(((Perl6VariableDecl)sym.getPsi()).getVariableNames()));
+            } else {
+                names.add(sym.getName());
+            }
+        }
+        return names.toArray();
     }
 
     private boolean isDeclaredAfterCurrentPosition(Perl6Symbol symbol) {
