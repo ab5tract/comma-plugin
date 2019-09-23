@@ -146,6 +146,6 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
         if (myIsMulti.equals("only"))
             collector.offerSymbol(sym);
         else
-            collector.offerMultiSymbol(sym, myIsMulti.equals("proto"));
+            collector.offerMultiSymbol(sym, false);
     }
 }

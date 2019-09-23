@@ -65,8 +65,7 @@ public class ExternalPerl6File implements Perl6File {
                 if (psi.getMultiness().equals("only")) {
                     collector.offerSymbol(symbol);
                 } else {
-                    if (psi.getMultiness().equals("multi"))
-                        collector.offerMultiSymbol(symbol, psi.getMultiness().equals("proto"));
+                    collector.offerMultiSymbol(symbol, false);
                 }
             } else {
                 collector.offerSymbol(symbol);

@@ -223,12 +223,7 @@ EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
             next if object ~~ Junction;
             @EXTERNAL_COMMA_ELEMS.push: pack-variable($_, object);
             if ($_.starts-with('&')) {
-                if object.candidates.elems > 1 {
-                    @EXTERNAL_COMMA_ELEMS.push: pack-code(object, 1, :!is-method);
-                    @EXTERNAL_COMMA_ELEMS.push: pack-code($_, 2, :!is-method) for object.candidates;
-                } else {
-                    @EXTERNAL_COMMA_ELEMS.push: pack-code(object, 0, :!is-method);
-                }
+                @EXTERNAL_COMMA_ELEMS.push: pack-code($_, $_.multi ?? 1 !! 0, :!is-method) for object.candidates;
             }
         }
         # Collect all types.
@@ -279,9 +274,9 @@ sub describer(@elems, $name, Mu \object) {
     if object.HOW.WHAT ~~ Metamodel::NativeHOW {
         @elems.push: %( k => "n", n => $name, t => object.^name );
     } elsif object.HOW.WHAT ~~ Metamodel::ClassHOW {
-        describe-OOP(@elems, $name, "c", object);
+        #describe-OOP(@elems, $name, "c", object);
     } elsif object.HOW.WHAT ~~ Metamodel::ParametricRoleGroupHOW {
-        describe-OOP(@elems, $name, "ro", object);
+        #describe-OOP(@elems, $name, "ro", object);
     } elsif object.HOW.WHAT ~~ Metamodel::EnumHOW {
         @elems.push: %( k => "e", n => $name, t => object.^name );
     } elsif object.HOW.WHAT ~~ Metamodel::SubsetHOW {
@@ -300,24 +295,10 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
         @privates = object.^private_method_table.values;
     }
     try for object.^methods -> $method {
-        try {
-            if $method.candidates.elems > 1 {
-                try %class<m>.push: pack-code($method, 1, :is-method);
-                try %class<m>.push: pack-code($_, 2, :is-method) for $method.candidates;
-            } else {
-                try %class<m>.push: pack-code($method, 0, :is-method);
-            }
-        }
+        try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, :is-method) for $method.candidates;
     }
     try for @privates -> $method {
-        try {
-            if $method.candidates.elems > 1 {
-                try %class<m>.push: pack-code($method, 1, '!' ~ $method.name, :is-method);
-                try %class<m>.push: pack-code($_, 2, '!' ~ $method.name, :is-method) for $method.candidates;
-            } else {
-                try %class<m>.push: pack-code($method, 0, '!' ~ $method.name, :is-method);
-            }
-        }
+        try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, '!' ~ $method.name, :is-method) for $method.candidates;
     }
     try for object.^attributes -> $a {
         next if $a.type.^name eq 'Junction';

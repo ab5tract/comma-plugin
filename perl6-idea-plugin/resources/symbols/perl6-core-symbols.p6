@@ -223,12 +223,7 @@ for CORE::.keys -> $_ {
     when /^"&"<:Ll>/ | '&EVAL' {
         @EXTERNAL_COMMA_ELEMS.push: pack-variable($_, CORE::{$_});
         if ($_.starts-with('&')) {
-            if CORE::{$_}.candidates.elems > 1 {
-                @EXTERNAL_COMMA_ELEMS.push: pack-code(CORE::{$_}, 1, :!is-method);
-                @EXTERNAL_COMMA_ELEMS.push: pack-code($_, 2, :!is-method) for CORE::{$_}.candidates;
-            } else {
-                @EXTERNAL_COMMA_ELEMS.push: pack-code(CORE::{$_}, 0, :!is-method);
-            }
+            @EXTERNAL_COMMA_ELEMS.push: pack-code($_, $_.multi ?? 1 !! 0, :!is-method) for CORE::{$_}.candidates;
         }
     }
     # Collect all types.
@@ -289,25 +284,11 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     } else {
         @privates = object.^private_method_table.values;
     }
-    for object.^methods -> $method {
-        try {
-            if $method.candidates.elems > 1 {
-                try %class<m>.push: pack-code($method, 1, :is-method);
-                try %class<m>.push: pack-code($_, 2, :is-method) for $method.candidates;
-            } else {
-                try %class<m>.push: pack-code($method, 0, :is-method);
-            }
-        }
+    try for object.^methods -> $method {
+        try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, :is-method) for $method.candidates;
     }
-    for @privates -> $method {
-        try {
-            if $method.candidates.elems > 1 {
-                try %class<m>.push: pack-code($method, 1, '!' ~ $method.name, :is-method);
-                try %class<m>.push: pack-code($_, 2, '!' ~ $method.name, :is-method) for $method.candidates;
-            } else {
-                try %class<m>.push: pack-code($method, 0, '!' ~ $method.name, :is-method);
-            }
-        }
+    try for @privates -> $method {
+        try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, '!' ~ $method.name, :is-method) for $method.candidates;
     }
     for object.^attributes -> $a {
         try %class<a>.push: pack-variable($a.name, $a, :is-attribute);

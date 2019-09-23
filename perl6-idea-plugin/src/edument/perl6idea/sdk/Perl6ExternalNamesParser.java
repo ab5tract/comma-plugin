@@ -68,7 +68,7 @@ public class Perl6ExternalNamesParser {
                         int isMulti = j.getInt("m");
                         Perl6RoutineDecl psi = new ExternalPerl6RoutineDecl(
                             myProject, myFile, j.getString("k"), j.getString("k").equals("m") ? "has" : "our",
-                            j.getString("n"), isMulti == 0 ? "only" : isMulti == 1 ? "proto" : "multi", j.getJSONObject("s").toMap());
+                            j.getString("n"), isMulti == 0 ? "only" : "multi", j.getJSONObject("s").toMap());
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, psi));
                         break;
                     }
@@ -90,7 +90,7 @@ public class Perl6ExternalNamesParser {
                                     routines.add(new ExternalPerl6RoutineDecl(
                                         myProject, myFile,
                                         (String)routineData.get("k"), "has",
-                                        (String)routineData.get("n"), isMulti == 0 ? "only" : isMulti == 1 ? "proto" : "multi",
+                                        (String)routineData.get("n"), isMulti == 0 ? "only" : "multi",
                                         signature));
                                 }
 
