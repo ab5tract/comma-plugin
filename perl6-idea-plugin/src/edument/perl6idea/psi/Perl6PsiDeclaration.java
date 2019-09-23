@@ -65,7 +65,11 @@ public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierO
             return null;
 
         // Walk up any enclosing packages.
-        StringBuilder globalName = new StringBuilder(getName());
+        String name = getName();
+        if (name == null) {
+            return null;
+        }
+        StringBuilder globalName = new StringBuilder(name);
         PsiElement outer = getParent();
         while (outer != null && !(outer instanceof Perl6File)) {
             if (outer instanceof Perl6PackageDecl) {
