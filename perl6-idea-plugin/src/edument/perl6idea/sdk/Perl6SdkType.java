@@ -208,7 +208,6 @@ public class Perl6SdkType extends SdkType {
                 perl6path);
         cmd.addParameter("--show-config");
         List<String> subs = Perl6CommandLine.execute(cmd);
-        if (subs == null) return null;
         for (String line : subs) {
             int equalsPosition = line.indexOf('=');
             if (equalsPosition > 0) {
@@ -247,12 +246,13 @@ public class Perl6SdkType extends SdkType {
                     coreSymbols);
                 Thread thread = new Thread(() -> {
                     mySettingsStarted = true;
-                    List<String> settingLines = Perl6CommandLine.execute(cmd);
-                    if (settingLines == null) {
+                    String settingLines = String.join("\n", Perl6CommandLine.execute(cmd));
+                    if (settingLines.isEmpty()) {
                         LOG.warn("getCoreSettingFile got no symbols from Perl 6, using fallback");
                         getFallback(project);
+                    } else {
+                        setting = makeSettingSymbols(project, settingLines);
                     }
-                    setting = makeSettingSymbols(project, String.join("\n", settingLines));
                     triggerCodeAnalysis(project);
                 });
                 thread.start();
@@ -386,7 +386,8 @@ public class Perl6SdkType extends SdkType {
         cmd.addParameter(invocation);
 
         List<String> symbols = Perl6CommandLine.execute(cmd);
-        return symbols == null ? new ArrayList<>() : new Perl6ExternalNamesParser(project, perl6File, String.join("\n", symbols)).parse().result();
+        String text = String.join("\n", symbols);
+        return new Perl6ExternalNamesParser(project, perl6File, text).parse().result();
     }
 
     public static void contributeParentSymbolsFromCore(@NotNull Perl6SymbolCollector collector,

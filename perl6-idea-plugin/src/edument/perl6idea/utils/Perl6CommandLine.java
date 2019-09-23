@@ -57,6 +57,7 @@ public class Perl6CommandLine {
         }
     }
 
+    @NotNull
     public static List<String> execute(GeneralCommandLine cmd) {
         List<String> results = new ArrayList<>();
         AtomicBoolean died = new AtomicBoolean(false);
@@ -66,10 +67,10 @@ public class Perl6CommandLine {
             new Thread(() -> readFromProcess(results, died, p, readerDone)).start();
             readerDone.acquire();
             p.waitFor();
-            if (died.get()) return null;
+            if (died.get()) return new ArrayList<>();
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn(e);
-            return null;
+            return new ArrayList<>();
         }
         return results;
     }
