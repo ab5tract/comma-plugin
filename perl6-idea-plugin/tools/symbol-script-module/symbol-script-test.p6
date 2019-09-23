@@ -10,8 +10,8 @@ subtest {
     my $output = $proc.out.slurp(:close);
     my $data;
     lives-ok { $data = from-json $output }, "Can parse json";
-    #    # Subs, constants, types
-    ok $data.first({ $_<n> eq "explicitly-manage" && $_<k> eq "s" && $_<m> == 0 }), 'Subroutine is exported';
+    # Subs, constants, types
+    ok $data.first({ $_<n> eq "explicitly-manage" && $_<k> eq "s" && $_<m> == 1 }), 'Subroutine is exported';
     # Roles
     my $native = $data.first({ $_<n> eq "NativeCall::Native" });
     ok $native, 'Native role is exported';

@@ -274,9 +274,9 @@ sub describer(@elems, $name, Mu \object) {
     if object.HOW.WHAT ~~ Metamodel::NativeHOW {
         @elems.push: %( k => "n", n => $name, t => object.^name );
     } elsif object.HOW.WHAT ~~ Metamodel::ClassHOW {
-        #describe-OOP(@elems, $name, "c", object);
+        describe-OOP(@elems, $name, "c", object);
     } elsif object.HOW.WHAT ~~ Metamodel::ParametricRoleGroupHOW {
-        #describe-OOP(@elems, $name, "ro", object);
+        describe-OOP(@elems, $name, "ro", object);
     } elsif object.HOW.WHAT ~~ Metamodel::EnumHOW {
         @elems.push: %( k => "e", n => $name, t => object.^name );
     } elsif object.HOW.WHAT ~~ Metamodel::SubsetHOW {
