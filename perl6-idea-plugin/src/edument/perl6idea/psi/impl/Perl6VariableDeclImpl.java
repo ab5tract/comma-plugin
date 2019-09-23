@@ -295,10 +295,10 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
                 continue;
 
             if (Perl6Variable.getTwigil(name) == '!' && symbolsAllowed.privateAttributesVisible) {
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, name));
             }
             else if (Perl6Variable.getTwigil(name) == '.') {
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, name));
                 if (collector.isSatisfied()) return;
                 if (symbolsAllowed.privateAttributesVisible) {
                     collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
