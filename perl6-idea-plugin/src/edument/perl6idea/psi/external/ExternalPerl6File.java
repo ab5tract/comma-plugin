@@ -62,10 +62,11 @@ public class ExternalPerl6File implements Perl6File {
         for (Perl6Symbol symbol : mySymbols) {
             if (symbol.getKind() == Perl6SymbolKind.Routine) {
                 Perl6RoutineDecl psi = (Perl6RoutineDecl)symbol.getPsi();
-                if (psi.getMultiness().equals("once")) {
+                if (psi.getMultiness().equals("only")) {
                     collector.offerSymbol(symbol);
                 } else {
-                    collector.offerMultiSymbol(symbol, psi.getMultiness().equals("proto"));
+                    if (psi.getMultiness().equals("multi"))
+                        collector.offerMultiSymbol(symbol, psi.getMultiness().equals("proto"));
                 }
             } else {
                 collector.offerSymbol(symbol);

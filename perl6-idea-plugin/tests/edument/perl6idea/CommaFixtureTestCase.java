@@ -9,7 +9,9 @@ import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCa
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Ignore;
 
+@Ignore
 public class CommaFixtureTestCase extends LightPlatformCodeInsightFixtureTestCase {
     protected Sdk testSdk;
 
