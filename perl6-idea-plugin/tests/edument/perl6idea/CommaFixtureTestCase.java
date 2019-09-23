@@ -39,6 +39,15 @@ public class CommaFixtureTestCase extends LightPlatformCodeInsightFixtureTestCas
         }
     }
 
+    private void ensureSetting() throws InterruptedException {
+        Perl6SdkType sdkType = (Perl6SdkType)testSdk.getSdkType();
+        Perl6File file = sdkType.getCoreSettingFile(getProject());
+        while (file.getName().equals("DUMMY")) {
+            Thread.sleep(100);
+            file = sdkType.getCoreSettingFile(getProject());
+        }
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -48,6 +57,7 @@ public class CommaFixtureTestCase extends LightPlatformCodeInsightFixtureTestCas
             testSdk = SdkConfigurationUtil.createAndAddSDK(homePath, Perl6SdkType.getInstance());
             ProjectRootManager.getInstance(myModule.getProject()).setProjectSdk(testSdk);
         });
+        ensureSetting();
     }
 
     @Override
