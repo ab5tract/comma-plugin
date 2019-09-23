@@ -42,7 +42,7 @@ public class Perl6CoverageSourceAnnotator implements Disposable {
             TextAttributes markerStyle = getMarkerStyle();
             Document document = editor.getDocument();
             MarkupModel markupModel = DocumentMarkupModel.forDocument(document, editor.getProject(), true);
-            if (!(file instanceof Perl6File))
+            if (!(file instanceof Perl6File) || !((Perl6File)file).isReal())
                 return;
             Map<Integer, List<Integer>> lineMap = ((Perl6File)file).getStatementLineMap();
             List<RangeHighlighter> highlighters = new ArrayList<>();

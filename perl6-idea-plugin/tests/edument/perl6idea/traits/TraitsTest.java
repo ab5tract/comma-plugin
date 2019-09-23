@@ -1,23 +1,14 @@
 package edument.perl6idea.traits;
 
 import com.intellij.psi.PsiElement;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6Trait;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class TraitsTest extends LightCodeInsightFixtureTestCase {
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
+public class TraitsTest extends CommaFixtureTestCase {
     public void testIsExportTraitData() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Fo<caret>o is export {}");
         PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset()).getParent();

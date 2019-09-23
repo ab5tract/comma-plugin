@@ -24,6 +24,7 @@ public class Perl6BlockOrHashImpl extends ASTWrapperPsiElement implements Perl6B
     @Override
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$_", this));
-        collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "&?BLOCK", this));
+        if (!collector.isSatisfied())
+            collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "&?BLOCK", this));
     }
 }

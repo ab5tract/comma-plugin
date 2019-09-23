@@ -1,45 +1,12 @@
 package edument.perl6idea.annotation;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
-import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import edument.perl6idea.sdk.Perl6SdkType;
-import org.jetbrains.annotations.NotNull;
 
-public class AnnotationTest extends LightCodeInsightFixtureTestCase {
-    private Sdk testSdk;
-
+public class AnnotationTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/annotation";
-    }
-
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            String homePath = Perl6SdkType.getInstance().suggestHomePath();
-            assertNotNull("Found a perl6 in path to use in tests", homePath);
-            testSdk = SdkConfigurationUtil.createAndAddSDK(homePath, Perl6SdkType.getInstance());
-            ProjectRootManager.getInstance(myModule.getProject()).setProjectSdk(testSdk);
-        });
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        SdkConfigurationUtil.removeSdk(testSdk);
-        super.tearDown();
     }
 
     public void testUndeclaredVariableAnnotatorReallyUndeclared() {
@@ -144,11 +111,6 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
         myFixture.checkHighlighting(false, false, true, true);
     }
 
-    public void testDeclaredExternalPrivateMethodAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role A does NativeCall::Native { method !a {} }; class B does A { method b { self!setup; } }");
-        myFixture.checkHighlighting(false, false, true, true);
-    }
-
     public void testUndeclaredAttributeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { has $!a; }; class B does A { method b { say <error descr=\"Attribute $!b is used, but not declared\">$!b</error>; } }");
         myFixture.checkHighlighting(false, false, true, true);
@@ -161,6 +123,8 @@ public class AnnotationTest extends LightCodeInsightFixtureTestCase {
 
     public void testDeclaredExternalAttributeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
+        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role A does NativeCall::Native { method !a {} }; class B does A { method b { self!setup; } }");
         myFixture.checkHighlighting(false, false, true, true);
     }
 

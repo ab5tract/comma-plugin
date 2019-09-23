@@ -1,49 +1,16 @@
 package edument.perl6idea.completion;
 
 import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
-import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import edument.perl6idea.sdk.Perl6SdkType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
-    private Sdk testSdk;
-
+public class TypeCompletionTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/completion";
-    }
-
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            String homePath = Perl6SdkType.getInstance().suggestHomePath();
-            assertNotNull("Found a perl6 in path to use in tests", homePath);
-            testSdk = SdkConfigurationUtil.createAndAddSDK(homePath, Perl6SdkType.getInstance());
-            ProjectRootManager.getInstance(myModule.getProject()).setProjectSdk(testSdk);
-        });
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        SdkConfigurationUtil.removeSdk(testSdk);
-        super.tearDown();
     }
 
     public void testTypesFromSetting() {
@@ -51,7 +18,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("Instant", "Int")));
+        assertContainsElements(vars, Arrays.asList("Instant", "Int"));
     }
 
     public void testMultipartTypesFromSetting() {
@@ -59,7 +26,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("IO::Path", "IO::Handle")));
+        assertContainsElements(vars, Arrays.asList("IO::Path", "IO::Handle"));
     }
 
     public void testSanityNoNativeCallWithoutImport() {
@@ -70,31 +37,35 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         assertEmpty(vars);
     }
 
-    public void testUseGlobalSymbol() {
+    public void testUseGlobalSymbol() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; say NativeCal<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU")));
+        assertContainsElements(vars, Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU"));
     }
 
-    public void testNeedGlobalSymbol() {
+    public void testNeedGlobalSymbol() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall", "need");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "need NativeCall; say NativeCal<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU")));
+        assertContainsElements(vars, Arrays.asList("NativeCall::CStr", "NativeCall::Compiler::GNU"));
     }
 
-    public void testUseFindsExportedSymbol() {
+    public void testUseFindsExportedSymbol() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; my lon<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("long", "longlong")));
+        assertContainsElements(vars, Arrays.asList("long", "longlong"));
     }
 
-    public void testNeedDoesNotFindExportedSymbol() {
+    public void testNeedDoesNotFindExportedSymbol() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall", "need");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "need NativeCall; my lon<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
@@ -107,7 +78,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.contains("Interesting"));
+        assertContainsElements(vars, "Interesting");
     }
 
     public void testSimpleDeclaredTypeMy() {
@@ -115,7 +86,7 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.contains("Interesting"));
+        assertContainsElements(vars, "Interesting");
     }
 
     public void testNestedTypesOutside() {
@@ -124,10 +95,8 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("Interesting", "Interesting::Nested",
-            "Interesting::Nested::Deeper")));
-        assertFalse(vars.contains("Lexical"));
-        assertFalse(vars.contains("Interested::Lexical"));
+        assertContainsElements(vars, Arrays.asList("Interesting", "Interesting::Nested", "Interesting::Nested::Deeper"));
+        assertDoesntContain(vars, "Lexical", "INterested::Lexical");
     }
 
     public void testNestedTypesInside() {
@@ -136,9 +105,10 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("Interesting", "Interesting::InterNested",
-            "Interesting::InterNested::InterDeeper", "InterNested", "InterNested::InterDeeper", "InterLexical")));
-        assertFalse(vars.contains("Interested::InterLexical"));
+        assertContainsElements(vars, Arrays.asList("Interesting", "Interesting::InterNested",
+                                                   "Interesting::InterNested::InterDeeper",
+                                                   "InterNested", "InterNested::InterDeeper", "InterLexical"));
+        assertDoesntContain(vars, "Interested::InterLexical");
     }
 
     public void testAnonymousClassIsSafeToComplete() {
@@ -152,6 +122,6 @@ public class TypeCompletionTest extends LightCodeInsightFixtureTestCase {
         myFixture.configureByFiles("IdeaFoo/Bar9.pm6", "IdeaFoo/Baz.pm6");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
-        assertTrue(vars.containsAll(Arrays.asList("ENUM::ONE", "ENUM::TWO")));
+        assertContainsElements(vars, Arrays.asList("ENUM::ONE", "ENUM::TWO"));
     }
 }

@@ -1,8 +1,12 @@
 package edument.perl6idea.sdk;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
@@ -11,14 +15,22 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import com.intellij.testFramework.LightVirtualFile;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.Perl6Icons;
-import edument.perl6idea.psi.Perl6PsiElement;
+import edument.perl6idea.psi.Perl6File;
+import edument.perl6idea.psi.Perl6PackageDecl;
+import edument.perl6idea.psi.external.ExternalPerl6File;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -34,12 +46,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Perl6SdkType extends SdkType {
     private static final String NAME = "Perl 6 SDK";
+    public static final String SETTING_FILE_NAME = "SETTINGS.pm6";
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
-    private List<Perl6Symbol> setting;
-    private Map<String, Perl6ExternalPackage> settingClasses = null;
     private Map<String, String> moarBuildConfig;
-    private Map<String, List<Perl6Symbol>> useNameCache = new ConcurrentHashMap<>();
-    private Map<String, List<Perl6Symbol>> needNameCache = new ConcurrentHashMap<>();
+
+    // Symbol caches
+    private Map<String, JSONArray> useNameSymbolCache = new ConcurrentHashMap<>();
+    private Map<String, Perl6File> useNameFileCache = new ConcurrentHashMap<>();
+
+    private Map<String, JSONArray> needNameSymbolCache = new ConcurrentHashMap<>();
+    private Map<String, Perl6File> needNameFileCache = new ConcurrentHashMap<>();
+
+    private JSONArray settingJson;
+    private Perl6File setting;
+    private boolean mySettingsStarted = false;
+    private Set<String> myPackageStarted = ContainerUtil.newConcurrentSet();
 
     private Perl6SdkType() {
         super(NAME);
@@ -131,7 +152,7 @@ public class Perl6SdkType extends SdkType {
         String[] command = {binPath.normalize().toString(), "-e", "say $*PERL.compiler.version"};
         BufferedReader std = null;
         try {
-            if (!Files.isDirectory(binPath) && Files.isExecutable(binPath)) {
+            if (!binPath.toFile().isDirectory() && Files.isExecutable(binPath)) {
                 Process p = Runtime.getRuntime().exec(command);
                 std = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String firstLine = std.readLine();
@@ -187,7 +208,6 @@ public class Perl6SdkType extends SdkType {
                 perl6path);
         cmd.addParameter("--show-config");
         List<String> subs = Perl6CommandLine.execute(cmd);
-        if (subs == null) return null;
         for (String line : subs) {
             int equalsPosition = line.indexOf('=');
             if (equalsPosition > 0) {
@@ -200,88 +220,156 @@ public class Perl6SdkType extends SdkType {
         return moarBuildConfig;
     }
 
-    public Perl6ExternalPackage getCoreSettingSymbol(String name, Perl6PsiElement element) {
-        if (settingClasses == null)
-            getCoreSettingSymbols(element);
-        Perl6ExternalPackage externalPackage = settingClasses.get(name);
-        // If no such core symbol, return empty class
-        return externalPackage != null ? externalPackage : new Perl6ExternalPackage("", Perl6PackageKind.CLASS);
-    }
-
-    public List<Perl6Symbol> getCoreSettingSymbols(Perl6PsiElement element) {
+    public Perl6File getCoreSettingFile(Project project) {
         if (setting != null)
             return setting;
+        if (settingJson != null)
+            return setting = makeSettingSymbols(project, settingJson);
+
         File coreSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-core-symbols.p6");
-        String perl6path = getSdkHomeByElement(element);
-        if (perl6path == null) {
-            LOG.warn("getCoreSettingSymbols is called without Perl 6 SDK set, using fallback");
-            return getFallback();
-        }
-        if (coreSymbols == null) {
-            LOG.warn("getCoreSettingSymbols is called with corrupted resources bundle, using fallback");
-            return getFallback();
+        String perl6path = getSdkHomeByProject(project);
+
+        if (perl6path == null || coreSymbols == null) {
+            String errorMessage = perl6path == null
+                                  ? "getCoreSettingFile is called without Perl 6 SDK set, using fallback"
+                                  : "getCoreSettingFile is called with corrupted resources bundle, using fallback";
+            LOG.warn(errorMessage);
+            return getFallback(project);
         }
 
         try {
-            GeneralCommandLine cmd = Perl6CommandLine.pushFile(
+            if (!mySettingsStarted) {
+                GeneralCommandLine cmd = Perl6CommandLine.pushFile(
                     Perl6CommandLine.getPerl6CommandLine(
-                            System.getProperty("java.io.tmpdir"),
-                            perl6path),
+                        System.getProperty("java.io.tmpdir"),
+                        perl6path),
                     coreSymbols);
-            List<String> subs = Perl6CommandLine.execute(cmd);
-            if (subs == null) {
-                LOG.warn("getCoreSettingSymbols got no symbols from Perl 6, using fallback");
-                return getFallback();
+                Thread thread = new Thread(() -> {
+                    mySettingsStarted = true;
+                    String settingLines = String.join("\n", Perl6CommandLine.execute(cmd));
+                    if (settingLines.isEmpty()) {
+                        LOG.warn("getCoreSettingFile got no symbols from Perl 6, using fallback");
+                        getFallback(project);
+                    } else {
+                        setting = makeSettingSymbols(project, settingLines);
+                    }
+                    triggerCodeAnalysis(project);
+                });
+                thread.start();
             }
-            setting = makeSettingSymbols(subs);
-            return setting;
+            return new ExternalPerl6File(project, new LightVirtualFile("DUMMY"));
         } catch (ExecutionException e) {
             LOG.error(e);
-            return getFallback();
+            return getFallback(project);
         }
     }
 
-    private List<Perl6Symbol> getFallback() {
+    private static void triggerCodeAnalysis(Project project) {
+        ApplicationManager.getApplication().runReadAction(() -> {
+            FileEditor[] editors = FileEditorManager.getInstance(project).getSelectedEditors();
+            for (FileEditor editor : editors) {
+                if (editor != null && editor.getFile() != null) {
+                    PsiFile psiFile = PsiManager.getInstance(project).findFile(editor.getFile());
+                    if (psiFile != null)
+                        DaemonCodeAnalyzer.getInstance(project).restart(psiFile);
+                }
+            }
+        });
+    }
+
+    private Perl6File getFallback(Project project) {
         File fallback = Perl6Utils.getResourceAsFile("symbols/CORE.fallback");
-        if (fallback == null) LOG.error("getCoreSettingSymbols is called with corrupted resources bundle");
+        if (fallback == null) {
+            LOG.error("getCoreSettingFile is called with corrupted resources bundle");
+            return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
+        }
 
         try {
-            if (fallback != null) {
-                return setting = makeSettingSymbols(Files.readAllLines(fallback.toPath(), StandardCharsets.UTF_8));
-            }
+            return setting = makeSettingSymbols(project, new String(Files.readAllBytes(fallback.toPath()), StandardCharsets.UTF_8));
         } catch (IOException e) {
             LOG.error(e);
+            return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
         }
-        return new ArrayList<>();
     }
 
-    private List<Perl6Symbol> makeSettingSymbols(List<String> names) {
-        Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(names);
-        settingClasses = parser.getExternal();
-        return parser.result();
+    private Perl6File makeSettingSymbols(Project project, String json) {
+        try {
+            settingJson = new JSONArray(json);
+            return makeSettingSymbols(project, settingJson);
+        } catch (JSONException e) {
+            Logger.getInstance(Perl6SdkType.class).warn(e);
+        }
+        return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
     }
 
-    public List<Perl6Symbol> getNamesForUse(Project project, String name) {
-        if (useNameCache == null)
-            return new ArrayList<>();
-        return useNameCache.computeIfAbsent(name, n -> loadModuleSymbols(project, "use", n));
+    private static Perl6File makeSettingSymbols(Project project, JSONArray settingJson) {
+        if (project.isDisposed())
+            return null;
+        ExternalPerl6File perl6File = new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
+        Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(project, perl6File, settingJson).parse();
+        perl6File.setSymbols(parser.result());
+        return perl6File;
     }
 
-    public List<Perl6Symbol> getNamesForNeed(Project project, String name) {
-        if (needNameCache == null)
-            return new ArrayList<>();
-        return needNameCache.computeIfAbsent(name, n -> loadModuleSymbols(project, "need", n));
+    public Perl6File getPsiFileForModule(Project project, String name, String invocation) {
+        Map<String, Perl6File> cache = invocation.startsWith("use") ? useNameFileCache : needNameFileCache;
+        Map<String, JSONArray> symbolCache = invocation.startsWith("use") ? useNameSymbolCache : needNameSymbolCache;
+        // If we have anything in file cache, return it
+        if (cache.containsKey(name))
+            return cache.get(name);
+
+        if (!myPackageStarted.contains(name)) {
+            myPackageStarted.add(name);
+            Thread thread = new Thread(() -> {
+                // if not, check if we have symbol cache, if yes, parse, save and return it
+                if (symbolCache.containsKey(name))
+                    cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, symbolCache.get(n)));
+                // if no symbol cache, compute as usual
+                cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, invocation));
+                triggerCodeAnalysis(project);
+            });
+            thread.start();
+        }
+        return new ExternalPerl6File(project, new LightVirtualFile("DUMMY"));
+    }
+
+    private static Perl6File constructExternalPsiFile(Project project, String name, JSONArray externalsJSON) {
+        LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
+        ExternalPerl6File perl6File = new ExternalPerl6File(project, dummy);
+        Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(project, perl6File, externalsJSON);
+        perl6File.setSymbols(parser.result());
+        return perl6File;
+    }
+
+    private static Perl6File constructExternalPsiFile(Project project, String name, String invocation) {
+        LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
+        ExternalPerl6File perl6File = new ExternalPerl6File(project, dummy);
+        List<Perl6Symbol> symbols = loadModuleSymbols(project, perl6File, invocation);
+        perl6File.setSymbols(symbols);
+        return perl6File;
     }
 
     public void invalidateCaches() {
         moarBuildConfig = null;
-        setting = null;
-        settingClasses = null;
-        useNameCache = new ConcurrentHashMap<>();
-        needNameCache = new ConcurrentHashMap<>();
+        invalidateFileCache();
+        invalidateSymbolCache();
     }
 
-    private List<Perl6Symbol> loadModuleSymbols(Project project, String directive, String name) {
+    public void invalidateFileCache() {
+        myPackageStarted = ContainerUtil.newConcurrentSet();
+        mySettingsStarted = false;
+        useNameFileCache = new ConcurrentHashMap<>();
+        needNameFileCache = new ConcurrentHashMap<>();
+        setting = null;
+    }
+
+    public void invalidateSymbolCache() {
+        useNameSymbolCache = new ConcurrentHashMap<>();
+        needNameSymbolCache = new ConcurrentHashMap<>();
+        settingJson = new JSONArray();
+    }
+
+    private static List<Perl6Symbol> loadModuleSymbols(Project project, Perl6File perl6File, String invocation) {
         String homePath = getSdkHomeByProject(project);
         File moduleSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-module-symbols.p6");
         if (homePath == null) {
@@ -292,13 +380,26 @@ public class Perl6SdkType extends SdkType {
             return new ArrayList<>();
         }
         GeneralCommandLine cmd = Perl6CommandLine.getPerl6CommandLine(
-            System.getProperty("java.io.tmpdir"),
+            project.getBasePath(),
             homePath);
         cmd.addParameter(moduleSymbols.getPath());
-        cmd.addParameter(directive);
-        cmd.addParameter(name);
+        cmd.addParameter(invocation);
 
         List<String> symbols = Perl6CommandLine.execute(cmd);
-        return symbols == null ? new ArrayList<>() : new Perl6ExternalNamesParser(symbols).result();
+        String text = String.join("\n", symbols);
+        return new Perl6ExternalNamesParser(project, perl6File, text).parse().result();
+    }
+
+    public static void contributeParentSymbolsFromCore(@NotNull Perl6SymbolCollector collector,
+                                                        Perl6File coreSetting,
+                                                        String parentName,
+                                                       MOPSymbolsAllowed allowed) {
+        Perl6SingleResolutionSymbolCollector parentCollector =
+          new Perl6SingleResolutionSymbolCollector(parentName, Perl6SymbolKind.TypeOrConstant);
+        coreSetting.contributeGlobals(parentCollector, new HashSet<>());
+        if (parentCollector.isSatisfied()) {
+            Perl6PackageDecl decl = (Perl6PackageDecl)parentCollector.getResult().getPsi();
+            decl.contributeMOPSymbols(collector, allowed);
+        }
     }
 }

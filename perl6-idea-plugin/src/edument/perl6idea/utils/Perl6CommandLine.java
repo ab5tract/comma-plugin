@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ public class Perl6CommandLine {
         }
     }
 
+    @NotNull
     public static List<String> execute(GeneralCommandLine cmd) {
         List<String> results = new ArrayList<>();
         AtomicBoolean died = new AtomicBoolean(false);
@@ -65,16 +67,16 @@ public class Perl6CommandLine {
             new Thread(() -> readFromProcess(results, died, p, readerDone)).start();
             readerDone.acquire();
             p.waitFor();
-            if (died.get()) return null;
+            if (died.get()) return new ArrayList<>();
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn(e);
-            return null;
+            return new ArrayList<>();
         }
         return results;
     }
 
     private static void readFromProcess(List<String> results, AtomicBoolean died, Process p, Semaphore readerDone) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
         try {
             String result;
             while ((result = reader.readLine()) != null)

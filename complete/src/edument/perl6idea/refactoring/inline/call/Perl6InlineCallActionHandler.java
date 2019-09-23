@@ -44,7 +44,7 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
 
         if (reference != null) {
             final PsiElement refElement = reference.getElement();
-            if (refElement != null && !isEnabledForLanguage(refElement.getLanguage())) {
+            if (!isEnabledForLanguage(refElement.getLanguage())) {
                 reportError(project, editor, "inlining of routine is not supported for " + refElement.getLanguage().getDisplayName());
                 return;
             }
@@ -109,7 +109,7 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
     private static boolean hasBadReturns(Perl6RoutineDecl routine) {
         Collection<PsiElement> returnStatements = collectReturns(routine);
         PsiElement[] statements = routine.getContent();
-        if (statements == null || statements.length == 0) {
+        if (statements.length == 0) {
             return false;
         }
 

@@ -1,49 +1,15 @@
 package edument.perl6idea.completion;
 
 import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
-import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import edument.perl6idea.sdk.Perl6SdkType;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 
-public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
-    private Sdk testSdk;
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            String homePath = Perl6SdkType.getInstance().suggestHomePath();
-            assertNotNull("Found a perl6 in path to use in tests", homePath);
-            testSdk = SdkConfigurationUtil.createAndAddSDK(homePath, Perl6SdkType.getInstance());
-            ProjectRootManager.getInstance(myModule.getProject()).setProjectSdk(testSdk);
-        });
-    }
-
+public class MethodCompletionTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/completion";
-    }
-
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        SdkConfigurationUtil.removeSdk(testSdk);
-        super.tearDown();
     }
 
     private List<String> complete(boolean isNull) {
@@ -59,19 +25,19 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     private void doTestContainsAll(String text, String... contains) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         List<String> methods = complete(false);
-        assertTrue(methods.containsAll(Arrays.asList(contains)));
+        assertContainsElements(methods, contains);
     }
 
     private void doTestContainsAllTwoFiles(String fileA, String fileB, String... contains) {
         myFixture.configureByFiles(fileA, fileB);
         List<String> methods = complete(false);
-        assertTrue(methods.containsAll(Arrays.asList(contains)));
+        assertContainsElements(methods, contains);
     }
 
     private void doTestNotContainsAll(String text, String... contains) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         List<String> methods = complete(false);
-        assertFalse(methods.containsAll(Arrays.asList(contains)));
+        assertDoesntContain(methods, contains);
     }
 
     public void testMethodOnSelfCompletion() {
@@ -132,7 +98,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         doTestContainsAll("Int.<caret>", ".Range");
     }
 
-    public void testMethodOnTypeFromModule() {
+    public void testMethodOnTypeFromModule() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         doTestContainsAll("use NativeCall; Pointer.<caret>", ".of");
     }
 
@@ -153,11 +120,13 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
                           "!a", "!bar");
     }
 
-    public void testPrivateMethodFromExternalRoleCompletion() {
+    public void testPrivateMethodFromExternalRoleCompletion() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         doTestContainsAll("use NativeCall; role Foo does NativeCall::Native { method bar { self!<caret> } }", "!setup");
     }
 
-    public void testCorrectImportGathering() {
+    public void testCorrectImportGathering() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         // We don't get methods from NativeCall in another block, so `!setup` is not available
         doTestNotContainsAll("class Foo { { use NativeCall; }; class Bar does NativeCall::Native { method !b {}; method !a { self!<caret> } } }", "!setup");
     }
@@ -201,7 +170,8 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
         doTestContainsAll("class Foo { has $.foo; method !x() { }; method !a { self!<caret> } }", "!a", "!x");
     }
 
-    public void testMethodsFromParametrizedRole() {
+    public void testMethodsFromParametrizedRole() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         doTestContainsAll("use NativeCall; role Foo does NativeCall::Native[Foo, lib-path] { method bar { self!<caret> } }", "!setup");
     }
 
@@ -373,16 +343,13 @@ public class MethodCompletionTest extends LightCodeInsightFixtureTestCase {
     public void testMethodAsARuleInGrammarCompletion1() {
         doTestContainsAll("grammar B { method panic() {}; regex regex-a { <.<caret> } }", "panic");
     }
+
     public void testMethodAsARuleInGrammarCompletion2() {
-        doTestNotContainsAll("grammar B { method panic() {}; regex regex-a { <.<caret> } }", "orig");
+        doTestContainsAll("grammar B { method panic() {}; regex regex-a { <.<caret> } }", "ast");
     }
 
     public void testGrammarFromSelfHasCursorMethods() {
-        doTestContainsAll("grammar B { method panic() {}; method foo() { self.<caret> }; regex regex-a { <?> } }", ".orig", ".target");
-    }
-
-    public void testInheritedGrammarMethodsCompletion() {
-        doTestContainsAll("grammar A { method a { self.<caret> } }", ".orig", ".pos");
+        doTestContainsAll("grammar B { method panic() {}; method foo() { self.<caret> }; regex regex-a { <?> } }", ".ast", ".panic");
     }
 
     public void testGeneralizedMethodInferenceOnKeyword() {

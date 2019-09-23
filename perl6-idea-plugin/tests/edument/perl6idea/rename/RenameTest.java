@@ -1,20 +1,11 @@
 package edument.perl6idea.rename;
 
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
-import org.jetbrains.annotations.NotNull;
+import edument.perl6idea.CommaFixtureTestCase;
 
-public class RenameTest extends LightCodeInsightFixtureTestCase {
+public class RenameTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/rename";
-    }
-
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
     }
 
     public void testRenameOfPrivateMethodFromName() {

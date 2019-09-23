@@ -90,6 +90,8 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     @Override
     public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         contributeInternals(collector, symbolsAllowed);
+        if (collector.isSatisfied())
+            return;
         contributeFromElders(collector, symbolsAllowed);
     }
 
@@ -214,7 +216,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 PsiReference ref = element.getReference();
                 if (ref == null) continue;
                 PsiElement decl = ref.resolve();
-                if (decl != null)
+                if (decl instanceof Perl6PackageDecl)
                     perl6PackageDecls.add(Pair.create(trait.getTraitModifier(), (Perl6PackageDecl)decl));
                 else
                     externals.add(Pair.create(trait.getTraitModifier(), trait.getTraitName()));
@@ -223,28 +225,25 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             }
         }
 
-        if (isAny)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Any", this).methods()) {
-                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
-                if (collector.isSatisfied()) return;
-            }
-        if (isMu)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Mu", this).methods()) {
-                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
-                if (collector.isSatisfied()) return;
-            }
-        if (isGrammar)
-            for (String method : Perl6SdkType.getInstance().getCoreSettingSymbol("Cursor", this).methods()) {
-                collector.offerSymbol(new Perl6ExternalSymbol(Perl6SymbolKind.Method, '.' + method));
-                if (collector.isSatisfied()) return;
-            }
+        // Contribute implicit symbols from Any/Mu and Cursor for grammars
+        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(getProject());
+        MOPSymbolsAllowed allowed = new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role"));
 
+        if (isAny)
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
+        if (isMu)
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
+        if (isGrammar)
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cursor", allowed);
+
+        // Contribute from explicit parents, either local or external
         for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
             // Local perl6PackageDecl
             Perl6PackageDecl typeRef = pair.second;
             String mod = pair.first;
             boolean isDoes = mod.equals("does");
             typeRef.contributeMOPSymbols(collector, isDoes ? symbolsAllowed.does() : symbolsAllowed.is());
+            if (collector.isSatisfied()) return;
             typeRef.contributeScopeSymbols(collector);
             if (collector.isSatisfied()) return;
         }
@@ -263,13 +262,12 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     private void contributeExternalPackage(Perl6SymbolCollector collector, String typeName,
                                            MOPSymbolsAllowed symbolsAllowed) {
-        Perl6VariantsSymbolCollector extCollector =
-                new Perl6VariantsSymbolCollector(Perl6SymbolKind.ExternalPackage);
+        Perl6SingleResolutionSymbolCollector extCollector =
+                new Perl6SingleResolutionSymbolCollector(typeName, Perl6SymbolKind.TypeOrConstant);
         applyExternalSymbolCollector(extCollector);
-        for (Perl6Symbol pack : extCollector.getVariants()) {
-            Perl6ExternalPackage externalPackage = (Perl6ExternalPackage)pack;
-            if (!(pack.getName().equals(typeName)))
-                continue;
+        Perl6Symbol collectorResult = extCollector.getResult();
+        if (collectorResult != null && collectorResult.getPsi() instanceof Perl6PackageDecl) {
+            Perl6PackageDecl externalPackage = (Perl6PackageDecl)collectorResult.getPsi();
             externalPackage.contributeMOPSymbols(collector, symbolsAllowed);
         }
     }

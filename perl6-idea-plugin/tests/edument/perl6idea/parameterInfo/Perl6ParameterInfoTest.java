@@ -1,20 +1,19 @@
 package edument.perl6idea.parameterInfo;
 
 import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import com.intellij.testFramework.utils.parameterInfo.MockCreateParameterInfoContext;
 import com.intellij.testFramework.utils.parameterInfo.MockParameterInfoUIContext;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.Perl6ParameterInfoHandler;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.P6CodeBlockCall;
 import edument.perl6idea.psi.Perl6RoutineDecl;
-import edument.perl6idea.psi.Perl6SubCall;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class Perl6ParameterInfoTest extends LightCodeInsightFixtureTestCase {
+public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
     public static final Perl6ParameterInfoHandler HANDLER = new Perl6ParameterInfoHandler();
 
     @NotNull
@@ -33,7 +32,7 @@ public class Perl6ParameterInfoTest extends LightCodeInsightFixtureTestCase {
 
     private void doTest(String text, Consumer<MockParameterInfoUIContext>... checks) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
-        MockCreateParameterInfoContext createContext = new MockCreateParameterInfoContext(getEditor(), getFile());
+        MockCreateParameterInfoContext createContext = new MockCreateParameterInfoContext(myFixture.getEditor(), myFixture.getFile());
         P6CodeBlockCall owner = HANDLER.findElementForParameterInfo(createContext);
         HANDLER.showParameterInfo(owner, createContext);
         Object[] items = createContext.getItemsToShow();
@@ -100,5 +99,12 @@ public class Perl6ParameterInfoTest extends LightCodeInsightFixtureTestCase {
     public void testJumping() {
         doTest("$a, $b, $asdf", "1, 3",
                context -> assertParameterInfo(context, true, "$a, $b, $asdf", 4, 6));
+    }
+
+    public void testExternalParameterInfo() {
+        doTest("slurp(<caret>",
+               context -> assertParameterInfo(context, true, "IO::Handle:D $fh = { ... }, |c is raw", 0, 26),
+               context -> assertParameterInfo(context, true, "$path, |c is raw", 0, 5)
+        );
     }
 }

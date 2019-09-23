@@ -13,4 +13,5 @@ public interface Perl6File extends Perl6PsiElement, Perl6PsiScope, PsiNameIdenti
     List<Perl6PsiDeclaration> getExports();
     void contributeGlobals(Perl6SymbolCollector collector, Set<String> seen);
     Map<Integer, List<Integer>> getStatementLineMap();
+    boolean isReal();
 }

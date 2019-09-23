@@ -1,23 +1,12 @@
 package edument.perl6idea.completion;
 
 import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.openapi.util.registry.RegistryValue;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 
-public class ModuleNameCompletionTest extends LightCodeInsightFixtureTestCase {
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
+public class ModuleNameCompletionTest extends CommaFixtureTestCase {
     public void testPragmaCompletion() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use exp<caret>");
         myFixture.complete(CompletionType.BASIC, 1);

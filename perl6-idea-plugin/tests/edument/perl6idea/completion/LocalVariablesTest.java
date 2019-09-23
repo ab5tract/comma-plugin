@@ -1,26 +1,17 @@
 package edument.perl6idea.completion;
 
 import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
+public class LocalVariablesTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/codeInsight/localVariables";
-    }
-
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
     }
 
     public void testCompletion() {
@@ -28,7 +19,7 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Collections.singletonList("$a")));
+        assertContainsElements(vars, Collections.singletonList("$a"));
 
         myFixture.type("a;\n@");
         myFixture.complete(CompletionType.BASIC, 1);
@@ -40,14 +31,14 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("%coool1", "%coool2")));
+        assertContainsElements(vars, Arrays.asList("%coool1", "%coool2"));
         assertEquals(2, vars.size());
 
         myFixture.type("1;\n&doooooooo");
         myFixture.complete(CompletionType.BASIC, 1);
         vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("&dooooooood1", "&dooooooood2")));
+        assertContainsElements(vars, Arrays.asList("&dooooooood1", "&dooooooood2"));
         assertEquals(2, vars.size());
     }
 
@@ -56,7 +47,7 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("&sec", "&sech")));
+        assertContainsElements(vars, Arrays.asList("&sec", "&sech"));
         assertEquals(2, vars.size());
     }
 
@@ -65,7 +56,7 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$name1", "$name2")));
+        assertContainsElements(vars, Arrays.asList("$name1", "$name2"));
     }
 
     public void testAttributeCompletionWithInnerClasses() {
@@ -74,7 +65,7 @@ public class LocalVariablesTest extends LightCodeInsightFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertTrue(vars.containsAll(Arrays.asList("$!", "$!xyz")));
+        assertContainsElements(vars, Arrays.asList("$!", "$!xyz"));
         assertEquals(2, vars.size());
     }
 

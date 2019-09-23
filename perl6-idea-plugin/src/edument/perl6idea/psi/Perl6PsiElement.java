@@ -73,7 +73,7 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
             if (stats == null) stats = new Perl6Statement[0];
             for (Perl6Statement statement : stats) {
                 // Do not iterate further If we already passed current element
-                if (statement.getTextOffset() > this.getTextOffset()) break;
+                if (statement.getTextOffset() > getTextOffset()) break;
                 for (PsiElement maybeImport : statement.getChildren()) {
                     if (!(maybeImport instanceof Perl6UseStatement || maybeImport instanceof Perl6NeedStatement)) continue;
                     Perl6LexicalSymbolContributor cont = (Perl6LexicalSymbolContributor)maybeImport;

@@ -11,6 +11,7 @@ import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.external.ExternalPerl6RoutineDecl;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
@@ -55,7 +56,7 @@ abstract public class Perl6InlineActionHandler extends InlineActionHandler {
             PsiElement declarationOfInlineePart = psiReference.resolve();
 
             // If we don't know where from it came or it is declared in the inlined code itself, skip
-            if (declarationOfInlineePart == null || PsiTreeUtil.isAncestor(codeToInline, declarationOfInlineePart, true))
+            if (declarationOfInlineePart == null || declarationOfInlineePart instanceof ExternalPerl6RoutineDecl || PsiTreeUtil.isAncestor(codeToInline, declarationOfInlineePart, true))
                 continue;
 
             Perl6Symbol declFromInlineLocation = null;

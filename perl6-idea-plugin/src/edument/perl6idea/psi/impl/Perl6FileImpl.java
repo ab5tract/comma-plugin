@@ -49,9 +49,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         // dynamic variables
         VARIABLE_SYMBOLS.put("$*ARGFILES", null);
         VARIABLE_SYMBOLS.put("@*ARGS", "Array");
-        VARIABLE_SYMBOLS.put("$*IN", "IO::Special");
-        VARIABLE_SYMBOLS.put("$*OUT", "IO::Special");
-        VARIABLE_SYMBOLS.put("$*ERR", "IO::Special");
+        VARIABLE_SYMBOLS.put("$*IN", "IO::Handle");
+        VARIABLE_SYMBOLS.put("$*OUT", "IO::Handle");
+        VARIABLE_SYMBOLS.put("$*ERR", "IO::Handle");
         VARIABLE_SYMBOLS.put("%*ENV", "Hash");
         VARIABLE_SYMBOLS.put("$*REPO", null);
         VARIABLE_SYMBOLS.put("$*INIT-DISTANT", "Instant");
@@ -84,6 +84,11 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     public Perl6FileImpl(FileViewProvider viewProvider) {
         super(viewProvider, Perl6Language.INSTANCE);
+    }
+
+    @Override
+    public boolean isReal() {
+        return true;
     }
 
     @NotNull
@@ -121,6 +126,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             Queue<Stub> visit = new LinkedList<>();
             visit.add(stub);
             while (!visit.isEmpty()) {
+                if (collector.isSatisfied())
+                    return;
                 Stub current = visit.remove();
                 boolean addChildren = false;
                 if (current == stub) {
@@ -135,18 +142,19 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                             Perl6PackageDecl psi = nested.getPsi();
                             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
                                 psi, topName));
-                            psi.contributeNestedPackagesWithPrefix(collector, topName + "::");
+                            if (!collector.isSatisfied())
+                                psi.contributeNestedPackagesWithPrefix(collector, topName + "::");
                         }
                     }
                 }
                 else if (current instanceof Perl6UseStatementStub) {
                     Perl6UseStatementStub use = (Perl6UseStatementStub)current;
-                    contributeTransitive(collector, seen, use.getModuleName());
+                    contributeTransitive(collector, seen, "use", use.getModuleName());
                 }
                 else if (current instanceof Perl6NeedStatementStub) {
                     Perl6NeedStatementStub need = (Perl6NeedStatementStub)current;
                     for (String name : need.getModuleNames())
-                        contributeTransitive(collector, seen, name);
+                        contributeTransitive(collector, seen, "need", name);
                 }
                 else {
                     addChildren = true;
@@ -159,6 +167,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             Queue<Perl6PsiElement> visit = new LinkedList<>();
             visit.add(this);
             while (!visit.isEmpty()) {
+                if (collector.isSatisfied())
+                    return;
                 Perl6PsiElement current = visit.remove();
                 boolean addChildren = false;
                 if (current == this) {
@@ -172,7 +182,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                         if (topName != null && !topName.isEmpty()) {
                             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.TypeOrConstant,
                                 nested, topName));
-                            nested.contributeNestedPackagesWithPrefix(collector, topName + "::");
+                            if (!collector.isSatisfied())
+                                nested.contributeNestedPackagesWithPrefix(collector, topName + "::");
                         }
                     }
                 }
@@ -185,12 +196,12 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                 }
                 else if (current instanceof Perl6UseStatement) {
                     Perl6UseStatement use = (Perl6UseStatement)current;
-                    contributeTransitive(collector, seen, use.getModuleName());
+                    contributeTransitive(collector, seen, "use", use.getModuleName());
                 }
                 else if (current instanceof Perl6NeedStatement) {
                     Perl6NeedStatement need = (Perl6NeedStatement)current;
                     for (String name : need.getModuleNames())
-                        contributeTransitive(collector, seen, name);
+                        contributeTransitive(collector, seen, "need", name);
                 }
                 else if (!(current instanceof Perl6PsiScope)) {
                     addChildren = true;
@@ -203,7 +214,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         }
     }
 
-    private void contributeTransitive(Perl6SymbolCollector collector, Set<String> seen, String name) {
+    private void contributeTransitive(Perl6SymbolCollector collector, Set<String> seen, String directive, String name) {
         if (name == null || seen.contains(name))
             return;
         seen.add(name);
@@ -217,11 +228,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         }
         else {
             // We only have globals, not exports, transitively available.
-            for (Perl6Symbol sym : Perl6SdkType.getInstance().getNamesForNeed(project, name)) {
-                collector.offerSymbol(sym);
-                if (collector.isSatisfied())
-                    return;
-            }
+            Perl6File needFile = Perl6SdkType.getInstance().getPsiFileForModule(project, name,directive + " " + name);
+            needFile.contributeGlobals(collector, new HashSet<>());
         }
     }
 
@@ -232,11 +240,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             if (collector.isSatisfied())
                 return;
         }
-        for (Perl6Symbol symbol : Perl6SdkType.getInstance().getCoreSettingSymbols(this)) {
-            collector.offerSymbol(symbol);
-            if (collector.isSatisfied())
-                return;
-        }
+        Perl6SdkType.getInstance().getCoreSettingFile(getProject()).contributeGlobals(collector, new HashSet<>());
+        if (collector.isSatisfied())
+            return;
         PsiElement list = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
         if (list == null) return;
         PsiElement finish = PsiTreeUtil.findChildOfType(list, PodBlockFinish.class);
@@ -287,6 +293,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
      * does not have an entry is not "interesting" statement (e.g. one that is meaningful
      * in coverage or could be hit by a breakpoint).
      */
+    @Override
     public Map<Integer, List<Integer>> getStatementLineMap() {
         Map<Integer, List<Integer>> result = new HashMap<>();
         Set<Integer> covered = new HashSet<>();

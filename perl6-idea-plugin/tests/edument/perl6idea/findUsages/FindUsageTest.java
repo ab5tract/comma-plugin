@@ -1,23 +1,14 @@
 package edument.perl6idea.findUsages;
 
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import com.intellij.usageView.UsageInfo;
-import edument.perl6idea.Perl6LightProjectDescriptor;
-import org.jetbrains.annotations.NotNull;
+import edument.perl6idea.CommaFixtureTestCase;
 
 import java.util.Collection;
 
-public class FindUsageTest extends LightCodeInsightFixtureTestCase {
+public class FindUsageTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/findUsage";
-    }
-
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
     }
 
     public void testVariableDefinition() {

@@ -78,7 +78,7 @@ public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction im
                 Perl6PsiElement perl6PsiElement = PsiTreeUtil.getParentOfType(element, Perl6PsiElement.class);
                 if (perl6PsiElement != null) {
                     Perl6Symbol metamodelSymbol = perl6PsiElement.resolveLexicalSymbol(Perl6SymbolKind.TypeOrConstant, "MetamodelX::MonitorHOW");
-                    shouldAddMonitorUsage = type.equals("monitor") && (metamodelSymbol == null || !metamodelSymbol.isExternal());
+                    shouldAddMonitorUsage = type.equals("monitor") && (metamodelSymbol == null);
                 }
 
                 Perl6PackageDecl decl = PsiTreeUtil.getParentOfType(element, Perl6PackageDecl.class);
