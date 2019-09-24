@@ -20,8 +20,8 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     private final String myKind;
     private final String myScope;
     private final String myName;
-    private final String myReturnType;
     private final String myIsMulti;
+    private String myReturnType;
     private Perl6Signature mySignature;
 
     public ExternalPerl6RoutineDecl(Project project, PsiElement parent,
@@ -34,6 +34,9 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
         myIsMulti = isMulti;
         mySignature = new ExternalPerl6Signature(project, parent, signature);
         myReturnType = (String)signature.get("r");
+        if (myReturnType.endsWith(":D") || myReturnType.endsWith(":U")) {
+            myReturnType = myReturnType.substring(0, myReturnType.length() - 2);
+        }
     }
 
     @Override
@@ -122,8 +125,15 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
         return mySignature;
     }
 
+    @Nullable
     @Override
     public String getReturnsTrait() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getReturnType() {
         return myReturnType;
     }
 

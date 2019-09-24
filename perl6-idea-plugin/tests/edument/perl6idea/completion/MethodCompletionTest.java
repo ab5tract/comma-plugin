@@ -533,4 +533,8 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
                                   "class A { has $.test; my class B { method a { self.te<caret> } } }");
         complete(true);
     }
+
+    public void testReturnTypeBasedExternal() {
+        doTestContainsAll("Setty.elems.<caret>", ".polymod", ".chr");
+    }
 }

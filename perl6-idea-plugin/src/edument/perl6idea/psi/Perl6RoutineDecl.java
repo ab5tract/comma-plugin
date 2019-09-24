@@ -23,4 +23,10 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     Perl6Parameter[] getParams();
     String getMultiness();
     PsiElement getDeclaratorNode();
+
+    @Nullable
+    @Override
+    default String getReturnType() {
+        return Perl6SignatureHolder.super.getReturnType();
+    }
 }
