@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Perl6FileElementType extends IStubFileElementType<Perl6FileStub> {
-    public static final int STUB_VERSION = 25;
+    public static final int STUB_VERSION = 26;
 
     public Perl6FileElementType() {
         super(Perl6Language.INSTANCE);
