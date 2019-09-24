@@ -13,15 +13,17 @@ public class Perl6RoutineDeclStubImpl extends StubBase<Perl6RoutineDecl> impleme
     private boolean isExported;
     private boolean isPrivate;
     private String multiness;
+    private String returnType;
 
     public Perl6RoutineDeclStubImpl(StubElement stub, String name, String kind, boolean isPrivate,
-                                    boolean exported, String multiness) {
+                                    boolean exported, String multiness, String returnType) {
         super(stub, Perl6ElementTypes.ROUTINE_DECLARATION);
         this.routineName = name;
         this.routineKind = kind;
         this.isPrivate = isPrivate;
         this.isExported = exported;
         this.multiness = multiness;
+        this.returnType = returnType;
     }
 
     @Override
@@ -52,5 +54,10 @@ public class Perl6RoutineDeclStubImpl extends StubBase<Perl6RoutineDecl> impleme
     @Override
     public String getMultiness() {
         return multiness;
+    }
+
+    @Override
+    public String getReturnType() {
+        return returnType;
     }
 }

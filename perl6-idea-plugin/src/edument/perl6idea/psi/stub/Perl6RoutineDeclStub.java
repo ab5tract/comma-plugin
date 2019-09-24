@@ -7,4 +7,5 @@ public interface Perl6RoutineDeclStub extends Perl6DeclStub<Perl6RoutineDecl> {
     String getRoutineName();
     boolean isPrivate();
     String getMultiness();
+    String getReturnType();
 }

@@ -72,6 +72,15 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         return getRoutineName().startsWith("!");
     }
 
+    @Nullable
+    @Override
+    public String getReturnType() {
+        Perl6RoutineDeclStub stub = getStub();
+        if (stub != null)
+            return stub.getReturnType();
+        return Perl6RoutineDecl.super.getReturnType();
+    }
+
     @Override
     @Nullable
     public String getReturnsTrait() {

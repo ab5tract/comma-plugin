@@ -6,7 +6,7 @@ import edument.perl6idea.psi.Perl6RoutineDecl;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6AllRoutinesStubIndex extends StringStubIndexExtension<Perl6RoutineDecl> {
-    private static final int INDEX_VERSION = 4;
+    private static final int INDEX_VERSION = 5;
     private static final Perl6AllRoutinesStubIndex instance = new Perl6AllRoutinesStubIndex();
 
     public static Perl6AllRoutinesStubIndex getInstance() {
