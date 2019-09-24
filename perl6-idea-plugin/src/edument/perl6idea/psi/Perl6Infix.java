@@ -5,5 +5,5 @@ import com.intellij.psi.PsiElement;
 public interface Perl6Infix extends Perl6PsiElement {
     PsiElement getLeftSide();
     PsiElement getRightSide();
-    String getOperator();
+    PsiElement getOperator();
 }
