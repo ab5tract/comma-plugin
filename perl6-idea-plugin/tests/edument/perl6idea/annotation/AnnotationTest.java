@@ -116,11 +116,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
-    // TODO
-    //public void testDeclaredExternalPrivateMethodAnnotator() {
-    //    myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role A does NativeCall::Native { method !a {} }; class B does A { method b { self!setup; } }");
-    //    myFixture.checkHighlighting();
-    //}
+    public void testDeclaredExternalPrivateMethodAnnotator() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role A does NativeCall::Native { method !a {} }; class B does A { method b { self!setup; } }");
+        myFixture.checkHighlighting();
+    }
 
     public void testUndeclaredAttributeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { has $!a; }; class B does A { method b { say <error descr=\"Attribute $!b is used, but not declared\">$!b</error>; } }");
@@ -137,7 +137,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
-    public void testDeclaredExternalAttributeAnnotator() {
+    public void testDeclaredExternalAttributeAnnotator() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
         myFixture.checkHighlighting();
     }
