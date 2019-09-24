@@ -246,14 +246,19 @@ public class Perl6SdkType extends SdkType {
                     coreSymbols);
                 Thread thread = new Thread(() -> {
                     mySettingsStarted = true;
-                    String settingLines = String.join("\n", Perl6CommandLine.execute(cmd));
-                    if (settingLines.isEmpty()) {
-                        LOG.warn("getCoreSettingFile got no symbols from Perl 6, using fallback");
-                        getFallback(project);
-                    } else {
-                        setting = makeSettingSymbols(project, settingLines);
+                    try {
+                        String settingLines = String.join("\n", Perl6CommandLine.execute(cmd));
+                        if (settingLines.isEmpty()) {
+                            LOG.warn("getCoreSettingFile got no symbols from Perl 6, using fallback");
+                            getFallback(project);
+                        }
+                        else {
+                            setting = makeSettingSymbols(project, settingLines);
+                        }
+                        triggerCodeAnalysis(project);
+                    } catch (AssertionError e) {
+                        // If the project was already disposed, do not die in a background thread
                     }
-                    triggerCodeAnalysis(project);
                 });
                 thread.start();
             }
@@ -266,6 +271,7 @@ public class Perl6SdkType extends SdkType {
 
     private static void triggerCodeAnalysis(Project project) {
         ApplicationManager.getApplication().runReadAction(() -> {
+            if (project.isDisposed()) return;
             FileEditor[] editors = FileEditorManager.getInstance(project).getSelectedEditors();
             for (FileEditor editor : editors) {
                 if (editor != null && editor.getFile() != null) {
@@ -321,12 +327,16 @@ public class Perl6SdkType extends SdkType {
         if (!myPackageStarted.contains(name)) {
             myPackageStarted.add(name);
             Thread thread = new Thread(() -> {
-                // if not, check if we have symbol cache, if yes, parse, save and return it
-                if (symbolCache.containsKey(name))
-                    cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, symbolCache.get(n)));
-                // if no symbol cache, compute as usual
-                cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, invocation));
-                triggerCodeAnalysis(project);
+                try {
+                    // if not, check if we have symbol cache, if yes, parse, save and return it
+                    if (symbolCache.containsKey(name))
+                        cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, symbolCache.get(n)));
+                    // if no symbol cache, compute as usual
+                    cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, invocation));
+                    triggerCodeAnalysis(project);
+                } catch (AssertionError e) {
+                    // If the project was already disposed, do not die in a background thread
+                }
             });
             thread.start();
         }
