@@ -11,9 +11,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class RemoveInitializerFix implements IntentionAction {
     private final Perl6VariableDecl variableDecl;
+    private final String variableName;
 
-    public RemoveInitializerFix(Perl6VariableDecl decl) {
+    public RemoveInitializerFix(Perl6VariableDecl decl, String name) {
         variableDecl = decl;
+        variableName = name;
     }
 
     @NotNull
@@ -35,7 +37,7 @@ public class RemoveInitializerFix implements IntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        Perl6VariableDecl newDecl = Perl6ElementFactory.createVariableDecl(project, variableDecl.getScope(), variableDecl.getVariableName());
+        Perl6VariableDecl newDecl = Perl6ElementFactory.createVariableDecl(project, variableDecl.getScope(), variableName);
         variableDecl.replace(newDecl);
     }
 

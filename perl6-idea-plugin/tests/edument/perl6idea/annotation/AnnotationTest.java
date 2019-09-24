@@ -11,52 +11,52 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testUndeclaredVariableAnnotatorReallyUndeclared() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable $foo is not declared\">$foo</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredVariableAnnotatorNoErrorIfDeclared() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo; say $foo;");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredVariableAnnotatorDefaultsInOuterScopeOK() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say $_, $/, $!");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredVariableAnnotatorPostdeclaredSubOK() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say &a.arity; sub a { }");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredVariableAnnotatorUndeclaredSubCaught() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable &a is not declared\">&a</error>.arity; sub ab { }");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredVariableAnnotatorPostdeclared() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable $foo is not declared in this scope yet\">$foo</error>; my $foo = 42");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredVariableAnnotatorNoErrorIfConstantDeclared() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my constant $foo = 42; say $foo;");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredVariableAnnotatorFinishPresent() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"say $=finish;\n\n=begin finish\n\nfoo");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredVariableAnnotatorFinishIsNotPresent() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"say <error descr=\"There is no =finish section in this file\">$=finish</error>;");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredVariableAnnotatorFinishPresentInBlock() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"if 1 {\nsay $=finish;\n}\n=begin finish\n\nfoo");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredVariableAnnotatorRoleParameter() {
@@ -64,118 +64,133 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testFalsePositive1() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"my $x = 1, 2; my ($a) = $x;");
+        myFixture.checkHighlighting();
+    }
+
     public void testAnonymousVariables() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"my $; my @; my %; my &; say $; say @; say %; say &;");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testDeclaredSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo() {};\nmy sub bar() {};\nfoo;\nbar()");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Subroutine foo is not declared\">foo</error>;");
-        myFixture.checkHighlighting(false, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testLeadingZeroAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <warning descr=\"Leading 0 does not indicate octal in Perl 6; use 0o755\">0755</warning>;");
-        myFixture.checkHighlighting(true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMethodNotOnRangeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <warning descr=\"Precedence of ^ is looser than method call; please parenthesize\">^1.map(*.is-prime)</warning>;");
-        myFixture.checkHighlighting(true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testUnitKeywordAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Semicolon form of 'class' without 'unit' is illegal.\">class Foo;</error>");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot use 'unit' with block form of declaration\">unit class Foo</error>{}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testEmptyNameVariableAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say $;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredPrivateMethodAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { method !a($one) {} }; class B does A { method b { self<error descr=\"Private method !c is used, but not declared\">!c</error>(1); } }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testDeclaredPrivateMethodAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { method !a {} }; class B does A { method b { self!a; } }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
+    }
+
+    public void testDeclaredExternalPrivateMethodAnnotator() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role A does NativeCall::Native { method !a {} }; class B does A { method b { self!setup; } }");
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredAttributeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { has $!a; }; class B does A { method b { say <error descr=\"Attribute $!b is used, but not declared\">$!b</error>; } }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testDeclaredAttributeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { has $!a; }; class B does A { has $!b; method b { say $!a; say $!b; } }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
-    public void testDeclaredExternalAttributeAnnotator() {
+    public void testUndeclaredMultiAttributeAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A { has ($!a, $!asdrf) }");
+        myFixture.checkHighlighting();
+    }
+
+    public void testDeclaredExternalAttributeAnnotator() throws InterruptedException {
+        ensureModuleIsLoaded("NativeCall");
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
-        myFixture.checkHighlighting(false, false, true, true);
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; role A does NativeCall::Native { method !a {} }; class B does A { method b { self!setup; } }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testSignature1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testSignature2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put positional parameter $c after a variadic parameter\">$c</error>) { }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testSignature3() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put optional parameter $c after a variadic parameter\">$c?</error>) { }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testSignature4() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$a, <error descr=\"Cannot put positional parameter $b after a named parameter\">$b</error>) { }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testSignature5() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testSignature6() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c!) {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testSignature7() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c) {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testSignature8() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(*%h, :$c) {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testSignature9() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub web(Str $cfg-filename, Str $model-filename, Str $tech-file?) is export {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testSignature10() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "multi sub MAIN('web', ExistingFile $cfg-filename, ExistingFile $model-filename, Str $tech-file?) is export {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testUnnamedTypenameInSignature() {
@@ -190,255 +205,260 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testRawWheneverAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=descr=\"A whenever must be within a supply or react block\"whenever</error> $foo {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testInfiniteRangeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "1..*");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testIncompleteRangeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 1<error=\"The range operator must have a second argument\">..</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testIncompleteRangeAnnotatorWithPrefixEnding() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$0 .. +($1 // $0);");
-        myFixture.checkHighlighting(true, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testLiteralRange() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for 5..10 {}");
-        myFixture.checkHighlighting(true, false, true, false);
+        myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a; my $b; for $a..$b {}");
-        myFixture.checkHighlighting(true, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testRangeWithNewlineIsCompleted() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"Range can be simplified\">0\n..\n1</weak_warning>");
-        myFixture.checkHighlighting(true, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testZeroToNRange() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for <weak_warning descr=\"Range can be simplified\">0..9</weak_warning> {}");
-        myFixture.checkHighlighting(true, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testZeroToExclusiveNRange() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "for <weak_warning descr=\"Range can be simplified\">0..^10</weak_warning> {}");
-        myFixture.checkHighlighting(true, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testZeroToVarRange() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $n = 5; for <weak_warning descr=\"Range can be simplified\">0..^$n</weak_warning> {}");
-        myFixture.checkHighlighting(true, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testZeroToExclusiveVarRange() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $n = 5; for <weak_warning descr=\"Range can be simplified\">0..$n-1</weak_warning> {}");
-        myFixture.checkHighlighting(true, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testZeroToExclusiveVarInParensRange() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $n = 5; for <weak_warning descr=\"Range can be simplified\">0..($n-1)</weak_warning> {}");
-        myFixture.checkHighlighting(true, false, true, false);
+        myFixture.checkHighlighting();
     }
 
     public void testNullRegexAnnotator1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"Empty regex is not allowed\">//</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testNullRegexAnnotator2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "token foo<error=\"Empty regex is not allowed\">{}</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testNullRegexAnnotator3() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "regex foo <error=\"Empty regex is not allowed\">{}</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testNullRegexAnnotator4() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "rule foo <error=\"Empty regex is not allowed\">{}</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testWheneverInReactAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "react { whenever $foo {} }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo; react { whenever $foo {} }");
+        myFixture.checkHighlighting();
     }
 
     public void testWheneverInSupplyAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "supply { whenever $foo {} }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo; supply { whenever $foo {} }");
+        myFixture.checkHighlighting();
     }
 
     public void testRegexPositionalDeclAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex positional match variable\">my $0 = 42</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testTypedRegexPositionalDeclAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex positional match variable\">my Int $0 = 42</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testRegexNamedDeclScalarSigilAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex named match variable\">my $<foo> = 42</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testRegexNamedDeclArraySigilAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex named match variable\">my @<foo> = 42</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testRegexNamedDeclHashSigilAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a regex named match variable\">my %<foo> = 42</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testContextualizerDeclScalarSigilAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a contextualizer\">my $('x') = 42</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testContextualizerDeclArraySigilAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a contextualizer\">my @('x') = 42</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testContextualizerDeclHashSigilAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot declare a contextualizer\">my %('x') = 42</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclarableAnnotatorUsesActualVariableDeclaration() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our token cidr { (\\d+) <?{ $0 <= 32 }> }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testRestrictUnitKeywordToMAINSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"The unit sub syntax is only allowed for the sub MAIN\">unit</error> sub foo() {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testPermitUnitKeywordForMAINSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "unit sub MAIN() {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testInfixAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $lc-and-trim := { $_ = .lc.trim };");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testEVALCase1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL \"5\";");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testEVALCase2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL q[5];");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testEVALCase3() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; EVAL q[$foo];");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testEVALCase4() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; EVAL <error descr=\"Cannot EVAL interpolated expression without MONKEY-SEE-NO-EVAL pragma\">qq[$foo]</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testEVALCase5() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL qq[];");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingStubbedMethodFromSingleRole() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { method foo($a) {...}; method bar($a) {...} }; class <error descr=\"Composed roles require to implement methods: bar, foo\">C does R </error>{}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingStubbedMethodsFromManyRoles() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { method foo($a) {...}; method bar($a) {...} }; role R2 { method baz {...} }; class <error descr=\"Composed roles require to implement methods: bar, foo, baz\">C does R does R2</error>{}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testStubbedMethodFromRoleImplementedAsAccessor() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "role R { method baz {...}; method bar {...}; method foo {...} }; class <error descr=\"Composed roles require to implement methods: bar, baz\">C does R </error>{ my $.baz; has $.foo; has $!bar;}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingStubbedMethodsIncludeMulti() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { multi method foo($a) {...}; method bar($a) {...} }; class C does R { multi method foo($a) {}; multi method foo(@b) {}; method bar($a) {...} }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingStubbedMethodDoNotIncludeFilledOnes1() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R1 { method m {...} }; role R2 does R1 { method m {...} }; class C does R2 {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R1 { method m {...} }; role R2 does R1 { method m {...} }; class <error descr=\"Composed roles require to implement methods: m\">C does R2 </error>{}");
+        myFixture.checkHighlighting();
     }
 
     public void testMissingStubbedMethodDoNotIncludeFilledOnes2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R1 { method m {...} }; role R2 { method m {} }; class C does R1 does R2 {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingStubbedMethodDoNotIncludeFilledOnes3() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R1 { method m {...} }; role R2 { method m {} }; class C does RR does R1 {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R1 { method m {...} }; role R2 { method m {} }; class C does R2 does R1 {}");
+        myFixture.checkHighlighting();
+    }
+
+    public void testMissingStubbedMethodsCountMultidecls() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { method m {...}; method b {...}; }; class C does R { has ($.m, $.b); }");
+        myFixture.checkHighlighting();
     }
 
     public void testMyScopedVariableExportAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"`my` scoped variable cannot be exported\">my $var is export</error>;");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testRoleDoesClassAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C {}; role A <error descr=\"Role cannot compose a class\">does C</error> {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testClassDoesClassAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C {}; class A <error descr=\"Class cannot compose a class\">does C</error> {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testClassDoesClassAlsoAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C {}; class D { also <error descr=\"Class cannot compose a class\">does C</error> }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testRoleDoesClassAlsoAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C {}; role D { also <error descr=\"Role cannot compose a class\">does C</error> }");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testNormalComposition1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R {}; role A does C {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testNormalComposition2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R {}; class A does C {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testNormalInheritance1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C {}; class A is C {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testNormalInheritance2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C {}; role A is C {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testTrustedMethodIsCountedAsDeclarted() {
@@ -448,17 +468,17 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testOOMonitors() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "monitor <error descr=\"Cannot use monitor type package without OO::Monitors module being included\">LongName::Name</error> {}");
-        myFixture.checkHighlighting(false, false, true, true);
+        myFixture.checkHighlighting();
     }
 
     public void testFromPerl5ModuleParens() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use Foo::Bar:from('Perl5')");
-        myFixture.checkHighlighting(false, false, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testFromPerl5ModuleAngles() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use Foo::Bar:from<Perl5>");
-        myFixture.checkHighlighting(false, false, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testSigspaceAnnotator() {
@@ -470,160 +490,160 @@ public class AnnotationTest extends CommaFixtureTestCase {
     public void testPackageDeclAnnotator1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "package Foo {}");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
    public void testPackageDeclAnnotator2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "module Foo {}");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
    public void testPackageDeclAnnotator3() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "module Foo <error descr=\"module cannot compose a role\">does A</error> {}");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
    public void testPackageDeclAnnotator4() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "module Foo <error descr=\"module cannot inherit a class\">is A</error> {}");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
    public void testPackageDeclAnnotator5() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "module Foo <error descr=\"module cannot compose a role\">does A</error> <error descr\"module cannot inherit a class\">is A</error> {}");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
    public void testPackageDeclAnnotator6() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "package Foo <error descr=\"package cannot compose a role\">does A</error> {}");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
    public void testPackageDeclAnnotator7() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "package Foo <error descr=\"package cannot inherit a class\">is A</error> {}");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
    public void testPackageDeclAnnotator8() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "package Foo <error descr=\"package cannot compose a role\">does A</error> <error descr\"package cannot inherit a class\">is A</error> {}");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testPackageDeclAlsoTraitAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "package Foo { also <error descr=\"package cannot compose a role\">does A</error> }");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMonitorAnnotatorOnEmptyNameCase() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use v6.d.PREVIEW; monitor <error descr=\"Cannot use monitor type package without OO::Monitors module being included\">Bar</error> {}");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testCompletelyFineReturn() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo() { return 42 }");
-        myFixture.checkHighlighting(false, false, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testReturnOutsideOfRoutineListOp() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 42; <error descr=\"Return outside of routine\">return 100</error>;");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testReturnOutsideOfRoutineFunctionCall() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 42; <error descr=\"Return outside of routine\">return(100)</error>;");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testReturnInStartBlock() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "await start { <error descr=\"Cannot use return to produce a result in a start block\">return 100</error>; }");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testReturnInSupplyBlock() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $s = supply { <error descr=\"Cannot use return to exit a supply block\">return 100</error>; }");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testReturnInReactBlock() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "react { <error descr=\"Cannot use return to exit a react block\">return 100</error>; }");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testReturnInWheneverBlock() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "react { whenever Supply.interval(1) { <error descr=\"Cannot use return in a whenever block\">return 100</error>; } }");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingParenFunctionCall() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say<error descr=\"Missing closing )\">(</error>42;");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingParenMethodCall() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$*OUT.say<error descr=\"Missing closing )\">(</error>42");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingParenExpression() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Missing closing )\">(</error>42 + (4 * 3);");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingParenLoop() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "loop <error descr=\"Missing closing )\">(</error>my $i = 0; $i < 10; $i++ { }");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingParenVarDecl() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my <error descr=\"Missing closing )\">(</error>$x, $y");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingParenSignature() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo<error descr=\"Missing closing )\">(</error>$x, { }");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingParenCall() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = { .say }; $a<error descr=\"Missing closing )\">(</error>42");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingArrayComposer() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <error descr=\"Missing closing ]\">[</error>1,2,3");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingArrayIndexer() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = 1,2,3; say @a<error descr=\"Missing closing ]\">[</error>1;");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingBlockoid() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo <error descr=\"Missing closing }\">{</error> say 42;");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingRegexGroup() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 'xxx' ~~ /a <error descr=\"Missing closing ]\">[</error> b | c /;");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingRegexAssertion() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 'xxx' ~~ /a <error descr=\"Missing closing >\"><</error>ident /;");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testMissingClosingRegexCapture() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 'xxx' ~~ /a <error descr=\"Missing closing )\">(</error> b | c /;");
-        myFixture.checkHighlighting(false, true, false, false);
+        myFixture.checkHighlighting();
     }
 
     public void testColonPairSimplification() {

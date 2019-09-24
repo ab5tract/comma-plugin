@@ -5,9 +5,7 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.Perl6PackageDecl;
-import edument.perl6idea.psi.Perl6Variable;
-import edument.perl6idea.psi.Perl6VariableDecl;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
 import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
@@ -21,7 +19,7 @@ public class UndeclaredAttributeAnnotator implements Annotator {
         // Filter out anything except attribute usages.
         if (!(element instanceof Perl6Variable))
             return;
-        if (element.getParent() instanceof Perl6VariableDecl)
+        if (element.getParent() instanceof Perl6VariableDecl || element.getParent() instanceof Perl6ParameterVariable)
             return;
         final Perl6Variable variable = (Perl6Variable)element;
         String variableName = variable.getVariableName();

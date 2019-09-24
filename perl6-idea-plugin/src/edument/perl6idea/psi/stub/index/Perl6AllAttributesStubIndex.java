@@ -6,7 +6,7 @@ import edument.perl6idea.psi.Perl6VariableDecl;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6AllAttributesStubIndex extends StringStubIndexExtension<Perl6VariableDecl> {
-    private static final int INDEX_VERSION = 3;
+    private static final int INDEX_VERSION = 4;
     private static final Perl6AllAttributesStubIndex instance = new Perl6AllAttributesStubIndex();
 
     public static Perl6AllAttributesStubIndex getInstance() {

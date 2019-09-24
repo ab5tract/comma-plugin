@@ -28,11 +28,12 @@ public class Perl6InlineViewDescriptor implements UsageViewDescriptor {
     if (myElement instanceof Perl6RoutineDecl) {
       return ((Perl6RoutineDecl)myElement).getRoutineKind() + " to inline";
     } else if (myElement instanceof Perl6VariableDecl) {
-      return ((Perl6VariableDecl)myElement).getVariableName() + " to inline";
+      return String.join(", ", ((Perl6VariableDecl)myElement).getVariableNames()) + " to inline";
     }
     return "Unknown element";
   }
 
+  @NotNull
   @Override
   public String getCodeReferencesText(int usagesCount, int filesCount) {
     return RefactoringBundle.message("invocations.to.be.inlined", UsageViewBundle.getReferencesString(usagesCount, filesCount));

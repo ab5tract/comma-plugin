@@ -23,15 +23,15 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
         myType = type;
     }
 
-    @Override
-    public String getVariableName() {
-        return getName();
-    }
-
     @NotNull
     @Override
     public String getName() {
         return myName;
+    }
+
+    @Override
+    public String[] getVariableNames() {
+        return new String[]{getName()};
     }
 
     @Override
