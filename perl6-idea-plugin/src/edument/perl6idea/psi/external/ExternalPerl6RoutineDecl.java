@@ -34,9 +34,8 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
         myIsMulti = isMulti;
         mySignature = new ExternalPerl6Signature(project, parent, signature);
         myReturnType = (String)signature.get("r");
-        int smiley = myReturnType.indexOf(':');
-        if (smiley != -1) {
-            myReturnType = myReturnType.substring(0, myReturnType.indexOf(':'));
+        if (myReturnType.endsWith(":D") || myReturnType.endsWith(":U")) {
+            myReturnType = myReturnType.substring(0, myReturnType.length() - 2);
         }
     }
 
