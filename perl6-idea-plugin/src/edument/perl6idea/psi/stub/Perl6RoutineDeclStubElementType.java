@@ -56,7 +56,7 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
         StringRef multiness = dataStream.readName();
         StringRef returnType = dataStream.readName();
         return new Perl6RoutineDeclStubImpl(parentStub, routineNameRef.getString(), routineKindRef.getString(), isPrivate,
-                                            exported, multiness.getString(), returnType.getString());
+                                            exported, multiness.getString(), returnType == null ? null : returnType.getString());
     }
 
     @Override
