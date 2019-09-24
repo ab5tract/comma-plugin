@@ -213,6 +213,10 @@ public class Perl6ElementFactory {
         return produceElement(project, String.format("%s %s;", scope, name), Perl6VariableDecl.class);
     }
 
+    public static PsiElement createInfixOperator(Project project, String op) {
+        return produceElement(project, String.format("1 %s 1", op), Perl6Infix.class).getOperator();
+    }
+
     public static Perl6IfStatement createIfStatement(Project project, boolean isIf, int numberOfBranches) {
         return produceElement(project, createIfStatementText(isIf, numberOfBranches), Perl6IfStatement.class);
     }

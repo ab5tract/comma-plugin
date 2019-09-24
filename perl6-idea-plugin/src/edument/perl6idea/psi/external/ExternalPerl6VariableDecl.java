@@ -35,6 +35,11 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
     }
 
     @Override
+    public Perl6Variable[] getVariables() {
+        return new Perl6Variable[0];
+    }
+
+    @Override
     public boolean hasInitializer() {
         return false;
     }

@@ -751,6 +751,17 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testListAssignmentAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my (@a, $x)");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my (@a, $x) := 4, (1,2,3);");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my ($x, @a) = 4, (1,2,3);");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my (<warning descr=\"Array slurps everything from assignment\">@a</warning>, $x) = (1,2,3), 4;");
+        myFixture.checkHighlighting();
+    }
+
     public void testReturnFromNilSubroutineAnnotation() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a(--> Nil) { if True { return; } }");
         myFixture.checkHighlighting();

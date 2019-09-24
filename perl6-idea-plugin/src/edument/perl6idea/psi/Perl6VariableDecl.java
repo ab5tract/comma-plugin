@@ -12,6 +12,7 @@ public interface Perl6VariableDecl extends Perl6PsiElement, Perl6PsiDeclaration,
                                            PsiNameIdentifierOwner, StubBasedPsiElement<Perl6VariableDeclStub>,
                                            Perl6LexicalSymbolContributor, Perl6MOPSymbolContributor {
     String[] getVariableNames();
+    Perl6Variable[] getVariables();
     boolean hasInitializer();
     @Nullable
     PsiElement getInitializer(Perl6Variable variable);

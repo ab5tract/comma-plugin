@@ -46,6 +46,6 @@ public class Perl6InfixApplicationImpl extends ASTWrapperPsiElement implements P
     @Override
     public String getOperator() {
         Perl6Infix infixOp = PsiTreeUtil.getChildOfType(this, Perl6Infix.class);
-        return infixOp == null ? "" : infixOp.getOperator();
+        return infixOp == null ? "" : infixOp.getOperator().getText();
     }
 }

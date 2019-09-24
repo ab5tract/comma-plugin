@@ -76,13 +76,20 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         Perl6VariableDeclStub stub = getStub();
         if (stub != null)
             return stub.getVariableNames();
+        Perl6Variable[] variables = getVariables();
+        return variables.length == 0
+               ? ArrayUtil.EMPTY_STRING_ARRAY
+               : Arrays.stream(variables).map(v -> v.getVariableName()).filter(n -> n != null).toArray(String[]::new);
+    }
+
+    @Override
+    public Perl6Variable[] getVariables() {
         Perl6Signature signature = PsiTreeUtil.getChildOfType(this, Perl6Signature.class);
         if (signature == null) {
-            String name = getName();
-            return name != null ? new String[]{name} : ArrayUtil.EMPTY_STRING_ARRAY;
+            Perl6Variable variable = getVariable();
+            return variable == null ? new Perl6Variable[0] : new Perl6Variable[]{variable};
         } else {
-            List<String> names = ContainerUtil.map(PsiTreeUtil.findChildrenOfType(signature, Perl6Variable.class), v -> v.getVariableName());
-            return ArrayUtil.toStringArray(names);
+            return PsiTreeUtil.findChildrenOfType(signature, Perl6Variable.class).toArray(new Perl6Variable[0]);
         }
     }
 
@@ -145,7 +152,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         Perl6Infix infix = PsiTreeUtil.getChildOfType(this, Perl6Infix.class);
         if (infix == null)
             return null;
-        if (!Objects.equals(infix.getOperator(), "="))
+        if (!Objects.equals(infix.getOperator().getText(), "="))
             return null;
         return infix;
     }

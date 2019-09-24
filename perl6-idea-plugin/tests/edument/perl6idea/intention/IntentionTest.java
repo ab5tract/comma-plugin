@@ -270,6 +270,10 @@ public class IntentionTest extends CommaFixtureTestCase {
         checkIntentionAbsence("Remove parentheses");
     }
 
+    public void testBindingDestructuringFix() {
+        executeIntention("Use binding");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
