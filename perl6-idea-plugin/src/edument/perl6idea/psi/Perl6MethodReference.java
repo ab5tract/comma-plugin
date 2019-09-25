@@ -82,7 +82,12 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
     @Override
     public Object[] getVariants() {
         Perl6MethodCall call = getElement();
-        return getMethodsForType(call, getCallInfo(call), false).toArray();
+        Collection<LookupElement> methods = getMethodsForType(call, getCallInfo(call), false);
+        if (call.getCallOperator().equals("!")) {
+            return methods.stream().filter(le -> le.getLookupString().startsWith("!")).toArray();
+        } else {
+            return methods.toArray();
+        }
     }
 
     /**
