@@ -7,10 +7,7 @@ import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6Signature;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
-import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
-import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -152,7 +149,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
             return;
 
         Perl6ExplicitAliasedSymbol sym = new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this,
-                                                                        myName.startsWith("!") ? myName : "." + myName);
+                                                                        myName.startsWith("!") ? myName : "." + myName, Perl6Symbol.Priority.OUTER);
         if (myIsMulti.equals("only"))
             collector.offerSymbol(sym);
         else

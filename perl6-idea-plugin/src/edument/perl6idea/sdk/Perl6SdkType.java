@@ -401,8 +401,8 @@ public class Perl6SdkType extends SdkType {
     }
 
     public static void contributeParentSymbolsFromCore(@NotNull Perl6SymbolCollector collector,
-                                                        Perl6File coreSetting,
-                                                        String parentName,
+                                                       Perl6File coreSetting,
+                                                       String parentName,
                                                        MOPSymbolsAllowed allowed) {
         Perl6SingleResolutionSymbolCollector parentCollector =
           new Perl6SingleResolutionSymbolCollector(parentName, Perl6SymbolKind.TypeOrConstant);
