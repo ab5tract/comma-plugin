@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -152,10 +153,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
         else {
             Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
             enclosingPackage.contributeMOPSymbols(collector, symbolsAllowed);
-            return ContainerUtil.map(collector.getVariants(), s -> PrioritizedLookupElement
-                .withPriority(
-                    LookupElementBuilder.create(s.getPsi(), s.getName()).withTypeText(((Perl6RoutineDecl)s.getPsi()).summarySignature()),
-                    s.getPriority() == Perl6Symbol.Priority.INNER ? 20 : 10));
+            return prioritizeResults(collector.getVariants());
         }
     }
 
@@ -200,8 +198,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
         MOPSymbolsAllowed symbolsAllowed = new MOPSymbolsAllowed(true, true, true, true);
         Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", symbolsAllowed);
         Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", symbolsAllowed);
-
-        return ContainerUtil.map(collector.getVariants(), s -> LookupElementBuilder.create(s.getPsi(), s.getName()).withTypeText(((Perl6RoutineDecl)s.getPsi()).summarySignature()));
+        return prioritizeResults(collector.getVariants());
     }
 
     private static Collection<LookupElement> tryToCompleteExternalTypeMethods(String typeName, Perl6PsiElement element) {
@@ -215,8 +212,19 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
         Perl6VariantsSymbolCollector methodsCollector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
         Perl6PackageDecl packageDecl = (Perl6PackageDecl)type.getPsi();
         packageDecl.contributeMOPSymbols(methodsCollector, new MOPSymbolsAllowed(true, true, true, true));
-        return ContainerUtil.map(methodsCollector.getVariants(), s -> PrioritizedLookupElement
-            .withPriority(LookupElementBuilder.create(s.getPsi(), s.getName()).withTypeText(((Perl6RoutineDecl)s.getPsi()).summarySignature()), s.getPriority() == Perl6Symbol.Priority.INNER ? 20 : 10));
+        return prioritizeResults(methodsCollector.getVariants());
+    }
+
+    @NotNull
+    private static List<LookupElement> prioritizeResults(Collection<Perl6Symbol> symbols) {
+        return ContainerUtil.map(symbols, s -> {
+            int priority = s.getPriority() == Perl6Symbol.Priority.INNER ? 20 : 10;
+            LookupElementBuilder item = LookupElementBuilder.create(s.getPsi(), s.getName());
+            if (s.getPsi() instanceof Perl6RoutineDecl) {
+                item = item.withTypeText(((Perl6RoutineDecl)s.getPsi()).summarySignature());
+            }
+            return PrioritizedLookupElement.withPriority(item, priority);
+        });
     }
 
     @Override
