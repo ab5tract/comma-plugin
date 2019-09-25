@@ -46,7 +46,6 @@ public class SubCompletionTest extends CommaFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertContainsElements(vars, Arrays.asList("sec", "sech", "set"));
-        System.out.println(vars);
         assertEquals(17, new ArrayList<>(new HashSet<>(vars)).size());
     }
 
