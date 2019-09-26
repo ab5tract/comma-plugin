@@ -223,12 +223,11 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
     @NotNull
     private static List<LookupElement> prioritizeResults(Collection<Perl6Symbol> symbols) {
         return ContainerUtil.map(symbols, s -> {
-            int priority = s.getPriority() == Perl6Symbol.Priority.INNER ? 20 : 10;
             LookupElementBuilder item = LookupElementBuilder.create(s.getPsi(), s.getName());
             if (s.getPsi() instanceof Perl6RoutineDecl) {
                 item = item.withTypeText(((Perl6RoutineDecl)s.getPsi()).summarySignature());
             }
-            return PrioritizedLookupElement.withPriority(item, priority);
+            return PrioritizedLookupElement.withPriority(item, s.getPriority());
         });
     }
 

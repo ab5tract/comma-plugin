@@ -149,22 +149,20 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
         // Add additional methods from Mu/Any/Cool as we don't
         // have a more complex structure for parents for now
 
-        if (myName.equals("Mu"))
-            return;
-
-        // Everything is Mu
-        Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
-        // If base is not Mu, add Any...
-        if (!myBase.equals("Mu")) {
-            if (myName.equals("Any"))
-                return;
-
-            // If base is either Cool or Any, get Any...
+        // If the type is Cool, but not Cool itself, we have to add Cool methods (if it is Cool itself, the methods are already there)
+        if (!myName.equals("Cool") && myBase.equals("Cool")) {
+            collector.decreasePriority();
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cool", allowed);
+        }
+        // If the type is not Any itself and its base is either Any or Cool, add Any methods
+        if (!myName.equals("Any") && !myBase.equals("Mu")) {
+            collector.decreasePriority();
             Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
-
-            // If base is Cool, add Cool
-            if (!myName.equals("Cool") && myBase.equals("Cool"))
-                Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cool", allowed);
+        }
+        // If the name is not Mu, add Mu methods
+        if (!myName.equals("Mu")) {
+            collector.decreasePriority();
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
         }
     }
 }

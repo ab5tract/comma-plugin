@@ -149,7 +149,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
             return;
 
         Perl6ExplicitAliasedSymbol sym = new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this,
-                                                                        myName.startsWith("!") ? myName : "." + myName, Perl6Symbol.Priority.OUTER);
+                                                                        myName.startsWith("!") ? myName : "." + myName);
         if (myIsMulti.equals("only"))
             collector.offerSymbol(sym);
         else

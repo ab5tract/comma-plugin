@@ -92,6 +92,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         contributeInternals(collector, symbolsAllowed);
         if (collector.isSatisfied())
             return;
+        collector.decreasePriority();
         contributeFromElders(collector, symbolsAllowed);
     }
 

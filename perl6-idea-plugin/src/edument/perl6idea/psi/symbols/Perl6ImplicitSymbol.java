@@ -49,7 +49,10 @@ public class Perl6ImplicitSymbol implements Perl6Symbol {
     }
 
     @Override
-    public Priority getPriority() {
-        return Priority.INNER;
+    public void setPriority(double priority) {}
+
+    @Override
+    public double getPriority() {
+        return 1000;
     }
 }
