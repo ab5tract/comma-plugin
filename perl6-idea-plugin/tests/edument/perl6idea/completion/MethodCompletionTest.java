@@ -534,4 +534,11 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
     public void testReturnTypeBasedExternal() {
         doTestContainsAll("Setty.elems.<caret>", ".polymod", ".chr");
     }
+
+    public void testCompletionIsInOrder() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A { method mmm {} }; class B is A { method m {} }; B.<caret>");
+        List<String> methods = complete(false);
+        assertEquals(".m", methods.get(0));
+        assertEquals(".mmm", methods.get(1));
+    }
 }

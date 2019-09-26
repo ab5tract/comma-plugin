@@ -226,17 +226,6 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             }
         }
 
-        // Contribute implicit symbols from Any/Mu and Cursor for grammars
-        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(getProject());
-        MOPSymbolsAllowed allowed = new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role"));
-
-        if (isAny)
-            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
-        if (isMu)
-            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
-        if (isGrammar)
-            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cursor", allowed);
-
         // Contribute from explicit parents, either local or external
         for (Pair<String, Perl6PackageDecl> pair : perl6PackageDecls) {
             // Local perl6PackageDecl
@@ -259,6 +248,20 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             contributeExternalPackage(collector, extType, isDoes ? symbolsAllowed.does() : symbolsAllowed.is());
             if (collector.isSatisfied()) return;
         }
+
+        // Contribute implicit symbols from Any/Mu and Cursor for grammars
+        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(getProject());
+        MOPSymbolsAllowed allowed = new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role"));
+
+        collector.decreasePriority();
+        if (isGrammar)
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cursor", allowed);
+        collector.decreasePriority();
+        if (isAny)
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
+        collector.decreasePriority();
+        if (isMu)
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
     }
 
     private void contributeExternalPackage(Perl6SymbolCollector collector, String typeName,
