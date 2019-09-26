@@ -229,7 +229,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             } else if (s.getPsi() instanceof Perl6VariableDecl) {
                 Perl6VariableDecl variableDecl = (Perl6VariableDecl)s.getPsi();
                 String type = variableDecl.inferType();
-                item = item.withTypeText(type == null ? "Any" : type + " (attribute)");
+                item = item.withTypeText("(attribute) " + (type == null ? "Any" : type));
             }
             return PrioritizedLookupElement.withPriority(item, s.getPriority());
         });
