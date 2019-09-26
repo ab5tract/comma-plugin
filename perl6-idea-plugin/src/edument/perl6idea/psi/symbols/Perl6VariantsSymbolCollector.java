@@ -25,8 +25,10 @@ public class Perl6VariantsSymbolCollector implements Perl6SymbolCollector {
 
     @Override
     public void offerMultiSymbol(Perl6Symbol symbol, boolean isProto) {
-        if (wantedKinds.contains(symbol.getKind()))
+        if (wantedKinds.contains(symbol.getKind())) {
+            symbol.setPriority(myPriority);
             multi.add(symbol);
+        }
     }
 
     @Override
