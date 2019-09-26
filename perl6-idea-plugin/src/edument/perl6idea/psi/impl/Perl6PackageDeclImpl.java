@@ -253,6 +253,9 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(getProject());
         MOPSymbolsAllowed allowed = new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role"));
 
+        if (perl6PackageDecls.size() != 0 || externals.size() != 0)
+            return;
+
         collector.decreasePriority();
         if (isGrammar)
             Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cursor", allowed);
