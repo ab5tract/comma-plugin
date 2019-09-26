@@ -226,6 +226,10 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             LookupElementBuilder item = LookupElementBuilder.create(s.getPsi(), s.getName());
             if (s.getPsi() instanceof Perl6RoutineDecl) {
                 item = item.withTypeText(((Perl6RoutineDecl)s.getPsi()).summarySignature());
+            } else if (s.getPsi() instanceof Perl6VariableDecl) {
+                Perl6VariableDecl variableDecl = (Perl6VariableDecl)s.getPsi();
+                String type = variableDecl.inferType();
+                item = item.withTypeText(type == null ? "Any" : type + " (attribute)");
             }
             return PrioritizedLookupElement.withPriority(item, s.getPriority());
         });

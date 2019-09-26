@@ -291,7 +291,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
         try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, '!' ~ $method.name, :is-method) for $method.candidates;
     }
     for object.^attributes -> $a {
-        try %class<a>.push: pack-variable($a.name, $a, :is-attribute);
+        try %class<a>.push: pack-variable($a.has_accessor ?? $a.name.subst('!', '.') !! $a.name, $a, :is-attribute);
     }
     @elems.push: %class;
 }
