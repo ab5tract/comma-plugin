@@ -3627,6 +3627,13 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 return -3;
 
             case 1:
+                if (!(this.peekDelimiters())) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
                 this.startToken(Perl6TokenTypes.COMMENT_QUOTE_OPEN);
                 if (!(this.interpolate("$*STARTER"))) {
                     if (this.backtrack()) {

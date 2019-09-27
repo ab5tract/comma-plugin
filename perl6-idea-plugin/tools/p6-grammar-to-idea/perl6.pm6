@@ -213,7 +213,7 @@ grammar MAIN {
     }
 
     token pre-comment-multi {
-         <?before '#|' <.has-delimiter>>
+        <?before '#|' <.has-delimiter>>
         :my $*STARTER = '';
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
@@ -267,6 +267,7 @@ grammar MAIN {
         <.start-token('COMMENT_STARTER')>
         '#='
         <.end-token('COMMENT_STARTER')>
+        <.peek-delimiters>
         <.start-token('COMMENT_QUOTE_OPEN')>
         $*STARTER
         <.end-token('COMMENT_QUOTE_OPEN')>
