@@ -3,9 +3,9 @@ package edument.perl6idea.documentation;
 import com.intellij.codeInsight.documentation.DocumentationManager;
 import com.intellij.lang.documentation.DocumentationProvider;
 import com.intellij.psi.PsiElement;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.CommaFixtureTestCase;
 
-public class DocumentationTest extends LightCodeInsightFixtureTestCase {
+public class DocumentationTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/docs";
