@@ -44,6 +44,7 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
         dataStream.writeBoolean(stub.isPrivate());
         dataStream.writeBoolean(stub.isExported());
         dataStream.writeName(stub.getMultiness());
+        dataStream.writeName(stub.getReturnType());
     }
 
     @NotNull

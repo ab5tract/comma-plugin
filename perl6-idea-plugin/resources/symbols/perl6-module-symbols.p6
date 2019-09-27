@@ -302,7 +302,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     }
     try for object.^attributes -> $a {
         next if $a.type.^name eq 'Junction';
-        try %class<a>.push: pack-variable($a.name, $a, :is-attribute);
+        try %class<a>.push: pack-variable($a.has_accessor ?? $a.name.subst('!', '.') !! $a.name, $a, :is-attribute);
     }
     @elems.push: %class;
 }

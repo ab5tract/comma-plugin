@@ -34,6 +34,6 @@ public class ModuleNameCompletionTest extends CommaFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> names = myFixture.getLookupElementStrings();
         assertNotNull(names);
-        assertTrue(names.contains(full));
+        assertContainsElements(names, full);
     }
 }

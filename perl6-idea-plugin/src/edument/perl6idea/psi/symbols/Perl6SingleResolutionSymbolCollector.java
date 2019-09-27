@@ -68,4 +68,9 @@ public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollecto
     public List<Perl6Symbol> getResults() {
         return results;
     }
+
+    // We do not consider e.g. signature matching when doing a resolution,
+    // so priority concept does not work here
+    @Override
+    public void decreasePriority() {}
 }

@@ -47,4 +47,12 @@ public class Perl6ImplicitSymbol implements Perl6Symbol {
     public boolean isImplicitlyDeclared() {
         return true;
     }
+
+    @Override
+    public void setPriority(double priority) {}
+
+    @Override
+    public double getPriority() {
+        return 1000;
+    }
 }

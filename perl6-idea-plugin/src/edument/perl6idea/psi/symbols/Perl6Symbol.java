@@ -11,4 +11,6 @@ public interface Perl6Symbol {
     boolean isExternal();               // From a module outside this project
     boolean isSetting();                // From CORE.setting
     boolean isImplicitlyDeclared();     // Like the default $_, $/, and $!; also $?FILE etc.
+    void setPriority(double priority);
+    double getPriority();
 }

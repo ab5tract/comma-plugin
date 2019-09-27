@@ -11,4 +11,6 @@ public interface Perl6SymbolCollector {
     /* Checks if the collector is already satisfied and there is no point continuing
      * to search. */
     boolean isSatisfied();
+
+    void decreasePriority();
 }

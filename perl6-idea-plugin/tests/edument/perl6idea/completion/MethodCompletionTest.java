@@ -384,10 +384,7 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
     }
 
     public void testCompletionOfMultiMethodByType() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "class T { multi method test-me {}; multi method test-me {} }; sub foo(T $t) { $t.test-m<caret> };");
-        myFixture.complete(CompletionType.BASIC, 1);
-        assertNull(myFixture.getLookupElementStrings());
+        doTestContainsAll("class T { multi method test-me {}; multi method test-me {} }; sub foo(T $t) { $t.test-m<caret> };", ".test-me");
     }
 
     public void testCompletionOfSubsetExternalType() {
@@ -536,5 +533,12 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
 
     public void testReturnTypeBasedExternal() {
         doTestContainsAll("Setty.elems.<caret>", ".polymod", ".chr");
+    }
+
+    public void testCompletionIsInOrder() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A { method mmm {} }; class B is A { method m {} }; B.<caret>");
+        List<String> methods = complete(false);
+        assertEquals(".m", methods.get(0));
+        assertEquals(".mmm", methods.get(1));
     }
 }

@@ -1,5 +1,6 @@
 package edument.perl6idea.psi;
 
+import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementResolveResult;
@@ -10,7 +11,6 @@ import edument.perl6idea.psi.impl.Perl6SubCallNameImpl;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,13 +40,18 @@ public class Perl6SubCallReference extends PsiReferenceBase.Poly<Perl6SubCallNam
     @Override
     public Object[] getVariants() {
         return getElement().getLexicalSymbolVariants(Perl6SymbolKind.Routine, Perl6SymbolKind.TypeOrConstant)
-                           .stream()
-                           .map(sym -> sym.getName())
-                           .toArray();
+            .stream()
+            .map(sym -> {
+                PsiElement psi = sym.getPsi();
+                if (psi instanceof Perl6RoutineDecl)
+                    return LookupElementBuilder.create(psi, sym.getName()).withTypeText(((Perl6RoutineDecl)psi).summarySignature());
+                else
+                    return sym.getName();
+            }).toArray();
     }
 
     @Override
-    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         PsiElement call = myElement.getParent();
         if (call instanceof Perl6SubCall) {
             Perl6SubCall subCall = (Perl6SubCall)call;

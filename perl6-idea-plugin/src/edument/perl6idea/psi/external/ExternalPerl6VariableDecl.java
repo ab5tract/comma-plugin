@@ -123,8 +123,9 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
                                                                      this, name.substring(0, 1) + "!" + name.substring(2)));
                 if (collector.isSatisfied()) return;
             }
-            collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self.foo;
-                                                                  Perl6SymbolKind.Method, this, '.' + name.substring(2)));
+            // Offer self.foo;
+            collector.offerMultiSymbol(new Perl6ExplicitAliasedSymbol(
+                Perl6SymbolKind.Method, this, '.' + name.substring(2)), false);
         }
     }
 }

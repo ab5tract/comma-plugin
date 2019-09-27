@@ -3,10 +3,7 @@ package edument.perl6idea.psi.external;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
-import edument.perl6idea.psi.Perl6File;
-import edument.perl6idea.psi.Perl6PackageDecl;
-import edument.perl6idea.psi.Perl6RoutineDecl;
-import edument.perl6idea.psi.Perl6VariableDecl;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -14,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements Perl6PackageDecl {
     private final String myType;
@@ -23,12 +22,20 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     private String myBase;
     private String myPackageKind;
     private String myName;
+    private Set<String> myGettersPool = new HashSet<>();
 
     public ExternalPerl6PackageDecl(Project project, Perl6File file, String kind, String name, String type, String base,
                                     List<Perl6RoutineDecl> routines, List<Perl6VariableDecl> attrs) {
         this(project, file, kind, name, type, base);
         myRoutines = routines;
         myAttributes = attrs;
+        for (Perl6VariableDecl decl : myAttributes) {
+            String[] names = decl.getVariableNames();
+            for (String getterName : names) {
+                if (Perl6Variable.getTwigil(getterName) == '.')
+                    myGettersPool.add(getterName.substring(2)); // cut off sigil
+            }
+        }
     }
 
     public ExternalPerl6PackageDecl(Project project, Perl6File file, String kind, String name, String type, String base) {
@@ -130,9 +137,12 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     @Override
     public void contributeMOPSymbols(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         for (Perl6RoutineDecl routine : myRoutines) {
-            if (!symbolsAllowed.privateMethodsVisible && routine.getRoutineName().startsWith("!"))
+            String name = routine.getRoutineName();
+            if (!symbolsAllowed.privateMethodsVisible && name.startsWith("!"))
                 continue;
             if (!symbolsAllowed.submethodsVisible && routine.getRoutineKind().equals("submethod"))
+                continue;
+            if (myGettersPool.contains(name))
                 continue;
             routine.contributeMOPSymbols(collector, symbolsAllowed);
             if (collector.isSatisfied()) return;
@@ -149,22 +159,20 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
         // Add additional methods from Mu/Any/Cool as we don't
         // have a more complex structure for parents for now
 
-        if (myName.equals("Mu"))
-            return;
-
-        // Everything is Mu
-        Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
-        // If base is not Mu, add Any...
-        if (!myBase.equals("Mu")) {
-            if (myName.equals("Any"))
-                return;
-
-            // If base is either Cool or Any, get Any...
+        // If the type is Cool, but not Cool itself, we have to add Cool methods (if it is Cool itself, the methods are already there)
+        if (!myName.equals("Cool") && myBase.equals("Cool")) {
+            collector.decreasePriority();
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cool", allowed);
+        }
+        // If the type is not Any itself and its base is either Any or Cool, add Any methods
+        if (!myName.equals("Any") && !myBase.equals("Mu")) {
+            collector.decreasePriority();
             Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
-
-            // If base is Cool, add Cool
-            if (!myName.equals("Cool") && myBase.equals("Cool"))
-                Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cool", allowed);
+        }
+        // If the name is not Mu, add Mu methods
+        if (!myName.equals("Mu")) {
+            collector.decreasePriority();
+            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
         }
     }
 }

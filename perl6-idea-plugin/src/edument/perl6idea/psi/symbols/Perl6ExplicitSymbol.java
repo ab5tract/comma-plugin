@@ -6,6 +6,7 @@ import com.intellij.psi.PsiNamedElement;
 public class Perl6ExplicitSymbol implements Perl6Symbol {
     private Perl6SymbolKind kind;
     private PsiNamedElement psi;
+    protected double myPriority;
 
     public Perl6ExplicitSymbol(Perl6SymbolKind kind, PsiNamedElement psi) {
         this.kind = kind;
@@ -40,5 +41,15 @@ public class Perl6ExplicitSymbol implements Perl6Symbol {
     @Override
     public boolean isImplicitlyDeclared() {
         return false;
+    }
+
+    @Override
+    public void setPriority(double priority) {
+        myPriority = priority;
+    }
+
+    @Override
+    public double getPriority() {
+        return myPriority;
     }
 }

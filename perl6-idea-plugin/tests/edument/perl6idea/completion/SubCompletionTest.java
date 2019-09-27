@@ -4,7 +4,9 @@ import com.intellij.codeInsight.completion.CompletionType;
 import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class SubCompletionTest extends CommaFixtureTestCase {
@@ -19,7 +21,7 @@ public class SubCompletionTest extends CommaFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertContainsElements(vars, "foo");
-        assertEquals(2, vars.size());
+        assertEquals(2, new ArrayList<>(new HashSet<>(vars)).size());
     }
 
     public void testCompletionFromOuter() {
@@ -35,7 +37,7 @@ public class SubCompletionTest extends CommaFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertContainsElements(vars, "foo");
-        assertEquals(2, vars.size());
+        assertEquals(2, new ArrayList<>(new HashSet<>(vars)).size());
     }
 
     public void testCompletionFromCORE() {
@@ -44,7 +46,7 @@ public class SubCompletionTest extends CommaFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertContainsElements(vars, Arrays.asList("sec", "sech", "set"));
-        assertEquals(17, vars.size());
+        assertEquals(17, new ArrayList<>(new HashSet<>(vars)).size());
     }
 
     public void testCompletionFromImport() throws InterruptedException {
@@ -54,7 +56,7 @@ public class SubCompletionTest extends CommaFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertContainsElements(vars, Arrays.asList("is-approx", "is-deeply", "isa-ok"));
-        assertEquals(4, vars.size());
+        assertEquals(4, new ArrayList<>(new HashSet<>(vars)).size());
     }
 
     public void testAnonymousSubIsSafeToComplete() {

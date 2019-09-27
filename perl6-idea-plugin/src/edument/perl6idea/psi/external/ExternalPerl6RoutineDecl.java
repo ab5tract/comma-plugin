@@ -7,10 +7,7 @@ import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6Signature;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
-import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
-import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
