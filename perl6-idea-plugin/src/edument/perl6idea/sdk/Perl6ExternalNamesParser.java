@@ -12,7 +12,6 @@ import edument.perl6idea.psi.external.ExternalPerl6VariableDecl;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,23 +57,30 @@ public class Perl6ExternalNamesParser {
                         break;
                     }
                     case "v": {
-                        Perl6VariableDecl psi = createVariable(j);
-                        result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, psi));
+                        ExternalPerl6VariableDecl decl = new ExternalPerl6VariableDecl(
+                            myProject, myFile, j.getString("n"), "our", j.getString("t"));
+                        if (j.has("d"))
+                            decl.setDocs(j.getString("d"));
+                        result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, decl));
                         break;
                     }
                     case "m":
                     case "s":
                     case "r": {
                         int isMulti = j.getInt("m");
-                        Perl6RoutineDecl psi = new ExternalPerl6RoutineDecl(
+                        ExternalPerl6RoutineDecl psi = new ExternalPerl6RoutineDecl(
                             myProject, myFile, j.getString("k"), j.getString("k").equals("m") ? "has" : "our",
                             j.getString("n"), isMulti == 0 ? "only" : "multi", j.getJSONObject("s").toMap());
+                        if (j.has("d"))
+                            psi.setDocs(j.getString("d"));
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, psi));
                         break;
                     }
                     case "e":
                     case "ss": {
-                        Perl6PackageDecl psi = new ExternalPerl6PackageDecl(myProject, myFile, "c", j.getString("n"), j.getString("t"), "A");
+                        ExternalPerl6PackageDecl psi = new ExternalPerl6PackageDecl(myProject, myFile, "c", j.getString("n"), j.getString("t"), "A");
+                        if (j.has("d"))
+                            psi.setDocs(j.getString("d"));
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
                     }
@@ -87,11 +93,14 @@ public class Perl6ExternalNamesParser {
                                     Map routineData = (Map)routine;
                                     Integer isMulti = (Integer)routineData.get("m");
                                     Map signature = (Map)routineData.get("s");
-                                    routines.add(new ExternalPerl6RoutineDecl(
+                                    ExternalPerl6RoutineDecl routineDecl = new ExternalPerl6RoutineDecl(
                                         myProject, myFile,
                                         (String)routineData.get("k"), "has",
                                         (String)routineData.get("n"), isMulti == 0 ? "only" : "multi",
-                                        signature));
+                                        signature);
+                                    if (routineData.containsKey("d"))
+                                        routineDecl.setDocs((String)routineData.get("d"));
+                                    routines.add(routineDecl);
                                 }
 
                         List<Perl6VariableDecl> attrs = new ArrayList<>();
@@ -99,15 +108,20 @@ public class Perl6ExternalNamesParser {
                             for (Object attribute : j.getJSONArray("a").toList())
                                 if (attribute instanceof Map) {
                                     Map attributeData = (Map)attribute;
-                                    attrs.add(new ExternalPerl6VariableDecl(
+                                    ExternalPerl6VariableDecl attributeDecl = new ExternalPerl6VariableDecl(
                                         myProject, myFile, (String)attributeData.get("n"),
-                                        "has", (String)attributeData.get("t")));
+                                        "has", (String)attributeData.get("t"));
+                                    if (attributeData.containsKey("d"))
+                                        attributeDecl.setDocs((String)attributeData.get("d"));
+                                    attrs.add(attributeDecl);
                                 }
 
-                        Perl6PackageDecl psi = new ExternalPerl6PackageDecl(
+                        ExternalPerl6PackageDecl psi = new ExternalPerl6PackageDecl(
                             myProject, myFile, j.getString("k"),
                             j.getString("n"), j.getString("t"), j.getString("b"),
                             routines, attrs);
+                        if (j.has("d"))
+                            psi.setDocs(j.getString("d"));
                         externalClasses.put(psi.getName(), psi);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
@@ -118,12 +132,6 @@ public class Perl6ExternalNamesParser {
             Logger.getInstance(Perl6ExternalNamesParser.class).warn(ex);
         }
         return this;
-    }
-
-    @NotNull
-    private Perl6VariableDecl createVariable(JSONObject j) {
-        return new ExternalPerl6VariableDecl(
-            myProject, myFile, j.getString("n"), "our", j.getString("t"));
     }
 
     public List<Perl6Symbol> result() {

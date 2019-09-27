@@ -20,6 +20,16 @@ import javax.swing.*;
 public class Perl6ExternalPsiElement implements PsiNamedElement, NavigatablePsiElement {
     protected Project myProject;
     protected PsiElement myParent;
+    protected String myDocs = null;
+
+    @Nullable
+    public String getDocumentationString() {
+        return myDocs;
+    }
+
+    public void setDocs(String docs) {
+        myDocs = docs;
+    }
 
     @NotNull
     @Override

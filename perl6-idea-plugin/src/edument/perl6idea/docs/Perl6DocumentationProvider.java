@@ -7,6 +7,7 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Function;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.external.Perl6ExternalPsiElement;
 import edument.perl6idea.psi.impl.PodPostCommentImpl;
 import edument.perl6idea.psi.impl.PodPreCommentImpl;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +20,9 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
     @Nullable
     @Override
     public String getQuickNavigateInfo(PsiElement element, PsiElement originalElement) {
+        if (element instanceof Perl6ExternalPsiElement) {
+            return ((Perl6ExternalPsiElement)element).getDocumentationString();
+        }
         if (element instanceof Perl6PackageDecl ||
             element instanceof Perl6RoutineDecl ||
             element instanceof Perl6VariableDecl) {
