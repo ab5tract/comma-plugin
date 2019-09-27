@@ -203,11 +203,36 @@ grammar MAIN {
 
     token comment {
         [
+        || <.pre-comment-multi>
         || <.pre-comment>
+        || <.post-comment-multi>
         || <.post-comment>
         || <.multiline-comment>
         || <.plain-comment>
         ]
+    }
+
+    token pre-comment-multi {
+         <?before '#|' <.has-delimiter>>
+        :my $*STARTER = '';
+        :my $*STOPPER = '';
+        :my $*ALT_STOPPER = '';
+        :my $*DELIM = '';
+        <.start-element('POD_PRE_COMMENT')>
+        <.start-token('COMMENT_STARTER')>
+        '#|'
+        <.end-token('COMMENT_STARTER')>
+        <.peek-delimiters>
+        <.start-token('COMMENT_QUOTE_OPEN')>
+        $*STARTER
+        <.end-token('COMMENT_QUOTE_OPEN')>
+        <.multiline-comment-nibbler>
+        [
+            <.start-token('COMMENT_QUOTE_CLOSE')>
+            <.stopper>
+            <.end-token('COMMENT_QUOTE_CLOSE')>
+        ]?
+        <.end-element('POD_PRE_COMMENT')>
     }
 
     token pre-comment {
@@ -229,6 +254,28 @@ grammar MAIN {
         <.start-token('COMMENT')>
         \N*
         <.end-token('COMMENT')>
+        <.end-element('POD_POST_COMMENT')>
+    }
+
+    token post-comment-multi {
+        <?before '#=' <.has-delimiter>>
+        :my $*STARTER = '';
+        :my $*STOPPER = '';
+        :my $*ALT_STOPPER = '';
+        :my $*DELIM = '';
+        <.start-element('POD_POST_COMMENT')>
+        <.start-token('COMMENT_STARTER')>
+        '#='
+        <.end-token('COMMENT_STARTER')>
+        <.start-token('COMMENT_QUOTE_OPEN')>
+        $*STARTER
+        <.end-token('COMMENT_QUOTE_OPEN')>
+        <.multiline-comment-nibbler>
+        [
+            <.start-token('COMMENT_QUOTE_CLOSE')>
+            <.stopper>
+            <.end-token('COMMENT_QUOTE_CLOSE')>
+        ]?
         <.end-element('POD_POST_COMMENT')>
     }
 
