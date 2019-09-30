@@ -39,6 +39,7 @@
 <li>Distinguish attribute getters from other methods and the show type of an attribute</li>
 <li>Improve the performance of Go to Symbol feature and Method Completion</li>
 <li>Make loading of external symbols not block project initialization and typing; symbols are also now loaded in parallel</li>
+<li>Work correctly with symbols from external modules that are parametrized (e.g. <code>use MyModule :day;</code>)</li>
 <li>Parameter Info now correctly behaves when a comma character is typed in a block that is an argument</li>
 <li>Add an annotator that highlights cases when an array or hash variable in a list assignments will gobble all initialization values (e.g. <code>my ($one, @rest, $two) = 42, [42], 42</code>) and provide a quickfix for it</li>
 <li>Annotation of calls to unknown private methods does not mark multimethods and external methods as unknown now</li>
