@@ -70,11 +70,15 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
     }
 
     @Override
-    public void updateParameterInfo(@NotNull final P6CodeBlockCall parameterOwner, @NotNull UpdateParameterInfoContext context) {
-    }
+    public void updateParameterInfo(@NotNull final P6CodeBlockCall parameterOwner, @NotNull UpdateParameterInfoContext context) {}
 
     @Override
     public void updateUI(Perl6RoutineDecl parameterType, @NotNull ParameterInfoUIContext context) {
+        PsiElement element = context.getParameterOwner();
+        boolean areWeInBlock = PsiTreeUtil.getParentOfType(element, Perl6BlockOrHash.class, Perl6SubCall.class, Perl6MethodCall.class) instanceof Perl6BlockOrHash;
+        if (areWeInBlock)
+            return;
+
         // Obtain signature and parameters
         Perl6Signature signatureNode = parameterType.getSignatureNode();
         if (signatureNode == null) return;
