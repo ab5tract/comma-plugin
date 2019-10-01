@@ -46,8 +46,7 @@ public class Perl6ElementFactory {
     }
 
     public static PsiElement createTypeDeclarationName(Project project, String name) {
-        // 6 number of chars in `class `
-        return produceElement(project, getTypeDeclarationText(name), Perl6Statement.class).findElementAt(6);
+        return produceElement(project, getTypeDeclarationText(name), Perl6PackageDecl.class).getNameIdentifier();
     }
 
     private static String getTypeDeclarationText(String name) {
@@ -55,11 +54,12 @@ public class Perl6ElementFactory {
     }
 
     public static Perl6LongName createIsTraitName(Project project, String name) {
-        return produceElement(project, getIsTraitNameText(name), Perl6LongName.class);
+        Perl6PackageDecl packageDecl = produceElement(project, getIsTraitNameText(name), Perl6PackageDecl.class);
+        return PsiTreeUtil.findChildOfType(packageDecl.getTraits().get(0), Perl6LongName.class);
     }
 
     private static String getIsTraitNameText(String name) {
-        return String.format("class Dummy is %s {}", name);
+        return String.format("class A is %s {}", name);
     }
 
     public static Perl6LongName createTypeName(Project project, String name) {
@@ -67,9 +67,7 @@ public class Perl6ElementFactory {
     }
 
     private static String getTypeNameText(String name) {
-        // right now if type is lowercase, it will be parsed as a routine name,
-        // so cheat with a trait
-        return String.format("class A is %s;", name);
+        return String.format("class %s {}", name);
     }
 
     public static Perl6LongName createRoutineName(Project project, String name) {

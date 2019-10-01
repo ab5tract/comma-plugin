@@ -6,6 +6,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.StubElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.parsing.Perl6TokenTypes;
@@ -35,7 +36,9 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
 
     @Override
     public PsiElement getNameIdentifier() {
-        return findChildByType(NAME);
+        PsiElement normalNameId = findChildByType(NAME);
+        Perl6LongName name = PsiTreeUtil.getChildOfType(this, Perl6LongName.class);
+        return normalNameId != null ? normalNameId : name != null ? name.getFirstChild() : null;
     }
 
     @Override
