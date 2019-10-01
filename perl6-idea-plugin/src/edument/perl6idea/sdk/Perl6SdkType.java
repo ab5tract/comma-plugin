@@ -380,6 +380,25 @@ public class Perl6SdkType extends SdkType {
     }
 
     private static List<Perl6Symbol> loadModuleSymbols(Project project, Perl6File perl6File, String invocation) {
+
+        if (invocation.equals("use nqp")) {
+            List<String> ops = new ArrayList<>();
+            File nqpSymbols = Perl6Utils.getResourceAsFile("symbols/nqp.ops");
+            if (nqpSymbols == null) {
+                ops.add("[]");
+            } else {
+                Path nqpSymbolsPath = nqpSymbols.toPath();
+                try {
+                    ops = Files.readAllLines(nqpSymbolsPath);
+                }
+                catch (IOException e) {
+                    ops.add("[]");
+                }
+            }
+
+            return new Perl6ExternalNamesParser(project, perl6File, String.join("\n", ops)).parse().result();
+        }
+
         String homePath = getSdkHomeByProject(project);
         File moduleSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-module-symbols.p6");
         if (homePath == null) {
