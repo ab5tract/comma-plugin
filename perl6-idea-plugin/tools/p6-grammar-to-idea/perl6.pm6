@@ -1358,12 +1358,12 @@ grammar MAIN {
     ## Terms
 
     token term {
-        || <.value>
         || <.fatarrow>
         || <.colonpair>
         || <.term_self>
         || <.variable>
         || <.term_ident>
+        || <.value>
         || <.scope_declarator>
         || <.routine_declarator>
         || <.regex_declarator>
