@@ -382,21 +382,7 @@ public class Perl6SdkType extends SdkType {
     private static List<Perl6Symbol> loadModuleSymbols(Project project, Perl6File perl6File, String invocation) {
 
         if (invocation.equals("use nqp")) {
-            List<String> ops = new ArrayList<>();
-            File nqpSymbols = Perl6Utils.getResourceAsFile("symbols/nqp.ops");
-            if (nqpSymbols == null) {
-                ops.add("[]");
-            } else {
-                Path nqpSymbolsPath = nqpSymbols.toPath();
-                try {
-                    ops = Files.readAllLines(nqpSymbolsPath);
-                }
-                catch (IOException e) {
-                    ops.add("[]");
-                }
-            }
-
-            return new Perl6ExternalNamesParser(project, perl6File, String.join("\n", ops)).parse().result();
+            return getNQPSymbols(project, perl6File);
         }
 
         String homePath = getSdkHomeByProject(project);
@@ -417,6 +403,24 @@ public class Perl6SdkType extends SdkType {
         List<String> symbols = Perl6CommandLine.execute(cmd);
         String text = String.join("\n", symbols);
         return new Perl6ExternalNamesParser(project, perl6File, text).parse().result();
+    }
+
+    private static List<Perl6Symbol> getNQPSymbols(Project project, Perl6File perl6File) {
+        List<String> ops = new ArrayList<>();
+        File nqpSymbols = Perl6Utils.getResourceAsFile("symbols/nqp.ops");
+        if (nqpSymbols == null) {
+            ops.add("[]");
+        } else {
+            Path nqpSymbolsPath = nqpSymbols.toPath();
+            try {
+                ops = Files.readAllLines(nqpSymbolsPath);
+            }
+            catch (IOException e) {
+                ops.add("[]");
+            }
+        }
+
+        return new Perl6ExternalNamesParser(project, perl6File, String.join("\n", ops)).parse().result();
     }
 
     public static void contributeParentSymbolsFromCore(@NotNull Perl6SymbolCollector collector,
