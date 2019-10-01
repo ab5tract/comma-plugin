@@ -216,6 +216,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
     public void testIncompleteRangeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 1<error=\"The range operator must have a second argument\">..</error>;");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say 1..42.Int;");
+        myFixture.checkHighlighting();
     }
 
     public void testIncompleteRangeAnnotatorWithPrefixEnding() {
