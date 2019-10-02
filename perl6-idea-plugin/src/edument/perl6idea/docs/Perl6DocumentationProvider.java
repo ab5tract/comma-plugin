@@ -13,7 +13,9 @@ import edument.perl6idea.psi.impl.PodPreCommentImpl;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
+import static edument.perl6idea.parsing.Perl6TokenTypes.COMMENT;
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6DocumentationProvider implements DocumentationProvider {
@@ -32,19 +34,20 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
     }
 
     private static String getEnclosingPodDocs(PsiElement element) {
-        StringBuilder docs = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         Perl6Statement statement = PsiTreeUtil.getParentOfType(element, Perl6Statement.class);
         if (statement == null) return null;
         PsiElement temp = statement.getPrevSibling();
-        gatherInlineComments(temp, p -> p.getPrevSibling(), t -> docs.insert(0, t), PodPreCommentImpl.class);
+        gatherInlineComments(temp, p -> p.getPrevSibling(), t -> builder.insert(0, t), PodPreCommentImpl.class);
+        builder.append("\n");
         temp = statement.getNextSibling();
-        gatherInlineComments(temp, p -> p.getNextSibling(), t -> docs.append(t), PodPostCommentImpl.class);
-        return docs.toString();
+        gatherInlineComments(temp, p -> p.getNextSibling(), t -> builder.append(t), PodPostCommentImpl.class);
+        return builder.toString().trim();
     }
 
     private static void gatherInlineComments(PsiElement temp,
                                              Function<PsiElement, PsiElement> next,
-                                             Function<String, StringBuilder> insert,
+                                             Consumer<String> insert,
                                              Class classToCompare) {
         while (true) {
             if (temp == null) break;
@@ -54,7 +57,18 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
                 continue;
             }
             if (temp.getClass().isAssignableFrom(classToCompare)) {
-                insert.fun(temp.getText().substring(3) + "\n");
+                PsiElement commentContent = temp instanceof PodPreComment ? temp.getLastChild() : temp.getFirstChild();
+                for (PsiElement comment = commentContent; comment != null; comment = next.fun(comment)) {
+                    if (comment.getNode().getElementType() == COMMENT) {
+                        String text = comment.getText();
+                        if (text.startsWith("\n"))
+                            text = "\n" + text.trim();
+                        else
+                            text = text.trim();
+                        insert.accept(text);
+                    }
+                }
+                insert.accept("\n");
                 temp = next.fun(temp);
                 continue;
             }
