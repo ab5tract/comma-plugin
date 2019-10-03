@@ -88,7 +88,7 @@ public class Perl6ExternalNamesParser {
                     case "ro": {
                         List<Perl6RoutineDecl> routines = new ArrayList<>();
                         if (j.has("m"))
-                            for (Object routine : j.getJSONArray("m").toList())
+                            for (Object routine : j.getJSONArray("m"))
                                 if (routine instanceof Map) {
                                     Map routineData = (Map)routine;
                                     Integer isMulti = (Integer)routineData.get("m");
@@ -105,7 +105,7 @@ public class Perl6ExternalNamesParser {
 
                         List<Perl6VariableDecl> attrs = new ArrayList<>();
                         if (j.has("a"))
-                            for (Object attribute : j.getJSONArray("a").toList())
+                            for (Object attribute : j.getJSONArray("a"))
                                 if (attribute instanceof Map) {
                                     Map attributeData = (Map)attribute;
                                     ExternalPerl6VariableDecl attributeDecl = new ExternalPerl6VariableDecl(
