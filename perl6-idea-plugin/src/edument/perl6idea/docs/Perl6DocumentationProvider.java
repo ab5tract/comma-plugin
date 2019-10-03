@@ -3,26 +3,19 @@ package edument.perl6idea.docs;
 import com.intellij.lang.documentation.DocumentationProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiWhiteSpace;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
-import com.intellij.util.Function;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
 import edument.perl6idea.psi.external.Perl6ExternalPsiElement;
-import edument.perl6idea.psi.impl.PodPostCommentImpl;
-import edument.perl6idea.psi.impl.PodPreCommentImpl;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-
-import static edument.perl6idea.parsing.Perl6TokenTypes.COMMENT;
-import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6DocumentationProvider implements DocumentationProvider {
     private final Map<String, String> coreTypeCache = new ConcurrentHashMap<>();
@@ -31,29 +24,24 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
     @Nullable
     @Override
     public synchronized String getQuickNavigateInfo(PsiElement element, PsiElement originalElement) {
-        if (element instanceof Perl6ExternalPsiElement) {
-            String extDocs = ((Perl6ExternalPsiElement)element).getDocumentationString();
-            if (extDocs != null)
-                return extDocs;
-            return tryToResolveCORE((Perl6ExternalPsiElement)element);
-        }
-        if (element instanceof Perl6PackageDecl ||
-            element instanceof Perl6RoutineDecl ||
-            element instanceof Perl6VariableDecl) {
-            return getEnclosingPodDocs(element);
+        if (element instanceof Perl6Constant) {
+            return "Constant " + ((Perl6Constant)element).getConstantName();
+        } else if (element instanceof Perl6Enum) {
+            return "Enum " + ((Perl6Enum)element).getEnumName();
+        } else if (element instanceof Perl6PackageDecl) {
+            return ((Perl6PackageDecl)element).getPackageKind() + " " + ((Perl6PackageDecl)element).getPackageName();
+        } else if (element instanceof Perl6Parameter) {
+            return "Parameter: " + ((Perl6Parameter)element).summary();
+        } else if (element instanceof Perl6Regex) {
+            return "Regex";
+        } else if (element instanceof Perl6RoutineDecl) {
+            return ((Perl6RoutineDecl)element).getRoutineKind() + " " + ((Perl6RoutineDecl)element).getRoutineName();
+        } else if (element instanceof Perl6Subset) {
+            return "Subset " + ((Perl6Subset)element).getSubsetName() + " of " + ((Perl6Subset)element).getSubsetBaseTypeName();
+        } else if (element instanceof Perl6VariableDecl) {
+            return "Variable declaration: " + Arrays.toString(((Perl6VariableDecl)element).getVariableNames());
         }
         return null;
-    }
-
-    @Nullable
-    private synchronized String tryToResolveCORE(Perl6ExternalPsiElement element) {
-        if (!coreCache) {
-            coreCache = true;
-            new Thread(() -> populateCoreCache()).start();
-            return null;
-        } else {
-            return coreTypeCache.get(element.getName());
-        }
     }
 
     private void populateCoreCache() {
@@ -65,54 +53,11 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
         }
     }
 
-    private static String getEnclosingPodDocs(PsiElement element) {
-        StringBuilder builder = new StringBuilder();
-        Perl6Statement statement = PsiTreeUtil.getParentOfType(element, Perl6Statement.class);
-        if (statement == null) return null;
-        PsiElement temp = statement.getPrevSibling();
-        gatherInlineComments(temp, p -> p.getPrevSibling(), t -> builder.insert(0, t), PodPreCommentImpl.class);
-        builder.append("\n");
-        temp = statement.getNextSibling();
-        gatherInlineComments(temp, p -> p.getNextSibling(), t -> builder.append(t), PodPostCommentImpl.class);
-        return builder.toString().trim();
-    }
-
-    private static void gatherInlineComments(PsiElement temp,
-                                             Function<PsiElement, PsiElement> next,
-                                             Consumer<String> insert,
-                                             Class classToCompare) {
-        while (true) {
-            if (temp == null) break;
-            if (temp instanceof PsiWhiteSpace ||
-                temp.getNode().getElementType() == UNV_WHITE_SPACE) {
-                temp = next.fun(temp);
-                continue;
-            }
-            if (temp.getClass().isAssignableFrom(classToCompare)) {
-                PsiElement commentContent = temp instanceof PodPreComment ? temp.getLastChild() : temp.getFirstChild();
-                for (PsiElement comment = commentContent; comment != null; comment = next.fun(comment)) {
-                    if (comment.getNode().getElementType() == COMMENT) {
-                        String text = comment.getText();
-                        if (text.startsWith("\n"))
-                            text = "\n" + text.trim();
-                        else
-                            text = text.trim();
-                        insert.accept(text);
-                    }
-                }
-                insert.accept("\n");
-                temp = next.fun(temp);
-                continue;
-            }
-            break;
-        }
-    }
-
     @Nullable
     @Override
     public List<String> getUrlFor(PsiElement element, PsiElement originalElement) {
-        if (element instanceof Perl6ExternalPsiElement) {
-            String name = ((Perl6ExternalPsiElement)element).getName();
+        if (element instanceof ExternalPerl6PackageDecl) {
+            String name = ((Perl6PackageDecl)element).getName();
             if (coreTypeCache.containsKey(name)) {
                 return Collections.singletonList("https://docs.perl6.org/type/" + name);
             }
@@ -122,17 +67,22 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
 
     @Nullable
     @Override
-    public String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
+    public synchronized String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
         if (element instanceof Perl6ExternalPsiElement) {
-            if (!coreCache) {
-                coreCache = true;
-                populateCoreCache();
+            String docs = ((Perl6ExternalPsiElement)element).getDocsString();
+            if (docs == null) {
+                if (!coreCache) {
+                    coreCache = true;
+                    populateCoreCache();
+                }
+                String name = ((Perl6ExternalPsiElement)element).getName();
+                docs = coreTypeCache.get(name);
+                if (docs != null)
+                    docs = docs.replaceAll("\n", "<br>");
             }
-
-            String name = ((Perl6ExternalPsiElement)element).getName();
-            if (coreTypeCache.containsKey(name)) {
-                return coreTypeCache.get(name).replaceAll("\n", "<br>");
-            }
+            return docs;
+        } else if (element instanceof Perl6Documented) {
+            return ((Perl6Documented)element).getDocsString();
         }
         return null;
     }
