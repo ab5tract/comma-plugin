@@ -70,7 +70,7 @@ public class Perl6ExternalNamesParser {
                         int isMulti = j.getInt("m");
                         ExternalPerl6RoutineDecl psi = new ExternalPerl6RoutineDecl(
                             myProject, myFile, j.getString("k"), j.getString("k").equals("m") ? "has" : "our",
-                            j.getString("n"), isMulti == 0 ? "only" : "multi", j.getJSONObject("s").toMap());
+                            j.getString("n"), isMulti == 0 ? "only" : "multi", j.getJSONObject("s"));
                         if (j.has("d"))
                             psi.setDocs(j.getString("d"));
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, psi));
@@ -89,30 +89,28 @@ public class Perl6ExternalNamesParser {
                         List<Perl6RoutineDecl> routines = new ArrayList<>();
                         if (j.has("m"))
                             for (Object routine : j.getJSONArray("m"))
-                                if (routine instanceof Map) {
-                                    Map routineData = (Map)routine;
-                                    Integer isMulti = (Integer)routineData.get("m");
-                                    Map signature = (Map)routineData.get("s");
+                                if (routine instanceof JSONObject) {
+                                    int isMulti = ((JSONObject)routine).getInt("m");
+                                    JSONObject signature = ((JSONObject)routine).getJSONObject("s");
                                     ExternalPerl6RoutineDecl routineDecl = new ExternalPerl6RoutineDecl(
                                         myProject, myFile,
-                                        (String)routineData.get("k"), "has",
-                                        (String)routineData.get("n"), isMulti == 0 ? "only" : "multi",
+                                        ((JSONObject)routine).getString("k"), "has",
+                                        ((JSONObject)routine).getString("n"), isMulti == 0 ? "only" : "multi",
                                         signature);
-                                    if (routineData.containsKey("d"))
-                                        routineDecl.setDocs((String)routineData.get("d"));
+                                    if (((JSONObject)routine).has("d"))
+                                        routineDecl.setDocs(((JSONObject)routine).getString("d"));
                                     routines.add(routineDecl);
                                 }
 
                         List<Perl6VariableDecl> attrs = new ArrayList<>();
                         if (j.has("a"))
                             for (Object attribute : j.getJSONArray("a"))
-                                if (attribute instanceof Map) {
-                                    Map attributeData = (Map)attribute;
+                                if (attribute instanceof JSONObject) {
                                     ExternalPerl6VariableDecl attributeDecl = new ExternalPerl6VariableDecl(
-                                        myProject, myFile, (String)attributeData.get("n"),
-                                        "has", (String)attributeData.get("t"));
-                                    if (attributeData.containsKey("d"))
-                                        attributeDecl.setDocs((String)attributeData.get("d"));
+                                        myProject, myFile, ((JSONObject)attribute).getString("n"),
+                                        "has", ((JSONObject)attribute).getString("t"));
+                                    if (((JSONObject)attribute).has("d"))
+                                        attributeDecl.setDocs(((JSONObject)attribute).getString("d"));
                                     attrs.add(attributeDecl);
                                 }
 

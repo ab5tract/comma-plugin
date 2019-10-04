@@ -236,7 +236,7 @@ EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
 
 sub pack-variable($name, \object, :$is-attribute = False) {
     my %var = k => "v", n => $name, t => $is-attribute ?? object.type.^name !! object.^name;
-    %var<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
+    try %var<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
     %var;
 }
 
@@ -248,7 +248,7 @@ sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
     my %signature = r => $s.returns.^name, p => @parameters;
     my $kind = $code.^name.comb.head.lc;
     my %code = k => $kind, n => $name // $code.name, s => %signature, m => $multiness;
-    %code<d> = $code.WHY.gist if $code.WHY ~~ Pod::Block::Declarator;
+    try %code<d> = $code.WHY.gist if $code.WHY ~~ Pod::Block::Declarator;
     %code;
 }
 
@@ -283,11 +283,11 @@ sub describer(@elems, $name, Mu \object) {
         describe-OOP(@elems, $name, "ro", object);
     } elsif object.HOW.WHAT ~~ Metamodel::EnumHOW {
         my %enum = k => "e", n => $name, t => object.^name;
-        %enum<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
+        try %enum<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
         @elems.push: %enum;
     } elsif object.HOW.WHAT ~~ Metamodel::SubsetHOW {
         my %subset = k => "ss", n => $name, t => object.^refinee.^name;
-        %subset<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
+        try %subset<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
         @elems.push: %subset;
     }
 }
@@ -296,7 +296,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     use nqp;
     my $b = nqp::istype(object, Cool) ?? 'C' !! nqp::istype(object, Any) ?? 'A' !! 'M';
     my %class = k => $kind, n => $name, t => object.^name, :$b;
-    %class<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
+    try %class<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
     my @privates;
     if $kind eq "ro" {
         @privates = object.^candidates[0].^private_method_table.values;

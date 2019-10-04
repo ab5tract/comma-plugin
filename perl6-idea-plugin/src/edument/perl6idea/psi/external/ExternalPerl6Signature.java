@@ -4,18 +4,25 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6Signature;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class ExternalPerl6Signature extends Perl6ExternalPsiElement implements Perl6Signature {
     private Perl6Parameter[] myParameters;
 
-    public ExternalPerl6Signature(Project project, PsiElement parent, Map signature) {
+    public ExternalPerl6Signature(Project project, PsiElement parent, JSONObject signature) {
         myProject = project;
         myParent = parent;
-        List<String> paramLines = (List<String>)signature.get("p");
+        JSONArray params = signature.getJSONArray("p");
+        List<String> paramLines = new ArrayList<>();
+        for (Object param : params) {
+            if (param instanceof String)
+                paramLines.add((String)param);
+        }
         myParameters = paramLines.stream().map(n -> new ExternalPerl6Parameter(project, parent, n)).toArray(ExternalPerl6Parameter[]::new);
     }
 
