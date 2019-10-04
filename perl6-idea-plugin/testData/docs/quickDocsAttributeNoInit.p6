@@ -3,7 +3,7 @@ class Foo {
     #| One
     #| Two
     #| Three!
-    has $.foo = 42;
+    has $.foo;
     #= Very important variable
 
     method a {

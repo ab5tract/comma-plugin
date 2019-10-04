@@ -3,7 +3,7 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.SearchScope;
@@ -21,6 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
+import static edument.perl6idea.parsing.Perl6TokenTypes.PARAMETER_SEPARATOR;
+import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements Perl6ParameterVariable {
     public Perl6ParameterVariableImpl(@NotNull ASTNode node) {
@@ -38,6 +40,24 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     public String getName() {
         PsiElement nameIdent = getNameIdentifier();
         return nameIdent != null ? nameIdent.getText() : "";
+    }
+
+    @Nullable
+    @Override
+    public String getDocsString() {
+        StringBuilder builder = new StringBuilder();
+        Perl6Parameter parameter = PsiTreeUtil.getParentOfType(this, Perl6Parameter.class);
+        if (parameter == null) return null;
+        PsiElement temp = parameter.getPrevSibling();
+        Perl6Documented.gatherInlineComments(temp, false, builder);
+        builder.append("<br>");
+        temp = parameter.getNextSibling();
+        while (temp != null && (temp.getNode().getElementType() == PARAMETER_SEPARATOR ||
+                                temp.getNode().getElementType() == UNV_WHITE_SPACE ||
+                                temp instanceof PsiWhiteSpace))
+            temp = temp.getNextSibling();
+        Perl6Documented.gatherInlineComments(temp, true, builder);
+        return builder.toString().trim();
     }
 
     @NotNull

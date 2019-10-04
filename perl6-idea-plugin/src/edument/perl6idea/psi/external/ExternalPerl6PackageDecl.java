@@ -46,7 +46,7 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
                 myPackageKind = "role";
                 break;
             case "c":
-                myPackageKind = "c";
+                myPackageKind = "class";
                 break;
         }
         switch (base) {

@@ -3,6 +3,7 @@ package edument.perl6idea.docs;
 import com.intellij.lang.documentation.DocumentationProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
@@ -11,10 +12,7 @@ import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Perl6DocumentationProvider implements DocumentationProvider {
@@ -25,21 +23,43 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
     @Override
     public synchronized String getQuickNavigateInfo(PsiElement element, PsiElement originalElement) {
         if (element instanceof Perl6Constant) {
-            return "Constant " + ((Perl6Constant)element).getConstantName();
+            if (element.getText().length() < 50)
+                return element.getText();
+            return "constant " + ((Perl6Constant)element).getConstantName() + " = ...";
         } else if (element instanceof Perl6Enum) {
-            return "Enum " + ((Perl6Enum)element).getEnumName();
+            Perl6Enum enumEl = (Perl6Enum)element;
+            return "enum " + enumEl.getEnumName() + " (" + String.join(", ", enumEl.getEnumValues()) + ")";
         } else if (element instanceof Perl6PackageDecl) {
-            return ((Perl6PackageDecl)element).getPackageKind() + " " + ((Perl6PackageDecl)element).getPackageName();
-        } else if (element instanceof Perl6Parameter) {
-            return "Parameter: " + ((Perl6Parameter)element).summary();
-        } else if (element instanceof Perl6Regex) {
-            return "Regex";
+            Perl6PackageDecl decl = (Perl6PackageDecl)element;
+            Optional<String> traits = decl.getTraits().stream().map(t -> t.getTraitModifier() + " " + t.getTraitName()).reduce((s1, s2) -> s1 + " " + s2);
+            return String.format("%s %s%s", decl.getPackageKind(), decl.getPackageName(),
+                                 traits.map(s -> " " + s).orElse(""));
+        } else if (element instanceof Perl6ParameterVariable) {
+            Perl6ParameterVariable decl = (Perl6ParameterVariable)element;
+            Perl6Parameter parameter = PsiTreeUtil.getParentOfType(decl, Perl6Parameter.class);
+            if (parameter == null) return null;
+            return parameter.getText();
+        } else if (element instanceof Perl6RegexDecl) {
+            String text = element.getText();
+            if (text.length() < 50)
+                return text;
+            Perl6RegexDecl decl = (Perl6RegexDecl)element;
+            return String.format("%s %s { ... }", decl.getRegexKind(), decl.getRegexName());
         } else if (element instanceof Perl6RoutineDecl) {
-            return ((Perl6RoutineDecl)element).getRoutineKind() + " " + ((Perl6RoutineDecl)element).getRoutineName();
+            Perl6RoutineDecl decl = (Perl6RoutineDecl)element;
+            Perl6Signature signature = decl.getSignatureNode();
+            return String.format("%s %s%s", decl.getRoutineKind(), decl.getRoutineName(), signature == null ? "()" : signature.getText());
         } else if (element instanceof Perl6Subset) {
-            return "Subset " + ((Perl6Subset)element).getSubsetName() + " of " + ((Perl6Subset)element).getSubsetBaseTypeName();
+            return "subset " + ((Perl6Subset)element).getSubsetName() + " of " + ((Perl6Subset)element).getSubsetBaseTypeName();
         } else if (element instanceof Perl6VariableDecl) {
-            return "Variable declaration: " + Arrays.toString(((Perl6VariableDecl)element).getVariableNames());
+            Perl6VariableDecl decl = (Perl6VariableDecl)element;
+            String name = String.join(", ", decl.getVariableNames());
+            String scope = decl.getScope();
+            PsiElement initializer = decl.getInitializer();
+            Perl6PackageDecl selfType = scope.equals("has") ? PsiTreeUtil.getParentOfType(decl, Perl6PackageDecl.class) : null;
+            return String.format("%s %s%s%s",
+                                 scope, name, initializer == null ? "" : " = " + initializer.getText(),
+                                 selfType == null ? "" : " (attribute of " + selfType.getPackageName() + ")");
         }
         return null;
     }

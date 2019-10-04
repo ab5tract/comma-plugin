@@ -2,10 +2,9 @@ package edument.perl6idea.psi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.Nullable;
-
-import static edument.perl6idea.parsing.Perl6ElementTypes.COMMENT;
 
 public interface Perl6Documented {
     @Nullable
@@ -21,7 +20,7 @@ public interface Perl6Documented {
         builder.append("\n");
         temp = statement.getNextSibling();
         gatherInlineComments(temp, true, builder);
-        return builder.toString().trim();
+        return builder.toString().trim().replace("\n", "<br>");
     }
 
     static void gatherInlineComments(PsiElement temp,
@@ -32,10 +31,10 @@ public interface Perl6Documented {
             temp = Perl6PsiUtil.skipSpaces(temp, toRight);
             if (temp == null) break;
 
-            if (temp.getClass().isAssignableFrom(clazz)) {
+            if (clazz.isInstance(temp)) {
                 PsiElement commentContent = toRight ? temp.getFirstChild() : temp.getLastChild();
-                for (PsiElement comment = commentContent; comment != null; comment = Perl6PsiUtil.skipSpaces(comment, toRight)) {
-                    if (comment.getNode().getElementType() != COMMENT)
+                for (PsiElement comment = commentContent; comment != null; comment = Perl6PsiUtil.skipSpaces(toRight ? comment.getNextSibling() : comment.getPrevSibling(), toRight)) {
+                    if (comment.getNode().getElementType() != Perl6TokenTypes.COMMENT)
                         continue;
 
                     String text = comment.getText();
@@ -53,7 +52,7 @@ public interface Perl6Documented {
                     builder.append("\n");
                 else
                     builder.insert(0, "\n");
-                temp = Perl6PsiUtil.skipSpaces(temp, toRight);
+                temp = Perl6PsiUtil.skipSpaces(toRight ? temp.getNextSibling() : temp.getPrevSibling(), toRight);
                 continue;
             }
             break;

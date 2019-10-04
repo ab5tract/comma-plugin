@@ -1,7 +1,7 @@
 .say;
 
 #| Base class for magicians
-class Magician {
+class Magician is Cool does Int {
   has Int $.level;
   has Str @.spells;
 }
