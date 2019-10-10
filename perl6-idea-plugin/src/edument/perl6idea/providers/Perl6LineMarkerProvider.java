@@ -55,13 +55,12 @@ public class Perl6LineMarkerProvider extends RelatedItemLineMarkerProvider {
     @Nullable
     private static Perl6PackageDecl isValidNavigationElement(@NotNull PsiElement element) {
         // If it is not a type name, we don't annotate it
-        if (element.getNode().getElementType() != Perl6TokenTypes.NAME)
+        if (element.getNode().getElementType() != Perl6TokenTypes.PACKAGE_NAME)
             return null;
         // If it is a type name inside of trait, we don't annotate it
         if (PsiTreeUtil.getParentOfType(element, Perl6Trait.class) != null)
             return null;
         // Return an outer package for the type name we are working with
-        PsiElement nameParent = element.getParent();
-        return nameParent instanceof Perl6PackageDecl ? (Perl6PackageDecl)nameParent : null;
+        return PsiTreeUtil.getParentOfType(element, Perl6PackageDecl.class);
     }
 }

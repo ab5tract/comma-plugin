@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.NAME;
 
 public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub>
@@ -443,13 +444,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        PsiElement nameElement = Perl6ElementFactory
-            .createTypeDeclarationName(getProject(), name);
-        ASTNode keyNode = findChildByType(NAME);
-        if (keyNode != null) {
-            ASTNode newKeyNode = nameElement.getNode();
-            getNode().replaceChild(keyNode, newKeyNode);
-        }
+        PsiElement nameElement = Perl6ElementFactory.createTypeDeclarationName(getProject(), name);
+        PsiElement identifier = getNameIdentifier();
+        if (identifier != null)
+            identifier.replace(nameElement);
         return this;
     }
 }

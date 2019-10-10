@@ -2597,9 +2597,12 @@ grammar MAIN {
         :my $*IN_DECL = 'package';
         <.ws>
         [
-            <.start-token('NAME')>
+            <.start-element('LONG_NAME')>
+            <.start-token('PACKAGE_NAME')>
             <.name>
-            <.end-token('NAME')>
+            <.end-token('PACKAGE_NAME')>
+            <.longname_colonpairs>
+            <.end-element('LONG_NAME')>
             <.ws>
             [
                 <?{ $*IS_ROLE }>
