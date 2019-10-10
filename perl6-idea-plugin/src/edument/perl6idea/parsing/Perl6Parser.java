@@ -18787,42 +18787,42 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean term_222_alt_23(PsiBuilder builder, OPP opp) {
-        if (!(this.term_ident_225(builder))) {
+        if (!(this.value_254(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean term_222_alt_24(PsiBuilder builder, OPP opp) {
-        if (!(this.variable_255(builder))) {
+        if (!(this.term_ident_225(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean term_222_alt_25(PsiBuilder builder, OPP opp) {
-        if (!(this.term_self_231(builder))) {
+        if (!(this.variable_255(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean term_222_alt_26(PsiBuilder builder, OPP opp) {
-        if (!(this.colonpair_29(builder))) {
+        if (!(this.term_self_231(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean term_222_alt_27(PsiBuilder builder, OPP opp) {
-        if (!(this.fatarrow_47(builder))) {
+        if (!(this.colonpair_29(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean term_222_alt_28(PsiBuilder builder, OPP opp) {
-        if (!(this.value_254(builder))) {
+        if (!(this.fatarrow_47(builder))) {
             return false;
         }
         return true;
