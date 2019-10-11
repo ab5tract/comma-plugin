@@ -492,6 +492,7 @@ sub generate-lexer(Grammar $grammar, $prefix, $package) is export {
     my $comp-unit = CompUnit.new:
         package => $package,
         imports => <
+            edument.perl6idea.parsing.Cursor
         >,
         type => $class;
     return $comp-unit.generate;

@@ -235,6 +235,7 @@ sub generate-parser(P6GrammarToIdea::Elements::Model $element-model, $prefix, $p
             com.intellij.psi.tree.IElementType
             com.intellij.lang.PsiBuilder
             com.intellij.lang.PsiParser
+            edument.perl6idea.parsing.OPP
         >,
         type => $class;
     return $comp-unit.generate;
