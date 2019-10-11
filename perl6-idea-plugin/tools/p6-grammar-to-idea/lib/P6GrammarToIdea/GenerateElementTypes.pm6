@@ -53,10 +53,11 @@ sub generate-perl6-element-types(@element-names, $prefix, $package) is export {
             ConstructorCall.new(:name($prefix ~ 'ElementType'), :arguments(
                 StringLiteral.new(:value($name)))));
     }
-    my $interface = Interface.new: :access<public>, :name<Perl6ElementTypes>, :@fields;
+    my $interface = Interface.new: :access<public>, :name($prefix ~ 'ElementTypes'), :@fields;
     my $comp-unit = CompUnit.new:
         package => $package,
         imports => <
+            com.intellij.psi.tree.IFileElementType
             com.intellij.psi.tree.IElementType
             com.intellij.psi.tree.IStubFileElementType
             com.intellij.psi.stubs.IStubElementType
