@@ -6,6 +6,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <fileTypeFactory implementation="edument.perl6idea.filetypes.Perl6FileTypeFactory"/>
+    <fileTypeFactory implementation="edument.perl6idea.cro.template.CroTemplateFileTypeFactory"/>
     <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
     <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
     <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>
