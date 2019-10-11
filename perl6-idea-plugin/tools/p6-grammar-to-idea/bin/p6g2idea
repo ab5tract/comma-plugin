@@ -15,7 +15,8 @@ multi sub MAIN('parse', $input-file where .IO.f) {
     ).ast.dump;
 }
 
-multi sub MAIN('generate', IO() $input-file where .f, IO() $output-dir where .d) {
+multi sub MAIN('generate', IO() $input-file where .f, IO() $output-dir where .d,
+        Str $prefix, Str $package) {
     say "Parsing grammar and building AST";
     my $ast = P6GrammarToIdea::Parser.parse(
         slurp($input-file),
@@ -31,19 +32,21 @@ multi sub MAIN('generate', IO() $input-file where .f, IO() $output-dir where .d)
     say "Building element model";
     my $element-model = build-element-model($ast);
 
-    say "Generating Perl6TokenTypes.java";
-    spurt $output-dir.add('Perl6TokenTypes.java'), generate-perl6-token-types(@token-names);
+    say "Generating {$prefix}TokenTypes.java";
+    spurt $output-dir.add($prefix ~ 'TokenTypes.java'),
+        generate-perl6-token-types(@token-names, $prefix, $package);
 
-    say "Generating Perl6ElementTypes.java";
-    spurt $output-dir.add('Perl6ElementTypes.java'), generate-perl6-element-types
-        $element-model.element-names;
+    say "Generating {$prefix}ElementTypes.java";
+    spurt $output-dir.add($prefix ~ 'ElementTypes.java'), generate-perl6-element-types
+        $element-model.element-names, $prefix, $package;
 
     for $ast.braids.kv -> $name, $grammar {
         my $filename = $name ~ 'Braid.java';
         say "Generating $filename";
-        spurt $output-dir.add($filename), generate-lexer($grammar);
+        spurt $output-dir.add($filename), generate-lexer($grammar, $prefix, $package);
     }
 
-    say "Generating Perl6Parser.java";
-    spurt $output-dir.add('Perl6Parser.java'), generate-parser($element-model);
+    say "Generating {$prefix}Parser.java";
+    spurt $output-dir.add($prefix ~ 'Parser.java'), generate-parser($element-model,
+        $prefix, $package);
 }
