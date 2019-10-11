@@ -6,7 +6,6 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <fileTypeFactory implementation="edument.perl6idea.filetypes.Perl6FileTypeFactory"/>
-    <fileTypeFactory implementation="edument.perl6idea.cro.template.CroTemplateFileTypeFactory"/>
     <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
     <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
     <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>
@@ -91,6 +90,9 @@
     <stubIndex implementation="edument.perl6idea.cro.CroRouteIndex"/>
     <codeInsight.parameterInfo language="Perl6" implementationClass="edument.perl6idea.Perl6ParameterInfoHandler"/>
     <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
+
+    <fileTypeFactory implementation="edument.perl6idea.cro.template.CroTemplateFileTypeFactory"/>
+    <lang.parserDefinition language="CroTemplate" implementationClass="edument.perl6idea.cro.template.parsing.CroTemplateParserDefinition"/>
 
     <intentionAction>
       <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
