@@ -1,4 +1,5 @@
 package edument.perl6idea.parsing;
+import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IStubFileElementType;
 import com.intellij.psi.stubs.IStubElementType;

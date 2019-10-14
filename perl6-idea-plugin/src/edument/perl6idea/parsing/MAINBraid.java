@@ -1,4 +1,5 @@
 package edument.perl6idea.parsing;
+import edument.perl6idea.parsing.Cursor;
 
 public class MAINBraid extends Cursor<MAINBraid> {
 
