@@ -11,8 +11,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import edument.perl6idea.cro.template.psi.impl.CroTemplateFileImpl;
-import edument.perl6idea.cro.template.psi.impl.CroTemplateUseImpl;
+import edument.perl6idea.cro.template.psi.impl.*;
 import org.jetbrains.annotations.NotNull;
 
 public class CroTemplateParserDefinition implements ParserDefinition {
@@ -48,8 +47,26 @@ public class CroTemplateParserDefinition implements ParserDefinition {
     @Override
     public PsiElement createElement(ASTNode node) {
         IElementType type = node.getElementType();
+        if (type == CroTemplateElementTypes.STRING_LITERAL)
+            return new CroTemplateStringLiteralImpl(node);
+        if (type == CroTemplateElementTypes.LITERAL_OPEN_TAG)
+            return new CroTemplateLiteralOpenTagImpl(node);
+        if (type == CroTemplateElementTypes.LITERAL_CLOSE_TAG)
+            return new CroTemplateLiteralCloseTagImpl(node);
+        if (type == CroTemplateElementTypes.LITERAL_TAG_ATTRIBUTE)
+            return new CroTemplateLiteralTagAttributeImpl(node);
+        if (type == CroTemplateElementTypes.INT_LITERAL)
+            return new CroTemplateIntLiteralImpl(node);
+        if (type == CroTemplateElementTypes.RAT_LITERAL)
+            return new CroTemplateRatLiteralImpl(node);
+        if (type == CroTemplateElementTypes.NUM_LITERAL)
+            return new CroTemplateNumLiteralImpl(node);
         if (type == CroTemplateElementTypes.USE)
             return new CroTemplateUseImpl(node);
+        if (type == CroTemplateElementTypes.APPLY)
+            return new CroTemplateApplyImpl(node);
+        if (type == CroTemplateElementTypes.ARGLIST)
+            return new CroTemplateArgListImpl(node);
         return null;
     }
 
