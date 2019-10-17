@@ -11,7 +11,9 @@ public interface CroTemplateTokenTypes {
     IElementType CLOSE_PAREN = new CroTemplateElementType("CLOSE_PAREN");
     IElementType COMMA = new CroTemplateElementType("COMMA");
     IElementType DECL_OPENER = new CroTemplateElementType("DECL_OPENER");
+    IElementType DOT = new CroTemplateElementType("DOT");
     IElementType END_OF_EXPR = new CroTemplateElementType("END_OF_EXPR");
+    IElementType IDENTIFER = new CroTemplateElementType("IDENTIFER");
     IElementType INFIX = new CroTemplateElementType("INFIX");
     IElementType INT_LITERAL = new CroTemplateElementType("INT_LITERAL");
     IElementType LITERAL_TAG_CLOSE = new CroTemplateElementType("LITERAL_TAG_CLOSE");
@@ -28,7 +30,10 @@ public interface CroTemplateTokenTypes {
     IElementType SYNTAX_WHITE_SPACE = new CroTemplateElementType("SYNTAX_WHITE_SPACE");
     IElementType TEMPLATE_TAG_APPLY_SIGIL = new CroTemplateElementType("TEMPLATE_TAG_APPLY_SIGIL");
     IElementType TEMPLATE_TAG_CLOSE = new CroTemplateElementType("TEMPLATE_TAG_CLOSE");
+    IElementType TEMPLATE_TAG_COND_SIGIL = new CroTemplateElementType("TEMPLATE_TAG_COND_SIGIL");
     IElementType TEMPLATE_TAG_DECL_SIGIL = new CroTemplateElementType("TEMPLATE_TAG_DECL_SIGIL");
+    IElementType TEMPLATE_TAG_ITER_SIGIL = new CroTemplateElementType("TEMPLATE_TAG_ITER_SIGIL");
     IElementType TEMPLATE_TAG_OPEN = new CroTemplateElementType("TEMPLATE_TAG_OPEN");
     IElementType TEMPLATE_TAG_SLASH = new CroTemplateElementType("TEMPLATE_TAG_SLASH");
+    IElementType TEMPLATE_TAG_VAR_SIGIL = new CroTemplateElementType("TEMPLATE_TAG_VAR_SIGIL");
 }

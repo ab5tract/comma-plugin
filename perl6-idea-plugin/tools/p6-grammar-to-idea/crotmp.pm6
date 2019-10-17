@@ -11,9 +11,9 @@ grammar MAIN {
     }
 
     token sequence-element {
-        || <.sequence-element-literal-text>
-        || <.sequence-element-literal-open-tag>
         || <.sequence-element-literal-close-tag>
+        || <.sequence-element-literal-open-tag>
+        || <.sequence-element-literal-text>
         || <.sigil-tag>
     }
 
@@ -109,8 +109,85 @@ grammar MAIN {
     }
 
     token sigil-tag {
+        || <.sigil-tag-topic>
+        || <.sigil-tag-variable>
+        || <.sigil-tag-iteration>
+        || <.sigil-tag-condition>
         || <.sigil-tag-use>
         || <.sigil-tag-apply>
+    }
+
+    token sigil-tag-topic {
+        <?before '<.'>
+        <.start-element('TOPIC_ACCESS')>
+        <.tlt>
+        <.dot>
+        [
+            <.deref>
+            <.tgt>?
+        ]?
+        <.end-element('TOPIC_ACCESS')>
+    }
+
+    token sigil-tag-variable {
+        <?before '<$'>
+        <.start-element('VARIABLE_ACCESS')>
+        <.tlt>
+        <.var-sigil>
+        [
+            <.start-token('IDENTIFER')>
+            <.identifier>
+            <.end-token('IDENTIFER')>
+            [ <.dot> <.deref>? ]?
+            <.tgt>?
+        ]?
+        <.end-element('VARIABLE_ACCESS')>
+    }
+
+    token sigil-tag-iteration {
+        <?before '<@'>
+        <.start-element('ITERATION')>
+        <.tlt>
+        <.iter-sigil>
+        [
+            <.deref>
+            [
+                <.tgt>
+                <.sequence-element>*
+                [
+                    <?before '</@'>
+                    <.tlt>
+                    <.tclose>
+                    <.iter-sigil>
+                    <.tgt>?
+                ]?
+            ]?
+        ]?
+        <.end-element('ITERATION')>
+    }
+
+    token sigil-tag-condition {
+        <?before '<' <[?!]>>
+        <.start-element('CONDITION')>
+        <.tlt>
+        <.cond-sigil>
+        [
+            [
+            || <.dot> <.deref>?
+            ]
+            [
+                <.tgt>
+                <.sequence-element>*
+                [
+                    <?before '</' <[?!]>>
+                    <.tlt>
+                    <.tclose>
+                    <.cond-sigil>
+                    <.tgt>?
+                ]?
+            ]?
+        ]?
+        <.end-element('CONDITION')>
     }
 
     token sigil-tag-use {
@@ -322,6 +399,37 @@ grammar MAIN {
         <.end-element('NUM_LITERAL')>
     }
 
+    token deref {
+        <.deref-item>
+        [<.dot> <.deref-item>?]*
+    }
+
+    token deref-item {
+        || <.deref-item-smart>
+    }
+    
+#    token deref-item:sym<method> {
+#        <identifier> '(' \s* ')'
+#    }
+
+    token deref-item-smart {
+        <.start-element('DEREF_SMART')>
+        <.start-token('IDENTIFER')>
+        <.identifier>
+        <.end-token('IDENTIFER')>
+        <.end-element('DEREF_SMART')>
+    }
+
+#    token deref-item:sym<hash-literal> {
+#        '<' <( <-[>]>* )> '>'
+#    }
+#    token deref-item:sym<array> {
+#        '[' <index=.expression> ']'
+#    }
+#    token deref-item:sym<hash> {
+#        '{' <key=.expression> '}'
+#    }
+
     token ws {
         [
         || <.start-token('SYNTAX_WHITE_SPACE')>
@@ -355,6 +463,12 @@ grammar MAIN {
         <.end-token('TEMPLATE_TAG_SLASH')>
     }
 
+    token dot {
+        <.start-token('DOT')>
+        '.'
+        <.end-token('DOT')>
+    }
+
     token lt {
         <.start-token('LITERAL_TAG_OPEN')>
         '<'
@@ -371,6 +485,24 @@ grammar MAIN {
         <.start-token('LITERAL_TAG_SLASH')>
         '/'
         <.end-token('LITERAL_TAG_SLASH')>
+    }
+
+    token var-sigil {
+        <.start-token('TEMPLATE_TAG_VAR_SIGIL')>
+        '$'
+        <.end-token('TEMPLATE_TAG_VAR_SIGIL')>
+    }
+
+    token iter-sigil {
+        <.start-token('TEMPLATE_TAG_ITER_SIGIL')>
+        '@'
+        <.end-token('TEMPLATE_TAG_ITER_SIGIL')>
+    }
+
+    token cond-sigil {
+        <.start-token('TEMPLATE_TAG_COND_SIGIL')>
+        <[?!]>
+        <.end-token('TEMPLATE_TAG_COND_SIGIL')>
     }
 
     token decl-sigil {
