@@ -93,6 +93,8 @@
 
     <fileTypeFactory implementation="edument.perl6idea.cro.template.CroTemplateFileTypeFactory"/>
     <lang.parserDefinition language="CroTemplate" implementationClass="edument.perl6idea.cro.template.parsing.CroTemplateParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="CroTemplate" implementationClass="edument.perl6idea.cro.template.highlighter.CroTemplateSyntaxHighlighterFactory"/>
+    <colorSettingsPage implementation="edument.perl6idea.cro.template.highlighter.CroTemplateColorSettingsPage"/>
 
     <intentionAction>
       <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
