@@ -1,4 +1,6 @@
 package edument.perl6idea.cro.template.psi;
 
-public interface CroTemplateInfixApplication {
+import com.intellij.psi.PsiElement;
+
+public interface CroTemplateInfixApplication extends PsiElement {
 }

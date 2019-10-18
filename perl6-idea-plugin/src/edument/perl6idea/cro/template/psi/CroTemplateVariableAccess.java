@@ -1,4 +1,6 @@
 package edument.perl6idea.cro.template.psi;
 
-public interface CroTemplateVariableAccess {
+import com.intellij.psi.PsiElement;
+
+public interface CroTemplateVariableAccess extends PsiElement {
 }

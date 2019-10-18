@@ -1,4 +1,6 @@
 package edument.perl6idea.cro.template.psi;
 
-public interface CroTemplateParameter {
+import com.intellij.psi.PsiElement;
+
+public interface CroTemplateParameter extends PsiElement {
 }
