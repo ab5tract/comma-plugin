@@ -17,6 +17,12 @@ grammar MAIN {
         || <.sigil-tag>
     }
 
+    token sequence-element-group {
+        <.start-element('TAG_SEQUENCE')>
+        <.sequence-element>*
+        <.end-element('TAG_SEQUENCE')>
+    }
+
     token sequence-element-literal-text {
         <.start-token('LITERAL_TEXT')>
         <-[<]>+
@@ -156,7 +162,7 @@ grammar MAIN {
             <.deref>
             [
                 <.tgt>
-                <.sequence-element>*
+                <.sequence-element-group>
                 [
                     <?before '</@'>
                     <.tlt>
@@ -181,7 +187,7 @@ grammar MAIN {
             ]
             [
                 <.tgt>
-                <.sequence-element>*
+                <.sequence-element-group>
                 [
                     <?before '</' <[?!]>>
                     <.tlt>
@@ -246,7 +252,7 @@ grammar MAIN {
                 <.hws>?
                 [
                     <.tgt>
-                    <.sequence-element>*
+                    <.sequence-element-group>
                     [
                         <?before '</:'>
                         <.tlt>
@@ -284,7 +290,7 @@ grammar MAIN {
                 <.hws>?
                 [
                     <.tgt>
-                    <.sequence-element>*
+                    <.sequence-element-group>
                     [
                         <?before '</:'>
                         <.tlt>
@@ -347,7 +353,7 @@ grammar MAIN {
             <.hws>?
             [
                 <.tgt>
-                <.sequence-element>*
+                <.sequence-element-group>
                 [
                     <?before '</|'>
                     <.tlt>

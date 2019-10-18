@@ -26,6 +26,7 @@ public interface CroTemplateElementTypes {
     IElementType SIGNATURE = new CroTemplateElementType("SIGNATURE");
     IElementType STRING_LITERAL = new CroTemplateElementType("STRING_LITERAL");
     IElementType SUB = new CroTemplateElementType("SUB");
+    IElementType TAG_SEQUENCE = new CroTemplateElementType("TAG_SEQUENCE");
     IElementType TOPIC_ACCESS = new CroTemplateElementType("TOPIC_ACCESS");
     IElementType USE = new CroTemplateElementType("USE");
     IElementType VARIABLE_ACCESS = new CroTemplateElementType("VARIABLE_ACCESS");
