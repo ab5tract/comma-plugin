@@ -924,8 +924,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
-                this.bsFailMark(20);
-                this.bsMark(8);
+                this.bsFailMark(34);
+                this.bsMark(15);
                 this.startToken(CroTemplateTokenTypes.ATTRIBUTE_QUOTE);
                 if (!(this.literal("\""))) {
                     if (this.backtrack()) {
@@ -938,59 +938,63 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 return -3;
 
             case 1:
-                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_VALUE);
-                this.bsMark(3);
+                this.bsMark(11);
                 this.state = 2;
                 break;
             case 2:
-                if (!(this.notInCharList("\""))) {
+                this.bsFailMark(10);
+                this.bsMark(6);
+                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_VALUE);
+                this.bsFailMark(4);
+                this.state = 3;
+                break;
+            case 3:
+                if (!(this.notInCharList("\"<"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {
                         return -2;
                     }
                 }
-                rep = this.peekRep(3);
+                rep = this.peekRep(4);
                 ++rep;
-                this.bsCommit(3);
-                this.bsMark(3, rep);
-                this.state = 2;
+                this.bsCommit(4);
+                this.bsMark(4, rep);
+                this.state = 3;
                 continue;
-
-            case 3:
-                this.state = 4;
-                return -3;
 
             case 4:
-                this.bsMark(7);
                 this.state = 5;
-                break;
+                return -3;
+
             case 5:
-                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_QUOTE);
-                if (!(this.literal("\""))) {
+                this.bsCommit(10);
+                this.state = 10;
+                continue;
+
+            case 6:
+                this.bsMark(8);
+                this.setArgs();
+                this.state = 7;
+                return 11;
+
+            case 7:
+                if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
                     } else {
                         return -2;
                     }
+                } else {
+                    this.pos = this.lastResult.getPos();
                 }
-                this.state = 6;
-                return -3;
-
-            case 6:
-                this.bsCommit(7);
-                this.state = 7;
-                continue;
-
-            case 7:
-                this.bsCommit(20);
-                this.state = 20;
+                this.bsCommit(10);
+                this.state = 10;
                 continue;
 
             case 8:
-                this.bsMark(16);
-                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_QUOTE);
-                if (!(this.literal("'"))) {
+                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_VALUE);
+                if (!(this.literal("<"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {
@@ -1001,34 +1005,45 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 return -3;
 
             case 9:
-                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_VALUE);
-                this.bsMark(11);
                 this.state = 10;
-                break;
+                continue;
+
             case 10:
-                if (!(this.notInCharList("'"))) {
+                rep = this.peekRep(11);
+                ++rep;
+                this.bsCommit(11);
+                this.bsMark(11, rep);
+                this.state = 2;
+                continue;
+
+            case 11:
+                this.bsMark(14);
+                this.state = 12;
+                break;
+            case 12:
+                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_QUOTE);
+                if (!(this.literal("\""))) {
                     if (this.backtrack()) {
                         continue;
                     } else {
                         return -2;
                     }
                 }
-                rep = this.peekRep(11);
-                ++rep;
-                this.bsCommit(11);
-                this.bsMark(11, rep);
-                this.state = 10;
-                continue;
-
-            case 11:
-                this.state = 12;
+                this.state = 13;
                 return -3;
 
-            case 12:
-                this.bsMark(15);
-                this.state = 13;
-                break;
             case 13:
+                this.bsCommit(14);
+                this.state = 14;
+                continue;
+
+            case 14:
+                this.bsCommit(34);
+                this.state = 34;
+                continue;
+
+            case 15:
+                this.bsMark(30);
                 this.startToken(CroTemplateTokenTypes.ATTRIBUTE_QUOTE);
                 if (!(this.literal("'"))) {
                     if (this.backtrack()) {
@@ -1037,25 +1052,120 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                this.state = 14;
+                this.state = 16;
                 return -3;
 
-            case 14:
-                this.bsCommit(15);
-                this.state = 15;
-                continue;
-
-            case 15:
-                this.bsCommit(20);
-                this.state = 20;
-                continue;
-
             case 16:
-                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_VALUE);
-                this.bsMark(18);
+                this.bsMark(26);
                 this.state = 17;
                 break;
             case 17:
+                this.bsFailMark(25);
+                this.bsMark(21);
+                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_VALUE);
+                this.bsFailMark(19);
+                this.state = 18;
+                break;
+            case 18:
+                if (!(this.notInCharList("'<"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                rep = this.peekRep(19);
+                ++rep;
+                this.bsCommit(19);
+                this.bsMark(19, rep);
+                this.state = 18;
+                continue;
+
+            case 19:
+                this.state = 20;
+                return -3;
+
+            case 20:
+                this.bsCommit(25);
+                this.state = 25;
+                continue;
+
+            case 21:
+                this.bsMark(23);
+                this.setArgs();
+                this.state = 22;
+                return 11;
+
+            case 22:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(25);
+                this.state = 25;
+                continue;
+
+            case 23:
+                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_VALUE);
+                if (!(this.literal("<"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 24;
+                return -3;
+
+            case 24:
+                this.state = 25;
+                continue;
+
+            case 25:
+                rep = this.peekRep(26);
+                ++rep;
+                this.bsCommit(26);
+                this.bsMark(26, rep);
+                this.state = 17;
+                continue;
+
+            case 26:
+                this.bsMark(29);
+                this.state = 27;
+                break;
+            case 27:
+                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_QUOTE);
+                if (!(this.literal("'"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 28;
+                return -3;
+
+            case 28:
+                this.bsCommit(29);
+                this.state = 29;
+                continue;
+
+            case 29:
+                this.bsCommit(34);
+                this.state = 34;
+                continue;
+
+            case 30:
+                this.startToken(CroTemplateTokenTypes.ATTRIBUTE_VALUE);
+                this.bsMark(32);
+                this.state = 31;
+                break;
+            case 31:
                 if (!(this.notSpaceChar())) {
                     if (this.backtrack()) {
                         continue;
@@ -1063,22 +1173,22 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
-                rep = this.peekRep(18);
+                rep = this.peekRep(32);
                 ++rep;
-                this.bsCommit(18);
-                this.bsMark(18, rep);
-                this.state = 17;
+                this.bsCommit(32);
+                this.bsMark(32, rep);
+                this.state = 31;
                 continue;
 
-            case 18:
-                this.state = 19;
+            case 32:
+                this.state = 33;
                 return -3;
 
-            case 19:
-                this.state = 20;
+            case 33:
+                this.state = 34;
                 continue;
 
-            case 20:
+            case 34:
                 return -1;
 
             }

@@ -81,9 +81,15 @@ grammar MAIN {
         || <.start-token('ATTRIBUTE_QUOTE')>
            '"'
            <.end-token('ATTRIBUTE_QUOTE')>
-           <.start-token('ATTRIBUTE_VALUE')>
-           <-["]>*
-           <.end-token('ATTRIBUTE_VALUE')>
+           [
+                || <.start-token('ATTRIBUTE_VALUE')>
+                   <-["<]>+
+                   <.end-token('ATTRIBUTE_VALUE')>
+                || <.sigil-tag>
+                || <.start-token('ATTRIBUTE_VALUE')>
+                   '<'
+                   <.end-token('ATTRIBUTE_VALUE')>
+           ]*
            [
                 <.start-token('ATTRIBUTE_QUOTE')>
                 '"'
@@ -92,9 +98,15 @@ grammar MAIN {
         || <.start-token('ATTRIBUTE_QUOTE')>
            \'
            <.end-token('ATTRIBUTE_QUOTE')>
-           <.start-token('ATTRIBUTE_VALUE')>
-           <-[']>*
-           <.end-token('ATTRIBUTE_VALUE')>
+           [
+                || <.start-token('ATTRIBUTE_VALUE')>
+                   <-['<]>+
+                   <.end-token('ATTRIBUTE_VALUE')>
+                || <.sigil-tag>
+                || <.start-token('ATTRIBUTE_VALUE')>
+                   '<'
+                   <.end-token('ATTRIBUTE_VALUE')>
+           ]*
            [
                 <.start-token('ATTRIBUTE_QUOTE')>
                 \'
