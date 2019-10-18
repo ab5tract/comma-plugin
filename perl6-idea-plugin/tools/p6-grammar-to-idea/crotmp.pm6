@@ -113,8 +113,12 @@ grammar MAIN {
         || <.sigil-tag-variable>
         || <.sigil-tag-iteration>
         || <.sigil-tag-condition>
-        || <.sigil-tag-use>
+        || <.sigil-tag-call>
+        || <.sigil-tag-sub>
+        || <.sigil-tag-macro>
+        || <.sigil-tag-body>
         || <.sigil-tag-apply>
+        || <.sigil-tag-use>
     }
 
     token sigil-tag-topic {
@@ -133,13 +137,12 @@ grammar MAIN {
         <?before '<$'>
         <.start-element('VARIABLE_ACCESS')>
         <.tlt>
-        <.var-sigil>
+        <.start-token('VARIABLE_NAME')>
+        '$' <.identifier>?
+        <.end-token('VARIABLE_NAME')>
         [
-            <.start-token('IDENTIFER')>
-            <.identifier>
-            <.end-token('IDENTIFER')>
             [ <.dot> <.deref>? ]?
-            <.tgt>?
+            <.tgt>
         ]?
         <.end-element('VARIABLE_ACCESS')>
     }
@@ -174,6 +177,7 @@ grammar MAIN {
         [
             [
             || <.dot> <.deref>?
+            || <.block>
             ]
             [
                 <.tgt>
@@ -188,6 +192,130 @@ grammar MAIN {
             ]?
         ]?
         <.end-element('CONDITION')>
+    }
+
+    token block {
+        <.start-token('OPEN_CURLY')>
+        '{'
+        <.end-token('OPEN_CURLY')>
+        <.ws>
+        [
+            <.expression>
+            <.ws>
+            [
+                <.start-token('CLOSE_CURLY')>
+                '}'
+                <.end-token('CLOSE_CURLY')>
+            ]?
+        ]?
+    }
+
+    token sigil-tag-call {
+        <?before '<&'>
+        <.start-element('CALL')>
+        <.tlt>
+        <.call-sigil>
+        [
+            <.start-token('SUB_NAME')>
+            <.identifier>
+            <.end-token('SUB_NAME')>
+            <.hws>?
+            <.arglist>?
+            <.hws>?
+            <.tgt>?
+        ]?
+        <.end-element('CALL')>
+    }
+
+    token sigil-tag-sub {
+        <?before '<:sub'>
+        <.start-element('SUB')>
+        <.tlt>
+        <.decl-sigil>
+        <.start-token('DECL_OPENER')>
+        'sub'
+        <.end-token('DECL_OPENER')>
+        [
+            <.hws>
+            [
+                <.start-token('SUB_NAME')>
+                <.identifier>
+                <.end-token('SUB_NAME')>
+                <.hws>?
+                <.signature>?
+                <.hws>?
+                [
+                    <.tgt>
+                    <.sequence-element>*
+                    [
+                        <?before '</:'>
+                        <.tlt>
+                        <.tclose>
+                        <.decl-sigil>
+                        [
+                            <.start-token('DECL_OPENER')>
+                            'sub'
+                            <.end-token('DECL_OPENER')>
+                        ]?
+                        <.tgt>?
+                    ]?
+                ]?
+            ]?
+        ]?
+        <.end-element('SUB')>
+    }
+
+    token sigil-tag-macro {
+        <?before '<:macro'>
+        <.start-element('MACRO')>
+        <.tlt>
+        <.decl-sigil>
+        <.start-token('DECL_OPENER')>
+        'macro'
+        <.end-token('DECL_OPENER')>
+        [
+            <.hws>
+            [
+                <.start-token('MACRO_NAME')>
+                <.identifier>
+                <.end-token('MACRO_NAME')>
+                <.hws>?
+                <.signature>?
+                <.hws>?
+                [
+                    <.tgt>
+                    <.sequence-element>*
+                    [
+                        <?before '</:'>
+                        <.tlt>
+                        <.tclose>
+                        <.decl-sigil>
+                        [
+                            <.start-token('DECL_OPENER')>
+                            'macro'
+                            <.end-token('DECL_OPENER')>
+                        ]?
+                        <.tgt>?
+                    ]?
+                ]?
+            ]?
+        ]?
+        <.end-element('MACRO')>
+    }
+
+    token sigil-tag-body {
+        <?before '<:body'>
+        <.start-element('BODY')>
+        <.tlt>
+        <.decl-sigil>
+        <.start-token('DECL_OPENER')>
+        'body'
+        <.end-token('DECL_OPENER')>
+        [
+            <.hws>?
+            <.tgt>
+        ]?
+        <.end-element('BODY')>
     }
 
     token sigil-tag-use {
@@ -230,6 +358,42 @@ grammar MAIN {
             ]?
         ]?
         <.end-element('APPLY')>
+    }
+
+    token signature {
+        <.start-element('SIGNATURE')>
+        <.start-token('OPEN_PAREN')>
+        '('
+        <.end-token('OPEN_PAREN')>
+        <.ws>
+        [
+            [
+                <.parameter>
+                <.ws>
+                [
+                    <.start-token('COMMA')>
+                    ','
+                    <.end-token('COMMA')>
+                    <.ws>
+                ]?
+            ]*
+            <.ws>
+            [
+                <.start-token('CLOSE_PAREN')>
+                ')'
+                <.end-token('CLOSE_PAREN')>
+                <.hws>?
+            ]?
+        ]?
+        <.end-element('SIGNATURE')>
+    }
+
+    token parameter {
+        <.start-element('PARAMETER')>
+        <.start-token('VARIABLE_NAME')>
+        '$' <.identifier>?
+        <.end-token('VARIABLE_NAME')>
+        <.end-element('PARAMETER')>
     }
 
     token arglist {
@@ -355,6 +519,7 @@ grammar MAIN {
         || <.int>
         || <.rat>
         || <.num>
+        || <.variable>
     }
 
     token single-quote-string {
@@ -397,6 +562,15 @@ grammar MAIN {
         '-'? \d* '.' \d+ <[eE]> '-'? \d+
         <.end-token('NUM_LITERAL')>
         <.end-element('NUM_LITERAL')>
+    }
+
+    token variable {
+        <.start-element('VARIABLE_ACCESS')>
+        <.start-token('VARIABLE_NAME')>
+        '$' <.identifier>?
+        <.end-token('VARIABLE_NAME')>
+        [ <.dot> <.deref>? ]?
+        <.end-element('VARIABLE_ACCESS')>
     }
 
     token deref {
@@ -487,12 +661,6 @@ grammar MAIN {
         <.end-token('LITERAL_TAG_SLASH')>
     }
 
-    token var-sigil {
-        <.start-token('TEMPLATE_TAG_VAR_SIGIL')>
-        '$'
-        <.end-token('TEMPLATE_TAG_VAR_SIGIL')>
-    }
-
     token iter-sigil {
         <.start-token('TEMPLATE_TAG_ITER_SIGIL')>
         '@'
@@ -503,6 +671,12 @@ grammar MAIN {
         <.start-token('TEMPLATE_TAG_COND_SIGIL')>
         <[?!]>
         <.end-token('TEMPLATE_TAG_COND_SIGIL')>
+    }
+
+    token call-sigil {
+        <.start-token('TEMPLATE_TAG_CALL_SIGIL')>
+        '&'
+        <.end-token('TEMPLATE_TAG_CALL_SIGIL')>
     }
 
     token decl-sigil {
