@@ -12,6 +12,7 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.cro.template.psi.impl.*;
+import edument.perl6idea.parsing.Perl6OPPElementTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class CroTemplateParserDefinition implements ParserDefinition {
@@ -69,14 +70,30 @@ public class CroTemplateParserDefinition implements ParserDefinition {
             return new CroTemplateIterationImpl(node);
         if (type == CroTemplateElementTypes.CONDITION)
             return new CroTemplateConditionImpl(node);
+        if (type == CroTemplateElementTypes.CALL)
+            return new CroTemplateCallImpl(node);
+        if (type == CroTemplateElementTypes.SUB)
+            return new CroTemplateSubImpl(node);
         if (type == CroTemplateElementTypes.USE)
             return new CroTemplateUseImpl(node);
+        if (type == CroTemplateElementTypes.MACRO)
+            return new CroTemplateMacroImpl(node);
+        if (type == CroTemplateElementTypes.BODY)
+            return new CroTemplateBodyImpl(node);
         if (type == CroTemplateElementTypes.APPLY)
             return new CroTemplateApplyImpl(node);
+        if (type == CroTemplateElementTypes.SIGNATURE)
+            return new CroTemplateSignatureImpl(node);
+        if (type == CroTemplateElementTypes.PARAMETER)
+            return new CroTemplateParameterImpl(node);
         if (type == CroTemplateElementTypes.ARGLIST)
             return new CroTemplateArgListImpl(node);
         if (type == CroTemplateElementTypes.DEREF_SMART)
             return new CroTemplateDerefSmartImpl(node);
+        if (type == Perl6OPPElementTypes.INFIX_APPLICATION)
+            return new CroTemplateInfixApplicationImpl(node);
+        if (type == CroTemplateElementTypes.INFIX)
+            return new CroTemplateInfixImpl(node);
         return null;
     }
 
