@@ -97,6 +97,7 @@
     <colorSettingsPage implementation="edument.perl6idea.cro.template.highlighter.CroTemplateColorSettingsPage"/>
     <lang.braceMatcher language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateBraceMatcher"/>
     <lang.quoteHandler language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateQuoteHandler"/>
+    <spellchecker.support language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateSpellCheckingStrategy"/>
 
     <intentionAction>
       <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
