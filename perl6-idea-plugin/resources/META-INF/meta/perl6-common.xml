@@ -98,6 +98,7 @@
     <lang.braceMatcher language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateBraceMatcher"/>
     <lang.quoteHandler language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateQuoteHandler"/>
     <spellchecker.support language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateSpellCheckingStrategy"/>
+    <lang.foldingBuilder language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateFoldingBuilder"/>
 
     <intentionAction>
       <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
