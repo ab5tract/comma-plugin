@@ -105,8 +105,9 @@ public class Perl6CommandLine {
         String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", "");
         command.add(Paths.get(prefix, "bin", "moar").toString());
         command.add("--debug-port=" + runConfiguration.getDebugPort());
-        if (runConfiguration.isStartSuspended())
-            command.add("--debug-suspend");
+        // Always start suspended so we have time to send breakpoints and event handlers.
+        // If the option is disabled, we'll resume right after that.
+        command.add("--debug-suspend");
         command.add("--libpath=" + Paths.get(prefix, "share", "nqp", "lib"));
         command.add("--libpath=" + Paths.get(prefix, "share", "perl6", "lib"));
         command.add("--libpath=" + Paths.get(prefix,"share", "perl6", "runtime"));
