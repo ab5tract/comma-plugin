@@ -64,8 +64,10 @@ public class Perl6DebugThread extends Thread {
             setEventHandler();
             if (runConfiguration.isStartSuspended())
                 mySession.positionReached(new Perl6SuspendContext(getThreads(), 0, mySession, this));
+            else
+                client.resume();
         } catch (CancellationException | InterruptedException | TimeoutException | ExecutionException e) {
-            // If the program has finished too early, do not prompt an odd message
+            // If the program didn't start properly, do not prompt an odd message
             // when we mis-interpret this situation
             if (mySession.isStopped()) {
                 return;
