@@ -96,6 +96,8 @@ public class CroTemplateParserDefinition implements ParserDefinition {
             return new CroTemplateInfixApplicationImpl(node);
         if (type == CroTemplateElementTypes.INFIX)
             return new CroTemplateInfixImpl(node);
+        if (type == CroTemplateElementTypes.PARENTHESIZED_EXPRESSION)
+            return new CroTemplateParenthesizedExpressionImpl(node);
         return null;
     }
 

@@ -22,6 +22,7 @@ public interface CroTemplateElementTypes {
     IElementType MACRO = new CroTemplateElementType("MACRO");
     IElementType NUM_LITERAL = new CroTemplateElementType("NUM_LITERAL");
     IElementType PARAMETER = new CroTemplateElementType("PARAMETER");
+    IElementType PARENTHESIZED_EXPRESSION = new CroTemplateElementType("PARENTHESIZED_EXPRESSION");
     IElementType RAT_LITERAL = new CroTemplateElementType("RAT_LITERAL");
     IElementType SIGNATURE = new CroTemplateElementType("SIGNATURE");
     IElementType STRING_LITERAL = new CroTemplateElementType("STRING_LITERAL");

@@ -534,10 +534,12 @@ grammar MAIN {
 
     token term {
         || <.single-quote-string>
-        || <.int>
-        || <.rat>
         || <.num>
+        || <.rat>
+        || <.int>
         || <.variable>
+        || <.deref-term>
+        || <.parenthesized-expression>
     }
 
     token single-quote-string {
@@ -589,6 +591,31 @@ grammar MAIN {
         <.end-token('VARIABLE_NAME')>
         [ <.dot> <.deref>? ]?
         <.end-element('VARIABLE_ACCESS')>
+    }
+
+    token deref-term {
+        <.start-element('TOPIC_ACCESS')>
+        <.dot>
+        <.deref>?
+        <.end-element('TOPIC_ACCESS')>
+    }
+
+    token parenthesized-expression {
+        <.start-element('PARENTHESIZED_EXPRESSION')>
+        <.start-token('OPEN_PAREN')>
+        '('
+        <.end-token('OPEN_PAREN')>
+        <.ws>
+        [
+            <.expression>
+            <.ws>
+            [
+                <.start-token('CLOSE_PAREN')>
+                ')'
+                <.end-token('CLOSE_PAREN')>
+            ]?
+        ]?
+        <.end-element('PARENTHESIZED_EXPRESSION')>
     }
 
     token deref {
