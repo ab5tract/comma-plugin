@@ -15,8 +15,8 @@ class CommaFactory is Documentable::DocPage::Factory {
         my $rest = $type-doc[1];
         with $rest {
           # $rest may contain Methods and Operators
-          my $methods = $rest.split(/^^ 'Operators' $$/)[0];
-          $rest = $rest.split(/^^ ['  method ' || '  routine ']/)>>.trim.grep(so *).List;
+          my $methods = $rest.split(/^^'Operators'$$/)[0];
+          $rest = $methods.split(/^^ ['  method ' || '  routine ']/)>>.trim.grep(so *).List;
       } else {
           $rest = [];
       }
