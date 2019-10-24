@@ -9,19 +9,18 @@ class CommaFactory is Documentable::DocPage::Factory {
     method generate-home-page() { %() }
     method generate-error-page() { %() }
     method generate-primary(Documentable::Primary $doc) {
-      my $text = pod2text($doc.pod);
-      my $type-doc = $text.split('Methods');
-      my $synopsis = $type-doc[0];
-#      my $rest = $type-doc[1];
-#      with $rest {
+        my $text = pod2text($doc.pod);
+        my $type-doc = $text.split('Methods');
+        my $synopsis = $type-doc[0];
+        my $rest = $type-doc[1];
+        with $rest {
           # $rest may contain Methods and Operators
-#          my $methods = $rest.split(/^^ 'Operators' $$/)[0];
-
-#          $rest = $rest.split(/^^ ['  method ' || '  routine ']/)>>.trim.grep(so *).List;
-#      } else {
-#          $rest = [];
-#      }
-      %( document => { :name($doc.name), desc => $synopsis } );
+          my $methods = $rest.split(/^^ 'Operators' $$/)[0];
+          $rest = $rest.split(/^^ ['  method ' || '  routine ']/)>>.trim.grep(so *).List;
+      } else {
+          $rest = [];
+      }
+      %( :name($doc.name), desc => $synopsis, methods => $rest );
     }
     method generate-index(Kind $kind) { %() }
     method generate-subindex(Kind $kind, $category) { %() }
@@ -41,14 +40,15 @@ my $factory = CommaFactory.new(:$config, :$registry);
 
 my @docs;
 
+say "Processing docs...";
+
 for $registry.documentables.kv -> $num, $doc {
-    @docs.push($factory.generate-primary($doc));
+    my $type = $factory.generate-primary($doc);
+    say "Processed $num: " ~ $type<name>;
+    @docs.push($type);
 }
 
-my %docs;
+say "Creating json...";
 
-for @docs.kv -> $num, $doc {
-    %docs<types>.push: $doc<document>;
-}
-
-spurt 'result.json', to-json %docs;
+spurt '../../resources/docs/core.json', to-json @docs, :!pretty;
+say "Finished! Wrote results to $*CWD.child('../../resources/docs/core.json').resolve()";
