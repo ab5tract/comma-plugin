@@ -172,6 +172,18 @@ grammar MAIN {
         <.iter-sigil>
         [
             <.deref>
+            <.hws>?
+            [
+                <.start-token('COLON')>
+                ':'
+                <.end-token('COLON')>
+                <.hws>?
+                [
+                    <.start-token('VARIABLE_NAME')>
+                    '$' <.identifier>?
+                    <.end-token('VARIABLE_NAME')>
+                ]?
+            ]?
             [
                 <.tgt>
                 <.sequence-element-group>

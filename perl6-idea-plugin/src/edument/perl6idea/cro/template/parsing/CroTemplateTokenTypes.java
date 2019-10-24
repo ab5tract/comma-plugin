@@ -12,6 +12,7 @@ public interface CroTemplateTokenTypes {
     IElementType CLOSE_BRACKET = new CroTemplateElementType("CLOSE_BRACKET");
     IElementType CLOSE_CURLY = new CroTemplateElementType("CLOSE_CURLY");
     IElementType CLOSE_PAREN = new CroTemplateElementType("CLOSE_PAREN");
+    IElementType COLON = new CroTemplateElementType("COLON");
     IElementType COMMA = new CroTemplateElementType("COMMA");
     IElementType DECL_OPENER = new CroTemplateElementType("DECL_OPENER");
     IElementType DOT = new CroTemplateElementType("DOT");
