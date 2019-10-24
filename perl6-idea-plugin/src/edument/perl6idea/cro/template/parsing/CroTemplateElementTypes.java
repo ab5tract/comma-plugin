@@ -11,6 +11,7 @@ public interface CroTemplateElementTypes {
     IElementType ARGLIST = new CroTemplateElementType("ARGLIST");
     IElementType BODY = new CroTemplateElementType("BODY");
     IElementType CALL = new CroTemplateElementType("CALL");
+    IElementType COMMENT = new CroTemplateElementType("COMMENT");
     IElementType CONDITION = new CroTemplateElementType("CONDITION");
     IElementType DEREF_ARRAY = new CroTemplateElementType("DEREF_ARRAY");
     IElementType DEREF_HASH = new CroTemplateElementType("DEREF_HASH");

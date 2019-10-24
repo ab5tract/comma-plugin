@@ -32,6 +32,7 @@ public class CroTemplateColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Array Indexer", CroTemplateHighlighter.BRACKETS),
             new AttributesDescriptor("Curly Braces", CroTemplateHighlighter.BRACES),
             new AttributesDescriptor("Comma", CroTemplateHighlighter.COMMA),
+            new AttributesDescriptor("Comment", CroTemplateHighlighter.COMMENT),
     };
 
     @Nullable

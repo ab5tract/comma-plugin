@@ -16,6 +16,7 @@ public class CroTemplateSyntaxHighlighter extends SyntaxHighlighterBase {
 
     static {
         ATTRIBUTES.put(CroTemplateTokenTypes.BAD_CHARACTER, CroTemplateHighlighter.BAD_CHARACTER);
+        ATTRIBUTES.put(CroTemplateTokenTypes.COMMENT, CroTemplateHighlighter.COMMENT);
 
         ATTRIBUTES.put(CroTemplateTokenTypes.LITERAL_TAG_OPEN, CroTemplateHighlighter.LITERAL_TAG);
         ATTRIBUTES.put(CroTemplateTokenTypes.LITERAL_TAG_CLOSE, CroTemplateHighlighter.LITERAL_TAG);

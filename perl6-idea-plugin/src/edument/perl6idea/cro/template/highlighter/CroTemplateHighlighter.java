@@ -107,4 +107,10 @@ public class CroTemplateHighlighter {
             COMMA_ID,
             DefaultLanguageHighlighterColors.COMMA
     );
+
+    static final String COMMENT_ID = "CRO_TEMPLATE_COMMENT";
+    public static final TextAttributesKey COMMENT = TextAttributesKey.createTextAttributesKey(
+            COMMENT_ID,
+            DefaultLanguageHighlighterColors.BLOCK_COMMENT
+    );
 }

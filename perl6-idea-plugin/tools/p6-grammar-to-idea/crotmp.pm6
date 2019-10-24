@@ -11,6 +11,7 @@ grammar MAIN {
     }
 
     token sequence-element {
+        || <.comment-tag>
         || <.sequence-element-literal-close-tag>
         || <.sequence-element-literal-open-tag>
         || <.sequence-element-literal-text>
@@ -21,6 +22,14 @@ grammar MAIN {
         <.start-element('TAG_SEQUENCE')>
         <.sequence-element>*
         <.end-element('TAG_SEQUENCE')>
+    }
+
+    token comment-tag {
+        <.start-element('COMMENT')>
+        <.start-token('COMMENT')>
+        '<!--' <-[>]>* '>'?
+        <.end-token('COMMENT')>
+        <.end-element('COMMENT')>
     }
 
     token sequence-element-literal-text {
