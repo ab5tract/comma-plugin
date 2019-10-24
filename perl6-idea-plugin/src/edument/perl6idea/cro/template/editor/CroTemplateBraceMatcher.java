@@ -14,7 +14,9 @@ public class CroTemplateBraceMatcher implements PairedBraceMatcher {
     public BracePair[] getPairs() {
         return new BracePair[] {
                 new BracePair(CroTemplateTokenTypes.OPEN_PAREN, CroTemplateTokenTypes.CLOSE_PAREN, false),
+                new BracePair(CroTemplateTokenTypes.OPEN_BRACKET, CroTemplateTokenTypes.CLOSE_BRACKET, false),
                 new BracePair(CroTemplateTokenTypes.OPEN_CURLY, CroTemplateTokenTypes.CLOSE_CURLY, false),
+                new BracePair(CroTemplateTokenTypes.OPEN_ANGLE, CroTemplateTokenTypes.CLOSE_ANGLE, false),
                 new BracePair(CroTemplateTokenTypes.TEMPLATE_TAG_OPEN, CroTemplateTokenTypes.TEMPLATE_TAG_CLOSE, false),
                 new BracePair(CroTemplateTokenTypes.LITERAL_TAG_OPEN, CroTemplateTokenTypes.LITERAL_TAG_CLOSE, false),
         };

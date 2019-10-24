@@ -16,7 +16,7 @@ public class CroTemplateParser implements PsiParser {
     }
 
     private boolean TOP_1_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.sequenceelement_33(builder))) {
+        if (!(this.sequenceelement_37(builder))) {
             return false;
         }
         return true;
@@ -73,17 +73,17 @@ public class CroTemplateParser implements PsiParser {
         } else {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         return true;
     }
 
     private boolean arglist_3_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.expression_15(builder))) {
+        if (!(this.expression_19(builder))) {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
@@ -97,7 +97,7 @@ public class CroTemplateParser implements PsiParser {
     }
 
     private boolean arglist_3_quant_3(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
@@ -132,7 +132,7 @@ public class CroTemplateParser implements PsiParser {
                 break;
             }
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker5;
@@ -157,7 +157,7 @@ public class CroTemplateParser implements PsiParser {
         } else {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker6;
@@ -183,10 +183,10 @@ public class CroTemplateParser implements PsiParser {
     }
 
     private boolean block_4_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.expression_15(builder))) {
+        if (!(this.expression_19(builder))) {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker1;
@@ -209,7 +209,7 @@ public class CroTemplateParser implements PsiParser {
         } else {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
@@ -291,7 +291,7 @@ public class CroTemplateParser implements PsiParser {
     }
 
     private boolean deref_10_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.dot_14(builder))) {
+        if (!(this.dot_18(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker1;
@@ -323,16 +323,272 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean derefitem_11(PsiBuilder builder) {
-        OPP opp;
-        opp = null;
-        if (!(this.derefitemsmart_12(builder))) {
+    private boolean derefitem_11_alt_1(PsiBuilder builder, OPP opp) {
+        if (!(this.derefitemhashliteral_14(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean derefitemsmart_12(PsiBuilder builder) {
+    private boolean derefitem_11_alt_2(PsiBuilder builder, OPP opp) {
+        if (!(this.derefitemhash_13(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean derefitem_11_alt_3(PsiBuilder builder, OPP opp) {
+        if (!(this.derefitemarray_12(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean derefitem_11_alt_4(PsiBuilder builder, OPP opp) {
+        if (!(this.derefitemsmart_16(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean derefitem_11_alt_5(PsiBuilder builder, OPP opp) {
+        if (!(this.derefitemmethod_15(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean derefitem_11(PsiBuilder builder) {
+        OPP opp;
+        opp = null;
+        PsiBuilder.Marker altMarker5;
+        altMarker5 = builder.mark();
+        if (this.derefitem_11_alt_5(builder, opp)) {
+            altMarker5.drop();
+        } else {
+            altMarker5.rollbackTo();
+            PsiBuilder.Marker altMarker4;;
+            altMarker4 = builder.mark();
+            if (this.derefitem_11_alt_4(builder, opp)) {
+                altMarker4.drop();
+            } else {
+                altMarker4.rollbackTo();
+                PsiBuilder.Marker altMarker3;;
+                altMarker3 = builder.mark();
+                if (this.derefitem_11_alt_3(builder, opp)) {
+                    altMarker3.drop();
+                } else {
+                    altMarker3.rollbackTo();
+                    PsiBuilder.Marker altMarker2;;
+                    altMarker2 = builder.mark();
+                    if (this.derefitem_11_alt_2(builder, opp)) {
+                        altMarker2.drop();
+                    } else {
+                        altMarker2.rollbackTo();
+                        PsiBuilder.Marker altMarker1;;
+                        altMarker1 = builder.mark();
+                        if (this.derefitem_11_alt_1(builder, opp)) {
+                            altMarker1.drop();
+                        } else {
+                            altMarker1.rollbackTo();
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean derefitemarray_12_quant_1(PsiBuilder builder, OPP opp) {
+        String tt2;
+        tt2 = builder.getTokenText();
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.CLOSE_BRACKET) && (tt2.equals("]"))) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean derefitemarray_12_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.expression_19(builder))) {
+            return false;
+        }
+        PsiBuilder.Marker quantMarker2;
+        quantMarker2 = builder.mark();
+        if (this.derefitemarray_12_quant_1(builder, opp)) {
+            quantMarker2.drop();
+        } else {
+            quantMarker2.rollbackTo();
+        }
+        return true;
+    }
+
+    private boolean derefitemarray_12(PsiBuilder builder) {
+        OPP opp;
+        opp = null;
+        PsiBuilder.Marker marker1;
+        marker1 = builder.mark();
+        String tt1;
+        tt1 = builder.getTokenText();
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.OPEN_BRACKET) && (tt1.equals("["))) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        PsiBuilder.Marker quantMarker3;
+        quantMarker3 = builder.mark();
+        if (this.derefitemarray_12_quant_2(builder, opp)) {
+            quantMarker3.drop();
+        } else {
+            quantMarker3.rollbackTo();
+        }
+        marker1.done(CroTemplateElementTypes.DEREF_ARRAY);
+        return true;
+    }
+
+    private boolean derefitemhash_13_quant_1(PsiBuilder builder, OPP opp) {
+        String tt2;
+        tt2 = builder.getTokenText();
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.CLOSE_CURLY) && (tt2.equals("}"))) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean derefitemhash_13_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.expression_19(builder))) {
+            return false;
+        }
+        PsiBuilder.Marker quantMarker2;
+        quantMarker2 = builder.mark();
+        if (this.derefitemhash_13_quant_1(builder, opp)) {
+            quantMarker2.drop();
+        } else {
+            quantMarker2.rollbackTo();
+        }
+        return true;
+    }
+
+    private boolean derefitemhash_13(PsiBuilder builder) {
+        OPP opp;
+        opp = null;
+        PsiBuilder.Marker marker1;
+        marker1 = builder.mark();
+        String tt1;
+        tt1 = builder.getTokenText();
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.OPEN_CURLY) && (tt1.equals("{"))) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        PsiBuilder.Marker quantMarker3;
+        quantMarker3 = builder.mark();
+        if (this.derefitemhash_13_quant_2(builder, opp)) {
+            quantMarker3.drop();
+        } else {
+            quantMarker3.rollbackTo();
+        }
+        marker1.done(CroTemplateElementTypes.DEREF_HASH);
+        return true;
+    }
+
+    private boolean derefitemhashliteral_14_quant_1(PsiBuilder builder, OPP opp) {
+        String tt2;
+        tt2 = builder.getTokenText();
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.CLOSE_ANGLE) && (tt2.equals(">"))) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean derefitemhashliteral_14_quant_2(PsiBuilder builder, OPP opp) {
+        if ((builder.getTokenType()) == CroTemplateTokenTypes.LITERAL_KEY) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        PsiBuilder.Marker quantMarker2;
+        quantMarker2 = builder.mark();
+        if (this.derefitemhashliteral_14_quant_1(builder, opp)) {
+            quantMarker2.drop();
+        } else {
+            quantMarker2.rollbackTo();
+        }
+        return true;
+    }
+
+    private boolean derefitemhashliteral_14(PsiBuilder builder) {
+        OPP opp;
+        opp = null;
+        PsiBuilder.Marker marker1;
+        marker1 = builder.mark();
+        String tt1;
+        tt1 = builder.getTokenText();
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.OPEN_ANGLE) && (tt1.equals("<"))) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        PsiBuilder.Marker quantMarker3;
+        quantMarker3 = builder.mark();
+        if (this.derefitemhashliteral_14_quant_2(builder, opp)) {
+            quantMarker3.drop();
+        } else {
+            quantMarker3.rollbackTo();
+        }
+        marker1.done(CroTemplateElementTypes.DEREF_HASH_LITERAL);
+        return true;
+    }
+
+    private boolean derefitemmethod_15_quant_1(PsiBuilder builder, OPP opp) {
+        String tt2;
+        tt2 = builder.getTokenText();
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.CLOSE_PAREN) && (tt2.equals(")"))) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean derefitemmethod_15(PsiBuilder builder) {
+        OPP opp;
+        opp = null;
+        PsiBuilder.Marker marker1;
+        marker1 = builder.mark();
+        if ((builder.getTokenType()) == CroTemplateTokenTypes.IDENTIFER) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        String tt1;
+        tt1 = builder.getTokenText();
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.OPEN_PAREN) && (tt1.equals("("))) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        if (!(this.ws_61(builder))) {
+            return false;
+        }
+        PsiBuilder.Marker quantMarker2;
+        quantMarker2 = builder.mark();
+        if (this.derefitemmethod_15_quant_1(builder, opp)) {
+            quantMarker2.drop();
+        } else {
+            quantMarker2.rollbackTo();
+        }
+        marker1.done(CroTemplateElementTypes.DEREF_METHOD);
+        return true;
+    }
+
+    private boolean derefitemsmart_16(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -346,24 +602,24 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean derefterm_13_quant_1(PsiBuilder builder, OPP opp) {
+    private boolean derefterm_17_quant_1(PsiBuilder builder, OPP opp) {
         if (!(this.deref_10(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean derefterm_13(PsiBuilder builder) {
+    private boolean derefterm_17(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.dot_14(builder))) {
+        if (!(this.dot_18(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.derefterm_13_quant_1(builder, opp)) {
+        if (this.derefterm_17_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
@@ -372,7 +628,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean dot_14(PsiBuilder builder) {
+    private boolean dot_18(PsiBuilder builder) {
         OPP opp;
         opp = null;
         String tt1;
@@ -385,32 +641,32 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean expression_15_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.ws_57(builder))) {
+    private boolean expression_19_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean expression_15_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.nextterm_28(builder))) {
+    private boolean expression_19_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.nextterm_32(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean expression_15_quant_3(PsiBuilder builder, OPP opp) {
-        if (!(this.ws_57(builder))) {
+    private boolean expression_19_quant_3(PsiBuilder builder, OPP opp) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         opp.startInfix();
-        if (!(this.infixish_21(builder))) {
+        if (!(this.infixish_25(builder))) {
             return false;
         }
         opp.endInfix();
         PsiBuilder.Marker quantMarker1;
         quantMarker1 = builder.mark();
-        if (this.expression_15_quant_1(builder, opp)) {
+        if (this.expression_19_quant_1(builder, opp)) {
             quantMarker1.drop();
         } else {
             quantMarker1.rollbackTo();
@@ -419,7 +675,7 @@ public class CroTemplateParser implements PsiParser {
         opp.endPrefixes();
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.expression_15_quant_2(builder, opp)) {
+        if (this.expression_19_quant_2(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
@@ -429,11 +685,11 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean expression_15_alt_4(PsiBuilder builder, OPP opp) {
+    private boolean expression_19_alt_4(PsiBuilder builder, OPP opp) {
         return true;
     }
 
-    private boolean expression_15_alt_5(PsiBuilder builder, OPP opp) {
+    private boolean expression_19_alt_5(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == CroTemplateTokenTypes.END_OF_EXPR) {
             builder.advanceLexer();
         } else {
@@ -442,13 +698,13 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean expression_15(PsiBuilder builder) {
+    private boolean expression_19(PsiBuilder builder) {
         OPP opp;
         opp = new OPP(builder);
         opp.startExpr();
         opp.startPrefixes();
         opp.endPrefixes();
-        if (!(this.term_53(builder))) {
+        if (!(this.term_57(builder))) {
             return false;
         }
         opp.startPostfixes();
@@ -456,7 +712,7 @@ public class CroTemplateParser implements PsiParser {
         while (true) {
             PsiBuilder.Marker quantMarker3;;
             quantMarker3 = builder.mark();
-            if (this.expression_15_quant_3(builder, opp)) {
+            if (this.expression_19_quant_3(builder, opp)) {
                 quantMarker3.drop();
             } else {
                 quantMarker3.rollbackTo();
@@ -466,13 +722,13 @@ public class CroTemplateParser implements PsiParser {
         opp.endExpr();
         PsiBuilder.Marker altMarker5;
         altMarker5 = builder.mark();
-        if (this.expression_15_alt_5(builder, opp)) {
+        if (this.expression_19_alt_5(builder, opp)) {
             altMarker5.drop();
         } else {
             altMarker5.rollbackTo();
             PsiBuilder.Marker altMarker4;;
             altMarker4 = builder.mark();
-            if (this.expression_15_alt_4(builder, opp)) {
+            if (this.expression_19_alt_4(builder, opp)) {
                 altMarker4.drop();
             } else {
                 altMarker4.rollbackTo();
@@ -482,7 +738,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean gt_16(PsiBuilder builder) {
+    private boolean gt_20(PsiBuilder builder) {
         OPP opp;
         opp = null;
         String tt1;
@@ -495,7 +751,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean hws_17(PsiBuilder builder) {
+    private boolean hws_21(PsiBuilder builder) {
         OPP opp;
         opp = null;
         if ((builder.getTokenType()) == CroTemplateTokenTypes.SYNTAX_WHITE_SPACE) {
@@ -506,30 +762,30 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean ident_18_alt_1(PsiBuilder builder, OPP opp) {
+    private boolean ident_22_alt_1(PsiBuilder builder, OPP opp) {
         return true;
     }
 
-    private boolean ident_18_alt_2(PsiBuilder builder, OPP opp) {
+    private boolean ident_22_alt_2(PsiBuilder builder, OPP opp) {
         return true;
     }
 
-    private boolean ident_18_quant_3(PsiBuilder builder, OPP opp) {
+    private boolean ident_22_quant_3(PsiBuilder builder, OPP opp) {
         return true;
     }
 
-    private boolean ident_18(PsiBuilder builder) {
+    private boolean ident_22(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker altMarker2;
         altMarker2 = builder.mark();
-        if (this.ident_18_alt_2(builder, opp)) {
+        if (this.ident_22_alt_2(builder, opp)) {
             altMarker2.drop();
         } else {
             altMarker2.rollbackTo();
             PsiBuilder.Marker altMarker1;;
             altMarker1 = builder.mark();
-            if (this.ident_18_alt_1(builder, opp)) {
+            if (this.ident_22_alt_1(builder, opp)) {
                 altMarker1.drop();
             } else {
                 altMarker1.rollbackTo();
@@ -539,7 +795,7 @@ public class CroTemplateParser implements PsiParser {
         while (true) {
             PsiBuilder.Marker quantMarker3;;
             quantMarker3 = builder.mark();
-            if (this.ident_18_quant_3(builder, opp)) {
+            if (this.ident_22_quant_3(builder, opp)) {
                 quantMarker3.drop();
             } else {
                 quantMarker3.rollbackTo();
@@ -549,23 +805,23 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean identifier_19_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.ident_18(builder))) {
+    private boolean identifier_23_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.ident_22(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean identifier_19(PsiBuilder builder) {
+    private boolean identifier_23(PsiBuilder builder) {
         OPP opp;
         opp = null;
-        if (!(this.ident_18(builder))) {
+        if (!(this.ident_22(builder))) {
             return false;
         }
         while (true) {
             PsiBuilder.Marker quantMarker1;;
             quantMarker1 = builder.mark();
-            if (this.identifier_19_quant_1(builder, opp)) {
+            if (this.identifier_23_quant_1(builder, opp)) {
                 quantMarker1.drop();
             } else {
                 quantMarker1.rollbackTo();
@@ -575,7 +831,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean infix_20(PsiBuilder builder) {
+    private boolean infix_24(PsiBuilder builder) {
         OPP opp;
         opp = null;
         if ((builder.getTokenType()) == CroTemplateTokenTypes.INFIX) {
@@ -586,19 +842,19 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean infixish_21(PsiBuilder builder) {
+    private boolean infixish_25(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.infix_20(builder))) {
+        if (!(this.infix_24(builder))) {
             return false;
         }
         marker1.done(CroTemplateElementTypes.INFIX);
         return true;
     }
 
-    private boolean int_22(PsiBuilder builder) {
+    private boolean int_26(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -612,7 +868,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean itersigil_23(PsiBuilder builder) {
+    private boolean itersigil_27(PsiBuilder builder) {
         OPP opp;
         opp = null;
         String tt1;
@@ -625,14 +881,14 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattribute_24_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.literaltagattributevalue_25(builder))) {
+    private boolean literaltagattribute_28_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.literaltagattributevalue_29(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean literaltagattribute_24_quant_2(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattribute_28_quant_2(PsiBuilder builder, OPP opp) {
         String tt1;
         tt1 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.ATTRIBUTE_EQUALS) && (tt1.equals("="))) {
@@ -640,12 +896,12 @@ public class CroTemplateParser implements PsiParser {
         } else {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.literaltagattribute_24_quant_1(builder, opp)) {
+        if (this.literaltagattribute_28_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
@@ -653,7 +909,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattribute_24(PsiBuilder builder) {
+    private boolean literaltagattribute_28(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -663,12 +919,12 @@ public class CroTemplateParser implements PsiParser {
         } else {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.literaltagattribute_24_quant_2(builder, opp)) {
+        if (this.literaltagattribute_28_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
@@ -677,7 +933,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_alt_1(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_alt_1(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == CroTemplateTokenTypes.ATTRIBUTE_VALUE) {
             builder.advanceLexer();
         } else {
@@ -686,7 +942,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_alt_2(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_alt_2(PsiBuilder builder, OPP opp) {
         String tt2;
         tt2 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.ATTRIBUTE_VALUE) && (tt2.equals("<"))) {
@@ -697,14 +953,14 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_alt_3(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltag_39(builder))) {
+    private boolean literaltagattributevalue_29_alt_3(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltag_43(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean literaltagattributevalue_25_alt_4(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_alt_4(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == CroTemplateTokenTypes.ATTRIBUTE_VALUE) {
             builder.advanceLexer();
         } else {
@@ -713,22 +969,22 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_quant_5(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_quant_5(PsiBuilder builder, OPP opp) {
         PsiBuilder.Marker altMarker4;
         altMarker4 = builder.mark();
-        if (this.literaltagattributevalue_25_alt_4(builder, opp)) {
+        if (this.literaltagattributevalue_29_alt_4(builder, opp)) {
             altMarker4.drop();
         } else {
             altMarker4.rollbackTo();
             PsiBuilder.Marker altMarker3;;
             altMarker3 = builder.mark();
-            if (this.literaltagattributevalue_25_alt_3(builder, opp)) {
+            if (this.literaltagattributevalue_29_alt_3(builder, opp)) {
                 altMarker3.drop();
             } else {
                 altMarker3.rollbackTo();
                 PsiBuilder.Marker altMarker2;;
                 altMarker2 = builder.mark();
-                if (this.literaltagattributevalue_25_alt_2(builder, opp)) {
+                if (this.literaltagattributevalue_29_alt_2(builder, opp)) {
                     altMarker2.drop();
                 } else {
                     altMarker2.rollbackTo();
@@ -739,7 +995,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_quant_6(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_quant_6(PsiBuilder builder, OPP opp) {
         String tt3;
         tt3 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.ATTRIBUTE_QUOTE) && (tt3.equals("'"))) {
@@ -750,7 +1006,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_alt_7(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_alt_7(PsiBuilder builder, OPP opp) {
         String tt1;
         tt1 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.ATTRIBUTE_QUOTE) && (tt1.equals("'"))) {
@@ -761,7 +1017,7 @@ public class CroTemplateParser implements PsiParser {
         while (true) {
             PsiBuilder.Marker quantMarker5;;
             quantMarker5 = builder.mark();
-            if (this.literaltagattributevalue_25_quant_5(builder, opp)) {
+            if (this.literaltagattributevalue_29_quant_5(builder, opp)) {
                 quantMarker5.drop();
             } else {
                 quantMarker5.rollbackTo();
@@ -770,7 +1026,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker6;
         quantMarker6 = builder.mark();
-        if (this.literaltagattributevalue_25_quant_6(builder, opp)) {
+        if (this.literaltagattributevalue_29_quant_6(builder, opp)) {
             quantMarker6.drop();
         } else {
             quantMarker6.rollbackTo();
@@ -778,7 +1034,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_alt_8(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_alt_8(PsiBuilder builder, OPP opp) {
         String tt5;
         tt5 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.ATTRIBUTE_VALUE) && (tt5.equals("<"))) {
@@ -789,14 +1045,14 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_alt_9(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltag_39(builder))) {
+    private boolean literaltagattributevalue_29_alt_9(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltag_43(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean literaltagattributevalue_25_alt_10(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_alt_10(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == CroTemplateTokenTypes.ATTRIBUTE_VALUE) {
             builder.advanceLexer();
         } else {
@@ -805,22 +1061,22 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_quant_11(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_quant_11(PsiBuilder builder, OPP opp) {
         PsiBuilder.Marker altMarker10;
         altMarker10 = builder.mark();
-        if (this.literaltagattributevalue_25_alt_10(builder, opp)) {
+        if (this.literaltagattributevalue_29_alt_10(builder, opp)) {
             altMarker10.drop();
         } else {
             altMarker10.rollbackTo();
             PsiBuilder.Marker altMarker9;;
             altMarker9 = builder.mark();
-            if (this.literaltagattributevalue_25_alt_9(builder, opp)) {
+            if (this.literaltagattributevalue_29_alt_9(builder, opp)) {
                 altMarker9.drop();
             } else {
                 altMarker9.rollbackTo();
                 PsiBuilder.Marker altMarker8;;
                 altMarker8 = builder.mark();
-                if (this.literaltagattributevalue_25_alt_8(builder, opp)) {
+                if (this.literaltagattributevalue_29_alt_8(builder, opp)) {
                     altMarker8.drop();
                 } else {
                     altMarker8.rollbackTo();
@@ -831,7 +1087,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_quant_12(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_quant_12(PsiBuilder builder, OPP opp) {
         String tt6;
         tt6 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.ATTRIBUTE_QUOTE) && (tt6.equals("\""))) {
@@ -842,7 +1098,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25_alt_13(PsiBuilder builder, OPP opp) {
+    private boolean literaltagattributevalue_29_alt_13(PsiBuilder builder, OPP opp) {
         String tt4;
         tt4 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.ATTRIBUTE_QUOTE) && (tt4.equals("\""))) {
@@ -853,7 +1109,7 @@ public class CroTemplateParser implements PsiParser {
         while (true) {
             PsiBuilder.Marker quantMarker11;;
             quantMarker11 = builder.mark();
-            if (this.literaltagattributevalue_25_quant_11(builder, opp)) {
+            if (this.literaltagattributevalue_29_quant_11(builder, opp)) {
                 quantMarker11.drop();
             } else {
                 quantMarker11.rollbackTo();
@@ -862,7 +1118,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker12;
         quantMarker12 = builder.mark();
-        if (this.literaltagattributevalue_25_quant_12(builder, opp)) {
+        if (this.literaltagattributevalue_29_quant_12(builder, opp)) {
             quantMarker12.drop();
         } else {
             quantMarker12.rollbackTo();
@@ -870,24 +1126,24 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagattributevalue_25(PsiBuilder builder) {
+    private boolean literaltagattributevalue_29(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker altMarker13;
         altMarker13 = builder.mark();
-        if (this.literaltagattributevalue_25_alt_13(builder, opp)) {
+        if (this.literaltagattributevalue_29_alt_13(builder, opp)) {
             altMarker13.drop();
         } else {
             altMarker13.rollbackTo();
             PsiBuilder.Marker altMarker7;;
             altMarker7 = builder.mark();
-            if (this.literaltagattributevalue_25_alt_7(builder, opp)) {
+            if (this.literaltagattributevalue_29_alt_7(builder, opp)) {
                 altMarker7.drop();
             } else {
                 altMarker7.rollbackTo();
                 PsiBuilder.Marker altMarker1;;
                 altMarker1 = builder.mark();
-                if (this.literaltagattributevalue_25_alt_1(builder, opp)) {
+                if (this.literaltagattributevalue_29_alt_1(builder, opp)) {
                     altMarker1.drop();
                 } else {
                     altMarker1.rollbackTo();
@@ -898,7 +1154,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean literaltagname_26(PsiBuilder builder) {
+    private boolean literaltagname_30(PsiBuilder builder) {
         OPP opp;
         opp = null;
         if ((builder.getTokenType()) == CroTemplateTokenTypes.LITERAL_TAG_NAME) {
@@ -909,7 +1165,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean lt_27(PsiBuilder builder) {
+    private boolean lt_31(PsiBuilder builder) {
         OPP opp;
         opp = null;
         String tt1;
@@ -922,16 +1178,16 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean nextterm_28(PsiBuilder builder) {
+    private boolean nextterm_32(PsiBuilder builder) {
         OPP opp;
         opp = null;
-        if (!(this.term_53(builder))) {
+        if (!(this.term_57(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean num_29(PsiBuilder builder) {
+    private boolean num_33(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -945,7 +1201,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean parameter_30(PsiBuilder builder) {
+    private boolean parameter_34(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -959,7 +1215,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean parenthesizedexpression_31_quant_1(PsiBuilder builder, OPP opp) {
+    private boolean parenthesizedexpression_35_quant_1(PsiBuilder builder, OPP opp) {
         String tt2;
         tt2 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.CLOSE_PAREN) && (tt2.equals(")"))) {
@@ -970,16 +1226,16 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean parenthesizedexpression_31_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.expression_15(builder))) {
+    private boolean parenthesizedexpression_35_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.expression_19(builder))) {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.parenthesizedexpression_31_quant_1(builder, opp)) {
+        if (this.parenthesizedexpression_35_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
@@ -987,7 +1243,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean parenthesizedexpression_31(PsiBuilder builder) {
+    private boolean parenthesizedexpression_35(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -999,12 +1255,12 @@ public class CroTemplateParser implements PsiParser {
         } else {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.parenthesizedexpression_31_quant_2(builder, opp)) {
+        if (this.parenthesizedexpression_35_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
@@ -1013,7 +1269,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean rat_32(PsiBuilder builder) {
+    private boolean rat_36(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -1027,58 +1283,58 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sequenceelement_33_alt_1(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltag_39(builder))) {
+    private boolean sequenceelement_37_alt_1(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltag_43(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sequenceelement_33_alt_2(PsiBuilder builder, OPP opp) {
-        if (!(this.sequenceelementliteraltext_37(builder))) {
+    private boolean sequenceelement_37_alt_2(PsiBuilder builder, OPP opp) {
+        if (!(this.sequenceelementliteraltext_41(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sequenceelement_33_alt_3(PsiBuilder builder, OPP opp) {
-        if (!(this.sequenceelementliteralopentag_36(builder))) {
+    private boolean sequenceelement_37_alt_3(PsiBuilder builder, OPP opp) {
+        if (!(this.sequenceelementliteralopentag_40(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sequenceelement_33_alt_4(PsiBuilder builder, OPP opp) {
-        if (!(this.sequenceelementliteralclosetag_35(builder))) {
+    private boolean sequenceelement_37_alt_4(PsiBuilder builder, OPP opp) {
+        if (!(this.sequenceelementliteralclosetag_39(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sequenceelement_33(PsiBuilder builder) {
+    private boolean sequenceelement_37(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker altMarker4;
         altMarker4 = builder.mark();
-        if (this.sequenceelement_33_alt_4(builder, opp)) {
+        if (this.sequenceelement_37_alt_4(builder, opp)) {
             altMarker4.drop();
         } else {
             altMarker4.rollbackTo();
             PsiBuilder.Marker altMarker3;;
             altMarker3 = builder.mark();
-            if (this.sequenceelement_33_alt_3(builder, opp)) {
+            if (this.sequenceelement_37_alt_3(builder, opp)) {
                 altMarker3.drop();
             } else {
                 altMarker3.rollbackTo();
                 PsiBuilder.Marker altMarker2;;
                 altMarker2 = builder.mark();
-                if (this.sequenceelement_33_alt_2(builder, opp)) {
+                if (this.sequenceelement_37_alt_2(builder, opp)) {
                     altMarker2.drop();
                 } else {
                     altMarker2.rollbackTo();
                     PsiBuilder.Marker altMarker1;;
                     altMarker1 = builder.mark();
-                    if (this.sequenceelement_33_alt_1(builder, opp)) {
+                    if (this.sequenceelement_37_alt_1(builder, opp)) {
                         altMarker1.drop();
                     } else {
                         altMarker1.rollbackTo();
@@ -1090,14 +1346,14 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sequenceelementgroup_34_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.sequenceelement_33(builder))) {
+    private boolean sequenceelementgroup_38_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.sequenceelement_37(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sequenceelementgroup_34(PsiBuilder builder) {
+    private boolean sequenceelementgroup_38(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -1105,7 +1361,7 @@ public class CroTemplateParser implements PsiParser {
         while (true) {
             PsiBuilder.Marker quantMarker2;;
             quantMarker2 = builder.mark();
-            if (this.sequenceelementgroup_34_quant_1(builder, opp)) {
+            if (this.sequenceelementgroup_38_quant_1(builder, opp)) {
                 quantMarker2.drop();
             } else {
                 quantMarker2.rollbackTo();
@@ -1116,23 +1372,23 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sequenceelementliteralclosetag_35_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.gt_16(builder))) {
+    private boolean sequenceelementliteralclosetag_39_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.gt_20(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sequenceelementliteralclosetag_35_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.ws_57(builder))) {
+    private boolean sequenceelementliteralclosetag_39_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
-        if (!(this.literaltagname_26(builder))) {
+        if (!(this.literaltagname_30(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.sequenceelementliteralclosetag_35_quant_1(builder, opp)) {
+        if (this.sequenceelementliteralclosetag_39_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
@@ -1140,12 +1396,12 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sequenceelementliteralclosetag_35(PsiBuilder builder) {
+    private boolean sequenceelementliteralclosetag_39(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.lt_27(builder))) {
+        if (!(this.lt_31(builder))) {
             return false;
         }
         if (!(this.close_7(builder))) {
@@ -1153,7 +1409,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sequenceelementliteralclosetag_35_quant_2(builder, opp)) {
+        if (this.sequenceelementliteralclosetag_39_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
@@ -1162,36 +1418,36 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sequenceelementliteralopentag_36_alt_1(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltag_39(builder))) {
+    private boolean sequenceelementliteralopentag_40_alt_1(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltag_43(builder))) {
             return false;
         }
-        if (!(this.ws_57(builder))) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean sequenceelementliteralopentag_36_alt_2(PsiBuilder builder, OPP opp) {
-        if (!(this.literaltagattribute_24(builder))) {
-            return false;
-        }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sequenceelementliteralopentag_36_quant_3(PsiBuilder builder, OPP opp) {
+    private boolean sequenceelementliteralopentag_40_alt_2(PsiBuilder builder, OPP opp) {
+        if (!(this.literaltagattribute_28(builder))) {
+            return false;
+        }
+        if (!(this.ws_61(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean sequenceelementliteralopentag_40_quant_3(PsiBuilder builder, OPP opp) {
         PsiBuilder.Marker altMarker3;
         altMarker3 = builder.mark();
-        if (this.sequenceelementliteralopentag_36_alt_2(builder, opp)) {
+        if (this.sequenceelementliteralopentag_40_alt_2(builder, opp)) {
             altMarker3.drop();
         } else {
             altMarker3.rollbackTo();
             PsiBuilder.Marker altMarker2;;
             altMarker2 = builder.mark();
-            if (this.sequenceelementliteralopentag_36_alt_1(builder, opp)) {
+            if (this.sequenceelementliteralopentag_40_alt_1(builder, opp)) {
                 altMarker2.drop();
             } else {
                 altMarker2.rollbackTo();
@@ -1201,24 +1457,24 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sequenceelementliteralopentag_36_quant_4(PsiBuilder builder, OPP opp) {
-        if (!(this.gt_16(builder))) {
+    private boolean sequenceelementliteralopentag_40_quant_4(PsiBuilder builder, OPP opp) {
+        if (!(this.gt_20(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sequenceelementliteralopentag_36_quant_5(PsiBuilder builder, OPP opp) {
-        if (!(this.literaltagname_26(builder))) {
+    private boolean sequenceelementliteralopentag_40_quant_5(PsiBuilder builder, OPP opp) {
+        if (!(this.literaltagname_30(builder))) {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         while (true) {
             PsiBuilder.Marker quantMarker4;;
             quantMarker4 = builder.mark();
-            if (this.sequenceelementliteralopentag_36_quant_3(builder, opp)) {
+            if (this.sequenceelementliteralopentag_40_quant_3(builder, opp)) {
                 quantMarker4.drop();
             } else {
                 quantMarker4.rollbackTo();
@@ -1227,7 +1483,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker5;
         quantMarker5 = builder.mark();
-        if (this.sequenceelementliteralopentag_36_quant_4(builder, opp)) {
+        if (this.sequenceelementliteralopentag_40_quant_4(builder, opp)) {
             quantMarker5.drop();
         } else {
             quantMarker5.rollbackTo();
@@ -1235,17 +1491,17 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sequenceelementliteralopentag_36(PsiBuilder builder) {
+    private boolean sequenceelementliteralopentag_40(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.lt_27(builder))) {
+        if (!(this.lt_31(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker6;
         quantMarker6 = builder.mark();
-        if (this.sequenceelementliteralopentag_36_quant_5(builder, opp)) {
+        if (this.sequenceelementliteralopentag_40_quant_5(builder, opp)) {
             quantMarker6.drop();
         } else {
             quantMarker6.rollbackTo();
@@ -1254,7 +1510,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sequenceelementliteraltext_37(PsiBuilder builder) {
+    private boolean sequenceelementliteraltext_41(PsiBuilder builder) {
         OPP opp;
         opp = null;
         if ((builder.getTokenType()) == CroTemplateTokenTypes.LITERAL_TEXT) {
@@ -1265,26 +1521,26 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigil_38_alt_1(PsiBuilder builder, OPP opp) {
+    private boolean sigil_42_alt_1(PsiBuilder builder, OPP opp) {
         return true;
     }
 
-    private boolean sigil_38_alt_2(PsiBuilder builder, OPP opp) {
+    private boolean sigil_42_alt_2(PsiBuilder builder, OPP opp) {
         return true;
     }
 
-    private boolean sigil_38(PsiBuilder builder) {
+    private boolean sigil_42(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker altMarker2;
         altMarker2 = builder.mark();
-        if (this.sigil_38_alt_2(builder, opp)) {
+        if (this.sigil_42_alt_2(builder, opp)) {
             altMarker2.drop();
         } else {
             altMarker2.rollbackTo();
             PsiBuilder.Marker altMarker1;;
             altMarker1 = builder.mark();
-            if (this.sigil_38_alt_1(builder, opp)) {
+            if (this.sigil_42_alt_1(builder, opp)) {
                 altMarker1.drop();
             } else {
                 altMarker1.rollbackTo();
@@ -1294,136 +1550,136 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltag_39_alt_1(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltaguse_48(builder))) {
+    private boolean sigiltag_43_alt_1(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltaguse_52(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltag_39_alt_2(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltagapply_40(builder))) {
+    private boolean sigiltag_43_alt_2(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltagapply_44(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltag_39_alt_3(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltagbody_41(builder))) {
+    private boolean sigiltag_43_alt_3(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltagbody_45(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltag_39_alt_4(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltagmacro_45(builder))) {
+    private boolean sigiltag_43_alt_4(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltagmacro_49(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltag_39_alt_5(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltagsub_46(builder))) {
+    private boolean sigiltag_43_alt_5(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltagsub_50(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltag_39_alt_6(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltagcall_42(builder))) {
+    private boolean sigiltag_43_alt_6(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltagcall_46(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltag_39_alt_7(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltagcondition_43(builder))) {
+    private boolean sigiltag_43_alt_7(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltagcondition_47(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltag_39_alt_8(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltagiteration_44(builder))) {
+    private boolean sigiltag_43_alt_8(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltagiteration_48(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltag_39_alt_9(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltagvariable_49(builder))) {
+    private boolean sigiltag_43_alt_9(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltagvariable_53(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltag_39_alt_10(PsiBuilder builder, OPP opp) {
-        if (!(this.sigiltagtopic_47(builder))) {
+    private boolean sigiltag_43_alt_10(PsiBuilder builder, OPP opp) {
+        if (!(this.sigiltagtopic_51(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltag_39(PsiBuilder builder) {
+    private boolean sigiltag_43(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker altMarker10;
         altMarker10 = builder.mark();
-        if (this.sigiltag_39_alt_10(builder, opp)) {
+        if (this.sigiltag_43_alt_10(builder, opp)) {
             altMarker10.drop();
         } else {
             altMarker10.rollbackTo();
             PsiBuilder.Marker altMarker9;;
             altMarker9 = builder.mark();
-            if (this.sigiltag_39_alt_9(builder, opp)) {
+            if (this.sigiltag_43_alt_9(builder, opp)) {
                 altMarker9.drop();
             } else {
                 altMarker9.rollbackTo();
                 PsiBuilder.Marker altMarker8;;
                 altMarker8 = builder.mark();
-                if (this.sigiltag_39_alt_8(builder, opp)) {
+                if (this.sigiltag_43_alt_8(builder, opp)) {
                     altMarker8.drop();
                 } else {
                     altMarker8.rollbackTo();
                     PsiBuilder.Marker altMarker7;;
                     altMarker7 = builder.mark();
-                    if (this.sigiltag_39_alt_7(builder, opp)) {
+                    if (this.sigiltag_43_alt_7(builder, opp)) {
                         altMarker7.drop();
                     } else {
                         altMarker7.rollbackTo();
                         PsiBuilder.Marker altMarker6;;
                         altMarker6 = builder.mark();
-                        if (this.sigiltag_39_alt_6(builder, opp)) {
+                        if (this.sigiltag_43_alt_6(builder, opp)) {
                             altMarker6.drop();
                         } else {
                             altMarker6.rollbackTo();
                             PsiBuilder.Marker altMarker5;;
                             altMarker5 = builder.mark();
-                            if (this.sigiltag_39_alt_5(builder, opp)) {
+                            if (this.sigiltag_43_alt_5(builder, opp)) {
                                 altMarker5.drop();
                             } else {
                                 altMarker5.rollbackTo();
                                 PsiBuilder.Marker altMarker4;;
                                 altMarker4 = builder.mark();
-                                if (this.sigiltag_39_alt_4(builder, opp)) {
+                                if (this.sigiltag_43_alt_4(builder, opp)) {
                                     altMarker4.drop();
                                 } else {
                                     altMarker4.rollbackTo();
                                     PsiBuilder.Marker altMarker3;;
                                     altMarker3 = builder.mark();
-                                    if (this.sigiltag_39_alt_3(builder, opp)) {
+                                    if (this.sigiltag_43_alt_3(builder, opp)) {
                                         altMarker3.drop();
                                     } else {
                                         altMarker3.rollbackTo();
                                         PsiBuilder.Marker altMarker2;;
                                         altMarker2 = builder.mark();
-                                        if (this.sigiltag_39_alt_2(builder, opp)) {
+                                        if (this.sigiltag_43_alt_2(builder, opp)) {
                                             altMarker2.drop();
                                         } else {
                                             altMarker2.rollbackTo();
                                             PsiBuilder.Marker altMarker1;;
                                             altMarker1 = builder.mark();
-                                            if (this.sigiltag_39_alt_1(builder, opp)) {
+                                            if (this.sigiltag_43_alt_1(builder, opp)) {
                                                 altMarker1.drop();
                                             } else {
                                                 altMarker1.rollbackTo();
@@ -1441,39 +1697,39 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagapply_40_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagapply_44_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagapply_40_quant_2(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagapply_44_quant_2(PsiBuilder builder, OPP opp) {
         if (!(this.arglist_3(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagapply_40_quant_3(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagapply_44_quant_3(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagapply_40_quant_4(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagapply_44_quant_4(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagapply_40_quant_5(PsiBuilder builder, OPP opp) {
-        if (!(this.tlt_55(builder))) {
+    private boolean sigiltagapply_44_quant_5(PsiBuilder builder, OPP opp) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
-        if (!(this.tclose_52(builder))) {
+        if (!(this.tclose_56(builder))) {
             return false;
         }
         if (!(this.applysigil_2(builder))) {
@@ -1481,7 +1737,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker5;
         quantMarker5 = builder.mark();
-        if (this.sigiltagapply_40_quant_4(builder, opp)) {
+        if (this.sigiltagapply_44_quant_4(builder, opp)) {
             quantMarker5.drop();
         } else {
             quantMarker5.rollbackTo();
@@ -1489,16 +1745,16 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagapply_40_quant_6(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagapply_44_quant_6(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
-        if (!(this.sequenceelementgroup_34(builder))) {
+        if (!(this.sequenceelementgroup_38(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker6;
         quantMarker6 = builder.mark();
-        if (this.sigiltagapply_40_quant_5(builder, opp)) {
+        if (this.sigiltagapply_44_quant_5(builder, opp)) {
             quantMarker6.drop();
         } else {
             quantMarker6.rollbackTo();
@@ -1506,7 +1762,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagapply_40_quant_7(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagapply_44_quant_7(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == CroTemplateTokenTypes.MACRO_NAME) {
             builder.advanceLexer();
         } else {
@@ -1514,28 +1770,28 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.sigiltagapply_40_quant_1(builder, opp)) {
+        if (this.sigiltagapply_44_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sigiltagapply_40_quant_2(builder, opp)) {
+        if (this.sigiltagapply_44_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
         }
         PsiBuilder.Marker quantMarker4;
         quantMarker4 = builder.mark();
-        if (this.sigiltagapply_40_quant_3(builder, opp)) {
+        if (this.sigiltagapply_44_quant_3(builder, opp)) {
             quantMarker4.drop();
         } else {
             quantMarker4.rollbackTo();
         }
         PsiBuilder.Marker quantMarker7;
         quantMarker7 = builder.mark();
-        if (this.sigiltagapply_40_quant_6(builder, opp)) {
+        if (this.sigiltagapply_44_quant_6(builder, opp)) {
             quantMarker7.drop();
         } else {
             quantMarker7.rollbackTo();
@@ -1543,12 +1799,12 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagapply_40(PsiBuilder builder) {
+    private boolean sigiltagapply_44(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.tlt_55(builder))) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
         if (!(this.applysigil_2(builder))) {
@@ -1556,7 +1812,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker8;
         quantMarker8 = builder.mark();
-        if (this.sigiltagapply_40_quant_7(builder, opp)) {
+        if (this.sigiltagapply_44_quant_7(builder, opp)) {
             quantMarker8.drop();
         } else {
             quantMarker8.rollbackTo();
@@ -1565,33 +1821,33 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagbody_41_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagbody_45_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagbody_41_quant_2(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagbody_45_quant_2(PsiBuilder builder, OPP opp) {
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.sigiltagbody_41_quant_1(builder, opp)) {
+        if (this.sigiltagbody_45_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
         }
-        if (!(this.tgt_54(builder))) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagbody_41(PsiBuilder builder) {
+    private boolean sigiltagbody_45(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.tlt_55(builder))) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
         if (!(this.declsigil_9(builder))) {
@@ -1606,7 +1862,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sigiltagbody_41_quant_2(builder, opp)) {
+        if (this.sigiltagbody_45_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
@@ -1615,35 +1871,35 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagcall_42_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagcall_46_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagcall_42_quant_2(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagcall_46_quant_2(PsiBuilder builder, OPP opp) {
         if (!(this.arglist_3(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagcall_42_quant_3(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagcall_46_quant_3(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagcall_42_quant_4(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagcall_46_quant_4(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagcall_42_quant_5(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagcall_46_quant_5(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == CroTemplateTokenTypes.SUB_NAME) {
             builder.advanceLexer();
         } else {
@@ -1651,28 +1907,28 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.sigiltagcall_42_quant_1(builder, opp)) {
+        if (this.sigiltagcall_46_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sigiltagcall_42_quant_2(builder, opp)) {
+        if (this.sigiltagcall_46_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
         }
         PsiBuilder.Marker quantMarker4;
         quantMarker4 = builder.mark();
-        if (this.sigiltagcall_42_quant_3(builder, opp)) {
+        if (this.sigiltagcall_46_quant_3(builder, opp)) {
             quantMarker4.drop();
         } else {
             quantMarker4.rollbackTo();
         }
         PsiBuilder.Marker quantMarker5;
         quantMarker5 = builder.mark();
-        if (this.sigiltagcall_42_quant_4(builder, opp)) {
+        if (this.sigiltagcall_46_quant_4(builder, opp)) {
             quantMarker5.drop();
         } else {
             quantMarker5.rollbackTo();
@@ -1680,12 +1936,12 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagcall_42(PsiBuilder builder) {
+    private boolean sigiltagcall_46(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.tlt_55(builder))) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
         if (!(this.callsigil_6(builder))) {
@@ -1693,7 +1949,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker6;
         quantMarker6 = builder.mark();
-        if (this.sigiltagcall_42_quant_5(builder, opp)) {
+        if (this.sigiltagcall_46_quant_5(builder, opp)) {
             quantMarker6.drop();
         } else {
             quantMarker6.rollbackTo();
@@ -1702,27 +1958,27 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagcondition_43_alt_1(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagcondition_47_alt_1(PsiBuilder builder, OPP opp) {
         if (!(this.block_4(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagcondition_43_quant_2(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagcondition_47_quant_2(PsiBuilder builder, OPP opp) {
         if (!(this.deref_10(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagcondition_43_alt_3(PsiBuilder builder, OPP opp) {
-        if (!(this.dot_14(builder))) {
+    private boolean sigiltagcondition_47_alt_3(PsiBuilder builder, OPP opp) {
+        if (!(this.dot_18(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sigiltagcondition_43_quant_2(builder, opp)) {
+        if (this.sigiltagcondition_47_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
@@ -1730,18 +1986,18 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagcondition_43_quant_4(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagcondition_47_quant_4(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagcondition_43_quant_5(PsiBuilder builder, OPP opp) {
-        if (!(this.tlt_55(builder))) {
+    private boolean sigiltagcondition_47_quant_5(PsiBuilder builder, OPP opp) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
-        if (!(this.tclose_52(builder))) {
+        if (!(this.tclose_56(builder))) {
             return false;
         }
         if (!(this.condsigil_8(builder))) {
@@ -1749,7 +2005,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker5;
         quantMarker5 = builder.mark();
-        if (this.sigiltagcondition_43_quant_4(builder, opp)) {
+        if (this.sigiltagcondition_47_quant_4(builder, opp)) {
             quantMarker5.drop();
         } else {
             quantMarker5.rollbackTo();
@@ -1757,16 +2013,16 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagcondition_43_quant_6(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagcondition_47_quant_6(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
-        if (!(this.sequenceelementgroup_34(builder))) {
+        if (!(this.sequenceelementgroup_38(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker6;
         quantMarker6 = builder.mark();
-        if (this.sigiltagcondition_43_quant_5(builder, opp)) {
+        if (this.sigiltagcondition_47_quant_5(builder, opp)) {
             quantMarker6.drop();
         } else {
             quantMarker6.rollbackTo();
@@ -1774,16 +2030,16 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagcondition_43_quant_7(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagcondition_47_quant_7(PsiBuilder builder, OPP opp) {
         PsiBuilder.Marker altMarker4;
         altMarker4 = builder.mark();
-        if (this.sigiltagcondition_43_alt_3(builder, opp)) {
+        if (this.sigiltagcondition_47_alt_3(builder, opp)) {
             altMarker4.drop();
         } else {
             altMarker4.rollbackTo();
             PsiBuilder.Marker altMarker2;;
             altMarker2 = builder.mark();
-            if (this.sigiltagcondition_43_alt_1(builder, opp)) {
+            if (this.sigiltagcondition_47_alt_1(builder, opp)) {
                 altMarker2.drop();
             } else {
                 altMarker2.rollbackTo();
@@ -1792,7 +2048,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker7;
         quantMarker7 = builder.mark();
-        if (this.sigiltagcondition_43_quant_6(builder, opp)) {
+        if (this.sigiltagcondition_47_quant_6(builder, opp)) {
             quantMarker7.drop();
         } else {
             quantMarker7.rollbackTo();
@@ -1800,12 +2056,12 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagcondition_43(PsiBuilder builder) {
+    private boolean sigiltagcondition_47(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.tlt_55(builder))) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
         if (!(this.condsigil_8(builder))) {
@@ -1813,7 +2069,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker8;
         quantMarker8 = builder.mark();
-        if (this.sigiltagcondition_43_quant_7(builder, opp)) {
+        if (this.sigiltagcondition_47_quant_7(builder, opp)) {
             quantMarker8.drop();
         } else {
             quantMarker8.rollbackTo();
@@ -1822,26 +2078,26 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagiteration_44_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagiteration_48_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagiteration_44_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.tlt_55(builder))) {
+    private boolean sigiltagiteration_48_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
-        if (!(this.tclose_52(builder))) {
+        if (!(this.tclose_56(builder))) {
             return false;
         }
-        if (!(this.itersigil_23(builder))) {
+        if (!(this.itersigil_27(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.sigiltagiteration_44_quant_1(builder, opp)) {
+        if (this.sigiltagiteration_48_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
@@ -1849,16 +2105,16 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagiteration_44_quant_3(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagiteration_48_quant_3(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
-        if (!(this.sequenceelementgroup_34(builder))) {
+        if (!(this.sequenceelementgroup_38(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sigiltagiteration_44_quant_2(builder, opp)) {
+        if (this.sigiltagiteration_48_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
@@ -1866,13 +2122,13 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagiteration_44_quant_4(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagiteration_48_quant_4(PsiBuilder builder, OPP opp) {
         if (!(this.deref_10(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker4;
         quantMarker4 = builder.mark();
-        if (this.sigiltagiteration_44_quant_3(builder, opp)) {
+        if (this.sigiltagiteration_48_quant_3(builder, opp)) {
             quantMarker4.drop();
         } else {
             quantMarker4.rollbackTo();
@@ -1880,20 +2136,20 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagiteration_44(PsiBuilder builder) {
+    private boolean sigiltagiteration_48(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.tlt_55(builder))) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
-        if (!(this.itersigil_23(builder))) {
+        if (!(this.itersigil_27(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker5;
         quantMarker5 = builder.mark();
-        if (this.sigiltagiteration_44_quant_4(builder, opp)) {
+        if (this.sigiltagiteration_48_quant_4(builder, opp)) {
             quantMarker5.drop();
         } else {
             quantMarker5.rollbackTo();
@@ -1902,28 +2158,28 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagmacro_45_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagmacro_49_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagmacro_45_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.signature_50(builder))) {
+    private boolean sigiltagmacro_49_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.signature_54(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagmacro_45_quant_3(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagmacro_49_quant_3(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagmacro_45_quant_4(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagmacro_49_quant_4(PsiBuilder builder, OPP opp) {
         String tt2;
         tt2 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.DECL_OPENER) && (tt2.equals("macro"))) {
@@ -1934,18 +2190,18 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagmacro_45_quant_5(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagmacro_49_quant_5(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagmacro_45_quant_6(PsiBuilder builder, OPP opp) {
-        if (!(this.tlt_55(builder))) {
+    private boolean sigiltagmacro_49_quant_6(PsiBuilder builder, OPP opp) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
-        if (!(this.tclose_52(builder))) {
+        if (!(this.tclose_56(builder))) {
             return false;
         }
         if (!(this.declsigil_9(builder))) {
@@ -1953,14 +2209,14 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker5;
         quantMarker5 = builder.mark();
-        if (this.sigiltagmacro_45_quant_4(builder, opp)) {
+        if (this.sigiltagmacro_49_quant_4(builder, opp)) {
             quantMarker5.drop();
         } else {
             quantMarker5.rollbackTo();
         }
         PsiBuilder.Marker quantMarker6;
         quantMarker6 = builder.mark();
-        if (this.sigiltagmacro_45_quant_5(builder, opp)) {
+        if (this.sigiltagmacro_49_quant_5(builder, opp)) {
             quantMarker6.drop();
         } else {
             quantMarker6.rollbackTo();
@@ -1968,16 +2224,16 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagmacro_45_quant_7(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagmacro_49_quant_7(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
-        if (!(this.sequenceelementgroup_34(builder))) {
+        if (!(this.sequenceelementgroup_38(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker7;
         quantMarker7 = builder.mark();
-        if (this.sigiltagmacro_45_quant_6(builder, opp)) {
+        if (this.sigiltagmacro_49_quant_6(builder, opp)) {
             quantMarker7.drop();
         } else {
             quantMarker7.rollbackTo();
@@ -1985,7 +2241,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagmacro_45_quant_8(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagmacro_49_quant_8(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == CroTemplateTokenTypes.MACRO_NAME) {
             builder.advanceLexer();
         } else {
@@ -1993,28 +2249,28 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.sigiltagmacro_45_quant_1(builder, opp)) {
+        if (this.sigiltagmacro_49_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sigiltagmacro_45_quant_2(builder, opp)) {
+        if (this.sigiltagmacro_49_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
         }
         PsiBuilder.Marker quantMarker4;
         quantMarker4 = builder.mark();
-        if (this.sigiltagmacro_45_quant_3(builder, opp)) {
+        if (this.sigiltagmacro_49_quant_3(builder, opp)) {
             quantMarker4.drop();
         } else {
             quantMarker4.rollbackTo();
         }
         PsiBuilder.Marker quantMarker8;
         quantMarker8 = builder.mark();
-        if (this.sigiltagmacro_45_quant_7(builder, opp)) {
+        if (this.sigiltagmacro_49_quant_7(builder, opp)) {
             quantMarker8.drop();
         } else {
             quantMarker8.rollbackTo();
@@ -2022,13 +2278,13 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagmacro_45_quant_9(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagmacro_49_quant_9(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker9;
         quantMarker9 = builder.mark();
-        if (this.sigiltagmacro_45_quant_8(builder, opp)) {
+        if (this.sigiltagmacro_49_quant_8(builder, opp)) {
             quantMarker9.drop();
         } else {
             quantMarker9.rollbackTo();
@@ -2036,12 +2292,12 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagmacro_45(PsiBuilder builder) {
+    private boolean sigiltagmacro_49(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.tlt_55(builder))) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
         if (!(this.declsigil_9(builder))) {
@@ -2056,7 +2312,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker10;
         quantMarker10 = builder.mark();
-        if (this.sigiltagmacro_45_quant_9(builder, opp)) {
+        if (this.sigiltagmacro_49_quant_9(builder, opp)) {
             quantMarker10.drop();
         } else {
             quantMarker10.rollbackTo();
@@ -2065,28 +2321,28 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagsub_46_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagsub_50_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagsub_46_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.signature_50(builder))) {
+    private boolean sigiltagsub_50_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.signature_54(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagsub_46_quant_3(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagsub_50_quant_3(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagsub_46_quant_4(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagsub_50_quant_4(PsiBuilder builder, OPP opp) {
         String tt2;
         tt2 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.DECL_OPENER) && (tt2.equals("sub"))) {
@@ -2097,18 +2353,18 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagsub_46_quant_5(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagsub_50_quant_5(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagsub_46_quant_6(PsiBuilder builder, OPP opp) {
-        if (!(this.tlt_55(builder))) {
+    private boolean sigiltagsub_50_quant_6(PsiBuilder builder, OPP opp) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
-        if (!(this.tclose_52(builder))) {
+        if (!(this.tclose_56(builder))) {
             return false;
         }
         if (!(this.declsigil_9(builder))) {
@@ -2116,14 +2372,14 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker5;
         quantMarker5 = builder.mark();
-        if (this.sigiltagsub_46_quant_4(builder, opp)) {
+        if (this.sigiltagsub_50_quant_4(builder, opp)) {
             quantMarker5.drop();
         } else {
             quantMarker5.rollbackTo();
         }
         PsiBuilder.Marker quantMarker6;
         quantMarker6 = builder.mark();
-        if (this.sigiltagsub_46_quant_5(builder, opp)) {
+        if (this.sigiltagsub_50_quant_5(builder, opp)) {
             quantMarker6.drop();
         } else {
             quantMarker6.rollbackTo();
@@ -2131,16 +2387,16 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagsub_46_quant_7(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagsub_50_quant_7(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
-        if (!(this.sequenceelementgroup_34(builder))) {
+        if (!(this.sequenceelementgroup_38(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker7;
         quantMarker7 = builder.mark();
-        if (this.sigiltagsub_46_quant_6(builder, opp)) {
+        if (this.sigiltagsub_50_quant_6(builder, opp)) {
             quantMarker7.drop();
         } else {
             quantMarker7.rollbackTo();
@@ -2148,7 +2404,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagsub_46_quant_8(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagsub_50_quant_8(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == CroTemplateTokenTypes.SUB_NAME) {
             builder.advanceLexer();
         } else {
@@ -2156,28 +2412,28 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.sigiltagsub_46_quant_1(builder, opp)) {
+        if (this.sigiltagsub_50_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sigiltagsub_46_quant_2(builder, opp)) {
+        if (this.sigiltagsub_50_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
         }
         PsiBuilder.Marker quantMarker4;
         quantMarker4 = builder.mark();
-        if (this.sigiltagsub_46_quant_3(builder, opp)) {
+        if (this.sigiltagsub_50_quant_3(builder, opp)) {
             quantMarker4.drop();
         } else {
             quantMarker4.rollbackTo();
         }
         PsiBuilder.Marker quantMarker8;
         quantMarker8 = builder.mark();
-        if (this.sigiltagsub_46_quant_7(builder, opp)) {
+        if (this.sigiltagsub_50_quant_7(builder, opp)) {
             quantMarker8.drop();
         } else {
             quantMarker8.rollbackTo();
@@ -2185,13 +2441,13 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagsub_46_quant_9(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltagsub_50_quant_9(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker9;
         quantMarker9 = builder.mark();
-        if (this.sigiltagsub_46_quant_8(builder, opp)) {
+        if (this.sigiltagsub_50_quant_8(builder, opp)) {
             quantMarker9.drop();
         } else {
             quantMarker9.rollbackTo();
@@ -2199,12 +2455,12 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagsub_46(PsiBuilder builder) {
+    private boolean sigiltagsub_50(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.tlt_55(builder))) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
         if (!(this.declsigil_9(builder))) {
@@ -2219,7 +2475,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker10;
         quantMarker10 = builder.mark();
-        if (this.sigiltagsub_46_quant_9(builder, opp)) {
+        if (this.sigiltagsub_50_quant_9(builder, opp)) {
             quantMarker10.drop();
         } else {
             quantMarker10.rollbackTo();
@@ -2228,20 +2484,20 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagtopic_47_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltagtopic_51_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagtopic_47_quant_2(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagtopic_51_quant_2(PsiBuilder builder, OPP opp) {
         if (!(this.deref_10(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.sigiltagtopic_47_quant_1(builder, opp)) {
+        if (this.sigiltagtopic_51_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
@@ -2249,20 +2505,20 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagtopic_47(PsiBuilder builder) {
+    private boolean sigiltagtopic_51(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.tlt_55(builder))) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
-        if (!(this.dot_14(builder))) {
+        if (!(this.dot_18(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sigiltagtopic_47_quant_2(builder, opp)) {
+        if (this.sigiltagtopic_51_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
@@ -2271,34 +2527,34 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltaguse_48_quant_1(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltaguse_52_quant_1(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltaguse_48_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_54(builder))) {
+    private boolean sigiltaguse_52_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltaguse_48_quant_3(PsiBuilder builder, OPP opp) {
-        if (!(this.singlequotestring_51(builder))) {
+    private boolean sigiltaguse_52_quant_3(PsiBuilder builder, OPP opp) {
+        if (!(this.singlequotestring_55(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.sigiltaguse_48_quant_1(builder, opp)) {
+        if (this.sigiltaguse_52_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sigiltaguse_48_quant_2(builder, opp)) {
+        if (this.sigiltaguse_52_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
@@ -2306,13 +2562,13 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltaguse_48_quant_4(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean sigiltaguse_52_quant_4(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker4;
         quantMarker4 = builder.mark();
-        if (this.sigiltaguse_48_quant_3(builder, opp)) {
+        if (this.sigiltaguse_52_quant_3(builder, opp)) {
             quantMarker4.drop();
         } else {
             quantMarker4.rollbackTo();
@@ -2320,12 +2576,12 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltaguse_48(PsiBuilder builder) {
+    private boolean sigiltaguse_52(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.tlt_55(builder))) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
         if (!(this.declsigil_9(builder))) {
@@ -2340,7 +2596,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker5;
         quantMarker5 = builder.mark();
-        if (this.sigiltaguse_48_quant_4(builder, opp)) {
+        if (this.sigiltaguse_52_quant_4(builder, opp)) {
             quantMarker5.drop();
         } else {
             quantMarker5.rollbackTo();
@@ -2349,20 +2605,20 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagvariable_49_quant_1(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagvariable_53_quant_1(PsiBuilder builder, OPP opp) {
         if (!(this.deref_10(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagvariable_49_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.dot_14(builder))) {
+    private boolean sigiltagvariable_53_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.dot_18(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.sigiltagvariable_49_quant_1(builder, opp)) {
+        if (this.sigiltagvariable_53_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
@@ -2370,26 +2626,26 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean sigiltagvariable_49_quant_3(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagvariable_53_quant_3(PsiBuilder builder, OPP opp) {
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.sigiltagvariable_49_quant_2(builder, opp)) {
+        if (this.sigiltagvariable_53_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
         }
-        if (!(this.tgt_54(builder))) {
+        if (!(this.tgt_58(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagvariable_49(PsiBuilder builder) {
+    private boolean sigiltagvariable_53(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if (!(this.tlt_55(builder))) {
+        if (!(this.tlt_59(builder))) {
             return false;
         }
         if ((builder.getTokenType()) == CroTemplateTokenTypes.VARIABLE_NAME) {
@@ -2399,7 +2655,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker4;
         quantMarker4 = builder.mark();
-        if (this.sigiltagvariable_49_quant_3(builder, opp)) {
+        if (this.sigiltagvariable_53_quant_3(builder, opp)) {
             quantMarker4.drop();
         } else {
             quantMarker4.rollbackTo();
@@ -2408,7 +2664,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean signature_50_quant_1(PsiBuilder builder, OPP opp) {
+    private boolean signature_54_quant_1(PsiBuilder builder, OPP opp) {
         String tt2;
         tt2 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.COMMA) && (tt2.equals(","))) {
@@ -2416,22 +2672,22 @@ public class CroTemplateParser implements PsiParser {
         } else {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean signature_50_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.parameter_30(builder))) {
+    private boolean signature_54_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.parameter_34(builder))) {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.signature_50_quant_1(builder, opp)) {
+        if (this.signature_54_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
@@ -2439,14 +2695,14 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean signature_50_quant_3(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_17(builder))) {
+    private boolean signature_54_quant_3(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_21(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean signature_50_quant_4(PsiBuilder builder, OPP opp) {
+    private boolean signature_54_quant_4(PsiBuilder builder, OPP opp) {
         String tt3;
         tt3 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.CLOSE_PAREN) && (tt3.equals(")"))) {
@@ -2456,7 +2712,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker4;
         quantMarker4 = builder.mark();
-        if (this.signature_50_quant_3(builder, opp)) {
+        if (this.signature_54_quant_3(builder, opp)) {
             quantMarker4.drop();
         } else {
             quantMarker4.rollbackTo();
@@ -2464,23 +2720,23 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean signature_50_quant_5(PsiBuilder builder, OPP opp) {
+    private boolean signature_54_quant_5(PsiBuilder builder, OPP opp) {
         while (true) {
             PsiBuilder.Marker quantMarker3;;
             quantMarker3 = builder.mark();
-            if (this.signature_50_quant_2(builder, opp)) {
+            if (this.signature_54_quant_2(builder, opp)) {
                 quantMarker3.drop();
             } else {
                 quantMarker3.rollbackTo();
                 break;
             }
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker5;
         quantMarker5 = builder.mark();
-        if (this.signature_50_quant_4(builder, opp)) {
+        if (this.signature_54_quant_4(builder, opp)) {
             quantMarker5.drop();
         } else {
             quantMarker5.rollbackTo();
@@ -2488,7 +2744,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean signature_50(PsiBuilder builder) {
+    private boolean signature_54(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -2500,12 +2756,12 @@ public class CroTemplateParser implements PsiParser {
         } else {
             return false;
         }
-        if (!(this.ws_57(builder))) {
+        if (!(this.ws_61(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker6;
         quantMarker6 = builder.mark();
-        if (this.signature_50_quant_5(builder, opp)) {
+        if (this.signature_54_quant_5(builder, opp)) {
             quantMarker6.drop();
         } else {
             quantMarker6.rollbackTo();
@@ -2514,7 +2770,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean singlequotestring_51_quant_1(PsiBuilder builder, OPP opp) {
+    private boolean singlequotestring_55_quant_1(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == CroTemplateTokenTypes.STRING_TEXT) {
             builder.advanceLexer();
         } else {
@@ -2523,7 +2779,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean singlequotestring_51_quant_2(PsiBuilder builder, OPP opp) {
+    private boolean singlequotestring_55_quant_2(PsiBuilder builder, OPP opp) {
         String tt2;
         tt2 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.STRING_QUOTE_SINGLE) && (tt2.equals("'"))) {
@@ -2534,7 +2790,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean singlequotestring_51(PsiBuilder builder) {
+    private boolean singlequotestring_55(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -2548,14 +2804,14 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.singlequotestring_51_quant_1(builder, opp)) {
+        if (this.singlequotestring_55_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.singlequotestring_51_quant_2(builder, opp)) {
+        if (this.singlequotestring_55_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
@@ -2564,7 +2820,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean tclose_52(PsiBuilder builder) {
+    private boolean tclose_56(PsiBuilder builder) {
         OPP opp;
         opp = null;
         String tt1;
@@ -2577,97 +2833,97 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean term_53_alt_1(PsiBuilder builder, OPP opp) {
-        if (!(this.parenthesizedexpression_31(builder))) {
+    private boolean term_57_alt_1(PsiBuilder builder, OPP opp) {
+        if (!(this.parenthesizedexpression_35(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean term_53_alt_2(PsiBuilder builder, OPP opp) {
-        if (!(this.derefterm_13(builder))) {
+    private boolean term_57_alt_2(PsiBuilder builder, OPP opp) {
+        if (!(this.derefterm_17(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean term_53_alt_3(PsiBuilder builder, OPP opp) {
-        if (!(this.variable_56(builder))) {
+    private boolean term_57_alt_3(PsiBuilder builder, OPP opp) {
+        if (!(this.variable_60(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean term_53_alt_4(PsiBuilder builder, OPP opp) {
-        if (!(this.int_22(builder))) {
+    private boolean term_57_alt_4(PsiBuilder builder, OPP opp) {
+        if (!(this.int_26(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean term_53_alt_5(PsiBuilder builder, OPP opp) {
-        if (!(this.rat_32(builder))) {
+    private boolean term_57_alt_5(PsiBuilder builder, OPP opp) {
+        if (!(this.rat_36(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean term_53_alt_6(PsiBuilder builder, OPP opp) {
-        if (!(this.num_29(builder))) {
+    private boolean term_57_alt_6(PsiBuilder builder, OPP opp) {
+        if (!(this.num_33(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean term_53_alt_7(PsiBuilder builder, OPP opp) {
-        if (!(this.singlequotestring_51(builder))) {
+    private boolean term_57_alt_7(PsiBuilder builder, OPP opp) {
+        if (!(this.singlequotestring_55(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean term_53(PsiBuilder builder) {
+    private boolean term_57(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker altMarker7;
         altMarker7 = builder.mark();
-        if (this.term_53_alt_7(builder, opp)) {
+        if (this.term_57_alt_7(builder, opp)) {
             altMarker7.drop();
         } else {
             altMarker7.rollbackTo();
             PsiBuilder.Marker altMarker6;;
             altMarker6 = builder.mark();
-            if (this.term_53_alt_6(builder, opp)) {
+            if (this.term_57_alt_6(builder, opp)) {
                 altMarker6.drop();
             } else {
                 altMarker6.rollbackTo();
                 PsiBuilder.Marker altMarker5;;
                 altMarker5 = builder.mark();
-                if (this.term_53_alt_5(builder, opp)) {
+                if (this.term_57_alt_5(builder, opp)) {
                     altMarker5.drop();
                 } else {
                     altMarker5.rollbackTo();
                     PsiBuilder.Marker altMarker4;;
                     altMarker4 = builder.mark();
-                    if (this.term_53_alt_4(builder, opp)) {
+                    if (this.term_57_alt_4(builder, opp)) {
                         altMarker4.drop();
                     } else {
                         altMarker4.rollbackTo();
                         PsiBuilder.Marker altMarker3;;
                         altMarker3 = builder.mark();
-                        if (this.term_53_alt_3(builder, opp)) {
+                        if (this.term_57_alt_3(builder, opp)) {
                             altMarker3.drop();
                         } else {
                             altMarker3.rollbackTo();
                             PsiBuilder.Marker altMarker2;;
                             altMarker2 = builder.mark();
-                            if (this.term_53_alt_2(builder, opp)) {
+                            if (this.term_57_alt_2(builder, opp)) {
                                 altMarker2.drop();
                             } else {
                                 altMarker2.rollbackTo();
                                 PsiBuilder.Marker altMarker1;;
                                 altMarker1 = builder.mark();
-                                if (this.term_53_alt_1(builder, opp)) {
+                                if (this.term_57_alt_1(builder, opp)) {
                                     altMarker1.drop();
                                 } else {
                                     altMarker1.rollbackTo();
@@ -2682,7 +2938,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean tgt_54(PsiBuilder builder) {
+    private boolean tgt_58(PsiBuilder builder) {
         OPP opp;
         opp = null;
         String tt1;
@@ -2695,7 +2951,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean tlt_55(PsiBuilder builder) {
+    private boolean tlt_59(PsiBuilder builder) {
         OPP opp;
         opp = null;
         String tt1;
@@ -2708,20 +2964,20 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean variable_56_quant_1(PsiBuilder builder, OPP opp) {
+    private boolean variable_60_quant_1(PsiBuilder builder, OPP opp) {
         if (!(this.deref_10(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean variable_56_quant_2(PsiBuilder builder, OPP opp) {
-        if (!(this.dot_14(builder))) {
+    private boolean variable_60_quant_2(PsiBuilder builder, OPP opp) {
+        if (!(this.dot_18(builder))) {
             return false;
         }
         PsiBuilder.Marker quantMarker2;
         quantMarker2 = builder.mark();
-        if (this.variable_56_quant_1(builder, opp)) {
+        if (this.variable_60_quant_1(builder, opp)) {
             quantMarker2.drop();
         } else {
             quantMarker2.rollbackTo();
@@ -2729,7 +2985,7 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean variable_56(PsiBuilder builder) {
+    private boolean variable_60(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker marker1;
@@ -2741,7 +2997,7 @@ public class CroTemplateParser implements PsiParser {
         }
         PsiBuilder.Marker quantMarker3;
         quantMarker3 = builder.mark();
-        if (this.variable_56_quant_2(builder, opp)) {
+        if (this.variable_60_quant_2(builder, opp)) {
             quantMarker3.drop();
         } else {
             quantMarker3.rollbackTo();
@@ -2750,11 +3006,11 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean ws_57_alt_1(PsiBuilder builder, OPP opp) {
+    private boolean ws_61_alt_1(PsiBuilder builder, OPP opp) {
         return true;
     }
 
-    private boolean ws_57_alt_2(PsiBuilder builder, OPP opp) {
+    private boolean ws_61_alt_2(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == CroTemplateTokenTypes.SYNTAX_WHITE_SPACE) {
             builder.advanceLexer();
         } else {
@@ -2763,18 +3019,18 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean ws_57(PsiBuilder builder) {
+    private boolean ws_61(PsiBuilder builder) {
         OPP opp;
         opp = null;
         PsiBuilder.Marker altMarker2;
         altMarker2 = builder.mark();
-        if (this.ws_57_alt_2(builder, opp)) {
+        if (this.ws_61_alt_2(builder, opp)) {
             altMarker2.drop();
         } else {
             altMarker2.rollbackTo();
             PsiBuilder.Marker altMarker1;;
             altMarker1 = builder.mark();
-            if (this.ws_57_alt_1(builder, opp)) {
+            if (this.ws_61_alt_1(builder, opp)) {
                 altMarker1.drop();
             } else {
                 altMarker1.rollbackTo();

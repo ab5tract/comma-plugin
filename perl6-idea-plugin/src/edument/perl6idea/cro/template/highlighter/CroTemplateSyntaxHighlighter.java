@@ -45,6 +45,8 @@ public class CroTemplateSyntaxHighlighter extends SyntaxHighlighterBase {
         ATTRIBUTES.put(CroTemplateTokenTypes.DOT, CroTemplateHighlighter.INFIX);
         ATTRIBUTES.put(CroTemplateTokenTypes.OPEN_PAREN, CroTemplateHighlighter.PARENS);
         ATTRIBUTES.put(CroTemplateTokenTypes.CLOSE_PAREN, CroTemplateHighlighter.PARENS);
+        ATTRIBUTES.put(CroTemplateTokenTypes.OPEN_BRACKET, CroTemplateHighlighter.BRACKETS);
+        ATTRIBUTES.put(CroTemplateTokenTypes.CLOSE_BRACKET, CroTemplateHighlighter.BRACKETS);
         ATTRIBUTES.put(CroTemplateTokenTypes.OPEN_CURLY, CroTemplateHighlighter.BRACES);
         ATTRIBUTES.put(CroTemplateTokenTypes.CLOSE_CURLY, CroTemplateHighlighter.BRACES);
         ATTRIBUTES.put(CroTemplateTokenTypes.COMMA, CroTemplateHighlighter.COMMA);
@@ -54,6 +56,7 @@ public class CroTemplateSyntaxHighlighter extends SyntaxHighlighterBase {
         ATTRIBUTES.put(CroTemplateTokenTypes.NUM_LITERAL, CroTemplateHighlighter.NUMERIC_LITERAL);
         ATTRIBUTES.put(CroTemplateTokenTypes.STRING_QUOTE_SINGLE, CroTemplateHighlighter.STRING_LITERAL_QUOTE);
         ATTRIBUTES.put(CroTemplateTokenTypes.STRING_TEXT, CroTemplateHighlighter.STRING_LITERAL_CHAR);
+        ATTRIBUTES.put(CroTemplateTokenTypes.LITERAL_KEY, CroTemplateHighlighter.STRING_LITERAL_CHAR);
     }
 
     @NotNull

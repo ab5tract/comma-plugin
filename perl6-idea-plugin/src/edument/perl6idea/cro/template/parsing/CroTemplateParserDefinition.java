@@ -92,6 +92,14 @@ public class CroTemplateParserDefinition implements ParserDefinition {
             return new CroTemplateArgListImpl(node);
         if (type == CroTemplateElementTypes.DEREF_SMART)
             return new CroTemplateDerefSmartImpl(node);
+        if (type == CroTemplateElementTypes.DEREF_ARRAY)
+            return new CroTemplateDerefArrayImpl(node);
+        if (type == CroTemplateElementTypes.DEREF_HASH)
+            return new CroTemplateDerefHashImpl(node);
+        if (type == CroTemplateElementTypes.DEREF_HASH_LITERAL)
+            return new CroTemplateDerefHashLiteralImpl(node);
+        if (type == CroTemplateElementTypes.DEREF_METHOD)
+            return new CroTemplateDerefMethodImpl(node);
         if (type == Perl6OPPElementTypes.INFIX_APPLICATION)
             return new CroTemplateInfixApplicationImpl(node);
         if (type == CroTemplateElementTypes.INFIX)

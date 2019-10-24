@@ -29,7 +29,8 @@ public class CroTemplateColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Literal Attribute Value", CroTemplateHighlighter.LITERAL_ATTRIBUTE_VALUE),
             new AttributesDescriptor("Literal Text", CroTemplateHighlighter.LITERAL_TEXT),
             new AttributesDescriptor("Parentheses", CroTemplateHighlighter.PARENS),
-            new AttributesDescriptor("Block Braces", CroTemplateHighlighter.BRACES),
+            new AttributesDescriptor("Array Indexer", CroTemplateHighlighter.BRACKETS),
+            new AttributesDescriptor("Curly Braces", CroTemplateHighlighter.BRACES),
             new AttributesDescriptor("Comma", CroTemplateHighlighter.COMMA),
     };
 

@@ -624,12 +624,30 @@ grammar MAIN {
     }
 
     token deref-item {
+        || <.deref-item-method>
         || <.deref-item-smart>
+        || <.deref-item-array>
+        || <.deref-item-hash>
+        || <.deref-item-hash-literal>
     }
     
-#    token deref-item:sym<method> {
-#        <identifier> '(' \s* ')'
-#    }
+    token deref-item-method {
+        <?before <.identifier> '('>
+        <.start-element('DEREF_METHOD')>
+        <.start-token('IDENTIFER')>
+        <.identifier>
+        <.end-token('IDENTIFER')>
+        <.start-token('OPEN_PAREN')>
+        '('
+        <.end-token('OPEN_PAREN')>
+        <.ws>
+        [
+            <.start-token('CLOSE_PAREN')>
+            ')'
+            <.end-token('CLOSE_PAREN')>
+        ]?
+        <.end-element('DEREF_METHOD')>
+    }
 
     token deref-item-smart {
         <.start-element('DEREF_SMART')>
@@ -639,15 +657,55 @@ grammar MAIN {
         <.end-element('DEREF_SMART')>
     }
 
-#    token deref-item:sym<hash-literal> {
-#        '<' <( <-[>]>* )> '>'
-#    }
-#    token deref-item:sym<array> {
-#        '[' <index=.expression> ']'
-#    }
-#    token deref-item:sym<hash> {
-#        '{' <key=.expression> '}'
-#    }
+    token deref-item-hash-literal {
+        <.start-element('DEREF_HASH_LITERAL')>
+        <.start-token('OPEN_ANGLE')>
+        '<'
+        <.end-token('OPEN_ANGLE')>
+        [
+            <.start-token('LITERAL_KEY')>
+            <-[>]>*
+            <.end-token('LITERAL_KEY')>
+            [
+                <.start-token('CLOSE_ANGLE')>
+                '>'
+                <.end-token('CLOSE_ANGLE')>
+            ]?
+        ]?
+        <.end-element('DEREF_HASH_LITERAL')>
+    }
+
+    token deref-item-array {
+        <.start-element('DEREF_ARRAY')>
+        <.start-token('OPEN_BRACKET')>
+        '['
+        <.end-token('OPEN_BRACKET')>
+        [
+            <.expression>
+            [
+                <.start-token('CLOSE_BRACKET')>
+                ']'
+                <.end-token('CLOSE_BRACKET')>
+            ]?
+        ]?
+        <.end-element('DEREF_ARRAY')>
+    }
+
+    token deref-item-hash {
+        <.start-element('DEREF_HASH')>
+        <.start-token('OPEN_CURLY')>
+        '{'
+        <.end-token('OPEN_CURLY')>
+        [
+            <.expression>
+            [
+                <.start-token('CLOSE_CURLY')>
+                '}'
+                <.end-token('CLOSE_CURLY')>
+            ]?
+        ]?
+        <.end-element('DEREF_HASH')>
+    }
 
     token ws {
         [

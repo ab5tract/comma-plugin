@@ -90,6 +90,12 @@ public class CroTemplateHighlighter {
             DefaultLanguageHighlighterColors.PARENTHESES
     );
 
+    static final String BRACKETS_ID = "CRO_TEMPLATE_BRACKETS";
+    public static final TextAttributesKey BRACKETS = TextAttributesKey.createTextAttributesKey(
+            BRACKETS_ID,
+            DefaultLanguageHighlighterColors.BRACKETS
+    );
+
     static final String BRACES_ID = "CRO_TEMPLATE_BRACES";
     public static final TextAttributesKey BRACES = TextAttributesKey.createTextAttributesKey(
             BRACES_ID,

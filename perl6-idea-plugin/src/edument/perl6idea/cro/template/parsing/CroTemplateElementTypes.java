@@ -12,6 +12,10 @@ public interface CroTemplateElementTypes {
     IElementType BODY = new CroTemplateElementType("BODY");
     IElementType CALL = new CroTemplateElementType("CALL");
     IElementType CONDITION = new CroTemplateElementType("CONDITION");
+    IElementType DEREF_ARRAY = new CroTemplateElementType("DEREF_ARRAY");
+    IElementType DEREF_HASH = new CroTemplateElementType("DEREF_HASH");
+    IElementType DEREF_HASH_LITERAL = new CroTemplateElementType("DEREF_HASH_LITERAL");
+    IElementType DEREF_METHOD = new CroTemplateElementType("DEREF_METHOD");
     IElementType DEREF_SMART = new CroTemplateElementType("DEREF_SMART");
     IElementType INFIX = new CroTemplateElementType("INFIX");
     IElementType INT_LITERAL = new CroTemplateElementType("INT_LITERAL");

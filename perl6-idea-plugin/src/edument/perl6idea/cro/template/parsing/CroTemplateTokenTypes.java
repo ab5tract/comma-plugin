@@ -8,6 +8,8 @@ public interface CroTemplateTokenTypes {
     IElementType ATTRIBUTE_QUOTE = new CroTemplateElementType("ATTRIBUTE_QUOTE");
     IElementType ATTRIBUTE_VALUE = new CroTemplateElementType("ATTRIBUTE_VALUE");
     IElementType BAD_CHARACTER = TokenType.BAD_CHARACTER;
+    IElementType CLOSE_ANGLE = new CroTemplateElementType("CLOSE_ANGLE");
+    IElementType CLOSE_BRACKET = new CroTemplateElementType("CLOSE_BRACKET");
     IElementType CLOSE_CURLY = new CroTemplateElementType("CLOSE_CURLY");
     IElementType CLOSE_PAREN = new CroTemplateElementType("CLOSE_PAREN");
     IElementType COMMA = new CroTemplateElementType("COMMA");
@@ -17,6 +19,7 @@ public interface CroTemplateTokenTypes {
     IElementType IDENTIFER = new CroTemplateElementType("IDENTIFER");
     IElementType INFIX = new CroTemplateElementType("INFIX");
     IElementType INT_LITERAL = new CroTemplateElementType("INT_LITERAL");
+    IElementType LITERAL_KEY = new CroTemplateElementType("LITERAL_KEY");
     IElementType LITERAL_TAG_CLOSE = new CroTemplateElementType("LITERAL_TAG_CLOSE");
     IElementType LITERAL_TAG_NAME = new CroTemplateElementType("LITERAL_TAG_NAME");
     IElementType LITERAL_TAG_OPEN = new CroTemplateElementType("LITERAL_TAG_OPEN");
@@ -24,6 +27,8 @@ public interface CroTemplateTokenTypes {
     IElementType LITERAL_TEXT = new CroTemplateElementType("LITERAL_TEXT");
     IElementType MACRO_NAME = new CroTemplateElementType("MACRO_NAME");
     IElementType NUM_LITERAL = new CroTemplateElementType("NUM_LITERAL");
+    IElementType OPEN_ANGLE = new CroTemplateElementType("OPEN_ANGLE");
+    IElementType OPEN_BRACKET = new CroTemplateElementType("OPEN_BRACKET");
     IElementType OPEN_CURLY = new CroTemplateElementType("OPEN_CURLY");
     IElementType OPEN_PAREN = new CroTemplateElementType("OPEN_PAREN");
     IElementType RAT_LITERAL = new CroTemplateElementType("RAT_LITERAL");
