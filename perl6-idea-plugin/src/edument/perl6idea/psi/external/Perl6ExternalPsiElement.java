@@ -30,7 +30,7 @@ public class Perl6ExternalPsiElement implements PsiNamedElement, NavigatablePsiE
     }
 
     public void setDocs(String docs) {
-        myDocs = docs;
+        myDocs = docs.replaceAll("\n", "<br>");
     }
 
     @NotNull

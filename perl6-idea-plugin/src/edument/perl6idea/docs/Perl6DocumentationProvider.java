@@ -88,20 +88,7 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
     @Nullable
     @Override
     public synchronized String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
-        if (element instanceof Perl6ExternalPsiElement) {
-            String docs = ((Perl6ExternalPsiElement)element).getDocsString();
-            if (docs == null) {
-                if (!coreCache) {
-                    coreCache = true;
-                    populateCoreCache();
-                }
-                String name = ((Perl6ExternalPsiElement)element).getName();
-                docs = coreTypeCache.get(name);
-                if (docs != null)
-                    docs = docs.replaceAll("\n", "<br>");
-            }
-            return docs;
-        } else if (element instanceof Perl6Documented) {
+        if (element instanceof Perl6Documented) {
             return ((Perl6Documented)element).getDocsString();
         }
         return null;

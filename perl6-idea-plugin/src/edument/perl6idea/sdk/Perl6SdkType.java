@@ -227,12 +227,16 @@ public class Perl6SdkType extends SdkType {
             return setting = makeSettingSymbols(project, settingJson);
 
         File coreSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-core-symbols.p6");
+        File coreDocs = Perl6Utils.getResourceAsFile("docs/core.json");
         String perl6path = getSdkHomeByProject(project);
 
-        if (perl6path == null || coreSymbols == null) {
+
+        if (perl6path == null || coreSymbols == null || coreDocs == null) {
             String errorMessage = perl6path == null
                                   ? "getCoreSettingFile is called without Perl 6 SDK set, using fallback"
-                                  : "getCoreSettingFile is called with corrupted resources bundle, using fallback";
+                                  : coreSymbols == null
+                                    ? "getCoreSettingFile is called with corrupted resources bundle, using fallback"
+                                    : "getCoreSettingFile is called with corrupted resources bundle";
             LOG.warn(errorMessage);
             return getFallback(project);
         }
@@ -244,6 +248,7 @@ public class Perl6SdkType extends SdkType {
                         System.getProperty("java.io.tmpdir"),
                         perl6path),
                     coreSymbols);
+                cmd.addParameter(coreDocs.getAbsolutePath());
                 Thread thread = new Thread(() -> {
                     mySettingsStarted = true;
                     try {
