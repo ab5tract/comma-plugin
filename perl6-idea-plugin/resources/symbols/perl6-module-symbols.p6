@@ -296,7 +296,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     use nqp;
     my $b = nqp::istype(object, Cool) ?? 'C' !! nqp::istype(object, Any) ?? 'A' !! 'M';
     my %class = k => $kind, n => $name, t => object.^name, :$b;
-    %class<mro> = (try flat object.^roles.map(*.^name), object.^mro.skip.map(*.^name)) // ();
+    %class<mro> = (try flat object.^roles.map(*.^name), object.^parents(:local).map(*.^name)) // ();
     try %class<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
     my @privates;
     if $kind eq "ro" {

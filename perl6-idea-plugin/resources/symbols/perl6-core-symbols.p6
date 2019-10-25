@@ -635,7 +635,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     use nqp;
     my $b = nqp::istype(object, Cool) ?? 'C' !! nqp::istype(object, Any) ?? 'A' !! 'M';
     my %class = k => $kind, n => $name, t => object.^name, :$b;
-    %class<mro> = (try flat object.^roles.map(*.^name), object.^mro.skip.map(*.^name)) // ();
+    %class<mro> = (try flat object.^roles.map(*.^name), object.^parents(:local).map(*.^name)) // ();
     my %methods;
     with %CORE-DOCS{$name} {
         %class<d> = $_<desc>;
@@ -650,7 +650,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     } else {
         @privates = object.^private_method_table.values;
     }
-    try for object.^methods(:local).grep(*.?package =:= object) -> $method {
+    try for object.^methods(:local).grep({ $kind ~~ 'c' ?? ($_.?package =:= object) !! True }) -> $method {
         try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, |(:docs($_) with %methods{$method.name} ),:is-method) for $method.candidates;
     }
     try for @privates -> $method {
