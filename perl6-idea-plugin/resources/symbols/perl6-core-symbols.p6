@@ -595,14 +595,14 @@ sub pack-variable($name, \object, :$is-attribute = False) {
     %( k => "v", n => $name, t => $is-attribute ?? object.type.^name !! object.^name );
 }
 
-sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
+sub pack-code($code, Int $multiness, Str $name?, :$docs, :$is-method) {
     my $s = $code.signature;
     my @params = $s.params;
     @params .= skip(1) if $is-method;
     my @parameters = @params.map(*.gist).List;
     my %signature = r => $s.returns.^name, p => @parameters;
     my $kind = $code.^name.comb.head.lc;
-    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness );
+    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness, |(:d($_) with $docs) );
 }
 
 sub pack-package(@elems, $name, Mu \object) {
@@ -638,6 +638,10 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     my %methods;
     with %CORE-DOCS{$name} {
         %class<d> = $_<desc>;
+        %methods = $_<methods>.map({
+            $_ ~~ /^^ $<name>=(.+?) \n $<desc>=(.+) /;
+            $/ ?? ($<name>.trim => $<desc>.trim) !! Nil;
+        }).grep(*.defined);
     }
     my @privates;
     if $kind eq "ro" {
@@ -645,8 +649,8 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     } else {
         @privates = object.^private_method_table.values;
     }
-    try for object.^methods -> $method {
-        try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, :is-method) for $method.candidates;
+    try for object.^methods(:local).grep(*.?package =:= object) -> $method {
+        try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, |(:docs($_) with %methods{$method.name} ),:is-method) for $method.candidates;
     }
     try for @privates -> $method {
         try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, '!' ~ $method.name, :is-method) for $method.candidates;
