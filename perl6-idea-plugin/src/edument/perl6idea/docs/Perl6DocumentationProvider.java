@@ -4,21 +4,14 @@ import com.intellij.lang.documentation.DocumentationProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
-import edument.perl6idea.psi.external.Perl6ExternalPsiElement;
-import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONObject;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.Optional;
 
 public class Perl6DocumentationProvider implements DocumentationProvider {
-    private final Map<String, String> coreTypeCache = new ConcurrentHashMap<>();
-    private boolean coreCache = false;
-
     @Nullable
     @Override
     public synchronized String getQuickNavigateInfo(PsiElement element, PsiElement originalElement) {
@@ -64,23 +57,15 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
         return null;
     }
 
-    private void populateCoreCache() {
-        List<String> docLines = Perl6Utils.getResourceAsLines("docs/core.json");
-        JSONObject docsCORE = new JSONObject(String.join("\n", ArrayUtil.toStringArray(docLines)));
-        for (Object type : docsCORE.getJSONArray("types")) {
-            JSONObject typeDescription = (JSONObject)type;
-            coreTypeCache.put(typeDescription.getString("name"), typeDescription.getString("desc"));
-        }
-    }
-
     @Nullable
     @Override
     public List<String> getUrlFor(PsiElement element, PsiElement originalElement) {
         if (element instanceof ExternalPerl6PackageDecl) {
             String name = ((Perl6PackageDecl)element).getName();
-            if (coreTypeCache.containsKey(name)) {
-                return Collections.singletonList("https://docs.perl6.org/type/" + name);
-            }
+            // TODO get urls for CORE back
+            //if (coreTypeCache.containsKey(name)) {
+            //    return Collections.singletonList("https://docs.perl6.org/type/" + name);
+            //}
         }
         return null;
     }
