@@ -139,6 +139,12 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
             variable.contributeMOPSymbols(collector, symbolsAllowed);
             if (collector.isSatisfied()) return;
         }
-        // TODO MRO-based dispatch
+        for (String mroParent : myMRO) {
+            Perl6Symbol parent = resolveLexicalSymbol(Perl6SymbolKind.TypeOrConstant, mroParent);
+            if (parent != null && parent.getPsi() instanceof Perl6PackageDecl) {
+                Perl6PackageDecl decl = (Perl6PackageDecl)parent.getPsi();
+                decl.contributeMOPSymbols(collector, symbolsAllowed);
+            }
+        }
     }
 }
