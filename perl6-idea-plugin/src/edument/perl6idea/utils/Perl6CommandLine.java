@@ -49,7 +49,7 @@ public class Perl6CommandLine {
     public static GeneralCommandLine pushFile(GeneralCommandLine cmd, File script) throws ExecutionException {
         try {
             // We pass -Ilib after script path, because it is the script argument
-            cmd.addParameters(script.getCanonicalPath(), "-Ilib");
+            cmd.addParameters(script.getCanonicalPath());
             return cmd;
         } catch (IOException e) {
             LOG.error(e);
