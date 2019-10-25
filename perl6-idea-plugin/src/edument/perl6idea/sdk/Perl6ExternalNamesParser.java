@@ -2,6 +2,7 @@ package edument.perl6idea.sdk;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6RoutineDecl;
@@ -17,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Perl6ExternalNamesParser {
     private JSONArray myJson;
@@ -114,10 +116,11 @@ public class Perl6ExternalNamesParser {
                                     attrs.add(attributeDecl);
                                 }
 
+                        List<String> mro = ContainerUtil.map(j.getJSONArray("mro").toList(), item -> Objects.toString(item, null));
                         ExternalPerl6PackageDecl psi = new ExternalPerl6PackageDecl(
                             myProject, myFile, j.getString("k"),
                             j.getString("n"), j.getString("t"), j.getString("b"),
-                            routines, attrs);
+                            routines, attrs, mro);
                         if (j.has("d"))
                             psi.setDocs(j.getString("d"));
                         externalClasses.put(psi.getName(), psi);

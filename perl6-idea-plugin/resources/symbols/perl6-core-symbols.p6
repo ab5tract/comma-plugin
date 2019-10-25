@@ -635,6 +635,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     use nqp;
     my $b = nqp::istype(object, Cool) ?? 'C' !! nqp::istype(object, Any) ?? 'A' !! 'M';
     my %class = k => $kind, n => $name, t => object.^name, :$b;
+    %class<mro> = (try flat object.^roles.map(*.^name), object.^mro.skip.map(*.^name)) // ();
     my %methods;
     with %CORE-DOCS{$name} {
         %class<d> = $_<desc>;

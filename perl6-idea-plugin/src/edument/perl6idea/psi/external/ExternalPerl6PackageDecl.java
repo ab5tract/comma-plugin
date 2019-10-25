@@ -19,14 +19,15 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     private final String myType;
     private List<Perl6RoutineDecl> myRoutines = new ArrayList<>();
     private List<Perl6VariableDecl> myAttributes = new ArrayList<>();
-    private String myBase;
+    private List<String> myMRO;
     private String myPackageKind;
     private String myName;
     private Set<String> myGettersPool = new HashSet<>();
 
     public ExternalPerl6PackageDecl(Project project, Perl6File file, String kind, String name, String type, String base,
-                                    List<Perl6RoutineDecl> routines, List<Perl6VariableDecl> attrs) {
+                                    List<Perl6RoutineDecl> routines, List<Perl6VariableDecl> attrs, List<String> mro) {
         this(project, file, kind, name, type, base);
+        myMRO = mro;
         myRoutines = routines;
         myAttributes = attrs;
         for (Perl6VariableDecl decl : myAttributes) {
@@ -48,19 +49,6 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
             case "c":
                 myPackageKind = "class";
                 break;
-        }
-        switch (base) {
-            case "M":
-                myBase = "Mu";
-                break;
-            case "A":
-                myBase = "Any";
-                break;
-            case "C":
-                myBase = "Cool";
-                break;
-            default:
-                myBase = base;
         }
         myName = name;
         myType = type;
@@ -151,28 +139,6 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
             variable.contributeMOPSymbols(collector, symbolsAllowed);
             if (collector.isSatisfied()) return;
         }
-        if (myBase.isEmpty())
-            return;
-        Perl6File coreSetting = Perl6SdkType.getInstance().getCoreSettingFile(getProject());
-        MOPSymbolsAllowed allowed = new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role"));
-
-        // Add additional methods from Mu/Any/Cool as we don't
-        // have a more complex structure for parents for now
-
-        // If the type is Cool, but not Cool itself, we have to add Cool methods (if it is Cool itself, the methods are already there)
-        if (!myName.equals("Cool") && myBase.equals("Cool")) {
-            collector.decreasePriority();
-            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cool", allowed);
-        }
-        // If the type is not Any itself and its base is either Any or Cool, add Any methods
-        if (!myName.equals("Any") && !myBase.equals("Mu")) {
-            collector.decreasePriority();
-            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
-        }
-        // If the name is not Mu, add Mu methods
-        if (!myName.equals("Mu")) {
-            collector.decreasePriority();
-            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
-        }
+        // TODO MRO-based dispatch
     }
 }
