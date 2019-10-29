@@ -1,6 +1,8 @@
 package edument.perl6idea.psi;
 
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
@@ -19,11 +21,13 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
     /* Name-manages the enclosing file name into a module name, if possible.
      * Returns null if that's not possible or this doesn't seem to be a module. */
     default String getEnclosingPerl6ModuleName() {
-        // Make sure it's a .pm6 file, and trim the extension.
-        String path = getContainingFile().getVirtualFile().getPath();
-        if (!path.endsWith(Perl6ModuleFileType.INSTANCE.getDefaultExtension()))
+        // Make sure it's Raku module file, and trim the extension.
+        VirtualFile file = getContainingFile().getVirtualFile();
+        if (!(FileTypeManager.getInstance().getFileTypeByFile(file) instanceof Perl6ModuleFileType))
             return null;
-        path = path.substring(0, path.length() - 4);
+        String path = file.getPath();
+        String extension = file.getExtension();
+        path = path.substring(0, path.length() - (extension == null ? 0 : extension.length()));
 
         // Make sure it's within the project and trim the project path
         // off the start.
