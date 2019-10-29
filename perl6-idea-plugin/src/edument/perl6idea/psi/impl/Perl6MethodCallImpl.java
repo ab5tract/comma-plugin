@@ -31,10 +31,16 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
     @NotNull
     @Override
     public String getCallName() {
-        PsiElement name = findChildByType(LONG_NAME);
-        if (name == null)
-            name = findChildByType(METHOD_CALL_NAME);
+        PsiElement name = getSimpleName();
         return name == null ? "" : getCallOperator() + name.getText();
+    }
+
+    @Override
+    public PsiElement getSimpleName() {
+        PsiElement name = findChildByType(LONG_NAME);
+        if (name != null)
+            return name;
+        return findChildByType(METHOD_CALL_NAME);
     }
 
     @Override

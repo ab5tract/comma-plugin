@@ -24,6 +24,7 @@ import com.intellij.refactoring.listeners.RefactoringEventListener;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.refactoring.helpers.Perl6IntroduceDialog;
+import edument.perl6idea.refactoring.Perl6NameSuggester;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -186,9 +187,9 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
 
     protected static void ensureName(IntroduceOperation operation) {
         if (operation.getName() == null) {
-            Collection<String> suggestednames = operation.getSuggestedNames();
-            if (suggestednames.size() > 0) {
-                operation.setName(suggestednames.iterator().next());
+            Collection<String> suggestedNames = operation.getSuggestedNames();
+            if (suggestedNames.size() > 0) {
+                operation.setName(suggestedNames.iterator().next());
             } else {
                 operation.setName("$x");
             }
@@ -234,7 +235,8 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             editor.getCaretModel().moveToOffset(occurrence.getTextRange().getStartOffset());
             final InplaceVariableIntroducer<PsiElement> introducer =
                 new Perl6InplaceVariableIntroducer(declaration, operation, occurrences);
-            introducer.performInplaceRefactoring(new LinkedHashSet<>(operation.getSuggestedNames()));
+            Collection<String> names = operation.getSuggestedNames();
+            introducer.performInplaceRefactoring(new LinkedHashSet<>(names));
         } else {
             removeLeftoverStatement(operation);
         }
@@ -371,12 +373,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     protected abstract PsiElement createDeclaration(IntroduceOperation operation);
 
     private static Collection<String> getSuggestedNames(PsiElement element) {
-        return generateSuggestedNames(element);
-    }
-
-    private static Collection<String> generateSuggestedNames(PsiElement element) {
-        // TODO Smarter heuristic can be used here
-        return new ArrayList<>(Collections.singletonList("$x"));
+        return Perl6NameSuggester.suggest(element);
     }
 
     private static List<PsiElement> getOccurrences(PsiElement element, PsiElement scope) {

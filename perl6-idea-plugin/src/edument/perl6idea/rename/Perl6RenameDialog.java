@@ -37,6 +37,7 @@ public class Perl6RenameDialog extends RenameDialog {
             return "";
     }
 
+    // TODO name suggester, somehow from context
     @Override
     public String[] getSuggestedNames() {
         return new String[]{getShortName()};
