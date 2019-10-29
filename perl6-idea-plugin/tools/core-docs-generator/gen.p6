@@ -10,17 +10,17 @@ class CommaFactory is Documentable::DocPage::Factory {
     method generate-error-page() { %() }
     method generate-primary(Documentable::Primary $doc) {
         my $text = pod2text($doc.pod);
-        my $type-doc = $text.split('Methods');
+        my $type-doc = $text.split("Methods\n\n");
         my $synopsis = $type-doc[0];
         my $rest = $type-doc[1];
         with $rest {
-          # $rest may contain Methods and Operators
-          my $methods = $rest.split(/^^'Operators'$$/)[0];
-          $rest = $methods.split(/^^ ['  method ' || '  routine ']/)>>.trim.grep(so *).List;
-      } else {
-          $rest = [];
-      }
-      %( :name($doc.name), desc => $synopsis, methods => $rest );
+            # $rest may contain Methods and Operators
+            my $methods = $rest.split(/^^'Operators'$$/)[0];
+            $rest = $methods.split(/^^ \n* ['  method ' || '  routine ']/)>>.trim.grep(so *).List;
+        } else {
+            $rest = [];
+        }
+        %( :name($doc.name), desc => $synopsis, methods => $rest );
     }
     method generate-index(Kind $kind) { %() }
     method generate-subindex(Kind $kind, $category) { %() }
@@ -28,9 +28,9 @@ class CommaFactory is Documentable::DocPage::Factory {
 }
 
 my $registry = Documentable::Registry.new(
-    :!cache, topdir => 'doc/doc',
-    dirs => ['Type'], :verbose
-);
+        :!cache, topdir => 'doc/doc',
+        dirs => ['Type'], :verbose
+        );
 
 $registry.compose;
 
