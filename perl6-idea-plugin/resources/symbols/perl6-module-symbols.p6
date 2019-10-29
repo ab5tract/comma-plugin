@@ -304,7 +304,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     } else {
         @privates = object.^private_method_table.values;
     }
-    try for object.^methods(:local).grep(*.?package =:= object) -> $method {
+    try for object.^methods(:local).grep({ $kind ~~ 'c' ?? ($_.?package =:= object) !! True }) -> $method {
         try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, :is-method) for $method.candidates;
     }
     try for @privates -> $method {

@@ -38,7 +38,6 @@ subtest {
     my $output = $proc.out.slurp(:close);
     my $data;
     lives-ok { $data = from-json $output }, 'Can parse json';
-    say $data;
     my $variable = $data.first(*.<n> eq '$test-variable');
     ok $variable<n> eq '$test-variable';
     ok $variable<k> eq 'v';
