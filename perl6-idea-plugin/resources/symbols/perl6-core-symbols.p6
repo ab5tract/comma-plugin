@@ -354,7 +354,7 @@ my sub parse-string(str $text, int $pos is rw) {
                         my str @caps = $/.caps>>.value>>.Str;
                         my $result = $/;
                         my str $endpiece = "";
-                        if my $lastchar = nqp::chr(nqp::ord(@caps.tail)) ne @caps.tail {
+                        if (my $lastchar = nqp::chr(nqp::ord(@caps.tail))) ne @caps.tail {
                             $endpiece = tear-off-combiners(@caps.tail, 0);
                             @caps.pop;
                             @caps.push($lastchar);
