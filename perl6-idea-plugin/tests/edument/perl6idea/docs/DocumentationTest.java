@@ -125,15 +125,18 @@ public class DocumentationTest extends CommaFixtureTestCase {
     public void testMethodExternalFromCORE() {
         testQuickDoc("method Capture(*%_--> Mu)");
         testGeneratedDoc("Defined as:<br><br>    method Capture()<br><br>Throws X::Cannot::Capture.");
+        testURL("https://docs.perl6.org/routine/Capture");
     }
 
     public void testMethodExternalFromCORERole() {
         testQuickDoc("method roots(Cool $n, *%_--> Mu)");
         testGeneratedDoc("multi method roots(Numeric:D: Int:D $n --> Positional)<br><br>Returns a list of the $n complex roots, which evaluate to the original<br>number when raised to the $nth power.");
+        testURL("https://docs.perl6.org/routine/roots");
     }
 
     public void testMethodExternalFromCOREClass() {
         testQuickDoc("method rindex(|c is raw--> Mu)");
         testGeneratedDoc("Defined as:<br><br>    multi sub    rindex(Str(Cool) $haystack, Str(Cool) $needle, Int(Cool) $startpos = $haystack.chars)<br>    multi method rindex(Str(Cool) $haystack: Str(Cool) $needle, Int(Cool) $startpos = $haystack.chars)<br><br>Coerces the first two arguments (including the invocant in method form) to<br>Str and $startpos to Int, and returns the last position of $needle in<br>$haystack not after $startpos. Returns an undefined value if $needle wasn't<br>found.<br><br>See the documentation in type Str for examples.");
+        testURL("https://docs.perl6.org/routine/rindex");
     }
 }

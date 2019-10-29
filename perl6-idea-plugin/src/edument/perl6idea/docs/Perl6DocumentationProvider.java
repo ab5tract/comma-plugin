@@ -5,11 +5,13 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
-import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
+import edument.perl6idea.psi.external.ExternalPerl6File;
 import edument.perl6idea.psi.external.Perl6ExternalPsiElement;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Perl6DocumentationProvider implements DocumentationProvider {
@@ -67,12 +69,16 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
     @Nullable
     @Override
     public List<String> getUrlFor(PsiElement element, PsiElement originalElement) {
-        if (element instanceof ExternalPerl6PackageDecl) {
-            String name = ((Perl6PackageDecl)element).getName();
-            // TODO get urls for CORE back
-            //if (coreTypeCache.containsKey(name)) {
-            //    return Collections.singletonList("https://docs.perl6.org/type/" + name);
-            //}
+        if (element instanceof Perl6ExternalPsiElement) {
+            String name = ((Perl6ExternalPsiElement)element).getName();
+            PsiElement parent = element.getParent();
+            if (parent instanceof ExternalPerl6File &&
+                Objects.equals(((ExternalPerl6File)parent).getName(), "SETTINGS.pm6")) {
+                if (element instanceof Perl6PackageDecl)
+                    return Collections.singletonList("https://docs.perl6.org/type/" + name);
+                else if (element instanceof Perl6RoutineDecl)
+                    return Collections.singletonList("https://docs.perl6.org/routine/" + name);
+            }
         }
         return null;
     }
