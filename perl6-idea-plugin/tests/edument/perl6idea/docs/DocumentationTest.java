@@ -13,7 +13,7 @@ public class DocumentationTest extends CommaFixtureTestCase {
         return "perl6-idea-plugin/testData/docs";
     }
 
-    public void testGeneratedDoc(String result) {
+    private void testGeneratedDoc(String result) {
         myFixture.configureByFile(getTestName(true) + ".p6");
         PsiElement element = myFixture.getElementAtCaret();
         DocumentationProvider provider = DocumentationManager.getProviderFromElement(element);
@@ -21,7 +21,7 @@ public class DocumentationTest extends CommaFixtureTestCase {
         assertEquals(result, quickNavigateInfo);
     }
 
-    public void testQuickDoc(String result) {
+    private void testQuickDoc(String result) {
         myFixture.configureByFile(getTestName(true) + ".p6");
         PsiElement element = myFixture.getElementAtCaret();
         DocumentationProvider provider = DocumentationManager.getProviderFromElement(element);
@@ -29,7 +29,7 @@ public class DocumentationTest extends CommaFixtureTestCase {
         assertEquals(result, quickNavigateInfo);
     }
 
-    public void testURL(String result) {
+    private void testURL(String result) {
         myFixture.configureByFile(getTestName(true) + ".p6");
         PsiElement element = myFixture.getElementAtCaret();
         DocumentationProvider provider = DocumentationManager.getProviderFromElement(element);
