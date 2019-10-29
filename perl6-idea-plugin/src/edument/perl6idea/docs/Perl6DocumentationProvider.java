@@ -6,6 +6,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
+import edument.perl6idea.psi.external.Perl6ExternalPsiElement;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -40,8 +41,14 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
             return String.format("%s %s { ... }", decl.getRegexKind(), decl.getRegexName());
         } else if (element instanceof Perl6RoutineDecl) {
             Perl6RoutineDecl decl = (Perl6RoutineDecl)element;
-            Perl6Signature signature = decl.getSignatureNode();
-            return String.format("%s %s%s", decl.getRoutineKind(), decl.getRoutineName(), signature == null ? "()" : signature.getText());
+            String signature;
+            if (decl instanceof Perl6ExternalPsiElement)
+                signature = "(" + decl.summarySignature() + ")";
+            else {
+                Perl6Signature node = decl.getSignatureNode();
+                signature = node != null ? node.getText() : "()";
+            }
+            return String.format("%s %s%s", decl.getRoutineKind(), decl.getRoutineName(), signature);
         } else if (element instanceof Perl6Subset) {
             return "subset " + ((Perl6Subset)element).getSubsetName() + " of " + ((Perl6Subset)element).getSubsetBaseTypeName();
         } else if (element instanceof Perl6VariableDecl) {

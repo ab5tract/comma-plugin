@@ -115,7 +115,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
 
     @Override
     public String getSignature() {
-        return mySignature.toString();
+        return mySignature.summary(myReturnType);
     }
 
     @Nullable
