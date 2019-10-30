@@ -2,19 +2,13 @@ package edument.perl6idea.sdk;
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.ExecutionException;
-import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.*;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.util.SystemInfo;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightVirtualFile;
@@ -99,15 +93,15 @@ public class Perl6SdkType extends SdkType {
         // There might be different installations, such as package,
         // rakudobrew, p6env etc, so for now just return the first one
         // from PATH we can find
-        return findPerl6InPath();
+        return findPerl6SdkDirInPath();
     }
 
     @Nullable
-    private static String findPerl6InPath() {
+    private static String findPerl6SdkDirInPath() {
         final String path = System.getenv("PATH");
         for (String root : path.split(File.pathSeparator)) {
             final String file = findPerl6InSdkHome(root);
-            if (file != null) return file;
+            if (file != null) return root;
         }
         return null;
     }
