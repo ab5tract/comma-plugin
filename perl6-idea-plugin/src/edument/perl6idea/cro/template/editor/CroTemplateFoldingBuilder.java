@@ -20,19 +20,10 @@ public class CroTemplateFoldingBuilder extends FoldingBuilderEx implements DumbA
     @NotNull
     @Override
     public FoldingDescriptor[] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
-        int recursionLevel = 0;
-        List<FoldingDescriptor> descriptors = new ArrayList<>();
-        getLevelFolding(root, recursionLevel, descriptors);
-        return descriptors.toArray(FoldingDescriptor.EMPTY);
-    }
-
-    private static void getLevelFolding(@NotNull PsiElement root, int recursionLevel, List<FoldingDescriptor> descriptors) {
-        Collection<CroTemplateTagSequence> blocks = PsiTreeUtil.findChildrenOfType(root, CroTemplateTagSequence.class);
-        for (final CroTemplateTagSequence block : blocks) {
-            descriptors.add(new FoldingDescriptor(block.getNode(),
-                    block.getTextRange(), FoldingGroup.newGroup("crotmp-" + recursionLevel)));
-            getLevelFolding(block, recursionLevel + 1, descriptors);
-        }
+        return PsiTreeUtil.findChildrenOfAnyType(root, CroTemplateTagSequence.class)
+                .stream()
+                .map(block -> new FoldingDescriptor(block, block.getTextRange()))
+                .toArray(FoldingDescriptor[]::new);
     }
 
     @Nullable
