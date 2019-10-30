@@ -1,6 +1,7 @@
 package edument.perl6idea.rename;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -30,6 +31,9 @@ public class Perl6ModuleRenameProcessor extends RenamePsiElementProcessor {
     @Override
     public boolean canProcessElement(@NotNull PsiElement element) {
         if (!(element instanceof Perl6File)) return false;
+        // Process only module files, no scripts or tests
+        if (!(FileTypeManager.getInstance().getFileTypeByFile(element.getContainingFile().getVirtualFile()) instanceof Perl6ModuleFileType))
+            return false;
         Perl6File file = (Perl6File)element;
         Module module = ModuleUtilCore.findModuleForFile(file);
         if (module == null) return false;
