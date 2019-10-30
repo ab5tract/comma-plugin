@@ -3,7 +3,9 @@ package edument.perl6idea.run;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.*;
+import com.intellij.execution.process.KillableColoredProcessHandler;
+import com.intellij.execution.process.ProcessHandler;
+import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -11,9 +13,8 @@ import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Paths;
-import java.util.LinkedList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Perl6RunCommandLineState extends CommandLineState {
@@ -25,19 +26,14 @@ public class Perl6RunCommandLineState extends CommandLineState {
         runConfiguration = (Perl6RunConfiguration)getEnvironment().getRunProfile();
     }
 
-    protected String checkSDK() throws ExecutionException {
+    protected void populateRunCommand() throws ExecutionException {
         Sdk projectSdk = ProjectRootManager.getInstance(getEnvironment().getProject()).getProjectSdk();
-        if (projectSdk == null)
+        if (projectSdk == null || !(projectSdk.getSdkType() instanceof Perl6SdkType))
             throw new ExecutionException("Perl 6 SDK is not set for the project, please set one");
-        String path = projectSdk.getHomePath();
+        String path = ((Perl6SdkType)projectSdk.getSdkType()).suggestHomePath();
         if (path == null)
             throw new ExecutionException("Perl 6 SDK path is likely to be corrupt");
-        return path;
-    }
-
-    protected void populateRunCommand() throws ExecutionException {
-        String perl6Path = checkSDK();
-        command.add(Paths.get(perl6Path, Perl6SdkType.perl6Command()).toAbsolutePath().toString());
+        command.add(path);
         setInterpreterParameters();
     }
 

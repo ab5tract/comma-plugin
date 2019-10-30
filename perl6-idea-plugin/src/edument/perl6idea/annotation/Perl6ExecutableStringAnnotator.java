@@ -15,7 +15,7 @@ public class Perl6ExecutableStringAnnotator implements Annotator {
 
     static {
         aliases.add("raku");
-        aliases.add("perl6")
+        aliases.add("perl6");
         aliases.add("rakudo");
     }
 

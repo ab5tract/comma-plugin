@@ -12,7 +12,6 @@ public class Perl6DebugCommandLineState extends Perl6RunCommandLineState {
 
     @Override
     protected void populateRunCommand() throws ExecutionException {
-        checkSDK();
         command = Perl6CommandLine.populateDebugCommandLine(getEnvironment().getProject(), runConfiguration);
         if (command == null)
             throw new ExecutionException("Perl 6 SDK is not set for the project, please set one");

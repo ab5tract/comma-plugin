@@ -22,8 +22,7 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
 
     @Override
     protected void populateRunCommand() throws ExecutionException {
-        String perl6Path = checkSDK();
-        command.add(Paths.get(perl6Path, Perl6SdkType.perl6Command()).toAbsolutePath().toString());
+        command.add(Perl6SdkType.getInstance().suggestHomePath());
         String canonicalPath;
         try {
             tempFile = FileUtil.createTempFile("comma-profiler", ".sql");

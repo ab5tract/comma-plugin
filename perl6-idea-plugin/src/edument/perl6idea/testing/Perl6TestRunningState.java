@@ -30,7 +30,6 @@ import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,9 +80,9 @@ public class Perl6TestRunningState extends CommandLineState {
             if (project.getBasePath() == null) throw new ExecutionException("SDK is not set");
             Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
             if (projectSdk == null) throw new ExecutionException("SDK is not set");
-            String homePath = projectSdk.getHomePath();
-            if (homePath == null) throw new ExecutionException("SDK is not set");
-            command.add(Paths.get(homePath, Perl6SdkType.perl6Command()).toString());
+            String sdkBinaryPath = Perl6SdkType.getInstance().suggestHomePath();
+            if (sdkBinaryPath == null) throw new ExecutionException("SDK is not set");
+            command.add(sdkBinaryPath);
         }
         File script = Perl6Utils.getResourceAsFile("testing/perl6-test-harness.p6");
         if (script == null) throw new ExecutionException("Bundled resources are corrupted");
@@ -96,7 +95,7 @@ public class Perl6TestRunningState extends CommandLineState {
         return cmd;
     }
 
-    class Perl6TestConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {
+    static class Perl6TestConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {
         Perl6TestConsoleProperties(RunConfiguration runConfiguration, ExecutionEnvironment env) {
             super(runConfiguration, "PERL6_TEST_CONFIGURATION", env.getExecutor());
         }
