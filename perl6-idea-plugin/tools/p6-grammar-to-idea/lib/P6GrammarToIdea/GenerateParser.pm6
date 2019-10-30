@@ -55,7 +55,7 @@ multi sub compile(ElementNode $elem) {
         decl($marker),
         assign($marker, call($builder, 'mark')),
         |compile($elem.element-parser),
-        call($marker, 'done', StaticVariable.new(:name($elem.element-name), :class<Perl6ElementTypes>))
+        call($marker, 'done', StaticVariable.new(:name($elem.element-name), :class($*PREFIX ~ 'ElementTypes')))
     )
 }
 
@@ -63,7 +63,7 @@ multi sub compile(TokenNode $token) {
     my $builder = local('builder', 'PsiBuilder');
     my $cond = equal(
         call($builder, 'getTokenType'),
-        StaticVariable.new(:name($token.token-name), :class<Perl6TokenTypes>)
+        StaticVariable.new(:name($token.token-name), :class($*PREFIX ~ 'TokenTypes'))
     );
     my @decl;
     with $token.literal-value {
@@ -221,19 +221,21 @@ sub parse-entry-method() {
         ]
 }
 
-sub generate-parser(P6GrammarToIdea::Elements::Model $element-model) is export {
+sub generate-parser(P6GrammarToIdea::Elements::Model $element-model, $prefix, $package) is export {
     my $main-model = $element-model.get-braid-model('MAIN');
     my %*MANGLED = $main-model.production-names.sort.map({ $_ => mangle($_, ++$) });
+    my $*PREFIX = $prefix;
     my @methods = flat parse-entry-method(), braid-methods($main-model);
-    my $class = Class.new: :access<public>, :name("Perl6Parser"),
+    my $class = Class.new: :access<public>, :name($prefix ~ "Parser"),
         :interfaces(Interface.new(:name('PsiParser'))), :@methods;
     my $comp-unit = CompUnit.new:
-        package => 'edument.perl6idea.parsing',
+        package => $package,
         imports => <
             com.intellij.lang.ASTNode
             com.intellij.psi.tree.IElementType
             com.intellij.lang.PsiBuilder
             com.intellij.lang.PsiParser
+            edument.perl6idea.parsing.OPP
         >,
         type => $class;
     return $comp-unit.generate;

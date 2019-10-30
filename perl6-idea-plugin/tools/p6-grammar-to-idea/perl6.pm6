@@ -1,4 +1,3 @@
-
 grammar MAIN {
     token TOP {
         :my $*GOAL = '';

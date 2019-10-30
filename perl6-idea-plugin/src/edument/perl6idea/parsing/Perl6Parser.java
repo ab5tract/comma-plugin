@@ -3,6 +3,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiParser;
+import edument.perl6idea.parsing.OPP;
 
 public class Perl6Parser implements PsiParser {
 

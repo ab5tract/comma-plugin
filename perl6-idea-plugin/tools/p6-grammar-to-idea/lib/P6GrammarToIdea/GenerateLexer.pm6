@@ -13,7 +13,8 @@ my class GrammarCompiler {
     my constant FAIL = -2;
     my constant END-TOKEN = -3;
 
-    has $.grammar;
+    has $.grammar is required;
+    has $.prefix is required;
     has Int %!rule-numbers = $!grammar.productions.map(*.name).antipairs;
     has Str %!rule-methods = $!grammar.productions.map:
         { .name => "_%!rule-numbers{.name}_&mangle(.name)" };
@@ -226,7 +227,7 @@ my class GrammarCompiler {
             my $append-to = $*CUR-STATEMENTS;
             when 'start-token' {
                 $append-to.push: this-call 'startToken',
-                    StaticVariable.new(:name($rule.args[0].value), :class<Perl6TokenTypes>);
+                    StaticVariable.new(:name($rule.args[0].value), :class($!prefix ~ 'TokenTypes'));
             }
             when 'end-token' {
                 my $next = self!new-state();
@@ -476,9 +477,9 @@ my class GrammarCompiler {
     }
 }
 
-sub generate-lexer(Grammar $grammar) is export {
+sub generate-lexer(Grammar $grammar, $prefix, $package) is export {
     my $class-name = "$grammar.name()Braid";
-    my $compiler = GrammarCompiler.new(:$grammar);
+    my $compiler = GrammarCompiler.new(:$grammar, :$prefix);
     my @rule-methods = $compiler.compile-rules;
     my @methods = flat $compiler.compile-run-rule, @rule-methods,
         ClassMethod.new:
@@ -489,8 +490,9 @@ sub generate-lexer(Grammar $grammar) is export {
     my $class = Class.new: :access<public>, :name($class-name),
         :super(Class.new(:name("Cursor<$grammar.name()Braid>"))), :@methods;
     my $comp-unit = CompUnit.new:
-        package => 'edument.perl6idea.parsing',
+        package => $package,
         imports => <
+            edument.perl6idea.parsing.Cursor
         >,
         type => $class;
     return $comp-unit.generate;
