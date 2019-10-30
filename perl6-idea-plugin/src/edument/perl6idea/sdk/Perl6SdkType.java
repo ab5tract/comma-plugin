@@ -113,7 +113,7 @@ public class Perl6SdkType extends SdkType {
     }
 
     @Nullable
-    private static String findPerl6InSdkHome(String home) {
+    public static String findPerl6InSdkHome(String home) {
         for (String command : BINARY_NAMES) {
             final File file = new File(home, command);
             if (file.exists() && file.isFile() && file.canExecute()) {
@@ -194,28 +194,31 @@ public class Perl6SdkType extends SdkType {
 
     @Nullable
     public Map<String, String> getMoarBuildConfiguration(Project project) {
-        if (moarBuildConfig != null) return moarBuildConfig;
-        String perl6path = getSdkHomeByProject(project);
-        if (perl6path == null) {
+        if (moarBuildConfig != null)
+            return moarBuildConfig;
+        List<String> subs;
+
+        try {
+            Perl6CommandLine cmd = new Perl6CommandLine(project);
+            cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
+            cmd.addParameter("--show-config");
+            subs = cmd.executeAndRead();
+            Map<String, String> buildConfig = new TreeMap<>();
+
+            for (String line : subs) {
+                int equalsPosition = line.indexOf('=');
+                if (equalsPosition > 0) {
+                    String key = line.substring(0, equalsPosition);
+                    String value = line.substring(equalsPosition + 1);
+                    buildConfig.put(key, value);
+                }
+            }
+            moarBuildConfig = buildConfig;
+        } catch (ExecutionException e) {
+            LOG.warn(e);
             return null;
         }
 
-        Map<String, String> buildConfig = new TreeMap<>();
-
-        GeneralCommandLine cmd = Perl6CommandLine.getPerl6CommandLine(
-                System.getProperty("java.io.tmpdir"),
-                perl6path);
-        cmd.addParameter("--show-config");
-        List<String> subs = Perl6CommandLine.execute(cmd);
-        for (String line : subs) {
-            int equalsPosition = line.indexOf('=');
-            if (equalsPosition > 0) {
-                String key = line.substring(0, equalsPosition);
-                String value = line.substring(equalsPosition + 1);
-                buildConfig.put(key, value);
-            }
-        }
-        moarBuildConfig = buildConfig;
         return moarBuildConfig;
     }
 
@@ -238,15 +241,13 @@ public class Perl6SdkType extends SdkType {
 
         try {
             if (!mySettingsStarted) {
-                GeneralCommandLine cmd = Perl6CommandLine.pushFile(
-                    Perl6CommandLine.getPerl6CommandLine(
-                        System.getProperty("java.io.tmpdir"),
-                        perl6path),
-                    coreSymbols);
+                Perl6CommandLine cmd = new Perl6CommandLine(project);
+                cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
+                cmd.addParameter(coreSymbols.getAbsolutePath());
                 Thread thread = new Thread(() -> {
                     mySettingsStarted = true;
                     try {
-                        String settingLines = String.join("\n", Perl6CommandLine.execute(cmd));
+                        String settingLines = String.join("\n", cmd.executeAndRead());
                         if (settingLines.isEmpty()) {
                             LOG.warn("getCoreSettingFile got no symbols from Perl 6, using fallback");
                             getFallback(project);
@@ -393,18 +394,15 @@ public class Perl6SdkType extends SdkType {
             LOG.warn(new ExecutionException("Necessary distribution file is missing"));
             return new ArrayList<>();
         }
-        GeneralCommandLine cmd = Perl6CommandLine.getPerl6CommandLine(
-            project.getBasePath(),
-            homePath);
-        cmd.addParameter(moduleSymbols.getPath());
-        cmd.addParameter(invocation);
-
-        List<String> symbols = Perl6CommandLine.execute(cmd);
-        String text = String.join("\n", symbols);
-        if (text.length() > 2)
+        try {
+            Perl6CommandLine cmd = new Perl6CommandLine(project);
+            cmd.setWorkDirectory(project.getBasePath());
+            cmd.addParameters(moduleSymbols.getPath(), invocation);
+            String text = String.join("\n", cmd.executeAndRead());
             return new Perl6ExternalNamesParser(project, perl6File, text).parse().result();
-        else
+        } catch (ExecutionException e) {
             return new ArrayList<>();
+        }
     }
 
     private static List<Perl6Symbol> getNQPSymbols(Project project, Perl6File perl6File) {

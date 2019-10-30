@@ -53,7 +53,7 @@ public class Perl6TestRunningState extends CommandLineState {
         return new DefaultExecutionResult(consoleView, processHandler);
     }
 
-    private ConsoleView createConsole(@NotNull ExecutionEnvironment env) {
+    private static ConsoleView createConsole(@NotNull ExecutionEnvironment env) {
         final Perl6TestRunConfiguration runConfiguration = (Perl6TestRunConfiguration) env.getRunProfile();
         final TestConsoleProperties testConsoleProperties = new Perl6TestConsoleProperties(runConfiguration, env);
         final ConsoleView consoleView = SMTestRunnerConnectionUtil.createConsole("Perl 6 tests", testConsoleProperties);
@@ -71,26 +71,20 @@ public class Perl6TestRunningState extends CommandLineState {
     }
 
     protected GeneralCommandLine createCommandLine() throws ExecutionException {
+        Project project = getEnvironment().getProject();
+        Perl6CommandLine cmd;
+
         if (isDebugging) {
-            command = Perl6CommandLine.populateDebugCommandLine(
-              getEnvironment().getProject(),
-              ((Perl6DebuggableConfiguration)getEnvironment().getRunProfile()));
+            Perl6DebuggableConfiguration runConf = ((Perl6DebuggableConfiguration)getEnvironment().getRunProfile());
+            cmd = new Perl6CommandLine(project, runConf.getDebugPort());
         } else {
-            Project project = getEnvironment().getProject();
-            if (project.getBasePath() == null) throw new ExecutionException("SDK is not set");
-            Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
-            if (projectSdk == null) throw new ExecutionException("SDK is not set");
-            String sdkBinaryPath = Perl6SdkType.getInstance().suggestHomePath();
-            if (sdkBinaryPath == null) throw new ExecutionException("SDK is not set");
-            command.add(sdkBinaryPath);
+            cmd = new Perl6CommandLine(project);
         }
         File script = Perl6Utils.getResourceAsFile("testing/perl6-test-harness.p6");
         if (script == null) throw new ExecutionException("Bundled resources are corrupted");
-        GeneralCommandLine cmd = Perl6CommandLine.getCustomPerl6CommandLine(
-            command,
-            getEnvironment().getProject().getBasePath());
-        cmd.addParameter(script.getAbsolutePath());
+        cmd.setWorkDirectory(project.getBasePath());
         cmd.withEnvironment("TEST_JOBS", String.valueOf(runConfiguration.getParallelismDegree()));
+        cmd.addParameter(script.getAbsolutePath());
         cmd.addParameter("-Ilib");
         return cmd;
     }
