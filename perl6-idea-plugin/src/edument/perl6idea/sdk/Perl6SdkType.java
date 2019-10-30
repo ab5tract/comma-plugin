@@ -397,7 +397,10 @@ public class Perl6SdkType extends SdkType {
 
         List<String> symbols = Perl6CommandLine.execute(cmd);
         String text = String.join("\n", symbols);
-        return new Perl6ExternalNamesParser(project, perl6File, text).parse().result();
+        if (text.length() > 2)
+            return new Perl6ExternalNamesParser(project, perl6File, text).parse().result();
+        else
+            return new ArrayList<>();
     }
 
     public static void contributeParentSymbolsFromCore(@NotNull Perl6SymbolCollector collector,
