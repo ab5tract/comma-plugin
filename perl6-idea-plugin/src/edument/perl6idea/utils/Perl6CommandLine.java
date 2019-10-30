@@ -34,10 +34,14 @@ public class Perl6CommandLine extends GeneralCommandLine {
         String sdkHome = Perl6SdkType.getSdkHomeByProject(project);
         if (sdkHome == null)
             throw new ExecutionException("No SDK for project");
-        String perl6Binary = Perl6SdkType.findPerl6InSdkHome(sdkHome);
-        if (perl6Binary == null)
-            throw new ExecutionException("SDK is invalid");
-        setExePath(perl6Binary);
+        if (Paths.get(sdkHome).toFile().isFile())
+            setExePath(sdkHome);
+        else {
+            String perl6Binary = Perl6SdkType.findPerl6InSdkHome(sdkHome);
+            if (perl6Binary == null)
+                throw new ExecutionException("SDK is invalid");
+            setExePath(perl6Binary);
+        }
     }
 
     public Perl6CommandLine(Project project, int debugPort) throws ExecutionException {
