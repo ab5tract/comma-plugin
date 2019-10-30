@@ -1,5 +1,6 @@
 package edument.perl6idea.psi.stub;
 
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.stubs.DefaultStubBuilder;
@@ -15,8 +16,7 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
     @Override
     protected StubElement createStubForFile(@NotNull PsiFile file) {
         if (file instanceof Perl6File && ((Perl6File)file).isReal())
-            return new Perl6FileStubImpl((Perl6File)file, generateCompilationUnitName(file),
-                    ((Perl6File)file).getStatementLineMap());
+            return new Perl6FileStubImpl((Perl6File)file, generateCompilationUnitName(file), ((Perl6File)file).getStatementLineMap());
         else
             return super.createStubForFile(file);
     }
@@ -27,7 +27,7 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
             vf = ((LightVirtualFile)vf).getOriginalFile();
         if (vf != null) {
             String filePath = vf.getPath();
-            if (filePath.endsWith(Perl6ModuleFileType.INSTANCE.getDefaultExtension())) {
+            if (FileTypeManager.getInstance().getFileTypeByFile(vf) instanceof Perl6ModuleFileType) {
                 String basePath = file.getProject().getBaseDir().getPath();
                 if (filePath.startsWith(basePath)) {
                     String relPath = filePath.substring(basePath.length() + 1);
