@@ -36,105 +36,53 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Fix a lot of issues related to symbol resolution and completion: numerous false positive cases were fixed, and a call to a multi method now suggests to choose an appropriate candidate instead of jumping to the first one. Performance of resolution was greatly increased for large projects</li>
-
-<li>Comma is now based on the 2019.01 version of IntelliJ platform. The plugin keeps backward compatibility with previous versions starting from 2017.03</li>
-
-<li>Add a Cro Application project template with options to use templating and WebSocket. This generates a project structure similar to the 'cro stub' one, including Dockerfile, routes setup, '.cro.yml' for the 'cro' command line tool, and example tests using Cro::HTTP::Test</li>
-
-<li>Add a Cro Service run configuration type which allows running a Cro service based on manual configuration or data taken from a '.cro.yml' file</li>
-
-<li>Add a visualizer for Log::Timeline output. That module provides for insertion of event and task logging into code, and then monitoring to see - live - what is happening. This is especially useful for visualizing asynchronous workflows and understanding parallelization. The upcoming Cro release will including logging of request pipelines.</li>
-
-<li>Fix debugger support on Windows (also requires upcoming Rakudo point release 2019.07.1)</li>
-
-<li>Support block comments (<code>Ctrl+Shift+/</code>)</li>
-
-<li>Add an annotation that suggests to replace redundant grep.first call chains into a single first call</li>
-
-<li>Add an intention (<code>Alt+Enter</code>) allowing to change a Perl 6 package's type (e.g. turn grammar into class or role into monitor)</li>
-
-<li>Add an intention to make private methods public: it updates both the private method definition and all its calls</li>
-
-<li>Add an intention to make an attribute required if it does not have a default value</li>
-
-<li>Add an annotation warning about BUILD and TWEAK being declared as methods instead of submethod, which is a common mistake, and a quickfix to change it</li>
-
-<li>Add an annotation warning about redundant Array and Hash initialization (e.g. my <code>@a = []</code> or <code>my %a = ()</code>) and a quickfix to remove the empty initializer</li>
-
-<li>Add an intention to replace the await Promise.allof construction with a plain await call</li>
-
-<li>Add an annotation warning about <code>"perl6"</code> usage in string literals that is common for running a new Perl 6 process and suggest to change it into multiplatform <code>$*EXECUTABLE.absolute</code> call with a quickfix</li>
-
-<li>Add an intention allowing to unparenthesize an expression</li>
-
-<li>Cro routes are now shown in Structure View (<code>Ctrl + F12</code>) for easier navigation to routes within a file</li>
-
-<li>Cro routes are indexed and can be seen in Navigate to Symbol (<code>Ctrl+Alt+Shift+N</code>)</li>
-
-<li>The range literal simplification quickfix is now accompanied with a weak warning annotator</li>
-
-<li>Modules with <code>:from</code> are no longer annotated as unknown</li>
-
-<li>The quickfix that stubs a local module from a 'use' statement now prompts the user for the name and module type. The new module name is suggested automatically and, if changed, the 'use' statement will reflect the change</li>
-
-<li>Add completion for dynamic variables defined by Perl 6</li>
-
-<li>Improve the timeline run tab UI</li>
-
-<li>Add support for the Pause action in the debugger</li>
-
-<li>The debugger's 'start suspended' setting in the Perl 6 Run Configuration now works</li>
-
-<li>On project creation, META6.json files are created with attributes sorted</li>
-
-<li>The annotator that detects usage of modules outside of META6.json now considers build and test dependencies</li>
-
-<li>If the specified SDK of a project is missing at its specified paths, it leads to a warning instead of an exception</li>
-
-<li>Add an annotator that detects use of <code>if .defined</code> and similar, providing a quickfix to replace it with an with/orwith/without construction</li>
-
-<li>Deprecation warnings no longer break the displaying of test results when using the test runner</li>
-
-<li>When, during debugging, a breakpoint is reached, the top stack frame now always shows its lexicals immediately</li>
-
-<li>Fix misleading error notification about failed connection when the Perl 6 process to debug exits before debug server was able to connect</li>
-
-<li>Fix a possible rare exception when anonymous variables are used</li>
-
-<li>Fix an incorrect behavior related to the colonpair form of argument passing</li>
-
-<li>Fix a possible exception in the annotator that offers a quickfix to stub a private method using an unknown call</li>
-
-<li>Fix a rare exception related to <code>META6.json</code> handling</li>
-
-<li>Fix resolution and completion of an Enumeration that is not marked as is export</li>
-
-<li>Fix the generated signature of a private method stubbed from its usage using a quickfix, when private attributes are passed as arguments</li>
-
-<li>Fix parsing of heredoc text that starts with an infix operator</li>
-
-<li>Fix a bug with META6.json being created with an incorrect module name</li>
-
-<li>Fix a rare exception occurring at new project creation</li>
-
-<li>Fix a rare exception caused by the presence of nameless constants in code</li>
-
-<li>Fix a possible exception on project SDK change</li>
-
-<li>Fix parsing of traits placed immediately after a type, for example, <code>Str is encoded('utf8')</code></li>
-
-<li>Fix parsing of a constant declaration with an explicit type, for example, <code>our Int constant A</code></li>
-
-<li>Fix parsing of indented Pod6 statements</li>
-
-<li>Fix a case when an annotator that suggests methods from roles that have to be implemented did not consider multi methods and attribute accessors</li>
-
-<li>Fix a case when an annotator that suggests simpler syntax for Pair literals wrongly recognized <code>:foo{$foo}</code> as an opportunity for rewriting to <code>:$foo</code></li>
-
-<li>Fix a bug where the 't' directory was marked as a Source Directory instead of Test Directory on Window</li>
-
-<li>Fix a bug where debugging after an SDK change used the Perl 6 prefix of the previous SDK</li>
+<li>Add basic support for Cro&#39;s Template language, including syntax
+highlighting and editing features (code folding, brace matching,
+spell checking, etc.)</li>
+<li>Provide in-IDE documentation for types and methods (local from the project,
+from external modules, and from Perl 6 builtins). These are extracted
+from documentation comments and the Perl 6 documentation respectively.</li>
+<li>Parse package names (class, grammar etc) with adverbs (e.g. <code>class
+Foo:auth&lt;foo&gt;</code>)</li>
+<li>Do not incorrectly recognize some cases of pair literals (e.g. <code>m =&gt; 42</code>) or sub
+calls (<code>s(42)</code>) as regex literals</li>
+<li>Accept postfix application as a valid case in the range correctness
+annotator</li>
+<li>The shebang line is now always added for new scripts, and only a MAIN
+subroutine stub is optional</li>
+<li>Support completion and recognition of known nqp functions when the <code>use
+nqp</code> pragma is present</li>
+<li>Fix a possible race related to setting breakpoints in the debugger</li>
+<li>Make discovering of Log::Timeline server by Timeline viewer more
+robust</li>
+<li>Recognize Raku file extensions (<code>.raku</code>, <code>.rakumod</code>, <code>.rakudoc</code>,
+<code>.rakutest</code>),</li>
+<li>Recognize Raku executable names (<code>raku</code> and <code>rakudo</code>) the besides
+existing ones</li>
+<li>Make the Parameter Info feature work with methods and subroutines imported from the CORE setting and external modules</li>
+<li>Make completion of methods on a call work according to the specified return type of a routine (e.g. <code>Setty.new.elems.&lt;caret&gt;</code> will know the return type is Int and suggest methods accordingly)</li>
+<li>Method completion now understands multi-methods</li>
+<li>Show method signatures during method completion and sort candidates according to Method Resolution Order</li>
+<li>Distinguish attribute getters from other methods and the show type of an attribute</li>
+<li>Improve the performance of Go to Symbol feature and Method Completion</li>
+<li>Make loading of external symbols not block project initialization and typing; symbols are also now loaded in parallel</li>
+<li>Work correctly with symbols from external modules that are parametrized (e.g. <code>use MyModule :day;</code>)</li>
+<li>Parameter Info now correctly behaves when a comma character is typed in a block that is an argument</li>
+<li>Add an annotator that highlights cases when an array or hash variable in a list assignments will gobble all initialization values (e.g. <code>my ($one, @rest, $two) = 42, [42], 42</code>) and provide a quickfix for it</li>
+<li>Annotation of calls to unknown private methods does not mark multimethods and external methods as unknown now</li>
+<li>Add &#39;model&#39; keyword to support metaclasses provided by the Red ORM</li>
+<li>The plugin updates Sdk caches on Sdk change action just as standalone Comma now</li>
+<li>Multiline pod declarations <code>#|()</code> and <code>#=()</code> are now parsed correctly</li>
+<li>An annotator that checks missing methods from classes now recognizes variable getters as methods, even in a case of a multi-variable declaration (e.g. <code>has ($.a, $.b)</code>)</li>
+<li>Structure View shows all names declared in an attribute declaration with multiple variables (e.g. <code>has ($.a, $.b)</code>). The Go to Declaration feature works with such declarations too</li>
+<li>The type of <code>$*IN</code>, <code>$*OUT</code>, <code>$*ERR*</code> is now correctly inferred to be <code>IO::Handle</code> instead of <code>IO::Special</code></li>
+<li>Fix a bug in using fallback when an Sdk is available, but CORE symbols can&#39;t be loaded</li>
+<li>Fix a rare exception on project indexing</li>
+<li>Implement Parameter Info feature (<code>Ctrl-P</code> in default keymap, auto-popups on typing a call if enabled in settings) which shows the signatures of the available candidates</li>
+<li>Implement Surround With feature (<code>Ctrl-Alt-T</code>) allowing to quickly surround expressions or statements with another construct, such as an <code>if</code> block, <code>for</code> loop, or contextualizer, for example, converting <code>from-json($file)</code> to <code>start { from-json($file) }</code>. Various capture groups are supported as surrounders for regexps</li>
+<li>Add an annotation warning about usage of a return with arguments inside of a routine with <code>Nil</code> specified as return type</li>
+<li>More cases of stacktrace locations are converted into clickable links in console output</li>
+<li>Fix an exception on attempt to create a Perl 6 module file in the plugin</li>
 </ul>
   ]]></change-notes>
 

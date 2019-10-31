@@ -32,26 +32,29 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Make the Parameter Info feature work with methods and subroutines imported from the CORE setting and external modules</li>
-<li>Make completion of methods on a call work according to the specified return type of a routine (e.g. <code>Setty.new.elems.&lt;caret&gt;</code> will know the return type is Int and suggest methods accordingly)</li>
-<li>Method completion now understands multi-methods</li>
-<li>Show method signatures during method completion and sort candidates according to Method Resolution Order</li>
-<li>Distinguish attribute getters from other methods and the show type of an attribute</li>
-<li>Improve the performance of Go to Symbol feature and Method Completion</li>
-<li>Make loading of external symbols not block project initialization and typing; symbols are also now loaded in parallel</li>
-<li>Work correctly with symbols from external modules that are parametrized (e.g. <code>use MyModule :day;</code>)</li>
-<li>Parameter Info now correctly behaves when a comma character is typed in a block that is an argument</li>
-<li>Add an annotator that highlights cases when an array or hash variable in a list assignments will gobble all initialization values (e.g. <code>my ($one, @rest, $two) = 42, [42], 42</code>) and provide a quickfix for it</li>
-<li>Annotation of calls to unknown private methods does not mark multimethods and external methods as unknown now</li>
-<li>Add &#39;model&#39; keyword to support metaclasses provided by the Red ORM</li>
-<li>The plugin updates Sdk caches on Sdk change action just as standalone Comma now</li>
-<li>Multiline pod declarations <code>#|()</code> and <code>#=()</code> are now parsed correctly</li>
-<li>Variable Inline refactoring now works with parameters and multi-variable declarations (e.g. <code>my ($a, $b);</code>)</li>
-<li>An annotator that checks missing methods from classes now recognizes variable getters as methods, even in a case of a multi-variable declaration (e.g. <code>has ($.a, $.b)</code>)</li>
-<li>Structure View shows all names declared in an attribute declaration with multiple variables (e.g. <code>has ($.a, $.b)</code>). The Go to Declaration feature works with such declarations too</li>
-<li>The type of <code>$*IN</code>, <code>$*OUT</code>, <code>$*ERR*</code> is now correctly inferred to be <code>IO::Handle</code> instead of <code>IO::Special</code></li>
-<li>Fix a bug in using fallback when an Sdk is available, but CORE symbols can&#39;t be loaded</li>
-<li>Fix a rare exception on project indexing</li>
+<li>Add basic support for Cro&#39;s Template language, including syntax
+highlighting and editing features (code folding, brace matching,
+spell checking, etc.)</li>
+<li>Provide in-IDE documentation for types and methods (local from the project,
+from external modules, and from Perl 6 builtins). These are extracted
+from documentation comments and the Perl 6 documentation respectively.</li>
+<li>Parse package names (class, grammar etc) with adverbs (e.g. <code>class
+Foo:auth&lt;foo&gt;</code>)</li>
+<li>Do not incorrectly recognize some cases of pair literals (e.g. <code>m =&gt; 42</code>) or sub
+calls (<code>s(42)</code>) as regex literals</li>
+<li>Accept postfix application as a valid case in the range correctness
+annotator</li>
+<li>The shebang line is now always added for new scripts, and only a MAIN
+subroutine stub is optional</li>
+<li>Support completion and recognition of known nqp functions when the <code>use
+nqp</code> pragma is present</li>
+<li>Fix a possible race related to setting breakpoints in the debugger</li>
+<li>Make discovering of Log::Timeline server by Timeline viewer more
+robust</li>
+<li>Recognize Raku file extensions (<code>.raku</code>, <code>.rakumod</code>, <code>.rakudoc</code>,
+<code>.rakutest</code>),</li>
+<li>Recognize Raku executable names (<code>raku</code> and <code>rakudo</code>) the besides
+existing ones</li>
 </ul>
   ]]>
   </change-notes>
