@@ -32,29 +32,17 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Add basic support for Cro&#39;s Template language, including syntax
-highlighting and editing features (code folding, brace matching,
-spell checking, etc.)</li>
-<li>Provide in-IDE documentation for types and methods (local from the project,
-from external modules, and from Perl 6 builtins). These are extracted
-from documentation comments and the Perl 6 documentation respectively.</li>
-<li>Parse package names (class, grammar etc) with adverbs (e.g. <code>class
-Foo:auth&lt;foo&gt;</code>)</li>
-<li>Do not incorrectly recognize some cases of pair literals (e.g. <code>m =&gt; 42</code>) or sub
-calls (<code>s(42)</code>) as regex literals</li>
-<li>Accept postfix application as a valid case in the range correctness
-annotator</li>
-<li>The shebang line is now always added for new scripts, and only a MAIN
-subroutine stub is optional</li>
-<li>Support completion and recognition of known nqp functions when the <code>use
-nqp</code> pragma is present</li>
+<li>Add basic support for Cro&#39;s Template language, including syntax highlighting and editing features (code folding, brace matching, spell checking, etc.)</li>
+<li>Provide in-IDE documentation for types and methods (local from the project, from external modules, and from Perl 6 builtins). These are extracted from documentation comments and the Perl 6 documentation respectively.</li>
+<li>Parse package names (class, grammar etc) with adverbs (e.g. <code>class Foo:auth&lt;foo&gt;</code>)</li>
+<li>Do not incorrectly recognize some cases of pair literals (e.g. <code>m =&gt; 42</code>) or sub calls (<code>s(42)</code>) as regex literals</li>
+<li>Accept postfix application as a valid case in the range correctness annotator</li>
+<li>The shebang line is now always added for new scripts, and only a MAIN subroutine stub is optional</li>
+<li>Support completion and recognition of known nqp functions when the <code>use nqp</code> pragma is present</li>
 <li>Fix a possible race related to setting breakpoints in the debugger</li>
-<li>Make discovering of Log::Timeline server by Timeline viewer more
-robust</li>
-<li>Recognize Raku file extensions (<code>.raku</code>, <code>.rakumod</code>, <code>.rakudoc</code>,
-<code>.rakutest</code>),</li>
-<li>Recognize Raku executable names (<code>raku</code> and <code>rakudo</code>) the besides
-existing ones</li>
+<li>Make discovering of Log::Timeline server by Timeline viewer more robust</li>
+<li>Recognize Raku file extensions (<code>.raku</code>, <code>.rakumod</code>, <code>.rakudoc</code>, <code>.rakutest</code>),</li>
+<li>Recognize Raku executable names (<code>raku</code> and <code>rakudo</code>) the besides existing ones</li>
 </ul>
   ]]>
   </change-notes>
