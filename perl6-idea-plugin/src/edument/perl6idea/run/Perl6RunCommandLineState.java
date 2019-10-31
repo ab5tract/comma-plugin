@@ -3,7 +3,9 @@ package edument.perl6idea.run;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.*;
+import com.intellij.execution.process.KillableColoredProcessHandler;
+import com.intellij.execution.process.ProcessHandler;
+import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -11,33 +13,21 @@ import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Paths;
-import java.util.LinkedList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Perl6RunCommandLineState extends CommandLineState {
     protected List<String> command = new LinkedList<>();
     protected Perl6RunConfiguration runConfiguration;
+    protected boolean isDebug = false;
 
     public Perl6RunCommandLineState(ExecutionEnvironment environment) {
         super(environment);
         runConfiguration = (Perl6RunConfiguration)getEnvironment().getRunProfile();
     }
 
-    protected String checkSDK() throws ExecutionException {
-        Sdk projectSdk = ProjectRootManager.getInstance(getEnvironment().getProject()).getProjectSdk();
-        if (projectSdk == null)
-            throw new ExecutionException("Perl 6 SDK is not set for the project, please set one");
-        String path = projectSdk.getHomePath();
-        if (path == null)
-            throw new ExecutionException("Perl 6 SDK path is likely to be corrupt");
-        return path;
-    }
-
     protected void populateRunCommand() throws ExecutionException {
-        String perl6Path = checkSDK();
-        command.add(Paths.get(perl6Path, Perl6SdkType.perl6Command()).toAbsolutePath().toString());
         setInterpreterParameters();
     }
 
@@ -50,14 +40,39 @@ public class Perl6RunCommandLineState extends CommandLineState {
     @NotNull
     @Override
     protected ProcessHandler startProcess() throws ExecutionException {
+        // At the beginning of starting a process, we always
+        // check project's SDK for being valid, so that
+        // all run configurations can assume they are running with a proper SDK
+        checkSdk();
         populateRunCommand();
         setScript();
-        GeneralCommandLine cmd = Perl6CommandLine.getCustomPerl6CommandLine(command, runConfiguration.getWorkingDirectory());
+        Perl6CommandLine cmd;
+        if (isDebug) {
+            cmd = new Perl6CommandLine(getEnvironment().getProject(), runConfiguration.getDebugPort());
+        } else {
+            cmd = new Perl6CommandLine(getEnvironment().getProject());
+        }
+        cmd.setWorkDirectory(runConfiguration.getWorkingDirectory());
+        cmd.addParameters(command);
         setEnvironment(cmd);
         KillableColoredProcessHandler handler = new KillableColoredProcessHandler(cmd, true);
         ProcessTerminatedListener.attach(handler, getEnvironment().getProject());
         setListeners(handler);
         return handler;
+    }
+
+    /**
+     * Checks SDK of project to be valid and is executed before process is started.
+     * Overload it with caution and in custom `startProcess` implementations
+     * always call either parent `startProcess` or `checkSdk` method.
+     */
+    protected void checkSdk() throws ExecutionException {
+        Sdk projectSdk = ProjectRootManager.getInstance(getEnvironment().getProject()).getProjectSdk();
+        if (projectSdk == null || !(projectSdk.getSdkType() instanceof Perl6SdkType))
+            throw new ExecutionException("Perl 6 SDK is not set for the project, please set one");
+        String path = Perl6SdkType.findPerl6InSdkHome(projectSdk.getHomePath());
+        if (path == null)
+            throw new ExecutionException("Perl 6 SDK is broken");
     }
 
     protected void setEnvironment(GeneralCommandLine cmd) {

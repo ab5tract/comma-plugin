@@ -2,19 +2,13 @@ package edument.perl6idea.sdk;
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.ExecutionException;
-import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.*;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.util.SystemInfo;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightVirtualFile;
@@ -47,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Perl6SdkType extends SdkType {
     private static final String NAME = "Perl 6 SDK";
     public static final String SETTING_FILE_NAME = "SETTINGS.pm6";
+    private static final Set<String> BINARY_NAMES = new HashSet<>();
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
     private Map<String, String> moarBuildConfig;
 
@@ -61,6 +56,16 @@ public class Perl6SdkType extends SdkType {
     private Perl6File setting;
     private boolean mySettingsStarted = false;
     private Set<String> myPackageStarted = ContainerUtil.newConcurrentSet();
+
+    static {
+        BINARY_NAMES.add("perl6");
+        BINARY_NAMES.add("perl6.bat");
+        BINARY_NAMES.add("perl6.exe");
+        BINARY_NAMES.add("raku");
+        BINARY_NAMES.add("raku.exe");
+        BINARY_NAMES.add("rakudo");
+        BINARY_NAMES.add("rakudo.exe");
+    }
 
     private Perl6SdkType() {
         super(NAME);
@@ -85,45 +90,35 @@ public class Perl6SdkType extends SdkType {
     @Nullable
     @Override
     public String suggestHomePath() {
-        return findPerl6InPath();
+        // There might be different installations, such as package,
+        // rakudobrew, p6env etc, so for now just return the first one
+        // from PATH we can find
+        return findPerl6SdkDirInPath();
     }
 
     @Nullable
-    private static String findPerl6InPath() {
-        final String command = perl6Command();
+    private static String findPerl6SdkDirInPath() {
         final String path = System.getenv("PATH");
         for (String root : path.split(File.pathSeparator)) {
-            final File file = new File(root, command);
-            if (file.exists()) {
-                return file.getParentFile().getAbsolutePath();
+            final String file = findPerl6InSdkHome(root);
+            if (file != null) return root;
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String findPerl6InSdkHome(String home) {
+        for (String command : BINARY_NAMES) {
+            final File file = new File(home, command);
+            if (file.exists() && file.isFile() && file.canExecute()) {
+                return file.getAbsolutePath();
             }
         }
         return null;
     }
 
-    public static String perl6Command() {
-        return SystemInfo.isWindows ? "perl6.bat"  : "perl6";
-    }
-
     @Nullable
-    public static String getSdkHomeByElement(PsiElement element) {
-        return getSdkHomeByModule(ModuleUtilCore.findModuleForPsiElement(element));
-    }
-
-    @Nullable
-    public static String getSdkHomeByModule(Module module) {
-        if (module == null)
-            return null;
-        Sdk sdk = ModuleRootManager.getInstance(module).getSdk();
-        return sdk != null && sdk.getSdkType() instanceof Perl6SdkType
-               ? sdk.getHomePath()
-               : getSdkHomeByProject(module.getProject());
-    }
-
-    @Nullable
-    public static String getSdkHomeByProject(Project project) {
-        if (project == null)
-            return null;
+    public static String getSdkHomeByProject(@NotNull Project project) {
         Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
         return sdk != null && sdk.getSdkType() instanceof Perl6SdkType
                ? sdk.getHomePath()
@@ -132,7 +127,12 @@ public class Perl6SdkType extends SdkType {
 
     @Override
     public boolean isValidSdkHome(@NotNull String path) {
-        return Paths.get(path, perl6Command()) != null;
+        for (String exe : BINARY_NAMES) {
+            File file = Paths.get(path, exe).toFile();
+            if (file.exists() && file.isFile() && file.canExecute())
+                return true;
+        }
+        return false;
     }
 
     @Nullable
@@ -148,33 +148,26 @@ public class Perl6SdkType extends SdkType {
     @Nullable
     @Override
     public String getVersionString(@NotNull String path) {
-        Path binPath = Paths.get(path, perl6Command());
-        String[] command = {binPath.normalize().toString(), "-e", "say $*PERL.compiler.version"};
-        BufferedReader std = null;
-        try {
-            if (!binPath.toFile().isDirectory() && Files.isExecutable(binPath)) {
-                Process p = Runtime.getRuntime().exec(command);
-                std = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String firstLine = std.readLine();
-                if (firstLine != null) {
-                    std.close();
-                    return firstLine;
-                }
-            }
-        } catch (IOException e) {
-            LOG.error(e);
+        String binPath = findPerl6InSdkHome(path);
+        if (binPath == null)
             return null;
-        } finally {
-            if (std != null) {
-                try {
-                    std.close();
-                }
-                catch (IOException e) {
-                    LOG.warn(e);
-                }
+        String[] command = {binPath, "-e", "say $*PERL.compiler.version"};
+        String line = null;
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+
+        try {
+            Process process = processBuilder.start();
+            try (
+                InputStreamReader in = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
+                BufferedReader processOutputReader = new BufferedReader(in)) {
+                line = processOutputReader.readLine();
+                if (process.waitFor() != 0)
+                    return null;
             }
+        } catch (IOException|InterruptedException e) {
+            LOG.warn(e);
         }
-        return null;
+        return line;
     }
 
     @NotNull
@@ -195,28 +188,31 @@ public class Perl6SdkType extends SdkType {
 
     @Nullable
     public Map<String, String> getMoarBuildConfiguration(Project project) {
-        if (moarBuildConfig != null) return moarBuildConfig;
-        String perl6path = getSdkHomeByProject(project);
-        if (perl6path == null) {
+        if (moarBuildConfig != null)
+            return moarBuildConfig;
+        List<String> subs;
+
+        try {
+            Perl6CommandLine cmd = new Perl6CommandLine(project);
+            cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
+            cmd.addParameter("--show-config");
+            subs = cmd.executeAndRead();
+            Map<String, String> buildConfig = new TreeMap<>();
+
+            for (String line : subs) {
+                int equalsPosition = line.indexOf('=');
+                if (equalsPosition > 0) {
+                    String key = line.substring(0, equalsPosition);
+                    String value = line.substring(equalsPosition + 1);
+                    buildConfig.put(key, value);
+                }
+            }
+            moarBuildConfig = buildConfig;
+        } catch (ExecutionException e) {
+            LOG.warn(e);
             return null;
         }
 
-        Map<String, String> buildConfig = new TreeMap<>();
-
-        GeneralCommandLine cmd = Perl6CommandLine.getPerl6CommandLine(
-                System.getProperty("java.io.tmpdir"),
-                perl6path);
-        cmd.addParameter("--show-config");
-        List<String> subs = Perl6CommandLine.execute(cmd);
-        for (String line : subs) {
-            int equalsPosition = line.indexOf('=');
-            if (equalsPosition > 0) {
-                String key = line.substring(0, equalsPosition);
-                String value = line.substring(equalsPosition + 1);
-                buildConfig.put(key, value);
-            }
-        }
-        moarBuildConfig = buildConfig;
         return moarBuildConfig;
     }
 
@@ -239,15 +235,13 @@ public class Perl6SdkType extends SdkType {
 
         try {
             if (!mySettingsStarted) {
-                GeneralCommandLine cmd = Perl6CommandLine.pushFile(
-                    Perl6CommandLine.getPerl6CommandLine(
-                        System.getProperty("java.io.tmpdir"),
-                        perl6path),
-                    coreSymbols);
+                Perl6CommandLine cmd = new Perl6CommandLine(project);
+                cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
+                cmd.addParameter(coreSymbols.getAbsolutePath());
                 Thread thread = new Thread(() -> {
                     mySettingsStarted = true;
                     try {
-                        String settingLines = String.join("\n", Perl6CommandLine.execute(cmd));
+                        String settingLines = String.join("\n", cmd.executeAndRead());
                         if (settingLines.isEmpty()) {
                             LOG.warn("getCoreSettingFile got no symbols from Perl 6, using fallback");
                             getFallback(project);
@@ -394,18 +388,15 @@ public class Perl6SdkType extends SdkType {
             LOG.warn(new ExecutionException("Necessary distribution file is missing"));
             return new ArrayList<>();
         }
-        GeneralCommandLine cmd = Perl6CommandLine.getPerl6CommandLine(
-            project.getBasePath(),
-            homePath);
-        cmd.addParameter(moduleSymbols.getPath());
-        cmd.addParameter(invocation);
-
-        List<String> symbols = Perl6CommandLine.execute(cmd);
-        String text = String.join("\n", symbols);
-        if (text.length() > 2)
+        try {
+            Perl6CommandLine cmd = new Perl6CommandLine(project);
+            cmd.setWorkDirectory(project.getBasePath());
+            cmd.addParameters(moduleSymbols.getPath(), invocation);
+            String text = String.join("\n", cmd.executeAndRead());
             return new Perl6ExternalNamesParser(project, perl6File, text).parse().result();
-        else
+        } catch (ExecutionException e) {
             return new ArrayList<>();
+        }
     }
 
     private static List<Perl6Symbol> getNQPSymbols(Project project, Perl6File perl6File) {
