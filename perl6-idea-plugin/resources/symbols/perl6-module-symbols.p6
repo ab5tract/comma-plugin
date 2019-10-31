@@ -235,7 +235,9 @@ EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
 }
 
 sub pack-variable($name, \object, :$is-attribute = False) {
-    %( k => "v", n => $name, t => $is-attribute ?? object.type.^name !! object.^name );
+    my %var = k => "v", n => $name, t => $is-attribute ?? object.type.^name !! object.^name;
+    try %var<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
+    %var;
 }
 
 sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
@@ -245,7 +247,9 @@ sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
     my @parameters = @params.map(*.gist).List;
     my %signature = r => $s.returns.^name, p => @parameters;
     my $kind = $code.^name.comb.head.lc;
-    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness );
+    my %code = k => $kind, n => $name // $code.name, s => %signature, m => $multiness;
+    try %code<d> = $code.WHY.gist if $code.WHY ~~ Pod::Block::Declarator;
+    %code;
 }
 
 sub pack-package(@elems, $name, Mu \object) {
@@ -278,9 +282,13 @@ sub describer(@elems, $name, Mu \object) {
     } elsif object.HOW.WHAT ~~ Metamodel::ParametricRoleGroupHOW {
         describe-OOP(@elems, $name, "ro", object);
     } elsif object.HOW.WHAT ~~ Metamodel::EnumHOW {
-        @elems.push: %( k => "e", n => $name, t => object.^name );
+        my %enum = k => "e", n => $name, t => object.^name;
+        try %enum<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
+        @elems.push: %enum;
     } elsif object.HOW.WHAT ~~ Metamodel::SubsetHOW {
-        @elems.push: %( k => "ss", n => $name, t => object.^refinee.^name );
+        my %subset = k => "ss", n => $name, t => object.^refinee.^name;
+        try %subset<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
+        @elems.push: %subset;
     }
 }
 
@@ -288,13 +296,15 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     use nqp;
     my $b = nqp::istype(object, Cool) ?? 'C' !! nqp::istype(object, Any) ?? 'A' !! 'M';
     my %class = k => $kind, n => $name, t => object.^name, :$b;
+    %class<mro> = (try flat object.^roles.map(*.^name), object.^parents(:local).map(*.^name)) // ();
+    try %class<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
     my @privates;
     if $kind eq "ro" {
         @privates = object.^candidates[0].^private_method_table.values;
     } else {
         @privates = object.^private_method_table.values;
     }
-    try for object.^methods -> $method {
+    try for object.^methods(:local).grep({ $kind ~~ 'c' ?? ($_.?package =:= object) !! True }) -> $method {
         try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, :is-method) for $method.candidates;
     }
     try for @privates -> $method {

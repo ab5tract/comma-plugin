@@ -58,6 +58,11 @@ public class ExternalPerl6File implements Perl6File {
     }
 
     @Override
+    public void contributeScopeSymbols(Perl6SymbolCollector collector) {
+        contributeGlobals(collector, new HashSet<>());
+    }
+
+    @Override
     public void contributeGlobals(Perl6SymbolCollector collector, Set<String> seen) {
         for (Perl6Symbol symbol : mySymbols) {
             if (symbol.getKind() == Perl6SymbolKind.Routine) {

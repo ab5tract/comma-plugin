@@ -12,14 +12,26 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.Perl6Language;
+import edument.perl6idea.psi.Perl6Documented;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class Perl6ExternalPsiElement implements PsiNamedElement, NavigatablePsiElement {
+public class Perl6ExternalPsiElement implements PsiNamedElement, NavigatablePsiElement, Perl6Documented {
     protected Project myProject;
     protected PsiElement myParent;
+    protected String myDocs = null;
+
+    @Nullable
+    @Override
+    public String getDocsString() {
+        return myDocs;
+    }
+
+    public void setDocs(String docs) {
+        myDocs = docs.replaceAll("\n", "<br>");
+    }
 
     @NotNull
     @Override

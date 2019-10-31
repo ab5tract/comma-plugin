@@ -124,6 +124,7 @@
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6StatementSurroundDescriptor"/>
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6ExpressionSurroundDescriptor"/>
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6SRegexAtomSurroundDescriptor"/>
+    <lang.documentationProvider language="Perl6" implementationClass="edument.perl6idea.docs.Perl6DocumentationProvider"/>
   </extensions>
 
   <actions>

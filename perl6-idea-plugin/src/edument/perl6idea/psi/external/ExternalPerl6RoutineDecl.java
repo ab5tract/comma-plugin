@@ -7,11 +7,13 @@ import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6Signature;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
-import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
+import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
+import org.json.JSONObject;
 
 public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements Perl6RoutineDecl {
     private final String myKind;
@@ -22,7 +24,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     private Perl6Signature mySignature;
 
     public ExternalPerl6RoutineDecl(Project project, PsiElement parent,
-                                    String kind, String scope, String name, String isMulti, Map signature) {
+                                    String kind, String scope, String name, String isMulti, JSONObject signature) {
         myProject = project;
         myParent = parent;
         myKind = kind;
@@ -113,7 +115,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
 
     @Override
     public String getSignature() {
-        return mySignature.toString();
+        return mySignature.summary(myReturnType);
     }
 
     @Nullable

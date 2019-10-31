@@ -57,7 +57,6 @@ public class Perl6CommandLine extends GeneralCommandLine {
         List<String> results = new LinkedList<>();
         try {
             Process p = createProcess();
-
             try (
                 BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))
             ) {

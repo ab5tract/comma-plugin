@@ -20,6 +20,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
 
     public Perl6StructureViewElement(Perl6PsiElement element) {
         this.element = element;
+        this.calculatedPresentation = getPresentation();
     }
 
     public Perl6StructureViewElement(Perl6PsiElement element, ItemPresentation calculatedPresentation) {

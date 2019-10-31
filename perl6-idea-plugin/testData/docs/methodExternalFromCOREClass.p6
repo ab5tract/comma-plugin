@@ -1,0 +1,1 @@
+Int.ri<caret>ndex;
