@@ -65,4 +65,12 @@ public class SubCompletionTest extends CommaFixtureTestCase {
         List<String> subs = myFixture.getLookupElementStrings();
         assertNotNull(subs);
     }
+
+    public void testNqpComplete() throws InterruptedException {
+        ensureModuleIsLoaded("nqp");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use nqp;\nnqp::ab<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> subs = myFixture.getLookupElementStrings();
+        assertContainsElements(subs, Arrays.asList("nqp::abs_I", "nqp::abs_i", "nqp::abs_n"));
+    }
 }

@@ -10,10 +10,7 @@ import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Perl6ModuleBuilderScript implements Perl6ModuleBuilderGeneric {
     private String myScriptName;
@@ -36,13 +33,11 @@ public class Perl6ModuleBuilderScript implements Perl6ModuleBuilderGeneric {
     public static String stubScript(Path moduleLibraryPath, String scriptName, boolean shouldFill) {
         if (!scriptName.endsWith(".pl6") && !scriptName.endsWith(Perl6ScriptFileType.INSTANCE.getDefaultExtension()))
             scriptName += "." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
-        List<String> lines = Arrays.asList(
-                "#!/usr/bin/env perl6",
-                "", "",
-                "sub MAIN() { }"
-        );
+        List<String> lines = new ArrayList<>(Collections.singletonList("#!/usr/bin/env perl6"));
+        if (shouldFill)
+            lines.addAll(Arrays.asList("", "", "sub MAIN() { }"));
         Path path = moduleLibraryPath.resolve(scriptName);
-        Perl6Utils.writeCodeToPath(path, shouldFill ? lines : new ArrayList<>());
+        Perl6Utils.writeCodeToPath(path, lines);
         return path.toString();
     }
 

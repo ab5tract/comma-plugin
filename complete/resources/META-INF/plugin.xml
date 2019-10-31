@@ -1,6 +1,6 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <id>edument.perl6-idea-plugin</id>
-  <version>2019.8.0</version>
+  <version>2019.9.0</version>
   <name>Comma Complete Edition (Perl 6 Language Support)</name>
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
@@ -32,12 +32,26 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Implement Parameter Info feature (<code>Ctrl-P</code> in default keymap, auto-popups on typing a call if enabled in settings) which shows the signatures of the available candidates</li>
-<li>Implement Surround With feature (<code>Ctrl-Alt-T</code>) allowing to quickly surround expressions or statements with another construct, such as an <code>if</code> block, <code>for</code> loop, or contextualizer, for example, converting <code>from-json($file)</code> to <code>start { from-json($file) }</code>. Various capture groups are supported as surrounders for regexps</li>
-<li>Add an annotation warning about usage of a return with arguments inside of a routine with <code>Nil</code> specified as return type</li>
-<li>More cases of stacktrace locations are converted into clickable links in console output</li>
-<li>Minor improvements of timeline and profiler UI</li>
-<li>Fix an exception on attempt to create a Perl 6 module file in the plugin</li>
+<li>Make the Parameter Info feature work with methods and subroutines imported from the CORE setting and external modules</li>
+<li>Make completion of methods on a call work according to the specified return type of a routine (e.g. <code>Setty.new.elems.&lt;caret&gt;</code> will know the return type is Int and suggest methods accordingly)</li>
+<li>Method completion now understands multi-methods</li>
+<li>Show method signatures during method completion and sort candidates according to Method Resolution Order</li>
+<li>Distinguish attribute getters from other methods and the show type of an attribute</li>
+<li>Improve the performance of Go to Symbol feature and Method Completion</li>
+<li>Make loading of external symbols not block project initialization and typing; symbols are also now loaded in parallel</li>
+<li>Work correctly with symbols from external modules that are parametrized (e.g. <code>use MyModule :day;</code>)</li>
+<li>Parameter Info now correctly behaves when a comma character is typed in a block that is an argument</li>
+<li>Add an annotator that highlights cases when an array or hash variable in a list assignments will gobble all initialization values (e.g. <code>my ($one, @rest, $two) = 42, [42], 42</code>) and provide a quickfix for it</li>
+<li>Annotation of calls to unknown private methods does not mark multimethods and external methods as unknown now</li>
+<li>Add &#39;model&#39; keyword to support metaclasses provided by the Red ORM</li>
+<li>The plugin updates Sdk caches on Sdk change action just as standalone Comma now</li>
+<li>Multiline pod declarations <code>#|()</code> and <code>#=()</code> are now parsed correctly</li>
+<li>Variable Inline refactoring now works with parameters and multi-variable declarations (e.g. <code>my ($a, $b);</code>)</li>
+<li>An annotator that checks missing methods from classes now recognizes variable getters as methods, even in a case of a multi-variable declaration (e.g. <code>has ($.a, $.b)</code>)</li>
+<li>Structure View shows all names declared in an attribute declaration with multiple variables (e.g. <code>has ($.a, $.b)</code>). The Go to Declaration feature works with such declarations too</li>
+<li>The type of <code>$*IN</code>, <code>$*OUT</code>, <code>$*ERR*</code> is now correctly inferred to be <code>IO::Handle</code> instead of <code>IO::Special</code></li>
+<li>Fix a bug in using fallback when an Sdk is available, but CORE symbols can&#39;t be loaded</li>
+<li>Fix a rare exception on project indexing</li>
 </ul>
   ]]>
   </change-notes>

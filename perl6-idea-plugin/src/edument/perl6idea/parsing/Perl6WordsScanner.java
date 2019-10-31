@@ -21,7 +21,7 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
         myIdentifierTokenSet = TokenSet.create(
             Perl6TokenTypes.NAME, Perl6TokenTypes.SUB_CALL_NAME,
             Perl6TokenTypes.METHOD_CALL_NAME, Perl6TokenTypes.VARIABLE,
-            Perl6TokenTypes.ROUTINE_NAME
+            Perl6TokenTypes.ROUTINE_NAME, Perl6TokenTypes.PACKAGE_NAME
         );
         myCommentTokenSet = TokenSet.create(Perl6TokenTypes.COMMENT, Perl6TokenTypes.POD_TEXT, Perl6TokenTypes.POD_FINISH_TEXT);
         myLiteralTokenSet = TokenSet.create(

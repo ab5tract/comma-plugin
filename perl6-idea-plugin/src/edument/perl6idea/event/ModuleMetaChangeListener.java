@@ -2,6 +2,7 @@ package edument.perl6idea.event;
 
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -55,9 +56,7 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
     public void after(@NotNull List<? extends VFileEvent> events) {
         for (VFileEvent event : events) {
             VirtualFile file = event.getFile();
-            if (file == null || // File might be null
-                // It is not a directory and its path does not end with `.pm6`, so skip it
-                !file.isDirectory() && !(Objects.equals(file.getExtension(), Perl6ModuleFileType.INSTANCE.getDefaultExtension())))
+            if (file == null || !(FileTypeManager.getInstance().getFileTypeByFile(file) instanceof Perl6ModuleFileType))
                 continue;
 
             if (event instanceof VFileDeleteEvent) {
@@ -110,7 +109,7 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
         for (String name : myMetaData.getProvidedNames()) {
             if (name.startsWith(oldPrefix)) {
                 myMetaData.removeNamespaceToProvides(name);
-                myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length(), name.length()));
+                myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()));
             }
         }
     }
@@ -129,7 +128,7 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
             for (String name : myMetaData.getProvidedNames()) {
                 if (name.startsWith(oldPrefix)) {
                     myMetaData.removeNamespaceToProvides(name);
-                    myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length(), name.length()));
+                    myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()));
                 }
             }
         } else if (isToLib) {
@@ -137,7 +136,7 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
             VfsUtilCore.visitChildrenRecursively(file, new VirtualFileVisitor<Object>() {
                 @Override
                 public boolean visitFile(@NotNull VirtualFile file) {
-                    if (!file.isDirectory() && Objects.equals(file.getExtension(), Perl6ModuleFileType.INSTANCE.getDefaultExtension())) {
+                    if (FileTypeManager.getInstance().getFileTypeByFile(file) instanceof Perl6ModuleFileType) {
                         myMetaData.addNamespaceToProvides(calculateModuleName(file.getPath()));
                     }
                     return true;

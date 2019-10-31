@@ -32,14 +32,14 @@ public class Perl6TimelineCommandLineState extends Perl6RunCommandLineState {
             throw new ExecutionException("Could not find a free port for timeline server: " + e.getMessage());
         }
         ProcessHandler handler = super.startProcess();
-        timelineClient = new TimelineClient("localhost", port);
+        timelineClient = new TimelineClient("127.0.0.1", port);
         return handler;
     }
 
     @Override
     protected void setEnvironment(GeneralCommandLine cmd) {
         super.setEnvironment(cmd);
-        cmd.withEnvironment("LOG_TIMELINE_SERVER", "localhost:" + port);
+        cmd.withEnvironment("LOG_TIMELINE_SERVER", "127.0.0.1:" + port);
     }
 
     public TimelineClient getTimelineClient() {

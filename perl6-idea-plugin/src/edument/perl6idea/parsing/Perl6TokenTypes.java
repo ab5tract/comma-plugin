@@ -83,6 +83,7 @@ public interface Perl6TokenTypes {
     IElementType NUMBER_LITERAL = new Perl6ElementType("NUMBER_LITERAL");
     IElementType ONLY_STAR = new Perl6ElementType("ONLY_STAR");
     IElementType PACKAGE_DECLARATOR = new Perl6ElementType("PACKAGE_DECLARATOR");
+    IElementType PACKAGE_NAME = new Perl6ElementType("PACKAGE_NAME");
     IElementType PAIR_KEY = new Perl6ElementType("PAIR_KEY");
     IElementType PARAMETER_ANON = new Perl6ElementType("PARAMETER_ANON");
     IElementType PARAMETER_INCOMPLETE = new Perl6ElementType("PARAMETER_INCOMPLETE");

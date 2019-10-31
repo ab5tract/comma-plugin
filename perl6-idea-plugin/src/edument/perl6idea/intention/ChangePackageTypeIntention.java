@@ -123,8 +123,7 @@ public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction im
         IElementType elementType = element.getNode().getElementType();
         if (elementType == Perl6TokenTypes.PACKAGE_DECLARATOR)
             return true;
-        PsiElement parent = element.getParent();
-        return elementType == Perl6TokenTypes.NAME && parent instanceof Perl6PackageDecl;
+        return elementType == Perl6TokenTypes.PACKAGE_NAME;
     }
 
     @NotNull

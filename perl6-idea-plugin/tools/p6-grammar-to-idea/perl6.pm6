@@ -1,4 +1,3 @@
-
 grammar MAIN {
     token TOP {
         :my $*GOAL = '';
@@ -1358,12 +1357,12 @@ grammar MAIN {
     ## Terms
 
     token term {
-        || <.value>
         || <.fatarrow>
         || <.colonpair>
         || <.term_self>
         || <.variable>
         || <.term_ident>
+        || <.value>
         || <.scope_declarator>
         || <.routine_declarator>
         || <.regex_declarator>
@@ -2597,9 +2596,12 @@ grammar MAIN {
         :my $*IN_DECL = 'package';
         <.ws>
         [
-            <.start-token('NAME')>
+            <.start-element('LONG_NAME')>
+            <.start-token('PACKAGE_NAME')>
             <.name>
-            <.end-token('NAME')>
+            <.end-token('PACKAGE_NAME')>
+            <.longname_colonpairs>
+            <.end-element('LONG_NAME')>
             <.ws>
             [
                 <?{ $*IS_ROLE }>
