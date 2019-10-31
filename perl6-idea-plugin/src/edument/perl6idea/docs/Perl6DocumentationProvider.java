@@ -1,10 +1,7 @@
 package edument.perl6idea.docs;
 
 import com.intellij.lang.documentation.DocumentationProvider;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.ResolveResult;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.external.ExternalPerl6File;
@@ -88,11 +85,18 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
     @Nullable
     @Override
     public synchronized String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
-        if (element instanceof Perl6MethodCall) {
-            PsiReference ref = element.getReference();
-            if (!(ref instanceof Perl6MethodReference))
+        if (element instanceof Perl6MethodCall || element instanceof Perl6SubCall) {
+            PsiReference ref;
+            if (element instanceof Perl6MethodCall) {
+                ref = element.getReference();
+            } else {
+                Perl6SubCallName callName = PsiTreeUtil.findChildOfType(element, Perl6SubCallName.class);
+                if (callName == null) return null;
+                ref = callName.getReference();
+            }
+            if (!(ref instanceof PsiReferenceBase.Poly))
                 return null;
-            ResolveResult[] resolves = ((Perl6MethodReference)ref).multiResolve(false);
+            ResolveResult[] resolves = ((PsiReferenceBase.Poly)ref).multiResolve(false);
             for (ResolveResult result : resolves) {
                 PsiElement declaration = result.getElement();
                 if (declaration instanceof Perl6RoutineDecl) {
