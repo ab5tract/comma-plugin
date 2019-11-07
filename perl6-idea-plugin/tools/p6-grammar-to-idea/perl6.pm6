@@ -4267,10 +4267,13 @@ grammar MAIN {
 
     token rxws {
         [
-        <?before [\s || '#']>
-        <.start-token('RX_WHITESPACE')> <?> <.end-token('RX_WHITESPACE')>
-        <.ws>
-        ]?
+        || <.start-token('WHITE_SPACE')>
+           [\r\n || \v]
+           <.end-token('WHITE_SPACE')>
+        || <.vws>
+        || <.start-token('UNV_WHITE_SPACE')> \h+ <.end-token('UNV_WHITE_SPACE')>
+        || <.plain-comment>
+        ]*
     }
 
     token regex_nibbler {
