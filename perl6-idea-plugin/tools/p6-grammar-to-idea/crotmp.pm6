@@ -217,6 +217,7 @@ grammar MAIN {
             [
             || <.dot> <.deref>?
             || <.block>
+            || <.variable>
             ]
             [
                 <.tgt>
