@@ -1,4 +1,4 @@
-package edument.perl6idea.actions;
+package edument.perl6idea.cro.actions;
 
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -9,13 +9,21 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
+import edument.perl6idea.cro.template.CroTemplateFileType;
+import edument.perl6idea.filetypes.Perl6TestFileType;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
 import edument.perl6idea.utils.Patterns;
+import edument.perl6idea.utils.Perl6Utils;
+import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-public class NewTestAction extends AnAction {
+public class NewCroTemplateAction extends AnAction {
     @Override
     public void update(AnActionEvent e) {
         final DataContext dataContext = e.getDataContext();
@@ -33,48 +41,58 @@ public class NewTestAction extends AnAction {
     }
 
     @Override
-    public void actionPerformed(AnActionEvent e) {
+    public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getData(CommonDataKeys.PROJECT);
         if (project == null) return;
         InputValidator validator = new InputValidator() {
             @Override
             public boolean checkInput(String inputString) {
-                return inputString.matches(Patterns.TEST_PATTERN);
+                return inputString.matches(Patterns.CRO_TEMPLATE_PATTERN);
             }
 
             @Override
             public boolean canClose(String inputString) {
-                return inputString.matches(Patterns.TEST_PATTERN);
+                return inputString.matches(Patterns.CRO_TEMPLATE_PATTERN);
             }
         };
 
         Object navigatable = e.getData(CommonDataKeys.NAVIGATABLE);
-        String testPath = null;
+        String templatePath = null;
         if (navigatable != null) {
             if (navigatable instanceof PsiDirectory)
-                testPath = ((PsiDirectory) navigatable).getVirtualFile().getPath();
+                templatePath = ((PsiDirectory) navigatable).getVirtualFile().getPath();
             else if (navigatable instanceof PsiFile)
                 if (((PsiFile) navigatable).getParent() != null)
-                    testPath = ((PsiFile) navigatable).getParent().getVirtualFile().getPath();
+                    templatePath = ((PsiFile) navigatable).getParent().getVirtualFile().getPath();
         }
 
         String fileName = Messages.showInputDialog(
-            project,
-            "Test file name (type one without an extension to use a default '.t'):",
-            "New Test Name",
-            Messages.getQuestionIcon(), null, validator);
+                project,
+                "Cro Template name (type one without an extension to use a default '.crotmp'):",
+                "New Cro Template Name",
+                Messages.getQuestionIcon(), null, validator);
         if (fileName == null)
             return;
 
-        if (testPath == null) {
+        if (templatePath == null) {
             VirtualFile path = project.getBaseDir();
             if (path == null) return;
-            testPath = Paths.get(path.getPath(), "t").toString();
+            templatePath = Paths.get(path.getPath(), "templates").toString();
         }
 
-        testPath = Perl6ModuleBuilderModule.stubTest(Paths.get(testPath), fileName, Collections.emptyList());
-        VirtualFile testFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(testPath);
+        templatePath = stubTemplate(Paths.get(templatePath), fileName);
+        VirtualFile testFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(templatePath);
         assert testFile != null;
         FileEditorManager.getInstance(project).openFile(testFile, true);
+    }
+
+
+    public static String stubTemplate(Path testDirectoryPath, String fileName) {
+        Path testPath = testDirectoryPath.resolve(fileName);
+        // If no extension, add default `.crotmp`
+        if (!testPath.toString().contains("."))
+            testPath = Paths.get(testDirectoryPath.toString(), fileName + "." + CroTemplateFileType.INSTANCE.getDefaultExtension());
+        Perl6Utils.writeCodeToPath(testPath, new LinkedList<>());
+        return testPath.toString();
     }
 }

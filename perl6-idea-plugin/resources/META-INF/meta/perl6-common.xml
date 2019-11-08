@@ -140,6 +140,10 @@
             description="Create new Perl 6 test in current project" icon="/icons/camelia.png">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewModuleAction"/>
     </action>
+    <action id="Perl6Plugin.NewCroTemplateAction" class="edument.perl6idea.cro.actions.NewCroTemplateAction" text="Cro Template"
+            description="Create new Cro template in current project" icon="/icons/cro.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewTestAction"/>
+    </action>
   </actions>
 
   <module-components>
