@@ -58,8 +58,10 @@ grammar MAIN {
         <.close>
         [
             <.ws>
-            <.literal-tag-name>
-            <.gt>?
+            [
+                <.literal-tag-name>
+                <.gt>?
+            ]?
         ]?
         <.end-element('LITERAL_CLOSE_TAG')>
     }
@@ -167,10 +169,8 @@ grammar MAIN {
         <.start-token('VARIABLE_NAME')>
         '$' <.identifier>?
         <.end-token('VARIABLE_NAME')>
-        [
-            [ <.dot> <.deref>? ]?
-            <.tgt>
-        ]?
+        [ <.dot> <.deref>? ]?
+        <.tgt>?
         <.end-element('VARIABLE_ACCESS')>
     }
 
