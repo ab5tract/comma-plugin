@@ -169,10 +169,8 @@ grammar MAIN {
         <.start-token('VARIABLE_NAME')>
         '$' <.identifier>?
         <.end-token('VARIABLE_NAME')>
-        [
-            [ <.dot> <.deref>? ]?
-            <.tgt>
-        ]?
+        [ <.dot> <.deref>? ]?
+        <.tgt>?
         <.end-element('VARIABLE_ACCESS')>
     }
 

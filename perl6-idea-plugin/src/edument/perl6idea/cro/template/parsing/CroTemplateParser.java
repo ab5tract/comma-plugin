@@ -2742,13 +2742,6 @@ public class CroTemplateParser implements PsiParser {
     }
 
     private boolean sigiltagvariable_54_quant_3(PsiBuilder builder, OPP opp) {
-        PsiBuilder.Marker quantMarker3;
-        quantMarker3 = builder.mark();
-        if (this.sigiltagvariable_54_quant_2(builder, opp)) {
-            quantMarker3.drop();
-        } else {
-            quantMarker3.rollbackTo();
-        }
         if (!(this.tgt_59(builder))) {
             return false;
         }
@@ -2767,6 +2760,13 @@ public class CroTemplateParser implements PsiParser {
             builder.advanceLexer();
         } else {
             return false;
+        }
+        PsiBuilder.Marker quantMarker3;
+        quantMarker3 = builder.mark();
+        if (this.sigiltagvariable_54_quant_2(builder, opp)) {
+            quantMarker3.drop();
+        } else {
+            quantMarker3.rollbackTo();
         }
         PsiBuilder.Marker quantMarker4;
         quantMarker4 = builder.mark();
