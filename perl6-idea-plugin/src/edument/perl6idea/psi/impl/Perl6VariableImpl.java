@@ -39,7 +39,14 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         if (infix != null)
             return "&infix:<" + infix.getText() + ">";
         PsiElement varToken = getVariableToken();
-        return varToken != null ? varToken.getText() : null;
+        if (varToken == null)
+            return null;
+        String name = varToken.getText();
+        for (PsiElement colonPair : findChildrenByType(Perl6ElementTypes.COLON_PAIR)) {
+            // We should properly mangle these at some point.
+            name += colonPair.getText();
+        }
+        return name;
     }
 
     @NotNull
