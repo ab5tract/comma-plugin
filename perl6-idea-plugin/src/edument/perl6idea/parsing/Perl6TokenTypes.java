@@ -143,7 +143,6 @@ public interface Perl6TokenTypes {
     IElementType RETURN_ARROW = new Perl6ElementType("RETURN_ARROW");
     IElementType ROUTINE_DECLARATOR = new Perl6ElementType("ROUTINE_DECLARATOR");
     IElementType ROUTINE_NAME = new Perl6ElementType("ROUTINE_NAME");
-    IElementType RX_WHITESPACE = new Perl6ElementType("RX_WHITESPACE");
     IElementType SCOPE_DECLARATOR = new Perl6ElementType("SCOPE_DECLARATOR");
     IElementType SELF = new Perl6ElementType("SELF");
     IElementType SELF_CALL_VARIABLE = new Perl6ElementType("SELF_CALL_VARIABLE");
