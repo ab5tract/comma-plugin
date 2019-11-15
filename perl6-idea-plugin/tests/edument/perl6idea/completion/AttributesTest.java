@@ -50,7 +50,7 @@ public class AttributesTest extends CommaFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
-        assertContainsElements(vars, Arrays.asList("$!", "$!a", "$!setup", "$!is-clone"));
+        assertContainsElements(vars, Arrays.asList("$!", "$!a", "$!rettype"));
     }
 
     public void testOuterFileAttributes() {

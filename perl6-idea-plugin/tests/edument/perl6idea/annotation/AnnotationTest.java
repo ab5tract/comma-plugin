@@ -139,7 +139,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testDeclaredExternalAttributeAnnotator() throws InterruptedException {
         ensureModuleIsLoaded("NativeCall");
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!setup; } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "use NativeCall; class A does NativeCall::Native { method b { say $!rettype; } }");
         myFixture.checkHighlighting();
     }
 
