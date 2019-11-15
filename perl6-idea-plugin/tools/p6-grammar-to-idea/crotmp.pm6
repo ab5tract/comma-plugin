@@ -58,8 +58,10 @@ grammar MAIN {
         <.close>
         [
             <.ws>
-            <.literal-tag-name>
-            <.gt>?
+            [
+                <.literal-tag-name>
+                <.gt>?
+            ]?
         ]?
         <.end-element('LITERAL_CLOSE_TAG')>
     }

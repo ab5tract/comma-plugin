@@ -1,0 +1,8 @@
+<:macro page($title, $active, $logged-in)>
+<!doctype html>
+<html lang="en">
+  <!{ $logged-in }>
+    <&nav-item('login', 'Log In', '/subscriber/login')>
+  </!
+</html>
+</:macro>
