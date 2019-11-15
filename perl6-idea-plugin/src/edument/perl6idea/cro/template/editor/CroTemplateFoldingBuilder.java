@@ -22,6 +22,7 @@ public class CroTemplateFoldingBuilder extends FoldingBuilderEx implements DumbA
     public FoldingDescriptor[] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
         return PsiTreeUtil.findChildrenOfAnyType(root, CroTemplateTagSequence.class)
                 .stream()
+                .filter(block -> !block.getTextRange().isEmpty())
                 .map(block -> new FoldingDescriptor(block, block.getTextRange()))
                 .toArray(FoldingDescriptor[]::new);
     }
