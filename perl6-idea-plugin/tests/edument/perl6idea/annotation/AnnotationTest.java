@@ -89,8 +89,13 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
-    public void testOperatorNamesInVariables() {
+    public void testDeclaredOperatorNamesInVariables() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @ops = &infix:<+>, &prefix:<!>, &postfix:<++>, &postcircumfix:<[ ]>;");
+        myFixture.checkHighlighting();
+    }
+
+    public void testUndeclaredOperatorNamesInVariables() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable &infix:<foo> is not declared\">&infix:<foo></error>;");
         myFixture.checkHighlighting();
     }
 
