@@ -12,7 +12,12 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
+import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ModuleRootModificationUtil;
+import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.libraries.Library;
+import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.vfs.*;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6Icons;
@@ -28,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Perl6MetaDataComponent implements ModuleComponent {
@@ -71,6 +77,49 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         }
         myMetaFile = metaFile;
         myMeta = checkMetaSanity();
+
+        // Load dependencies
+        if (myMeta != null) {
+            syncExternalLibraries(myMeta);
+        }
+    }
+
+    private void syncExternalLibraries(JSONObject meta) {
+        final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(myModule);
+        List<String> libraryNames = new ArrayList<>();
+        List<String> missingEntries = new ArrayList<>();
+        moduleRootManager.orderEntries().forEachLibrary(library -> {
+            libraryNames.add(library.getName());
+            return true;
+        });
+        JSONArray depends = meta.getJSONArray("depends");
+        outer : for (Object dependencyName : depends) {
+            if (dependencyName instanceof String) {
+                for (String libraryName : libraryNames) {
+                    if (Objects.equals(libraryName, dependencyName))
+                        continue outer;
+                }
+                missingEntries.add((String)dependencyName);
+            }
+        }
+
+        if (missingEntries.isEmpty())
+            return;
+
+        ApplicationManager.getApplication().invokeLater(() -> {
+            ApplicationManager.getApplication().runWriteAction(() -> {
+                ModifiableRootModel model = moduleRootManager.getModifiableModel();
+                LibraryTable table = model.getModuleLibraryTable();
+                for (String missingEntry : missingEntries) {
+                    Library library = table.createLibrary(missingEntry);
+                    Library.ModifiableModel libraryModel = library.getModifiableModel();
+                    libraryModel.addRoot(missingEntry, OrderRootType.SOURCES);
+                    libraryModel.commit();
+                    ModuleRootModificationUtil.addDependency(myModule, library);
+                }
+                model.commit();
+            });
+        });
     }
 
     private VirtualFile checkOldMetaFile(VirtualFile metaParent) {
