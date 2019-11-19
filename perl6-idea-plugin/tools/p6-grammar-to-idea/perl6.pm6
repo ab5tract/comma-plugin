@@ -1634,6 +1634,13 @@ grammar MAIN {
     token semiarglist {
         <.arglist>
         <.ws>?
+        [
+           <.start-token('STATEMENT_TERMINATOR')>
+           ';'
+           <.end-token('STATEMENT_TERMINATOR')>
+           <.arglist>?
+           <.ws>?
+        ]*
     }
 
     token arglist {

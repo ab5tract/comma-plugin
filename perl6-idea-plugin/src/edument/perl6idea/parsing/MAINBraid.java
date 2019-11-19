@@ -14896,6 +14896,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
     }
 
     private int _119_semiarglist() {
+        int rep;
         while (true) {
             switch (this.state) {
             case 0:
@@ -14937,6 +14938,76 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 4:
+                this.bsMark(13);
+                this.state = 5;
+                break;
+            case 5:
+                this.startToken(Perl6TokenTypes.STATEMENT_TERMINATOR);
+                if (!(this.literal(";"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 6;
+                return -3;
+
+            case 6:
+                this.bsMark(9);
+                this.state = 7;
+                break;
+            case 7:
+                this.setArgs();
+                this.state = 8;
+                return 120;
+
+            case 8:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(9);
+                this.state = 9;
+                continue;
+
+            case 9:
+                this.bsMark(12);
+                this.state = 10;
+                break;
+            case 10:
+                this.setArgs();
+                this.state = 11;
+                return 18;
+
+            case 11:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(12);
+                this.state = 12;
+                continue;
+
+            case 12:
+                rep = this.peekRep(13);
+                ++rep;
+                this.bsCommit(13);
+                this.bsMark(13, rep);
+                this.state = 5;
+                continue;
+
+            case 13:
                 return -1;
 
             }
