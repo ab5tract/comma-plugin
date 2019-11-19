@@ -1,0 +1,1 @@
+our int32 constant LC_ALL is export(:ALL) = 6;
