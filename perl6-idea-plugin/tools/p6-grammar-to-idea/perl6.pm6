@@ -3724,6 +3724,7 @@ grammar MAIN {
            [
            || <.postfixish_nometa>
            || <.start-token('HYPER_METAOP_MISSING')> <?> <.end-token('HYPER_METAOP_MISSING')>
+              { $*PREC = 'y=' } { $*ASSOC = 'unary' }
            ]
            <.end-element('HYPER_METAOP')>
         || <.postfixish_nometa>
