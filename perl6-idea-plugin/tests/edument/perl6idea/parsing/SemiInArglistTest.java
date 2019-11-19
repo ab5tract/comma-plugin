@@ -13,7 +13,7 @@ public class SemiInArglistTest extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/parsing/semi-in-arglist-test";
+        return "perl6-idea-plugin/testData/parsing/semi-in-arglist";
     }
 
     @Override
