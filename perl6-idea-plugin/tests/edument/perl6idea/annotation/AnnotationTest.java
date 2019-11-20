@@ -84,6 +84,21 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testInfixBracketedInVariableIsNotConsideredUndeclared() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my &add = &[+];");
+        myFixture.checkHighlighting();
+    }
+
+    public void testDeclaredOperatorNamesInVariables() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @ops = &infix:<+>, &prefix:<!>, &postfix:<++>, &postcircumfix:<[ ]>;");
+        myFixture.checkHighlighting();
+    }
+
+    public void testUndeclaredOperatorNamesInVariables() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable &infix:<foo> is not declared\">&infix:<foo></error>;");
+        myFixture.checkHighlighting();
+    }
+
     public void testLeadingZeroAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <warning descr=\"Leading 0 does not indicate octal in Perl 6; use 0o755\">0755</warning>;");
         myFixture.checkHighlighting();

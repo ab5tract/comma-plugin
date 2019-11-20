@@ -8,10 +8,7 @@ public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, 
 
     PsiElement getVariableToken();
 
-    default String getVariableName() {
-        PsiElement varToken = getVariableToken();
-        return varToken != null ? varToken.getText() : null;
-    }
+    String getVariableName();
 
     /* This method is used to factor out code of deciding
      * what most generic type variable can have based purely

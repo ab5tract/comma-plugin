@@ -1725,6 +1725,7 @@ grammar MAIN {
            <.start-token('VARIABLE')>
            <.sigil> <.twigil>? <.desigilname>
            <.end-token('VARIABLE')>
+           <.longname_colonpairs>
            <.end-element('VARIABLE')>
         || <.start-element('VARIABLE')>
            <.start-token('VARIABLE')>

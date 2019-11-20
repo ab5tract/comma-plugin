@@ -21833,6 +21833,9 @@ public class Perl6Parser implements PsiParser {
         } else {
             return false;
         }
+        if (!(this.longname_colonpairs_67(builder))) {
+            return false;
+        }
         marker16.done(Perl6ElementTypes.VARIABLE);
         return true;
     }

@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,22 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     public String getName() {
         PsiElement nameIdent = getNameIdentifier();
         return nameIdent != null ? nameIdent.getText() : "";
+    }
+
+    @Override
+    public String getVariableName() {
+        PsiElement infix = findChildByType(Perl6ElementTypes.INFIX);
+        if (infix != null)
+            return "&infix:<" + infix.getText() + ">";
+        PsiElement varToken = getVariableToken();
+        if (varToken == null)
+            return null;
+        String name = varToken.getText();
+        for (PsiElement colonPair : findChildrenByType(Perl6ElementTypes.COLON_PAIR)) {
+            // We should properly mangle these at some point.
+            name += colonPair.getText();
+        }
+        return name;
     }
 
     @NotNull
