@@ -4,6 +4,7 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,8 +31,15 @@ import java.util.Map;
 public class Perl6CommandLine extends GeneralCommandLine {
     private static Logger LOG = Logger.getInstance(Perl6CommandLine.class);
 
+    public Perl6CommandLine(Sdk sdk) throws ExecutionException {
+        this(sdk.getHomePath());
+    }
+
     public Perl6CommandLine(Project project) throws ExecutionException {
-        String sdkHome = Perl6SdkType.getSdkHomeByProject(project);
+        this(Perl6SdkType.getSdkHomeByProject(project));
+    }
+
+    protected Perl6CommandLine(@Nullable String sdkHome) throws ExecutionException {
         if (sdkHome == null)
             throw new ExecutionException("No SDK for project");
         if (Paths.get(sdkHome).toFile().isFile())
