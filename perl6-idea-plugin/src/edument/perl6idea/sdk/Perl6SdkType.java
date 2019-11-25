@@ -2,6 +2,7 @@ package edument.perl6idea.sdk;
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.ExecutionException;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditor;
@@ -244,7 +245,7 @@ public class Perl6SdkType extends SdkType {
                 cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
                 cmd.addParameter(coreSymbols.getAbsolutePath());
                 cmd.addParameter(coreDocs.getAbsolutePath());
-                Thread thread = new Thread(() -> {
+                ApplicationManager.getApplication().executeOnPooledThread(() -> {
                     try {
                         String settingLines = String.join("\n", cmd.executeAndRead());
                         if (settingLines.isEmpty()) {
@@ -259,7 +260,6 @@ public class Perl6SdkType extends SdkType {
                         // If the project was already disposed, do not die in a background thread
                     }
                 });
-                thread.start();
             }
             return new ExternalPerl6File(project, new LightVirtualFile("DUMMY"));
         } catch (ExecutionException e) {
