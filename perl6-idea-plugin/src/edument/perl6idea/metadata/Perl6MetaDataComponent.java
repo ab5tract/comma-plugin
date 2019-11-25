@@ -5,6 +5,7 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -12,12 +13,14 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.ModuleRootModificationUtil;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.vfs.*;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.library.Perl6LibraryType;
 import edument.perl6idea.module.Perl6ModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -78,6 +81,21 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     }
 
     private void syncExternalLibraries(JSONObject meta) {
+        Sdk sdk = ProjectRootManager.getInstance(myModule.getProject()).getProjectSdk();
+        Application application = ApplicationManager.getApplication();
+        if (sdk == null) {
+            application.invokeLater(() -> {
+                application.runWriteAction(() -> {
+                    ModifiableRootModel model = ModuleRootManager.getInstance(myModule).getModifiableModel();
+                    for (OrderEntry entry : model.getOrderEntries()) {
+                        model.removeOrderEntry(entry);
+                    }
+                    model.commit();
+                });
+            });
+            return;
+        }
+
         final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(myModule);
         List<String> libraryNames = new ArrayList<>();
         List<String> missingEntries = new ArrayList<>();
@@ -99,11 +117,26 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         if (missingEntries.isEmpty())
             return;
 
-        ApplicationManager.getApplication().invokeLater(() -> {
-            ApplicationManager.getApplication().runWriteAction(() -> {
+        application.invokeLater(() -> {
+            application.runWriteAction(() -> {
                 for (String missingEntry : missingEntries) {
-                    ModuleRootModificationUtil.addModuleLibrary(myModule, missingEntry, Collections.emptyList(),
-                                                                Collections.singletonList("raku://" + missingEntry));
+                    String url = String.format("raku://%d:%s", sdk.getName().hashCode(), missingEntry);
+                    ModuleRootModificationUtil.updateModel(myModule, model -> {
+                        LibraryEx library = (LibraryEx)model.getModuleLibraryTable().createLibrary(missingEntry);
+                        LibraryEx.ModifiableModelEx libraryModel = library.getModifiableModel();
+                        libraryModel.setKind(Perl6LibraryType.LIBRARY_KIND);
+
+                        for (String rootUrl : Collections.singletonList(url)) {
+                            libraryModel.addRoot(rootUrl, OrderRootType.SOURCES);
+                        }
+
+                        LibraryOrderEntry entry = model.findLibraryOrderEntry(library);
+                        assert entry != null : library;
+                        entry.setScope(DependencyScope.COMPILE);
+                        entry.setExported(false);
+
+                        application.invokeAndWait(() -> WriteAction.run(libraryModel::commit));
+                    });
                 }
             });
         });
