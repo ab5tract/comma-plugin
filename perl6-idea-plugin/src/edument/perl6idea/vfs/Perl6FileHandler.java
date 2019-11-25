@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 public class Perl6FileHandler extends ArchiveHandler {
     private final Pattern pathPattern = Pattern.compile("/(-?\\d+?):(.+?)");
     private String myPath;
-    private static Map <String, byte[]> contentsCache = new HashMap<>();
+    private static Map <String, String> packagesCache = new HashMap<>();
     private final Logger LOG = Logger.getInstance(Perl6FileHandler.class);
 
     public Perl6FileHandler(@NotNull String path) {
@@ -46,13 +46,14 @@ public class Perl6FileHandler extends ArchiveHandler {
         }
 
         try {
-            List<String> providesList = executeLocateScript(sdk, matcher.group(2), true);
+            List<String> providesList = executeLocateScript(sdk, matcher.group(2));
 
             EntryInfo root = new EntryInfo("", true, 0L, 1L, null);
             entries.put("", root);
 
             for (String provideItem : providesList) {
                 String[] provideInfo = provideItem.split("=");
+                packagesCache.put(provideInfo[0], provideInfo[1]);
                 entries.put(provideInfo[0] + ".pm6", new EntryInfo(provideInfo[0] + ".pm6", false, 1L, 1L, root));
             }
         }
@@ -65,15 +66,14 @@ public class Perl6FileHandler extends ArchiveHandler {
     }
 
     @NotNull
-    private static List<String> executeLocateScript(Sdk sdk, String argument, boolean wantPackage) throws ExecutionException {
+    private static List<String> executeLocateScript(Sdk sdk, String argument) throws ExecutionException {
         File locateScript = Perl6Utils.getResourceAsFile("zef/locate.p6");
         if (locateScript == null)
             throw new ExecutionException("Resource bundle is corrupted: locate script is missing");
         Perl6CommandLine cmd = new Perl6CommandLine(sdk);
         cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
         cmd.addParameters(locateScript.getAbsolutePath());
-        if (wantPackage)
-            cmd.addParameter("--package");
+        cmd.addParameter("--package");
         cmd.addParameter(argument);
         return cmd.executeAndRead();
     }
@@ -93,21 +93,12 @@ public class Perl6FileHandler extends ArchiveHandler {
     @NotNull
     @Override
     public byte[] contentsToByteArray(@NotNull String relativePath) {
-        return contentsCache.computeIfAbsent(relativePath, (path) -> {
-            Matcher matcher = pathPattern.matcher(myPath);
-            if (matcher.matches()) {
-                Sdk sdk = getSdkByMatch(matcher.group(1));
-                try {
-                    List<String> realFSPath = executeLocateScript(sdk, relativePath, false);
-                    if (realFSPath.size() == 1) {
-                        return Files.readAllBytes(Paths.get(realFSPath.get(0)));
-                    }
-                }
-                catch (ExecutionException | IOException e) {
-                    LOG.warn(e);
-                }
-            }
-            return new byte[0];
-        });
+        getEntriesMap();
+        try {
+            return Files.readAllBytes(Paths.get(packagesCache.get(relativePath.substring(0, relativePath.length() - 4))));
+        } catch (IOException e) {
+            LOG.warn(e);
+        }
+        return new byte[0];
     }
 }

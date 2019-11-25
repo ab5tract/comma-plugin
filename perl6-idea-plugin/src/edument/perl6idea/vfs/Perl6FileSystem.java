@@ -2,9 +2,10 @@ package edument.perl6idea.vfs;
 
 import com.intellij.openapi.util.io.FileAttributes;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.*;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.ArchiveFileSystem;
-import com.intellij.openapi.vfs.newvfs.NewVirtualFile;
 import com.intellij.openapi.vfs.newvfs.VfsImplUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,8 +30,7 @@ public class Perl6FileSystem extends ArchiveFileSystem {
     @Nullable
     @Override
     public VirtualFile findFileByPath(@NotNull String path) {
-        NewVirtualFile path1 = VfsImplUtil.findFileByPath(this, path);
-        return path1;
+        return VfsImplUtil.findFileByPath(this, path);
     }
 
     @Override
@@ -68,7 +68,6 @@ public class Perl6FileSystem extends ArchiveFileSystem {
     @Override
     @NotNull
     protected String getRelativePath(VirtualFile file) {
-        System.out.println("Getting relative path of [" + file.getPath() + "]");
         String path = file.getPath();
         String relativePath = path.substring(extractRootPath(path).length());
         return StringUtil.startsWithChar(relativePath, '/') ? relativePath.substring(1) : relativePath;
