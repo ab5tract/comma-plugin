@@ -1,32 +1,20 @@
 package edument.perl6idea.vfs;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileListener;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.openapi.vfs.VirtualFileSystem;
-import com.intellij.testFramework.LightVirtualFile;
-import edument.perl6idea.utils.Perl6CommandLine;
-import edument.perl6idea.utils.Perl6Utils;
+import com.intellij.openapi.util.io.FileAttributes;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.*;
+import com.intellij.openapi.vfs.newvfs.ArchiveFileSystem;
+import com.intellij.openapi.vfs.newvfs.NewVirtualFile;
+import com.intellij.openapi.vfs.newvfs.VfsImplUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-public class Perl6FileSystem extends VirtualFileSystem {
+public class Perl6FileSystem extends ArchiveFileSystem {
     public static final String PROTOCOL = "raku";
-    private static final Logger LOG = Logger.getInstance(Perl6FileSystem.class);
-    private Map<String, Map<String, VirtualFile>> cache = new ConcurrentHashMap<>();
 
     public static Perl6FileSystem getInstance() {
         return (Perl6FileSystem)VirtualFileManager.getInstance().getFileSystem(PROTOCOL);
@@ -38,102 +26,180 @@ public class Perl6FileSystem extends VirtualFileSystem {
         return PROTOCOL;
     }
 
-    public Collection<VirtualFile> findFilesByPath(@NotNull Project project, @NotNull String path) {
-        return cache.computeIfAbsent(path, (name) -> {
-            try {
-                Map<String, VirtualFile> packageFiles = new ConcurrentHashMap<>();
-                File locateScript = Perl6Utils.getResourceAsFile("zef/locate.p6");
-                if (locateScript == null) {
-                    throw new ExecutionException("File locator is called with corrupted resources bundle, aborting");
-                }
-                Perl6CommandLine cmd = new Perl6CommandLine(project);
-                cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
-                cmd.addParameters(locateScript.getPath());
-                cmd.addParameters(path);
-                for (String compUnit : cmd.executeAndRead()) {
-                    String[] pieces = compUnit.split("=");
-                    if (pieces.length == 2) {
-                        String fileContents = Files.lines(Paths.get(pieces[1]), StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
-                        ;
-                        new File(pieces[1]);
-                        VirtualFile file = new LightVirtualFile(pieces[0] + ".pm6", fileContents);
-                        packageFiles.put(pieces[0], file);
-                    }
-                }
-
-                //return new Perl6LibraryVirtualFile(this, path, path, packageFiles.values().toArray(VirtualFile.EMPTY_ARRAY));
-                return packageFiles;
-            }
-            catch (ExecutionException | IOException e) {
-                LOG.warn(e);
-            }
-            return new ConcurrentHashMap<>();
-        }).values();
-    }
-
     @Nullable
     @Override
     public VirtualFile findFileByPath(@NotNull String path) {
-        return null;
+        NewVirtualFile path1 = VfsImplUtil.findFileByPath(this, path);
+        return path1;
     }
 
     @Override
-    public void refresh(boolean asynchronous) {}
+    public void refresh(boolean asynchronous) {
+        VfsImplUtil.refresh(this, asynchronous);
+    }
 
     @Nullable
     @Override
     public VirtualFile refreshAndFindFileByPath(@NotNull String path) {
-        return findFileByPath(path);
+        return VfsImplUtil.refreshAndFindFileByPath(this, path);
     }
 
     @Override
-    public void addVirtualFileListener(@NotNull VirtualFileListener listener) {
-
-    }
-
-    @Override
-    public void removeVirtualFileListener(@NotNull VirtualFileListener listener) {
-
-    }
-
-    @Override
-    protected void deleteFile(Object requestor, @NotNull VirtualFile vFile) throws IOException {
+    public void deleteFile(Object requestor, @NotNull VirtualFile vFile) throws IOException {
         throw new IOException("Cannot modify");
     }
 
     @Override
-    protected void moveFile(Object requestor, @NotNull VirtualFile vFile, @NotNull VirtualFile newParent) throws IOException {
+    public void moveFile(Object requestor, @NotNull VirtualFile vFile, @NotNull VirtualFile newParent) throws IOException {
         throw new IOException("Cannot modify");
     }
 
     @Override
-    protected void renameFile(Object requestor, @NotNull VirtualFile vFile, @NotNull String newName) throws IOException {
+    public void renameFile(Object requestor, @NotNull VirtualFile vFile, @NotNull String newName) throws IOException {
+        throw new IOException("Cannot modify");
+    }
+
+    @Nullable
+    @Override
+    public FileAttributes getAttributes(@NotNull VirtualFile file) {
+        return new FileAttributes(!file.getPath().endsWith(".pm6"), false, false, false, DEFAULT_LENGTH, DEFAULT_TIMESTAMP, false);
+    }
+
+    @Override
+    @NotNull
+    protected String getRelativePath(VirtualFile file) {
+        System.out.println("Getting relative path of [" + file.getPath() + "]");
+        String path = file.getPath();
+        String relativePath = path.substring(extractRootPath(path).length());
+        return StringUtil.startsWithChar(relativePath, '/') ? relativePath.substring(1) : relativePath;
+    }
+
+    @NotNull
+    @Override
+    protected String extractRootPath(@NotNull String path) {
+        return path.split("!/")[0] + "!/";
+    }
+
+    @NotNull
+    @Override
+    protected String extractLocalPath(@NotNull String rootPath) {
+        return rootPath.split("!/")[0];
+    }
+
+    @NotNull
+    @Override
+    protected String composeRootPath(@NotNull String localPath) {
+        return localPath + "!/";
+    }
+
+    @NotNull
+    @Override
+    protected Perl6FileHandler getHandler(@NotNull VirtualFile file) {
+        return VfsImplUtil.getHandler(this, file, Perl6FileHandler::new);
+    }
+
+    @NotNull
+    @Override
+    public VirtualFile createChildFile(Object requestor, @NotNull VirtualFile vDir, @NotNull String fileName) throws IOException {
         throw new IOException("Cannot modify");
     }
 
     @NotNull
     @Override
-    protected VirtualFile createChildFile(Object requestor, @NotNull VirtualFile vDir, @NotNull String fileName) throws IOException {
+    public VirtualFile createChildDirectory(Object requestor, @NotNull VirtualFile vDir, @NotNull String dirName) throws IOException {
         throw new IOException("Cannot modify");
+    }
+
+    @Override
+    public boolean exists(@NotNull VirtualFile file) {
+        return getAttributes(file) != null;
     }
 
     @NotNull
     @Override
-    protected VirtualFile createChildDirectory(Object requestor, @NotNull VirtualFile vDir, @NotNull String dirName) throws IOException {
-        throw new IOException("Cannot modify");
+    public String[] list(@NotNull VirtualFile file) {
+        return getHandler(file).list(getRelativePath(file));
+    }
+
+    @Override
+    public boolean isDirectory(@NotNull VirtualFile file) {
+        if (file.getParent() == null) return true;
+        FileAttributes attributes = getAttributes(file);
+        return attributes == null || attributes.isDirectory();
+    }
+
+    @Override
+    public long getTimeStamp(@NotNull VirtualFile file) {
+        FileAttributes attributes = getAttributes(file);
+        if (attributes != null) return attributes.lastModified;
+        return -1L;
+    }
+
+    @Override
+    public void setTimeStamp(@NotNull VirtualFile file, long timeStamp) throws IOException {
+        throw new IOException("Can't modify file");
+    }
+
+    @Override
+    public boolean isWritable(@NotNull VirtualFile file) {
+        return false;
+    }
+
+    @Override
+    public void setWritable(@NotNull VirtualFile file, boolean writableFlag) throws IOException {
+        throw new IOException("Can't modify file");
     }
 
     @NotNull
     @Override
-    protected VirtualFile copyFile(Object requestor,
-                                   @NotNull VirtualFile virtualFile,
-                                   @NotNull VirtualFile newParent,
-                                   @NotNull String copyName) throws IOException {
-        throw new IOException("Cannot modify");
+    public VirtualFile copyFile(Object requestor,
+                                @NotNull VirtualFile virtualFile,
+                                @NotNull VirtualFile newParent,
+                                @NotNull String copyName) throws IOException {
+        throw new IOException("Cannot copy file");
+    }
+
+    @NotNull
+    @Override
+    public byte[] contentsToByteArray(@NotNull VirtualFile file) throws IOException {
+        return getHandler(file).contentsToByteArray(getRelativePath(file));
+    }
+
+    @NotNull
+    @Override
+    public InputStream getInputStream(@NotNull VirtualFile file) throws IOException {
+        return getHandler(file).getInputStream(getRelativePath(file));
+    }
+
+    @NotNull
+    @Override
+    public OutputStream getOutputStream(@NotNull VirtualFile file, Object requestor, long modStamp, long timeStamp)
+        throws IOException {
+        throw new IOException("Can't get output stream");
     }
 
     @Override
-    public boolean isReadOnly() {
-        return true;
+    public long getLength(@NotNull VirtualFile file) {
+        FileAttributes attributes = getAttributes(file);
+        if (attributes != null) return attributes.length;
+        return 0L;
+    }
+
+    @Nullable
+    @Override
+    public VirtualFile findFileByPathIfCached(@NotNull String path) {
+        return VfsImplUtil.findFileByPathIfCached(this, path);
+    }
+
+    @Nullable
+    @Override
+    public VirtualFile findLocalByRootPath(@NotNull String rootPath) {
+        String localPath = extractLocalPath(rootPath);
+        return new Perl6LightVirtualFile(localPath, "");
+    }
+
+    @Override
+    public int getRank() {
+        return LocalFileSystem.getInstance().getRank() + 1;
     }
 }
