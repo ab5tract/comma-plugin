@@ -4,7 +4,6 @@ import com.intellij.ide.favoritesTreeView.FavoritesRootNode;
 import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.TreeStructureProvider;
 import com.intellij.ide.projectView.ViewSettings;
-import com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -28,14 +27,6 @@ public class Perl6ProjectStructureProvider implements TreeStructureProvider {
             VirtualFile file = ((ProjectViewNode) f).getVirtualFile();
             return file != null && file.getName().equals(".precomp");
         });
-        list.removeIf(p -> p instanceof ExternalLibrariesNode);
-
-        if (parent.getParent() == null) {
-            if (parent.getProject() == null) return list;
-            ExternalLibrariesNode node = new Perl6ExternalLibrariesNode(parent.getProject(), settings);
-            node.setParent(parent);
-            list.add(node);
-        }
         return list;
     }
 }
