@@ -243,6 +243,7 @@ public class Perl6SdkType extends SdkType {
                 Perl6CommandLine cmd = new Perl6CommandLine(project);
                 cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
                 cmd.addParameter(coreSymbols.getAbsolutePath());
+                cmd.addParameter(coreDocs.getAbsolutePath());
                 Thread thread = new Thread(() -> {
                     try {
                         String settingLines = String.join("\n", cmd.executeAndRead());
