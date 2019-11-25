@@ -5,7 +5,9 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.stubs.StubIndex;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.utils.Perl6ModuleListFetcher;
 import org.jetbrains.annotations.NotNull;
@@ -24,9 +26,8 @@ public class Perl6ModuleReference extends PsiReferenceBase<Perl6ModuleName> {
     @Override
     public PsiElement resolve() {
         Project project = this.getElement().getProject();
-        Collection<Perl6File> matching = ProjectModulesStubIndex.getInstance()
-            .get(this.getValue(), project, GlobalSearchScope.projectScope(project));
-        return matching.isEmpty() ? null : matching.iterator().next();
+        Collection<Perl6File> elements = StubIndex.getElements(Perl6StubIndexKeys.PROJECT_MODULES, getValue(), project, GlobalSearchScope.allScope(project), Perl6File.class);
+        return  elements.isEmpty() ? null : elements.iterator().next();
     }
 
     @NotNull
