@@ -120,7 +120,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         application.invokeLater(() -> {
             application.runWriteAction(() -> {
                 for (String missingEntry : missingEntries) {
-                    String url = String.format("raku://%d:%s", sdk.getName().hashCode(), missingEntry);
+                    String url = String.format("raku://%d:%s!/", sdk.getName().hashCode(), missingEntry);
                     ModuleRootModificationUtil.updateModel(myModule, model -> {
                         LibraryEx library = (LibraryEx)model.getModuleLibraryTable().createLibrary(missingEntry);
                         LibraryEx.ModifiableModelEx libraryModel = library.getModifiableModel();
