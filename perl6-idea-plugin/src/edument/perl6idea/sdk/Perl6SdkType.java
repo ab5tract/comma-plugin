@@ -37,6 +37,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Perl6SdkType extends SdkType {
     private static final String NAME = "Perl 6 SDK";
@@ -54,7 +55,7 @@ public class Perl6SdkType extends SdkType {
 
     private JSONArray settingJson;
     private Perl6File setting;
-    private boolean mySettingsStarted = false;
+    private final AtomicBoolean mySettingsStarted = new AtomicBoolean(false);
     private Set<String> myPackageStarted = ContainerUtil.newConcurrentSet();
 
     static {
@@ -238,12 +239,11 @@ public class Perl6SdkType extends SdkType {
         }
 
         try {
-            if (!mySettingsStarted) {
+            if (mySettingsStarted.compareAndSet(false, true)) {
                 Perl6CommandLine cmd = new Perl6CommandLine(project);
                 cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
                 cmd.addParameter(coreSymbols.getAbsolutePath());
                 Thread thread = new Thread(() -> {
-                    mySettingsStarted = true;
                     try {
                         String settingLines = String.join("\n", cmd.executeAndRead());
                         if (settingLines.isEmpty()) {
@@ -365,7 +365,7 @@ public class Perl6SdkType extends SdkType {
 
     public void invalidateFileCache() {
         myPackageStarted = ContainerUtil.newConcurrentSet();
-        mySettingsStarted = false;
+        mySettingsStarted.set(false);
         useNameFileCache = new ConcurrentHashMap<>();
         needNameFileCache = new ConcurrentHashMap<>();
         setting = null;
