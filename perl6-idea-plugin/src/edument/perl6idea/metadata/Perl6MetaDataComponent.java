@@ -16,6 +16,7 @@ import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.impl.libraries.LibraryEx;
+import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.vfs.*;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6Icons;
@@ -97,8 +98,9 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         }
 
         final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(myModule);
-        List<String> libraryNames = new ArrayList<>();
-        List<String> missingEntries = new ArrayList<>();
+        Set<String> libraryNames = new HashSet<>();
+        Set<String> missingEntries = new HashSet<>();
+        Set<String> metaEntries = new HashSet<>();
         moduleRootManager.orderEntries().forEachLibrary(library -> {
             libraryNames.add(library.getName());
             return true;
@@ -106,6 +108,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         JSONArray depends = meta.getJSONArray("depends");
         outer : for (Object dependencyName : depends) {
             if (dependencyName instanceof String) {
+                metaEntries.add((String)dependencyName);
                 for (String libraryName : libraryNames) {
                     if (Objects.equals(libraryName, dependencyName))
                         continue outer;
@@ -114,6 +117,28 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             }
         }
 
+
+        removeReundantLibraries(application, libraryNames, metaEntries);
+        syncMetaEntriesIntoLibraries(sdk, application, missingEntries);
+    }
+
+    private void removeReundantLibraries(Application application, Set<String> libraryNames, Set<String> metaEntries) {
+        application.invokeLater(() -> {
+            libraryNames.removeAll(metaEntries);
+            for (String redundant : libraryNames) {
+                ModuleRootModificationUtil.updateModel(myModule, model -> {
+                    Library library = model.getModuleLibraryTable().getLibraryByName(redundant);
+                    if (library != null) {
+                    OrderEntry redundantEntry = model.findLibraryOrderEntry(library);
+                        if (redundantEntry != null)
+                            model.removeOrderEntry(redundantEntry);
+                    }
+                });
+            }
+        });
+    }
+
+    private void syncMetaEntriesIntoLibraries(Sdk sdk, Application application, Set<String> missingEntries) {
         if (missingEntries.isEmpty())
             return;
 
