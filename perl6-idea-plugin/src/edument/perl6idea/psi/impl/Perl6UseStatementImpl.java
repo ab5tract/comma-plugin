@@ -9,6 +9,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.stubs.StubIndex;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6ModuleName;
@@ -16,6 +17,7 @@ import edument.perl6idea.psi.Perl6PsiDeclaration;
 import edument.perl6idea.psi.Perl6UseStatement;
 import edument.perl6idea.psi.stub.Perl6UseStatementStub;
 import edument.perl6idea.psi.stub.Perl6UseStatementStubElementType;
+import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.Perl6LexicalSymbolContributor;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
@@ -63,6 +65,14 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                     return;
             }
             else {
+                Collection<Perl6File> elements = StubIndex.getElements(Perl6StubIndexKeys.PROJECT_MODULES, name, project, GlobalSearchScope.allScope(project), Perl6File.class);
+                if (!elements.isEmpty()) {
+                    elements.iterator().next().contributeGlobals(collector, new HashSet<>());
+                }
+
+                if (collector.isSatisfied())
+                    return;
+
                 Perl6File file = Perl6SdkType.getInstance().getPsiFileForModule(project, name, getText());
                 if (file != null) {
                     file.contributeGlobals(collector, new HashSet<>());

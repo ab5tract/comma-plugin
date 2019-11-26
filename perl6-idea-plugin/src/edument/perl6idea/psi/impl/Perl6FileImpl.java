@@ -17,10 +17,7 @@ import com.intellij.util.ArrayUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.*;
-import edument.perl6idea.psi.stub.Perl6FileStub;
-import edument.perl6idea.psi.stub.Perl6NeedStatementStub;
-import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
-import edument.perl6idea.psi.stub.Perl6UseStatementStub;
+import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -156,6 +153,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     for (String name : need.getModuleNames())
                         contributeTransitive(collector, seen, "need", name);
                 }
+                else if (current instanceof Perl6RoutineDeclStub) {
+                    ((Perl6RoutineDeclStub)current).getPsi().contributeLexicalSymbols(collector);
+                }
                 else {
                     addChildren = true;
                 }
@@ -186,6 +186,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                                 nested.contributeNestedPackagesWithPrefix(collector, topName + "::");
                         }
                     }
+                }
+                else if (current instanceof Perl6RoutineDecl) {
+                    ((Perl6RoutineDecl)current).contributeLexicalSymbols(collector);
                 }
                 else if (current instanceof Perl6Enum) {
                     Perl6Enum perl6Enum = (Perl6Enum)current;
