@@ -10,17 +10,13 @@ import com.intellij.util.PlatformIcons;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6LibraryPsiDirectoryNode extends PsiDirectoryNode {
-    private final PsiDirectory myDirectory;
-
     public Perl6LibraryPsiDirectoryNode(Project project, AbstractTreeNode node, ViewSettings settings) {
         super(project, (PsiDirectory)node.getValue(), settings);
-        myDirectory = (PsiDirectory)node.getValue();
     }
 
     @Override
     public void update(@NotNull PresentationData data) {
-        String name = myDirectory.getName();
-        data.setPresentableText(name.substring(name.indexOf(':') + 1));
+        data.setPresentableText("provides");
         data.setIcon(PlatformIcons.FOLDER_ICON);
     }
 }

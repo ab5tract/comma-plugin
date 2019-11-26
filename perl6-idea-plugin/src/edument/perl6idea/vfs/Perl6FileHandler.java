@@ -94,7 +94,9 @@ public class Perl6FileHandler extends ArchiveHandler {
     public byte[] contentsToByteArray(@NotNull String relativePath) {
         getEntriesMap();
         try {
-            return Files.readAllBytes(Paths.get(packagesCache.get(relativePath.substring(0, relativePath.length() - 4))));
+            String packageName = relativePath.substring(0, relativePath.length() - 4);
+            if (packagesCache.containsKey(packageName))
+                return Files.readAllBytes(Paths.get(packagesCache.get(packageName)));
         } catch (IOException e) {
             LOG.warn(e);
         }
