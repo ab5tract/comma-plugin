@@ -81,7 +81,8 @@ public class Perl6ProfileModel extends AbstractTableModel {
     }
 
     public boolean isCellInternal(int row, String path) {
-        return !nodes.get(row).getOriginalFile().startsWith(path);
+        String file = nodes.get(row).getOriginalFile();
+        return !file.startsWith(path) && !file.startsWith("site#sources");
     }
 
     public int getNodeId(int row) {
