@@ -54,6 +54,9 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                       event.getFileName().equals(META_OBSOLETE_NAME))) return;
                 myMeta = checkMetaSanity();
                 saveFile();
+                if (myMeta != null) {
+                    syncExternalLibraries(myMeta);
+                }
             }
         });
         myModule = module;
@@ -240,9 +243,21 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         }
     }
 
+    public void triggerMetaBuild() {
+        VirtualFile metaParent = calculateMetaParent();
+        if (metaParent == null) return;
+        VirtualFile metaFile = metaParent.findChild(META6_JSON_NAME);
+        if (metaFile != null) {
+            triggerMetaBuild(metaFile);
+        }
+    }
+
     public void triggerMetaBuild(@NotNull VirtualFile metaFile) {
         myMetaFile = metaFile;
         myMeta = checkMetaSanity();
+        if (myMeta != null) {
+            syncExternalLibraries(myMeta);
+        }
     }
 
     public boolean isMetaDataExist() {
