@@ -1,5 +1,6 @@
 package edument.perl6idea.metadata;
 
+import com.intellij.execution.ExecutionException;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -8,6 +9,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -23,12 +25,15 @@ import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.library.Perl6LibraryType;
 import edument.perl6idea.module.Perl6ModuleType;
+import edument.perl6idea.utils.Perl6CommandLine;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,6 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Perl6MetaDataComponent implements ModuleComponent {
     public static final String META6_JSON_NAME = "META6.json";
     public static final String META_OBSOLETE_NAME = "META.info";
+    private static final Logger LOG = Logger.getInstance(Perl6MetaDataComponent.class);
     private Module myModule = null;
     private VirtualFile myMetaFile = null;
     private JSONObject myMeta = null;
@@ -100,29 +106,41 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             return;
         }
 
-        final ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(myModule);
-        Set<String> libraryNames = new HashSet<>();
-        Set<String> missingEntries = new HashSet<>();
-        Set<String> metaEntries = new HashSet<>();
-        moduleRootManager.orderEntries().forEachLibrary(library -> {
-            libraryNames.add(library.getName());
-            return true;
-        });
-        JSONArray depends = meta.getJSONArray("depends");
-        outer : for (Object dependencyName : depends) {
-            if (dependencyName instanceof String) {
-                metaEntries.add((String)dependencyName);
-                for (String libraryName : libraryNames) {
-                    if (Objects.equals(libraryName, dependencyName))
-                        continue outer;
+        // Next thing is syncing META6.json dependencies with the libraries of the module
+        // First, collect names of all dependencies that should be in this module
+        Set<String> dependenciesFromMeta = new HashSet<>();
+        List<Object> starterDeps = meta.getJSONArray("depends").toList();
+
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            for (Object dep : starterDeps) {
+                try {
+                    if (!(dep instanceof String))
+                        continue;
+                    File locateScript = Perl6Utils.getResourceAsFile("zef/gather-deps.p6");
+                    if (locateScript == null)
+                        throw new ExecutionException("Resource bundle is corrupted: locate script is missing");
+                    Perl6CommandLine depsCollectorScript = new Perl6CommandLine(sdk);
+                    depsCollectorScript.addParameter(locateScript.getAbsolutePath());
+                    depsCollectorScript.addParameter((String)dep);
+                    dependenciesFromMeta.addAll(depsCollectorScript.executeAndRead());
                 }
-                missingEntries.add((String)dependencyName);
+                catch (ExecutionException e) {
+                    LOG.warn(e);
+                }
             }
-        }
 
+            Set<String> existingLibraryNames = new HashSet<>();
+            ModuleRootManager.getInstance(myModule).orderEntries().forEachLibrary(library -> {
+                existingLibraryNames.add(library.getName());
+                return true;
+            });
 
-        removeReundantLibraries(application, libraryNames, metaEntries);
-        syncMetaEntriesIntoLibraries(sdk, application, missingEntries);
+            // Second, remove libraries that are not specifies in META
+            removeReundantLibraries(application, existingLibraryNames, dependenciesFromMeta);
+            dependenciesFromMeta.removeAll(existingLibraryNames);
+            // Third, add those specified there, but no duplicates, hence the remove above
+            syncMetaEntriesIntoLibraries(sdk, application, dependenciesFromMeta);
+        });
     }
 
     private void removeReundantLibraries(Application application, Set<String> libraryNames, Set<String> metaEntries) {
