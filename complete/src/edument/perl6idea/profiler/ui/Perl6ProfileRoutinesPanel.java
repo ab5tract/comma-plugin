@@ -3,6 +3,7 @@ package edument.perl6idea.profiler.ui;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
@@ -283,6 +284,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
                 }
                 int offset = StringUtil.lineColToOffset(editor.getDocument().getText(), model.getNodeSourceLine(row) - 1, 0);
                 editor.getCaretModel().moveToOffset(offset);
+                editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
                 callsNavigation.requestFocus();
             }
         }
