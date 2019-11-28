@@ -154,7 +154,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                         contributeTransitive(collector, seen, "need", name);
                 }
                 else if (current instanceof Perl6RoutineDeclStub) {
-                    ((Perl6RoutineDeclStub)current).getPsi().contributeLexicalSymbols(collector);
+                    if (((Perl6RoutineDeclStub)current).isExported() || ((Perl6RoutineDeclStub)current).getScope().equals("our"))
+                        ((Perl6RoutineDeclStub)current).getPsi().contributeLexicalSymbols(collector);
                 }
                 else {
                     addChildren = true;
@@ -188,7 +189,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     }
                 }
                 else if (current instanceof Perl6RoutineDecl) {
-                    ((Perl6RoutineDecl)current).contributeLexicalSymbols(collector);
+                    if (((Perl6RoutineDecl)current).isExported() || ((Perl6RoutineDecl)current).getScope().equals("our"))
+                        ((Perl6RoutineDecl)current).contributeLexicalSymbols(collector);
                 }
                 else if (current instanceof Perl6Enum) {
                     Perl6Enum perl6Enum = (Perl6Enum)current;
