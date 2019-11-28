@@ -116,6 +116,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 try {
                     if (!(dep instanceof String))
                         continue;
+                    dependenciesFromMeta.add((String)dep);
                     File locateScript = Perl6Utils.getResourceAsFile("zef/gather-deps.p6");
                     if (locateScript == null)
                         throw new ExecutionException("Resource bundle is corrupted: locate script is missing");
@@ -144,7 +145,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     }
 
     private void removeReundantLibraries(Application application, Set<String> libraryNames, Set<String> metaEntries) {
-        application.invokeLater(() -> {
+        application.invokeAndWait(() -> {
             libraryNames.removeAll(metaEntries);
             for (String redundant : libraryNames) {
                 ModuleRootModificationUtil.updateModel(myModule, model -> {
@@ -163,7 +164,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         if (missingEntries.isEmpty())
             return;
 
-        application.invokeLater(() -> {
+        application.invokeAndWait(() -> {
             application.runWriteAction(() -> {
                 for (String missingEntry : missingEntries) {
                     String url = String.format("raku://%d:%s!/", sdk.getName().hashCode(), missingEntry);
@@ -197,7 +198,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 NotificationType.ERROR,
                 new AnAction(String.format("Rename to %s", META6_JSON_NAME)) {
                     @Override
-                    public void actionPerformed(AnActionEvent event) {
+                    public void actionPerformed(@NotNull AnActionEvent event) {
                         ApplicationManager.getApplication().invokeLater(
                             () -> WriteAction.run(() -> {
                                 try {
