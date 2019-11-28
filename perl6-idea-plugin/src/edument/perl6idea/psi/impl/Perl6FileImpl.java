@@ -131,6 +131,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     addChildren = true;
                 }
                 else if (current instanceof Perl6PackageDeclStub) {
+                    if (((Perl6PackageDeclStub)current).getPackageKind().equals("module"))
+                        addChildren = true;
                     Perl6PackageDeclStub nested = (Perl6PackageDeclStub)current;
                     String scope = nested.getScope();
                     if (scope.equals("our") || scope.equals("unit")) {
@@ -176,6 +178,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     addChildren = true;
                 }
                 else if (current instanceof Perl6PackageDecl) {
+                    if (((Perl6PackageDecl)current).getPackageKind().equals("module"))
+                        addChildren = true;
                     Perl6PackageDecl nested = (Perl6PackageDecl)current;
                     String scope = nested.getScope();
                     if (scope.equals("our") || scope.equals("unit")) {
