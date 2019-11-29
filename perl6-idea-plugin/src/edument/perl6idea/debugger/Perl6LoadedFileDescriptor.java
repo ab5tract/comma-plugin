@@ -16,8 +16,10 @@ public class Perl6LoadedFileDescriptor {
         if (path.contains(new CharSequenceBackedByChars(MODULE_NAME_AFTER_PATH_STARTS_WITH))) {
             int startOfParens = path.lastIndexOf(" (");
             myModuleName = path.substring(startOfParens + 2, path.length() - 1);
+            myPath = path.substring(0, startOfParens);
+        } else {
+            myPath = path;
         }
-        myPath = path;
     }
 
     @NotNull
