@@ -28,7 +28,7 @@ sub MAIN($name) {
         }
         with $dist {
             next unless $dist<name> eq $module-name;
-            (next unless $dist<ver> eq $_) with %params<ver>;
+            (next unless Version.new($dist<ver>) ~~ $_) with %params<ver>;
             (next unless $dist<auth> eq $_) with %params<auth>;
 
             my $cur = @curs.first: {.prefix eq $file.parent.parent}
