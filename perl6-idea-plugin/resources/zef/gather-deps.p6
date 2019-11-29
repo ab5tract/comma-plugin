@@ -40,5 +40,5 @@ sub MAIN($name) {
         $names.append: $dep-to-add;
         $visit.append: |meta-by-module-name($dep-to-add);
     }
-    .say for @$names.unique;
+    .say for @$names.unique.grep(*.defined);
 }
