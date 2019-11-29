@@ -22,7 +22,9 @@ sub MAIN($name) {
         }
 
         for @dist-files -> $file {
-            my $meta = from-json $file.IO.slurp;
+            my $json = $file.IO.slurp;
+            next unless $json.contains($module-name);
+            my $meta = from-json $json;
 
             next unless ($meta<name> // '') eq $module-name;
             (next unless ($meta<ver> // '') eq $_) with %params<ver>;
