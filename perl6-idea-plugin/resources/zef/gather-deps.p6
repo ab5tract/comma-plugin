@@ -27,7 +27,7 @@ sub MAIN($name) {
             my $meta = from-json $json;
 
             next unless ($meta<name> // '') eq $module-name;
-            (next unless ($meta<ver> // '') eq $_) with %params<ver>;
+            (next unless (Version.new($meta<ver> // '')) ~~ $_) with %params<ver>;
             (next unless ($meta<auth> // '') eq $_) with %params<auth>;
 
             return $meta<depends>;
