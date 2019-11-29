@@ -38,7 +38,9 @@ sub MAIN($name) {
     my $visit = meta-by-module-name($name).Array;
     my $names;
     $names.append: |$visit;
+    my %visited;
     while $visit.pop -> $dep-to-add {
+        next if %visited{$dep-to-add}++;
         $names.append: $dep-to-add;
         $visit.append: |meta-by-module-name($dep-to-add);
     }
