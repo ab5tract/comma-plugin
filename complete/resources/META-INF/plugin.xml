@@ -32,17 +32,17 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Add basic support for Cro&#39;s Template language, including syntax highlighting and editing features (code folding, brace matching, spell checking, etc.)</li>
-<li>Provide in-IDE documentation for types and methods (local from the project, from external modules, and from Perl 6 builtins). These are extracted from documentation comments and the Perl 6 documentation respectively.</li>
-<li>Parse package names (class, grammar etc) with adverbs (e.g. <code>class Foo:auth&lt;foo&gt;</code>)</li>
-<li>Do not incorrectly recognize some cases of pair literals (e.g. <code>m =&gt; 42</code>) or sub calls (<code>s(42)</code>) as regex literals</li>
-<li>Accept postfix application as a valid case in the range correctness annotator</li>
-<li>The shebang line is now always added for new scripts, and only a MAIN subroutine stub is optional</li>
-<li>Support completion and recognition of known nqp functions when the <code>use nqp</code> pragma is present</li>
-<li>Fix a possible race related to setting breakpoints in the debugger</li>
-<li>Make discovering of Log::Timeline server by Timeline viewer more robust</li>
-<li>Recognize Raku file extensions (<code>.raku</code>, <code>.rakumod</code>, <code>.rakudoc</code>, <code>.rakutest</code>),</li>
-<li>Recognize Raku executable names (<code>raku</code> and <code>rakudo</code>) the besides existing ones</li>
+<li>Provide integration with external libraries used. Now sources of externals are accessible in read-only files, support jumping from definition to usage and the other way around. The profiling tool window supports jumping to definition of external calls, and the debugger supports it as well, with stepping</li>
+<li>Improve support of operator syntax. Now usages of both <code>&amp;[+]</code> and <code>&amp;infix:&lt;+&gt;*</code> will not be marked as undeclared anymore, while usage of missing operators will be marked as such</li>
+<li>Fix a parsing exception caused by a <code>;</code> in an argument list</li>
+<li>Fix a long standing parsing exception caused by <code>&gt;&gt;.foo</code> calls ambiguity.</li>
+<li>Add a <code>New Cro Template</code> action</li>
+<li>Fix different parser exceptions for Cro template language</li>
+<li>Support the new <code>&lt;?$foo&gt;</code> and <code>&lt;!$foo&gt;</code> syntax added in the latest release of Cro::WebApp</li>
+<li>An escaped <code>#</code> symbol is no longer misparsed in regex language</li>
+<li>New file associations (<code>.raku</code>, <code>.rakumod</code>, <code>.rakutest</code>, <code>.rakudoc</code>) are suggested in the Windows installer</li>
+<li>The undeclared symbol annotator will not run until the SETTING symbols are available, which makes it less noisy at the start</li>
+<li>Fix data race in SETTING symbols loading, making it more stable</li>
 </ul>
   ]]>
   </change-notes>
