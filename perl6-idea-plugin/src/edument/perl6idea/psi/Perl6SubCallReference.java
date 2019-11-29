@@ -24,9 +24,10 @@ public class Perl6SubCallReference extends PsiReferenceBase.Poly<Perl6SubCallNam
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
         Perl6SubCallName call = getElement();
-        List<Perl6Symbol> symbol = call.resolveLexicalSymbolAllowingMulti(Perl6SymbolKind.Routine, call.getCallName());
-        if (symbol != null) {
-            return symbol.stream()
+        List<Perl6Symbol> symbols = call.resolveLexicalSymbolAllowingMulti(Perl6SymbolKind.Routine, call.getCallName());
+
+        if (symbols != null) {
+            return symbols.stream()
                     .map(s -> s.getPsi())
                     .filter(p -> p != null)
                     .map(p -> new PsiElementResolveResult(p))

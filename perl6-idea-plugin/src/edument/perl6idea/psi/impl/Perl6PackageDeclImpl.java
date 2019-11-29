@@ -277,7 +277,6 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (collectorResult != null && collectorResult.getPsi() instanceof Perl6PackageDecl) {
             Perl6PackageDecl externalPackage = (Perl6PackageDecl)collectorResult.getPsi();
             externalPackage.contributeMOPSymbols(collector, symbolsAllowed);
-            if (collector.isSatisfied()) return;
         }
     }
 

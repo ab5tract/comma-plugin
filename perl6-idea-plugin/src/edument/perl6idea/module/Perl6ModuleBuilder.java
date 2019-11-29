@@ -3,7 +3,10 @@ package edument.perl6idea.module;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.ModifiableModuleModel;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
@@ -12,6 +15,7 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.builder.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6ProjectType;
@@ -86,6 +90,18 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             LOG.error("Could not update builder", e);
         }
+    }
+
+    @Nullable
+    @Override
+    public List<Module> commit(@NotNull Project project, ModifiableModuleModel model, ModulesProvider modulesProvider) {
+        List<Module> modules = super.commit(project, model, modulesProvider);
+        if (modules != null) {
+            for (Module module : modules) {
+                module.getComponent(Perl6MetaDataComponent.class).triggerMetaBuild();
+            }
+        }
+        return modules;
     }
 
     @NotNull

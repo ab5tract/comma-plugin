@@ -125,6 +125,8 @@
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6ExpressionSurroundDescriptor"/>
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6SRegexAtomSurroundDescriptor"/>
     <lang.documentationProvider language="Perl6" implementationClass="edument.perl6idea.docs.Perl6DocumentationProvider"/>
+    <virtualFileSystem key="raku" implementationClass="edument.perl6idea.vfs.Perl6FileSystem"/>
+    <library.type implementation="edument.perl6idea.library.Perl6LibraryType" />
   </extensions>
 
   <actions>

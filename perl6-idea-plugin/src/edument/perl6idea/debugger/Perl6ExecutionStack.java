@@ -18,7 +18,7 @@ public class Perl6ExecutionStack extends XExecutionStack {
         mySuspendContext = suspendContext;
         this.thread = thread;
         for (Perl6StackFrameDescriptor frame : frames) {
-            stackFrames.add(new Perl6StackFrame(frame, this));
+            stackFrames.add(new Perl6StackFrame(suspendContext.getDebugSession().getProject(), frame, this));
         }
     }
 

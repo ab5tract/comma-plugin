@@ -3,6 +3,7 @@ package edument.perl6idea.profiler.ui;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
@@ -10,12 +11,14 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.Function;
 import com.intellij.util.PlatformIcons;
 import edument.perl6idea.profiler.model.*;
 import edument.perl6idea.psi.Perl6File;
+import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -25,6 +28,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -255,7 +259,19 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     private void goToCallAtRow(int row) {
         Perl6ProfileModel model = (Perl6ProfileModel)callsNavigation.getModel();
         if (!model.isCellInternal(row, myBaseProjectPath)) {
-            VirtualFile file = LocalFileSystem.getInstance().findFileByPath(model.getNodeSourceFile(row));
+            String sourceFilePath = model.getNodeSourceFile(row);
+            VirtualFile file = null;
+            if (sourceFilePath.startsWith("site#")) {
+                String[] pathAndModule = sourceFilePath.split(" ");
+                if (pathAndModule.length == 2) {
+                    String moduleNameKey = pathAndModule[1].substring(1, pathAndModule[1].length() - 1);
+                    Collection<Perl6File> indexedFile = ProjectModulesStubIndex.getInstance().get(moduleNameKey, myProject, GlobalSearchScope.allScope(myProject));
+                    if (!indexedFile.isEmpty())
+                        file = indexedFile.iterator().next().getVirtualFile();
+                }
+            }
+            if (file == null)
+                file = LocalFileSystem.getInstance().findFileByPath(sourceFilePath);
             if (file != null) {
                 PsiFile psiFile = PsiManager.getInstance(myProject).findFile(file);
                 if (!(psiFile instanceof Perl6File))
@@ -268,6 +284,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
                 }
                 int offset = StringUtil.lineColToOffset(editor.getDocument().getText(), model.getNodeSourceLine(row) - 1, 0);
                 editor.getCaretModel().moveToOffset(offset);
+                editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
                 callsNavigation.requestFocus();
             }
         }

@@ -116,7 +116,7 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
                 // Perl6ProjectOpenProcessor and Perl6ImportProvider would not call a project builder
                 // without either `META6.json` or `META.list` present
                 Path metaPath = Paths.get(getFileToImport(), "META6.json");
-                if (!Files.exists(metaPath))
+                if (!metaPath.toFile().exists())
                     metaPath = Paths.get(getFileToImport(), "META.list");
                 VirtualFile metaFile = lfs.findFileByPath(metaPath.toString());
                 if (metaFile != null) {

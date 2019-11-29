@@ -17,10 +17,7 @@ import com.intellij.util.ArrayUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.*;
-import edument.perl6idea.psi.stub.Perl6FileStub;
-import edument.perl6idea.psi.stub.Perl6NeedStatementStub;
-import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
-import edument.perl6idea.psi.stub.Perl6UseStatementStub;
+import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -134,6 +131,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     addChildren = true;
                 }
                 else if (current instanceof Perl6PackageDeclStub) {
+                    if (((Perl6PackageDeclStub)current).getPackageKind().equals("module"))
+                        addChildren = true;
                     Perl6PackageDeclStub nested = (Perl6PackageDeclStub)current;
                     String scope = nested.getScope();
                     if (scope.equals("our") || scope.equals("unit")) {
@@ -156,6 +155,10 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     for (String name : need.getModuleNames())
                         contributeTransitive(collector, seen, "need", name);
                 }
+                else if (current instanceof Perl6RoutineDeclStub) {
+                    if (((Perl6RoutineDeclStub)current).isExported() || ((Perl6RoutineDeclStub)current).getScope().equals("our"))
+                        ((Perl6RoutineDeclStub)current).getPsi().contributeLexicalSymbols(collector);
+                }
                 else {
                     addChildren = true;
                 }
@@ -175,6 +178,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     addChildren = true;
                 }
                 else if (current instanceof Perl6PackageDecl) {
+                    if (((Perl6PackageDecl)current).getPackageKind().equals("module"))
+                        addChildren = true;
                     Perl6PackageDecl nested = (Perl6PackageDecl)current;
                     String scope = nested.getScope();
                     if (scope.equals("our") || scope.equals("unit")) {
@@ -186,6 +191,10 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                                 nested.contributeNestedPackagesWithPrefix(collector, topName + "::");
                         }
                     }
+                }
+                else if (current instanceof Perl6RoutineDecl) {
+                    if (((Perl6RoutineDecl)current).isExported() || ((Perl6RoutineDecl)current).getScope().equals("our"))
+                        ((Perl6RoutineDecl)current).contributeLexicalSymbols(collector);
                 }
                 else if (current instanceof Perl6Enum) {
                     Perl6Enum perl6Enum = (Perl6Enum)current;

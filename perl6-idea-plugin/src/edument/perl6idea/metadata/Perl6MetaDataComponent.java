@@ -1,38 +1,47 @@
 package edument.perl6idea.metadata;
 
+import com.intellij.execution.ExecutionException;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleComponent;
-import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.impl.libraries.LibraryEx;
+import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.vfs.*;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.library.Perl6LibraryType;
 import edument.perl6idea.module.Perl6ModuleType;
+import edument.perl6idea.utils.Perl6CommandLine;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Perl6MetaDataComponent implements ModuleComponent {
     public static final String META6_JSON_NAME = "META6.json";
     public static final String META_OBSOLETE_NAME = "META.info";
+    private static final Logger LOG = Logger.getInstance(Perl6MetaDataComponent.class);
     private Module myModule = null;
     private VirtualFile myMetaFile = null;
     private JSONObject myMeta = null;
@@ -51,6 +60,9 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                       event.getFileName().equals(META_OBSOLETE_NAME))) return;
                 myMeta = checkMetaSanity();
                 saveFile();
+                if (myMeta != null) {
+                    syncExternalLibraries(myMeta);
+                }
             }
         });
         myModule = module;
@@ -71,6 +83,110 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         }
         myMetaFile = metaFile;
         myMeta = checkMetaSanity();
+
+        // Load dependencies
+        if (myMeta != null) {
+            syncExternalLibraries(myMeta);
+        }
+    }
+
+    private void syncExternalLibraries(JSONObject meta) {
+        Sdk sdk = ProjectRootManager.getInstance(myModule.getProject()).getProjectSdk();
+        Application application = ApplicationManager.getApplication();
+        if (sdk == null) {
+            application.invokeLater(() -> {
+                application.runWriteAction(() -> {
+                    ModifiableRootModel model = ModuleRootManager.getInstance(myModule).getModifiableModel();
+                    for (OrderEntry entry : model.getOrderEntries()) {
+                        model.removeOrderEntry(entry);
+                    }
+                    model.commit();
+                });
+            });
+            return;
+        }
+
+        // Next thing is syncing META6.json dependencies with the libraries of the module
+        // First, collect names of all dependencies that should be in this module
+        Set<String> dependenciesFromMeta = new HashSet<>();
+        List<Object> starterDeps = meta.getJSONArray("depends").toList();
+
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            for (Object dep : starterDeps) {
+                try {
+                    if (!(dep instanceof String))
+                        continue;
+                    dependenciesFromMeta.add((String)dep);
+                    File locateScript = Perl6Utils.getResourceAsFile("zef/gather-deps.p6");
+                    if (locateScript == null)
+                        throw new ExecutionException("Resource bundle is corrupted: locate script is missing");
+                    Perl6CommandLine depsCollectorScript = new Perl6CommandLine(sdk);
+                    depsCollectorScript.addParameter(locateScript.getAbsolutePath());
+                    depsCollectorScript.addParameter((String)dep);
+                    dependenciesFromMeta.addAll(depsCollectorScript.executeAndRead());
+                }
+                catch (ExecutionException e) {
+                    LOG.warn(e);
+                }
+            }
+
+            Set<String> existingLibraryNames = new HashSet<>();
+            ModuleRootManager.getInstance(myModule).orderEntries().forEachLibrary(library -> {
+                existingLibraryNames.add(library.getName());
+                return true;
+            });
+
+            // Second, remove libraries that are not specifies in META
+            removeReundantLibraries(application, existingLibraryNames, dependenciesFromMeta);
+            dependenciesFromMeta.removeAll(existingLibraryNames);
+            // Third, add those specified there, but no duplicates, hence the remove above
+            syncMetaEntriesIntoLibraries(sdk, application, dependenciesFromMeta);
+        });
+    }
+
+    private void removeReundantLibraries(Application application, Set<String> libraryNames, Set<String> metaEntries) {
+        application.invokeAndWait(() -> {
+            libraryNames.removeAll(metaEntries);
+            for (String redundant : libraryNames) {
+                ModuleRootModificationUtil.updateModel(myModule, model -> {
+                    Library library = model.getModuleLibraryTable().getLibraryByName(redundant);
+                    if (library != null) {
+                    OrderEntry redundantEntry = model.findLibraryOrderEntry(library);
+                        if (redundantEntry != null)
+                            model.removeOrderEntry(redundantEntry);
+                    }
+                });
+            }
+        });
+    }
+
+    private void syncMetaEntriesIntoLibraries(Sdk sdk, Application application, Set<String> missingEntries) {
+        if (missingEntries.isEmpty())
+            return;
+
+        application.invokeAndWait(() -> {
+            application.runWriteAction(() -> {
+                for (String missingEntry : missingEntries) {
+                    String url = String.format("raku://%d:%s!/", sdk.getName().hashCode(), missingEntry);
+                    ModuleRootModificationUtil.updateModel(myModule, model -> {
+                        LibraryEx library = (LibraryEx)model.getModuleLibraryTable().createLibrary(missingEntry);
+                        LibraryEx.ModifiableModelEx libraryModel = library.getModifiableModel();
+                        libraryModel.setKind(Perl6LibraryType.LIBRARY_KIND);
+
+                        for (String rootUrl : Collections.singletonList(url)) {
+                            libraryModel.addRoot(rootUrl, OrderRootType.SOURCES);
+                        }
+
+                        LibraryOrderEntry entry = model.findLibraryOrderEntry(library);
+                        assert entry != null : library;
+                        entry.setScope(DependencyScope.COMPILE);
+                        entry.setExported(false);
+
+                        application.invokeAndWait(() -> WriteAction.run(libraryModel::commit));
+                    });
+                }
+            });
+        });
     }
 
     private VirtualFile checkOldMetaFile(VirtualFile metaParent) {
@@ -82,7 +198,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 NotificationType.ERROR,
                 new AnAction(String.format("Rename to %s", META6_JSON_NAME)) {
                     @Override
-                    public void actionPerformed(AnActionEvent event) {
+                    public void actionPerformed(@NotNull AnActionEvent event) {
                         ApplicationManager.getApplication().invokeLater(
                             () -> WriteAction.run(() -> {
                                 try {
@@ -146,9 +262,21 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         }
     }
 
+    public void triggerMetaBuild() {
+        VirtualFile metaParent = calculateMetaParent();
+        if (metaParent == null) return;
+        VirtualFile metaFile = metaParent.findChild(META6_JSON_NAME);
+        if (metaFile != null) {
+            triggerMetaBuild(metaFile);
+        }
+    }
+
     public void triggerMetaBuild(@NotNull VirtualFile metaFile) {
         myMetaFile = metaFile;
         myMeta = checkMetaSanity();
+        if (myMeta != null) {
+            syncExternalLibraries(myMeta);
+        }
     }
 
     public boolean isMetaDataExist() {

@@ -5,37 +5,35 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Perl6LoadedFileDescriptor {
-    private String path;
-    private String name;
-    private String moduleName;
+    private String myPath;
+    private String myName;
+    private String myModuleName;
 
     private final static char[] MODULE_NAME_AFTER_PATH_STARTS_WITH = {' ', '('};
 
     Perl6LoadedFileDescriptor(String path, String name) {
+        myName = name;
         if (path.contains(new CharSequenceBackedByChars(MODULE_NAME_AFTER_PATH_STARTS_WITH))) {
             int startOfParens = path.lastIndexOf(" (");
-            moduleName = path.substring(startOfParens + 2, path.length() - 1);
-            this.path = path.substring(0, startOfParens);
+            myModuleName = path.substring(startOfParens + 2, path.length() - 1);
+            myPath = path.substring(0, startOfParens);
+        } else {
+            myPath = path;
         }
-        else {
-            this.path = path;
-        }
-        this.name = name;
     }
 
     @NotNull
     public String getPath() {
-        return path;
+        return myPath;
     }
 
     @Nullable
     public String getName() {
-        return name;
+        return myName;
     }
 
-    @NotNull
-    public String getNameOrPath() {
-        return path;
+    public String getModuleName() {
+        return myModuleName;
     }
 
     @Override
