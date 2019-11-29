@@ -21,7 +21,11 @@ sub MAIN($name) {
     }
 
     my $dists := gather for @dist-files -> $file {
-        my $dist = try from-json($file.IO.slurp);
+        my $dist = try {
+            my $json = $file.IO.slurp;
+            next unless $json.contains($module-name);
+            from-json $json
+        }
         with $dist {
             next unless $dist<name> eq $module-name;
             (next unless $dist<ver> eq $_) with %params<ver>;
