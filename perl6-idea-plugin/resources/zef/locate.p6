@@ -1,5 +1,4 @@
 use JSON::Fast;
-use Zef::Distribution;
 
 sub MAIN($name) {
     my $module-name = $name.ends-with('.pm6') ?? $name.substr(0, *-4) !! $name;
@@ -22,11 +21,11 @@ sub MAIN($name) {
     }
 
     my $dists := gather for @dist-files -> $file {
-        if try { Zef::Distribution.new( |%(from-json($file.IO.slurp)) ) } -> $dist {
-            # Filter by name, ver and auth
-            next unless $dist.name eq $module-name;
-            (next unless $dist.ver eq $_) with %params<ver>;
-            (next unless $dist.auth eq $_) with %params<auth>;
+        my $dist = try from-json($file.IO.slurp);
+        with $dist {
+            next unless $dist<name> eq $module-name;
+            (next unless $dist<ver> eq $_) with %params<ver>;
+            (next unless $dist<auth> eq $_) with %params<auth>;
 
             my $cur = @curs.first: {.prefix eq $file.parent.parent}
             take { :$dist, :from($cur) };
@@ -35,13 +34,13 @@ sub MAIN($name) {
 
     # Some dists does not have version or api specified, so use dummy ones to
     # avoid warnings
-    my @candis = $dists.sort({ $_<dist>.ver // v0 }).sort({ $_<dist>.api // 1 }).reverse;
+    my @candis = $dists.sort({ $_<dist><ver> // v0 }).sort({ $_<dist><api> // 1 }).reverse;
 
 
 
     for @candis.first -> $candi {
         my $source-prefix = $candi<from>.prefix.child('sources');
-        for $candi<dist>.provides -> $provides-item {
+        for $candi<dist><provides> -> $provides-item {
             for $provides-item.keys -> $impl {
                for $provides-item{$impl}.values -> $value {
                     say "$impl=$source-prefix.child($value<file>)";

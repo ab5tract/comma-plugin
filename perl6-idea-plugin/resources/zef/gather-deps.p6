@@ -1,5 +1,4 @@
 use JSON::Fast;
-use Zef::Distribution;
 
 sub MAIN($name) {
     sub meta-by-module-name($name) {
