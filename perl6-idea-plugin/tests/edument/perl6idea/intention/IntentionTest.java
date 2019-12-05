@@ -287,6 +287,14 @@ public class IntentionTest extends CommaFixtureTestCase {
         checkIntentionAbsence("Convert to single");
     }
 
+    public void testConditionalBlockConversion1() {
+        executeIntention("Convert to block");
+    }
+
+    public void testConditionalBlockConversion2() {
+        executeIntention("Convert to block");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
