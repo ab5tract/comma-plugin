@@ -85,7 +85,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     @Override
     public boolean isReal() {
-        return true;
+        return getOriginalFile() != null;
     }
 
     @NotNull
