@@ -196,6 +196,8 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
     @Override
     public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
+        if (getScope().equals("unit"))
+            contributeParametersOfUnit(collector);
         String name = getRoutineName();
         String scope = getScope();
         if (!name.equals("<anon>") && (scope.equals("my") || scope.equals("our"))) {
@@ -208,6 +210,15 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
             if (!collector.isSatisfied())
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
                                                                      this, "&" + name));
+        }
+    }
+
+    private void contributeParametersOfUnit(Perl6SymbolCollector collector) {
+        Perl6Parameter[] params = getParams();
+        for (Perl6Parameter param : params) {
+            Perl6ParameterVariable parameterVariable = PsiTreeUtil.findChildOfType(param, Perl6ParameterVariable.class);
+            if (parameterVariable != null)
+                parameterVariable.contributeLexicalSymbols(collector);
         }
     }
 
