@@ -24,10 +24,7 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
 
     @Override
     public PsiElement getVariableToken() {
-        PsiElement type = findChildByType(Perl6TokenTypes.VARIABLE);
-        if (type == null)
-            return findChildByType(Perl6TokenTypes.REGEX_CAPTURE_NAME);
-        return type;
+        return findChildByType(Perl6TokenTypes.VARIABLE);
     }
 
     @Override
@@ -42,8 +39,13 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         if (infix != null)
             return "&infix:<" + infix.getText() + ">";
         PsiElement varToken = getVariableToken();
-        if (varToken == null)
-            return null;
+        if (varToken == null) {
+            if (findChildByType(Perl6TokenTypes.REGEX_CAPTURE_NAME) != null) {
+                return getText();
+            } else {
+                return null;
+            }
+        }
         String name = varToken.getText();
         for (PsiElement colonPair : findChildrenByType(Perl6ElementTypes.COLON_PAIR)) {
             // We should properly mangle these at some point.
