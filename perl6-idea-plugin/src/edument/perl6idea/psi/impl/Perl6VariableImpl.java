@@ -24,7 +24,10 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
 
     @Override
     public PsiElement getVariableToken() {
-        return findChildByType(Perl6TokenTypes.VARIABLE);
+        PsiElement type = findChildByType(Perl6TokenTypes.VARIABLE);
+        if (type == null)
+            return findChildByType(Perl6TokenTypes.REGEX_CAPTURE_NAME);
+        return type;
     }
 
     @Override
