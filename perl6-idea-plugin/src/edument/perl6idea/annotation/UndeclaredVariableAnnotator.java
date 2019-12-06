@@ -16,6 +16,8 @@ public class UndeclaredVariableAnnotator implements Annotator {
         // Make sure we've got a sensible looking variable to check.
         if (!(element instanceof Perl6Variable))
             return;
+        if (element.getParent() instanceof Perl6RegexVariable)
+            return;
         final Perl6Variable ref = (Perl6Variable) element;
         String variableName = ref.getVariableName();
         if (variableName == null)
