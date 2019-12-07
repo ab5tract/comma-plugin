@@ -42,12 +42,20 @@ public class MissingRoleMethodAnnotator implements Annotator {
                 }
             } else if (decl instanceof Perl6VariableDecl) {
                 Perl6VariableDecl variableDecl = (Perl6VariableDecl)decl;
-                if (Objects.equals(variableDecl.getScope(), "has")) {
-                    String[] names = variableDecl.getVariableNames();
-                    for (String name : names) {
-                        if (Perl6Variable.getTwigil(name) == '.') {
-                            methodsToImplement.remove(name.substring(2));
-                        }
+                if (!Objects.equals(variableDecl.getScope(), "has"))
+                    continue;
+                String[] names = variableDecl.getVariableNames();
+                for (String name : names) {
+                    if (Perl6Variable.getTwigil(name) == '.') {
+                        methodsToImplement.remove(name.substring(2));
+                    }
+                }
+                List<Perl6Trait> attrTraits = variableDecl.getTraits();
+                for (Perl6Trait trait : attrTraits) {
+                    if (trait.getTraitModifier().equals("handles")) {
+                        String handledMethods = trait.getTraitName();
+                        for (String method : handledMethods.split("\\W+"))
+                            methodsToImplement.remove(method);
                     }
                 }
             }

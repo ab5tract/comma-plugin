@@ -453,6 +453,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testMissingStubbedMethodsHandlesTrait() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { method foo {...}; method bar {...}; method baz {...} }; class Impl { method foo {} }; class C does R { has Impl $.impl handles <foo bar>; has Int $.foo handles <baz> }");
+        myFixture.checkHighlighting();
+    }
+
     public void testMyScopedVariableExportAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"`my` scoped variable cannot be exported\">my $var is export</error>;");
         myFixture.checkHighlighting();
