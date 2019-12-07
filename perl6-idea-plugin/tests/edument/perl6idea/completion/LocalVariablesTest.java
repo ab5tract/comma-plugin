@@ -60,6 +60,16 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
         doTest("my $a = #`( comment )\n10; say $a.<caret>", ".abs");
     }
 
+    public void testRegexProviding() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "/(\\w)/; say $<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertDoesntContain(methods, "$0");
+
+        doTest("'test' ~~ /(\\w) (\\w) $<testtt> = \\w /; say $<caret>", "$0", "$1", "$<testtt>");
+    }
+
     private void doTest(String text, String... elems) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         myFixture.complete(CompletionType.BASIC, 1);
