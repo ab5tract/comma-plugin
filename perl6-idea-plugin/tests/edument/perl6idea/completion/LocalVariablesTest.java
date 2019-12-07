@@ -43,38 +43,28 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
     }
 
     public void testRoutineVariablesFromSetting() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "&sec<caret>");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertContainsElements(vars, Arrays.asList("&sec", "&sech"));
-        assertEquals(2, vars.size());
+        doTest("&sec<caret>", "&sec", "&sech");
     }
 
     public void testRoleParameterVariable() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role P[$name1, $name2] { method m { $na<caret> } }");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertContainsElements(vars, Arrays.asList("$name1", "$name2"));
+        doTest("role P[$name1, $name2] { method m { $na<caret> } }",
+               "$name1", "$name2");
     }
 
     public void testAttributeCompletionWithInnerClasses() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "class C { has $!abc; class Inner { has $!xyz;  method m() { say $!<caret> } } }");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertContainsElements(vars, Arrays.asList("$!", "$!xyz"));
-        assertEquals(2, vars.size());
+        doTest("class C { has $!abc; class Inner { has $!xyz;  method m() { say $!<caret> } } }",
+               "$!", "$!xyz");
     }
 
     public void testCommentDoesNotThrow() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                "my $a = #`( comment )\n10; say $a.<caret>");
+        doTest("my $a = #`( comment )\n10; say $a.<caret>", ".abs");
+    }
+
+    private void doTest(String text, String... elems) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
-        assertContainsElements(methods, ".abs");
+        assertContainsElements(methods, elems);
     }
 }
