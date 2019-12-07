@@ -50,7 +50,8 @@ public class SimplifiedRangeAnnotator implements Annotator {
                 // Var condition
                 rangeEnd instanceof Perl6Variable && infix.getText().equals("..^") ||
                 // Infix, possible `0..$n-1`
-                rangeEnd instanceof Perl6InfixApplication && infix.getText().equals("..") ||
+                rangeEnd instanceof Perl6InfixApplication && infix.getText().equals("..") &&
+                PsiTreeUtil.findChildOfType(rangeEnd, Perl6Whatever.class) == null ||
                 // Parens, possible ..($n-1)
                 rangeEnd instanceof Perl6ParenthesizedExpr && infix.getText().equals("..") &&
                 ( // inner parens expr

@@ -247,6 +247,12 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+        public void testRangeWIthWhateverStarIsTooSmartForSimplificatio() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "[0..*-31");
+        myFixture.checkHighlighting();
+    }
+
+
     public void testRangeWithNewlineIsCompleted() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"Range can be simplified\">0\n..\n1</weak_warning>");
         myFixture.checkHighlighting();
