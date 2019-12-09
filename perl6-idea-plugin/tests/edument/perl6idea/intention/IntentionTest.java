@@ -274,6 +274,19 @@ public class IntentionTest extends CommaFixtureTestCase {
         executeIntention("Use binding");
     }
 
+    public void testQuotesConversion1() {
+        executeIntention("Convert to double");
+    }
+
+    public void testQuotesConversion2() {
+        executeIntention("Convert to single");
+    }
+
+    public void testNoQuotesConversionForStr() {
+        checkIntentionAbsence("Convert to double");
+        checkIntentionAbsence("Convert to single");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }

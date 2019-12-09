@@ -120,6 +120,14 @@
       <className>edument.perl6idea.intention.UnwrapPromiseAllOfIntention</className>
       <category>Perl 6 Intentions</category>
     </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.SingleQuotesToDoubleIntention</className>
+      <category>Perl 6 Intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.DoubleQuotesToSingleIntention</className>
+      <category>Perl 6 Intentions</category>
+    </intentionAction>
 
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6StatementSurroundDescriptor"/>
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6ExpressionSurroundDescriptor"/>

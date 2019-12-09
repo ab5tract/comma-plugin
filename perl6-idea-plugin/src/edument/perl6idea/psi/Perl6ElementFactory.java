@@ -307,4 +307,8 @@ public class Perl6ElementFactory {
     public static PsiElement createRegexVariable(Project project) {
         return produceElement(project, "/$<x> = [ ] /", Perl6RegexAtom.class);
     }
+
+    public static Perl6StrLiteral createStrLiteral(Project project, String text) {
+        return produceElement(project, text, Perl6StrLiteral.class);
+    }
 }

@@ -27,6 +27,8 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
 
         if (vf instanceof LightVirtualFile) {
             vf = ((LightVirtualFile)vf).getOriginalFile();
+            if (vf == null)
+                return null;
             if (vf.getFileSystem() instanceof Perl6FileSystem) {
                 return vf.getNameWithoutExtension();
             }
