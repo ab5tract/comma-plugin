@@ -21,16 +21,20 @@ class Pod::To::Comma {
                 $active-prefix = False;
                 # If it is a new header, finish the previous one
                 with $content-current {
-                    %defs{$content-current<name>} = $content-current<docs>.join;
+                    for $content-current<names> -> $name {
+                        %defs{$name} = $content-current<docs>.join;
+                    }
                     $content-current = Nil;
                 }
                 # when it is a definition we want to know about, init a new current
                 with $_.contents[0].contents {
                     if so $_.Str.starts-with($PREFIXES) {
                         my $*FORMAT = False;
-                        $content-current = %( name => pod2comma($_).words[1] );
+                        $content-current = %( names => pod2comma($_).words[1] );
                     } elsif so $_.Str.starts-with($OP-PREFIXES) {
-                        $content-current = %( name => "&{$_[0]}:<{$_[1]}>" with pod2comma($_).words );
+                        my $header-str = pod2comma($_);
+                        my $names = $header-str.words.elems > 2 ?? $header-str.split(',', :1limit)>>.trim !! $header-str;
+                        $content-current = %( names => [ "&{$_.words[0]}:<{$_.words[1]}>" for $names ] );
                     }
                 }
             }

@@ -139,4 +139,9 @@ public class DocumentationTest extends CommaFixtureTestCase {
         testGeneratedDoc("Defined as:<br><br>    multi sub    rindex(Str(Cool) $haystack, Str(Cool) $needle, Int(Cool) $startpos = $haystack.chars)<br>    multi method rindex(Str(Cool) $haystack: Str(Cool) $needle, Int(Cool) $startpos = $haystack.chars)<br><br>Coerces the first two arguments (including the invocant in method form) to<br>Str and $startpos to Int, and returns the last position of $needle in<br>$haystack not after $startpos. Returns an undefined value if $needle wasn't<br>found.<br><br>See the documentation in type Str for examples.");
         testURL("https://docs.perl6.org/routine/rindex");
     }
+
+    public void testOperatorDocs() {
+        testQuickDoc("our &infix:<(+)>");
+        testGeneratedDoc("<p><pre><code>multi sub infix:<(+)>(**@p)<br>multi sub infix:<⊎>(**@p)</code></pre></p><p>Baggy addition operator.</p><p>Returns the Baggy addition of its arguments. This creates a new Bag from each element of the arguments with the weights of the element added together to get the new weight, if none of the arguments are a Mix or MixHash.</p><p><pre><code>say <a a b c a d> (+) <a a b c c>; # OUTPUT: «Bag(a(5), b(2), c(3), d)␤»<br></code></pre></p><p>If any of the arguments is a Mixy, the result is a new Mix.</p><p><pre><code>say <a b c> (+) (a => 2.5, b => 3.14).Mix; # OUTPUT: «Mix(a(3.5), b(4.14), c)␤»<br></code></pre></p><p>⊎ is equivalent to (+), at codepoint U+228E (MULTISET UNION).</p>");
+    }
 }
