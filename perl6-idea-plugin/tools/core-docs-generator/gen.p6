@@ -6,7 +6,7 @@ use Documentable::Registry;
 die 'Cannot find documentation directory. Please, clone docs repo into the current working directory before running the script again. Exiting...' unless 'doc'.IO.e;
 
 constant $PREFIXES = 'method '|'routine ';
-constant $OP-PREFIXES = 'infix ';
+constant $OP-PREFIXES = 'prefix '|'infix '|'postfix '|'circumfix '|'postcircumfix ';
 
 class Pod::To::Comma {
     method render($pod, :$name, :$needs-prefix = False) {
