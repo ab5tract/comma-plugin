@@ -2,53 +2,121 @@ use JSON::Fast;
 use Pod::To::Text;
 use Documentable;
 use Documentable::Registry;
-use Documentable::Config;
-use Documentable::DocPage::Factory;
 
-class CommaFactory is Documentable::DocPage::Factory {
-    method generate-home-page() { %() }
-    method generate-error-page() { %() }
-    method generate-primary(Documentable::Primary $doc) {
-        my $text = pod2text($doc.pod);
-        my $type-doc = $text.split("Methods\n\n");
-        my $synopsis = $type-doc[0];
-        my $rest = $type-doc[1];
-        with $rest {
-            # $rest may contain Methods and Operators
-            my $methods = $rest.split(/^^'Operators'$$/)[0];
-            $rest = $methods.split(/^^ \n* ['  method ' || '  routine ']/)>>.trim.grep(so *).List;
-        } else {
-            $rest = [];
+die 'Cannot find documentation directory. Please, clone docs repo into the current working directory before running the script again. Exiting...' unless 'doc'.IO.e;
+
+constant $PREFIXES = 'method '|'routine ';
+constant $OP-PREFIXES = 'infix ';
+
+class Pod::To::Comma {
+    method render($pod, :$name, :$needs-prefix = False) {
+        my %defs;
+        my $content-current;
+        my $prefix;
+        my $active-prefix = $needs-prefix;
+
+        # Iterate each page element
+        for $pod.contents {
+            when Pod::Heading {
+                $active-prefix = False;
+                # If it is a new header, finish the previous one
+                with $content-current {
+                    %defs{$content-current<name>} = $content-current<docs>.join;
+                    $content-current = Nil;
+                }
+                # when it is a definition we want to know about, init a new current
+                with $_.contents[0].contents {
+                    if so $_.Str.starts-with($PREFIXES) {
+                        my $*FORMAT = False;
+                        $content-current = %( name => pod2comma($_).words[1] );
+                    } elsif so $_.Str.starts-with($OP-PREFIXES) {
+                        $content-current = %( name => "&{$_[0]}:<{$_[1]}>" with pod2comma($_).words );
+                    }
+                }
+            }
+            when Pod::Block::Named {}
+            when Pod::Block::Para|Pod::Block::Code|Pod::Item|Pod::Block::Table {
+                with $content-current -> $item {
+                    $item<docs>.push: pod2comma($_);
+                } elsif $active-prefix {
+                    $prefix.push: pod2comma($_);
+                }
+            }
+            when Pod::Block::Comment {}
+            default {
+                die "NYI for {$_.^name}";
+            }
         }
-        %( :name($doc.name), desc => $synopsis, methods => $rest );
+        %( :$name, :%defs, %( $needs-prefix ?? :prefix($prefix.join) !! hash ) );
     }
-    method generate-index(Kind $kind) { %() }
-    method generate-subindex(Kind $kind, $category) { %() }
-    method generate-search-file() { %() }
+
+    multi pod2comma(Pod::Block::Code $pod) {
+        "<p><pre><code>{$pod.contents>>.&pod2comma.join}</code></pre></p>"
+    }
+
+    multi pod2comma(Pod::Block::Para $pod) {
+        "<p>{$pod.contents.map({pod2comma($_)}).join}</p>";
+    }
+
+    multi pod2comma(Pod::Item $pod) {
+        "* {pod2comma($pod.contents)}<br>";
+    }
+
+    multi pod2comma(Pod::Block::Table $pod) {
+        my $ret = '<table class=\'sections\'>';
+        $ret ~= "<tr>{$_.item.map({"<th>{$_}</th>"}).join}</tr>\n" with $pod.headers;
+        $ret ~= "<tr>{$_.map({"<tr>{$_}</tr>"}).join}</tr>\n" for $pod.contents;
+        $ret ~ '</table>';
+    }
+
+    multi pod2comma(Positional $pod) {
+        $pod.flat>>.&pod2comma.grep(?*).join;
+    }
+
+    multi pod2comma(Pod::FormattingCode $pod) {
+        return $pod.contents>>.&pod2comma.join unless $*FORMAT;
+        given $pod.type {
+            when 'B' {
+                "<b>{$pod.contents>>.&pod2comma.join}</b>";
+            }
+            when 'I' {
+                "<i>{$pod.contents>>.&pod2comma.join}</i>";
+            }
+            when 'C' {
+                "<code>{$pod.contents>>.&pod2comma.join}</code>";
+            }
+            when 'X'|'L'|'N' {
+                $pod.contents>>.&pod2comma.join;
+            }
+            default {
+                die "We do not support type $_";
+            }
+        }
+    }
+
+    multi pod2comma(Str $pod) {
+        $pod;
+    }
 }
 
 my $registry = Documentable::Registry.new(
         :!cache, topdir => 'doc/doc',
-        dirs => ['Type'], :verbose
-        );
+        dirs => ['Language', 'Type'], :verbose);
 
 $registry.compose;
 
-my $config = Documentable::Config.new(filename => 'config.json');
-
-my $factory = CommaFactory.new(:$config, :$registry);
-
-my @docs;
-
 say "Processing docs...";
 
+my %docs;
 for $registry.documentables.kv -> $num, $doc {
-    my $type = $factory.generate-primary($doc);
-    say "Processed $num: " ~ $type<name>;
-    @docs.push($type);
+    if $doc.kind eq Language && $doc.name eq 'Operators' {
+        %docs<ops> := Pod::To::Comma.render($doc.pod, :!name)<defs>;
+    } elsif $doc.kind eq Type {
+        %docs<types>{$doc.name} = Pod::To::Comma.render($doc.pod, name => $doc.name, :needs-prefix);
+    }
 }
 
 say "Creating json...";
 
-spurt '../../resources/docs/core.json', to-json @docs, :!pretty;
+spurt '../../resources/docs/core.json', to-json %docs, :!pretty;
 say "Finished! Wrote results to $*CWD.child('../../resources/docs/core.json').resolve()";
