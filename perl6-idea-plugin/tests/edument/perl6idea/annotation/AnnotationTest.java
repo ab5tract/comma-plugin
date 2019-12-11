@@ -236,7 +236,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testIncompleteRangeAnnotatorWithPrefixEnding() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "$0 .. +($1 // $0);");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo; $foo .. +($1 // $0);");
         myFixture.checkHighlighting();
     }
 
@@ -247,11 +247,10 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
-        public void testRangeWIthWhateverStarIsTooSmartForSimplificatio() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "[0..*-31");
+    public void testRangeWIthWhateverStarIsTooSmartForSimplification() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "[0..*-31]");
         myFixture.checkHighlighting();
     }
-
 
     public void testRangeWithNewlineIsCompleted() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"Range can be simplified\">0\n..\n1</weak_warning>");
