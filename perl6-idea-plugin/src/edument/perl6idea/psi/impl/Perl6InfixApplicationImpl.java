@@ -55,6 +55,8 @@ public class Perl6InfixApplicationImpl extends ASTWrapperPsiElement implements P
         if (!getOperator().equals("~~"))
             return;
         PsiElement[] ops = getOperands();
+        if (ops.length != 2)
+            return;
         if (ops[1] instanceof Perl6PsiElement) {
             Perl6PsiElement rightOp = (Perl6PsiElement)ops[1];
             String type = rightOp.inferType();
