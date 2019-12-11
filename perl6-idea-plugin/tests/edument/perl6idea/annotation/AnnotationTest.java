@@ -236,7 +236,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testIncompleteRangeAnnotatorWithPrefixEnding() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo; $foo .. +($1 // $0);");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my ($foo, $bar, $baz); $foo .. +($bar // $baz);");
         myFixture.checkHighlighting();
     }
 

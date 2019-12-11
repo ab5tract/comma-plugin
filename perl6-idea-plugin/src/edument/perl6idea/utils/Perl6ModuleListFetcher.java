@@ -37,7 +37,7 @@ public class Perl6ModuleListFetcher implements ProjectComponent {
                       "CompUnit::Repository::RepositoryRegistry",
                       "NativeCall", "NativeCall::Types", "NativeCall::Compiler::GNU",
                       "NativeCall::Compiler::MSVC",
-                      "Test", "Pod::To::Text");
+                      "Test", "Pod::To::Text", "Telemetry");
     public static final List<String> PRAGMAS =
         Arrays.asList("v6.c", "v6.d", "MONKEY-GUTS", "MONKEY-SEE-NO-EVAL",
                       "MONKEY-TYPING", "MONKEY", "experimental", "fatal",
