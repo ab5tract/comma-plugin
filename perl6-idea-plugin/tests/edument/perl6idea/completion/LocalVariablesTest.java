@@ -61,13 +61,14 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
     }
 
     public void testRegexProviding() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "/(\\w)/; say $<caret>");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> methods = myFixture.getLookupElementStrings();
-        assertNotNull(methods);
-        assertDoesntContain(methods, "$0");
-
         doTest("'test' ~~ /(\\w) (\\w) $<testtt> = \\w /; say $<caret>", "$0", "$1", "$<testtt>");
+        doNegativeTest("/(\\w)/; say $<caret>", "$0");
+        doNegativeTest("'' ~~ /(\\w)/; sub t { say $<caret> }", "$0");
+        doNegativeTest("'test' ~~ /(\\w)/; given {} -> $/ { $<caret> }", "$0");
+        doNegativeTest("'test' ~~ /(\\w)/; my $/; $<caret>", "$0");
+        doTest("'test' ~~ /$<let>=(\\w)/; 'test' ~~ /$<let2>=(\\w)/; $<caret>", "$<let2>");
+        doNegativeTest("'test' ~~ /$<let>=(\\w)/; 'test' ~~ /$<let2>=(\\w)/; $<caret>", "$<let>");
+        doTest("'abc123' ~~ s/$<let>=[<:Ll>+]/$<caret>/;", "$<let>");
     }
 
     private void doTest(String text, String... elems) {
@@ -76,5 +77,13 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
         assertContainsElements(methods, elems);
+    }
+
+    private void doNegativeTest(String text, String... elems) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertDoesntContain(methods, elems);
     }
 }
