@@ -3,10 +3,9 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.*;
-import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.Perl6Infix;
+import edument.perl6idea.psi.Perl6InfixApplication;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -48,33 +47,5 @@ public class Perl6InfixApplicationImpl extends ASTWrapperPsiElement implements P
     public String getOperator() {
         Perl6Infix infixOp = PsiTreeUtil.getChildOfType(this, Perl6Infix.class);
         return infixOp == null ? "" : infixOp.getOperator().getText();
-    }
-
-    @Override
-    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
-        if (!getOperator().equals("~~"))
-            return;
-        PsiElement[] ops = getOperands();
-        if (ops.length != 2)
-            return;
-        if (ops[1] instanceof Perl6PsiElement) {
-            Perl6PsiElement rightOp = (Perl6PsiElement)ops[1];
-            String type = rightOp.inferType();
-            if (type.equals("Regex")) {
-                if (rightOp instanceof Perl6QuoteRegex) {
-                    ((Perl6QuoteRegex)rightOp).contributeRegexVariables(collector);
-                } else if (rightOp instanceof Perl6Variable) {
-                    PsiReference varRef = rightOp.getReference();
-                    assert varRef != null;
-                    PsiElement decl = varRef.resolve();
-                    if (decl instanceof Perl6VariableDecl) {
-                        PsiElement initializer = ((Perl6VariableDecl)decl).getInitializer((Perl6Variable)rightOp);
-                        if (initializer instanceof Perl6QuoteRegex) {
-                            ((Perl6QuoteRegex)initializer).contributeRegexVariables(collector);
-                        }
-                    }
-                }
-            }
-        }
     }
 }

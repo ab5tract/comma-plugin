@@ -6,7 +6,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6QuoteRegex;
+import edument.perl6idea.psi.Perl6Regex;
 import edument.perl6idea.psi.Perl6RegexCapturePositional;
+import edument.perl6idea.psi.Perl6RegexDriver;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -20,9 +22,9 @@ public class Perl6RegexCapturePositionalImpl extends ASTWrapperPsiElement implem
     public String getName() {
         // This is not very efficient, since we want to use alias in caller in Perl6QuoteRegexImpl,
         // but we sacrifice some performance for code consistency
-        Perl6QuoteRegex regex = PsiTreeUtil.getParentOfType(this, Perl6QuoteRegex.class);
+        Perl6RegexDriver regex = PsiTreeUtil.getParentOfType(this, Perl6QuoteRegex.class, Perl6Regex.class);
         if (regex != null) {
-            Collection<Perl6RegexCapturePositional> captures = PsiTreeUtil.findChildrenOfType(regex, Perl6RegexCapturePositional.class);
+            Collection<Perl6RegexCapturePositional> captures = PsiTreeUtil.findChildrenOfType((PsiElement)regex, Perl6RegexCapturePositional.class);
             int captureCounter = 0;
             for (Perl6RegexCapturePositional capture : captures) {
                 if (this.equals(capture))
