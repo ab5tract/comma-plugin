@@ -68,7 +68,9 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
         doNegativeTest("'test' ~~ /(\\w)/; my $/; $<caret>", "$0");
         doTest("'test' ~~ /$<let>=(\\w)/; 'test' ~~ /$<let2>=(\\w)/; $<caret>", "$<let2>");
         doNegativeTest("'test' ~~ /$<let>=(\\w)/; 'test' ~~ /$<let2>=(\\w)/; $<caret>", "$<let>");
+        doTest("'abc123'.subst(/ $<let> = \\d /, { $<caret> })", "$<let>");
         doTest("'abc123' ~~ s/$<let>=[<:Ll>+]/$<caret>/;", "$<let>");
+        doTest("my $var = /(\\w) (\\w) $<testtt> = \\w /; 'hehe' ~~ $var; say $<caret>", "$0", "$1", "$<testtt>");
     }
 
     private void doTest(String text, String... elems) {
