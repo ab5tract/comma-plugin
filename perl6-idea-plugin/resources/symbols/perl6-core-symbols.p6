@@ -568,8 +568,7 @@ my sub from-json(Str() $text) is export {
 # ========== END OF JSON CODE ==========
 
 # Prepare documentation archive
-my $types = from-json @*ARGS[0].IO.slurp;
-my %CORE-DOCS = $types.map({ .<name> => $_ });
+my %CORE-DOCS = from-json @*ARGS[0].IO.slurp;
 
 my @EXTERNAL_COMMA_ELEMS;
 
@@ -578,7 +577,7 @@ for CORE::.keys -> $_ {
     when 'EXPORTHOW' | 'Rakudo' { }
     # Collect all top-level subs and EVAL.
     when /^"&"<:Ll>/ | '&EVAL' {
-        @EXTERNAL_COMMA_ELEMS.push: pack-variable($_, CORE::{$_});
+        @EXTERNAL_COMMA_ELEMS.push: pack-variable($_, CORE::{$_}, |%( :d($_) with %CORE-DOCS<ops>{$_} ) );
         if ($_.starts-with('&')) {
             @EXTERNAL_COMMA_ELEMS.push: pack-code($_, $_.multi ?? 1 !! 0, :!is-method) for CORE::{$_}.candidates;
         }
@@ -591,8 +590,8 @@ for CORE::.keys -> $_ {
 
 put to-json @EXTERNAL_COMMA_ELEMS;
 
-sub pack-variable($name, \object, :$is-attribute = False) {
-    %( k => "v", n => $name, t => $is-attribute ?? object.type.^name !! object.^name );
+sub pack-variable($name, \object, :$is-attribute = False, :$d) {
+    %( k => "v", n => $name, t => $is-attribute ?? object.type.^name !! object.^name, %( :$d if $d ) );
 }
 
 sub pack-code($code, Int $multiness, Str $name?, :$docs, :$is-method) {
@@ -637,12 +636,9 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     my %class = k => $kind, n => $name, t => object.^name, :$b;
     %class<mro> = (try flat object.^roles.map(*.^name), object.^parents(:local).map(*.^name)) // ();
     my %methods;
-    with %CORE-DOCS{$name} {
-        %class<d> = $_<desc>;
-        %methods = $_<methods>.map({
-            $_ ~~ /^^ $<name>=(.+?) \n $<desc>=(.+) /;
-            $/ ?? ($<name>.trim => $<desc>.trim) !! Nil;
-        }).grep(*.defined);
+    with %CORE-DOCS<types>{$name} {
+        %class<d> = $_<prefix>;
+        %methods = $_<defs>;
     }
     my @privates;
     if $kind eq "ro" {
@@ -651,7 +647,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
         @privates = object.^private_method_table.values;
     }
     try for object.^methods(:local).grep({ $kind ~~ 'c' ?? ($_.?package =:= object) !! True }) -> $method {
-        try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, |(:docs($_) with %methods{$method.name} ),:is-method) for $method.candidates;
+        try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, |(:docs($_) with %methods{$method.name} ), :is-method) for $method.candidates;
     }
     try for @privates -> $method {
         try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, '!' ~ $method.name, :is-method) for $method.candidates;

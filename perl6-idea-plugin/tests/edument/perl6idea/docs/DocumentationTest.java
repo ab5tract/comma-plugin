@@ -17,8 +17,8 @@ public class DocumentationTest extends CommaFixtureTestCase {
         myFixture.configureByFile(getTestName(true) + ".p6");
         PsiElement element = myFixture.getElementAtCaret();
         DocumentationProvider provider = DocumentationManager.getProviderFromElement(element);
-        String quickNavigateInfo = provider.generateDoc(element, null);
-        assertEquals(result, quickNavigateInfo);
+        String generatedDoc = provider.generateDoc(element, null);
+        assertEquals(result, generatedDoc);
     }
 
     private void testQuickDoc(String result) {
@@ -118,19 +118,19 @@ public class DocumentationTest extends CommaFixtureTestCase {
 
     public void testExternalTypeFromCORE() {
         testQuickDoc("class IntStr");
-        testGeneratedDoc("TITLE<br>class IntStr<br><br>SUBTITLE<br>Dual value integer and string<br><br>    class IntStr is Int is Str { }<br><br>The dual value types (often referred to as allomorphs) allow for the<br>representation of a value as both a string and a numeric type. Typically<br>they will be created for you when the context is \"stringy\" but they can be<br>determined to be numbers, such as in some quoting constructs:<br><br>    my $f = <42>; say $f.^name; # OUTPUT: «IntStr␤»<br><br>As a subclass of both Int and Str, an IntStr will be accepted where either<br>is expected. However, IntStr does not share object identity with Int- or<br>Str-only variants:<br><br>    my $int-str = <42>;<br>    my Int $int = $int-str; # OK!<br>    my Str $str = $int-str; # OK!<br>    say 42 ∈ <42  55  1>;   # False; ∈ operator cares about object identity<br><br>");
+        testGeneratedDoc("<p><pre><code>class IntStr is Int is Str { }</code></pre></p><p>The dual value types (often referred to as allomorphs) allow for the representation of a value as both a string and a numeric type. Typically they will be created for you when the context is \"stringy\" but they can be determined to be numbers, such as in some quoting constructs:</p><p><pre><code>my $f = <42>; say $f.^name; # OUTPUT: «IntStr␤»</code></pre></p><p>As a subclass of both Int and Str, an IntStr will be accepted where either is expected. However, IntStr does not share object identity with Int- or Str-only variants:</p><p><pre><code>my $int-str = <42>;<br>my Int $int = $int-str; # OK!<br>my Str $str = $int-str; # OK!<br>say 42 ∈ <42  55  1>;   # False; ∈ operator cares about object identity</code></pre></p>");
         testURL("https://docs.perl6.org/type/IntStr");
     }
 
     public void testMethodExternalFromCORE() {
         testQuickDoc("method Capture(*%_--> Mu)");
-        testGeneratedDoc("Defined as:<br><br>    method Capture()<br><br>Throws X::Cannot::Capture.");
+        testGeneratedDoc("<p>Defined as:</p><p><pre><code>method Capture()</code></pre></p><p>Throws X::Cannot::Capture.</p>");
         testURL("https://docs.perl6.org/routine/Capture");
     }
 
     public void testMethodExternalFromCORERole() {
         testQuickDoc("method roots(Cool $n, *%_--> Mu)");
-        testGeneratedDoc("multi method roots(Numeric:D: Int:D $n --> Positional)<br><br>Returns a list of the $n complex roots, which evaluate to the original<br>number when raised to the $nth power.");
+        testGeneratedDoc("<p><pre><code>multi method roots(Numeric:D: Int:D $n --> Positional)</code></pre></p><p>Returns a list of the $n complex roots, which evaluate to the original number when raised to the $nth power.</p>");
         testURL("https://docs.perl6.org/routine/roots");
     }
 
@@ -138,5 +138,10 @@ public class DocumentationTest extends CommaFixtureTestCase {
         testQuickDoc("method rindex(|c is raw--> Mu)");
         testGeneratedDoc("Defined as:<br><br>    multi sub    rindex(Str(Cool) $haystack, Str(Cool) $needle, Int(Cool) $startpos = $haystack.chars)<br>    multi method rindex(Str(Cool) $haystack: Str(Cool) $needle, Int(Cool) $startpos = $haystack.chars)<br><br>Coerces the first two arguments (including the invocant in method form) to<br>Str and $startpos to Int, and returns the last position of $needle in<br>$haystack not after $startpos. Returns an undefined value if $needle wasn't<br>found.<br><br>See the documentation in type Str for examples.");
         testURL("https://docs.perl6.org/routine/rindex");
+    }
+
+    public void testOperatorDocs() {
+        testQuickDoc("our &infix:<(+)>");
+        testGeneratedDoc("<p><pre><code>multi sub infix:<(+)>(**@p)<br>multi sub infix:<⊎>(**@p)</code></pre></p><p>Baggy addition operator.</p><p>Returns the Baggy addition of its arguments. This creates a new Bag from each element of the arguments with the weights of the element added together to get the new weight, if none of the arguments are a Mix or MixHash.</p><p><pre><code>say <a a b c a d> (+) <a a b c c>; # OUTPUT: «Bag(a(5), b(2), c(3), d)␤»<br></code></pre></p><p>If any of the arguments is a Mixy, the result is a new Mix.</p><p><pre><code>say <a b c> (+) (a => 2.5, b => 3.14).Mix; # OUTPUT: «Mix(a(3.5), b(4.14), c)␤»<br></code></pre></p><p>⊎ is equivalent to (+), at codepoint U+228E (MULTISET UNION).</p>");
     }
 }
