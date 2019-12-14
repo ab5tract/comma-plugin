@@ -131,7 +131,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 }
                 Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector("$/", Perl6SymbolKind.Variable);
                 anchor.applyLexicalSymbolCollector(collector);
-                if (!collector.getResult().isImplicitlyDeclared())
+                Perl6Symbol result = collector.getResult();
+                if (result != null && !result.isImplicitlyDeclared())
                     return new ArrayList<>();
                 return deduceRegexValuesFromStatement(anchor);
             }
