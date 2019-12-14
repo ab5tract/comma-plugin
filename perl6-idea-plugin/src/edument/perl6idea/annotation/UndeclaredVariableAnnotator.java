@@ -11,6 +11,8 @@ import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.regex.Pattern;
+
 public class UndeclaredVariableAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
@@ -25,6 +27,13 @@ public class UndeclaredVariableAnnotator implements Annotator {
         String variableName = variable.getVariableName();
         if (variableName == null)
             return;
+
+        Pattern REGEX_VAR_PATTERN = Pattern.compile("\\$\\d+|\\$<[\\w\\d_-]+>");
+        if (REGEX_VAR_PATTERN.matcher(variableName).matches()) {
+            Perl6Symbol symbol = variable.resolveLexicalSymbol(Perl6SymbolKind.Variable, "$/");
+            if (symbol.getPsi() != null)
+                return;
+        }
 
         // Check for $=finish section
         if (Perl6Variable.getTwigil(variableName) == '=' && variableName.equals("$=finish")) {
