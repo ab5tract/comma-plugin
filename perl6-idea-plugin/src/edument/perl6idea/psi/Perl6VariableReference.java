@@ -108,7 +108,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     private static Collection<PsiNamedElement> obtainRegexDrivenVars(Perl6Variable starter) {
         // Firstly, we check if we are in inline-statement (s///, subst etc) we need
         // to complete based on, or we want some more complex resolution
-        PsiElement anchor = PsiTreeUtil.getParentOfType(starter, Perl6MethodCall.class, Perl6Statement.class);
+        Perl6PsiElement anchor = PsiTreeUtil.getParentOfType(starter, Perl6MethodCall.class, Perl6Statement.class);
 
         if (anchor instanceof Perl6Statement || anchor instanceof Perl6MethodCall &&
                                                 !Objects.equals(((Perl6MethodCall)anchor).getCallName(), "subst")) {
@@ -117,7 +117,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 return regex.collectRegexVariables();
             } else {
                 Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector("$/", Perl6SymbolKind.Variable);
-                ((Perl6PsiElement)anchor).applyLexicalSymbolCollector(collector);
+                anchor.applyLexicalSymbolCollector(collector);
                 if (!collector.getResult().isImplicitlyDeclared())
                     return new ArrayList<>();
                 return deduceRegexValuesFromStatement(anchor);
