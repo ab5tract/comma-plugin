@@ -39,7 +39,7 @@ public class Perl6ExternalNamesParser {
         try {
             myJson = new JSONArray(json);
         } catch (JSONException e) {
-            Logger.getInstance(Perl6ExternalNamesParser.class).warn(e);
+            Logger.getInstance(Perl6ExternalNamesParser.class).warn("Tried to parse a JSONArray out of [" + json + "]; for file '" + file.getName() + "'");
             myJson = new JSONArray();
         }
     }
