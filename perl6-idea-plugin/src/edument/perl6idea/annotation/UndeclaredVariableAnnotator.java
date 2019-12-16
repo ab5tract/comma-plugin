@@ -31,7 +31,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
         Pattern REGEX_VAR_PATTERN = Pattern.compile("\\$\\d+|\\$<[\\w\\d_-]+>");
         if (REGEX_VAR_PATTERN.matcher(variableName).matches()) {
             Perl6Symbol symbol = variable.resolveLexicalSymbol(Perl6SymbolKind.Variable, "$/");
-            if (symbol.getPsi() != null)
+            if (!symbol.isImplicitlyDeclared())
                 return;
         }
 

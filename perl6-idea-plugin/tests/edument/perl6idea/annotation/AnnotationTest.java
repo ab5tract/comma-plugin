@@ -362,6 +362,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testUndeclaredAnnotatorRegexVars() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "if <error descr=\"Variable $sub-key is not declared\">$sub-key</error> ~~ /^ <[\\w-]>+ $/ {<error descr=\"Variable $0 is not declared\">$0</error>}");
+        myFixture.checkHighlighting();
+    }
+
     public void testRestrictUnitKeywordToMAINSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"The unit sub syntax is only allowed for the sub MAIN\">unit</error> sub foo() {}");
         myFixture.checkHighlighting();
