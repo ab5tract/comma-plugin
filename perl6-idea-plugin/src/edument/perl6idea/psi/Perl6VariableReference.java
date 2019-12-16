@@ -169,6 +169,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             PsiElementProcessor.CollectElements<PsiElement> processor = new PsiElementProcessor.CollectElements<PsiElement>() {
                 @Override
                 public boolean execute(@NotNull PsiElement each) {
+                    if (each instanceof Perl6RoutineDecl)
+                        return false;
                     if (!(each instanceof Perl6InfixApplication))
                         return true;
                     Perl6InfixApplication application = (Perl6InfixApplication)each;
