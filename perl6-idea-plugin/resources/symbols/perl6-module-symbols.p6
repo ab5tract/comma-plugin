@@ -213,6 +213,14 @@ my sub to-json(
 
 # ========== END OF JSON CODE ==========
 
+# In the worst case the EVAL below crashes, just return an empty list
+CATCH {
+    default {
+    say '[]';
+    exit 0;
+    }
+}
+
 EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
     my @EXTERNAL_COMMA_ELEMS;
     for MY::.kv -> $_, \object {
