@@ -3,7 +3,10 @@ package edument.perl6idea.docs;
 import com.intellij.codeInsight.documentation.DocumentationManager;
 import com.intellij.lang.documentation.DocumentationProvider;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiPolyVariantReference;
+import com.intellij.psi.ResolveResult;
 import edument.perl6idea.CommaFixtureTestCase;
+import edument.perl6idea.psi.Perl6MethodCall;
 
 import java.util.List;
 
@@ -135,9 +138,15 @@ public class DocumentationTest extends CommaFixtureTestCase {
     }
 
     public void testMethodExternalFromCOREClass() {
-        testQuickDoc("method rindex(|c is raw--> Mu)");
-        testGeneratedDoc("Defined as:<br><br>    multi sub    rindex(Str(Cool) $haystack, Str(Cool) $needle, Int(Cool) $startpos = $haystack.chars)<br>    multi method rindex(Str(Cool) $haystack: Str(Cool) $needle, Int(Cool) $startpos = $haystack.chars)<br><br>Coerces the first two arguments (including the invocant in method form) to<br>Str and $startpos to Int, and returns the last position of $needle in<br>$haystack not after $startpos. Returns an undefined value if $needle wasn't<br>found.<br><br>See the documentation in type Str for examples.");
-        testURL("https://docs.perl6.org/routine/rindex");
+        myFixture.configureByFile(getTestName(true) + ".p6");
+        Perl6MethodCall element = myFixture.findElementByText(".end", Perl6MethodCall.class);
+        DocumentationProvider provider = DocumentationManager.getProviderFromElement(element);
+        PsiPolyVariantReference resolved = (PsiPolyVariantReference)element.getReference();
+        ResolveResult[] decls = resolved.multiResolve(false);
+        assertTrue(decls.length > 0);
+        assertEquals("method end(*%_--> Int)", provider.getQuickNavigateInfo(decls[0].getElement(), null));
+        assertEquals("<p><pre><code>multi method end(Any:U: --> 0)<br>multi method end(Any:D:)</code></pre></p><p>Interprets the invocant as a list, and returns the last index of that list.</p><p><pre><code>say 6.end;                      # OUTPUT: «0␤»<br>say <a b c>.end;                # OUTPUT: «2␤»</code></pre></p>", provider.generateDoc(decls[0].getElement(), element));
+        assertContainsElements(provider.getUrlFor(decls[0].getElement(), element), "https://docs.perl6.org/routine/end");
     }
 
     public void testOperatorDocs() {

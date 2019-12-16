@@ -638,7 +638,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     my %methods;
     with %CORE-DOCS<types>{$name} {
         %class<d> = $_<prefix>;
-        %methods = $_<defs>;
+        %methods := $_<defs>;
     }
     my @privates;
     if $kind eq "ro" {
