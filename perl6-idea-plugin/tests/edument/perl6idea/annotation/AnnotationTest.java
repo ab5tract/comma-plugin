@@ -236,7 +236,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testIncompleteRangeAnnotatorWithPrefixEnding() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo; $foo .. +($1 // $0);");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my ($foo, $bar, $baz); $foo .. +($bar // $baz);");
         myFixture.checkHighlighting();
     }
 
@@ -354,6 +354,21 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testUndeclarableAnnotatorUsesActualVariableDeclaration() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our token cidr { (\\d+) <?{ $0 <= 32 }> }");
+        myFixture.checkHighlighting();
+    }
+
+    public void testUndeclaredAnnotatorInMethodCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "token foo { (.) <.panic(\"Unknown escape \\\\$0\")> }");
+        myFixture.checkHighlighting();
+    }
+
+    public void testUndeclaredAnnotatorRegexVars() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "if <error descr=\"Variable $sub-key is not declared\">$sub-key</error> ~~ /^ <[\\w-]>+ $/ {<error descr=\"Variable $0 is not declared\">$0</error>}");
+        myFixture.checkHighlighting();
+    }
+
+    public void testUndeclaredAnnotatorRegexVarsCorrectComparisonIsUsed() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($sub-key) { if $sub-key ~~ m:s/^ '{' (<[\\w-]>+)+ % ';' '}' $/ { $0 } elsif $sub-key ~~ /^ <[\\w-]>+ $/ {} }");
         myFixture.checkHighlighting();
     }
 

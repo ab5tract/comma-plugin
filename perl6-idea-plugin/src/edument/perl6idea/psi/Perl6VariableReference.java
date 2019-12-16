@@ -2,16 +2,21 @@ package edument.perl6idea.psi;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.search.PsiElementProcessor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     public Perl6VariableReference(Perl6Variable var) {
@@ -49,6 +54,11 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                     if (psi.getTextOffset() <= var.getTextOffset() || Perl6Variable.getSigil(name) == '&')
                         return psi;
                 }
+            } else {
+                for (PsiNamedElement regexVar : obtainRegexDrivenVars(var)) {
+                    if (Objects.equals(regexVar.getName(), name))
+                        return regexVar;
+                }
             }
         }
         return null;
@@ -65,11 +75,10 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                     true, true, true, enclosingPackage.getPackageKind().equals("role")));
             syms.addAll(collector.getVariants());
         }
-        return syms
-               .stream()
-               .filter(this::isDeclaredAfterCurrentPosition)
-               .map(sym -> sym.getName())
-               .toArray();
+        return Stream
+            .concat(syms.stream().filter(this::isDeclaredAfterCurrentPosition).map(sym -> sym.getName()),
+                    obtainRegexDrivenVars(getElement()).stream())
+            .toArray();
     }
 
     private boolean isDeclaredAfterCurrentPosition(Perl6Symbol symbol) {
@@ -97,8 +106,107 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
         return false;
     }
 
+    private static Collection<PsiNamedElement> obtainRegexDrivenVars(Perl6Variable starter) {
+        // Firstly, we check if we are in inline-statement (s///, subst etc) we need
+        // to complete based on, or we want some more complex resolution
+        Perl6PsiElement anchor = PsiTreeUtil.getParentOfType(starter, Perl6Regex.class, Perl6QuoteRegex.class, Perl6Statement.class);
+
+        if (anchor instanceof Perl6Statement) {
+            Perl6RegexDriver regex = PsiTreeUtil.getParentOfType(anchor, Perl6QuoteRegex.class, Perl6Regex.class);
+            if (regex != null) {
+                return regex.collectRegexVariables();
+            } else {
+                PsiElement call = PsiTreeUtil.getParentOfType(anchor, Perl6MethodCall.class, Perl6File.class);
+                if (call instanceof Perl6MethodCall && ((Perl6MethodCall)call).getCallName().equals(".subst")) {
+                    PsiElement[] args = ((Perl6MethodCall)call).getCallArguments();
+                    if (args.length >= 2) {
+                        if (((Perl6PsiElement)args[0]).inferType().equals("Regex") &&
+                            PsiTreeUtil.isAncestor(args[1], starter, true)) {
+                            List<PsiNamedElement> elemsToReturn = new ArrayList<>();
+                            if (derefAndCollectRegexVars(args[0], elemsToReturn)) {
+                                return elemsToReturn;
+                            }
+                        }
+                    }
+                }
+                Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector("$/", Perl6SymbolKind.Variable);
+                anchor.applyLexicalSymbolCollector(collector);
+                Perl6Symbol result = collector.getResult();
+                if (result != null && !result.isImplicitlyDeclared())
+                    return new ArrayList<>();
+                return deduceRegexValuesFromStatement(anchor, starter);
+            }
+        } else if (anchor instanceof Perl6RegexDriver) {
+            return ((Perl6RegexDriver)anchor).collectRegexVariables();
+        }
+        return new ArrayList<>();
+    }
+
+    private static boolean derefAndCollectRegexVars(PsiElement arg, List<PsiNamedElement> elemsToReturn) {
+        if (arg instanceof Perl6Variable) {
+            Perl6Variable regexVar = (Perl6Variable)arg;
+            PsiReference ref = regexVar.getReference();
+            assert ref != null;
+            PsiElement resolve = ref.resolve();
+            if (resolve instanceof Perl6VariableDecl) {
+                PsiElement init = ((Perl6VariableDecl)resolve).getInitializer(regexVar);
+                if (init instanceof Perl6RegexDriver) {
+                    elemsToReturn.addAll(((Perl6RegexDriver)init).collectRegexVariables());
+                }
+                return true;
+            }
+        } else if (arg instanceof Perl6RegexDriver) {
+            elemsToReturn.addAll(((Perl6RegexDriver)arg).collectRegexVariables());
+            return true;
+        }
+        return false;
+    }
+
+    private static Collection<PsiNamedElement> deduceRegexValuesFromStatement(PsiElement anchor,
+                                                                              Perl6Variable starter) {
+        PsiElement level = anchor;
+        while (true) {
+            level = PsiTreeUtil.getParentOfType(level, Perl6File.class, Perl6RoutineDecl.class, Perl6StatementList.class);
+            if (level == null || level instanceof Perl6RoutineDecl) return new ArrayList<>();
+
+            PsiElementProcessor.CollectElements<PsiElement> processor = new PsiElementProcessor.CollectElements<PsiElement>() {
+                @Override
+                public boolean execute(@NotNull PsiElement each) {
+                    if (!(each instanceof Perl6InfixApplication))
+                        return true;
+                    Perl6InfixApplication application = (Perl6InfixApplication)each;
+                    if (application.getOperator().equals("~~")) {
+                        PsiElement[] ops = application.getOperands();
+                        if (ops.length == 2) {
+                            if (ops[1] instanceof Perl6PsiElement && ((Perl6PsiElement)ops[1]).inferType().equals("Regex"))
+                                return super.execute(ops[1]);
+                        }
+                    }
+                    return application.getTextOffset() < anchor.getTextOffset();
+                }
+            };
+            PsiTreeUtil.processElements(level, processor);
+            Collection<PsiElement> infixes = processor.getCollection();
+
+            PsiElement curr = null;
+
+            // Might be null of top level
+            Perl6RoutineDecl anchorRoutineLevel = PsiTreeUtil.getParentOfType(anchor, Perl6RoutineDecl.class);
+            for (PsiElement infix : infixes) {
+                if (infix.getTextOffset() > starter.getTextOffset())
+                    break;
+                if (Objects.equals(PsiTreeUtil.getParentOfType(infix, Perl6RoutineDecl.class), anchorRoutineLevel))
+                    curr = infix;
+            }
+            if (curr != null) {
+                List<PsiNamedElement> elemsToReturn = new ArrayList<>();
+                return derefAndCollectRegexVars(curr, elemsToReturn) ? elemsToReturn : new ArrayList<>();
+            }
+        }
+    }
+
     @Override
-    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         return myElement.setName(newElementName);
     }
 }

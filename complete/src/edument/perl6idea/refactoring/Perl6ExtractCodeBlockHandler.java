@@ -30,6 +30,7 @@ import javax.swing.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static edument.perl6idea.psi.Perl6ElementFactory.createNamedCodeBlock;
@@ -42,6 +43,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     private List<Perl6StatementList> myScopes;
     private boolean selfIsPassed = false;
     protected boolean isExpr = false;
+    private Pattern REGEX_DRIVEN_VARIABLES_PATTERN = Pattern.compile("^\\$\\d+$");
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;
@@ -378,6 +380,9 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
         for (Perl6Variable usedVariable : deduplicatedVars) {
             char twigil = Perl6Variable.getTwigil(usedVariable.getVariableName());
+            if (REGEX_DRIVEN_VARIABLES_PATTERN.matcher(usedVariable.getVariableName()).matches()) {
+                continue;
+            }
             if (twigil != '!') {
                 Perl6VariableData variableCapture = checkIfLexicalVariableCaptured(parentToCreateAt, elements, usedVariable);
                 if (variableCapture != null)

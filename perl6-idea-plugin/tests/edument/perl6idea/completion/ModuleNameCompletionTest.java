@@ -22,7 +22,7 @@ public class ModuleNameCompletionTest extends CommaFixtureTestCase {
     }
 
     public void testLibraryCompletion1() {
-        doTest("Tes", "Test");
+        doTest("Te", "Test");
     }
 
     public void testLibraryCompletion2() {

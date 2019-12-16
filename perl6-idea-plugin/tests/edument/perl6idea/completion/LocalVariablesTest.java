@@ -43,38 +43,52 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
     }
 
     public void testRoutineVariablesFromSetting() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "&sec<caret>");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertContainsElements(vars, Arrays.asList("&sec", "&sech"));
-        assertEquals(2, vars.size());
+        doTest("&sec<caret>", "&sec", "&sech");
     }
 
     public void testRoleParameterVariable() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role P[$name1, $name2] { method m { $na<caret> } }");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertContainsElements(vars, Arrays.asList("$name1", "$name2"));
+        doTest("role P[$name1, $name2] { method m { $na<caret> } }",
+               "$name1", "$name2");
     }
 
     public void testAttributeCompletionWithInnerClasses() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "class C { has $!abc; class Inner { has $!xyz;  method m() { say $!<caret> } } }");
-        myFixture.complete(CompletionType.BASIC, 1);
-        List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertContainsElements(vars, Arrays.asList("$!", "$!xyz"));
-        assertEquals(2, vars.size());
+        doTest("class C { has $!abc; class Inner { has $!xyz;  method m() { say $!<caret> } } }",
+               "$!", "$!xyz");
     }
 
     public void testCommentDoesNotThrow() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                "my $a = #`( comment )\n10; say $a.<caret>");
+        doTest("my $a = #`( comment )\n10; say $a.<caret>", ".abs");
+    }
+
+    public void testRegexProviding() {
+        doTest("'test' ~~ /(\\w) (\\w) $<testtt> = \\w /; say $<caret>", "$0", "$1", "$<testtt>");
+        doNegativeTest("/(\\w)/; say $<caret>", "$0");
+        doNegativeTest("'' ~~ /(\\w)/; sub t { say $<caret> }", "$0");
+        doNegativeTest("'test' ~~ /(\\w)/; given {} -> $/ { $<caret> }", "$0");
+        doNegativeTest("'test' ~~ /(\\w)/; my $/; $<caret>", "$0");
+        doTest("'test' ~~ /$<let>=(\\w)/; 'test' ~~ /$<let2>=(\\w)/; $<caret>", "$<let2>");
+        doNegativeTest("'test' ~~ /$<let>=(\\w)/; 'test' ~~ /$<let2>=(\\w)/; $<caret>", "$<let>");
+        doTest("'abc123'.subst(/ $<let> = \\d /, { $<caret> })", "$<let>");
+        doTest("'abc123' ~~ s/$<let>=[<:Ll>+]/$<caret>/;", "$<let>");
+        doTest("my $var = /(\\w) (\\w) $<testtt> = \\w /; 'hehe' ~~ $var; say $<caret>", "$0", "$1", "$<testtt>");
+        doTest("sub a {}; 'foo' ~~ /(.)$<a>=[.]/;sub foo() {\"foo\" ~~ /$<b>=./;};$<caret>", "$<a>");
+        doTest("'foo' ~~ /(.)$<a>=[.]/;sub foo() {\"foo\" ~~ /$<b>=./;};$<caret>", "$<a>");
+        doNegativeTest("'foo' ~~ /(.)$<a>=[.]/;sub foo() {\"foo\" ~~ /$<b>=./;};$<caret>", "$<b>");
+    }
+
+    private void doTest(String text, String... elems) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> methods = myFixture.getLookupElementStrings();
         assertNotNull(methods);
-        assertContainsElements(methods, ".abs");
+        assertContainsElements(methods, elems);
+    }
+
+    private void doNegativeTest(String text, String... elems) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> methods = myFixture.getLookupElementStrings();
+        assertNotNull(methods);
+        assertDoesntContain(methods, elems);
     }
 }

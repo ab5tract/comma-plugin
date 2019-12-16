@@ -9,4 +9,9 @@ public class Perl6QuoteRegexImpl extends ASTWrapperPsiElement implements Perl6Qu
     public Perl6QuoteRegexImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferType() {
+        return "Regex";
+    }
 }
