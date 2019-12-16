@@ -71,6 +71,7 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
         doTest("'abc123'.subst(/ $<let> = \\d /, { $<caret> })", "$<let>");
         doTest("'abc123' ~~ s/$<let>=[<:Ll>+]/$<caret>/;", "$<let>");
         doTest("my $var = /(\\w) (\\w) $<testtt> = \\w /; 'hehe' ~~ $var; say $<caret>", "$0", "$1", "$<testtt>");
+        doTest("sub a {}; 'foo' ~~ /(.)$<a>=[.]/;sub foo() {\"foo\" ~~ /$<b>=./;};$<caret>", "$<a>");
         doTest("'foo' ~~ /(.)$<a>=[.]/;sub foo() {\"foo\" ~~ /$<b>=./;};$<caret>", "$<a>");
         doNegativeTest("'foo' ~~ /(.)$<a>=[.]/;sub foo() {\"foo\" ~~ /$<b>=./;};$<caret>", "$<b>");
     }
