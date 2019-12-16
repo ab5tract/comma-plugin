@@ -171,8 +171,6 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             PsiElementProcessor.CollectElements<PsiElement> processor = new PsiElementProcessor.CollectElements<PsiElement>() {
                 @Override
                 public boolean execute(@NotNull PsiElement each) {
-                    if (each instanceof Perl6RoutineDecl)
-                        return false;
                     if (!(each instanceof Perl6InfixApplication))
                         return true;
                     Perl6InfixApplication application = (Perl6InfixApplication)each;
@@ -190,8 +188,12 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             Collection<PsiElement> infixes = processor.getCollection();
 
             PsiElement curr = null;
+
+            // Might be null of top level
+            Perl6RoutineDecl anchorRoutineLevel = PsiTreeUtil.getParentOfType(anchor, Perl6RoutineDecl.class);
             for (PsiElement infix : infixes) {
-                curr = infix;
+                if (Objects.equals(PsiTreeUtil.getParentOfType(infix, Perl6RoutineDecl.class), anchorRoutineLevel))
+                    curr = infix;
             }
             if (curr != null) {
                 List<PsiNamedElement> elemsToReturn = new ArrayList<>();
