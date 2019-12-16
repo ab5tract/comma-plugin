@@ -357,6 +357,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testUndeclaredAnnotatorInMethodCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "token foo { (.) <.panic(\"Unknown escape \\\\$0\")> }");
+        myFixture.checkHighlighting();
+    }
+
     public void testRestrictUnitKeywordToMAINSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"The unit sub syntax is only allowed for the sub MAIN\">unit</error> sub foo() {}");
         myFixture.checkHighlighting();

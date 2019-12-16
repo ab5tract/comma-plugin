@@ -109,9 +109,9 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
     private static Collection<PsiNamedElement> obtainRegexDrivenVars(Perl6Variable starter) {
         // Firstly, we check if we are in inline-statement (s///, subst etc) we need
         // to complete based on, or we want some more complex resolution
-        Perl6PsiElement anchor = PsiTreeUtil.getParentOfType(starter, Perl6Statement.class);
+        Perl6PsiElement anchor = PsiTreeUtil.getParentOfType(starter, Perl6Regex.class, Perl6QuoteRegex.class, Perl6Statement.class);
 
-        if (anchor != null) {
+        if (anchor instanceof Perl6Statement) {
             Perl6RegexDriver regex = PsiTreeUtil.getParentOfType(anchor, Perl6QuoteRegex.class, Perl6Regex.class);
             if (regex != null) {
                 return regex.collectRegexVariables();
@@ -136,6 +136,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                     return new ArrayList<>();
                 return deduceRegexValuesFromStatement(anchor);
             }
+        } else if (anchor instanceof Perl6RegexDriver) {
+            return ((Perl6RegexDriver)anchor).collectRegexVariables();
         }
         return new ArrayList<>();
     }
