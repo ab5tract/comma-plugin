@@ -134,7 +134,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 Perl6Symbol result = collector.getResult();
                 if (result != null && !result.isImplicitlyDeclared())
                     return new ArrayList<>();
-                return deduceRegexValuesFromStatement(anchor);
+                return deduceRegexValuesFromStatement(anchor, starter);
             }
         } else if (anchor instanceof Perl6RegexDriver) {
             return ((Perl6RegexDriver)anchor).collectRegexVariables();
@@ -162,7 +162,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
         return false;
     }
 
-    private static Collection<PsiNamedElement> deduceRegexValuesFromStatement(PsiElement anchor) {
+    private static Collection<PsiNamedElement> deduceRegexValuesFromStatement(PsiElement anchor,
+                                                                              Perl6Variable starter) {
         PsiElement level = anchor;
         while (true) {
             level = PsiTreeUtil.getParentOfType(level, Perl6File.class, Perl6RoutineDecl.class, Perl6StatementList.class);
@@ -192,6 +193,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             // Might be null of top level
             Perl6RoutineDecl anchorRoutineLevel = PsiTreeUtil.getParentOfType(anchor, Perl6RoutineDecl.class);
             for (PsiElement infix : infixes) {
+                if (infix.getTextOffset() > starter.getTextOffset())
+                    break;
                 if (Objects.equals(PsiTreeUtil.getParentOfType(infix, Perl6RoutineDecl.class), anchorRoutineLevel))
                     curr = infix;
             }

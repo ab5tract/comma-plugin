@@ -367,6 +367,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testUndeclaredAnnotatorRegexVarsCorrectComparisonIsUsed() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($sub-key) { if $sub-key ~~ m:s/^ '{' (<[\\w-]>+)+ % ';' '}' $/ { $0 } elsif $sub-key ~~ /^ <[\\w-]>+ $/ {} }");
+        myFixture.checkHighlighting();
+    }
+
     public void testRestrictUnitKeywordToMAINSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"The unit sub syntax is only allowed for the sub MAIN\">unit</error> sub foo() {}");
         myFixture.checkHighlighting();
