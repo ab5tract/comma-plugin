@@ -54,7 +54,7 @@ public class MissingRoleMethodAnnotator implements Annotator {
                 for (Perl6Trait trait : attrTraits) {
                     if (trait.getTraitModifier().equals("handles")) {
                         String handledMethods = trait.getTraitName();
-                        for (String method : handledMethods.split("\\W+"))
+                        for (String method : handledMethods.split("\\s+"))
                             methodsToImplement.remove(method);
                     }
                 }
