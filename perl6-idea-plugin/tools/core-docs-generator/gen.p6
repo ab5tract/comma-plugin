@@ -69,7 +69,7 @@ class Pod::To::Comma {
     multi pod2comma(Pod::Block::Table $pod) {
         my $ret = '<table class=\'sections\'>';
         $ret ~= "<tr>{$_.item.map({"<th>{$_}</th>"}).join}</tr>\n" with $pod.headers;
-        $ret ~= "<tr>{$_.map({"<tr>{$_}</tr>"}).join}</tr>\n" for $pod.contents;
+        $ret ~= "<tr>{$_.map({"<td>{$_}</tr>"}).join}</tr>\n" for $pod.contents;
         $ret ~ '</table>';
     }
 
