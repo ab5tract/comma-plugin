@@ -29,6 +29,7 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
             Perl6TokenTypes.NUMBER_LITERAL, Perl6TokenTypes.RAT_LITERAL);
     }
 
+    @Override
     public void processWords(CharSequence fileText, Processor<WordOccurrence> processor) {
         myLexer.start(fileText);
         WordOccurrence occurrence = new WordOccurrence(fileText, 0, 0, null); // shared occurrence
@@ -94,7 +95,7 @@ public class Perl6WordsScanner extends VersionedWordsScanner {
         return false;
     }
 
-    protected static boolean stripWords(final Processor<WordOccurrence> processor,
+    protected static boolean stripWords(final Processor<? super WordOccurrence> processor,
                                         final CharSequence tokenText,
                                         int from,
                                         int to,
