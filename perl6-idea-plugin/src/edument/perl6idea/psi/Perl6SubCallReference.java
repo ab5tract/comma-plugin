@@ -13,7 +13,6 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Perl6SubCallReference extends PsiReferenceBase.Poly<Perl6SubCallName> {
     public Perl6SubCallReference(Perl6SubCallNameImpl call) {
@@ -28,11 +27,10 @@ public class Perl6SubCallReference extends PsiReferenceBase.Poly<Perl6SubCallNam
 
         if (symbols != null) {
             return symbols.stream()
-                    .map(s -> s.getPsi())
-                    .filter(p -> p != null)
-                    .map(p -> new PsiElementResolveResult(p))
-                    .collect(Collectors.toList())
-                    .toArray(ResolveResult.EMPTY_ARRAY);
+                .map(s -> s.getPsi())
+                .filter(p -> p != null)
+                .map(p -> new PsiElementResolveResult(p))
+                .toArray(ResolveResult[]::new);
         }
         return ResolveResult.EMPTY_ARRAY;
     }
