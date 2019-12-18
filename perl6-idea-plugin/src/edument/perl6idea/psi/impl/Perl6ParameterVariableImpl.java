@@ -20,6 +20,8 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.PARAMETER_SEPARATOR;
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
@@ -63,8 +65,12 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     @NotNull
     @Override
     public SearchScope getUseScope() {
-        PsiElement parent = PsiTreeUtil.getParentOfType(this, Perl6RoutineDecl.class);
-        return parent != null ? new LocalSearchScope(parent, getName()) : super.getUseScope();
+        Perl6RoutineDecl parent = PsiTreeUtil.getParentOfType(this, Perl6RoutineDecl.class);
+        if (parent == null)
+            return super.getUseScope();
+        if (Objects.equals(parent.getScope(), "unit"))
+            return new LocalSearchScope(parent.getContainingFile(), parent.getContainingFile().getName());
+        return new LocalSearchScope(parent, getName());
     }
 
     @Override

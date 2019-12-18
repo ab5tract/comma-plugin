@@ -56,6 +56,22 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
                "$!", "$!xyz");
     }
 
+    public void testUnitSubProvidesParamsToOuterScope() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "unit sub MAIN($cool); say $co<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertContainsElements(vars, Collections.singletonList("$cool"));
+
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "unit sub MAIN(Int :$cool); say $co<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertContainsElements(vars, Collections.singletonList("$cool"));
+    }
+
     public void testCommentDoesNotThrow() {
         doTest("my $a = #`( comment )\n10; say $a.<caret>", ".abs");
     }
