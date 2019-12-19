@@ -35,4 +35,12 @@ public class CroTemplateVariableReference extends PsiReferenceBase<CroTemplateVa
         CroTemplateScopeWalker.walkWithCollector(collector, getElement());
         return collector.getResolution();
     }
+
+    @NotNull
+    @Override
+    public Object[] getVariants() {
+        CroTemplateCompletionCollector collector = new CroTemplateCompletionCollector();
+        CroTemplateScopeWalker.walkWithCollector(collector, getElement());
+        return collector.getResolutions().toArray();
+    }
 }
