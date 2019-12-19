@@ -90,6 +90,9 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
         doTest("sub a {}; 'foo' ~~ /(.)$<a>=[.]/;sub foo() {\"foo\" ~~ /$<b>=./;};$<caret>", "$<a>");
         doTest("'foo' ~~ /(.)$<a>=[.]/;sub foo() {\"foo\" ~~ /$<b>=./;};$<caret>", "$<a>");
         doNegativeTest("'foo' ~~ /(.)$<a>=[.]/;sub foo() {\"foo\" ~~ /$<b>=./;};$<caret>", "$<b>");
+        doTest("'foo' ~~ /<a>/; $<caret>", "$<a>");
+        doTest("/<alnum> <.hehe> { $<caret> }/", "$<alnum>");
+        doNegativeTest("/<alnum> <.hehe> { $<caret> }/", "$<hehe>");
     }
 
     private void doTest(String text, String... elems) {
