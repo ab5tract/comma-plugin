@@ -3,16 +3,18 @@ package edument.perl6idea.cro.template.psi.reference;
 import com.intellij.psi.PsiElement;
 
 public class CroTemplateResolveCollector implements CroTemplateSymbolCollector {
-    private final String wanted;
+    private final String wantedName;
+    private final CroTemplateSymbolKind wantedKind;
     private PsiElement found;
 
-    public CroTemplateResolveCollector(String wanted) {
-        this.wanted = wanted;
+    public CroTemplateResolveCollector(String wantedName, CroTemplateSymbolKind wantedKind) {
+        this.wantedName = wantedName;
+        this.wantedKind = wantedKind;
     }
 
     @Override
-    public void offer(String name, PsiElement element) {
-        if (found == null && wanted.equals(name))
+    public void offer(String name, CroTemplateSymbolKind kind, PsiElement element) {
+        if (found == null && kind == wantedKind && wantedName.equals(name))
             found = element;
     }
 

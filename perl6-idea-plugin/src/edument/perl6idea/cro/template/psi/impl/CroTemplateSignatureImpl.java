@@ -6,9 +6,8 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.cro.template.psi.CroTemplateParameter;
 import edument.perl6idea.cro.template.psi.CroTemplateSignature;
 import edument.perl6idea.cro.template.psi.reference.CroTemplateSymbolCollector;
+import edument.perl6idea.cro.template.psi.reference.CroTemplateSymbolKind;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
 
 public class CroTemplateSignatureImpl extends ASTWrapperPsiElement implements CroTemplateSignature {
     public CroTemplateSignatureImpl(@NotNull ASTNode node) {
@@ -18,7 +17,9 @@ public class CroTemplateSignatureImpl extends ASTWrapperPsiElement implements Cr
     @Override
     public void offerAllParametersTo(CroTemplateSymbolCollector collector) {
         for (CroTemplateParameter parameter : PsiTreeUtil.findChildrenOfType(this, CroTemplateParameter.class)) {
-            collector.offer(parameter.getName(), parameter);
+            collector.offer(parameter.getName(), CroTemplateSymbolKind.Variable, parameter);
+            if (collector.isSatisfied())
+                break;
         }
     }
 }
