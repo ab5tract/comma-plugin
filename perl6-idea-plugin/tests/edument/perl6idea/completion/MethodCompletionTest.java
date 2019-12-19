@@ -541,4 +541,11 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
         assertEquals(".m", methods.get(0));
         assertEquals(".mmm", methods.get(1));
     }
+
+    public void testNativeTypesCompletionDoNotThrow() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "my atomicint $t; $t.<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        assertNoThrowable(() -> myFixture.getLookupElementStrings());
+    }
 }
