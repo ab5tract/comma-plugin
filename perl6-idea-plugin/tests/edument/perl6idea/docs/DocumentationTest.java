@@ -121,19 +121,19 @@ public class DocumentationTest extends CommaFixtureTestCase {
 
     public void testExternalTypeFromCORE() {
         testQuickDoc("class IntStr");
-        testGeneratedDoc("<p><pre><code>class IntStr is Int is Str { }</code></pre></p><p>The dual value types (often referred to as allomorphs) allow for the representation of a value as both a string and a numeric type. Typically they will be created for you when the context is \"stringy\" but they can be determined to be numbers, such as in some quoting constructs:</p><p><pre><code>my $f = <42>; say $f.^name; # OUTPUT: «IntStr␤»</code></pre></p><p>As a subclass of both Int and Str, an IntStr will be accepted where either is expected. However, IntStr does not share object identity with Int- or Str-only variants:</p><p><pre><code>my $int-str = <42>;<br>my Int $int = $int-str; # OK!<br>my Str $str = $int-str; # OK!<br>say 42 ∈ <42  55  1>;   # False; ∈ operator cares about object identity</code></pre></p>");
+        testGeneratedDoc("<p><pre><code>class IntStr is Int is Str { }</code></pre></p><p>The dual value types (often referred to as allomorphs) allow for the representation of a value as both a string and a numeric type. Typically they will be created for you when the context is \"stringy\" but they can be determined to be numbers, such as in some quoting constructs:</p><p><pre><code>my $f = &lt;42&gt;; say $f.^name; # OUTPUT: «IntStr␤»</code></pre></p><p>As a subclass of both Int and Str, an IntStr will be accepted where either is expected. However, IntStr does not share object identity with Int- or Str-only variants:</p><p><pre><code>my $int-str = &lt;42&gt;;<br>my Int $int = $int-str; # OK!<br>my Str $str = $int-str; # OK!<br>say 42 ∈ &lt;42  55  1&gt;;   # False; ∈ operator cares about object identity</code></pre></p>");
         testURL("https://docs.perl6.org/type/IntStr");
     }
 
     public void testMethodExternalFromCORE() {
-        testQuickDoc("method Capture(*%_--> Mu)");
+        testQuickDoc("method Capture(*%_--&gt; Mu)");
         testGeneratedDoc("<p>Defined as:</p><p><pre><code>method Capture()</code></pre></p><p>Throws X::Cannot::Capture.</p>");
         testURL("https://docs.perl6.org/routine/Capture");
     }
 
     public void testMethodExternalFromCORERole() {
-        testQuickDoc("method roots(Cool $n, *%_--> Mu)");
-        testGeneratedDoc("<p><pre><code>multi method roots(Numeric:D: Int:D $n --> Positional)</code></pre></p><p>Returns a list of the $n complex roots, which evaluate to the original number when raised to the $nth power.</p>");
+        testQuickDoc("method roots(Cool $n, *%_--&gt; Mu)");
+        testGeneratedDoc("<p><pre><code>multi method roots(Numeric:D: Int:D $n --&gt; Positional)</code></pre></p><p>Returns a list of the $n complex roots, which evaluate to the original number when raised to the $nth power.</p>");
         testURL("https://docs.perl6.org/routine/roots");
     }
 
@@ -144,13 +144,13 @@ public class DocumentationTest extends CommaFixtureTestCase {
         PsiPolyVariantReference resolved = (PsiPolyVariantReference)element.getReference();
         ResolveResult[] decls = resolved.multiResolve(false);
         assertTrue(decls.length > 0);
-        assertEquals("method end(*%_--> Int)", provider.getQuickNavigateInfo(decls[0].getElement(), null));
-        assertEquals("<p><pre><code>multi method end(Any:U: --> 0)<br>multi method end(Any:D:)</code></pre></p><p>Interprets the invocant as a list, and returns the last index of that list.</p><p><pre><code>say 6.end;                      # OUTPUT: «0␤»<br>say <a b c>.end;                # OUTPUT: «2␤»</code></pre></p>", provider.generateDoc(decls[0].getElement(), element));
+        assertEquals("method end(*%_--&gt; Int)", provider.getQuickNavigateInfo(decls[0].getElement(), null));
+        assertEquals("<p><pre><code>multi method end(Any:U: --&gt; 0)<br>multi method end(Any:D:)</code></pre></p><p>Interprets the invocant as a list, and returns the last index of that list.</p><p><pre><code>say 6.end;                      # OUTPUT: «0␤»<br>say &lt;a b c&gt;.end;                # OUTPUT: «2␤»</code></pre></p>",  provider.generateDoc(decls[0].getElement(), element));
         assertContainsElements(provider.getUrlFor(decls[0].getElement(), element), "https://docs.perl6.org/routine/end");
     }
 
     public void testOperatorDocs() {
-        testQuickDoc("our &infix:<(+)>");
-        testGeneratedDoc("<p><pre><code>multi sub infix:<(+)>(**@p)<br>multi sub infix:<⊎>(**@p)</code></pre></p><p>Baggy addition operator.</p><p>Returns the Baggy addition of its arguments. This creates a new Bag from each element of the arguments with the weights of the element added together to get the new weight, if none of the arguments are a Mix or MixHash.</p><p><pre><code>say <a a b c a d> (+) <a a b c c>; # OUTPUT: «Bag(a(5), b(2), c(3), d)␤»<br></code></pre></p><p>If any of the arguments is a Mixy, the result is a new Mix.</p><p><pre><code>say <a b c> (+) (a => 2.5, b => 3.14).Mix; # OUTPUT: «Mix(a(3.5), b(4.14), c)␤»<br></code></pre></p><p>⊎ is equivalent to (+), at codepoint U+228E (MULTISET UNION).</p>");
+        testQuickDoc("our &amp;infix:&lt;(+)&gt;");
+        testGeneratedDoc("<p><pre><code>multi sub infix:&lt;(+)&gt;(**@p)<br>multi sub infix:&lt;⊎&gt;(**@p)</code></pre></p><p>Baggy addition operator.</p><p>Returns the Baggy addition of its arguments. This creates a new Bag from each element of the arguments with the weights of the element added together to get the new weight, if none of the arguments are a Mix or MixHash.</p><p><pre><code>say &lt;a a b c a d&gt; (+) &lt;a a b c c&gt;; # OUTPUT: «Bag(a(5), b(2), c(3), d)␤»<br></code></pre></p><p>If any of the arguments is a Mixy, the result is a new Mix.</p><p><pre><code>say &lt;a b c&gt; (+) (a =&gt; 2.5, b =&gt; 3.14).Mix; # OUTPUT: «Mix(a(3.5), b(4.14), c)␤»<br></code></pre></p><p>⊎ is equivalent to (+), at codepoint U+228E (MULTISET UNION).</p>");
     }
 }
