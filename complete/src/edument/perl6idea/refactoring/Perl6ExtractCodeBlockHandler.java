@@ -225,7 +225,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     @NotNull
-    protected List<PsiElement> getExpressionTargets(@NotNull PsiElement commonParent) {
+    protected static List<PsiElement> getExpressionTargets(@NotNull PsiElement commonParent) {
         List<PsiElement> targets = new ArrayList<>();
         if (commonParent.getParent() instanceof Perl6Statement) {
             targets.add(commonParent.getParent());
@@ -238,6 +238,19 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
                 commonParent = commonParent.getParent();
             }
         }
+        return filterOutFalsePositiveExtractee(targets);
+    }
+
+    @NotNull
+    private static List<PsiElement> filterOutFalsePositiveExtractee(List<PsiElement> targets) {
+        targets = ContainerUtil.filter(targets, target -> {
+            if (target instanceof Perl6TypeName) {
+                return !(target.getParent() instanceof Perl6Parameter) && !(target.getParent() instanceof Perl6ScopedDecl);
+            } else if (target instanceof Perl6Variable) {
+                return !(target.getParent() instanceof Perl6VariableDecl) && !(target.getParent() instanceof Perl6ParameterVariable);
+            }
+            return true;
+        });
         return targets;
     }
 
