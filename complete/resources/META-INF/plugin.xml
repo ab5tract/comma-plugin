@@ -32,17 +32,20 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Provide integration with external libraries used. Now sources of externals are accessible in read-only files, support jumping from definition to usage and the other way around. The profiling tool window supports jumping to definition of external calls, and the debugger supports it as well, with stepping</li>
-<li>Improve support of operator syntax. Now usages of both <code>&amp;[+]</code> and <code>&amp;infix:&lt;+&gt;*</code> will not be marked as undeclared anymore, while usage of missing operators will be marked as such</li>
-<li>Fix a parsing exception caused by a <code>;</code> in an argument list</li>
-<li>Fix a long standing parsing exception caused by <code>&gt;&gt;.foo</code> calls ambiguity.</li>
-<li>Add a <code>New Cro Template</code> action</li>
-<li>Fix different parser exceptions for Cro template language</li>
-<li>Support the new <code>&lt;?$foo&gt;</code> and <code>&lt;!$foo&gt;</code> syntax added in the latest release of Cro::WebApp</li>
-<li>An escaped <code>#</code> symbol is no longer misparsed in regex language</li>
-<li>New file associations (<code>.raku</code>, <code>.rakumod</code>, <code>.rakutest</code>, <code>.rakudoc</code>) are suggested in the Windows installer</li>
-<li>The undeclared symbol annotator will not run until the SETTING symbols are available, which makes it less noisy at the start</li>
-<li>Fix data race in SETTING symbols loading, making it more stable</li>
+<li>In the Cro template language, resolution and completion of variables, calls and macros now works within a single file</li>
+<li>Resolve and complete match variables resulting from regex application, including back-references within a regex</li>
+<li>Improve documentation support: fix wrong documentation cases, properly display tables, update documentation cache</li>
+<li>Make it possible to view documentation for operators: both the standard operator syntax (e.g. &#39;+&#39;) and the function form (e.g. &#39;&amp;infix:&lt;+&gt;&#39;)</li>
+<li>Add an intention for converting double quotes into single ones (removing interpolation) and the other way around (adding interpolation)</li>
+<li>Add an intention to convert one-line control flow statements into blocks (e.g. &#39;say 42 if True&#39; is converted into &#39;if True { say 42 }&#39;)</li>
+<li>The annotation and quickfix for stubbing missing role methods in a class now considers the &#39;handles&#39; trait</li>
+<li>For &#39;unit&#39;-scoped MAIN subroutines, the parameters are now resolved and completed properly</li>
+<li>Improve recognizing file URLs as clickable links in console output</li>
+<li>Don&#39;t perform bogus extract refactors on a variable or its type from a declaration or a parameter</li>
+<li>Fix a race which could lead to an exception when closing a project shortly after starting the IDE</li>
+<li>Fix an exception involving usage of the PsiViewer plugin</li>
+<li>Fix an exception related to usage of an external module that does not exist</li>
+<li>Do not mistakenly suggest to simplify a range with whatever star</li>
 </ul>
   ]]>
   </change-notes>
