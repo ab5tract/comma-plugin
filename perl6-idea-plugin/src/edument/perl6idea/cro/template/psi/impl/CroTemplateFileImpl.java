@@ -3,9 +3,12 @@ package edument.perl6idea.cro.template.psi.impl;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.cro.template.CroTemplateFileType;
 import edument.perl6idea.cro.template.CroTemplateLanguage;
 import edument.perl6idea.cro.template.psi.CroTemplateFile;
+import edument.perl6idea.cro.template.psi.Declaration;
+import edument.perl6idea.cro.template.psi.reference.CroTemplateSymbolCollector;
 import org.jetbrains.annotations.NotNull;
 
 public class CroTemplateFileImpl extends PsiFileBase implements CroTemplateFile {
@@ -17,5 +20,15 @@ public class CroTemplateFileImpl extends PsiFileBase implements CroTemplateFile 
     @Override
     public FileType getFileType() {
         return CroTemplateFileType.INSTANCE;
+    }
+
+    @Override
+    public void offerAllTo(CroTemplateSymbolCollector collector) {
+        Declaration[] types = PsiTreeUtil.getChildrenOfType(this, Declaration.class);
+        if (types == null)
+            return;
+        for (Declaration declaration : types) {
+            declaration.declareToCollector(collector);
+        }
     }
 }

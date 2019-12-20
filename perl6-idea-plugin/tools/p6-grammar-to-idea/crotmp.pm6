@@ -188,9 +188,11 @@ grammar MAIN {
                 <.end-token('COLON')>
                 <.hws>?
                 [
+                    <.start-element('PARAMETER')>
                     <.start-token('VARIABLE_NAME')>
                     '$' <.identifier>?
                     <.end-token('VARIABLE_NAME')>
+                    <.end-element('PARAMETER')>
                 ]?
             ]?
             [
