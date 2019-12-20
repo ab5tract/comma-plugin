@@ -18,11 +18,15 @@ public class Perl6RegexAssertionImpl extends ASTWrapperPsiElement implements Per
 
     @Override
     public String getName() {
-        Collection<Perl6RegexCall> infix = PsiTreeUtil.findChildrenOfType(this, Perl6RegexCall.class);
-        if (infix.size() == 1)
+        Collection<Perl6RegexCall> calls = PsiTreeUtil.findChildrenOfType(this, Perl6RegexCall.class);
+        if (calls.size() == 1)
             return "$" + getText();
-        else
-            return "$<" + infix.iterator().next().getName() + ">";
+        else if (!calls.isEmpty()) {
+            Perl6RegexCall next = calls.iterator().next();
+            if (next != null)
+                return "$<" + next.getText() + ">";
+        }
+        return null;
     }
 
     @Override
