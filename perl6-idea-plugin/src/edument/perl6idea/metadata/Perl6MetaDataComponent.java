@@ -131,16 +131,21 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             }
 
             Set<String> existingLibraryNames = new HashSet<>();
-            ModuleRootManager.getInstance(myModule).orderEntries().forEachLibrary(library -> {
-                existingLibraryNames.add(library.getName());
-                return true;
-            });
-
-            // Second, remove libraries that are not specifies in META
-            removeReundantLibraries(application, existingLibraryNames, dependenciesFromMeta);
-            dependenciesFromMeta.removeAll(existingLibraryNames);
-            // Third, add those specified there, but no duplicates, hence the remove above
-            syncMetaEntriesIntoLibraries(sdk, application, dependenciesFromMeta);
+            try {
+                if (myModule.isDisposed())
+                    return;
+                ModuleRootManager.getInstance(myModule).orderEntries().forEachLibrary(library -> {
+                    existingLibraryNames.add(library.getName());
+                    return true;
+                });
+                // Second, remove libraries that are not specifies in META
+                removeReundantLibraries(application, existingLibraryNames, dependenciesFromMeta);
+                dependenciesFromMeta.removeAll(existingLibraryNames);
+                // Third, add those specified there, but no duplicates, hence the remove above
+                syncMetaEntriesIntoLibraries(sdk, application, dependenciesFromMeta);
+            } catch (Exception ex) {
+                LOG.warn(ex);
+            }
         });
     }
 
