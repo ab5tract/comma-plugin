@@ -405,14 +405,13 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     }
 
     private static boolean isValidIntroduceContext(PsiElement element) {
-        boolean invalid = element instanceof Perl6ImportStatement ||
-                          element instanceof Perl6RequireStatement ||
-                          element instanceof Perl6UseStatement ||
-                          element instanceof Perl6NeedStatement ||
-                          element instanceof Perl6ControlStatement ||
-                          element instanceof Perl6CatchStatement ||
-                          element instanceof Perl6Phaser;
-        return !invalid;
+        boolean valid = element instanceof P6Extractable;
+        if (element instanceof Perl6TypeName) {
+            return !(element.getParent() instanceof Perl6Parameter) && !(element.getParent() instanceof Perl6ScopedDecl);
+        } else if (element instanceof Perl6Variable) {
+            return !(element.getParent() instanceof Perl6VariableDecl) && !(element.getParent() instanceof Perl6ParameterVariable);
+        }
+        return valid;
     }
 
     @Override

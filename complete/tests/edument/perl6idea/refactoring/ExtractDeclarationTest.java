@@ -161,9 +161,25 @@ public class ExtractDeclarationTest extends CommaFixtureTestCase {
     }
 
     public void testNonpostfixCallExtraction() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = %foo{.fo<caret>o};");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = %foo{<selection>42.foo</selection>};");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$foo");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $foo = .foo;\nmy $a = %foo{$foo};");
+        myFixture.checkResult("my $foo = 42.foo;\nmy $a = %foo{$foo};");
+    }
+
+    public void testNoExtractionForTypeInDeclaration() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my In<caret>t $a;");
+        Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$foo");
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, "Cannot refactor with this selection", () ->
+            handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null)
+        );
+    }
+
+    public void testNoExtractionForTypeInParameter() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "when :(In<caret>t $a) {};");
+        Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$foo");
+        assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class, "Cannot refactor with this selection", () ->
+            handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null)
+        );
     }
 }
