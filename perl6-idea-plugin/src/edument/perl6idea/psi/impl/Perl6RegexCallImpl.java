@@ -21,6 +21,12 @@ public class Perl6RegexCallImpl extends ASTWrapperPsiElement implements Perl6Reg
     }
 
     @Override
+    public String getName() {
+        PsiElement name = getFirstChild();
+        return name == null ? null : name.getText();
+    }
+
+    @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         Perl6RegexCall newCall = Perl6ElementFactory.createRegexCall(getProject(), name);
         replace(newCall);

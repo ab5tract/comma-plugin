@@ -92,6 +92,7 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
         doNegativeTest("'foo' ~~ /(.)$<a>=[.]/;sub foo() {\"foo\" ~~ /$<b>=./;};$<caret>", "$<b>");
         doTest("'foo' ~~ /<a>/; $<caret>", "$<a>");
         doTest("/<alnum> <.hehe> { $<caret> }/", "$<alnum>");
+        doTest("/<local=.alnum> { $<caret> }/", "$<local>");
         doNegativeTest("/<alnum> <.hehe> { $<caret> }/", "$<hehe>");
     }
 
