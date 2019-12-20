@@ -68,8 +68,8 @@ class Pod::To::Comma {
 
     multi pod2comma(Pod::Block::Table $pod) {
         my $ret = '<table class=\'sections\'>';
-        $ret ~= "<tr>{$_.item.map({"<th>{$_}</th>"}).join}</tr>\n" with $pod.headers;
-        $ret ~= "<tr>{$_.map({"<tr>{$_}</tr>"}).join}</tr>\n" for $pod.contents;
+        $ret ~= "<tr>{$_.item.map({"<th>{$_.trans(['&', '<', '>'] => ['&amp;', '&lt;', '&gt;'])}</th>"}).join}</tr>\n" with $pod.headers;
+        $ret ~= "<tr>{$_.map({"<td>{$_.trans(['&', '<', '>'] => ['&amp;', '&lt;', '&gt;'])}</tr>"}).join}</tr>\n" for $pod.contents;
         $ret ~ '</table>';
     }
 
@@ -99,7 +99,7 @@ class Pod::To::Comma {
     }
 
     multi pod2comma(Str $pod) {
-        $pod;
+        $pod.trans(['&', '<', '>'] => ['&amp;', '&lt;', '&gt;']);
     }
 }
 

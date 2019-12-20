@@ -13,33 +13,35 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+
 public class Perl6DocumentationProvider implements DocumentationProvider {
     @Nullable
     @Override
     public synchronized String getQuickNavigateInfo(PsiElement element, PsiElement originalElement) {
         if (element instanceof Perl6Constant) {
             if (element.getText().length() < 50)
-                return element.getText();
-            return "constant " + ((Perl6Constant)element).getConstantName() + " = ...";
+                return escapeHtml(element.getText());
+            return escapeHtml("constant " + ((Perl6Constant)element).getConstantName() + " = ...");
         } else if (element instanceof Perl6Enum) {
             Perl6Enum enumEl = (Perl6Enum)element;
-            return "enum " + enumEl.getEnumName() + " (" + String.join(", ", enumEl.getEnumValues()) + ")";
+            return escapeHtml("enum " + enumEl.getEnumName() + " (" + String.join(", ", enumEl.getEnumValues()) + ")");
         } else if (element instanceof Perl6PackageDecl) {
             Perl6PackageDecl decl = (Perl6PackageDecl)element;
             Optional<String> traits = decl.getTraits().stream().map(t -> t.getTraitModifier() + " " + t.getTraitName()).reduce((s1, s2) -> s1 + " " + s2);
-            return String.format("%s %s%s", decl.getPackageKind(), decl.getPackageName(),
-                                 traits.map(s -> " " + s).orElse(""));
+            return escapeHtml(String.format("%s %s%s", decl.getPackageKind(), decl.getPackageName(),
+                                 traits.map(s -> " " + s).orElse("")));
         } else if (element instanceof Perl6ParameterVariable) {
             Perl6ParameterVariable decl = (Perl6ParameterVariable)element;
             Perl6Parameter parameter = PsiTreeUtil.getParentOfType(decl, Perl6Parameter.class);
             if (parameter == null) return null;
-            return parameter.getText();
+            return escapeHtml(parameter.getText());
         } else if (element instanceof Perl6RegexDecl) {
             String text = element.getText();
             if (text.length() < 50)
                 return text;
             Perl6RegexDecl decl = (Perl6RegexDecl)element;
-            return String.format("%s %s { ... }", decl.getRegexKind(), decl.getRegexName());
+            return escapeHtml(String.format("%s %s { ... }", decl.getRegexKind(), decl.getRegexName()));
         } else if (element instanceof Perl6RoutineDecl) {
             Perl6RoutineDecl decl = (Perl6RoutineDecl)element;
             String signature;
@@ -49,18 +51,18 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
                 Perl6Signature node = decl.getSignatureNode();
                 signature = node != null ? node.getText() : "()";
             }
-            return String.format("%s %s%s", decl.getRoutineKind(), decl.getRoutineName(), signature);
+            return escapeHtml(String.format("%s %s%s", decl.getRoutineKind(), decl.getRoutineName(), signature));
         } else if (element instanceof Perl6Subset) {
-            return "subset " + ((Perl6Subset)element).getSubsetName() + " of " + ((Perl6Subset)element).getSubsetBaseTypeName();
+            return escapeHtml("subset " + ((Perl6Subset)element).getSubsetName() + " of " + ((Perl6Subset)element).getSubsetBaseTypeName());
         } else if (element instanceof Perl6VariableDecl) {
             Perl6VariableDecl decl = (Perl6VariableDecl)element;
             String name = String.join(", ", decl.getVariableNames());
             String scope = decl.getScope();
             PsiElement initializer = decl.getInitializer();
             Perl6PackageDecl selfType = scope.equals("has") ? PsiTreeUtil.getParentOfType(decl, Perl6PackageDecl.class) : null;
-            return String.format("%s %s%s%s",
+            return escapeHtml(String.format("%s %s%s%s",
                                  scope, name, initializer == null ? "" : " = " + initializer.getText(),
-                                 selfType == null ? "" : " (attribute of " + selfType.getPackageName() + ")");
+                                 selfType == null ? "" : " (attribute of " + selfType.getPackageName() + ")"));
         }
         return null;
     }
