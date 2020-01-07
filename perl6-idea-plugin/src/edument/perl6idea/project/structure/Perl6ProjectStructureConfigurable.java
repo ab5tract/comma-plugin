@@ -19,6 +19,7 @@ import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
 import com.intellij.openapi.ui.DetailsComponent;
 import com.intellij.openapi.ui.MasterDetailsComponent;
 import com.intellij.openapi.util.ActionCallback;
+import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.ex.IdeFocusTraversalPolicy;
 import com.intellij.ui.OnePixelSplitter;
 import com.intellij.ui.components.panels.Wrapper;
@@ -260,7 +261,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
             if (toFocus == null) toFocus = detailsContent;
             if (requestFocus) {
                 myToFocus = toFocus;
-                UIUtil.requestFocus(toFocus);
+                IdeFocusManager.findInstance().requestFocus(toFocus, true);
             }
         }
 

@@ -38,7 +38,7 @@ public class Perl6JdkComboBox extends ComboBoxWithWidePopup<Perl6JdkComboBox.Jdk
     @Nullable
     private final Condition<Sdk> myFilter;
     @Nullable
-    private final Condition<SdkTypeId> myCreationFilter;
+    private final Condition<? super SdkTypeId> myCreationFilter;
     private JButton mySetUpButton;
     private final Condition<SdkTypeId> mySdkTypeFilter;
 
@@ -54,7 +54,7 @@ public class Perl6JdkComboBox extends ComboBoxWithWidePopup<Perl6JdkComboBox.Jdk
     public Perl6JdkComboBox(@NotNull final ProjectSdksModel jdkModel,
                             @Nullable Condition<SdkTypeId> sdkTypeFilter,
                             @Nullable Condition<Sdk> filter,
-                            @Nullable Condition<SdkTypeId> creationFilter,
+                            @Nullable Condition<? super SdkTypeId> creationFilter,
                             boolean addSuggestedItems) {
         super(new JdkComboBoxModel(jdkModel, sdkTypeFilter, filter, addSuggestedItems));
         myFilter = filter;
@@ -130,7 +130,7 @@ public class Perl6JdkComboBox extends ComboBoxWithWidePopup<Perl6JdkComboBox.Jdk
                                @Nullable final Project project,
                                final ProjectSdksModel jdksModel,
                                final JdkComboBox.NoneJdkComboBoxItem firstItem,
-                               @Nullable final Condition<Sdk> additionalSetup,
+                               @Nullable final Condition<? super Sdk> additionalSetup,
                                final boolean moduleJdkSetup) {
         setSetupButton(setUpButton, project, jdksModel, firstItem, additionalSetup,
                        ProjectBundle.message("project.roots.set.up.jdk.title", moduleJdkSetup ? 1 : 2));
@@ -140,7 +140,7 @@ public class Perl6JdkComboBox extends ComboBoxWithWidePopup<Perl6JdkComboBox.Jdk
                                @Nullable final Project project,
                                final ProjectSdksModel jdksModel,
                                final JdkComboBox.NoneJdkComboBoxItem firstItem,
-                               @Nullable final Condition<Sdk> additionalSetup,
+                               @Nullable final Condition<? super Sdk> additionalSetup,
                                final String actionGroupTitle) {
 
         mySetUpButton = setUpButton;
@@ -174,7 +174,7 @@ public class Perl6JdkComboBox extends ComboBoxWithWidePopup<Perl6JdkComboBox.Jdk
         });
     }
 
-    public void setEditButton(final JButton editButton, final Project project, final Computable<Sdk> retrieveJDK) {
+    public void setEditButton(final JButton editButton, final Project project, final Computable<? extends Sdk> retrieveJDK) {
         editButton.addActionListener(e -> {
             final Sdk projectJdk = retrieveJDK.compute();
             if (projectJdk != null) {
@@ -315,7 +315,7 @@ public class Perl6JdkComboBox extends ComboBoxWithWidePopup<Perl6JdkComboBox.Jdk
         }
     }
 
-    public static Condition<Sdk> getSdkFilter(@Nullable final Condition<SdkTypeId> filter) {
+    public static Condition<Sdk> getSdkFilter(@Nullable final Condition<? super SdkTypeId> filter) {
         return filter == null ? Conditions.alwaysTrue() : sdk -> filter.value(sdk.getSdkType());
     }
 

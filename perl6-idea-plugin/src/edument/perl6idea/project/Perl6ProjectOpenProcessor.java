@@ -6,7 +6,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.projectImport.ProjectOpenProcessorBase;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,11 +15,13 @@ import java.io.IOException;
 public class Perl6ProjectOpenProcessor extends ProjectOpenProcessorBase<Perl6ProjectBuilder> {
     private static final Logger LOG = Logger.getInstance(Perl6ProjectOpenProcessor.class);
 
-    protected Perl6ProjectOpenProcessor() {
-        super(new Perl6ProjectBuilder());
+    @NotNull
+    @Override
+    protected Perl6ProjectBuilder doGetBuilder() {
+        return new Perl6ProjectBuilder();
     }
 
-    @Nullable
+    @NotNull
     @Override
     public String[] getSupportedExtensions() {
         return new String[]{ "META6.json", "META.list" };
@@ -31,7 +33,7 @@ public class Perl6ProjectOpenProcessor extends ProjectOpenProcessorBase<Perl6Pro
     }
 
     @Override
-    protected boolean doQuickImport(VirtualFile file, WizardContext wizardContext) {
+    protected boolean doQuickImport(VirtualFile file, @NotNull WizardContext wizardContext) {
         try {
             String pathToImport = file.getParent().getPath();
             getBuilder().setFileToImport(pathToImport);

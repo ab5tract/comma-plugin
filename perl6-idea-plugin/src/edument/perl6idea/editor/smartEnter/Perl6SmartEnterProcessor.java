@@ -6,6 +6,7 @@ import com.intellij.codeInsight.editorActions.smartEnter.SmartEnterProcessor;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -22,9 +23,14 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.impl.Perl6RoutineDeclImpl;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
+    private static Logger LOG = Logger.getInstance(Perl6SmartEnterProcessor.class);
+
     @Override
     public boolean process(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile psiFile) {
         if (!(psiFile instanceof Perl6File)) return false;
@@ -51,7 +57,12 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         CommandProcessor.getInstance().executeCommand(project, () -> {
             EditorActionManager actionManager = EditorActionManager.getInstance();
             EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_MOVE_LINE_END);
-            actionHandler.execute(editor, caretModel.getCurrentCaret(), DataManager.getInstance().getDataContextFromFocus().getResult());
+            try {
+                actionHandler.execute(editor, caretModel.getCurrentCaret(), DataManager.getInstance().getDataContextFromFocusAsync().blockingGet(2000));
+            }
+            catch (ExecutionException | TimeoutException e) {
+                LOG.warn(e);
+            }
         }, "", null);
         return true;
     }
