@@ -1,7 +1,6 @@
 package edument.perl6idea.psi.stub;
 
 import com.intellij.psi.stubs.*;
-import com.intellij.util.containers.hash.HashMap;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.extensions.Perl6FrameworkCall;
 import edument.perl6idea.psi.Perl6SubCall;
@@ -10,8 +9,8 @@ import edument.perl6idea.psi.stub.impl.Perl6SubCallStubImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class Perl6SubCallStubElementType extends IStubElementType<Perl6SubCallStub, Perl6SubCall> {
     public Perl6SubCallStubElementType() {

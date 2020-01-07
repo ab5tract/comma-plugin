@@ -1,9 +1,9 @@
 package edument.perl6idea.cro.template.psi.reference;
 
 import com.intellij.psi.PsiElement;
-import com.intellij.util.containers.hash.HashMap;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 public class CroTemplateCompletionCollector implements CroTemplateSymbolCollector {

@@ -91,7 +91,7 @@
     <codeInsight.parameterInfo language="Perl6" implementationClass="edument.perl6idea.Perl6ParameterInfoHandler"/>
     <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
 
-    <fileTypeFactory implementation="edument.perl6idea.cro.template.CroTemplateFileTypeFactory"/>
+    <fileType name="crotemplate" language="Perl6" implementationClass="edument.perl6idea.cro.template.CroTemplateFileType" fieldName="INSTANCE" extensions="crotmp"/>
     <lang.parserDefinition language="CroTemplate" implementationClass="edument.perl6idea.cro.template.parsing.CroTemplateParserDefinition"/>
     <lang.syntaxHighlighterFactory language="CroTemplate" implementationClass="edument.perl6idea.cro.template.highlighter.CroTemplateSyntaxHighlighterFactory"/>
     <colorSettingsPage implementation="edument.perl6idea.cro.template.highlighter.CroTemplateColorSettingsPage"/>
