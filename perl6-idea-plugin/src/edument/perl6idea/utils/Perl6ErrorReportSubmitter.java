@@ -1,15 +1,15 @@
 package edument.perl6idea.utils;
 
 import com.google.gson.Gson;
-import com.intellij.errorreport.bean.ErrorBean;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
+import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter;
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.diagnostic.SubmittedReportInfo;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.util.Consumer;
+import com.intellij.util.ExceptionUtil;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.Registry;
@@ -34,6 +34,8 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
     private static String URL = "https://commaide.com/api/error-reports";
@@ -45,10 +47,6 @@ public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
     }
 
     @Override
-    public SubmittedReportInfo submit(IdeaLoggingEvent[] events, Component parent) {
-        return new SubmittedReportInfo(null, "0", SubmittedReportInfo.SubmissionStatus.FAILED);
-    }
-
     public boolean submit(@NotNull IdeaLoggingEvent[] events,
                           @Nullable String additionalInfo,
                           @NotNull Component parentComponent,
@@ -62,13 +60,15 @@ public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
         }
     }
 
-    private static ErrorBean createErrorBean(IdeaLoggingEvent event, String info) {
-        ErrorBean errorBean = new ErrorBean(event.getThrowable(), info);
-        errorBean.setMessage(event.getMessage());
-        errorBean.setPluginName("Perl 6 Language Support");
-        IdeaPluginDescriptor perl6plugin = PluginManager.getPlugin(PluginId.getId("edument.perl6-idea-plugin"));
-        if (perl6plugin != null) // Should not happen
-            errorBean.setPluginVersion(perl6plugin.getVersion());
+    private static Map<String, String> createErrorBean(IdeaLoggingEvent event, String info) {
+        Map<String, String> errorBean = new HashMap<>();
+        errorBean.put("pluginName", "Perl 6 Language Support");
+        IdeaPluginDescriptor perl6plugin = PluginManagerCore.getPlugin(PluginId.getId("edument.perl6-idea-plugin"));
+        if (perl6plugin != null)
+            errorBean.put("pluginVersion", perl6plugin.getVersion());
+        errorBean.put("message", event.getMessage());
+        errorBean.put("stackTrace", ExceptionUtil.getThrowableText(event.getThrowable()));
+        errorBean.put("lastAction", info);
         return errorBean;
     }
 
@@ -88,6 +88,7 @@ public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
         HttpClientBuilder builder = HttpClientBuilder.create();
 
         SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+            @Override
             public boolean isTrusted(X509Certificate[] arg0, String arg1) {
                 return true;
             }
