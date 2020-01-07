@@ -3,11 +3,11 @@ package edument.perl6idea.annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiElement;
-import com.intellij.util.containers.hash.HashSet;
 import edument.perl6idea.annotation.fix.UseExecutableDynamicVariableFix;
 import edument.perl6idea.psi.Perl6StrLiteral;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Perl6ExecutableStringAnnotator implements Annotator {

@@ -5,7 +5,10 @@
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
-    <fileTypeFactory implementation="edument.perl6idea.filetypes.Perl6FileTypeFactory"/>
+    <fileType name="perl6script" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ScriptFileType" fieldName="INSTANCE" extensions="p6;pl6;raku"/>
+    <fileType name="perl6module" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ModuleFileType" fieldName="INSTANCE" extensions="pm6;rakumod"/>
+    <fileType name="perl6test" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6TestFileType" fieldName="INSTANCE" extensions="t;t6;rakutest"/>
+    <fileType name="perl6doc" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6PodFileType" fieldName="INSTANCE" extensions="pod6;rakudoc"/>
     <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
     <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
     <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>

@@ -290,7 +290,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
             @NotNull
             @Override
-            public Object[] getDependences() {
+            public Object[] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };

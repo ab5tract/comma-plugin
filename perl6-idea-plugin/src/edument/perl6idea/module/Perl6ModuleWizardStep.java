@@ -4,7 +4,6 @@ import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
-import com.intellij.util.containers.hash.HashMap;
 import com.intellij.util.ui.JBUI;
 import edument.perl6idea.utils.Patterns;
 import edument.perl6idea.utils.Perl6ProjectType;
@@ -13,6 +12,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Perl6ModuleWizardStep extends ModuleWizardStep {
