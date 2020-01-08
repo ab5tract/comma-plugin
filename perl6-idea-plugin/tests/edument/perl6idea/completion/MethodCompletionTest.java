@@ -526,9 +526,7 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
     }
 
     public void testAccessorsPrivacy2() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "class A { has $.test; my class B { method a { self.te<caret> } } }");
-        complete(true);
+        doTestNotContainsAll("class A { has $.test; my class B { method a { self.te<caret> } } }", ".test");
     }
 
     public void testReturnTypeBasedExternal() {
