@@ -77,5 +77,6 @@
     <orderEntry type="library" name="org.junit.vintage:junit-vintage-engine:5.4.2" level="project" />
     <orderEntry type="library" name="snakeyaml" level="project" />
     <orderEntry type="module" module-name="intellij.platform.serviceContainer" />
+    <orderEntry type="module" module-name="intellij.idea.community.main" />
   </component>
 </module>
