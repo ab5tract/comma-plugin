@@ -19,6 +19,5 @@
   <help webhelp-url="https://commaide.com/docs"/>
   <documentation url="https://commaide.com/docs"/>
   <support url="https://commaide.com/subscriber/feedback"/>
-  <feedback eap-url="https://commaide.com/subscriber/feedback"
-            release-url="https://commaide.com/subscriber/feedback"/>
+  <feedback url="https://commaide.com/subscriber/feedback"/>
 </component>
