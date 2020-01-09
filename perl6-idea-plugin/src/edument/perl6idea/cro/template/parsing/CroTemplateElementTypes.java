@@ -25,6 +25,7 @@ public interface CroTemplateElementTypes {
     IElementType LITERAL_OPEN_TAG = new CroTemplateElementType("LITERAL_OPEN_TAG");
     IElementType LITERAL_TAG_ATTRIBUTE = new CroTemplateElementType("LITERAL_TAG_ATTRIBUTE");
     IElementType MACRO = new CroTemplateElementType("MACRO");
+    IElementType NAMED_ARGUMENT = new CroTemplateElementType("NAMED_ARGUMENT");
     IElementType NUM_LITERAL = new CroTemplateElementType("NUM_LITERAL");
     IElementType PARAMETER = new CroTemplateElementType("PARAMETER");
     IElementType PARENTHESIZED_EXPRESSION = new CroTemplateElementType("PARENTHESIZED_EXPRESSION");

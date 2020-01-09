@@ -72,6 +72,8 @@ public class CroTemplateParserDefinition implements ParserDefinition {
             return new CroTemplateConditionImpl(node);
         if (type == CroTemplateElementTypes.CALL)
             return new CroTemplateCallImpl(node);
+        if (type == CroTemplateElementTypes.NAMED_ARGUMENT)
+            return new CroTemplateNamedArgumentImpl(node);
         if (type == CroTemplateElementTypes.SUB)
             return new CroTemplateSubImpl(node);
         if (type == CroTemplateElementTypes.USE)

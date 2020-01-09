@@ -456,7 +456,7 @@ grammar MAIN {
         <.ws>
         [
             [
-                <.expression>
+                <.argument>
                 <.ws>
                 [
                     <.start-token('COMMA')>
@@ -474,6 +474,38 @@ grammar MAIN {
             ]?
         ]?
         <.end-element('ARGLIST')>
+    }
+
+    token argument {
+        || <.start-element('NAMED_ARGUMENT')>
+           <.start-token('NAMED_ARGUMENT_SYNTAX')>
+           ':'
+           <.end-token('NAMED_ARGUMENT_SYNTAX')>
+           [
+               <.start-token('NAMED_ARGUMENT_SYNTAX')>
+               '!'
+               <.end-token('NAMED_ARGUMENT_SYNTAX')>
+           ]?
+           [
+               <.start-token('NAMED_ARGUMENT_NAME')>
+               <.identifier>
+               <.end-token('NAMED_ARGUMENT_NAME')>
+               [
+                   <.start-token('NAMED_ARGUMENT_SYNTAX')>
+                   '('
+                   <.end-token('NAMED_ARGUMENT_SYNTAX')>
+                   [
+                       <.expression>
+                       [
+                           <.start-token('NAMED_ARGUMENT_SYNTAX')>
+                           ')'
+                           <.end-token('NAMED_ARGUMENT_SYNTAX')>
+                       ]?
+                   ]?
+               ]?
+           ]?
+           <.end-element('NAMED_ARGUMENT')>
+        || <.expression>
     }
     
     token expression {
