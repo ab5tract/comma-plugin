@@ -432,10 +432,20 @@ grammar MAIN {
 
     token parameter {
         <.start-element('PARAMETER')>
+        [
+        || <.start-token('NAMED_PARAMETER_SYNTAX')>
+           ':'
+           <.end-token('NAMED_PARAMETER_SYNTAX')>
+           <.parameter-name>?
+        || <.parameter-name>
+        ]
+        <.end-element('PARAMETER')>
+    }
+
+    token parameter-name {
         <.start-token('VARIABLE_NAME')>
         '$' <.identifier>?
         <.end-token('VARIABLE_NAME')>
-        <.end-element('PARAMETER')>
     }
 
     token arglist {
