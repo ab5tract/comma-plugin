@@ -8,6 +8,7 @@ public interface CroTemplateTokenTypes {
     IElementType ATTRIBUTE_QUOTE = new CroTemplateElementType("ATTRIBUTE_QUOTE");
     IElementType ATTRIBUTE_VALUE = new CroTemplateElementType("ATTRIBUTE_VALUE");
     IElementType BAD_CHARACTER = TokenType.BAD_CHARACTER;
+    IElementType BOOL_LITERAL = new CroTemplateElementType("BOOL_LITERAL");
     IElementType CLOSE_ANGLE = new CroTemplateElementType("CLOSE_ANGLE");
     IElementType CLOSE_BRACKET = new CroTemplateElementType("CLOSE_BRACKET");
     IElementType CLOSE_CURLY = new CroTemplateElementType("CLOSE_CURLY");

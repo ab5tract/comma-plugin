@@ -603,6 +603,7 @@ grammar MAIN {
         || <.num>
         || <.rat>
         || <.int>
+        || <.bool>
         || <.variable>
         || <.deref-term>
         || <.parenthesized-expression>
@@ -648,6 +649,14 @@ grammar MAIN {
         '-'? \d* '.' \d+ <[eE]> '-'? \d+
         <.end-token('NUM_LITERAL')>
         <.end-element('NUM_LITERAL')>
+    }
+
+    token bool {
+        <.start-element('BOOL_LITERAL')>
+        <.start-token('BOOL_LITERAL')>
+        ['True' || 'False']
+        <.end-token('BOOL_LITERAL')>
+        <.end-element('BOOL_LITERAL')>
     }
 
     token variable {

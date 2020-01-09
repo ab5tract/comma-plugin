@@ -10,6 +10,7 @@ public interface CroTemplateElementTypes {
     IElementType APPLY = new CroTemplateElementType("APPLY");
     IElementType ARGLIST = new CroTemplateElementType("ARGLIST");
     IElementType BODY = new CroTemplateElementType("BODY");
+    IElementType BOOL_LITERAL = new CroTemplateElementType("BOOL_LITERAL");
     IElementType CALL = new CroTemplateElementType("CALL");
     IElementType COMMENT = new CroTemplateElementType("COMMENT");
     IElementType CONDITION = new CroTemplateElementType("CONDITION");
