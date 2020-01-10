@@ -21,6 +21,12 @@ public class CroTemplateParameterImpl extends ASTWrapperPsiElement implements Cr
     }
 
     @Override
+    public int getTextOffset() {
+        ASTNode[] varName = getNode().getChildren(TokenSet.create(CroTemplateTokenTypes.VARIABLE_NAME));
+        return varName.length == 0 ? 0 : varName[0].getStartOffset();
+    }
+
+    @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         throw new IncorrectOperationException();
     }
