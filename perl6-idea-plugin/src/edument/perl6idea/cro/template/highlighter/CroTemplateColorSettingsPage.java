@@ -35,6 +35,7 @@ public class CroTemplateColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Comma", CroTemplateHighlighter.COMMA),
             new AttributesDescriptor("Comment", CroTemplateHighlighter.COMMENT),
             new AttributesDescriptor("Named Argument Syntax", CroTemplateHighlighter.NAMED_ARGUMENT_SYNTAX),
+            new AttributesDescriptor("Module Name", CroTemplateHighlighter.MODULE_NAME),
     };
 
     @Nullable

@@ -48,6 +48,12 @@ public class CroTemplateHighlighter {
             DefaultLanguageHighlighterColors.KEYWORD
     );
 
+    static final String MODULE_NAME_ID = "CRO_TEMPLATE_MODULE_NAME";
+    public static final TextAttributesKey MODULE_NAME = TextAttributesKey.createTextAttributesKey(
+            MODULE_NAME_ID,
+            DefaultLanguageHighlighterColors.CONSTANT
+    );
+
     static final String VARIABLE_ID = "CRO_TEMPLATE_VARIABLE";
     public static final TextAttributesKey VARIABLE = TextAttributesKey.createTextAttributesKey(
             VARIABLE_ID,

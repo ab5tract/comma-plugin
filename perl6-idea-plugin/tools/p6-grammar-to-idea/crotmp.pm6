@@ -370,9 +370,18 @@ grammar MAIN {
         <.end-token('DECL_OPENER')>
         [
             <.hws>
-            [ <.single-quote-string> <.hws>? <.tgt>? ]?
+            [ [<.single-quote-string> || <.module-name>] <.hws>? <.tgt>? ]?
         ]?
         <.end-element('USE')>
+    }
+
+    token module-name {
+        <.start-token('MODULE_NAME')>
+        <.identifier>
+        [
+            '::' <.identifier>?
+        ]*
+        <.end-token('MODULE_NAME')>
     }
 
     token sigil-tag-apply {

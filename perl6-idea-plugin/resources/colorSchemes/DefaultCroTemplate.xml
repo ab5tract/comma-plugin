@@ -5,6 +5,12 @@
       <option name="FONT_TYPE" value="3" />
     </value>
   </option>
+  <option name="CRO_TEMPLATE_MODULE_NAME">
+    <value>
+      <option name="FOREGROUND" value="4b0082" />
+      <option name="FONT_TYPE" value="3" />
+    </value>
+  </option>
   <option name="CRO_TEMPLATE_CALL_NAME">
     <value>
       <option name="FOREGROUND" value="ff4500" />

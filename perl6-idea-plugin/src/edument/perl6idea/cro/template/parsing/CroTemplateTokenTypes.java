@@ -29,6 +29,7 @@ public interface CroTemplateTokenTypes {
     IElementType LITERAL_TAG_SLASH = new CroTemplateElementType("LITERAL_TAG_SLASH");
     IElementType LITERAL_TEXT = new CroTemplateElementType("LITERAL_TEXT");
     IElementType MACRO_NAME = new CroTemplateElementType("MACRO_NAME");
+    IElementType MODULE_NAME = new CroTemplateElementType("MODULE_NAME");
     IElementType NAMED_ARGUMENT_NAME = new CroTemplateElementType("NAMED_ARGUMENT_NAME");
     IElementType NAMED_ARGUMENT_SYNTAX = new CroTemplateElementType("NAMED_ARGUMENT_SYNTAX");
     IElementType NAMED_PARAMETER_SYNTAX = new CroTemplateElementType("NAMED_PARAMETER_SYNTAX");
