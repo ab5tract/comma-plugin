@@ -84,6 +84,12 @@ public class CroTemplateHighlighter {
             DefaultLanguageHighlighterColors.STRING
     );
 
+    static final String BOOL_LITERAL_ID = "CRO_TEMPLATE_BOOL_LITERAL";
+    public static final TextAttributesKey BOOL_LITERAL = TextAttributesKey.createTextAttributesKey(
+            BOOL_LITERAL_ID,
+            DefaultLanguageHighlighterColors.CONSTANT
+    );
+
     static final String PARENS_ID = "CRO_TEMPLATE_PARENS";
     public static final TextAttributesKey PARENS = TextAttributesKey.createTextAttributesKey(
             PARENS_ID,
@@ -105,6 +111,12 @@ public class CroTemplateHighlighter {
     static final String COMMA_ID = "CRO_TEMPLATE_COMMA";
     public static final TextAttributesKey COMMA = TextAttributesKey.createTextAttributesKey(
             COMMA_ID,
+            DefaultLanguageHighlighterColors.COMMA
+    );
+
+    static final String NAMED_ARGUMENT_SYNTAX_ID = "CRO_TEMPLATE_NAMED_ARGUMENT_SYNTAX";
+    public static final TextAttributesKey NAMED_ARGUMENT_SYNTAX = TextAttributesKey.createTextAttributesKey(
+            NAMED_ARGUMENT_SYNTAX_ID,
             DefaultLanguageHighlighterColors.COMMA
     );
 
