@@ -19,13 +19,13 @@ public class Perl6ModuleFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getName() {
-        return "Perl 6 Module";
+        return "Raku Module";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "Perl 6 Module";
+        return "Raku Module";
     }
 
     @NotNull

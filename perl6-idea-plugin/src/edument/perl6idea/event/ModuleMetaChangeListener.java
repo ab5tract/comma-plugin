@@ -218,6 +218,6 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
     @NotNull
     @Override
     public String getComponentName() {
-        return "Perl 6 Module Change Listener";
+        return "Raku Module Change Listener";
     }
 }

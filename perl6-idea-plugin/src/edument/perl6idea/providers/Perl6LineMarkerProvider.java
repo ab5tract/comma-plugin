@@ -23,7 +23,7 @@ import java.util.List;
 
 public class Perl6LineMarkerProvider extends RelatedItemLineMarkerProvider {
     private static final NotNullFunction<PsiElement, Collection<? extends GotoRelatedItem>> PERL6_GOTO_RELATED_ITEM_PROVIDER =
-        dom -> Collections.singletonList(new GotoRelatedItem(dom, "Perl 6"));
+        dom -> Collections.singletonList(new GotoRelatedItem(dom, "Raku"));
 
     @Override
     protected void collectNavigationMarkers(@NotNull PsiElement element, @NotNull Collection<? super RelatedItemLineMarkerInfo> result) {

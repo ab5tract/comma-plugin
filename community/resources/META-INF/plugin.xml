@@ -1,12 +1,12 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <id>edument.perl6-idea-plugin</id>
   <version>2019.10.0</version>
-  <name>Comma Community Edition (Perl 6 Language Support)</name>
+  <name>Comma Community Edition (Raku Language Support)</name>
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
   <description><![CDATA[
 <p>
-  The Comma Community plugin provides Perl 6 language support for IDEA-based IDEs.
+  The Comma Community plugin provides Raku language support for IDEA-based IDEs.
   Features include:
 </p>
 
@@ -37,7 +37,7 @@
   <change-notes><![CDATA[
 <ul>
 <li>Add basic support for Cro&#39;s Template language, including syntax highlighting and editing features (code folding, brace matching, spell checking, etc.)</li>
-<li>Provide in-IDE documentation for types and methods (local from the project, from external modules, and from Perl 6 builtins). These are extracted from documentation comments and the Perl 6 documentation respectively.</li>
+<li>Provide in-IDE documentation for types and methods (local from the project, from external modules, and from Raku builtins). These are extracted from documentation comments and the Raku documentation respectively.</li>
 <li>Parse package names (class, grammar etc) with adverbs (e.g. <code>class Foo:auth&lt;foo&gt;</code>)</li>
 <li>Do not incorrectly recognize some cases of pair literals (e.g. <code>m =&gt; 42</code>) or sub calls (<code>s(42)</code>) as regex literals</li>
 <li>Accept postfix application as a valid case in the range correctness annotator</li>
@@ -70,7 +70,7 @@
 <li>Implement Surround With feature (<code>Ctrl-Alt-T</code>) allowing to quickly surround expressions or statements with another construct, such as an <code>if</code> block, <code>for</code> loop, or contextualizer, for example, converting <code>from-json($file)</code> to <code>start { from-json($file) }</code>. Various capture groups are supported as surrounders for regexps</li>
 <li>Add an annotation warning about usage of a return with arguments inside of a routine with <code>Nil</code> specified as return type</li>
 <li>More cases of stacktrace locations are converted into clickable links in console output</li>
-<li>Fix an exception on attempt to create a Perl 6 module file in the plugin</li>
+<li>Fix an exception on attempt to create a Raku module file in the plugin</li>
 </ul>
   ]]></change-notes>
 

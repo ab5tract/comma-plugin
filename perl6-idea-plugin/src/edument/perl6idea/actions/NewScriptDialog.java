@@ -16,7 +16,7 @@ public class NewScriptDialog extends DialogWrapper {
     protected NewScriptDialog(@Nullable Project project, boolean canBeParent) {
         super(project, canBeParent);
         init();
-        setTitle("New Perl 6 Script");
+        setTitle("New Raku Script");
     }
 
     @Nullable

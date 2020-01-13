@@ -17,8 +17,8 @@ public class Perl6CommunityTestConfigurationType extends ConfigurationTypeBase i
     private static final String PERL6_TEST_CONFIGURATION_ID = "PERL6_TEST_CONFIGURATION";
 
     protected Perl6CommunityTestConfigurationType() {
-        super(PERL6_TEST_CONFIGURATION_ID, "Perl 6 test",
-              "Run Perl 6 tests", Perl6Icons.CAMELIA);
+        super(PERL6_TEST_CONFIGURATION_ID, "Raku test",
+              "Run Raku tests", Perl6Icons.CAMELIA);
         addFactory(new ConfigurationFactory(this) {
             @NotNull
             @Override

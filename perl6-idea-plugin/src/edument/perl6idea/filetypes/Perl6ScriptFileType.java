@@ -19,13 +19,13 @@ public class Perl6ScriptFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getName() {
-        return "Perl 6 Script";
+        return "Raku Script";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "Perl 6 Script";
+        return "Raku Script";
     }
 
     @NotNull

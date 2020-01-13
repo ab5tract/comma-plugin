@@ -35,13 +35,13 @@ public class Perl6ModuleType extends ModuleType<Perl6ModuleBuilder> {
     @NotNull
     @Override
     public String getName() {
-        return "Perl 6 Module";
+        return "Raku Module";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "Perl 6 modules are used for developing <b>Perl 6</b> applications.";
+        return "Raku modules are used for developing <b>Raku</b> applications.";
     }
 
     public Icon getBigIcon() {

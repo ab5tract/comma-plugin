@@ -71,7 +71,7 @@ public class Perl6ProfileTask extends Task.Backgroundable {
         catch (SQLException | IOException e) {
             onCancel();
             Notifications.Bus.notify(
-                new Notification("Perl 6 Profiler", "Error during profiling data procession",
+                new Notification("Raku Profiler", "Error during profiling data procession",
                                  e.getMessage(), NotificationType.ERROR));
             myProfilerView.setView(new JLabel("Could not collect profiling results"));
             throw new ProcessCanceledException();

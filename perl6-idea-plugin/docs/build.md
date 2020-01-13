@@ -3,7 +3,7 @@
 #### Preparation
 
 Currently, Comma is based upon 191 Intellij revision/branch.
-Perl 6 Comma plugin supports versions in range from 145 (2016.1) to 191 (2019.1).
+Raku Comma plugin supports versions in range from 145 (2016.1) to 191 (2019.1).
 
 Do the following steps inside a work-related directory, for example, `comma`.
 * `git clone https://github.com/edumentab/intellij-community.git`
@@ -50,10 +50,10 @@ While in the `comma-build` directory.
 
 * Run the configuration.
 
-#### How to run Perl 6 Plugin from IDEA Run Configuration for testing
+#### How to run Raku Plugin from IDEA Run Configuration for testing
 
 * Open Run Configurations. Create a new Run Configuration (you may copy `IDEA with Python plugin` and do appropriate changes if wanted):
-  - Name: `IDEA with Perl 6 plugin`(does not matter for build, you also likely want to specify edition).
+  - Name: `IDEA with Raku plugin`(does not matter for build, you also likely want to specify edition).
   - Main class: com.intellij.idea.Main (type `Main` in Search by Name and select needed)
   - VM options: `-ea -Xmx192m -Didea.is.internal=true`
   - Working directory: `intellij-community/bin`

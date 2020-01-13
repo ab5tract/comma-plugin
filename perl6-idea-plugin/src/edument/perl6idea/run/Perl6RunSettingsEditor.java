@@ -122,7 +122,7 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
                 super.addComponents();
                 Perl6RunSettingsEditor.this.myPerl6ParametersPanel = new RawCommandLineEditor();
                 myPerl6ParametersComponent =
-                  LabeledComponent.create(Perl6RunSettingsEditor.this.myPerl6ParametersPanel, "Perl 6 parameters", BorderLayout.WEST);
+                  LabeledComponent.create(Perl6RunSettingsEditor.this.myPerl6ParametersPanel, "Raku parameters", BorderLayout.WEST);
                 add(myPerl6ParametersComponent);
             }
 

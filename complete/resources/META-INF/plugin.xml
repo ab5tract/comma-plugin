@@ -1,12 +1,12 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <id>edument.perl6-idea-plugin</id>
   <version>2019.12.0</version>
-  <name>Comma Complete Edition (Perl 6 Language Support)</name>
+  <name>Comma Complete Edition (Raku Language Support)</name>
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
   <description><![CDATA[
 <p>
-  The Comma Complete plugin provides Perl 6 language support for IDEA-based IDEs.
+  The Comma Complete plugin provides Raku language support for IDEA-based IDEs.
   Features include:
 </p>
 
@@ -93,7 +93,7 @@
     </action>
     <group id="Perl6Plugin.CoverageMenu">
       <action id="Perl6Plugin.HideCoverage" class="edument.perl6idea.coverage.Perl6CoverageHideAction"
-              text="Hide Perl 6 Coverage Data" />
+              text="Hide Raku Coverage Data" />
       <add-to-group group-id="CoverageMenu"/>
       <separator/>
     </group>

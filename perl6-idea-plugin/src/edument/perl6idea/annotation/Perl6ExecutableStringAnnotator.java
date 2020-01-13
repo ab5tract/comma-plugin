@@ -27,7 +27,7 @@ public class Perl6ExecutableStringAnnotator implements Annotator {
         String text = ((Perl6StrLiteral)element).getStringText();
         if (aliases.contains(text))
             holder
-                .createWarningAnnotation(element, "If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)")
+                .createWarningAnnotation(element, "If the Raku executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)")
                 .registerFix(new UseExecutableDynamicVariableFix(element));
     }
 }

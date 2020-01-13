@@ -89,7 +89,7 @@ public class Perl6Lexer extends LexerBase {
                     c.passed = true;
                     if (stack.isEmpty()) {
                         if (c.pos != stack.target.length())
-                            System.err.println("Perl 6 lexer: failed to lex the whole file (passed early)");
+                            System.err.println("Raku lexer: failed to lex the whole file (passed early)");
                         stack.token = null;
                         return;
                     }
@@ -98,14 +98,14 @@ public class Perl6Lexer extends LexerBase {
                 case -2:
                     stack.pop();
                     if (stack.isEmpty()) {
-                        System.err.println("Perl 6 lexer: failed to lex the whole file (failed to match)");
+                        System.err.println("Raku lexer: failed to lex the whole file (failed to match)");
                         stack.token = null;
                         return;
                     }
                     continue;
                 case -3:
                     if (stack.tokenStart < lastTokenStart)
-                        System.err.println("Perl 6 lexer went backwards (from " + lastTokenStart +
+                        System.err.println("Raku lexer went backwards (from " + lastTokenStart +
                             " to " + stack.tokenStart + ") over text '" +
                             stack.target.subSequence(stack.tokenStart, lastTokenStart) + "'");
                     else

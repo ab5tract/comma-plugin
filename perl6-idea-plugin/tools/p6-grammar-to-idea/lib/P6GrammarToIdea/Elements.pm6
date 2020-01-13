@@ -3,7 +3,7 @@ use P6GrammarToIdea::AST;
 
 # This walks the AST and builds up an element model. This will be used to
 # generate an element list and a parser. The parser works in terms of tokens,
-# which are produced by the lexer, which actually does the hard work of Perl 6
+# which are produced by the lexer, which actually does the hard work of Raku
 # parsing (far more than a "traditional" lexer).
 #
 # The element model is a projection of the AST, which only contains the parts

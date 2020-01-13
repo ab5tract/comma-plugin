@@ -5,10 +5,10 @@
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
-    <fileType name="Perl 6 Script" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ScriptFileType" fieldName="INSTANCE" extensions="p6;pl6;raku"/>
-    <fileType name="Perl 6 Module" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ModuleFileType" fieldName="INSTANCE" extensions="pm6;rakumod"/>
-    <fileType name="Perl 6 Test" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6TestFileType" fieldName="INSTANCE" extensions="t;t6;rakutest"/>
-    <fileType name="Perl 6 Pod" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6PodFileType" fieldName="INSTANCE" extensions="pod6;rakudoc"/>
+    <fileType name="Raku Script" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ScriptFileType" fieldName="INSTANCE" extensions="p6;pl6;raku"/>
+    <fileType name="Raku Module" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ModuleFileType" fieldName="INSTANCE" extensions="pm6;rakumod"/>
+    <fileType name="Raku Test" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6TestFileType" fieldName="INSTANCE" extensions="t;t6;rakutest"/>
+    <fileType name="Raku Pod" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6PodFileType" fieldName="INSTANCE" extensions="pod6;rakudoc"/>
     <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
     <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
     <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>
@@ -105,35 +105,35 @@
 
     <intentionAction>
       <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
-      <category>Perl 6 Intentions</category>
+      <category>Raku Intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.MakeMethodPublicIntention</className>
-      <category>Perl 6 Intentions</category>
+      <category>Raku Intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.MakeAttributeRequiredIntention</className>
-      <category>Perl 6 Intentions</category>
+      <category>Raku Intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.UnparenthesizeIntention</className>
-      <category>Perl 6 Intentions</category>
+      <category>Raku Intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.UnwrapPromiseAllOfIntention</className>
-      <category>Perl 6 Intentions</category>
+      <category>Raku Intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.SingleQuotesToDoubleIntention</className>
-      <category>Perl 6 Intentions</category>
+      <category>Raku Intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.DoubleQuotesToSingleIntention</className>
-      <category>Perl 6 Intentions</category>
+      <category>Raku Intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.ConvertToBlockFormIntention</className>
-      <category>Perl 6 Intentions</category>
+      <category>Raku Intentions</category>
     </intentionAction>
 
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6StatementSurroundDescriptor"/>
@@ -145,16 +145,16 @@
   </extensions>
 
   <actions>
-    <action id="Perl6Plugin.NewScriptAction" class="edument.perl6idea.actions.NewScriptAction" text="Perl 6 Script"
-            description="Create new Perl 6 script in current project" icon="/icons/camelia.png">
+    <action id="Perl6Plugin.NewScriptAction" class="edument.perl6idea.actions.NewScriptAction" text="Raku Script"
+            description="Create new Raku script in current project" icon="/icons/camelia.png">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
     </action>
-    <action id="Perl6Plugin.NewModuleAction" class="edument.perl6idea.actions.NewModuleAction" text="Perl 6 Module"
-            description="Create new Perl 6 module in current project" icon="/icons/camelia.png">
+    <action id="Perl6Plugin.NewModuleAction" class="edument.perl6idea.actions.NewModuleAction" text="Raku Module"
+            description="Create new Raku module in current project" icon="/icons/camelia.png">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewScriptAction"/>
     </action>
-    <action id="Perl6Plugin.NewTestAction" class="edument.perl6idea.actions.NewTestAction" text="Perl 6 Test"
-            description="Create new Perl 6 test in current project" icon="/icons/camelia.png">
+    <action id="Perl6Plugin.NewTestAction" class="edument.perl6idea.actions.NewTestAction" text="Raku Test"
+            description="Create new Raku test in current project" icon="/icons/camelia.png">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewModuleAction"/>
     </action>
     <action id="Perl6Plugin.NewCroTemplateAction" class="edument.perl6idea.cro.actions.NewCroTemplateAction" text="Cro Template"

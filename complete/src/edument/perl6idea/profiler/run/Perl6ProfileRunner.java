@@ -20,7 +20,7 @@ public class Perl6ProfileRunner extends DefaultProgramRunner {
     @NotNull
     @Override
     public String getRunnerId() {
-        return "Perl 6 Profiler";
+        return "Raku Profiler";
     }
 
     @Override

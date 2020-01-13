@@ -6,7 +6,7 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import java.util.*;
 
 /**
- * This works much like the Cursor class in Perl 6: it is the base class for grammars, and contains the state of an
+ * This works much like the Cursor class in Raku: it is the base class for grammars, and contains the state of an
  * ongoing rule parse along with having a bunch of methods used to implement parsing.
  */
 public abstract class Cursor<TCursor extends Cursor> {

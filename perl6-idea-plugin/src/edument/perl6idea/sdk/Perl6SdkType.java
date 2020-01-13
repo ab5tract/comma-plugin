@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Perl6SdkType extends SdkType {
-    private static final String NAME = "Perl 6 SDK";
+    private static final String NAME = "Raku SDK";
     public static final String SETTING_FILE_NAME = "SETTINGS.pm6";
     private static final Set<String> BINARY_NAMES = new HashSet<>();
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
@@ -179,13 +179,13 @@ public class Perl6SdkType extends SdkType {
         if (version == null) {
             return "Unknown at " + sdkHome;
         }
-        return "Perl 6 " + version;
+        return "Raku " + version;
     }
 
     @NotNull
     @Override
     public String getPresentableName() {
-        return "Perl 6 SDK";
+        return "Raku SDK";
     }
 
     @Nullable
@@ -231,7 +231,7 @@ public class Perl6SdkType extends SdkType {
 
         if (perl6path == null || coreSymbols == null || coreDocs == null) {
             String errorMessage = perl6path == null
-                                  ? "getCoreSettingFile is called without Perl 6 SDK set, using fallback"
+                                  ? "getCoreSettingFile is called without Raku SDK set, using fallback"
                                   : coreSymbols == null
                                     ? "getCoreSettingFile is called with corrupted resources bundle, using fallback"
                                     : "getCoreSettingFile is called with corrupted resources bundle";
@@ -249,7 +249,7 @@ public class Perl6SdkType extends SdkType {
                     try {
                         String settingLines = String.join("\n", cmd.executeAndRead());
                         if (settingLines.isEmpty()) {
-                            LOG.warn("getCoreSettingFile got no symbols from Perl 6, using fallback");
+                            LOG.warn("getCoreSettingFile got no symbols from Raku, using fallback");
                             getFallback(project);
                         }
                         else {

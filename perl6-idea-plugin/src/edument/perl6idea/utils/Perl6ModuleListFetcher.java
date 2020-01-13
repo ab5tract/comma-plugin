@@ -129,7 +129,7 @@ public class Perl6ModuleListFetcher implements ProjectComponent {
             isFirst = false;
             CompletableFuture<Boolean> isCacheLoaded = new CompletableFuture<>();
             ProgressManager.getInstance()
-                           .runProcessWithProgressAsynchronously(new Task.Backgroundable(project, "Getting Perl 6 Modules List") {
+                           .runProcessWithProgressAsynchronously(new Task.Backgroundable(project, "Getting Raku Modules List") {
                                @Override
                                public void run(@NotNull ProgressIndicator indicator) {
                                    populateModules();

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Implemented to provide support for DSL-style declarations provided by a
- * Perl 6 framework. For example, the Cro::HTTP::Router uses a number of subs
+ * Raku framework. For example, the Cro::HTTP::Router uses a number of subs
  * (get, put, post, etc.) that declare routes. We'd like to index these.
  */
 public abstract class Perl6FrameworkCall {

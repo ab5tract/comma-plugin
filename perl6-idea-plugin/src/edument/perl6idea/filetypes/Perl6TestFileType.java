@@ -19,13 +19,13 @@ public class Perl6TestFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getName() {
-        return "Perl 6 Test";
+        return "Raku Test";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "Perl 6 Test";
+        return "Raku Test";
     }
 
     @NotNull
