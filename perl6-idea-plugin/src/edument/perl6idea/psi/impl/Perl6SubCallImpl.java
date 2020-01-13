@@ -6,7 +6,6 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.containers.hash.HashMap;
 import edument.perl6idea.extensions.Perl6FrameworkCall;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6SubCallStub;
@@ -14,6 +13,7 @@ import edument.perl6idea.psi.stub.Perl6SubCallStubElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> implements Perl6SubCall {

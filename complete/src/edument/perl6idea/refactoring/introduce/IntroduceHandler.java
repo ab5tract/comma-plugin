@@ -5,7 +5,6 @@ import com.intellij.codeInsight.PsiEquivalenceUtil;
 import com.intellij.codeInsight.template.impl.TemplateManagerImpl;
 import com.intellij.codeInsight.template.impl.TemplateState;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.application.Result;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
@@ -218,7 +217,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
 
     private void performInplaceIntroduce(IntroduceOperation operation) {
         PsiElement element = performRefactoring(operation);
-        PsiElement declaration = PsiTreeUtil.findChildOfAnyType(element, Perl6VariableDecl.class, Perl6Constant.class);
+        PsiNamedElement declaration = PsiTreeUtil.findChildOfAnyType(element, Perl6VariableDecl.class, Perl6Constant.class);
         if (element == null || declaration == null) {
             showCannotPerformError(operation.getProject(), operation.getEditor());
             return;
@@ -233,7 +232,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             }
             editor.getCaretModel().moveToOffset(occurrence.getTextRange().getStartOffset());
             final InplaceVariableIntroducer<PsiElement> introducer =
-                new Perl6InplaceVariableIntroducer((PsiNamedElement)declaration, operation, occurrences);
+                new Perl6InplaceVariableIntroducer(declaration, operation, occurrences);
             introducer.performInplaceRefactoring(new LinkedHashSet<>(operation.getSuggestedNames()));
         } else {
             removeLeftoverStatement(operation);
@@ -244,7 +243,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         PsiElement initializer = operation.getInitializer();
         Perl6Statement statement = PsiTreeUtil.getParentOfType(initializer, Perl6Statement.class, false);
         if (statement != null)
-            WriteCommandAction.runWriteCommandAction(operation.getProject(), () -> statement.delete());
+            WriteCommandAction.writeCommandAction(operation.getProject()).run(() -> statement.delete());
     }
 
     private static PsiElement findOccurrenceUnderCaret(List<PsiElement> occurrences, Editor editor) {
@@ -267,15 +266,13 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     private PsiElement performReplace(PsiElement declaration, IntroduceOperation operation) {
         PsiElement expression = operation.getInitializer();
         Project project = operation.getProject();
-        return new WriteCommandAction<PsiElement>(project, expression.getContainingFile()) {
-            @Override
-            protected void run(@NotNull Result<PsiElement> result) {
-                try {
+        return WriteCommandAction.writeCommandAction(project, expression.getContainingFile()).compute(() -> {
+            try {
                     RefactoringEventData afterData = new RefactoringEventData();
                     afterData.addElement(declaration);
                     project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
                            .refactoringStarted(getRefactoringId(), afterData);
-                    result.setResult(addDeclaration(operation, declaration));
+                    //result.setResult(addDeclaration(operation, declaration));
                     PsiElement newExpression = createExpression(project, operation.getName());
 
                     PsiElement operationElement = operation.getElement();
@@ -287,14 +284,14 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
                         if (operation.isReplaceAll()) {
                             List<PsiElement> newOccurrences = new ArrayList<>();
                             for (PsiElement occurrence : operation.getOccurrences()) {
-                                PsiElement replaced = replaceExpression(occurrence, newExpression, operation);
+                                PsiElement replaced = replaceExpression(occurrence, newExpression);
                                 if (replaced != null)
                                     newOccurrences.add(replaced);
                             }
                             operation.setOccurrences(newOccurrences);
                         }
                         else {
-                            PsiElement replaced = replaceExpression(expression, newExpression, operation);
+                            PsiElement replaced = replaceExpression(expression, newExpression);
                             operation.setOccurrences(Collections.singletonList(replaced));
                         }
                     }
@@ -305,20 +302,20 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
                     project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
                            .refactoringDone(getRefactoringId(), afterData);
                 }
-            }
-        }.execute().getResultObject();
+            return addDeclaration(operation, declaration);
+        });
     }
 
     protected void postRefactoring(PsiElement statementList, IntroduceOperation operation) {
         if (statementList != null) {
-            WriteCommandAction.runWriteCommandAction(operation.getProject(), () -> {
+            WriteCommandAction.writeCommandAction(operation.getProject()).run(() -> {
                 PsiDocumentManager.getInstance(operation.getProject()).doPostponedOperationsAndUnblockDocument(operation.getEditor().getDocument());
                 CodeStyleManager.getInstance(operation.getProject()).reformat(statementList);
             });
         }
     }
 
-    private static PsiElement replaceExpression(PsiElement expression, PsiElement newExpression, IntroduceOperation operation) {
+    private static PsiElement replaceExpression(PsiElement expression, PsiElement newExpression) {
         return expression.replace(newExpression);
     }
 
@@ -423,7 +420,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     }
 
     private static class Perl6InplaceVariableIntroducer extends InplaceVariableIntroducer<PsiElement> {
-        public Perl6InplaceVariableIntroducer(PsiNamedElement occurrence, IntroduceOperation operation, List<PsiElement> occurrences) {
+        Perl6InplaceVariableIntroducer(PsiNamedElement occurrence, IntroduceOperation operation, List<PsiElement> occurrences) {
             super(occurrence, operation.getEditor(), operation.getProject(), "Introduce variable", occurrences.toArray(PsiElement.EMPTY_ARRAY), null);
         }
     }

@@ -25,6 +25,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 public class NewModuleAction extends AnAction {
     private static final Logger LOG = Logger.getInstance(NewModuleAction.class);
@@ -97,7 +99,12 @@ public class NewModuleAction extends AnAction {
                 CommandProcessor.getInstance().executeCommand(project, () -> {
                     EditorActionManager actionManager = EditorActionManager.getInstance();
                     EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_MOVE_LINE_END);
-                    actionHandler.execute(editor, caretModel.getCurrentCaret(), DataManager.getInstance().getDataContextFromFocus().getResult());
+                    try {
+                        actionHandler.execute(editor, caretModel.getCurrentCaret(), DataManager.getInstance().getDataContextFromFocusAsync().blockingGet(2000));
+                    }
+                    catch (ExecutionException | TimeoutException ex) {
+                        LOG.warn(ex);
+                    }
                 }, "", null);
             }
         }

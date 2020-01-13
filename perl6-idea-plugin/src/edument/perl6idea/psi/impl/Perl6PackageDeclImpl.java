@@ -435,7 +435,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
             @NotNull
             @Override
-            public Object[] getDependences() {
+            public Object[] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };

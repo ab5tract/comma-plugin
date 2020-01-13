@@ -20,6 +20,8 @@ import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.vfs.*;
+import com.intellij.openapi.vfs.newvfs.BulkFileListener;
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
@@ -52,20 +54,25 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         if (name == null || !name.equals(Perl6ModuleType.getInstance().getId()))
             return;
 
-        VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
+        myModule = module;
+
+        myModule.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             @Override
-            public void contentsChanged(@NotNull VirtualFileEvent event) {
-                if (!event.isFromSave() ||
-                    !(event.getFileName().equals(META6_JSON_NAME) ||
-                      event.getFileName().equals(META_OBSOLETE_NAME))) return;
-                myMeta = checkMetaSanity();
-                saveFile();
-                if (myMeta != null) {
-                    syncExternalLibraries(myMeta);
+            public void after(@NotNull List<? extends VFileEvent> events) {
+                for (VFileEvent event : events) {
+                    if (event.getFile() == null) continue;
+                    String fileName = event.getFile().getName();
+                    if (!event.isFromSave() ||
+                        !(fileName.equals(META6_JSON_NAME) || fileName.equals(META_OBSOLETE_NAME))) return;
+                    myMeta = checkMetaSanity();
+                    saveFile();
+                    if (myMeta != null) {
+                        syncExternalLibraries(myMeta);
+                    }
                 }
             }
         });
-        myModule = module;
+
         VirtualFile metaParent = calculateMetaParent();
         if (metaParent == null) return;
 

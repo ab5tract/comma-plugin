@@ -5,14 +5,14 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Ignore;
 
 @Ignore
-public class CommaFixtureTestCase extends LightPlatformCodeInsightFixtureTestCase {
+public class CommaFixtureTestCase extends BasePlatformTestCase {
     protected Sdk testSdk;
 
     @NotNull
@@ -55,7 +55,7 @@ public class CommaFixtureTestCase extends LightPlatformCodeInsightFixtureTestCas
             String homePath = Perl6SdkType.getInstance().suggestHomePath();
             assertNotNull("Found a perl6 in path to use in tests", homePath);
             testSdk = SdkConfigurationUtil.createAndAddSDK(homePath, Perl6SdkType.getInstance());
-            ProjectRootManager.getInstance(myModule.getProject()).setProjectSdk(testSdk);
+            ProjectRootManager.getInstance(myFixture.getModule().getProject()).setProjectSdk(testSdk);
         });
         ensureSetting();
     }

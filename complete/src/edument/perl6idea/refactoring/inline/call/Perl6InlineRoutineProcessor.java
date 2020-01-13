@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
@@ -117,7 +118,11 @@ public class Perl6InlineRoutineProcessor extends Perl6InlineProcessor {
         Perl6Statement statement = PsiTreeUtil.getParentOfType(myRoutine, Perl6Statement.class);
         if (statement == null)
             return;
-        statement.delete();
+        PsiElement newline = statement.getNextSibling();
+        if (newline instanceof PsiWhiteSpace)
+            statement.getParent().deleteChildRange(statement, newline);
+        else
+            statement.delete();
     }
 
     @NotNull

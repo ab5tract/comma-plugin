@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.codec.Charsets;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -12,6 +11,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -88,14 +88,14 @@ public class TimelineClient {
         public final TimelineEventListener listener;
         public boolean handshook = false;
 
-        public ConnectionState(AsynchronousSocketChannel connection, TimelineEventListener listener) {
+        ConnectionState(AsynchronousSocketChannel connection, TimelineEventListener listener) {
             this.connection = connection;
             this.listener = listener;
         }
     }
 
     private void dispatchEvents(AsynchronousSocketChannel conn, TimelineEventListener listener) {
-        conn.write(ByteBuffer.wrap("{ \"min\": 1, \"max\": 1 }\n".getBytes(Charsets.US_ASCII)));
+        conn.write(ByteBuffer.wrap("{ \"min\": 1, \"max\": 1 }\n".getBytes(StandardCharsets.US_ASCII)));
         read(new ConnectionState(conn, listener));
     }
 
@@ -120,7 +120,7 @@ public class TimelineClient {
         });
     }
 
-    private void closeConnection(ConnectionState state) {
+    private static void closeConnection(ConnectionState state) {
         try {
             state.connection.close();
         }
@@ -129,7 +129,7 @@ public class TimelineClient {
         }
     }
 
-    private void processBuffer(ConnectionState state) {
+    private static void processBuffer(ConnectionState state) {
         boolean again = true;
         while (again) {
             int end = state.outstanding.position();
@@ -150,9 +150,9 @@ public class TimelineClient {
     }
 
     private static final Map<String, Object> EMPTY_DATA = new HashMap<>();
-    private void processMessage(byte[] message, ConnectionState state) {
+    private static void processMessage(byte[] message, ConnectionState state) {
         try {
-            String decoded = new String(message, "UTF-8");
+            String decoded = new String(message, StandardCharsets.UTF_8);
             JsonObject json = new JsonParser().parse(decoded).getAsJsonObject();
             if (state.handshook) {
                 String module = json.get("m").getAsString();

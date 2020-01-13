@@ -354,7 +354,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
             @NotNull
             @Override
-            public Object[] getDependences() {
+            public Object[] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };

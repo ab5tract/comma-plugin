@@ -286,7 +286,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
             @NotNull
             @Override
-            public Object[] getDependences() {
+            public Object[] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };
