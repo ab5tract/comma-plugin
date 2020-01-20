@@ -42,6 +42,7 @@ public class Perl6ProjectImportProvider extends ProjectImportProvider {
           }};
     }
 
+    @Override
     @Nullable
     @Language("HTML")
     public String getFileSample() {
