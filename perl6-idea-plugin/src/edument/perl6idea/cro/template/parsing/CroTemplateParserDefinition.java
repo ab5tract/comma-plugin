@@ -62,6 +62,8 @@ public class CroTemplateParserDefinition implements ParserDefinition {
             return new CroTemplateRatLiteralImpl(node);
         if (type == CroTemplateElementTypes.NUM_LITERAL)
             return new CroTemplateNumLiteralImpl(node);
+        if (type == CroTemplateElementTypes.BOOL_LITERAL)
+            return new CroTemplateBoolLiteralImpl(node);
         if (type == CroTemplateElementTypes.TOPIC_ACCESS)
             return new CroTemplateTopicAccessImpl(node);
         if (type == CroTemplateElementTypes.VARIABLE_ACCESS)
@@ -72,6 +74,8 @@ public class CroTemplateParserDefinition implements ParserDefinition {
             return new CroTemplateConditionImpl(node);
         if (type == CroTemplateElementTypes.CALL)
             return new CroTemplateCallImpl(node);
+        if (type == CroTemplateElementTypes.NAMED_ARGUMENT)
+            return new CroTemplateNamedArgumentImpl(node);
         if (type == CroTemplateElementTypes.SUB)
             return new CroTemplateSubImpl(node);
         if (type == CroTemplateElementTypes.USE)

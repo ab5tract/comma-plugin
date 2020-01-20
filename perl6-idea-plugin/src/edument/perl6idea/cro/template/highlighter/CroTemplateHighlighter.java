@@ -48,6 +48,12 @@ public class CroTemplateHighlighter {
             DefaultLanguageHighlighterColors.KEYWORD
     );
 
+    static final String MODULE_NAME_ID = "CRO_TEMPLATE_MODULE_NAME";
+    public static final TextAttributesKey MODULE_NAME = TextAttributesKey.createTextAttributesKey(
+            MODULE_NAME_ID,
+            DefaultLanguageHighlighterColors.CONSTANT
+    );
+
     static final String VARIABLE_ID = "CRO_TEMPLATE_VARIABLE";
     public static final TextAttributesKey VARIABLE = TextAttributesKey.createTextAttributesKey(
             VARIABLE_ID,
@@ -84,6 +90,12 @@ public class CroTemplateHighlighter {
             DefaultLanguageHighlighterColors.STRING
     );
 
+    static final String BOOL_LITERAL_ID = "CRO_TEMPLATE_BOOL_LITERAL";
+    public static final TextAttributesKey BOOL_LITERAL = TextAttributesKey.createTextAttributesKey(
+            BOOL_LITERAL_ID,
+            DefaultLanguageHighlighterColors.CONSTANT
+    );
+
     static final String PARENS_ID = "CRO_TEMPLATE_PARENS";
     public static final TextAttributesKey PARENS = TextAttributesKey.createTextAttributesKey(
             PARENS_ID,
@@ -105,6 +117,12 @@ public class CroTemplateHighlighter {
     static final String COMMA_ID = "CRO_TEMPLATE_COMMA";
     public static final TextAttributesKey COMMA = TextAttributesKey.createTextAttributesKey(
             COMMA_ID,
+            DefaultLanguageHighlighterColors.COMMA
+    );
+
+    static final String NAMED_ARGUMENT_SYNTAX_ID = "CRO_TEMPLATE_NAMED_ARGUMENT_SYNTAX";
+    public static final TextAttributesKey NAMED_ARGUMENT_SYNTAX = TextAttributesKey.createTextAttributesKey(
+            NAMED_ARGUMENT_SYNTAX_ID,
             DefaultLanguageHighlighterColors.COMMA
     );
 

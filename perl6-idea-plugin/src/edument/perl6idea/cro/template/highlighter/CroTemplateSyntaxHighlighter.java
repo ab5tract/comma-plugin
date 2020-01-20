@@ -41,6 +41,7 @@ public class CroTemplateSyntaxHighlighter extends SyntaxHighlighterBase {
         ATTRIBUTES.put(CroTemplateTokenTypes.VARIABLE_NAME, CroTemplateHighlighter.VARIABLE);
         ATTRIBUTES.put(CroTemplateTokenTypes.MACRO_NAME, CroTemplateHighlighter.CALL_NAME);
         ATTRIBUTES.put(CroTemplateTokenTypes.SUB_NAME, CroTemplateHighlighter.CALL_NAME);
+        ATTRIBUTES.put(CroTemplateTokenTypes.MODULE_NAME, CroTemplateHighlighter.MODULE_NAME);
         ATTRIBUTES.put(CroTemplateTokenTypes.IDENTIFER, CroTemplateHighlighter.CALL_NAME);
         ATTRIBUTES.put(CroTemplateTokenTypes.INFIX, CroTemplateHighlighter.INFIX);
         ATTRIBUTES.put(CroTemplateTokenTypes.DOT, CroTemplateHighlighter.INFIX);
@@ -51,10 +52,14 @@ public class CroTemplateSyntaxHighlighter extends SyntaxHighlighterBase {
         ATTRIBUTES.put(CroTemplateTokenTypes.OPEN_CURLY, CroTemplateHighlighter.BRACES);
         ATTRIBUTES.put(CroTemplateTokenTypes.CLOSE_CURLY, CroTemplateHighlighter.BRACES);
         ATTRIBUTES.put(CroTemplateTokenTypes.COMMA, CroTemplateHighlighter.COMMA);
+        ATTRIBUTES.put(CroTemplateTokenTypes.NAMED_ARGUMENT_NAME, CroTemplateHighlighter.NAMED_ARGUMENT_SYNTAX);
+        ATTRIBUTES.put(CroTemplateTokenTypes.NAMED_ARGUMENT_SYNTAX, CroTemplateHighlighter.NAMED_ARGUMENT_SYNTAX);
+        ATTRIBUTES.put(CroTemplateTokenTypes.NAMED_PARAMETER_SYNTAX, CroTemplateHighlighter.NAMED_ARGUMENT_SYNTAX);
 
         ATTRIBUTES.put(CroTemplateTokenTypes.INT_LITERAL, CroTemplateHighlighter.NUMERIC_LITERAL);
         ATTRIBUTES.put(CroTemplateTokenTypes.RAT_LITERAL, CroTemplateHighlighter.NUMERIC_LITERAL);
         ATTRIBUTES.put(CroTemplateTokenTypes.NUM_LITERAL, CroTemplateHighlighter.NUMERIC_LITERAL);
+        ATTRIBUTES.put(CroTemplateTokenTypes.BOOL_LITERAL, CroTemplateHighlighter.BOOL_LITERAL);
         ATTRIBUTES.put(CroTemplateTokenTypes.STRING_QUOTE_SINGLE, CroTemplateHighlighter.STRING_LITERAL_QUOTE);
         ATTRIBUTES.put(CroTemplateTokenTypes.STRING_TEXT, CroTemplateHighlighter.STRING_LITERAL_CHAR);
         ATTRIBUTES.put(CroTemplateTokenTypes.LITERAL_KEY, CroTemplateHighlighter.STRING_LITERAL_CHAR);

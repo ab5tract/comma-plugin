@@ -23,6 +23,7 @@ public class CroTemplateColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("String Literal Quote", CroTemplateHighlighter.STRING_LITERAL_QUOTE),
             new AttributesDescriptor("String Literal Value", CroTemplateHighlighter.STRING_LITERAL_CHAR),
             new AttributesDescriptor("Numeric Literal", CroTemplateHighlighter.NUMERIC_LITERAL),
+            new AttributesDescriptor("Boolean Literal", CroTemplateHighlighter.BOOL_LITERAL),
             new AttributesDescriptor("Literal Tag Markup", CroTemplateHighlighter.LITERAL_TAG),
             new AttributesDescriptor("Literal Tag Name", CroTemplateHighlighter.LITERAL_TAG_NAME),
             new AttributesDescriptor("Literal Attribute Name", CroTemplateHighlighter.LITERAL_ATTRIBUTE_NAME),
@@ -33,6 +34,8 @@ public class CroTemplateColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Curly Braces", CroTemplateHighlighter.BRACES),
             new AttributesDescriptor("Comma", CroTemplateHighlighter.COMMA),
             new AttributesDescriptor("Comment", CroTemplateHighlighter.COMMENT),
+            new AttributesDescriptor("Named Argument Syntax", CroTemplateHighlighter.NAMED_ARGUMENT_SYNTAX),
+            new AttributesDescriptor("Module Name", CroTemplateHighlighter.MODULE_NAME),
     };
 
     @Nullable

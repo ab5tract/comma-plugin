@@ -8,6 +8,7 @@ public interface CroTemplateTokenTypes {
     IElementType ATTRIBUTE_QUOTE = new CroTemplateElementType("ATTRIBUTE_QUOTE");
     IElementType ATTRIBUTE_VALUE = new CroTemplateElementType("ATTRIBUTE_VALUE");
     IElementType BAD_CHARACTER = TokenType.BAD_CHARACTER;
+    IElementType BOOL_LITERAL = new CroTemplateElementType("BOOL_LITERAL");
     IElementType CLOSE_ANGLE = new CroTemplateElementType("CLOSE_ANGLE");
     IElementType CLOSE_BRACKET = new CroTemplateElementType("CLOSE_BRACKET");
     IElementType CLOSE_CURLY = new CroTemplateElementType("CLOSE_CURLY");
@@ -28,6 +29,10 @@ public interface CroTemplateTokenTypes {
     IElementType LITERAL_TAG_SLASH = new CroTemplateElementType("LITERAL_TAG_SLASH");
     IElementType LITERAL_TEXT = new CroTemplateElementType("LITERAL_TEXT");
     IElementType MACRO_NAME = new CroTemplateElementType("MACRO_NAME");
+    IElementType MODULE_NAME = new CroTemplateElementType("MODULE_NAME");
+    IElementType NAMED_ARGUMENT_NAME = new CroTemplateElementType("NAMED_ARGUMENT_NAME");
+    IElementType NAMED_ARGUMENT_SYNTAX = new CroTemplateElementType("NAMED_ARGUMENT_SYNTAX");
+    IElementType NAMED_PARAMETER_SYNTAX = new CroTemplateElementType("NAMED_PARAMETER_SYNTAX");
     IElementType NUM_LITERAL = new CroTemplateElementType("NUM_LITERAL");
     IElementType OPEN_ANGLE = new CroTemplateElementType("OPEN_ANGLE");
     IElementType OPEN_BRACKET = new CroTemplateElementType("OPEN_BRACKET");

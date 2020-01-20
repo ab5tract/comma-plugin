@@ -370,9 +370,18 @@ grammar MAIN {
         <.end-token('DECL_OPENER')>
         [
             <.hws>
-            [ <.single-quote-string> <.hws>? <.tgt>? ]?
+            [ [<.single-quote-string> || <.module-name>] <.hws>? <.tgt>? ]?
         ]?
         <.end-element('USE')>
+    }
+
+    token module-name {
+        <.start-token('MODULE_NAME')>
+        <.identifier>
+        [
+            '::' <.identifier>?
+        ]*
+        <.end-token('MODULE_NAME')>
     }
 
     token sigil-tag-apply {
@@ -432,10 +441,20 @@ grammar MAIN {
 
     token parameter {
         <.start-element('PARAMETER')>
+        [
+        || <.start-token('NAMED_PARAMETER_SYNTAX')>
+           ':'
+           <.end-token('NAMED_PARAMETER_SYNTAX')>
+           <.parameter-name>?
+        || <.parameter-name>
+        ]
+        <.end-element('PARAMETER')>
+    }
+
+    token parameter-name {
         <.start-token('VARIABLE_NAME')>
         '$' <.identifier>?
         <.end-token('VARIABLE_NAME')>
-        <.end-element('PARAMETER')>
     }
 
     token arglist {
@@ -446,7 +465,7 @@ grammar MAIN {
         <.ws>
         [
             [
-                <.expression>
+                <.argument>
                 <.ws>
                 [
                     <.start-token('COMMA')>
@@ -464,6 +483,38 @@ grammar MAIN {
             ]?
         ]?
         <.end-element('ARGLIST')>
+    }
+
+    token argument {
+        || <.start-element('NAMED_ARGUMENT')>
+           <.start-token('NAMED_ARGUMENT_SYNTAX')>
+           ':'
+           <.end-token('NAMED_ARGUMENT_SYNTAX')>
+           [
+               <.start-token('NAMED_ARGUMENT_SYNTAX')>
+               '!'
+               <.end-token('NAMED_ARGUMENT_SYNTAX')>
+           ]?
+           [
+               <.start-token('NAMED_ARGUMENT_NAME')>
+               <.identifier>
+               <.end-token('NAMED_ARGUMENT_NAME')>
+               [
+                   <.start-token('NAMED_ARGUMENT_SYNTAX')>
+                   '('
+                   <.end-token('NAMED_ARGUMENT_SYNTAX')>
+                   [
+                       <.expression>
+                       [
+                           <.start-token('NAMED_ARGUMENT_SYNTAX')>
+                           ')'
+                           <.end-token('NAMED_ARGUMENT_SYNTAX')>
+                       ]?
+                   ]?
+               ]?
+           ]?
+           <.end-element('NAMED_ARGUMENT')>
+        || <.expression>
     }
     
     token expression {
@@ -561,6 +612,7 @@ grammar MAIN {
         || <.num>
         || <.rat>
         || <.int>
+        || <.bool>
         || <.variable>
         || <.deref-term>
         || <.parenthesized-expression>
@@ -606,6 +658,14 @@ grammar MAIN {
         '-'? \d* '.' \d+ <[eE]> '-'? \d+
         <.end-token('NUM_LITERAL')>
         <.end-element('NUM_LITERAL')>
+    }
+
+    token bool {
+        <.start-element('BOOL_LITERAL')>
+        <.start-token('BOOL_LITERAL')>
+        ['True' || 'False']
+        <.end-token('BOOL_LITERAL')>
+        <.end-element('BOOL_LITERAL')>
     }
 
     token variable {
