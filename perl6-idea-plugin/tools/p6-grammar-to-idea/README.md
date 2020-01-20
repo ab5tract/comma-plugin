@@ -1,11 +1,11 @@
-# Perl 6 grammar-ish to IDEA platform Lexer/Parser
+# Raku grammar-ish to IDEA platform Lexer/Parser
 
-This is a tool that takes something that looks very much like a Perl 6 grammar
+This is a tool that takes something that looks very much like a Raku grammar
 and produces Java code implementing the IDEA platform `Lexer` and `PsiParser`
 interfaces.
 
-This turns out to be a hard problem, since Perl 6 grammars, used to specify
-the Perl 6 language:
+This turns out to be a hard problem, since Raku grammars, used to specify
+the Raku language:
 
 * Rely on being able to nest sub-languages as deep as needed inside of each
   other (`my $rx = /"$foo."bar"()"+/;` has MAIN, Regex, Quote, MAIN, Quote
@@ -24,12 +24,12 @@ Therefore, the integer used to represent the current state consists of two
 ## The grammar language
 
 The grammar language is a restricted, and in some places slightly extended,
-version of the Perl 6 grammar syntax. The input file should consist of one or
+version of the Raku grammar syntax. The input file should consist of one or
 more grammars, with one of them representing the main language being called
 `MAIN`. Inside each `grammar`, `rule` and `token` are supported, with `rule`
 doing the automatic insertion of `<.ws>` calls.
 
-The following constructs inside of those behave as in Perl 6 grammars:
+The following constructs inside of those behave as in Raku grammars:
 
 * Single line comments with `#`
 * `.` for matching any character

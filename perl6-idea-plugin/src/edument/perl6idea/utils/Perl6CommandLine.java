@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * A thin wrapper around GeneralCommandLine
  * Features include:
- * * Adds Perl 6 interpreter from Sdk set for the project passed to constructor
+ * * Adds Raku interpreter from Sdk set for the project passed to constructor
  * * Contains a shortcut for executing and gathering output of process
  * Warning: Perl6CommandLine usage is *synchronous*. It means that it will block
  * for scripts that take a lot of time to execute and setting execution

@@ -149,6 +149,6 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDisplayName() {
-        return "Perl 6";
+        return "Raku";
     }
 }

@@ -24,8 +24,8 @@ public class Perl6CompleteRunConfigurationType extends ConfigurationTypeBase {
     protected static final String PERL6_RUN_CONFIGURATION_ID = "PERL6_RUN_CONFIGURATION";
 
     protected Perl6CompleteRunConfigurationType() {
-        super(PERL6_RUN_CONFIGURATION_ID, "Perl 6",
-              "Run Perl 6 configuration", Perl6Icons.CAMELIA);
+        super(PERL6_RUN_CONFIGURATION_ID, "Raku",
+              "Raku run configuration", Perl6Icons.CAMELIA);
         addFactory(new ConfigurationFactory(this) {
             @NotNull
             @Override

@@ -100,7 +100,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testLeadingZeroAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <warning descr=\"Leading 0 does not indicate octal in Perl 6; use 0o755\">0755</warning>;");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <warning descr=\"Leading 0 does not indicate octal in Raku; use 0o755\">0755</warning>;");
         myFixture.checkHighlighting();
     }
 
@@ -789,7 +789,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testPerl6ExecutableAnnotation() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "say <warning descr=\"If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">'perl6'</warning>; run <warning descr=\"If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">'perl6'</warning>; run <warning descr=\"If the Perl 6 executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">\"perl6\"</warning>;");
+                                  "say <warning descr=\"If the Raku executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">'perl6'</warning>; run <warning descr=\"If the Raku executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">'perl6'</warning>; run <warning descr=\"If the Raku executable is meant, consider using the $*EXECUTABLE.absolute() call that supports many platforms (e.g. GNU/Linux, Windows, etc.)\">\"perl6\"</warning>;");
         myFixture.checkHighlighting();
     }
 

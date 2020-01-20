@@ -224,7 +224,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             myPanel.add(myNameField, "wrap");
             myPanel.add(new JLabel("Scope:"));
             myPanel.add(myScopeCombo);
-            ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(myProject, "Getting Perl 6 Modules List"){
+            ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(myProject, "Getting Raku Modules List"){
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
                     myNameField.setVariants(Perl6ModuleListFetcher.getNames(myProject));

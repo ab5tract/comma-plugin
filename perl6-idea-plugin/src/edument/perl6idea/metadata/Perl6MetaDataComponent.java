@@ -219,7 +219,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                                 catch (IOException ex) {
                                     Notifications.Bus.notify(
                                         new Notification(
-                                            "Perl 6 meta error", "Perl 6 META error",
+                                            "Raku meta error", "Raku META error",
                                             "Could not rename META file: " + ex.getMessage(),
                                             NotificationType.ERROR));
                                 }
@@ -536,8 +536,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     private void notifyMetaIssue(String message, NotificationType type, AnAction... actions) {
         Notification notification = new Notification(
-            "Perl 6 meta error", Perl6Icons.CAMELIA,
-            "Perl 6 meta error", "",
+            "Raku meta error", Perl6Icons.CAMELIA,
+            "Raku meta error", "",
             message, type, null);
         if (myMetaFile != null) {
             notification.addAction(new AnAction(String.format("Open %s", META6_JSON_NAME)) {
@@ -564,8 +564,8 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     private void notifyMissingMETA() {
         Notification notification = new Notification(
-            "Perl 6 meta error", Perl6Icons.CAMELIA,
-            "Perl 6 meta file is missing", "",
+            "Raku meta error", Perl6Icons.CAMELIA,
+            "Raku meta file is missing", "",
             String.format("'%s' nor '%s' files seem to be present in this module.", META_OBSOLETE_NAME, META6_JSON_NAME),
             NotificationType.WARNING, null);
         notification.addAction(new AnAction(String.format("Stub and open %s file", META6_JSON_NAME)) {
@@ -578,7 +578,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 }
                 catch (IOException e1) {
                     Notifications.Bus.notify(new Notification(
-                        "Perl 6 meta error", Perl6Icons.CAMELIA,
+                        "Raku meta error", Perl6Icons.CAMELIA,
                         String.format("%s error", META6_JSON_NAME),
                         String.format("Error has occurred during %s file creation", META6_JSON_NAME),
                         e1.getMessage(), NotificationType.ERROR, null));

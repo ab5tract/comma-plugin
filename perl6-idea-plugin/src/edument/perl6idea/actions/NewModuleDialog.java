@@ -19,7 +19,7 @@ public class NewModuleDialog extends DialogWrapper {
                               String prefix) {
         super(project, canBeParent);
         init();
-        setTitle("New Perl 6 Module");
+        setTitle("New Raku Module");
         moduleNameField.setText(prefix);
     }
 

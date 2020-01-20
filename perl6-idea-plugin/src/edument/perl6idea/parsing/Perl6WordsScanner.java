@@ -9,7 +9,7 @@ import com.intellij.util.Processor;
 import org.jetbrains.annotations.NotNull;
 
 // A straightforward copy of `DefaultWordsScanner` class,
-// tweaked to handle Perl 6 attributes
+// tweaked to handle Raku attributes
 public class Perl6WordsScanner extends VersionedWordsScanner {
     private final Lexer myLexer;
     private final TokenSet myIdentifierTokenSet;

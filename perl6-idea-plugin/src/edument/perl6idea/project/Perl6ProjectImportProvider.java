@@ -35,7 +35,7 @@ public class Perl6ProjectImportProvider extends ProjectImportProvider {
               public JComponent getComponent() {
                   JComponent oldPanel = super.getComponent();
                   JPanel newPanel = new JPanel(new MigLayout());
-                  newPanel.add(new JLabel("Select a Perl 6 compiler to use"), "wrap 20");
+                  newPanel.add(new JLabel("Select a Raku compiler to use"), "wrap 20");
                   newPanel.add(oldPanel);
                   return newPanel;
               }
@@ -45,6 +45,6 @@ public class Perl6ProjectImportProvider extends ProjectImportProvider {
     @Nullable
     @Language("HTML")
     public String getFileSample() {
-        return "<b>Perl 6</b> project file (META6.json or META.info)";
+        return "<b>Raku</b> project file (META6.json or META.info)";
     }
 }

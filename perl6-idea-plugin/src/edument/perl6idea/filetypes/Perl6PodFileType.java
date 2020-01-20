@@ -19,13 +19,13 @@ public class Perl6PodFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getName() {
-        return "Perl 6 Pod";
+        return "Raku Pod";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "Perl 6 Pod (Plain Old Documentation)";
+        return "Raku Pod (Plain Old Documentation)";
     }
 
     @NotNull

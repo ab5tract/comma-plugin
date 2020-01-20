@@ -149,7 +149,7 @@ public final class Perl6Highlighter {
     /* Operators
      * *********
      * These map to operation symbol, which is by default not highlighted.
-     * In Perl 6, operators are significant, and the term/infix parser
+     * In Raku, operators are significant, and the term/infix parser
      * interlocking is an important part of the syntax model, allowing the
      * use of characters to unambiguously be operators and terms. Thus we
      * will map these to a color in the default schemes.
@@ -389,7 +389,7 @@ public final class Perl6Highlighter {
     /* Callable
      * ********
      * These map to the function call and function delcaration colors. but
-     * the Perl 6 included schema overrides them.
+     * the Raku included schema overrides them.
      */
 
     static final String METHOD_CALL_NAME_ID = "PERL6_METHOD_CALL_NAME";
@@ -449,7 +449,7 @@ public final class Perl6Highlighter {
     /* Types and terms
      * ***************
      * Mark these up all as class names. We'll assign them a color
-     * in the Perl 6 scheme.
+     * in the Raku scheme.
      */
 
     static final String TERM_ID = "PERL6_TERM";

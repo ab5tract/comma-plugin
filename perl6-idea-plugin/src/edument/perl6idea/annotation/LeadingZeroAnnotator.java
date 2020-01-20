@@ -13,7 +13,7 @@ public class LeadingZeroAnnotator implements Annotator {
             String literal = psiElement.getText();
             if (literal.length() > 1 && literal.startsWith("0") && Character.isDigit(literal.charAt(1)))
                 annotationHolder.createWarningAnnotation(psiElement,
-                        "Leading 0 does not indicate octal in Perl 6; use 0o" + literal.substring(1));
+                        "Leading 0 does not indicate octal in Raku; use 0o" + literal.substring(1));
         }
     }
 }

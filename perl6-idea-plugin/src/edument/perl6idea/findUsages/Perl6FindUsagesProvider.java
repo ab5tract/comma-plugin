@@ -32,26 +32,26 @@ public class Perl6FindUsagesProvider implements FindUsagesProvider {
     @Override
     public String getType(@NotNull PsiElement element) {
         if (element instanceof Perl6Constant)
-            return "Perl 6 constant";
+            return "Raku constant";
         else if (element instanceof Perl6Enum)
-            return "Perl 6 enum";
+            return "Raku enum";
         else if (element instanceof Perl6Label)
-            return "Perl 6 label";
+            return "Raku label";
         else if (element instanceof Perl6PackageDecl)
-            return "Perl 6 " + ((Perl6PackageDecl)element).getPackageKind();
+            return "Raku " + ((Perl6PackageDecl)element).getPackageKind();
         else if (element instanceof Perl6RoutineDecl)
-            return "Perl 6 " + ((Perl6RoutineDecl)element).getRoutineKind();
+            return "Raku " + ((Perl6RoutineDecl)element).getRoutineKind();
         else if (element instanceof Perl6ParameterVariable)
-            return "Perl 6 parameter";
+            return "Raku parameter";
         else if (element instanceof Perl6RegexDecl)
-            return "Perl 6 " + ((Perl6RegexDecl)element).getRegexKind();
+            return "Raku " + ((Perl6RegexDecl)element).getRegexKind();
         else if (element instanceof Perl6Subset)
-            return "Perl 6 subset";
+            return "Raku subset";
         else if (element instanceof Perl6VariableDecl) {
             String scope = ((Perl6VariableDecl)element).getScope();
-            return "Perl 6 " + (scope.equals("has") ? "attribute" : "variable");
+            return "Raku " + (scope.equals("has") ? "attribute" : "variable");
         }
-        return "Perl 6 element";
+        return "Raku element";
     }
 
     @NotNull

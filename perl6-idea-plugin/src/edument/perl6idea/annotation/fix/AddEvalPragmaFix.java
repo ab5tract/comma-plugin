@@ -20,7 +20,7 @@ public class AddEvalPragmaFix implements IntentionAction {
     @NotNull
     @Override
     public String getFamilyName() {
-        return "Perl 6";
+        return "Raku";
     }
 
     @Override

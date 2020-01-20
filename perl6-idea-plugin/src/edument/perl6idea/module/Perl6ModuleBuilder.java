@@ -40,12 +40,12 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
 
     @Override
     public String getName() {
-        return "Perl 6 Builder";
+        return "Raku Builder";
     }
 
     @Override
     public String getDescription() {
-        return "Perl 6 builder";
+        return "Raku builder";
     }
 
     @Override
@@ -117,7 +117,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
 
     @Override
     public String getGroupName() {
-        return "Perl 6";
+        return "Raku";
     }
 
     @Override

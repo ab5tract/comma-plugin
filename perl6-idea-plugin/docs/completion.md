@@ -2,7 +2,7 @@
 
 This document describes main principles of completion algorithm used in Comma
 and provides set of rules used. It must be noted that algorithm presented
-has no 100% matching with real Perl 6 compiler, but strives to be as close as
+has no 100% matching with real Raku compiler, but strives to be as close as
 possible.
 
 #### Inheritance (`is`)

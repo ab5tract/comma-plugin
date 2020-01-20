@@ -62,7 +62,7 @@ public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
 
     private static Map<String, String> createErrorBean(IdeaLoggingEvent event, String info) {
         Map<String, String> errorBean = new HashMap<>();
-        errorBean.put("pluginName", "Perl 6 Language Support");
+        errorBean.put("pluginName", "Raku Language Support");
         IdeaPluginDescriptor perl6plugin = PluginManagerCore.getPlugin(PluginId.getId("edument.perl6-idea-plugin"));
         if (perl6plugin != null)
             errorBean.put("pluginVersion", perl6plugin.getVersion());

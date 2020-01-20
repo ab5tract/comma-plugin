@@ -69,10 +69,10 @@ public class Perl6RunCommandLineState extends CommandLineState {
     protected void checkSdk() throws ExecutionException {
         Sdk projectSdk = ProjectRootManager.getInstance(getEnvironment().getProject()).getProjectSdk();
         if (projectSdk == null || !(projectSdk.getSdkType() instanceof Perl6SdkType))
-            throw new ExecutionException("Perl 6 SDK is not set for the project, please set one");
+            throw new ExecutionException("Raku SDK is not set for the project, please set one");
         String path = Perl6SdkType.findPerl6InSdkHome(projectSdk.getHomePath());
         if (path == null)
-            throw new ExecutionException("Perl 6 SDK is broken");
+            throw new ExecutionException("Raku SDK is broken");
     }
 
     protected void setEnvironment(GeneralCommandLine cmd) {

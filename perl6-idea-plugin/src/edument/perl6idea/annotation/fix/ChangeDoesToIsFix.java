@@ -31,7 +31,7 @@ public class ChangeDoesToIsFix extends PsiElementBaseIntentionAction implements 
     @NotNull
     @Override
     public String getFamilyName() {
-        return "Perl 6";
+        return "Raku";
     }
 
     @Override

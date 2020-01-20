@@ -72,7 +72,7 @@ public class Perl6DebugThread extends Thread {
             if (mySession.isStopped()) {
                 return;
             }
-            Notification notification = new Notification("Perl 6 Debugger", "Connection Error", "Could not connect to debug server",
+            Notification notification = new Notification("Raku Debugger", "Connection Error", "Could not connect to debug server",
                                                          NotificationType.ERROR);
             Notifications.Bus.notify(notification,  mySession.getProject());
         }

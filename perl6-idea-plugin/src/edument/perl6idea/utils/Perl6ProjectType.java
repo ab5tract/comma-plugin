@@ -11,10 +11,10 @@ public enum Perl6ProjectType {
             case PERL6_SCRIPT:
                 return "Creates a stub script file, and nothing more.";
             case PERL6_MODULE:
-                return "Creates a stub Perl 6 module, consisting of a module for application logic and a test file. " +
+                return "Creates a stub Raku module, consisting of a module for application logic and a test file. " +
                         "Includes a META6.json so the module can be installed with its dependencies and distributed.";
             case PERL6_APPLICATION:
-                return "Creates a stub Perl 6 application, consisting of a script, a module for application logic, and a test file. " +
+                return "Creates a stub Raku application, consisting of a script, a module for application logic, and a test file. " +
                         "Includes a META6.json so the application can be installed with its dependencies and distributed.";
             case CRO_WEB_APPLICATION:
                 return "Creates a stub Cro web application";
@@ -25,11 +25,11 @@ public enum Perl6ProjectType {
     public static String toTypeLabel(Perl6ProjectType type) {
         switch (type) {
             case PERL6_SCRIPT:
-                return "Perl 6 script";
+                return "Raku script";
             case PERL6_MODULE:
-                return "Perl 6 module";
+                return "Raku module";
             case PERL6_APPLICATION:
-                return "Perl 6 application";
+                return "Raku application";
             default:
                 return "Cro web application";
         }
@@ -39,11 +39,11 @@ public enum Perl6ProjectType {
         if (label == null)
             return PERL6_SCRIPT;
         switch (label) {
-            case "Perl 6 script":
+            case "Raku script":
                 return PERL6_SCRIPT;
-            case "Perl 6 module":
+            case "Raku module":
                 return PERL6_MODULE;
-            case "Perl 6 application":
+            case "Raku application":
                 return PERL6_APPLICATION;
             default:
                 return CRO_WEB_APPLICATION;

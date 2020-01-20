@@ -2,7 +2,7 @@
 
 #### Description
 
-This document describes a way to unify access to Perl 6 module meta information.
+This document describes a way to unify access to Raku module meta information.
 
 A module component `Perl6MetaDataComponent` is created and registered as IDEA module component.
 

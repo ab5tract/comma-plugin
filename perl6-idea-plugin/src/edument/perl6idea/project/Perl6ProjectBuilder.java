@@ -45,7 +45,7 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
     @NotNull
     @Override
     public String getName() {
-        return "Perl 6 sources";
+        return "Raku sources";
     }
 
     @Override

@@ -92,7 +92,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     @Nls
     @Override
     public String getDisplayName() {
-        return "Perl 6 Project Structure";
+        return "Raku Project Structure";
     }
 
     @Nullable

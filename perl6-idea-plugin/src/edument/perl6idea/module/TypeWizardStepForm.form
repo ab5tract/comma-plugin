@@ -28,9 +28,9 @@
             <properties>
               <layoutOrientation value="0"/>
               <model>
-                <item value="Perl 6 script"/>
-                <item value="Perl 6 module"/>
-                <item value="Perl 6 application"/>
+                <item value="Raku script"/>
+                <item value="Raku module"/>
+                <item value="Raku application"/>
                 <item value="Cro web application"/>
               </model>
               <opaque value="false"/>

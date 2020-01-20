@@ -1,4 +1,4 @@
-# Perl 6 Color Scheme Principles
+# Raku Color Scheme Principles
 
 ## The basic idea
 

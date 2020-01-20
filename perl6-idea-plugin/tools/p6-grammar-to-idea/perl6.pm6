@@ -3500,7 +3500,7 @@ grammar MAIN {
 
     # We want to provide better feedback when the user starts to type some
     # kind of postcircumfix that has an opening thingy. Thus we recognize
-    # various "openers", on the basis that Perl 6 will give a parse fail if
+    # various "openers", on the basis that Raku will give a parse fail if
     # they are not closed later anyway.
     token interpolation_opener {
         || <?[([{<]>
