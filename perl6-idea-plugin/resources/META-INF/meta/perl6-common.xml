@@ -142,6 +142,9 @@
     <lang.documentationProvider language="Perl6" implementationClass="edument.perl6idea.docs.Perl6DocumentationProvider"/>
     <virtualFileSystem key="raku" implementationClass="edument.perl6idea.vfs.Perl6FileSystem"/>
     <library.type implementation="edument.perl6idea.library.Perl6LibraryType" />
+
+    <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoActionMethodProvider"/>
+    <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoGrammarRuleProvider"/>
   </extensions>
 
   <actions>
