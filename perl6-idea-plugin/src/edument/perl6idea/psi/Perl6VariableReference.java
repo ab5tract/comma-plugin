@@ -1,5 +1,7 @@
 package edument.perl6idea.psi;
 
+import com.intellij.codeInsight.navigation.NavigationUtil;
+import com.intellij.navigation.GotoRelatedItem;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
@@ -132,9 +134,20 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector("$/", Perl6SymbolKind.Variable);
                 anchor.applyLexicalSymbolCollector(collector);
                 Perl6Symbol result = collector.getResult();
-                if (result != null && !result.isImplicitlyDeclared())
-                    return new ArrayList<>();
-                return deduceRegexValuesFromStatement(anchor, starter);
+                if (result != null) {
+                    if (result.getPsi() instanceof Perl6ParameterVariable) {
+                        List<GotoRelatedItem> items = NavigationUtil.collectRelatedItems(result.getPsi(), null);
+                        if (items.size() == 1) {
+                            PsiElement rule = items.get(0).getElement();
+                            if (rule instanceof Perl6RegexDecl) {
+                                Perl6RegexDriver driver = PsiTreeUtil.findChildOfType(rule, Perl6Regex.class);
+                                return driver == null ? new ArrayList<>() : driver.collectRegexVariables();
+                            }
+                        }
+                    }
+                } else {
+                    return deduceRegexValuesFromStatement(anchor, starter);
+                }
             }
         } else if (anchor instanceof Perl6RegexDriver) {
             return ((Perl6RegexDriver)anchor).collectRegexVariables();
