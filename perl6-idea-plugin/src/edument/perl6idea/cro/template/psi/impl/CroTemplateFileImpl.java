@@ -31,4 +31,9 @@ public class CroTemplateFileImpl extends PsiFileBase implements CroTemplateFile 
             declaration.declareToCollector(collector);
         }
     }
+
+    @Override
+    public void declareExportedSymbols(CroTemplateSymbolCollector collector) {
+        offerAllTo(collector);
+    }
 }
