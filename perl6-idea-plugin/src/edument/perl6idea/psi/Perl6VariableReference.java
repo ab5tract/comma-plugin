@@ -134,7 +134,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector("$/", Perl6SymbolKind.Variable);
                 anchor.applyLexicalSymbolCollector(collector);
                 Perl6Symbol result = collector.getResult();
-                if (result != null) {
+                if (!result.isImplicitlyDeclared()) {
                     if (result.getPsi() instanceof Perl6ParameterVariable) {
                         List<GotoRelatedItem> items = NavigationUtil.collectRelatedItems(result.getPsi(), null);
                         if (items.size() == 1) {
