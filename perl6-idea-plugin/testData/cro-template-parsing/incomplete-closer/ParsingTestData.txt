@@ -1,5 +1,5 @@
 FILE(0,175)
-  CroTemplateMacroImpl(CroTemplate:MACRO)(0,175)
+  CroTemplateMacroImpl(MACRO)(0,175)
     PsiElement(CroTemplate:TEMPLATE_TAG_OPEN)('<')(0,1)
     PsiElement(CroTemplate:TEMPLATE_TAG_DECL_SIGIL)(':')(1,2)
     PsiElement(CroTemplate:DECL_OPENER)('macro')(2,7)
