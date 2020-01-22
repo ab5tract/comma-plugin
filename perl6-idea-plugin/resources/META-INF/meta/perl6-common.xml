@@ -150,6 +150,8 @@
     <stubIndex implementation="edument.perl6idea.cro.template.psi.stub.index.CroTemplateSubIndex"/>
     <stubIndex implementation="edument.perl6idea.cro.template.psi.stub.index.CroTemplateMacroIndex"/>
     <gotoSymbolContributor implementation="edument.perl6idea.cro.template.CroTemplateSymbolNameContributor"/>
+    <lang.psiStructureViewFactory language="CroTemplate"
+                                  implementationClass="edument.perl6idea.cro.template.structureView.CroTemplateStructureViewFactory"/>
   </extensions>
 
   <actions>
