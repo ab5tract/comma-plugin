@@ -4,9 +4,12 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IStubFileElementType;
 import com.intellij.psi.stubs.IStubElementType;
 import edument.perl6idea.psi.stub.*;
+import edument.perl6idea.cro.template.psi.stub.*;
 
 public interface CroTemplateElementTypes {
-    IFileElementType FILE = new CroTemplateFileElementType();
+    IStubFileElementType FILE = new CroTemplateFileElementType();
+    IStubElementType MACRO = new CroTemplateMacroStubElementType();
+    IStubElementType SUB = new CroTemplateSubStubElementType();
     IElementType APPLY = new CroTemplateElementType("APPLY");
     IElementType ARGLIST = new CroTemplateElementType("ARGLIST");
     IElementType BODY = new CroTemplateElementType("BODY");
@@ -25,7 +28,6 @@ public interface CroTemplateElementTypes {
     IElementType LITERAL_CLOSE_TAG = new CroTemplateElementType("LITERAL_CLOSE_TAG");
     IElementType LITERAL_OPEN_TAG = new CroTemplateElementType("LITERAL_OPEN_TAG");
     IElementType LITERAL_TAG_ATTRIBUTE = new CroTemplateElementType("LITERAL_TAG_ATTRIBUTE");
-    IElementType MACRO = new CroTemplateElementType("MACRO");
     IElementType NAMED_ARGUMENT = new CroTemplateElementType("NAMED_ARGUMENT");
     IElementType NUM_LITERAL = new CroTemplateElementType("NUM_LITERAL");
     IElementType PARAMETER = new CroTemplateElementType("PARAMETER");
@@ -33,7 +35,6 @@ public interface CroTemplateElementTypes {
     IElementType RAT_LITERAL = new CroTemplateElementType("RAT_LITERAL");
     IElementType SIGNATURE = new CroTemplateElementType("SIGNATURE");
     IElementType STRING_LITERAL = new CroTemplateElementType("STRING_LITERAL");
-    IElementType SUB = new CroTemplateElementType("SUB");
     IElementType TAG_SEQUENCE = new CroTemplateElementType("TAG_SEQUENCE");
     IElementType TOPIC_ACCESS = new CroTemplateElementType("TOPIC_ACCESS");
     IElementType USE = new CroTemplateElementType("USE");

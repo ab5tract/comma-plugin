@@ -42,6 +42,16 @@ sub generate-perl6-element-types(@element-names, $prefix, $package) is export {
         push @fields, InterfaceField.new: :type<IStubElementType>, :name<SUB_CALL>,
             :default(ConstructorCall.new(:name<Perl6SubCallStubElementType>));
     }
+    elsif $prefix eq 'CroTemplate' {
+        push @fields, InterfaceField.new: :type<IStubFileElementType>, :name<FILE>, :default(
+            ConstructorCall.new(:name<CroTemplateFileElementType>, :arguments()));
+
+        %custom := set 'MACRO', 'SUB';
+        push @fields, InterfaceField.new: :type<IStubElementType>, :name<MACRO>,
+            :default(ConstructorCall.new(:name<CroTemplateMacroStubElementType>));
+        push @fields, InterfaceField.new: :type<IStubElementType>, :name<SUB>,
+            :default(ConstructorCall.new(:name<CroTemplateSubStubElementType>));
+    }
     else {
         push @fields, InterfaceField.new: :type<IFileElementType>, :name<FILE>, :default(
             ConstructorCall.new(:name($prefix ~ 'FileElementType'), :arguments()));
@@ -62,6 +72,7 @@ sub generate-perl6-element-types(@element-names, $prefix, $package) is export {
             com.intellij.psi.tree.IStubFileElementType
             com.intellij.psi.stubs.IStubElementType
             edument.perl6idea.psi.stub.*
+            edument.perl6idea.cro.template.psi.stub.*
         >,
         type => $interface;
     return $comp-unit.generate;
