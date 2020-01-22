@@ -5,6 +5,7 @@ import edument.perl6idea.cro.template.CroTemplateLanguage;
 import edument.perl6idea.cro.template.psi.CroTemplateMacro;
 import edument.perl6idea.cro.template.psi.impl.CroTemplateMacroImpl;
 import edument.perl6idea.cro.template.psi.stub.impl.CroTemplateMacroStubImpl;
+import edument.perl6idea.cro.template.psi.stub.index.CroTemplateStubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -44,6 +45,6 @@ public class CroTemplateMacroStubElementType extends IStubElementType<CroTemplat
 
     @Override
     public void indexStub(@NotNull CroTemplateMacroStub stub, @NotNull IndexSink sink) {
-
+        sink.occurrence(CroTemplateStubIndexKeys.TEMPLATE_MACRO, stub.getName());
     }
 }

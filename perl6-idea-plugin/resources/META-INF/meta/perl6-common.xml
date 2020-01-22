@@ -147,6 +147,9 @@
 
     <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoActionMethodProvider"/>
     <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoGrammarRuleProvider"/>
+    <stubIndex implementation="edument.perl6idea.cro.template.psi.stub.index.CroTemplateSubIndex"/>
+    <stubIndex implementation="edument.perl6idea.cro.template.psi.stub.index.CroTemplateMacroIndex"/>
+    <gotoSymbolContributor implementation="edument.perl6idea.cro.template.CroTemplateSymbolNameContributor"/>
   </extensions>
 
   <actions>
