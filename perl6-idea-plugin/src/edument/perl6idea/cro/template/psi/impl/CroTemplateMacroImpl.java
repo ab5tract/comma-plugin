@@ -25,6 +25,11 @@ public class CroTemplateMacroImpl extends StubBasedPsiElementBase<CroTemplateMac
     }
 
     @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + getNode().getElementType().toString() + ")";
+    }
+
+    @Override
     public void offerAllTo(CroTemplateSymbolCollector collector) {
         CroTemplateSignature signature = PsiTreeUtil.getChildOfType(this, CroTemplateSignature.class);
         if (signature != null)
