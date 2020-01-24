@@ -62,9 +62,10 @@ public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> 
         PsiReference ref = name.getReference();
         if (ref == null) return "Mu";
         PsiElement resolved = ref.resolve();
-        if (resolved == null) return "Mu";
-        Perl6RoutineDecl decl = (Perl6RoutineDecl)resolved;
-        return decl.getReturnType();
+        if (resolved instanceof Perl6RoutineDecl) {
+            return ((Perl6RoutineDecl)resolved).getReturnType();
+        }
+        return "Mu";
     }
 
     @Override
