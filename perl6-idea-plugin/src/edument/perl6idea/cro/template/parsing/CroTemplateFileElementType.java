@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 public class CroTemplateFileElementType extends IStubFileElementType<CroTemplateFileStub> {
-    public static final int STUB_VERSION = 28;
+    public static final int STUB_VERSION = 1;
 
     public CroTemplateFileElementType() {
         super(CroTemplateLanguage.INSTANCE);
