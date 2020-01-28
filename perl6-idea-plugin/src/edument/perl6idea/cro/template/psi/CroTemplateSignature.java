@@ -30,7 +30,7 @@ public interface CroTemplateSignature extends PsiElement {
         for (int i = 0, size = arguments.size(); i < size; i++) {
             PsiElement arg = arguments.get(i);
             if (arg instanceof CroTemplateNamedArgument) {
-                if (i + 1 > size)
+                if (i + 1 >= size)
                     break;
                 PsiElement named = arguments.get(i + 1);
                 namedArgs.put(named.getText(), named);
