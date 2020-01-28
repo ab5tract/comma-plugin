@@ -20,7 +20,7 @@ public interface Perl6RegexDriver {
                 symbols.add(((Perl6RegexCapturePositional)firstChild));
             } else if (firstChild instanceof Perl6RegexVariable) {
                 symbols.add((Perl6RegexVariable)firstChild);
-            } else if (firstChild instanceof Perl6RegexAssertion && !firstChild.getText().startsWith("<.")) {
+            } else if (firstChild instanceof Perl6RegexAssertion && firstChild.getText().matches("^<\\w.*")) {
                 Perl6RegexAssertion regexAssertion = (Perl6RegexAssertion)firstChild;
                 if (regexAssertion.getName() != null)
                     symbols.add(regexAssertion);
