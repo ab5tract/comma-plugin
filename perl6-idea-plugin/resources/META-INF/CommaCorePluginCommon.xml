@@ -113,11 +113,6 @@
       <add-to-group group-id="NewProjectOrModuleGroup"/>
     </action>
 
-<!--    <group id="NewProjectFromVCS" class="edument.perl6idea.actions.newActions.NewProjectFromVCSGroups" text="Project from Version Control"-->
-<!--           popup="true">-->
-<!--      <add-to-group group-id="NewProjectOrModuleGroup" anchor="after" relative-to-action="ImportProject"/>-->
-<!--    </group>-->
-
     <action id="NewElement" class="com.intellij.ide.actions.NewElementAction"/>
     <group id="MoveModuleToGroup" class="com.intellij.ide.projectView.impl.MoveModuleToGroupTopLevel" popup="true"/>
   </actions>
