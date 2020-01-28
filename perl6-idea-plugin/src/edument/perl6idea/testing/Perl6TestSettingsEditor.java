@@ -1,5 +1,6 @@
 package edument.perl6idea.testing;
 
+import com.intellij.execution.configuration.EnvironmentVariablesComponent;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.ui.LabeledComponent;
@@ -15,10 +16,13 @@ import java.awt.*;
 
 public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfiguration> {
     private JTextField myDegree;
+    protected EnvironmentVariablesComponent myEnvVariablesComponent = new EnvironmentVariablesComponent();
 
     @Override
     protected void resetEditorFrom(@NotNull Perl6TestRunConfiguration configuration) {
         myDegree.setText(String.valueOf(configuration.getParallelismDegree()));
+        myEnvVariablesComponent.setEnvs(configuration.getEnvs());
+        myEnvVariablesComponent.setPassParentEnvs(configuration.isPassParentEnvs());
     }
 
     @Override
@@ -30,6 +34,8 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         } catch (NumberFormatException e) {
             throw new ConfigurationException("Number of tests must be a positive integer");
         }
+        configuration.setEnvs(myEnvVariablesComponent.getEnvs());
+        configuration.setPassParentEnvs(myEnvVariablesComponent.isPassParentEnvs());
     }
 
     @NotNull
@@ -60,6 +66,7 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         };
         LabeledComponent<JTextField> degree = LabeledComponent.create(myDegree, "Tests run in parallel", BorderLayout.WEST);
         panel.add(degree);
+        panel.add(myEnvVariablesComponent);
         return panel;
     }
 }

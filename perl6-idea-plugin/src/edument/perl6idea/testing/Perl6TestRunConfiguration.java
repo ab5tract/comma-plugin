@@ -11,9 +11,14 @@ import edument.perl6idea.run.Perl6DebuggableConfiguration;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 abstract public class Perl6TestRunConfiguration extends RunConfigurationBase implements Perl6DebuggableConfiguration {
     private static final String PARALELLISM_DEGREE = "PARALELLISM_DEGREE";
     private Integer parallelismDegree;
+    private Map<String, String> myEnvs = new HashMap<>();
+    private boolean passParentEnvs;
 
     Perl6TestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
         super(project, factory, name);
@@ -60,5 +65,21 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase imp
     }
     public void setParallelismDegree(int parallelismDegree) {
         this.parallelismDegree = parallelismDegree;
+    }
+
+    protected Map<String, String> getEnvs() {
+        return myEnvs;
+    }
+
+    protected void setEnvs(Map<String, String> envs) {
+        myEnvs = envs;
+    }
+
+    protected boolean isPassParentEnvs() {
+        return passParentEnvs;
+    }
+
+    protected void setPassParentEnvs(boolean passParentEnvs) {
+        this.passParentEnvs = passParentEnvs;
     }
 }
