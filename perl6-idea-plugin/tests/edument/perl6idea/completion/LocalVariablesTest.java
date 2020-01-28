@@ -94,6 +94,8 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
         doTest("/<alnum> <.hehe> { $<caret> }/", "$<alnum>");
         doTest("/<local=.alnum> { $<caret> }/", "$<local>");
         doNegativeTest("/<alnum> <.hehe> { $<caret> }/", "$<hehe>");
+
+        doTest("grammar G { token foo:sym<bar> { (.) $<foo> = \\w } }; class G { method foo:sym<bar>($/) { say $<caret> } }", "$0", "$<foo>");
     }
 
     private void doTest(String text, String... elems) {
