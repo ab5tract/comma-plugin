@@ -1,5 +1,6 @@
 package edument.perl6idea.cro.template.psi.stub;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.*;
 import edument.perl6idea.cro.template.CroTemplateLanguage;
 import edument.perl6idea.cro.template.psi.CroTemplateSub;
@@ -19,6 +20,11 @@ public class CroTemplateSubStubElementType extends IStubElementType<CroTemplateS
     @Override
     public String getExternalId() {
         return "croTemplate.stub.sub";
+    }
+
+    @Override
+    public boolean shouldCreateStub(ASTNode node) {
+        return ((CroTemplateSub)node.getPsi()).getName() != null;
     }
 
     @Override

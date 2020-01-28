@@ -1,5 +1,6 @@
 package edument.perl6idea.cro.template.psi.stub;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.*;
 import edument.perl6idea.cro.template.CroTemplateLanguage;
 import edument.perl6idea.cro.template.psi.CroTemplateMacro;
@@ -13,6 +14,11 @@ import java.io.IOException;
 public class CroTemplateMacroStubElementType extends IStubElementType<CroTemplateMacroStub, CroTemplateMacro> {
     public CroTemplateMacroStubElementType() {
         super("MACRO", CroTemplateLanguage.INSTANCE);
+    }
+
+    @Override
+    public boolean shouldCreateStub(ASTNode node) {
+        return ((CroTemplateMacro)node.getPsi()).getName() != null;
     }
 
     @NotNull
