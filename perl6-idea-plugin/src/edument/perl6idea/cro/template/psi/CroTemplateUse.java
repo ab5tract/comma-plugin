@@ -2,5 +2,5 @@ package edument.perl6idea.cro.template.psi;
 
 import com.intellij.psi.PsiElement;
 
-public interface CroTemplateUse extends PsiElement {
+public interface CroTemplateUse extends PsiElement, Declaration {
 }

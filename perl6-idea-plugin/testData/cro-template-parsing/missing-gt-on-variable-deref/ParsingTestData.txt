@@ -1,5 +1,5 @@
 FILE(0,38)
-  CroTemplateSubImpl(CroTemplate:SUB)(0,38)
+  CroTemplateSubImpl(SUB)(0,38)
     PsiElement(CroTemplate:TEMPLATE_TAG_OPEN)('<')(0,1)
     PsiElement(CroTemplate:TEMPLATE_TAG_DECL_SIGIL)(':')(1,2)
     PsiElement(CroTemplate:DECL_OPENER)('sub')(2,5)

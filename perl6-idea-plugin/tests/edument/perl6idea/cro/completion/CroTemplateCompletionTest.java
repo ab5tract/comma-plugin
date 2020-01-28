@@ -58,4 +58,26 @@ public class CroTemplateCompletionTest extends CommaFixtureTestCase {
         assertSize(2, vars);
         assertContainsElements(vars, Arrays.asList("m1", "m2"));
     }
+
+    public void testCompletionOfSubFromOtherFile() {
+        myFixture.configureByText("stuff.crotmp", "<:sub s3()>abc</:> <:sub s4($x, $y)>def</:>");
+        myFixture.configureByText(CroTemplateFileType.INSTANCE,
+                "<:use 'stuff.crotmp'> <&<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertSize(2, vars);
+        assertContainsElements(vars, Arrays.asList("s3", "s4"));
+    }
+
+    public void testCompletionOfMacroFromOtherFile() {
+        myFixture.configureByText("stuff.crotmp", "<:macro m3()>abc</:> <:macro m4($x, $y)>def</:>");
+        myFixture.configureByText(CroTemplateFileType.INSTANCE,
+                "<:use 'stuff.crotmp'> <|<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertNotNull(vars);
+        assertSize(2, vars);
+        assertContainsElements(vars, Arrays.asList("m3", "m4"));
+    }
 }
