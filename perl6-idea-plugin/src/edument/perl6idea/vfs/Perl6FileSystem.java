@@ -82,7 +82,8 @@ public class Perl6FileSystem extends ArchiveFileSystem {
     @NotNull
     @Override
     protected String extractLocalPath(@NotNull String rootPath) {
-        return rootPath.split("!/")[0];
+        String localPath = rootPath.split("!/")[0];
+        return localPath.startsWith("/") ? localPath.substring(1) : localPath;
     }
 
     @NotNull
