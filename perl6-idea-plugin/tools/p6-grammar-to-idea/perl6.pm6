@@ -3010,26 +3010,26 @@ grammar MAIN {
            <.start-token('QUOTE_REGEX')> 'Ss' <.end-token('QUOTE_REGEX')>
            { $*RX_S = 1 }
            [
-           || [ <.quotepair_rx> <.ws> ]+ <.sibble>
+           || [ <.quotepair_rx> <.ws> ]+ <.sibble>?
            || <.sibble>
            ]
         || <?before ['ss' [<.has-delimiter> || <.quotepair>]]>
            <.start-token('QUOTE_REGEX')> 'ss' <.end-token('QUOTE_REGEX')>
            { $*RX_S = 1 }
            [
-           || [ <.quotepair_rx> <.ws> ]+ <.sibble>
+           || [ <.quotepair_rx> <.ws> ]+ <.sibble>?
            || <.sibble>
            ]
         || <?before ['S' [<.has-delimiter> || <.quotepair>]]>
            <.start-token('QUOTE_REGEX')> 'S' <.end-token('QUOTE_REGEX')>
            [
-           || [ <.quotepair_rx> <.ws> ]+ <.sibble>
+           || [ <.quotepair_rx> <.ws> ]+ <.sibble>?
            || <.sibble>
            ]
         || <?before ['s' [<.has-delimiter> || <.quotepair>]]>
            <.start-token('QUOTE_REGEX')> 's' <.end-token('QUOTE_REGEX')>
            [
-           || [ <.quotepair_rx> <.ws> ]+ <.sibble>
+           || [ <.quotepair_rx> <.ws> ]+ <.sibble>?
            || <.sibble>
            ]
         ]
