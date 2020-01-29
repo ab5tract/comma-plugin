@@ -158,58 +158,30 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
-    public void testSignature1() {
+    public void testSignatureAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { }");
         myFixture.checkHighlighting();
-    }
-
-    public void testSignature2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put positional parameter $c after a variadic parameter\">$c</error>) { }");
         myFixture.checkHighlighting();
-    }
-
-    public void testSignature3() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put optional parameter $c after a variadic parameter\">$c?</error>) { }");
         myFixture.checkHighlighting();
-    }
-
-    public void testSignature4() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$a, <error descr=\"Cannot put positional parameter $b after a named parameter\">$b</error>) { }");
         myFixture.checkHighlighting();
-    }
-
-    public void testSignature5() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { }");
         myFixture.checkHighlighting();
-    }
-
-    public void testSignature6() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c!) {}");
         myFixture.checkHighlighting();
-    }
-
-    public void testSignature7() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c) {}");
         myFixture.checkHighlighting();
-    }
-
-    public void testSignature8() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(*%h, :$c) {}");
         myFixture.checkHighlighting();
-    }
-
-    public void testSignature9() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub web(Str $cfg-filename, Str $model-filename, Str $tech-file?) is export {}");
         myFixture.checkHighlighting();
-    }
-
-    public void testSignature10() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "multi sub MAIN('web', ExistingFile $cfg-filename, ExistingFile $model-filename, Str $tech-file?) is export {}");
         myFixture.checkHighlighting();
-    }
-
-    public void testUnnamedTypenameInSignature() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub MAIN(Admin, 'web') {}");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, $bar? is copy) {}");
         myFixture.checkHighlighting();
     }
 
