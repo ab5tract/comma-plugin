@@ -49,7 +49,9 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
             summary.append(term.getText());
 
         PsiElement maybeQuant = getLastChild();
-        while (maybeQuant != null && (maybeQuant instanceof PsiWhiteSpace || maybeQuant.getNode().getElementType() == UNV_WHITE_SPACE)) {
+        while (maybeQuant != null && (
+            maybeQuant instanceof Perl6Trait ||
+            maybeQuant instanceof PsiWhiteSpace || maybeQuant.getNode().getElementType() == UNV_WHITE_SPACE)) {
             maybeQuant = maybeQuant.getPrevSibling();
         }
         if (maybeQuant != null && maybeQuant.getNode().getElementType() == PARAMETER_QUANTIFIER)
