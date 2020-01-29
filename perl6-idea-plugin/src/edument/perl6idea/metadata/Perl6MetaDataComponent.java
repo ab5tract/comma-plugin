@@ -98,18 +98,24 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     }
 
     private void syncExternalLibraries(JSONObject meta) {
-        Sdk sdk = ProjectRootManager.getInstance(myModule.getProject()).getProjectSdk();
         Application application = ApplicationManager.getApplication();
-        if (sdk == null) {
-            application.invokeLater(() -> {
-                application.runWriteAction(() -> {
+        Sdk sdk;
+        try {
+            sdk = ProjectRootManager.getInstance(myModule.getProject()).getProjectSdk();
+            if (sdk == null) {
+                application.invokeLater(() -> application.runWriteAction(() -> {
                     ModifiableRootModel model = ModuleRootManager.getInstance(myModule).getModifiableModel();
                     for (OrderEntry entry : model.getOrderEntries()) {
                         model.removeOrderEntry(entry);
                     }
                     model.commit();
-                });
-            });
+                }));
+                return;
+            }
+        } catch (AssertionError ex) {
+            // The user likely closed the project already and the exception is
+            // caused by disposing of the Project object, thus just ignore
+            // and try to sync next time.
             return;
         }
 
@@ -176,29 +182,27 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         if (missingEntries.isEmpty())
             return;
 
-        application.invokeAndWait(() -> {
-            application.runWriteAction(() -> {
-                for (String missingEntry : missingEntries) {
-                    String url = String.format("raku://%d:%s!/", sdk.getName().hashCode(), missingEntry);
-                    ModuleRootModificationUtil.updateModel(myModule, model -> {
-                        LibraryEx library = (LibraryEx)model.getModuleLibraryTable().createLibrary(missingEntry);
-                        LibraryEx.ModifiableModelEx libraryModel = library.getModifiableModel();
-                        libraryModel.setKind(Perl6LibraryType.LIBRARY_KIND);
+        application.invokeAndWait(() -> application.runWriteAction(() -> {
+            for (String missingEntry : missingEntries) {
+                String url = String.format("raku://%d:%s!/", sdk.getName().hashCode(), missingEntry);
+                ModuleRootModificationUtil.updateModel(myModule, model -> {
+                    LibraryEx library = (LibraryEx)model.getModuleLibraryTable().createLibrary(missingEntry);
+                    LibraryEx.ModifiableModelEx libraryModel = library.getModifiableModel();
+                    libraryModel.setKind(Perl6LibraryType.LIBRARY_KIND);
 
-                        for (String rootUrl : Collections.singletonList(url)) {
-                            libraryModel.addRoot(rootUrl, OrderRootType.SOURCES);
-                        }
+                    for (String rootUrl : Collections.singletonList(url)) {
+                        libraryModel.addRoot(rootUrl, OrderRootType.SOURCES);
+                    }
 
-                        LibraryOrderEntry entry = model.findLibraryOrderEntry(library);
-                        assert entry != null : library;
-                        entry.setScope(DependencyScope.COMPILE);
-                        entry.setExported(false);
+                    LibraryOrderEntry entry = model.findLibraryOrderEntry(library);
+                    assert entry != null : library;
+                    entry.setScope(DependencyScope.COMPILE);
+                    entry.setExported(false);
 
-                        application.invokeAndWait(() -> WriteAction.run(libraryModel::commit));
-                    });
-                }
-            });
-        });
+                    application.invokeAndWait(() -> WriteAction.run(libraryModel::commit));
+                });
+            }
+        }));
     }
 
     private VirtualFile checkOldMetaFile(VirtualFile metaParent) {
@@ -239,11 +243,11 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                 meta = new JSONObject(content);
                 checkMetaSanity(meta);
             }
-            catch (IOException|JSONException|Perl6MetaException e) {
-                if (e instanceof Perl6MetaException)
-                    notifyMetaIssue(e.getMessage(), NotificationType.ERROR, ((Perl6MetaException)e).myFix);
-                else
-                    notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
+            catch (Perl6MetaException e) {
+                notifyMetaIssue(e.getMessage(), NotificationType.ERROR, e.myFix);
+            }
+            catch (IOException|JSONException e) {
+                notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
             }
         }
         return meta;
@@ -542,7 +546,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         if (myMetaFile != null) {
             notification.addAction(new AnAction(String.format("Open %s", META6_JSON_NAME)) {
                 @Override
-                public void actionPerformed(AnActionEvent e) {
+                public void actionPerformed(@NotNull AnActionEvent e) {
                     if (myModule.isDisposed()) return;
                     FileEditorManager.getInstance(myModule.getProject()).openFile(myMetaFile, true);
                     notification.expire();
@@ -553,7 +557,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             if (action == null) continue;
             notification.addAction(new AnAction(action.getTemplatePresentation().getText()) {
                 @Override
-                public void actionPerformed(AnActionEvent e) {
+                public void actionPerformed(@NotNull AnActionEvent e) {
                     notification.expire();
                     action.actionPerformed(e);
                 }
@@ -570,7 +574,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
             NotificationType.WARNING, null);
         notification.addAction(new AnAction(String.format("Stub and open %s file", META6_JSON_NAME)) {
             @Override
-            public void actionPerformed(AnActionEvent e) {
+            public void actionPerformed(@NotNull AnActionEvent e) {
                 try {
                     notification.expire();
                     if (myModule.isDisposed()) return;
@@ -591,11 +595,11 @@ public class Perl6MetaDataComponent implements ModuleComponent {
     private static class Perl6MetaException extends Exception {
         public final AnAction myFix;
 
-        public Perl6MetaException(String message) {
+        Perl6MetaException(String message) {
             this(message, null);
         }
 
-        public Perl6MetaException(String message, AnAction fix) {
+        Perl6MetaException(String message, AnAction fix) {
             super(message);
             myFix = fix;
         }
