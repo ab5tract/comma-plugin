@@ -15,7 +15,7 @@
 * Literals have a distinct color
 * Literal escapes have a distinct color
 * Numeric literals have a distinct color
-* Sigspace has a differnet background color
+* Sigspace has a different background color
 * Bad escapes have a different background color
 
 This gives us these colors for the elements:
