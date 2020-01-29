@@ -8,12 +8,12 @@ Raku Comma plugin supports versions in range from 145 (2016.1) to 191 (2019.1).
 Do the following steps inside a work-related directory, for example, `comma`.
 * `git clone https://github.com/edumentab/intellij-community.git`
 * `cd intellij-community`
-* `git checkout comma-191`
+* `git checkout comma-193`
 * Do steps from `intellij-community` repo [README](https://github.com/JetBrains/intellij-community/#opening-the-intellij-source-code-for-build): creating `IDEA jdk` JDK and setting it to the project, running `getPlugins.sh` script.
 * `git clone https://github.com/edumentab/perl6-idea-plugin.git comma-build` (so the structure is `intellij-community/comma-build`)
-* Make sure that revisions of android-related repo are the same as the IDEA checkout, 191.6707.
-  * `cd android; git checkout 191`
-  * `cd tools-base; git checkout 191`
+* Make sure that revisions of android-related repo are the same as the IDEA checkout, 193.6015.9.
+  * `cd android; git checkout idea/193.6015.9`
+  * `cd tools-base; git checkout idea/193.6015.9`
   * `cd ../..`
 * Start IDEA instance, open existing project from `intellij-community` directory.
 * A `Unregistered VCS root detected` for `comma-bulid` will appear - let IDEA add this root.
