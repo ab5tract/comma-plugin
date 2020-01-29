@@ -12,6 +12,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
+import com.intellij.openapi.vfs.newvfs.impl.VirtualDirectoryImpl;
 import com.intellij.util.messages.MessageBusConnection;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
@@ -56,7 +57,7 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
     public void after(@NotNull List<? extends VFileEvent> events) {
         for (VFileEvent event : events) {
             VirtualFile file = event.getFile();
-            if (file == null || !(FileTypeManager.getInstance().getFileTypeByFile(file) instanceof Perl6ModuleFileType))
+            if (file == null || !(FileTypeManager.getInstance().getFileTypeByFile(file) instanceof Perl6ModuleFileType) && !(file instanceof VirtualDirectoryImpl))
                 continue;
 
             if (event instanceof VFileDeleteEvent) {
