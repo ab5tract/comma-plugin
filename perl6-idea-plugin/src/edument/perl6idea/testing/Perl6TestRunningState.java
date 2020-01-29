@@ -86,6 +86,10 @@ public class Perl6TestRunningState extends CommandLineState {
         cmd.withEnvironment("TEST_JOBS", String.valueOf(runConfiguration.getParallelismDegree()));
         cmd.addParameter(script.getAbsolutePath());
         cmd.addParameter("-Ilib");
+        cmd.withEnvironment(runConfiguration.getEnvs());
+        cmd.withParentEnvironmentType(runConfiguration.isPassParentEnvs()
+                                      ? GeneralCommandLine.ParentEnvironmentType.SYSTEM
+                                      : GeneralCommandLine.ParentEnvironmentType.NONE);
         return cmd;
     }
 
