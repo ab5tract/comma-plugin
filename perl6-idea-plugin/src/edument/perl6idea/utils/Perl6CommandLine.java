@@ -1,7 +1,7 @@
 package edument.perl6idea.utils;
 
 import com.intellij.execution.ExecutionException;
-import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.execution.configurations.PtyCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -28,7 +28,7 @@ import java.util.Map;
  * for scripts that take a lot of time to execute and setting execution
  * into separate thread is on the caller side.
  */
-public class Perl6CommandLine extends GeneralCommandLine {
+public class Perl6CommandLine extends PtyCommandLine {
     private static Logger LOG = Logger.getInstance(Perl6CommandLine.class);
 
     public Perl6CommandLine(Sdk sdk) throws ExecutionException {
