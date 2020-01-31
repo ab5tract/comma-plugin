@@ -90,7 +90,9 @@ public class Perl6CommandLine extends PtyCommandLine {
         if (moarBuildConfiguration == null) {
             return null;
         }
-        String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", "");
+        String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", null);
+        if (prefix == null)
+            prefix = moarBuildConfiguration.getOrDefault("Raku::prefix", "");
         command.add(Paths.get(prefix, "bin", "moar").toString());
         // Always start suspended so we have time to send breakpoints and event handlers.
         // If the option is disabled, we'll resume right after that.
