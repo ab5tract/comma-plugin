@@ -36,41 +36,53 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Add basic support for Cro&#39;s Template language, including syntax highlighting and editing features (code folding, brace matching, spell checking, etc.)</li>
-<li>Provide in-IDE documentation for types and methods (local from the project, from external modules, and from Raku builtins). These are extracted from documentation comments and the Raku documentation respectively.</li>
-<li>Parse package names (class, grammar etc) with adverbs (e.g. <code>class Foo:auth&lt;foo&gt;</code>)</li>
-<li>Do not incorrectly recognize some cases of pair literals (e.g. <code>m =&gt; 42</code>) or sub calls (<code>s(42)</code>) as regex literals</li>
-<li>Accept postfix application as a valid case in the range correctness annotator</li>
-<li>The shebang line is now always added for new scripts, and only a MAIN subroutine stub is optional</li>
-<li>Support completion and recognition of known nqp functions when the <code>use nqp</code> pragma is present</li>
-<li>Fix a possible race related to setting breakpoints in the debugger</li>
-<li>Make discovering of Log::Timeline server by Timeline viewer more robust</li>
-<li>Recognize Raku file extensions (<code>.raku</code>, <code>.rakumod</code>, <code>.rakudoc</code>, <code>.rakutest</code>),</li>
-<li>Recognize Raku executable names (<code>raku</code> and <code>rakudo</code>) the besides existing ones</li>
-<li>Make the Parameter Info feature work with methods and subroutines imported from the CORE setting and external modules</li>
-<li>Make completion of methods on a call work according to the specified return type of a routine (e.g. <code>Setty.new.elems.&lt;caret&gt;</code> will know the return type is Int and suggest methods accordingly)</li>
-<li>Method completion now understands multi-methods</li>
-<li>Show method signatures during method completion and sort candidates according to Method Resolution Order</li>
-<li>Distinguish attribute getters from other methods and the show type of an attribute</li>
-<li>Improve the performance of Go to Symbol feature and Method Completion</li>
-<li>Make loading of external symbols not block project initialization and typing; symbols are also now loaded in parallel</li>
-<li>Work correctly with symbols from external modules that are parametrized (e.g. <code>use MyModule :day;</code>)</li>
-<li>Parameter Info now correctly behaves when a comma character is typed in a block that is an argument</li>
-<li>Add an annotator that highlights cases when an array or hash variable in a list assignments will gobble all initialization values (e.g. <code>my ($one, @rest, $two) = 42, [42], 42</code>) and provide a quickfix for it</li>
-<li>Annotation of calls to unknown private methods does not mark multimethods and external methods as unknown now</li>
-<li>Add &#39;model&#39; keyword to support metaclasses provided by the Red ORM</li>
-<li>The plugin updates Sdk caches on Sdk change action just as standalone Comma now</li>
-<li>Multiline pod declarations <code>#|()</code> and <code>#=()</code> are now parsed correctly</li>
-<li>An annotator that checks missing methods from classes now recognizes variable getters as methods, even in a case of a multi-variable declaration (e.g. <code>has ($.a, $.b)</code>)</li>
-<li>Structure View shows all names declared in an attribute declaration with multiple variables (e.g. <code>has ($.a, $.b)</code>). The Go to Declaration feature works with such declarations too</li>
-<li>The type of <code>$*IN</code>, <code>$*OUT</code>, <code>$*ERR*</code> is now correctly inferred to be <code>IO::Handle</code> instead of <code>IO::Special</code></li>
-<li>Fix a bug in using fallback when an Sdk is available, but CORE symbols can&#39;t be loaded</li>
-<li>Fix a rare exception on project indexing</li>
-<li>Implement Parameter Info feature (<code>Ctrl-P</code> in default keymap, auto-popups on typing a call if enabled in settings) which shows the signatures of the available candidates</li>
-<li>Implement Surround With feature (<code>Ctrl-Alt-T</code>) allowing to quickly surround expressions or statements with another construct, such as an <code>if</code> block, <code>for</code> loop, or contextualizer, for example, converting <code>from-json($file)</code> to <code>start { from-json($file) }</code>. Various capture groups are supported as surrounders for regexps</li>
-<li>Add an annotation warning about usage of a return with arguments inside of a routine with <code>Nil</code> specified as return type</li>
-<li>More cases of stacktrace locations are converted into clickable links in console output</li>
-<li>Fix an exception on attempt to create a Raku module file in the plugin</li>
+<li>Migrate to the 2019.03 version of IntelliJ platform</li>
+<li>Update the user interface to call the language Raku instead of Perl 6</li>
+<li>Go to Related Symbol (<code>Ctrl+Alt+Home</code> on an action method name or a
+grammar rule name) now allows to jump from the grammar rule to the
+respective actions method and back. In an action method, the <code>$/</code>
+variable now completes based on the rule&#39;s captures</li>
+<li>In the Cro template language, resolution and completion of variables, calls and macros now works within a single file</li>
+<li>Resolve and complete match variables resulting from regex application, including back-references within a regex</li>
+<li>Improve documentation support: fix wrong documentation cases, properly display tables, update documentation cache</li>
+<li>Make it possible to view documentation for operators: both the standard operator syntax (e.g. &#39;+&#39;) and the function form (e.g. &#39;&amp;infix:&lt;+&gt;&#39;)</li>
+<li>Provide integration with external libraries used. Now sources of externals are accessible in read-only files, support jumping from definition to usage and the other way around. The profiling tool window supports jumping to definition of external calls, and the debugger supports it as well, with stepping</li>
+<li>Improve support of operator syntax. Now usages of both <code>&amp;[+]</code> and <code>&amp;infix:&lt;+&gt;*</code> will not be marked as undeclared anymore, while usage of missing operators will be marked as such</li>
+<li>Add an intention for converting double quotes into single ones (removing interpolation) and the other way around (adding interpolation)</li>
+<li>Add an intention to convert one-line control flow statements into blocks (e.g. &#39;say 42 if True&#39; is converted into &#39;if True { say 42 }&#39;)</li>
+<li>The annotation and quickfix for stubbing missing role methods in a class now considers the &#39;handles&#39; trait</li>
+<li>Support module usage syntax, named parameters and arguments in Cro template language</li>
+<li>Resolution and auto-complete of subs and macros between Cro template files now works</li>
+<li>Cro template language subs and macro are now indexed and available through the Navigate to Symbol feature</li>
+<li>Cro template language symbols are now shown in Structure View</li>
+<li>For Cro template language subs, parameter info (<code>Ctrl+P</code>) is now available</li>
+<li>Improve the default color scheme for Cro template language files</li>
+<li>Enable setting environment variables for a Test Run Configuration</li>
+<li>Fix a parsing exception caused by a <code>;</code> in an argument list</li>
+<li>Fix a long standing parsing exception caused by <code>&gt;&gt;.foo</code> calls ambiguity.</li>
+<li>Add a <code>New Cro Template</code> action</li>
+<li>Fix different parser exceptions for Cro template language</li>
+<li>Support the new <code>&lt;?$foo&gt;</code> and <code>&lt;!$foo&gt;</code> syntax added in the latest release of Cro::WebApp</li>
+<li>An escaped <code>#</code> symbol is no longer misparsed in regex language</li>
+<li>New file associations (<code>.raku</code>, <code>.rakumod</code>, <code>.rakutest</code>, <code>.rakudoc</code>) are suggested in the Windows installer</li>
+<li>The undeclared symbol annotator will not run until the SETTING symbols are available, which makes it less noisy at the start</li>
+<li>Fix data race in SETTING symbols loading, making it more stable</li>
+<li>For &#39;unit&#39;-scoped MAIN subroutines, the parameters are now resolved and completed properly</li>
+<li>Improve recognizing file URLs as clickable links in console output</li>
+<li>Don&#39;t perform bogus extract refactors on a variable or its type from a declaration or a parameter</li>
+<li>Fix a race which could lead to an exception when closing a project shortly after starting the IDE</li>
+<li>Fix an exception involving usage of the PsiViewer plugin</li>
+<li>Fix an exception related to usage of an external module that does not exist</li>
+<li>Do not mistakenly suggest to simplify a range with whatever star</li>
+<li>Prevent a possible exception related to method completion.</li>
+<li>Fix a parser exception triggered by typing a specific case of regexp syntax</li>
+<li>Fix regex-based variables completion bug when some non-capturing assertions were suggested by mistake</li>
+<li>Make sure changes to project structure related to directories made using the IDE are reflected
+in <code>META6.json</code></li>
+<li>Prevent a rare exception sometimes occuring on project closing</li>
+<li>Fix a bug where an optional parameter with a trait was not recognized as being optional, and thus
+caused bogus parameter ordering annotations to be shown</li>
+<li>Fix a bug of console input not being recognized by Run tab window</li>
 </ul>
   ]]></change-notes>
 
