@@ -8,7 +8,10 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6OPPElementTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -93,9 +96,14 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     @Override
     public Indent getIndent() {
-        if ((myNode.getElementType() == STATEMENT_LIST || myNode.getElementType() == REGEX)
-            && myNode.getTreeParent().getElementType() == BLOCKOID)
-            return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
+        if (myNode.getElementType() == STATEMENT
+            && PsiTreeUtil.getParentOfType(myNode.getPsi(), Perl6Blockoid.class, Perl6File.class) instanceof Perl6Blockoid)
+            if (myNode.getFirstChildNode().getElementType() == LABEL)
+                return mySettings.getLanguageIndentOptions(Perl6Language.INSTANCE).LABEL_INDENT_ABSOLUTE
+                       ? Indent.getAbsoluteLabelIndent()
+                       : Indent.getSpaceIndent(mySettings.getLanguageIndentOptions(Perl6Language.INSTANCE).LABEL_INDENT_SIZE, true);
+            else
+                return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
         if (myNode.getElementType() == SEMI_LIST && myNode.getTreeParent().getElementType() == ARRAY_COMPOSER)
             return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
         if (myNode.getElementType() == ARRAY_COMPOSER_CLOSE)

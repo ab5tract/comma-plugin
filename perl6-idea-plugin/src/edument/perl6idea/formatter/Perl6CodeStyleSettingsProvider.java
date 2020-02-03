@@ -7,6 +7,7 @@ import com.intellij.application.options.SmartIndentOptionsEditor;
 import com.intellij.lang.Language;
 import com.intellij.psi.codeStyle.CodeStyleConfigurable;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
+import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable;
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider;
 import edument.perl6idea.Perl6Language;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +53,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
     @Nullable
     @Override
     public IndentOptionsEditor getIndentOptionsEditor() {
-        return new SmartIndentOptionsEditor();
+        return new Perl6IndentOptionsEditor();
     }
 
 
