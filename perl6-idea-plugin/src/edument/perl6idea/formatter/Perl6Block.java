@@ -39,8 +39,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         this.isStatementContinuation = false;
     }
 
-    Perl6Block(ASTNode node, Wrap wrap, Alignment align, CodeStyleSettings settings,
-               Boolean isStatementContinuation) {
+    private Perl6Block(ASTNode node, Wrap wrap, Alignment align, CodeStyleSettings settings,
+                       Boolean isStatementContinuation) {
         super(node, wrap, align);
         mySettings = settings;
         this.isStatementContinuation = isStatementContinuation;
@@ -63,7 +63,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             else if (elementType == STATEMENT) {
                 childBlock = new Perl6StatementBlock(child, null, null, mySettings);
             }
-            else if (elementType == STATEMENT_TERMINATOR && child.getText().equals(";")) {
+            else if (elementType == STATEMENT_TERMINATOR) {
                 childBlock = new Perl6StatementTerminatorBlock(child, null, null, mySettings);
             }
             else if (elementType == STATEMENT_LIST) {
@@ -76,18 +76,13 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
                 else if (nodeInStatementContinuation(child))
                     childIsStatementContinuation = true;
                 childBlock = new Perl6Block(child, null, null, mySettings,
-                                           childIsStatementContinuation);
+                                            childIsStatementContinuation);
             }
             childBlock.setParent(this);
             children.add(childBlock);
         }
         this.children = children;
         return children;
-    }
-
-    @Override
-    public boolean isIncomplete() {
-        return super.isIncomplete();
     }
 
     @Nullable
