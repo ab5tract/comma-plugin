@@ -5,10 +5,7 @@ import com.intellij.application.options.CodeStyleAbstractPanel;
 import com.intellij.application.options.IndentOptionsEditor;
 import com.intellij.application.options.SmartIndentOptionsEditor;
 import com.intellij.lang.Language;
-import com.intellij.psi.codeStyle.CodeStyleConfigurable;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
-import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable;
-import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider;
+import com.intellij.psi.codeStyle.*;
 import edument.perl6idea.Perl6Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,12 +47,66 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
         };
     }
 
+    @Override
+    public void customizeSettings(@NotNull CodeStyleSettingsCustomizable consumer, @NotNull SettingsType settingsType) {
+        if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS) {
+            consumer.showStandardOptions(
+                // Hard wrap at, wrap on typing
+                "RIGHT_MARGIN", "WRAP_ON_TYPING",
+                // keeping lines
+                "KEEP_LINE_BREAKS", "KEEP_FIRST_COLUMN_COMMENT", "KEEP_CONTROL_STATEMENT_IN_ONE_LINE",
+                "KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE"
+            );
+            consumer.showCustomOption(
+                Perl6CodeStyleSettings.class,
+                "ROUTINES_DECLARATION_IN_ONE_LINE", "Routine declaration in one line",
+                CodeStyleSettingsCustomizable.WRAPPING_KEEP);
+            consumer.showCustomOption(
+                Perl6CodeStyleSettings.class,
+                "REGEX_DECLARATION_IN_ONE_LINE", "Regex declaration in one line",
+                CodeStyleSettingsCustomizable.WRAPPING_KEEP);
+            consumer.showCustomOption(
+                Perl6CodeStyleSettings.class,
+                "CLASS_DECLARATION_IN_ONE_LINE", "Class declaration in one line",
+                CodeStyleSettingsCustomizable.WRAPPING_KEEP);
+            consumer.showCustomOption(
+                Perl6CodeStyleSettings.class,
+                "POINTY_BLOCK_IN_ONE_LINE", "Pointy block in one line",
+                CodeStyleSettingsCustomizable.WRAPPING_KEEP);
+            consumer.showCustomOption(
+                Perl6CodeStyleSettings.class,
+                "PACKAGE_DECL_BRACE_STYLE", "In package declaration",
+                "Braces placement", CodeStyleSettingsCustomizable.BRACE_PLACEMENT_OPTIONS, CodeStyleSettingsCustomizable.BRACE_PLACEMENT_VALUES);
+            consumer.showCustomOption(
+                Perl6CodeStyleSettings.class,
+                "ROUTINE_DECL_BRACE_STYLE", "In routine declaration",
+                "Braces placement", CodeStyleSettingsCustomizable.BRACE_PLACEMENT_OPTIONS, CodeStyleSettingsCustomizable.BRACE_PLACEMENT_VALUES);
+            consumer.showCustomOption(
+                Perl6CodeStyleSettings.class,
+                "REGEX_DECL_BRACE_STYLE", "In regex declaration",
+                "Braces placement", CodeStyleSettingsCustomizable.BRACE_PLACEMENT_OPTIONS, CodeStyleSettingsCustomizable.BRACE_PLACEMENT_VALUES);
+            consumer.showCustomOption(
+                Perl6CodeStyleSettings.class,
+                "PHASER_BRACE_STYLE", "In phasers",
+                "Braces placement", CodeStyleSettingsCustomizable.BRACE_PLACEMENT_OPTIONS, CodeStyleSettingsCustomizable.BRACE_PLACEMENT_VALUES);
+            consumer.showCustomOption(
+                Perl6CodeStyleSettings.class,
+                "OTHER_BRACE_STYLE", "Other",
+                "Braces placement", CodeStyleSettingsCustomizable.BRACE_PLACEMENT_OPTIONS, CodeStyleSettingsCustomizable.BRACE_PLACEMENT_VALUES);
+        }
+    }
+
     @Nullable
     @Override
     public IndentOptionsEditor getIndentOptionsEditor() {
         return new Perl6IndentOptionsEditor();
     }
 
+    @Nullable
+    @Override
+    public CustomCodeStyleSettings createCustomSettings(CodeStyleSettings settings) {
+        return new Perl6CodeStyleSettings(settings);
+    }
 
     @NotNull
     @Override
