@@ -1,140 +1,100 @@
 package edument.perl6idea.formatter;
 
-import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.IdeActions;
-import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
-import com.intellij.openapi.editor.actionSystem.EditorActionManager;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.intellij.psi.codeStyle.CodeStyleSettings;
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import edument.perl6idea.CommaFixtureTestCase;
+import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+
+import java.util.function.BiFunction;
 
 public class FormatterTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/formatter";
-  }
+    }
 
     public void testBasicFormatting() {
-        myFixture.configureByFiles("basic.in.p6");
-        WriteCommandAction.runWriteCommandAction(null, () -> {
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
-        });
-        myFixture.checkResultByFile("basic.out.p6");
+        doTest("basic");
     }
 
     public void testAssortedFormatting() {
-        myFixture.configureByFiles("assorted.in.p6");
-        WriteCommandAction.runWriteCommandAction(null, () -> {
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
-        });
-        myFixture.checkResultByFile("assorted.out.p6");
+        doTest("assorted");
     }
 
     public void testBasicGrammarFormatting() {
-        myFixture.configureByFiles("grammar-basic.in.p6");
-        WriteCommandAction.runWriteCommandAction(null, () -> {
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
-        });
-        myFixture.checkResultByFile("grammar-basic.out.p6");
+        doTest("grammar-basic");
     }
 
     public void testContinuationAfterBlock() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "{\n\n}<caret>");
-        CommandProcessor.getInstance().executeCommand(getProject(), () -> {
-            EditorActionManager actionManager = EditorActionManager.getInstance();
-            EditorActionHandler actionHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
-            actionHandler.execute(myFixture.getEditor(), null, DataManager.getInstance().getDataContextFromFocus().getResult());
-        }, "", null);
-        myFixture.checkResult("{\n\n}\n<caret>");
+        doTest("{\n\n}<caret>", "{\n\n}\n<caret>");
     }
 
     public void testLineBreakingOfStatements() {
-        myFixture.configureByFiles("break-lines.in.p6");
-        WriteCommandAction.runWriteCommandAction(null, () -> {
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
-        });
-        myFixture.checkResultByFile("break-lines.out.p6");
+        doTest("break-lines");
     }
 
     public void testLineBreakingOfBlocks() {
-        myFixture.configureByFiles("blocks.in.p6");
-        WriteCommandAction.runWriteCommandAction(null, () -> {
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
-        });
-        myFixture.checkResultByFile("blocks.out.p6");
+       doTest("blocks");
     }
 
     public void testRemoveSpaceBeforeSemi() {
-        myFixture.configureByFiles("space-before-semi.in.p6");
-        WriteCommandAction.runWriteCommandAction(null, () -> {
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
-        });
-        myFixture.checkResultByFile("space-before-semi.out.p6");
+        doTest("space-before-semi");
     }
 
     public void testMultilineHashFormatting() {
-        myFixture.configureByFiles("hash.in.p6");
-        WriteCommandAction.runWriteCommandAction(null, () -> {
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
-        });
-        myFixture.checkResultByFile("hash.out.p6");
+        doTest("hash");
     }
 
-    /* TODO Would be ideal to get this one to work also. */
-    /*public void testMultilineHashWithMultilineValueFormatting() {
-        myFixture.configureByFiles("hash-multiline-values.in.p6");
-        WriteCommandAction.runWriteCommandAction(null, () -> {
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
-        });
-        myFixture.checkResultByFile("hash-multiline-values.out.p6");
-    }*/
+    public void testMultilineHashWithMultilineValueFormatting() {
+        doTest("hash-multiline-values");
+    }
 
     public void testMultilineArrayFormatting() {
-        myFixture.configureByFiles("array.in.p6");
-        WriteCommandAction.runWriteCommandAction(null, () -> {
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
-        });
-        myFixture.checkResultByFile("array.out.p6");
+        doTest("array");
     }
 
     public void testTrailingCommaInArrayAndHashFormatting() {
-        myFixture.configureByFiles("trailing-comma.in.p6");
-        WriteCommandAction.runWriteCommandAction(null, () -> {
-            CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
-        });
-        myFixture.checkResultByFile("trailing-comma.out.p6");
+        doTest("trailing-comma");
     }
 
     public void testCommentsNotBrokenByFormatting() {
-        myFixture.configureByFiles("comments-left-intact.in.p6");
+        doTest("comments-left-intact");
+    }
+
+    private void doTest(String input, String output) {
+        doTest(input, output, (s1, s2) -> true);
+    }
+
+    private void doTest(String input, String output, BiFunction<CommonCodeStyleSettings, Perl6CodeStyleSettings, Boolean> config) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, input);
+        reformat(config);
+        myFixture.checkResult(output);
+    }
+
+    private void doTest(String filename) {
+        doTest(filename, (s1, s2) -> true);
+    }
+
+    private void doTest(String filename, BiFunction<CommonCodeStyleSettings, Perl6CodeStyleSettings, Boolean> config) {
+        myFixture.configureByFiles(filename + ".in.p6");
+        reformat(config);
+        myFixture.checkResultByFile(filename + ".out.p6");
+    }
+
+    private void reformat(BiFunction<CommonCodeStyleSettings, Perl6CodeStyleSettings, Boolean> config) {
         WriteCommandAction.runWriteCommandAction(null, () -> {
             CodeStyleManager codeStyleManager = CodeStyleManager.getInstance(myFixture.getProject());
-            PsiFile file = myFixture.getFile();
-            codeStyleManager.reformatText(file, 0, file.getTextLength());
+            CodeStyleSettingsManager settingsManager = CodeStyleSettingsManager.getInstance(myFixture.getProject());
+            CodeStyleSettings temp = settingsManager.getTemporarySettings();
+            CommonCodeStyleSettings commons = temp.getCommonSettings(Perl6Language.INSTANCE);
+            Perl6CodeStyleSettings customs = temp.getCustomSettings(Perl6CodeStyleSettings.class);
+            config.apply(commons, customs);
+            settingsManager.setTemporarySettings(temp);
+            codeStyleManager.reformat(myFixture.getFile());
         });
-        myFixture.checkResultByFile("comments-left-intact.out.p6");
     }
 }
