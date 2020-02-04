@@ -28,7 +28,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                 "    say $t; # OUTPUT: «A1B1A1A2»\n" +
                                                 "}\n" +
                                                 "    \n" +
-                                                "foobar;";
+                                                "if True {foobar;}";
 
     @Nullable
     @Override
@@ -55,7 +55,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                 "RIGHT_MARGIN", "WRAP_ON_TYPING",
                 // keeping lines
                 "KEEP_LINE_BREAKS", "KEEP_FIRST_COLUMN_COMMENT", "KEEP_CONTROL_STATEMENT_IN_ONE_LINE",
-                "KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE"
+                "KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE", "KEEP_SIMPLE_BLOCKS_IN_ONE_LINE"
             );
             consumer.showCustomOption(
                 Perl6CodeStyleSettings.class,
@@ -106,6 +106,15 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
     @Override
     public CustomCodeStyleSettings createCustomSettings(CodeStyleSettings settings) {
         return new Perl6CodeStyleSettings(settings);
+    }
+
+    @Override
+    protected void customizeDefaults(@NotNull CommonCodeStyleSettings commonSettings,
+                                     @NotNull CommonCodeStyleSettings.IndentOptions indentOptions) {
+        commonSettings.KEEP_LINE_BREAKS = true;
+        commonSettings.KEEP_FIRST_COLUMN_COMMENT = true;
+        commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE = true;
+        commonSettings.KEEP_CONTROL_STATEMENT_IN_ONE_LINE = false;
     }
 
     @NotNull

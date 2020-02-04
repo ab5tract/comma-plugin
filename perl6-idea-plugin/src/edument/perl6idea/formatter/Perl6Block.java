@@ -11,13 +11,13 @@ import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
-import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6OPPElementTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 import static edument.perl6idea.parsing.Perl6ElementTypes.HEREDOC;
@@ -25,8 +25,10 @@ import static edument.perl6idea.parsing.Perl6ElementTypes.INFIX;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 class Perl6Block extends AbstractBlock implements BlockWithParent {
+    private final static boolean DEBUG_MODE = true;
+    private final List<BiFunction<Perl6Block, Perl6Block, Spacing>> myRules;
+    private final CodeStyleSettings mySettings;
     private BlockWithParent myParent;
-    private CodeStyleSettings mySettings;
     private Boolean isStatementContinuation;
     private List<Block> children;
 
@@ -34,17 +36,23 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             UNV_WHITE_SPACE, WHITE_SPACE,
             VERTICAL_WHITE_SPACE, UNSP_WHITE_SPACE
     );
-    private TokenSet LARGE_BLOCK = TokenSet.create(PACKAGE_DECLARATION, ROUTINE_DECLARATION);
 
-    Perl6Block(ASTNode node, Wrap wrap, Alignment align, CodeStyleSettings settings) {
+    Perl6Block(ASTNode node,
+               Wrap wrap,
+               Alignment align,
+               CodeStyleSettings settings,
+               List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         super(node, wrap, align);
+        myRules = rules;
         mySettings = settings;
         this.isStatementContinuation = false;
     }
 
-    private Perl6Block(ASTNode node, Wrap wrap, Alignment align, CodeStyleSettings settings,
-                       Boolean isStatementContinuation) {
+    private Perl6Block(ASTNode node, Wrap wrap, Alignment align, Boolean isStatementContinuation,
+                       CodeStyleSettings settings,
+                       List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         super(node, wrap, align);
+        myRules = rules;
         mySettings = settings;
         this.isStatementContinuation = isStatementContinuation;
     }
@@ -59,28 +67,12 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             if (WHITESPACES.contains(elementType))
                 continue;
             Perl6Block childBlock;
-            if (elementType == BLOCKOID
-                && LARGE_BLOCK.contains(child.getTreeParent().getElementType())) {
-                childBlock = new Perl6LargeBlockoidBlock(child, null, null, mySettings);
-            }
-            else if (elementType == STATEMENT) {
-                childBlock = new Perl6StatementBlock(child, null, null, mySettings);
-            }
-            else if (elementType == STATEMENT_TERMINATOR) {
-                childBlock = new Perl6StatementTerminatorBlock(child, null, null, mySettings);
-            }
-            else if (elementType == STATEMENT_LIST) {
-                childBlock = new Perl6StatementListBlock(child, null, null, mySettings);
-            }
-            else {
-                Boolean childIsStatementContinuation = null;
-                if (isStatementContinuation != null && isStatementContinuation)
-                    childIsStatementContinuation = false;
-                else if (nodeInStatementContinuation(child))
-                    childIsStatementContinuation = true;
-                childBlock = new Perl6Block(child, null, null, mySettings,
-                                            childIsStatementContinuation);
-            }
+            Boolean childIsStatementContinuation = null;
+            if (isStatementContinuation != null && isStatementContinuation)
+                childIsStatementContinuation = false;
+            else if (nodeInStatementContinuation(child))
+                childIsStatementContinuation = true;
+            childBlock = new Perl6Block(child, null, null, childIsStatementContinuation, mySettings, myRules);
             childBlock.setParent(this);
             children.add(childBlock);
         }
@@ -91,6 +83,30 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     @Nullable
     @Override
     public Spacing getSpacing(@Nullable Block child1, @NotNull Block child2) {
+        if (!(child1 instanceof Perl6Block) || !(child2 instanceof Perl6Block))
+            return null;
+
+        Perl6Block left = (Perl6Block) child1;
+        Perl6Block right = (Perl6Block) child2;
+
+        int i = 0;
+        for (BiFunction<Perl6Block, Perl6Block, Spacing> rule : myRules) {
+            i++;
+            Spacing result = rule.apply(left, right);
+            if (result != null) {
+                if (DEBUG_MODE) {
+                    System.out.printf("Left: %s [%s]%n", left.getNode().getElementType(), left.getNode().getText());
+                    System.out.printf("Right: %s [%s]%n", right.getNode().getElementType(), right.getNode().getText());
+                    System.out.println("Applied rule: " + i);
+                }
+                return result;
+            }
+        }
+        if (DEBUG_MODE) {
+            System.out.printf("Left: %s [%s]%n", left.getNode().getElementType(), left.getNode().getText());
+            System.out.printf("Right: %s [%s]%n", right.getNode().getElementType(), right.getNode().getText());
+            System.out.println("==> No rule was applied.");
+        }
         return null;
     }
 
@@ -182,28 +198,6 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             return new ChildAttributes(Indent.getNormalIndent(), null);
         }
         else if (elementType == BLOCKOID) {
-            if (newIndex == children.size() - 1) {
-                // Maybe adding at the end of the blockoid; see if the last statement is
-                // complete.
-                Block maybeStatementList = children.get(1);
-                if (maybeStatementList instanceof Perl6StatementListBlock) {
-                    List<Block> stmts = ((Perl6StatementListBlock)maybeStatementList).getChildren();
-                    if (stmts.size() > 0) {
-                        Block lastStatement = stmts.get(stmts.size() - 1);
-                        if (lastStatement instanceof AbstractBlock) {
-                            // This is incredibly cheaty, but: if the thing doesn't contain a
-                            // ; or a } then it wasn't terminated. If it does, well, who knows,
-                            // but it's better than getting it wrong all of the time.
-                            String lastStmtText = ((AbstractBlock)lastStatement).getNode().getText();
-                            if (shouldBeContinued(lastStmtText)) {
-                                int indent = mySettings.getIndentSize(Perl6ModuleFileType.INSTANCE) +
-                                             mySettings.getContinuationIndentSize(Perl6ModuleFileType.INSTANCE);
-                                return new ChildAttributes(Indent.getSpaceIndent(indent), null);
-                            }
-                        }
-                    }
-                }
-            }
             return new ChildAttributes(Indent.getNormalIndent(), null);
         }
         else if (isStatementContinuation != null && isStatementContinuation) {
