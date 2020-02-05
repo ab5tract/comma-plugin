@@ -48,10 +48,10 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         Perl6CodeStyleSettings customSettings = settings.getCustomSettings(Perl6CodeStyleSettings.class);
 
         // Prepare fast constants for common cases
-        EMPTY_SPACING = Spacing.createSpacing(0, 0, 0, commonSettings.KEEP_LINE_BREAKS, 1);
-        SINGLE_SPACE_SPACING = Spacing.createSpacing(1, 1, 0, commonSettings.KEEP_LINE_BREAKS, 1);
-        SINGLE_LINE_BREAK = Spacing.createSpacing(0, 0, 1, commonSettings.KEEP_LINE_BREAKS, 1);
-        DOUBLE_LINE_BREAK = Spacing.createSpacing(0, 0, 2, commonSettings.KEEP_LINE_BREAKS, 1);
+        EMPTY_SPACING = Spacing.createSpacing(0, 0, 0, commonSettings.KEEP_LINE_BREAKS, 3);
+        SINGLE_SPACE_SPACING = Spacing.createSpacing(1, 1, 0, commonSettings.KEEP_LINE_BREAKS, 3);
+        SINGLE_LINE_BREAK = Spacing.createSpacing(0, 0, 1, commonSettings.KEEP_LINE_BREAKS, 3);
+        DOUBLE_LINE_BREAK = Spacing.createSpacing(0, 0, 2, commonSettings.KEEP_LINE_BREAKS, 3);
 
         // Init actual rule sets
         initLineBreakRules(commonSettings, customSettings, rules);
@@ -59,10 +59,11 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         // XXX No wrapping rules for now
     }
 
-    private void initSpacingRules(CommonCodeStyleSettings settings,
-                                  Perl6CodeStyleSettings settings1,
+    private void initSpacingRules(CommonCodeStyleSettings commonSettings,
+                                  Perl6CodeStyleSettings customSettings,
                                   List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         rules.add((left, right) -> right.getNode().getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR ? EMPTY_SPACING : null);
+        rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.UNTERMINATED_STATEMENT ? EMPTY_SPACING : null);
     }
 
     private void initLineBreakRules(CommonCodeStyleSettings commonSettings,
@@ -102,15 +103,13 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         rules.add((left, right) -> {
             boolean isOpener = left.getNode().getElementType() == Perl6TokenTypes.BLOCK_CURLY_BRACKET_OPEN;
             boolean isCloser = right.getNode().getElementType() == Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE;
-            //if (isOpener && isCloser && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE)
-            //    return null;
+            if (!isOpener && !isCloser) return null;
             ASTNode parent = left.getNode().getTreeParent();
             if (commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE && parent.getElementType() == Perl6ElementTypes.BLOCKOID) {
-                boolean isSimple = PsiTreeUtil.countChildrenOfType(parent.getPsi(), Perl6Statement.class) < 2;
-                if (isSimple)
-                    return SINGLE_SPACE_SPACING;
+                int statementCount = PsiTreeUtil.findChildrenOfType(parent.getPsi(), Perl6Statement.class).size();
+                return statementCount > 0 ? SINGLE_SPACE_SPACING : EMPTY_SPACING;
             }
-            return isOpener || isCloser ? SINGLE_LINE_BREAK : null;
+            return SINGLE_LINE_BREAK;
         });
 
         rules.add((left, right) -> STATEMENTS.contains(left.getNode().getElementType())
