@@ -9,6 +9,7 @@ sub foo($a, $b, $c,
                 + (42 +
                5);
         if $y < 10 {
+
         }
         else {
             say "bye";
