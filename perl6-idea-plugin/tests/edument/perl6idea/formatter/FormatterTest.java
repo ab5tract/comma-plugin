@@ -29,16 +29,15 @@ public class FormatterTest extends CommaFixtureTestCase {
         doTest("grammar-basic");
     }
 
-    public void testContinuationAfterBlock() {
-        doTest("{\n\n}<caret>", "{\n\n}\n<caret>");
-    }
-
     public void testLineBreakingOfStatements() {
         doTest("break-lines");
     }
 
     public void testLineBreakingOfBlocks() {
-       doTest("blocks");
+        doTest("blocks", (s1, s2) -> {
+            s1.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE = false;
+            return true;
+        });
     }
 
     public void testRemoveSpaceBeforeSemi() {
@@ -54,7 +53,10 @@ public class FormatterTest extends CommaFixtureTestCase {
     }
 
     public void testMultilineArrayFormatting() {
-        doTest("array");
+        doTest("array", (s1, s2) -> {
+            s1.getIndentOptions().CONTINUATION_INDENT_SIZE = 4;
+            return true;
+        });
     }
 
     public void testTrailingCommaInArrayAndHashFormatting() {
@@ -95,6 +97,7 @@ public class FormatterTest extends CommaFixtureTestCase {
             config.apply(commons, customs);
             settingsManager.setTemporarySettings(temp);
             codeStyleManager.reformat(myFixture.getFile());
+            settingsManager.dropTemporarySettings();
         });
     }
 }
