@@ -154,6 +154,7 @@
     <lang.psiStructureViewFactory language="CroTemplate"
                                   implementationClass="edument.perl6idea.cro.template.structureView.CroTemplateStructureViewFactory"/>
     <lang.findUsagesProvider language="CroTemplate" implementationClass="edument.perl6idea.cro.template.findUsages.CroTemplateFindUsagesProvider"/>
+    <usageTypeProvider implementation="edument.perl6idea.cro.template.findUsages.CroTemplateUsageTypeProvider"/>
   </extensions>
 
   <actions>
