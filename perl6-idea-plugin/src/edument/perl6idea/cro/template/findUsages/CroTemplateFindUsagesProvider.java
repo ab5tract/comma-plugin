@@ -1,6 +1,7 @@
 package edument.perl6idea.cro.template.findUsages;
 
 import com.intellij.lang.HelpID;
+import com.intellij.lang.cacheBuilder.WordsScanner;
 import com.intellij.lang.findUsages.FindUsagesProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
@@ -11,6 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CroTemplateFindUsagesProvider implements FindUsagesProvider {
+    @Nullable
+    @Override
+    public WordsScanner getWordsScanner() {
+        return new CroTemplateWordsScannar();
+    }
+
     @Override
     public boolean canFindUsagesFor(@NotNull PsiElement element) {
         return element instanceof PsiNamedElement;
