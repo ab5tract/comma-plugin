@@ -9,4 +9,10 @@ public class CodeStylePerl6Panel extends TabbedLanguageCodeStylePanel {
     public CodeStylePerl6Panel(CodeStyleSettings settings, CodeStyleSettings originalSettings) {
         super(Perl6Language.INSTANCE, settings, originalSettings);
     }
+
+    @Override
+    protected void initTabs(CodeStyleSettings settings) {
+        addIndentOptionsTab(settings);
+        addWrappingAndBracesTab(settings);
+    }
 }

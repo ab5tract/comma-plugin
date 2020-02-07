@@ -99,7 +99,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
     @Nullable
     @Override
     public IndentOptionsEditor getIndentOptionsEditor() {
-        return new Perl6IndentOptionsEditor();
+        return new SmartIndentOptionsEditor();
     }
 
     @Nullable

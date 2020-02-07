@@ -115,12 +115,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     @Override
     public Indent getIndent() {
         if (myNode.getTreeParent().getPsi() instanceof Perl6Blockoid && myNode.getTreeNext() != null && myNode.getTreePrev() != null)
-            if (myNode.getFirstChildNode() != null && myNode.getFirstChildNode().getElementType() == LABEL)
-                return mySettings.getLanguageIndentOptions(Perl6Language.INSTANCE).LABEL_INDENT_ABSOLUTE
-                       ? Indent.getAbsoluteLabelIndent()
-                       : Indent.getSpaceIndent(mySettings.getLanguageIndentOptions(Perl6Language.INSTANCE).LABEL_INDENT_SIZE, true);
-            else
-                return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
+            return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
         if (myNode.getElementType() == SEMI_LIST && myNode.getTreeParent().getElementType() == ARRAY_COMPOSER)
             return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
         if (myNode.getElementType() == ARRAY_COMPOSER_CLOSE)
