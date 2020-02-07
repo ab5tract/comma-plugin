@@ -4,28 +4,22 @@ import com.intellij.formatting.*;
 import com.intellij.formatting.templateLanguages.BlockWithParent;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.editor.Document;
-import com.intellij.psi.PsiDocumentManager;
+import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.Perl6Language;
-import edument.perl6idea.filetypes.Perl6ModuleFileType;
-import edument.perl6idea.parsing.Perl6OPPElementTypes;
-import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
-import static edument.perl6idea.parsing.Perl6ElementTypes.HEREDOC;
-import static edument.perl6idea.parsing.Perl6ElementTypes.INFIX;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 class Perl6Block extends AbstractBlock implements BlockWithParent {
@@ -65,6 +59,9 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if (isLeaf())
             return EMPTY;
         final ArrayList<Block> children = new ArrayList<>();
+
+        Pair<Function<ASTNode, Boolean>, Alignment> alignFunction = calculateAlign(myNode);
+
         for (ASTNode child = getNode().getFirstChildNode(); child != null; child = child.getTreeNext()) {
             IElementType elementType = child.getElementType();
             if (WHITESPACES.contains(elementType))
@@ -75,11 +72,20 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
                 childIsStatementContinuation = false;
             else if (nodeInStatementContinuation(child))
                 childIsStatementContinuation = true;
-            childBlock = new Perl6Block(child, null, null, childIsStatementContinuation, mySettings, myRules);
+            Alignment align = alignFunction == null ? null : alignFunction.first.apply(child) ? alignFunction.second : null;
+            childBlock = new Perl6Block(child, null, align, childIsStatementContinuation, mySettings, myRules);
             childBlock.setParent(this);
             children.add(childBlock);
         }
         return children;
+    }
+
+    @Nullable
+    private static Pair<Function<ASTNode, Boolean>, Alignment> calculateAlign(ASTNode node) {
+        if (node.getElementType() == SIGNATURE) {
+            return Pair.create((child) -> child.getElementType() == PARAMETER, Alignment.createAlignment());
+        }
+        return null;
     }
 
     @Nullable

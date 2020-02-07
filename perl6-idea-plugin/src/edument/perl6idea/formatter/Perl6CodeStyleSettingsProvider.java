@@ -21,14 +21,15 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                 "        $t ~= \"A$x\";\n" +
                                                 "        B: while $y++ < 2 {\n" +
                                                 "            $t ~= \"B$y\";\n" +
-                                                "            redo A if $y++ == 1;\n" +
+                                                "            redo A if $y++ ==\n" +
+                                                "                    1;\n" +
                                                 "            last A\n" +
                                                 "        }\n" +
                                                 "    }\n" +
-                                                "    say $t; # OUTPUT: «A1B1A1A2»\n" +
-                                                "}\n" +
-                                                "    \n" +
-                                                "if True {foobar;}";
+                                                "    say $t;\n" +
+                                                "    " +
+                                                "    # OUTPUT: «A1B1A1A2»\n" +
+                                                "}\n";
 
     @Nullable
     @Override
