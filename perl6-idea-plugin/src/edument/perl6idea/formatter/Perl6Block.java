@@ -6,6 +6,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.editor.Document;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
@@ -131,8 +132,12 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     private static boolean nodeInStatementContinuation(ASTNode startNode) {
         PsiElement startPsi = startNode.getPsi();
-        Document doc = PsiDocumentManager.getInstance(startPsi.getProject()).getDocument(startPsi.getContainingFile());
-        assert doc != null;
+        PsiFile file = startPsi.getContainingFile();
+        if (file == null)
+            return false;
+        Document doc = file.getViewProvider().getDocument();
+        if (doc == null)
+            return false;
         if (startPsi.getParent() instanceof Perl6InfixApplication
             && doc.getLineNumber(startPsi.getTextOffset()) != doc.getLineNumber(startPsi.getParent().getTextOffset())) {
             if (checkIfNonContinuatedInitializer(startPsi)) return false;
