@@ -30,11 +30,40 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                 "    " +
                                                 "    # OUTPUT: «A1B1A1A2»\n" +
                                                 "}\n";
+    private static final String BRACES_SAMPLE = "say 1 +\n" +
+                                                "        41;\n" +
+                                                "\n" +
+                                                "class Foo {\n" +
+                                                "    method foo {\n" +
+                                                "        if True { say \"One-liner\" }\n" +
+                                                "        else {}\n" +
+                                                "\n" +
+                                                "        for ^42 {\n" +
+                                                "            LAST { say \"LAST\" }\n" +
+                                                "        }\n" +
+                                                "    }\n" +
+                                                "\n" +
+                                                "    method answer { -> { 42 } }\n" +
+                                                "    method empty {}\n" +
+                                                "\n" +
+                                                "    class Empty {}\n" +
+                                                "}\n" +
+                                                "\n" +
+                                                "grammar Bar {\n" +
+                                                "    token a { <?> }\n" +
+                                                "    token long {\n" +
+                                                "        \\w \\w \\w \\w\n" +
+                                                "    }\n" +
+                                                "}";
 
     @Nullable
     @Override
     public String getCodeSample(@NotNull SettingsType settingsType) {
-        return INDENT_SAMPLE;
+        if (settingsType == SettingsType.INDENT_SETTINGS)
+            return INDENT_SAMPLE;
+        if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS)
+            return BRACES_SAMPLE;
+        return "";
     }
 
     @NotNull
