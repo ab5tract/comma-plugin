@@ -14,7 +14,7 @@ public class Perl6CodeStyleSettings extends CustomCodeStyleSettings {
 
     public boolean ROUTINES_DECLARATION_IN_ONE_LINE = true;
     public boolean REGEX_DECLARATION_IN_ONE_LINE = true;
-    public boolean CLASS_DECLARATION_IN_ONE_LINE = true;
+    public boolean PACKAGE_DECLARATION_IN_ONE_LINE = true;
     public boolean POINTY_BLOCK_IN_ONE_LINE = true;
 
     public Perl6CodeStyleSettings(CodeStyleSettings container) {

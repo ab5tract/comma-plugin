@@ -16,8 +16,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
-import edument.perl6idea.psi.Perl6Regex;
-import edument.perl6idea.psi.Perl6Statement;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,10 +48,10 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         Perl6CodeStyleSettings customSettings = settings.getCustomSettings(Perl6CodeStyleSettings.class);
 
         // Prepare fast constants for common cases
-        EMPTY_SPACING = Spacing.createSpacing(0, 0, 0, commonSettings.KEEP_LINE_BREAKS, 3);
-        SINGLE_SPACE_SPACING = Spacing.createSpacing(1, 1, 0, commonSettings.KEEP_LINE_BREAKS, 3);
-        SINGLE_LINE_BREAK = Spacing.createSpacing(0, 0, 1, commonSettings.KEEP_LINE_BREAKS, 3);
-        DOUBLE_LINE_BREAK = Spacing.createSpacing(0, 0, 2, commonSettings.KEEP_LINE_BREAKS, 3);
+        EMPTY_SPACING = Spacing.createSpacing(0, 0, 0, commonSettings.KEEP_LINE_BREAKS, commonSettings.KEEP_LINE_BREAKS ? 3 : 1);
+        SINGLE_SPACE_SPACING = Spacing.createSpacing(1, 1, 0, commonSettings.KEEP_LINE_BREAKS, commonSettings.KEEP_LINE_BREAKS ? 3 : 1);
+        SINGLE_LINE_BREAK = Spacing.createSpacing(0, 0, 1, commonSettings.KEEP_LINE_BREAKS, commonSettings.KEEP_LINE_BREAKS ? 3 : 1);
+        DOUBLE_LINE_BREAK = Spacing.createSpacing(0, 0, 2, commonSettings.KEEP_LINE_BREAKS, commonSettings.KEEP_LINE_BREAKS ? 3 : 1);
 
         // Init actual rule sets
         initLineBreakRules(commonSettings, customSettings, rules);
@@ -65,6 +64,7 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                                   List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         rules.add((left, right) -> right.getNode().getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR ? EMPTY_SPACING : null);
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.UNTERMINATED_STATEMENT ? EMPTY_SPACING : null);
+        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.INFIX || right.getNode().getElementType() == Perl6ElementTypes.INFIX ? SINGLE_SPACE_SPACING : null);
     }
 
     private void initLineBreakRules(CommonCodeStyleSettings commonSettings,
@@ -105,22 +105,28 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
             boolean isOpener = left.getNode().getElementType() == Perl6TokenTypes.BLOCK_CURLY_BRACKET_OPEN;
             boolean isCloser = right.getNode().getElementType() == Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE;
             if (!isOpener && !isCloser) return null;
-            ASTNode parent = left.getNode().getTreeParent();
-            if (commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE && parent.getElementType() == Perl6ElementTypes.BLOCKOID) {
-                Collection<PsiElement> inner = PsiTreeUtil.findChildrenOfAnyType(parent.getPsi(), Perl6Statement.class, Perl6Regex.class);
-                int statementCount = 0;
+
+            ASTNode blockoid = left.getNode().getTreeParent();
+            if (blockoid.getElementType() == Perl6ElementTypes.BLOCKOID) {
+                PsiElement source = PsiTreeUtil.getParentOfType(blockoid.getPsi(), Perl6PackageDecl.class, Perl6RoutineDecl.class, Perl6RegexDecl.class, Perl6PointyBlock.class, Perl6Statement.class);
+                Collection<PsiElement> inner = PsiTreeUtil.findChildrenOfAnyType(blockoid.getPsi(), Perl6Statement.class, Perl6Regex.class);
+                int statementCount;
                 if (inner.size() == 1 && inner.iterator().next() instanceof Perl6Regex) {
                     statementCount = inner.iterator().next().getChildren().length;
                 } else {
                     statementCount = inner.size();
                 }
-                switch (statementCount) {
-                    case 0:
+                if (statementCount == 0) {
+                    if (source instanceof Perl6PackageDecl && customSettings.PACKAGE_DECLARATION_IN_ONE_LINE)
                         return EMPTY_SPACING;
-                    case 1:
-                        return SINGLE_SPACE_SPACING;
-                    default:
-                        return SINGLE_LINE_BREAK;
+                    if (source instanceof Perl6RoutineDecl && customSettings.ROUTINES_DECLARATION_IN_ONE_LINE)
+                        return EMPTY_SPACING;
+                    if (source instanceof Perl6RegexDecl && customSettings.REGEX_DECLARATION_IN_ONE_LINE)
+                        return EMPTY_SPACING;
+                    if (source instanceof Perl6PointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE)
+                        return EMPTY_SPACING;
+                    if (source instanceof Perl6Statement && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE)
+                        return EMPTY_SPACING;
                 }
             }
             return SINGLE_LINE_BREAK;

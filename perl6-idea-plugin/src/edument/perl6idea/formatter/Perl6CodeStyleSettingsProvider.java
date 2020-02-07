@@ -43,14 +43,14 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                 "        }\n" +
                                                 "    }\n" +
                                                 "\n" +
-                                                "    method answer { -> { 42 } }\n" +
+                                                "    method answer { -> {} }\n" +
                                                 "    method empty {}\n" +
                                                 "\n" +
                                                 "    class Empty {}\n" +
                                                 "}\n" +
                                                 "\n" +
                                                 "grammar Bar {\n" +
-                                                "    token a { <?> }\n" +
+                                                "    token a {}\n" +
                                                 "    token long {\n" +
                                                 "        \\w \\w \\w \\w\n" +
                                                 "    }\n" +
@@ -84,7 +84,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                 // Hard wrap at, wrap on typing
                 "RIGHT_MARGIN", "WRAP_ON_TYPING",
                 // keeping lines
-                "KEEP_LINE_BREAKS", "KEEP_FIRST_COLUMN_COMMENT", "KEEP_CONTROL_STATEMENT_IN_ONE_LINE",
+                "KEEP_LINE_BREAKS", "KEEP_FIRST_COLUMN_COMMENT",
                 "KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE", "KEEP_SIMPLE_BLOCKS_IN_ONE_LINE"
             );
             consumer.showCustomOption(
@@ -97,7 +97,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                 CodeStyleSettingsCustomizable.WRAPPING_KEEP);
             consumer.showCustomOption(
                 Perl6CodeStyleSettings.class,
-                "CLASS_DECLARATION_IN_ONE_LINE", "Class declaration in one line",
+                "PACKAGE_DECLARATION_IN_ONE_LINE", "Package declaration in one line",
                 CodeStyleSettingsCustomizable.WRAPPING_KEEP);
             consumer.showCustomOption(
                 Perl6CodeStyleSettings.class,
