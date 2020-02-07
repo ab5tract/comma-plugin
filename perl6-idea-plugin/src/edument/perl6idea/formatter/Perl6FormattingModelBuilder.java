@@ -16,6 +16,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
+import edument.perl6idea.psi.Perl6Regex;
 import edument.perl6idea.psi.Perl6Statement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -106,8 +107,21 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
             if (!isOpener && !isCloser) return null;
             ASTNode parent = left.getNode().getTreeParent();
             if (commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE && parent.getElementType() == Perl6ElementTypes.BLOCKOID) {
-                int statementCount = PsiTreeUtil.findChildrenOfType(parent.getPsi(), Perl6Statement.class).size();
-                return statementCount > 0 ? SINGLE_SPACE_SPACING : EMPTY_SPACING;
+                Collection<PsiElement> inner = PsiTreeUtil.findChildrenOfAnyType(parent.getPsi(), Perl6Statement.class, Perl6Regex.class);
+                int statementCount = 0;
+                if (inner.size() == 1 && inner.iterator().next() instanceof Perl6Regex) {
+                    statementCount = inner.iterator().next().getChildren().length;
+                } else {
+                    statementCount = inner.size();
+                }
+                switch (statementCount) {
+                    case 0:
+                        return EMPTY_SPACING;
+                    case 1:
+                        return SINGLE_SPACE_SPACING;
+                    default:
+                        return SINGLE_LINE_BREAK;
+                }
             }
             return SINGLE_LINE_BREAK;
         });
