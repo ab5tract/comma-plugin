@@ -231,7 +231,8 @@ EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
             next if object ~~ Junction;
             @EXTERNAL_COMMA_ELEMS.push: pack-variable($_, object);
             if ($_.starts-with('&')) {
-                @EXTERNAL_COMMA_ELEMS.push: pack-code($_, $_.multi ?? 1 !! 0, :!is-method) for object.candidates;
+                my $name = .substr(1);
+                @EXTERNAL_COMMA_ELEMS.push: pack-code($_, $_.multi ?? 1 !! 0, $name, :!is-method) for object.candidates;
             }
         }
         # Collect all types.
