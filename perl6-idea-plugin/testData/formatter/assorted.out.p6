@@ -3,11 +3,11 @@ sub foo($a, $b, $c,
     if $x == 42 {
         say 1;
         say 5 +
-                40
-                + 21;
+            40
+            + 21;
         say 2
-                + (42 +
-                5);
+            + (42 +
+               5);
         if $y < 10 {
 
         }
@@ -46,20 +46,20 @@ my $x = Foo.new:
         a => 1;
 
 is-deeply %foo,
-        { a => 1 },
-        'bar';
+          { a => 1 },
+          'bar';
 
 is-deeply %foo,
-        { xxx => 1 },
-        'blah';
+          { xxx => 1 },
+          'blah';
 
 is-deeply %bar,
-        { a => 1 },
-        'blah';
+          { a => 1 },
+          'blah';
 
 is-deeply %foo,
-        { a => 1 },
-        'bar';
+          { a => 1 },
+          'bar';
 
 say Foo.new:
         a => 1,

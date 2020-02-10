@@ -4,8 +4,8 @@ class C {
     method meth(Int $x, Str $y) {
         if $y.chars > $x {
             say "long" ~
-                    $y.substr(0, $x) ~
-                    "...";
+                $y.substr(0, $x) ~
+                "...";
         }
         else {
             say "short";
@@ -21,4 +21,4 @@ else {
 }
 
 c.meth(10,
-        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+       "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
