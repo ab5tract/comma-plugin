@@ -7,13 +7,18 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.TokenType;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import edument.perl6idea.parsing.Perl6ElementTypes;
+import edument.perl6idea.parsing.Perl6OPPElementTypes;
+import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import sun.util.resources.cldr.en.TimeZoneNames_en_ZA;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -33,6 +38,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             UNV_WHITE_SPACE, WHITE_SPACE,
             VERTICAL_WHITE_SPACE, UNSP_WHITE_SPACE
     );
+    private ArrayList<Block> children;
 
     Perl6Block(ASTNode node,
                Wrap wrap,
@@ -77,13 +83,17 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             childBlock.setParent(this);
             children.add(childBlock);
         }
-        return children;
+        return this.children = children;
     }
 
     @Nullable
     private static Pair<Function<ASTNode, Boolean>, Alignment> calculateAlign(ASTNode node) {
         if (node.getElementType() == SIGNATURE) {
             return Pair.create((child) -> child.getElementType() == PARAMETER, Alignment.createAlignment());
+        } else if (node.getElementType() == ARRAY_COMPOSER) {
+            return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN || child.getElementType() == ARRAY_COMPOSER_CLOSE, Alignment.createAlignment());
+        } else if (node.getElementType() == Perl6OPPElementTypes.INFIX_APPLICATION) {
+            return Pair.create((child) -> child.getElementType() != Perl6ElementTypes.INFIX || child.getElementType() != Perl6ElementTypes.NULL_TERM, Alignment.createAlignment());
         }
         return null;
     }
@@ -173,6 +183,48 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean isIncomplete() {
+        ASTNode lastChild = myNode.getLastChildNode();
+        while (true) {
+            while (lastChild != null && lastChild.getElementType() == TokenType.WHITE_SPACE) {
+                lastChild = lastChild.getTreePrev();
+            }
+            if (lastChild == null) {
+                return false;
+            } else if (lastChild.getElementType() == TokenType.ERROR_ELEMENT) {
+                return true;
+            } else if (lastChild.getElementType() == ARRAY_COMPOSER_CLOSE) {
+                ASTNode maybeSemilist = lastChild.getTreePrev();
+                return maybeSemilist.getElementType() == SEMI_LIST && maybeSemilist.getText().trim().endsWith(",");
+            } else {
+                lastChild = lastChild.getLastChildNode();
+            }
+        }
+    }
+
+    @NotNull
+    @Override
+    public ChildAttributes getChildAttributes(int newIndex) {
+        IElementType elementType = myNode.getElementType();
+        if (elementType == REGEX_GROUP || elementType == ARRAY_COMPOSER || elementType == BLOCKOID) {
+            return new ChildAttributes(Indent.getNormalIndent(), null);
+        }
+        else if (elementType == SIGNATURE) {
+            return new ChildAttributes(Indent.getContinuationIndent(), obtainAlign(elementType));
+        }
+        return new ChildAttributes(Indent.getNoneIndent(), null);
+    }
+
+    private Alignment obtainAlign(IElementType elementType) {
+        if (children.size() == 0)
+            return null;
+        if (elementType == SIGNATURE) {
+            return children.stream().map(child -> child.getAlignment()).filter(child -> child != null).findFirst().orElse(null);
+        }
+        return null;
     }
 
     @Override

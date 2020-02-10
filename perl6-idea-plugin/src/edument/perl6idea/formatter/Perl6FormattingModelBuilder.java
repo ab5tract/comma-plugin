@@ -25,9 +25,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import static edument.perl6idea.parsing.Perl6TokenTypes.*;
+
 public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
     private static final TokenSet STATEMENTS = TokenSet.create(Perl6ElementTypes.STATEMENT, Perl6ElementTypes.COMMENT,
                                                                Perl6ElementTypes.HEREDOC);
+    private static final TokenSet OPENERS = TokenSet.create(ARRAY_COMPOSER_OPEN, ARRAY_INDEX_BRACKET_OPEN, BLOCK_CURLY_BRACKET_OPEN,
+                                                            HASH_INDEX_BRACKET_OPEN, PARENTHESES_OPEN, SIGNATURE_BRACKET_OPEN);
+    private static final TokenSet CLOSERS = TokenSet.create(ARRAY_COMPOSER_CLOSE, ARRAY_INDEX_BRACKET_CLOSE, BLOCK_CURLY_BRACKET_CLOSE,
+                                                            HASH_INDEX_BRACKET_CLOSE, PARENTHESES_CLOSE, SIGNATURE_BRACKET_CLOSE);
     public Spacing EMPTY_SPACING;
     public Spacing SINGLE_SPACE_SPACING;
     public Spacing SINGLE_LINE_BREAK;
@@ -64,6 +70,10 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                                   List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         rules.add((left, right) -> right.getNode().getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR ? EMPTY_SPACING : null);
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.UNTERMINATED_STATEMENT ? EMPTY_SPACING : null);
+        rules.add((left, right) -> OPENERS.contains(left.getNode().getElementType()) ? EMPTY_SPACING : null);
+        rules.add((left, right) -> CLOSERS.contains(right.getNode().getElementType()) ? EMPTY_SPACING : null);
+        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.INFIX && left.getNode().getText().equals(",") ? SINGLE_SPACE_SPACING : null);
+        rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.INFIX && right.getNode().getText().equals(",") ? EMPTY_SPACING : null);
         rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.INFIX || right.getNode().getElementType() == Perl6ElementTypes.INFIX ? SINGLE_SPACE_SPACING : null);
     }
 
@@ -102,7 +112,7 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                : null);
 
         rules.add((left, right) -> {
-            boolean isOpener = left.getNode().getElementType() == Perl6TokenTypes.BLOCK_CURLY_BRACKET_OPEN;
+            boolean isOpener = left.getNode().getElementType() == BLOCK_CURLY_BRACKET_OPEN;
             boolean isCloser = right.getNode().getElementType() == Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE;
             if (!isOpener && !isCloser) return null;
 
