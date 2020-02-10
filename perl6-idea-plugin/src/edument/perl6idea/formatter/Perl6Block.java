@@ -12,13 +12,13 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6OPPElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import sun.util.resources.cldr.en.TimeZoneNames_en_ZA;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -66,7 +66,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             return EMPTY;
         final ArrayList<Block> children = new ArrayList<>();
 
-        Pair<Function<ASTNode, Boolean>, Alignment> alignFunction = calculateAlign(myNode);
+        Pair<Function<ASTNode, Boolean>, Alignment> alignFunction = calculateAlignment(myNode);
 
         for (ASTNode child = getNode().getFirstChildNode(); child != null; child = child.getTreeNext()) {
             IElementType elementType = child.getElementType();
@@ -87,13 +87,13 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     }
 
     @Nullable
-    private static Pair<Function<ASTNode, Boolean>, Alignment> calculateAlign(ASTNode node) {
+    private static Pair<Function<ASTNode, Boolean>, Alignment> calculateAlignment(ASTNode node) {
         if (node.getElementType() == SIGNATURE) {
             return Pair.create((child) -> child.getElementType() == PARAMETER, Alignment.createAlignment());
         } else if (node.getElementType() == ARRAY_COMPOSER) {
-            return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN || child.getElementType() == ARRAY_COMPOSER_CLOSE, Alignment.createAlignment());
+            return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN && child.getElementType() == ARRAY_COMPOSER_CLOSE, Alignment.createAlignment());
         } else if (node.getElementType() == Perl6OPPElementTypes.INFIX_APPLICATION) {
-            return Pair.create((child) -> child.getElementType() != Perl6ElementTypes.INFIX || child.getElementType() != Perl6ElementTypes.NULL_TERM, Alignment.createAlignment());
+            return Pair.create((child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM, Alignment.createAlignment());
         }
         return null;
     }
@@ -134,10 +134,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
         if (myNode.getElementType() == SEMI_LIST && myNode.getTreeParent().getElementType() == ARRAY_COMPOSER)
             return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
-        if (myNode.getElementType() == ARRAY_COMPOSER_CLOSE)
-            return Indent.getNoneIndent();
         if (isStatementContinuation != null && isStatementContinuation)
-            return Indent.getContinuationWithoutFirstIndent();
+            return Indent.getContinuationIndent();
         return Indent.getNoneIndent();
     }
 
@@ -149,13 +147,16 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         Document doc = file.getViewProvider().getDocument();
         if (doc == null)
             return false;
-        if (startPsi.getParent() instanceof Perl6InfixApplication
-            && doc.getLineNumber(startPsi.getTextOffset()) != doc.getLineNumber(startPsi.getParent().getTextOffset())) {
-            if (checkIfNonContinuatedInitializer(startPsi)) return false;
+        // Check if the node spans over multiple lines, making us want a continuation
+        if (!(doc.getLineNumber(startPsi.getTextOffset()) != doc.getLineNumber(startPsi.getParent().getTextOffset())))
+            return false;
+
+        if (startPsi.getParent() instanceof Perl6InfixApplication) {
+            return !checkIfNonContinuatedInitializer(startPsi);
+        } else if (startPsi.getParent() instanceof Perl6VariableDecl || startPsi.getParent() instanceof Perl6SubCall) {
             return true;
         }
-        return (startPsi.getParent() instanceof Perl6Signature || startPsi.getParent() instanceof Perl6MethodCall)
-               && doc.getLineNumber(startPsi.getTextOffset()) != doc.getLineNumber(startPsi.getParent().getTextOffset());
+        return startPsi.getParent() instanceof Perl6Signature || startPsi.getParent() instanceof Perl6MethodCall;
     }
 
     private static boolean checkIfNonContinuatedInitializer(PsiElement startPsi) {

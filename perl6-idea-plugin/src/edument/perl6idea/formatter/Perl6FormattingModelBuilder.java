@@ -1,6 +1,5 @@
 package edument.perl6idea.formatter;
 
-import com.intellij.codeInsight.ExpectedTypeUtil;
 import com.intellij.formatting.BraceStyle;
 import com.intellij.formatting.FormattingModel;
 import com.intellij.formatting.FormattingModelBuilder;
@@ -45,11 +44,11 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         final PsiFile psiFile = element.getContainingFile();
         List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules = new ArrayList<>();
         initRules(settings, rules);
-        final Perl6Block block = new Perl6Block(psiFile.getNode(), null,null, settings, rules);
+        final Perl6Block block = new Perl6Block(psiFile.getNode(), null, null, settings, rules);
         return new DocumentBasedFormattingModel(block, element.getProject(), settings, psiFile.getFileType(), psiFile);
     }
 
-    private void initRules(CodeStyleSettings settings,List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
+    private void initRules(CodeStyleSettings settings, List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         CommonCodeStyleSettings commonSettings = settings.getCommonSettings(Perl6Language.INSTANCE);
         Perl6CodeStyleSettings customSettings = settings.getCustomSettings(Perl6CodeStyleSettings.class);
 
@@ -72,9 +71,22 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.UNTERMINATED_STATEMENT ? EMPTY_SPACING : null);
         rules.add((left, right) -> OPENERS.contains(left.getNode().getElementType()) ? EMPTY_SPACING : null);
         rules.add((left, right) -> CLOSERS.contains(right.getNode().getElementType()) ? EMPTY_SPACING : null);
-        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.INFIX && left.getNode().getText().equals(",") ? SINGLE_SPACE_SPACING : null);
-        rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.INFIX && right.getNode().getText().equals(",") ? EMPTY_SPACING : null);
-        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.INFIX || right.getNode().getElementType() == Perl6ElementTypes.INFIX ? SINGLE_SPACE_SPACING : null);
+        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.INFIX &&
+                                   left.getNode().getText().equals(",")
+                                   ? checkNotEmpty(left.getNode().getTreeNext()) ? EMPTY_SPACING : SINGLE_SPACE_SPACING : null);
+        rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.INFIX &&
+                                   right.getNode().getText().equals(",") ? EMPTY_SPACING : null);
+        rules.add((left, right) -> {
+            boolean isInfixOp =
+                left.getNode().getElementType() == Perl6ElementTypes.INFIX ||
+                right.getNode().getElementType() == Perl6ElementTypes.INFIX;
+            boolean isDotOp = left.getNode().getText().equals(".") || right.getNode().getText().equals(".");
+            return isInfixOp && isDotOp ? EMPTY_SPACING : isInfixOp ? SINGLE_SPACE_SPACING : null;
+        });
+    }
+
+    private static boolean checkNotEmpty(ASTNode node) {
+        return node != null && node.getElementType() == Perl6ElementTypes.NULL_TERM;
     }
 
     private void initLineBreakRules(CommonCodeStyleSettings commonSettings,
@@ -118,7 +130,9 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
 
             ASTNode blockoid = left.getNode().getTreeParent();
             if (blockoid.getElementType() == Perl6ElementTypes.BLOCKOID) {
-                PsiElement source = PsiTreeUtil.getParentOfType(blockoid.getPsi(), Perl6PackageDecl.class, Perl6RoutineDecl.class, Perl6RegexDecl.class, Perl6PointyBlock.class, Perl6Statement.class);
+                PsiElement source = PsiTreeUtil.getParentOfType(blockoid.getPsi(), Perl6PackageDecl.class,
+                                                                Perl6RoutineDecl.class, Perl6RegexDecl.class,
+                                                                Perl6PointyBlock.class, Perl6Statement.class);
                 Collection<PsiElement> inner = PsiTreeUtil.findChildrenOfAnyType(blockoid.getPsi(), Perl6Statement.class, Perl6Regex.class);
                 int statementCount;
                 if (inner.size() == 1 && inner.iterator().next() instanceof Perl6Regex) {
@@ -127,16 +141,17 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                     statementCount = inner.size();
                 }
                 if (statementCount == 0) {
-                    if (source instanceof Perl6PackageDecl && customSettings.PACKAGE_DECLARATION_IN_ONE_LINE)
+                    if (source instanceof Perl6PackageDecl && customSettings.PACKAGE_DECLARATION_IN_ONE_LINE ||
+                        source instanceof Perl6RoutineDecl && customSettings.ROUTINES_DECLARATION_IN_ONE_LINE ||
+                        source instanceof Perl6RegexDecl && customSettings.REGEX_DECLARATION_IN_ONE_LINE ||
+                        source instanceof Perl6PointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE ||
+                        source instanceof Perl6Statement && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE) {
                         return EMPTY_SPACING;
-                    if (source instanceof Perl6RoutineDecl && customSettings.ROUTINES_DECLARATION_IN_ONE_LINE)
-                        return EMPTY_SPACING;
-                    if (source instanceof Perl6RegexDecl && customSettings.REGEX_DECLARATION_IN_ONE_LINE)
-                        return EMPTY_SPACING;
-                    if (source instanceof Perl6PointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE)
-                        return EMPTY_SPACING;
-                    if (source instanceof Perl6Statement && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE)
-                        return EMPTY_SPACING;
+                    }
+                } else if (statementCount == 1) {
+                    if (source instanceof Perl6Statement && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE ||
+                        source instanceof Perl6PointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE)
+                        return SINGLE_SPACE_SPACING;
                 }
             }
             return SINGLE_LINE_BREAK;
@@ -145,15 +160,5 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         rules.add((left, right) -> STATEMENTS.contains(left.getNode().getElementType())
                                    || STATEMENTS.contains(right.getNode().getElementType())
                                    ? SINGLE_LINE_BREAK : null);
-    }
-
-    @Nullable
-    private static ASTNode getParent(ASTNode node, int number) {
-        while (number != 0) {
-            if (node != null)
-                node = node.getTreeParent();
-            number--;
-        }
-        return node;
     }
 }
