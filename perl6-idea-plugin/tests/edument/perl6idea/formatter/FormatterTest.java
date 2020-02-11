@@ -36,6 +36,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("@foo.push:\n42;", "@foo.push:\n        42;");
         reformatTest("basic-indent");
         reformatTest("basic-class");
+        reformatTest("class ABC\n  is export {}", "class ABC\n        is export {}");
     }
 
     public void testSpacing() {
@@ -51,9 +52,21 @@ public class FormatterTest extends CommaFixtureTestCase {
         // reformatTest("my @ab = <12 2333 3 4\n5 6 7>;", "my @ab = <12 2333 3 4\n         5 6 7>;");
         reformatTest("my %long-hash = a => 42,\nb => 50;", "my %long-hash = a => 42,\n                b => 50;");
         reformatTest("basic-hash");
+        // traits
+        reformatTest("traits");
+        // parameters, calls
+        reformatTest("sub foobar($first-one,\n$second-one) {}", "sub foobar($first-one,\n           $second-one) {}");
+        reformatTest("push 42,\n42", "push 42,\n     42");
+        // call chains
+        reformatTest("Foo\n.method(42)\n.method2(24)", "Foo\n        .method(42)\n        .method2(24)");
     }
 
     public void testWrapping() {
+        // literals
+        // call chains
+        // parameters
+        // args
+        // traits
     }
 
     public void testEnterIndentation() {

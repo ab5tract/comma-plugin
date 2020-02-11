@@ -1,5 +1,6 @@
 package edument.perl6idea.formatter;
 
+import com.intellij.codeInsight.ExpectedTypeUtil;
 import com.intellij.formatting.*;
 import com.intellij.formatting.templateLanguages.BlockWithParent;
 import com.intellij.lang.ASTNode;
@@ -29,6 +30,10 @@ import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 class Perl6Block extends AbstractBlock implements BlockWithParent {
     private final static boolean DEBUG_MODE = false;
+    private static final TokenSet TRAIT_CARRIERS = TokenSet.create(
+        PACKAGE_DECLARATION, ROUTINE_DECLARATION, VARIABLE_DECLARATION,
+        PARAMETER, REGEX_DECLARATION, ENUM, SUBSET, CONSTANT
+    );
     private final List<BiFunction<Perl6Block, Perl6Block, Spacing>> myRules;
     private final CodeStyleSettings mySettings;
     private BlockWithParent myParent;
@@ -88,12 +93,15 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     @Nullable
     private static Pair<Function<ASTNode, Boolean>, Alignment> calculateAlignment(ASTNode node) {
-        if (node.getElementType() == SIGNATURE) {
+        IElementType type = node.getElementType();
+        if (type == SIGNATURE) {
             return Pair.create((child) -> child.getElementType() == PARAMETER, Alignment.createAlignment());
-        } else if (node.getElementType() == ARRAY_COMPOSER) {
+        } else if (type == ARRAY_COMPOSER) {
             return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN && child.getElementType() == ARRAY_COMPOSER_CLOSE, Alignment.createAlignment());
-        } else if (node.getElementType() == Perl6OPPElementTypes.INFIX_APPLICATION) {
+        } else if (type == Perl6OPPElementTypes.INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof Perl6MethodCall)) {
             return Pair.create((child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM, Alignment.createAlignment());
+        } else if (TRAIT_CARRIERS.contains(type)) {
+            return Pair.create((child) -> child.getElementType() == Perl6ElementTypes.TRAIT, Alignment.createAlignment());
         }
         return null;
     }
@@ -148,12 +156,12 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if (doc == null)
             return false;
         // Check if the node spans over multiple lines, making us want a continuation
-        if (!(doc.getLineNumber(startPsi.getTextOffset()) != doc.getLineNumber(startPsi.getParent().getTextOffset())))
+        if (doc.getLineNumber(startPsi.getTextOffset()) == doc.getLineNumber(startPsi.getParent().getTextOffset()))
             return false;
 
         if (startPsi.getParent() instanceof Perl6InfixApplication) {
             return !checkIfNonContinuatedInitializer(startPsi);
-        } else if (startPsi.getParent() instanceof Perl6VariableDecl || startPsi.getParent() instanceof Perl6SubCall) {
+        } else if (startPsi.getParent() instanceof Perl6PsiDeclaration || startPsi.getParent() instanceof Perl6SubCall) {
             return true;
         }
         return startPsi.getParent() instanceof Perl6Signature || startPsi.getParent() instanceof Perl6MethodCall;
