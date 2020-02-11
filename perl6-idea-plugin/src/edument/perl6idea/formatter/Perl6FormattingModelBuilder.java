@@ -17,11 +17,8 @@ import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiFunction;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
@@ -29,10 +26,12 @@ import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
     private static final TokenSet STATEMENTS = TokenSet.create(Perl6ElementTypes.STATEMENT, Perl6ElementTypes.COMMENT,
                                                                Perl6ElementTypes.HEREDOC);
-    private static final TokenSet OPENERS = TokenSet.create(ARRAY_COMPOSER_OPEN, ARRAY_INDEX_BRACKET_OPEN, BLOCK_CURLY_BRACKET_OPEN,
-                                                            HASH_INDEX_BRACKET_OPEN, PARENTHESES_OPEN, SIGNATURE_BRACKET_OPEN);
-    private static final TokenSet CLOSERS = TokenSet.create(ARRAY_COMPOSER_CLOSE, ARRAY_INDEX_BRACKET_CLOSE, BLOCK_CURLY_BRACKET_CLOSE,
-                                                            HASH_INDEX_BRACKET_CLOSE, PARENTHESES_CLOSE, SIGNATURE_BRACKET_CLOSE);
+    private static final TokenSet OPENERS = TokenSet.create(ARRAY_COMPOSER_OPEN, ARRAY_INDEX_BRACKET_OPEN,
+                                                            HASH_INDEX_BRACKET_OPEN, PARENTHESES_OPEN, SIGNATURE_BRACKET_OPEN,
+                                                            REGEX_GROUP_BRACKET_OPEN, REGEX_CAPTURE_PARENTHESES_OPEN);
+    private static final TokenSet CLOSERS = TokenSet.create(ARRAY_COMPOSER_CLOSE, ARRAY_INDEX_BRACKET_CLOSE,
+                                                            HASH_INDEX_BRACKET_CLOSE, PARENTHESES_CLOSE, SIGNATURE_BRACKET_CLOSE,
+                                                            REGEX_GROUP_BRACKET_CLOSE, REGEX_CAPTURE_PARENTHESES_CLOSE);
     public Spacing EMPTY_SPACING;
     public Spacing SINGLE_SPACE_SPACING;
     public Spacing SINGLE_LINE_BREAK;
@@ -67,25 +66,73 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
     private void initSpacingRules(CommonCodeStyleSettings commonSettings,
                                   Perl6CodeStyleSettings customSettings,
                                   List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
+        // Nothing between statement and its ;
         rules.add((left, right) -> right.getNode().getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR ? EMPTY_SPACING : null);
+        // Nothing between statement and its absence of ;
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.UNTERMINATED_STATEMENT ? EMPTY_SPACING : null);
+
+        // Nothing inside of different types of braces, parens etc (block ones are handled in line break rules set
         rules.add((left, right) -> OPENERS.contains(left.getNode().getElementType()) ? EMPTY_SPACING : null);
         rules.add((left, right) -> CLOSERS.contains(right.getNode().getElementType()) ? EMPTY_SPACING : null);
-        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.INFIX &&
-                                   left.getNode().getText().equals(",")
-                                   ? checkNotEmpty(left.getNode().getTreeNext()) ? EMPTY_SPACING : SINGLE_SPACE_SPACING : null);
+
+        // Comma operator, a space after one if it's not a dangling one
+        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.INFIX && left.getNode().getText().equals(",")
+                                   ? isDanglingComma(left.getNode().getTreeNext()) ? EMPTY_SPACING : SINGLE_SPACE_SPACING : null);
+        // Comma operator, nothing before one
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.INFIX &&
                                    right.getNode().getText().equals(",") ? EMPTY_SPACING : null);
+
+        // Fatarrow
+        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.FATARROW ||
+                                   right.getNode().getElementType() == Perl6ElementTypes.FATARROW ? SINGLE_SPACE_SPACING : null);
+
+        // Prefix operators
+        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.PREFIX ? EMPTY_SPACING : null);
+
+        // Various infix operator related rules
         rules.add((left, right) -> {
             boolean isInfixOp =
+                left.getNode().getElementType() == Perl6TokenTypes.INFIX ||
+                right.getNode().getElementType() == Perl6TokenTypes.INFIX ||
                 left.getNode().getElementType() == Perl6ElementTypes.INFIX ||
                 right.getNode().getElementType() == Perl6ElementTypes.INFIX;
+            if (!isInfixOp) return null;
+
+            // Whatever-related expressions
+            Perl6InfixApplication app = PsiTreeUtil.getParentOfType(left.getNode().getPsi(), Perl6InfixApplication.class);
+            if (app != null && PsiTreeUtil.getChildOfType(app, Perl6Whatever.class) != null)
+                return EMPTY_SPACING;
+
+            // If it is a dot in a method call, no spacing
             boolean isDotOp = left.getNode().getText().equals(".") || right.getNode().getText().equals(".");
-            return isInfixOp && isDotOp ? EMPTY_SPACING : isInfixOp ? SINGLE_SPACE_SPACING : null;
+            return isDotOp ? EMPTY_SPACING : SINGLE_SPACE_SPACING;
         });
+
+        // Lambda rules
+        rules.add((left, right) -> left.getNode().getElementType() == Perl6TokenTypes.LAMBDA ? SINGLE_SPACE_SPACING : null);
+
+        /** Regex related ones */
+        // Regex infix
+        rules.add((left, right) -> left.getNode().getElementType() == Perl6TokenTypes.REGEX_INFIX ||
+                                   right.getNode().getElementType() == Perl6TokenTypes.REGEX_INFIX
+                                   ? SINGLE_SPACE_SPACING : null);
+
+        // Regex separator
+        rules.add((left, right) -> {
+            boolean isLeft = left.getNode().getElementType() == Perl6ElementTypes.REGEX_QUANTIFIER ||
+                             left.getNode().getElementType() == Perl6TokenTypes.REGEX_QUANTIFIER;
+            boolean isRight = right.getNode().getElementType() == Perl6ElementTypes.REGEX_QUANTIFIER ||
+                              right.getNode().getElementType() == Perl6TokenTypes.REGEX_QUANTIFIER;
+            if (!isLeft && !isRight) return null;
+            String text = isLeft ? left.getNode().getText() : right.getNode().getText();
+            return text.startsWith("**") || text.startsWith("%") || text.startsWith("%%") ? SINGLE_SPACE_SPACING : null;
+        });
+
+        // Regex quantifier
+        rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.REGEX_QUANTIFIER ? EMPTY_SPACING : null);
     }
 
-    private static boolean checkNotEmpty(ASTNode node) {
+    private static boolean isDanglingComma(ASTNode node) {
         return node != null && node.getElementType() == Perl6ElementTypes.NULL_TERM;
     }
 
