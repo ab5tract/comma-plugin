@@ -202,6 +202,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                         source instanceof Perl6PointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE)
                         return Spacing.createSpacing(1, 1, 0, true, 1);
                 }
+                if (statementCount < 2)
+                    return Spacing.createSpacing(0, 0, 1, false, 0);
             }
             return Spacing.createSpacing(0, 0, 1, true, 1);
         });
