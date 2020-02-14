@@ -69,7 +69,9 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         // Nothing between statement and its ;
         rules.add((left, right) -> right.getNode().getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR ? EMPTY_SPACING : null);
         // Nothing between statement and its absence of ;
-        rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.UNTERMINATED_STATEMENT ? EMPTY_SPACING : null);
+        rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.UNTERMINATED_STATEMENT
+                                   ? Spacing.createSpacing(0, 0, 0, false, 0)
+                                   : null);
 
         // Nothing inside of different types of braces, parens etc (block ones are handled in line break rules set
         rules.add((left, right) -> OPENERS.contains(left.getNode().getElementType()) ? EMPTY_SPACING : null);
@@ -193,15 +195,15 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                         source instanceof Perl6RegexDecl && customSettings.REGEX_DECLARATION_IN_ONE_LINE ||
                         source instanceof Perl6PointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE ||
                         source instanceof Perl6Statement && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE) {
-                        return EMPTY_SPACING;
+                        return Spacing.createSpacing(0, 0, 0, true, 1);
                     }
                 } else if (statementCount == 1) {
                     if (source instanceof Perl6Statement && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE ||
                         source instanceof Perl6PointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE)
-                        return SINGLE_SPACE_SPACING;
+                        return Spacing.createSpacing(1, 1, 0, true, 1);
                 }
             }
-            return SINGLE_LINE_BREAK;
+            return Spacing.createSpacing(0, 0, 1, true, 1);
         });
 
         rules.add((left, right) -> STATEMENTS.contains(left.getNode().getElementType())
