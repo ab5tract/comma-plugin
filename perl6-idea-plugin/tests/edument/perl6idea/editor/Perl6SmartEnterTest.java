@@ -7,19 +7,14 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.Perl6LightProjectDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
+public class Perl6SmartEnterTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
         return "perl6-idea-plugin/testData/smartEnter";
@@ -28,15 +23,12 @@ public class Perl6SmartEnterTest extends LightCodeInsightFixtureTestCase {
     public void doTest() {
         myFixture.configureByFile(getTestName(false) + ".p6");
         final List<SmartEnterProcessor> processors = SmartEnterProcessors.INSTANCE.forKey(Perl6Language.INSTANCE);
-        new WriteCommandAction(myFixture.getProject()) {
-            @Override
-            protected void run(@NotNull Result result) {
-                final Editor editor = myFixture.getEditor();
-                for (SmartEnterProcessor processor : processors) {
-                    processor.process(myFixture.getProject(), editor, myFixture.getFile());
-                }
+        WriteCommandAction.writeCommandAction(myFixture.getProject()).run(() -> {
+            final Editor editor = myFixture.getEditor();
+            for (SmartEnterProcessor processor : processors) {
+                processor.process(myFixture.getProject(), editor, myFixture.getFile());
             }
-        }.execute();
+        });
         myFixture.checkResultByFile(getTestName(false) + "_after.p6", true);
     }
 
