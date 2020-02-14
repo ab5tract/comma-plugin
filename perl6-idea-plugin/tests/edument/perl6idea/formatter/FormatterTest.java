@@ -91,7 +91,11 @@ public class FormatterTest extends CommaFixtureTestCase {
 
     public void testWrapping() {
         // literals
+        reformatTest("my @abc = 1,2,3,4,5,6;", "my @abc = 1, 2,\n          3, 4,\n          5, 6;",
+                     (s1, s2) -> s1.RIGHT_MARGIN = 16);
         // call chains
+        reformatTest("TypeFoo.a-very-long-method-call;", "TypeFoo\n        .a-very-long-method-call;",
+                     (s1, s2) -> s1.RIGHT_MARGIN = 14);
         // parameters
         // args
         // traits
