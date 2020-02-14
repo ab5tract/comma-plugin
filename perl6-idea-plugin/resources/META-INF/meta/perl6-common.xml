@@ -5,6 +5,7 @@
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
+    <postFormatProcessor implementation="edument.perl6idea.formatter.Perl6FormatPostprocessor"/>
     <fileType name="Raku Script" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ScriptFileType" fieldName="INSTANCE" extensions="p6;pl6;raku"/>
     <fileType name="Raku Module" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ModuleFileType" fieldName="INSTANCE" extensions="pm6;rakumod"/>
     <fileType name="Raku Test" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6TestFileType" fieldName="INSTANCE" extensions="t;t6;rakutest"/>
