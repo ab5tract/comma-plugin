@@ -12,6 +12,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6OPPElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
@@ -93,12 +94,14 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     @Override
     public Wrap getWrap() {
+        if (myNode.getElementType() == PARAMETER || myNode.getElementType() == Perl6ElementTypes.TRAIT)
+            return Wrap.createWrap(WrapType.NORMAL, true);
         if (myNode.getElementType() == Perl6ElementTypes.INFIX && myNode.getText().equals("."))
             return Wrap.createWrap(WrapType.NORMAL, false);
         if (myNode.getPsi() instanceof Perl6MethodCall && myNode.getText().startsWith("."))
             return Wrap.createWrap(WrapType.NORMAL, false);
         if (myNode.getTreeParent() != null && myNode.getTreeParent().getPsi() instanceof Perl6InfixApplication &&
-            myNode.getElementType() != Perl6TokenTypes.NULL_TERM && myNode.getElementType() != Perl6TokenTypes.INFIX) {
+            myNode.getElementType() != Perl6TokenTypes.NULL_TERM && myNode.getElementType() != Perl6ElementTypes.INFIX) {
             Perl6InfixApplication application = (Perl6InfixApplication)myNode.getTreeParent().getPsi();
             if (!application.getOperator().equals("."))
                 return Wrap.createWrap(WrapType.NORMAL, false);

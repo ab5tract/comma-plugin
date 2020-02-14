@@ -97,8 +97,14 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("TypeFoo.a-very-long-method-call;", "TypeFoo\n        .a-very-long-method-call;",
                      (s1, s2) -> s1.RIGHT_MARGIN = 14);
         // parameters
+        reformatTest("sub abcd($aaaaaa, $bbbbbb) {}", "sub abcd(\n        $aaaaaa,\n        $bbbbbb) {}",
+                     (s1, s2) -> s1.RIGHT_MARGIN = 14);
         // args
+        reformatTest("say 424242424242424242, True", "say\n        424242424242424242,\n        True",
+                     (s1, s2) -> s1.RIGHT_MARGIN = 14);
         // traits
+        reformatTest("class Name is trait1 is trait2 is trait3 {}", "class Name\n        is trait1\n        is trait2\n        is trait3 {}",
+                     (s1, s2) -> s1.RIGHT_MARGIN = 14);
     }
 
     public void testEnterIndentation() {
