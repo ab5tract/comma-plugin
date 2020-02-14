@@ -1,6 +1,6 @@
 /
     'prefix'
-            $<<caret>> = [ [ $<part>=[abc] ]
-                * % '-'
-                                ] 'postfix'
+    $<<caret>> = [[ $<part>=[abc] ]
+        * % '-'
+        ] 'postfix'
 /

@@ -1,1 +1,1 @@
-for 1..10 -> $n<caret>
+for 1 .. 10 -> $n<caret>
