@@ -123,6 +123,8 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("array", (s1, s2) -> s1.getIndentOptions().CONTINUATION_INDENT_SIZE = 4);
         reformatTest("trailing-comma");
         reformatTest("comments-left-intact");
+        reformatTest("contextualizers");
+        reformatTest("heredoc");
     }
 
     /* -- HELPERS -- */
