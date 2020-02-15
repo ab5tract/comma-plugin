@@ -108,6 +108,7 @@ public class FormatterTest extends CommaFixtureTestCase {
     }
 
     public void testEnterIndentation() {
+        enterTest("", "\n");
     }
 
     public void testIntegrationCases() {
@@ -134,12 +135,22 @@ public class FormatterTest extends CommaFixtureTestCase {
      */
     private void enterTest(String filename) {
         myFixture.configureByFile(filename + ".in.p6");
+        executeEnter();;
+        myFixture.checkResultByFile(filename + ".out.p6");
+    }
+
+    private void enterTest(String input, String output) {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, input);
+        executeEnter();
+        myFixture.checkResult(output);
+    }
+
+    private void executeEnter() {
         CommandProcessor.getInstance().executeCommand(getProject(), () -> {
             EditorActionManager actionManager = EditorActionManager.getInstance();
             EditorActionHandler enterHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
             enterHandler.execute(myFixture.getEditor(), null, DataManager.getInstance().getDataContextFromFocus().getResult());
         }, "", null);
-        myFixture.checkResultByFile(filename + ".out.p6");
     }
 
     /**
