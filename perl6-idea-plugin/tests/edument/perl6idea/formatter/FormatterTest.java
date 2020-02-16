@@ -113,7 +113,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         enterTest("if True {\n    say 42;<caret>\n}", "if True {\n    say 42;\n    <caret>\n}");
         enterTest("say 1 +<caret>", "say 1 +\n    <caret>");
         enterTest("sub abcd($abc,<caret>)","sub abcd($abc,\n         <caret>)");
-        //enterTest("abcd(42,<caret>)","");
+        enterTest("abcd(42,<caret>)","abcd(42,\n     )");
         enterTest("my @a = [42, 42,<caret>]", "my @a = [42, 42,\n         <caret>]");
         enterTest("my @ab = 42, 42,<caret>", "my @ab = 42, 42,\n         <caret>");
         enterTest("class AAAA is export<caret>", "class AAAA is export\n           ");

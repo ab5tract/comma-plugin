@@ -167,6 +167,13 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             if (myNode.getElementType() == PARENTHESES_CLOSE && myNode.getTreeParent().getPsi() instanceof Perl6Signature) {
                 return Indent.getSpaceIndent(1, true);
             }
+            else if (myNode.getElementType() == PARENTHESES_CLOSE && myNode.getTreeParent().getPsi() instanceof Perl6SubCall) {
+                Perl6SubCall subCall = (Perl6SubCall)myNode.getTreeParent().getPsi();
+                if (subCall.getCallArguments().length != 0) {
+                    PsiElement infix = subCall.getCallArguments()[0].getParent();
+                    return Indent.getSpaceIndent(infix instanceof Perl6InfixApplication ? infix.getStartOffsetInParent() : 0, true);
+                }
+            }
             else if (myNode.getElementType() == ARRAY_COMPOSER_CLOSE) {
                 if (myNode.getTreeParent().getPsi() instanceof Perl6ArrayComposer) {
                     PsiElement maybeSemilist = Perl6PsiUtil.skipSpaces(myNode.getTreePrev().getPsi(), false);
