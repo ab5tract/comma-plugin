@@ -10,13 +10,14 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
+import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6OPPElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +27,6 @@ import java.util.function.Function;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.*;
 import static edument.perl6idea.parsing.Perl6OPPElementTypes.INFIX_APPLICATION;
-import static edument.perl6idea.parsing.Perl6OPPElementTypes.POSTFIX_APPLICATION;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 class Perl6Block extends AbstractBlock implements BlockWithParent {
@@ -163,8 +163,23 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if (myNode.getElementType() == SEMI_LIST && (myNode.getTreeParent().getElementType() == ARRAY_COMPOSER ||
                                                      myNode.getTreeParent().getElementType() == Perl6ElementTypes.CONTEXTUALIZER))
             return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
-        if (isStatementContinuation != null && isStatementContinuation)
+        if (isStatementContinuation != null && isStatementContinuation) {
+            if (myNode.getElementType() == PARENTHESES_CLOSE && myNode.getTreeParent().getPsi() instanceof Perl6Signature) {
+                return Indent.getSpaceIndent(1, true);
+            }
+            else if (myNode.getElementType() == ARRAY_COMPOSER_CLOSE) {
+                if (myNode.getTreeParent().getPsi() instanceof Perl6ArrayComposer) {
+                    PsiElement maybeSemilist = Perl6PsiUtil.skipSpaces(myNode.getTreePrev().getPsi(), false);
+                    if (maybeSemilist instanceof Perl6SemiList) {
+                        if (maybeSemilist.getText().trim().endsWith(","))
+                            return Indent.getSpaceIndent(1, true);
+                        else
+                            return Indent.getNoneIndent();
+                    }
+                }
+            }
             return Indent.getContinuationIndent();
+        }
         return Indent.getNoneIndent();
     }
 
@@ -185,7 +200,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         } else if (startPsi.getParent() instanceof Perl6PsiDeclaration ||
                    startPsi.getParent() instanceof Perl6SubCall ||
                    startPsi.getParent() instanceof Perl6Signature ||
-                   startPsi.getParent() instanceof Perl6MethodCall) {
+                   startPsi.getParent() instanceof Perl6MethodCall ||
+                   startPsi.getParent() instanceof Perl6ArrayComposer) {
             return true;
         }
         return false;
@@ -218,26 +234,6 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         return false;
     }
 
-    @Override
-    public boolean isIncomplete() {
-        ASTNode lastChild = myNode.getLastChildNode();
-        while (true) {
-            while (lastChild != null && lastChild.getElementType() == TokenType.WHITE_SPACE) {
-                lastChild = lastChild.getTreePrev();
-            }
-            if (lastChild == null) {
-                return false;
-            } else if (lastChild.getElementType() == TokenType.ERROR_ELEMENT) {
-                return true;
-            } else if (lastChild.getElementType() == ARRAY_COMPOSER_CLOSE) {
-                ASTNode maybeSemilist = lastChild.getTreePrev();
-                return maybeSemilist.getElementType() == SEMI_LIST && maybeSemilist.getText().trim().endsWith(",");
-            } else {
-                lastChild = lastChild.getLastChildNode();
-            }
-        }
-    }
-
     @NotNull
     @Override
     public ChildAttributes getChildAttributes(int newIndex) {
@@ -245,8 +241,17 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if (elementType == REGEX_GROUP || elementType == ARRAY_COMPOSER || elementType == BLOCKOID) {
             return new ChildAttributes(Indent.getNormalIndent(), null);
         }
-        else if (elementType == SIGNATURE) {
+        else if (elementType == SIGNATURE || elementType == INFIX_APPLICATION) {
             return new ChildAttributes(Indent.getContinuationIndent(), obtainAlign(elementType));
+        }
+        else if (myNode.getPsi() instanceof Perl6PsiDeclaration) {
+            List<Block> blocks = getSubBlocks();
+            Block block = blocks.get(newIndex - 1);
+            if (block instanceof Perl6Block) {
+                if (((Perl6Block)block).getNode().getPsi() instanceof Perl6Trait) {
+                    return new ChildAttributes(Indent.getContinuationIndent(), block.getAlignment());
+                }
+            }
         }
         return new ChildAttributes(Indent.getNoneIndent(), null);
     }
@@ -255,6 +260,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if (children.size() == 0)
             return null;
         if (elementType == SIGNATURE) {
+            return children.stream().map(child -> child.getAlignment()).filter(child -> child != null).findFirst().orElse(null);
+        } else if (elementType == INFIX_APPLICATION) {
             return children.stream().map(child -> child.getAlignment()).filter(child -> child != null).findFirst().orElse(null);
         }
         return null;
