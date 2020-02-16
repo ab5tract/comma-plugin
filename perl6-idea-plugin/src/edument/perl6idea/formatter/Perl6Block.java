@@ -7,10 +7,8 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.TokenType;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
-import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.parsing.Perl6ElementTypes;
@@ -245,11 +243,29 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     @Override
     public ChildAttributes getChildAttributes(int newIndex) {
         IElementType elementType = myNode.getElementType();
-        if (elementType == REGEX_GROUP || elementType == ARRAY_COMPOSER || elementType == BLOCKOID) {
+        if (elementType == REGEX_GROUP || elementType == ARRAY_COMPOSER) {
+            return new ChildAttributes(Indent.getNormalIndent(), null);
+        }
+        else if (elementType == BLOCKOID) {
+            List<Block> subblocks;
+            Block block = getSubBlocks().get(newIndex - 1);
+            while (block != null) {
+                subblocks = block.getSubBlocks();
+                if (subblocks.size() != 0) {
+                    block = subblocks.get(subblocks.size() - 1);
+                    subblocks = block.getSubBlocks();
+                }
+                else {
+                    if (block instanceof Perl6Block && ((Perl6Block)block).getNode().getElementType() == UNTERMINATED_STATEMENT)
+                        return new ChildAttributes(Indent.getContinuationIndent(), obtainAlign((Perl6Block)block));
+                    else
+                        return new ChildAttributes(Indent.getNormalIndent(), null);
+                }
+            }
             return new ChildAttributes(Indent.getNormalIndent(), null);
         }
         else if (elementType == SIGNATURE || elementType == INFIX_APPLICATION) {
-            return new ChildAttributes(Indent.getContinuationIndent(), obtainAlign(elementType));
+            return new ChildAttributes(Indent.getContinuationIndent(), obtainAlign(this));
         }
         else if (myNode.getPsi() instanceof Perl6PsiDeclaration) {
             List<Block> blocks = getSubBlocks();
@@ -263,13 +279,21 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         return new ChildAttributes(Indent.getNoneIndent(), null);
     }
 
-    private Alignment obtainAlign(IElementType elementType) {
-        if (children.size() == 0)
-            return null;
+    private static Alignment obtainAlign(Perl6Block block) {
+        IElementType elementType = block.getNode().getElementType();
         if (elementType == SIGNATURE) {
-            return children.stream().map(child -> child.getAlignment()).filter(child -> child != null).findFirst().orElse(null);
+            return block.children.stream().map(child -> child.getAlignment()).filter(child -> child != null).findFirst().orElse(null);
         } else if (elementType == INFIX_APPLICATION) {
-            return children.stream().map(child -> child.getAlignment()).filter(child -> child != null).findFirst().orElse(null);
+            return block.children.stream().map(child -> child.getAlignment()).filter(child -> child != null).findFirst().orElse(null);
+        } else if (elementType == UNTERMINATED_STATEMENT) {
+            Perl6Block base = (Perl6Block)block.getParent();
+            List<Block> blocks = base.getSubBlocks();
+            for (int i = 0; i < blocks.size(); i++) {
+                Block temp = blocks.get(i);
+                if (temp == block) {
+                    return obtainAlign((Perl6Block)blocks.get(i - 1));
+                }
+            }
         }
         return null;
     }
