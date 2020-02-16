@@ -3,7 +3,7 @@ class Foo {
         say 42;
         sub heredoc() {
             say q:to/END/;
-                    blah blah blah
+        blah blah blah
         END
 
         }

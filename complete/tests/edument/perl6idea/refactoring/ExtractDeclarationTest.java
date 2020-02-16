@@ -99,14 +99,14 @@ public class ExtractDeclarationTest extends CommaFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>for 1..3 { 10 }</selection>;");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $bar = do for 1..3 { 10 };\n");
+        myFixture.checkResult("my $bar = do for 1 .. 3 { 10 };\n");
     }
 
     public void testGivenStatementExtraction() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>given $foo { when 1 { say 10 } }</selection>;");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $bar = do given $foo { when 1 { say 10 } };\n");
+        myFixture.checkResult("my $bar = do given $foo {\n    when 1 { say 10 }\n};\n");
     }
 
     public void testLoopStatementExtraction() {
