@@ -191,7 +191,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     private static boolean nodeInStatementContinuation(ASTNode startNode) {
         PsiElement startPsi = startNode.getPsi();
         PsiFile file = startPsi.getContainingFile();
-        if (file == null)
+        if (file == null || !file.isPhysical())
             return false;
         Document doc = file.getViewProvider().getDocument();
         if (doc == null)
