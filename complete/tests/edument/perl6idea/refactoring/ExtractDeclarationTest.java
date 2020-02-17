@@ -35,7 +35,7 @@ public class ExtractDeclarationTest extends CommaFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>(^10).roll</selection>;");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$foo");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $foo = (^10).roll;\n");
+        myFixture.checkResult("my $foo = (^10).roll;");
     }
 
     public void testStatementVariableExtractionFull() {
@@ -56,21 +56,21 @@ public class ExtractDeclarationTest extends CommaFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>if True { say 10 } else { say 'no' }   </selection>");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $bar = do if True { say 10 } else { say 'no' };\n");
+        myFixture.checkResult("my $bar = do if True { say 10 } else { say 'no' };");
     }
 
     public void testIfStatementExtraction() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>if True { say 10 } else { say 'no' }</selection>");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $bar = do if True { say 10 } else { say 'no' };\n");
+        myFixture.checkResult("my $bar = do if True { say 10 } else { say 'no' };");
     }
 
     public void testUnlessStatementExtraction() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>unless False { say 10 }</selection>");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $bar = do unless False { say 10 };\n");
+        myFixture.checkResult("my $bar = do unless False { say 10 };");
     }
 
 
@@ -99,21 +99,21 @@ public class ExtractDeclarationTest extends CommaFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>for 1..3 { 10 }</selection>;");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $bar = do for 1 .. 3 { 10 };\n");
+        myFixture.checkResult("my $bar = do for 1 .. 3 { 10 };");
     }
 
     public void testGivenStatementExtraction() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>given $foo { when 1 { say 10 } }</selection>;");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $bar = do given $foo {\n    when 1 { say 10 }\n};\n");
+        myFixture.checkResult("my $bar = do given $foo {\n    when 1 { say 10 }\n};");
     }
 
     public void testLoopStatementExtraction() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>loop (my $i = 0; $i < 10; $i++) { say $i; }</selection>");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $bar = do loop (my $i = 0; $i < 10; $i++) { say $i; };\n");
+        myFixture.checkResult("my $bar = do loop (my $i = 0; $i < 10; $i++) { say $i; };");
     }
 
     public void testWhileStatementExtraction() {
@@ -134,7 +134,7 @@ public class ExtractDeclarationTest extends CommaFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<selection>repeat { say 10 } until True</selection>");
         Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$bar");
         handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
-        myFixture.checkResult("my $bar = do repeat { say 10 } until True;\n");
+        myFixture.checkResult("my $bar = do repeat { say 10 } until True;");
     }
 
     public void testCorrectAnchorSelection() {
