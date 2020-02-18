@@ -67,7 +67,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                                   Perl6CodeStyleSettings customSettings,
                                   List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         // Nothing between statement and its ;
-        rules.add((left, right) -> right.getNode().getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR ? EMPTY_SPACING : null);
+        rules.add((left, right) -> right.getNode().getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR
+                                   ? Spacing.createSpacing(0, 0, 0, false, 0) : null);
         // Nothing between statement and its absence of ;
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.UNTERMINATED_STATEMENT
                                    ? Spacing.createSpacing(0, 0, 0, false, 0)
@@ -181,7 +182,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
             if (blockoid.getElementType() == Perl6ElementTypes.BLOCKOID) {
                 PsiElement source = PsiTreeUtil.getParentOfType(blockoid.getPsi(), Perl6PackageDecl.class,
                                                                 Perl6RoutineDecl.class, Perl6RegexDecl.class,
-                                                                Perl6PointyBlock.class, Perl6Statement.class);
+                                                                Perl6PointyBlock.class, Perl6Statement.class,
+                                                                Perl6BlockOrHash.class, edument.perl6idea.psi.Perl6Block.class);
                 Collection<PsiElement> inner = PsiTreeUtil.findChildrenOfAnyType(blockoid.getPsi(), Perl6Statement.class, Perl6Regex.class);
                 int statementCount;
                 if (inner.size() == 1 && inner.iterator().next() instanceof Perl6Regex) {
@@ -194,11 +196,11 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                         source instanceof Perl6RoutineDecl && customSettings.ROUTINES_DECLARATION_IN_ONE_LINE ||
                         source instanceof Perl6RegexDecl && customSettings.REGEX_DECLARATION_IN_ONE_LINE ||
                         source instanceof Perl6PointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE ||
-                        source instanceof Perl6Statement && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE) {
+                        (source instanceof Perl6Statement || source instanceof Perl6BlockOrHash || source instanceof edument.perl6idea.psi.Perl6Block) && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE) {
                         return Spacing.createSpacing(0, 0, 0, true, 1);
                     }
                 } else if (statementCount == 1) {
-                    if (source instanceof Perl6Statement && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE ||
+                    if ((source instanceof Perl6Statement || source instanceof Perl6BlockOrHash || source instanceof edument.perl6idea.psi.Perl6Block) && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE ||
                         source instanceof Perl6PointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE)
                         return Spacing.createSpacing(1, 1, 0, true, 1);
                 }
