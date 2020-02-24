@@ -116,16 +116,21 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         } else if (type == ARRAY_COMPOSER) {
             return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN && child.getElementType() == ARRAY_COMPOSER_CLOSE, Alignment.createAlignment());
         } else if (type == Perl6OPPElementTypes.INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof Perl6MethodCall)) {
-            if (node.getPsi() instanceof Perl6InfixApplication) {
-                if (((Perl6InfixApplication)node.getPsi()).getOperator().equals(","))
-                    return Pair.create(
-                        (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM
-                                   && child.getElementType() != INFIX_APPLICATION, Alignment.createAlignment());
-                else
-                    return Pair.create(
-                        (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM,
-                        Alignment.createAlignment());
-            }
+            if (!(node.getPsi() instanceof Perl6InfixApplication))
+                return null;
+
+            Perl6InfixApplication infixApp = (Perl6InfixApplication)node.getPsi();
+
+            if (infixApp.getOperator().equals(","))
+                return Pair.create(
+                    (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM
+                               && child.getElementType() != INFIX_APPLICATION, Alignment.createAlignment());
+            else if (infixApp.getOperator().equals("??"))
+                return null; // Do not align ?? !!, we'll just indent it
+            else
+                return Pair.create(
+                    (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM,
+                    Alignment.createAlignment());
         } else if (TRAIT_CARRIERS.contains(type)) {
             return Pair.create((child) -> child.getElementType() == Perl6ElementTypes.TRAIT, Alignment.createAlignment());
         }

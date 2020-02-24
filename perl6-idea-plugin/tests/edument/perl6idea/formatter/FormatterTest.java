@@ -38,6 +38,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("basic-class");
         reformatTest("class ABC\n  is export {}", "class ABC\n        is export {}");
         reformatTest("unit module A;\nrole Foo {}", "unit module A;\nrole Foo {}");
+        reformatTest("42\n?? 100\n!! 88;", "42\n        ?? 100\n        !! 88;");
     }
 
     public void testSpacing() {
