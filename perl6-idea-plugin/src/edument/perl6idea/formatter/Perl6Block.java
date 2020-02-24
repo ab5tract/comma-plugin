@@ -216,8 +216,10 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
         if (startPsi.getParent() instanceof Perl6InfixApplication) {
             return !checkIfNonContinuatedInitializer(startPsi);
-        } else if (startPsi.getParent() instanceof Perl6PsiDeclaration ||
-                   startPsi.getParent() instanceof Perl6SubCall ||
+        } else if (startPsi.getParent() instanceof Perl6PsiDeclaration) {
+            Perl6PsiDeclaration declaration = (Perl6PsiDeclaration)startPsi.getParent();
+            return !declaration.getScope().equals("unit");
+        } else if (startPsi.getParent() instanceof Perl6SubCall ||
                    startPsi.getParent() instanceof Perl6Signature ||
                    startPsi.getParent() instanceof Perl6MethodCall ||
                    startPsi.getParent() instanceof Perl6ArrayComposer) {
