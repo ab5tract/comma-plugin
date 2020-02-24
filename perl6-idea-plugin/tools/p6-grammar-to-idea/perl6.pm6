@@ -4107,6 +4107,7 @@ grammar MAIN {
            || '⚛=' { $*PREC = 'i=' } { $*ASSOC = 'right' }
            || 'or' { $*PREC = 'c=' } { $*ASSOC = 'left' }
            || '..' { $*PREC = 'n=' } { $*ASSOC = 'non' }
+           || '=>' { $*PREC = 'i=' } { $*ASSOC = 'right' }
            || '.' <!{ $*IN_REDUCE }> <?before [<.ws> <.alpha>]>
                   { $*PREC = 'v=' } { $*ASSOC = 'left' }
                   { $*SUB_PREC = 'z=' } { $*NEXT_TERM = 'dotty' }
