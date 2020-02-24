@@ -68,6 +68,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("[ 42, 53   ]", "[42, 53]");
         reformatTest("/( a || b ) | cbd/", "/(a || b) | cbd/");
         reformatTest("/(    \\d + )/", "/(\\d+)/");
+        reformatTest("/ [<var=.foo>] /", "/ [<var=.foo>] /");
     }
 
     public void testAlignment() {

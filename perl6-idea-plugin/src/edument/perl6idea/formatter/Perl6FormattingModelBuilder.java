@@ -32,6 +32,7 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
     private static final TokenSet CLOSERS = TokenSet.create(ARRAY_COMPOSER_CLOSE, ARRAY_INDEX_BRACKET_CLOSE,
                                                             HASH_INDEX_BRACKET_CLOSE, PARENTHESES_CLOSE, SIGNATURE_BRACKET_CLOSE,
                                                             REGEX_GROUP_BRACKET_CLOSE, REGEX_CAPTURE_PARENTHESES_CLOSE);
+    public static final Spacing CONSTANT_EMPTY_SPACING = Spacing.createSpacing(0, 0, 0, false, 0);
     public Spacing EMPTY_SPACING;
     public Spacing SINGLE_SPACE_SPACING;
     public Spacing SINGLE_LINE_BREAK;
@@ -68,10 +69,10 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                                   List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         // Nothing between statement and its ;
         rules.add((left, right) -> right.getNode().getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR
-                                   ? Spacing.createSpacing(0, 0, 0, false, 0) : null);
+                                   ? CONSTANT_EMPTY_SPACING : null);
         // Nothing between statement and its absence of ;
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.UNTERMINATED_STATEMENT
-                                   ? Spacing.createSpacing(0, 0, 0, false, 0)
+                                   ? CONSTANT_EMPTY_SPACING
                                    : null);
 
         // Nothing inside of different types of braces, parens etc (block ones are handled in line break rules set
@@ -100,6 +101,9 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                 left.getNode().getElementType() == Perl6ElementTypes.INFIX ||
                 right.getNode().getElementType() == Perl6ElementTypes.INFIX;
             if (!isInfixOp) return null;
+
+            if (!(PsiTreeUtil.getParentOfType(left.getNode().getPsi(), Perl6QuoteRegex.class, Perl6StatementList.class) instanceof Perl6StatementList))
+                return null;
 
             // Whatever-related expressions
             Perl6InfixApplication app = PsiTreeUtil.getParentOfType(left.getNode().getPsi(), Perl6InfixApplication.class);
