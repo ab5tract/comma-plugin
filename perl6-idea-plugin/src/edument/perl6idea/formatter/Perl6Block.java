@@ -121,11 +121,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
             Perl6InfixApplication infixApp = (Perl6InfixApplication)node.getPsi();
 
-            if (infixApp.getOperator().equals(","))
-                return Pair.create(
-                    (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM
-                               && child.getElementType() != INFIX_APPLICATION, Alignment.createAlignment());
-            else if (infixApp.getOperator().equals("??"))
+            if (infixApp.getOperator().equals("??"))
                 return null; // Do not align ?? !!, we'll just indent it
             else
                 return Pair.create(
