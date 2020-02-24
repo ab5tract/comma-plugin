@@ -200,6 +200,10 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if (doc.getLineNumber(startPsi.getTextOffset()) == doc.getLineNumber(startPsi.getParent().getTextOffset()))
             return false;
 
+        // Comments can be swept under other statement nodes, but they are in no way a continuation
+        if (startPsi instanceof PodPreComment || startPsi instanceof PodPostComment)
+            return false;
+
         if (startPsi.getParent() instanceof Perl6InfixApplication) {
             return !checkIfNonContinuatedInitializer(startPsi);
         } else if (startPsi.getParent() instanceof Perl6PsiDeclaration ||
