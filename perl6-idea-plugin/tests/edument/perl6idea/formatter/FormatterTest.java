@@ -139,6 +139,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("contextualizers");
         reformatTest("heredoc");
         reformatTest("comment");
+        reformatTest("escapes");
     }
 
     /* -- HELPERS -- */

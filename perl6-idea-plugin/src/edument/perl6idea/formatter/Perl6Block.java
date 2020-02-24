@@ -116,7 +116,16 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         } else if (type == ARRAY_COMPOSER) {
             return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN && child.getElementType() == ARRAY_COMPOSER_CLOSE, Alignment.createAlignment());
         } else if (type == Perl6OPPElementTypes.INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof Perl6MethodCall)) {
-            return Pair.create((child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM, Alignment.createAlignment());
+            if (node.getPsi() instanceof Perl6InfixApplication) {
+                if (((Perl6InfixApplication)node.getPsi()).getOperator().equals(","))
+                    return Pair.create(
+                        (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM
+                                   && child.getElementType() != INFIX_APPLICATION, Alignment.createAlignment());
+                else
+                    return Pair.create(
+                        (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM,
+                        Alignment.createAlignment());
+            }
         } else if (TRAIT_CARRIERS.contains(type)) {
             return Pair.create((child) -> child.getElementType() == Perl6ElementTypes.TRAIT, Alignment.createAlignment());
         }
@@ -219,6 +228,10 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     private static boolean checkIfNonContinuatedInitializer(PsiElement startPsi) {
         if (((Perl6InfixApplication)startPsi.getParent()).getOperator().equals(",")) {
+            Perl6Contextualizer contextualizer = PsiTreeUtil.getParentOfType(startPsi, Perl6Contextualizer.class);
+            if (contextualizer != null && contextualizer.getText().startsWith("%"))
+                return true;
+
             PsiElement hopefullyStatement = startPsi.getParent().getParent();
             if (hopefullyStatement instanceof Perl6Statement) {
                 PsiElement statementHolder = hopefullyStatement.getParent();
@@ -289,7 +302,14 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if (elementType == SIGNATURE) {
             return block.children.stream().map(child -> child.getAlignment()).filter(child -> child != null).findFirst().orElse(null);
         } else if (elementType == INFIX_APPLICATION) {
-            return block.children.stream().map(child -> child.getAlignment()).filter(child -> child != null).findFirst().orElse(null);
+            Perl6InfixApplication application = (Perl6InfixApplication)block.getNode().getPsi();
+            if (application.getOperator().equals("=") &&
+                application.getOperands().length == 2 &&
+                application.getOperands()[1] instanceof Perl6Infix)
+                return null;
+            else
+                return block.children.stream().map(child -> child.getAlignment()).filter(child -> child != null).findFirst()
+                    .orElse(null);
         } else if (elementType == UNTERMINATED_STATEMENT) {
             Perl6Block base = (Perl6Block)block.getParent();
             List<Block> blocks = base.getSubBlocks();
