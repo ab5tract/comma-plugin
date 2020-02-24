@@ -4,6 +4,7 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IStubFileElementType;
 import com.intellij.psi.stubs.IStubElementType;
 import edument.perl6idea.psi.stub.*;
+import edument.perl6idea.cro.template.psi.stub.*;
 
 public interface Perl6ElementTypes {
     IStubFileElementType FILE = new Perl6FileElementType();
