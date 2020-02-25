@@ -193,12 +193,7 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                                                                 Perl6BlockOrHash.class, edument.perl6idea.psi.Perl6Block.class);
                 PsiElement inner = PsiTreeUtil.getChildOfAnyType(blockoid.getPsi(), Perl6StatementList.class, Perl6Regex.class);
                 PsiElement[] children = inner == null ? PsiElement.EMPTY_ARRAY : inner.getChildren();
-                int statementCount;
-                if (children.length == 1 && children[0] instanceof Perl6Regex) {
-                    statementCount = children[0].getChildren().length;
-                } else {
-                    statementCount = children.length;
-                }
+                int statementCount = children.length;
                 if (statementCount == 0) {
                     if (source instanceof Perl6PackageDecl && customSettings.PACKAGE_DECLARATION_IN_ONE_LINE ||
                         source instanceof Perl6RoutineDecl && customSettings.ROUTINES_DECLARATION_IN_ONE_LINE ||
@@ -210,6 +205,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                 } else if (statementCount == 1) {
                     if ((source instanceof Perl6Statement || source instanceof Perl6BlockOrHash || source instanceof edument.perl6idea.psi.Perl6Block) && commonSettings.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE ||
                         source instanceof Perl6PointyBlock && customSettings.POINTY_BLOCK_IN_ONE_LINE)
+                        return Spacing.createSpacing(1, 1, 0, true, 1);
+                    if (source instanceof Perl6RegexDecl && customSettings.REGEX_DECLARATION_IN_ONE_LINE)
                         return Spacing.createSpacing(1, 1, 0, true, 1);
                 }
                 if (statementCount < 2)

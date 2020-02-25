@@ -8,7 +8,7 @@ sub a($a is cookie
          does cookie) {}
 
 token foo is cookie
-          is cookie {<?>}
+          is cookie { <?> }
 
 enum quux-to-beyond is cookie
                     does cookie <>;
