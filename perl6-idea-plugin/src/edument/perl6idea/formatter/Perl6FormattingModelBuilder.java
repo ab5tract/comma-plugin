@@ -58,10 +58,9 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         SINGLE_LINE_BREAK = Spacing.createSpacing(0, 0, 1, commonSettings.KEEP_LINE_BREAKS, commonSettings.KEEP_LINE_BREAKS ? 3 : 1);
         DOUBLE_LINE_BREAK = Spacing.createSpacing(0, 0, 2, commonSettings.KEEP_LINE_BREAKS, commonSettings.KEEP_LINE_BREAKS ? 3 : 1);
 
-        // Init actual rule sets
+        // Init spacing rule sets
         initLineBreakRules(commonSettings, customSettings, rules);
         initSpacingRules(commonSettings, customSettings, rules);
-        // XXX No wrapping rules for now
     }
 
     private void initSpacingRules(CommonCodeStyleSettings commonSettings,
@@ -192,12 +191,13 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                                                                 Perl6RoutineDecl.class, Perl6RegexDecl.class,
                                                                 Perl6PointyBlock.class, Perl6Statement.class,
                                                                 Perl6BlockOrHash.class, edument.perl6idea.psi.Perl6Block.class);
-                Collection<PsiElement> inner = PsiTreeUtil.findChildrenOfAnyType(blockoid.getPsi(), Perl6Statement.class, Perl6Regex.class);
+                PsiElement inner = PsiTreeUtil.getChildOfAnyType(blockoid.getPsi(), Perl6StatementList.class, Perl6Regex.class);
+                PsiElement[] children = inner == null ? PsiElement.EMPTY_ARRAY : inner.getChildren();
                 int statementCount;
-                if (inner.size() == 1 && inner.iterator().next() instanceof Perl6Regex) {
-                    statementCount = inner.iterator().next().getChildren().length;
+                if (children.length == 1 && children[0] instanceof Perl6Regex) {
+                    statementCount = children[0].getChildren().length;
                 } else {
-                    statementCount = inner.size();
+                    statementCount = children.length;
                 }
                 if (statementCount == 0) {
                     if (source instanceof Perl6PackageDecl && customSettings.PACKAGE_DECLARATION_IN_ONE_LINE ||
