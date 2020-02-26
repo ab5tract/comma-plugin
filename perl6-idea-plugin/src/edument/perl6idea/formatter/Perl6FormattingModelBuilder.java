@@ -104,8 +104,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
             if (!(PsiTreeUtil.getParentOfType(left.getNode().getPsi(), Perl6QuoteRegex.class, Perl6StatementList.class) instanceof Perl6StatementList))
                 return null;
 
-            // We have a fat arrow, keep them close
-            if (left.getNode().getText().equals("=") && right.getNode().getText().startsWith(">"))
+            // Keep metaop like `+=` close
+            if (left.getNode().getElementType() == Perl6ElementTypes.INFIX && right.getNode().getElementType() == METAOP)
                 return CONSTANT_EMPTY_SPACING;
 
             // Whatever-related expressions

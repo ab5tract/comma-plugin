@@ -215,11 +215,18 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if (startPsi instanceof PodPreComment || startPsi instanceof PodPostComment)
             return false;
 
+        // Traits have continuation indent
+        if (startPsi instanceof Perl6Trait)
+            return true;
+        // While infix is handled below, a special case of `my $foo = <continuation here> ...` is handled here
+        if (startPsi.getParent() instanceof Perl6VariableDecl) {
+            if (Perl6PsiUtil.skipSpaces(startPsi.getPrevSibling(), false) instanceof Perl6Infix)
+                return true;
+        }
+
+        // Now checking parents
         if (startPsi.getParent() instanceof Perl6InfixApplication) {
             return !checkIfNonContinuatedInitializer(startPsi);
-        } else if (startPsi.getParent() instanceof Perl6PsiDeclaration) {
-            Perl6PsiDeclaration declaration = (Perl6PsiDeclaration)startPsi.getParent();
-            return !declaration.getScope().equals("unit");
         } else if (startPsi.getParent() instanceof Perl6SubCall ||
                    startPsi.getParent() instanceof Perl6Signature ||
                    startPsi.getParent() instanceof Perl6MethodCall ||

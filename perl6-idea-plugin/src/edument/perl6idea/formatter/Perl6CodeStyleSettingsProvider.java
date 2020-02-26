@@ -84,7 +84,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                 // Hard wrap at, wrap on typing
                 "RIGHT_MARGIN", "WRAP_ON_TYPING",
                 // keeping lines
-                "KEEP_LINE_BREAKS", "KEEP_FIRST_COLUMN_COMMENT",
+                "KEEP_LINE_BREAKS",
                 "KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE", "KEEP_SIMPLE_BLOCKS_IN_ONE_LINE"
             );
             consumer.showCustomOption(
@@ -106,23 +106,23 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
             consumer.showCustomOption(
                 Perl6CodeStyleSettings.class,
                 "PACKAGE_DECL_BRACE_STYLE", "In package declaration",
-                "Braces placement", CodeStyleSettingsCustomizable.BRACE_PLACEMENT_OPTIONS, CodeStyleSettingsCustomizable.BRACE_PLACEMENT_VALUES);
+                "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
             consumer.showCustomOption(
                 Perl6CodeStyleSettings.class,
                 "ROUTINE_DECL_BRACE_STYLE", "In routine declaration",
-                "Braces placement", CodeStyleSettingsCustomizable.BRACE_PLACEMENT_OPTIONS, CodeStyleSettingsCustomizable.BRACE_PLACEMENT_VALUES);
+                "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
             consumer.showCustomOption(
                 Perl6CodeStyleSettings.class,
                 "REGEX_DECL_BRACE_STYLE", "In regex declaration",
-                "Braces placement", CodeStyleSettingsCustomizable.BRACE_PLACEMENT_OPTIONS, CodeStyleSettingsCustomizable.BRACE_PLACEMENT_VALUES);
+                "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
             consumer.showCustomOption(
                 Perl6CodeStyleSettings.class,
                 "PHASER_BRACE_STYLE", "In phasers",
-                "Braces placement", CodeStyleSettingsCustomizable.BRACE_PLACEMENT_OPTIONS, CodeStyleSettingsCustomizable.BRACE_PLACEMENT_VALUES);
+                "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
             consumer.showCustomOption(
                 Perl6CodeStyleSettings.class,
                 "OTHER_BRACE_STYLE", "Other",
-                "Braces placement", CodeStyleSettingsCustomizable.BRACE_PLACEMENT_OPTIONS, CodeStyleSettingsCustomizable.BRACE_PLACEMENT_VALUES);
+                "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
         }
     }
 

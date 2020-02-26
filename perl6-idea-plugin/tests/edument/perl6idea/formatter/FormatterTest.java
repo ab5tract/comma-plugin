@@ -72,6 +72,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("/(    \\d + )/", "/(\\d+)/");
         reformatTest("/ [<var=.foo>] /", "/ [<var=.foo>] /");
         reformatTest("token foo { \\d \\w }", "token foo {\n    \\d \\w\n}");
+        reformatTest("42 += 15", "42 += 15");
     }
 
     public void testAlignment() {
@@ -146,6 +147,41 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("call-staircase");
     }
 
+    public void testSettingsApplication() {
+        // Indentation tab
+        reformatTest("indentation");
+        reformatTest("indentation-reverse", (common, custom) -> {
+            CommonCodeStyleSettings.IndentOptions indentOptions = common.getIndentOptions();
+            indentOptions.INDENT_SIZE = 3;
+            indentOptions.CONTINUATION_INDENT_SIZE = 4;
+        });
+        reformatTest("indentation-tab", (common, custom) -> {
+            CommonCodeStyleSettings.IndentOptions indentOptions = common.getIndentOptions();
+            indentOptions.TAB_SIZE = 5;
+            indentOptions.USE_TAB_CHARACTER = true;
+        });
+        // Braces and Wrapping tab
+        reformatTest("braces");
+        reformatTest("braces-reverse", (common, custom) -> {
+            common.KEEP_LINE_BREAKS = !common.KEEP_LINE_BREAKS;
+            common.KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE = !common.KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE;
+            common.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE = !common.KEEP_SIMPLE_BLOCKS_IN_ONE_LINE;
+            custom.ROUTINES_DECLARATION_IN_ONE_LINE = !custom.ROUTINES_DECLARATION_IN_ONE_LINE;
+            custom.REGEX_DECLARATION_IN_ONE_LINE = !custom.REGEX_DECLARATION_IN_ONE_LINE;
+            custom.PACKAGE_DECLARATION_IN_ONE_LINE = !custom.PACKAGE_DECLARATION_IN_ONE_LINE;
+            custom.POINTY_BLOCK_IN_ONE_LINE = !custom.POINTY_BLOCK_IN_ONE_LINE;
+        });
+        reformatTest("braces-style", (common, custom) -> {
+            custom.PACKAGE_DECL_BRACE_STYLE = custom.ROUTINE_DECL_BRACE_STYLE = custom.REGEX_DECL_BRACE_STYLE =
+            custom.PHASER_BRACE_STYLE = custom.OTHER_BRACE_STYLE = 2;
+        });
+        // TODO Spacing tab
+        //reformatTest("spacing");
+        //reformatTest("spacing-reverse", (common, custom) -> {
+        //    // CUSTOM SPACING SETTINGS
+        //});
+    }
+
     /* -- HELPERS -- */
 
     /**
@@ -191,7 +227,7 @@ public class FormatterTest extends CommaFixtureTestCase {
     private void reformatTest(String filename, BiConsumer<CommonCodeStyleSettings, Perl6CodeStyleSettings> config) {
         myFixture.configureByFiles(filename + ".in.p6");
         reformat(config);
-        myFixture.checkResultByFile(filename + ".out.p6");
+        myFixture.checkResultByFile(filename + ".out.p6", true);
     }
 
     private void reformat(BiConsumer<CommonCodeStyleSettings, Perl6CodeStyleSettings> config) {
