@@ -95,8 +95,6 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     public Wrap getWrap() {
         if (myNode.getElementType() == PARAMETER || myNode.getElementType() == Perl6ElementTypes.TRAIT)
             return Wrap.createWrap(WrapType.NORMAL, true);
-        if (myNode.getElementType() == Perl6ElementTypes.INFIX && myNode.getText().equals("."))
-            return Wrap.createWrap(WrapType.NORMAL, false);
         if (myNode.getPsi() instanceof Perl6MethodCall && myNode.getText().startsWith("."))
             return Wrap.createWrap(WrapType.NORMAL, false);
         if (myNode.getTreeParent() != null && myNode.getTreeParent().getPsi() instanceof Perl6InfixApplication &&
