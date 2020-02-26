@@ -153,30 +153,30 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         // Brace style for package
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.BLOCKOID &&
                                    right.getNode().getTreeParent().getElementType() == Perl6ElementTypes.PACKAGE_DECLARATION
-                                   ? (BraceStyle.fromInt(customSettings.PACKAGE_DECL_BRACE_STYLE) == BraceStyle.EndOfLine
+                                   ? (customSettings.PACKAGE_DECL_BRACE_STYLE == 1
                                       ? SINGLE_SPACE_SPACING : SINGLE_LINE_BREAK)
                                    : null);
 
         // Brace style for routine
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.BLOCKOID &&
                                    right.getNode().getTreeParent().getElementType() == Perl6ElementTypes.ROUTINE_DECLARATION
-                                   ? (BraceStyle.fromInt(customSettings.ROUTINE_DECL_BRACE_STYLE) == BraceStyle.EndOfLine
+                                   ? (customSettings.ROUTINE_DECL_BRACE_STYLE == 1
                                       ? SINGLE_SPACE_SPACING : SINGLE_LINE_BREAK)
                                    : null);
 
         // Brace style for regex
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.BLOCKOID &&
                                    right.getNode().getTreeParent().getElementType() == Perl6ElementTypes.REGEX_DECLARATION
-                                   ? (BraceStyle.fromInt(customSettings.REGEX_DECL_BRACE_STYLE) == BraceStyle.EndOfLine
+                                   ? (customSettings.REGEX_DECL_BRACE_STYLE == 1
                                       ? SINGLE_SPACE_SPACING : SINGLE_LINE_BREAK)
                                    : null);
 
         // Brace style for phasers and everything else
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.BLOCK
                ? (right.getNode().getTreeParent().getElementType() == Perl6ElementTypes.PHASER
-                  ? (BraceStyle.fromInt(customSettings.PHASER_BRACE_STYLE) == BraceStyle.EndOfLine
-                     ? SINGLE_SPACE_SPACING : SINGLE_LINE_BREAK)
-                  : (BraceStyle.fromInt(customSettings.OTHER_BRACE_STYLE) == BraceStyle.EndOfLine
+                  ? (customSettings.PHASER_BRACE_STYLE == 1
+                    ? SINGLE_SPACE_SPACING : SINGLE_LINE_BREAK)
+                  : (customSettings.OTHER_BRACE_STYLE == 1
                      ? SINGLE_SPACE_SPACING : SINGLE_LINE_BREAK))
                : null);
 

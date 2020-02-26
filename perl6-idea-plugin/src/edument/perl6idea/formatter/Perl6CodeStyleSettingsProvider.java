@@ -55,14 +55,35 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                 "        \\w \\w \\w \\w\n" +
                                                 "    }\n" +
                                                 "}";
+    private static final String SPACING_SAMPLE = "my @a = 1, 2, 3, n => 42;\n" +
+                                                 "\n" +
+                                                 "my $bind := 'bind';\n" +
+                                                 "\n" +
+                                                 "1 + 2 * 3 / 4;\n" +
+                                                 "\n" +
+                                                 "@a.grep(* ~~ Int).grep(*.is-prime);\n" +
+                                                 "\n" +
+                                                 "for @a -> $item {\n" +
+                                                 "    $item.Str ~~ / (a & b) | <[c d* e ** 42]> /\n" +
+                                                 "}\n" +
+                                                 "\n" +
+                                                 "say $bind.comb(2);\n" +
+                                                 "\n" +
+                                                 "my $array = [1, 2];\n" +
+                                                 "my $hash = {:a, :b};\n";
 
     @Nullable
     @Override
     public String getCodeSample(@NotNull SettingsType settingsType) {
-        if (settingsType == SettingsType.INDENT_SETTINGS)
+        if (settingsType == SettingsType.INDENT_SETTINGS) {
             return INDENT_SAMPLE;
-        if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS)
+        }
+        if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS) {
             return BRACES_SAMPLE;
+        }
+        if (settingsType == SettingsType.SPACING_SETTINGS) {
+            return SPACING_SAMPLE;
+        }
         return "";
     }
 
@@ -81,49 +102,77 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
     public void customizeSettings(@NotNull CodeStyleSettingsCustomizable consumer, @NotNull SettingsType settingsType) {
         if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS) {
             consumer.showStandardOptions(
-                // Hard wrap at, wrap on typing
-                "RIGHT_MARGIN", "WRAP_ON_TYPING",
-                // keeping lines
-                "KEEP_LINE_BREAKS",
-                "KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE", "KEEP_SIMPLE_BLOCKS_IN_ONE_LINE"
+                "RIGHT_MARGIN", "WRAP_ON_TYPING", "KEEP_LINE_BREAKS", "KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE",
+                "KEEP_SIMPLE_BLOCKS_IN_ONE_LINE"
             );
-            consumer.showCustomOption(
-                Perl6CodeStyleSettings.class,
-                "ROUTINES_DECLARATION_IN_ONE_LINE", "Routine declaration in one line",
-                CodeStyleSettingsCustomizable.WRAPPING_KEEP);
-            consumer.showCustomOption(
-                Perl6CodeStyleSettings.class,
-                "REGEX_DECLARATION_IN_ONE_LINE", "Regex declaration in one line",
-                CodeStyleSettingsCustomizable.WRAPPING_KEEP);
-            consumer.showCustomOption(
-                Perl6CodeStyleSettings.class,
-                "PACKAGE_DECLARATION_IN_ONE_LINE", "Package declaration in one line",
-                CodeStyleSettingsCustomizable.WRAPPING_KEEP);
-            consumer.showCustomOption(
-                Perl6CodeStyleSettings.class,
-                "POINTY_BLOCK_IN_ONE_LINE", "Pointy block in one line",
-                CodeStyleSettingsCustomizable.WRAPPING_KEEP);
-            consumer.showCustomOption(
-                Perl6CodeStyleSettings.class,
-                "PACKAGE_DECL_BRACE_STYLE", "In package declaration",
-                "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
-            consumer.showCustomOption(
-                Perl6CodeStyleSettings.class,
-                "ROUTINE_DECL_BRACE_STYLE", "In routine declaration",
-                "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
-            consumer.showCustomOption(
-                Perl6CodeStyleSettings.class,
-                "REGEX_DECL_BRACE_STYLE", "In regex declaration",
-                "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
-            consumer.showCustomOption(
-                Perl6CodeStyleSettings.class,
-                "PHASER_BRACE_STYLE", "In phasers",
-                "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
-            consumer.showCustomOption(
-                Perl6CodeStyleSettings.class,
-                "OTHER_BRACE_STYLE", "Other",
-                "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
+            addKeeping(consumer, "ROUTINES_DECLARATION_IN_ONE_LINE", "Routine declaration in one line");
+            addKeeping(consumer, "ROUTINES_DECLARATION_IN_ONE_LINE", "Routine declaration in one line");
+            addKeeping(consumer, "REGEX_DECLARATION_IN_ONE_LINE", "Regex declaration in one line");
+            addKeeping(consumer, "PACKAGE_DECLARATION_IN_ONE_LINE", "Package declaration in one line");
+            addKeeping(consumer, "POINTY_BLOCK_IN_ONE_LINE", "Pointy block in one line");
+            addBracing(consumer, "PACKAGE_DECL_BRACE_STYLE", "In package declaration");
+            addBracing(consumer, "ROUTINE_DECL_BRACE_STYLE", "In routine declaration");
+            addBracing(consumer, "REGEX_DECL_BRACE_STYLE", "In regex declaration");
+            addBracing(consumer, "PHASER_BRACE_STYLE", "In phasers");
+            addBracing(consumer, "OTHER_BRACE_STYLE", "Other");
+            addWrapRelated(consumer, "PARAMETER_WRAP", "Wrap", "Parameter list");
+            addWrapRelated(consumer, "PARAMETER_ALIGNMENT", "Align", "Parameter list");
+            addWrapRelated(consumer, "TRAIT_WRAP", "Wrap", "Traits");
+            addWrapRelated(consumer, "TRAIT_ALIGNMENT", "Align", "Traits");
+            addWrapRelated(consumer, "CALL_ARGUMENTS_WRAP", "Wrap", "Call arguments");
+            addWrapRelated(consumer, "CALL_ARGUMENTS_ALIGNMENT", "Align", "Call arguments");
+            addWrapRelated(consumer, "ARRAY_ELEMENTS_WRAP", "Wrap", "Array initializer");
+            addWrapRelated(consumer, "ARRAY_ELEMENTS_ALIGNMENT", "Align", "Array initializer");
+            addWrapRelated(consumer, "METHOD_CALL_WRAP", "Wrap method calls", "Other");
+            addWrapRelated(consumer, "INFIX_APPLICATION_WRAP", "Wrap infix operands", "Other");
         }
+        else if (settingsType == SettingsType.SPACING_SETTINGS) {
+            addSpacing(consumer, "BEFORE_COMMA", "Before comma", "Other");
+            addSpacing(consumer, "AFTER_COMMA", "After comma", "Other");
+            addSpacing(consumer, "BEFORE_FATARROW", "Before fatarrow", "Other");
+            addSpacing(consumer, "AFTER_FATARROW", "After fatarrow", "Other");
+            addSpacing(consumer, "AFTER_LAMBDA", "After lambda", "Other");
+
+            addSpacing(consumer, "BEFORE_ASSIGNMENT", "Before assign/bind (=, :=)", "Operators");
+            addSpacing(consumer, "AFTER_ASSIGNMENT", "After assign/bind (=, :=)", "Operators");
+            addSpacing(consumer, "BEFORE_INFIX", "Before infix", "Operators");
+            addSpacing(consumer, "AFTER_INFIX", "After infix", "Operators");
+            addSpacing(consumer, "BEFORE_WHATEVER_STAR", "Left of whenever star", "Operators");
+            addSpacing(consumer, "AFTER_WHATEVER_STAR", "Right of whenever star", "Operators");
+            addSpacing(consumer, "AFTER_PREFIX_OPS", "After prefix operator", "Operators");
+
+            addSpacing(consumer, "BEFORE_REGEX_INFIX_SPACING", "Before infix (&&, ||)", "Regex");
+            addSpacing(consumer, "AFTER_REGEX_INFIX_SPACING", "After infix (&&, ||)", "Regex");
+            addSpacing(consumer, "BEFORE_REGEX_QUANTIFIER_SPACING", "Before quantifier (+, *, ?)", "Regex");
+            addSpacing(consumer, "AFTER_REGEX_QUANTIFIER_SPACING", "After quantifier (+, *, ?)", "Regex");
+            addSpacing(consumer, "BEFORE_REGEX_SEPARATOR_SPACING", "Before separator (**)", "Regex");
+            addSpacing(consumer, "AFTER_REGEX_SEPARATOR_SPACING", "After separator (**)", "Regex");
+
+            addSpacing(consumer, "CALL_PARENS_SPACING", "Call", "In-parentheses");
+            addSpacing(consumer, "GROUPING_PARENS_SPACING", "Grouping", "In-parentheses");
+            addSpacing(consumer, "ARRAY_LITERAL_PARENS_SPACING", "Array/List literal", "In-parentheses");
+            addSpacing(consumer, "HASH_LITERAL_PARENS_SPACING", "Hash literal", "In-parentheses");
+            addSpacing(consumer, "REGEX_GROUP_PARENS_SPACING", "Regex group", "In-parentheses");
+            addSpacing(consumer, "REGEX_POSITIONAL_PARENS_SPACING", "Regex capture", "In-parentheses");
+        }
+    }
+
+    private static void addSpacing(CodeStyleSettingsCustomizable consumer, String fieldName, String title, String groupName) {
+        consumer.showCustomOption(Perl6CodeStyleSettings.class, fieldName, title, groupName);
+    }
+
+    private static void addBracing(CodeStyleSettingsCustomizable consumer, String fieldName, String title) {
+        consumer.showCustomOption(
+            Perl6CodeStyleSettings.class, fieldName, title,
+            "Braces placement", Perl6CodeStyleSettings.BRACE_PLACEMENT_OPTIONS, Perl6CodeStyleSettings.BRACE_PLACEMENT_VALUES);
+    }
+
+    private static void addKeeping(CodeStyleSettingsCustomizable consumer, String fieldName, String title) {
+        consumer.showCustomOption(Perl6CodeStyleSettings.class, fieldName, title, "Keep when reformatting");
+    }
+
+    private static void addWrapRelated(CodeStyleSettingsCustomizable consumer, String fieldName, String title, String groupName) {
+        consumer.showCustomOption(Perl6CodeStyleSettings.class, fieldName, title, groupName);
     }
 
     @Nullable
