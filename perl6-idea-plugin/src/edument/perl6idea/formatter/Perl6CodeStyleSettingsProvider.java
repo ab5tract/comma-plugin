@@ -58,7 +58,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                "  }\n" +
                                                "}\n" +
                                                "\n" +
-                                               "Foo.a-very-long-method-name(424242).a-very-long-method-name(42424242);\n" +
+                                               "Foo.a-very-long-method-name(4242,4242).a-very-long-method-name(42424242);\n" +
                                                "\n" +
                                                "my $abc = [12341234, 12342134, 12342134];";
     private static final String SPACING_SAMPLE = "my @a = 1, 2, 3, n => 42;\n" +
