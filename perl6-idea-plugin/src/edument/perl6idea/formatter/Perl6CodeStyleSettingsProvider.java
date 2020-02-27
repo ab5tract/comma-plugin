@@ -59,17 +59,17 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                  "\n" +
                                                  "my $bind := 'bind';\n" +
                                                  "\n" +
-                                                 "1 + 2 * 3 / 4;\n" +
+                                                 "1 + (2 * 3) / 4;\n" +
                                                  "\n" +
                                                  "@a.grep(* ~~ Int).grep(*.is-prime);\n" +
                                                  "\n" +
                                                  "for @a -> $item {\n" +
-                                                 "    $item.Str ~~ / (a & b) | <[c d* e ** 42]> /\n" +
+                                                 "    $item.Str ~~ / (a && b) || <[c d* e ** 42]> /\n" +
                                                  "}\n" +
                                                  "\n" +
                                                  "say $bind.comb(2);\n" +
                                                  "\n" +
-                                                 "my $array = [1, 2];\n" +
+                                                 "my $array = [1, !True];\n" +
                                                  "my $hash = {:a, :b};\n";
 
     @Nullable
@@ -141,8 +141,8 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
             addSpacing(consumer, "AFTER_WHATEVER_STAR", "Right of whenever star", "Operators");
             addSpacing(consumer, "AFTER_PREFIX_OPS", "After prefix operator", "Operators");
 
-            addSpacing(consumer, "BEFORE_REGEX_INFIX_SPACING", "Before infix (&&, ||)", "Regex");
-            addSpacing(consumer, "AFTER_REGEX_INFIX_SPACING", "After infix (&&, ||)", "Regex");
+            addSpacing(consumer, "BEFORE_REGEX_INFIX_SPACING", "Before infix (||)", "Regex");
+            addSpacing(consumer, "AFTER_REGEX_INFIX_SPACING", "After infix (||)", "Regex");
             addSpacing(consumer, "BEFORE_REGEX_QUANTIFIER_SPACING", "Before quantifier (+, *, ?)", "Regex");
             addSpacing(consumer, "AFTER_REGEX_QUANTIFIER_SPACING", "After quantifier (+, *, ?)", "Regex");
             addSpacing(consumer, "BEFORE_REGEX_SEPARATOR_SPACING", "Before separator (**)", "Regex");
@@ -151,7 +151,6 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
             addSpacing(consumer, "CALL_PARENS_SPACING", "Call", "In-parentheses");
             addSpacing(consumer, "GROUPING_PARENS_SPACING", "Grouping", "In-parentheses");
             addSpacing(consumer, "ARRAY_LITERAL_PARENS_SPACING", "Array/List literal", "In-parentheses");
-            addSpacing(consumer, "HASH_LITERAL_PARENS_SPACING", "Hash literal", "In-parentheses");
             addSpacing(consumer, "REGEX_GROUP_PARENS_SPACING", "Regex group", "In-parentheses");
             addSpacing(consumer, "REGEX_POSITIONAL_PARENS_SPACING", "Regex capture", "In-parentheses");
         }

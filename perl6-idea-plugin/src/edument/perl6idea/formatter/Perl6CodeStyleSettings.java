@@ -45,7 +45,6 @@ public class Perl6CodeStyleSettings extends CustomCodeStyleSettings {
     public boolean CALL_PARENS_SPACING = false;
     public boolean GROUPING_PARENS_SPACING = false;
     public boolean ARRAY_LITERAL_PARENS_SPACING = false;
-    public boolean HASH_LITERAL_PARENS_SPACING = true;
     public boolean REGEX_GROUP_PARENS_SPACING = false;
     public boolean REGEX_POSITIONAL_PARENS_SPACING = false;
 

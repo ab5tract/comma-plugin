@@ -53,7 +53,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         // Non-word infix operators
         reformatTest("42+632    + 23 +1+ 53;", "42 + 632 + 23 + 1 + 53;");
         // Infix in whatever star
-        reformatTest("say *   +   3", "say *+3");
+        reformatTest("say *   +   3", "say *+ 3");
         // Non-word prefix operators
         reformatTest("!  42 eq !55", "!42 eq !55");
         // Lambda
@@ -61,7 +61,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         // Regex infix; TODO & and &&
         reformatTest("/a|d||e/", "/a | d || e/");
         // Regex quantifier
-        //reformatTest("/4 * 3  ?/", "/4* 3?/");
+        reformatTest("/4 * 3  ?/", "/4* 3?/");
         // Regex separator
         reformatTest("/ ^ [\\w+] ** 1%',' $ /", "/ ^ [\\w+] ** 1 % ',' $ /");
         // Spacing withing different types of parentheses and brackets
@@ -175,11 +175,32 @@ public class FormatterTest extends CommaFixtureTestCase {
             custom.PACKAGE_DECL_BRACE_STYLE = custom.ROUTINE_DECL_BRACE_STYLE = custom.REGEX_DECL_BRACE_STYLE =
             custom.PHASER_BRACE_STYLE = custom.OTHER_BRACE_STYLE = 2;
         });
-        // TODO Spacing tab
-        //reformatTest("spacing");
-        //reformatTest("spacing-reverse", (common, custom) -> {
-        //    // CUSTOM SPACING SETTINGS
-        //});
+        reformatTest("spacing");
+        reformatTest("spacing-reverse", (common, custom) -> {
+            custom.BEFORE_COMMA = !custom.BEFORE_COMMA;
+            custom.AFTER_COMMA = !custom.AFTER_COMMA;
+            custom.BEFORE_FATARROW = !custom.BEFORE_FATARROW;
+            custom.AFTER_FATARROW = !custom.AFTER_FATARROW;
+            custom.BEFORE_ASSIGNMENT = !custom.BEFORE_ASSIGNMENT;
+            custom.AFTER_ASSIGNMENT = !custom.AFTER_ASSIGNMENT;
+            custom.BEFORE_INFIX = !custom.BEFORE_INFIX;
+            custom.AFTER_INFIX = !custom.AFTER_INFIX;
+            custom.BEFORE_WHATEVER_STAR = !custom.BEFORE_WHATEVER_STAR;
+            custom.AFTER_WHATEVER_STAR = !custom.AFTER_WHATEVER_STAR;
+            custom.AFTER_PREFIX_OPS = !custom.AFTER_PREFIX_OPS;
+            custom.AFTER_LAMBDA = !custom.AFTER_LAMBDA;
+            custom.BEFORE_REGEX_INFIX_SPACING = !custom.BEFORE_REGEX_INFIX_SPACING;
+            custom.AFTER_REGEX_INFIX_SPACING = !custom.AFTER_REGEX_INFIX_SPACING;
+            custom.BEFORE_REGEX_QUANTIFIER_SPACING = !custom.BEFORE_REGEX_QUANTIFIER_SPACING;
+            custom.AFTER_REGEX_QUANTIFIER_SPACING = !custom.AFTER_REGEX_QUANTIFIER_SPACING;
+            custom.BEFORE_REGEX_SEPARATOR_SPACING = !custom.BEFORE_REGEX_SEPARATOR_SPACING;
+            custom.AFTER_REGEX_SEPARATOR_SPACING = !custom.AFTER_REGEX_SEPARATOR_SPACING;
+            custom.CALL_PARENS_SPACING = !custom.CALL_PARENS_SPACING;
+            custom.GROUPING_PARENS_SPACING = !custom.GROUPING_PARENS_SPACING;
+            custom.ARRAY_LITERAL_PARENS_SPACING = !custom.ARRAY_LITERAL_PARENS_SPACING;
+            custom.REGEX_GROUP_PARENS_SPACING = !custom.REGEX_GROUP_PARENS_SPACING;
+            custom.REGEX_POSITIONAL_PARENS_SPACING = !custom.REGEX_POSITIONAL_PARENS_SPACING;
+        });
     }
 
     /* -- HELPERS -- */

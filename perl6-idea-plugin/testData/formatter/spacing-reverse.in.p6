@@ -13,4 +13,4 @@ for @a -> $item {
 say $bind.comb(2);
 
 my $array = [1, !True];
-my $hash = {:a, :b};
+my $hash = { :a, :b };
