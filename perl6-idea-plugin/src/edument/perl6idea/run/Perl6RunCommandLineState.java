@@ -9,8 +9,10 @@ import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.sun.javafx.PlatformUtil;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
+import edument.perl6idea.utils.Perl6ScriptRunner;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -46,11 +48,17 @@ public class Perl6RunCommandLineState extends CommandLineState {
         checkSdk();
         populateRunCommand();
         setScript();
-        Perl6CommandLine cmd;
+        GeneralCommandLine cmd;
         if (isDebug) {
-            cmd = new Perl6CommandLine(getEnvironment().getProject(), runConfiguration.getDebugPort());
+            if (PlatformUtil.isWindows())
+                cmd = new Perl6CommandLine(getEnvironment().getProject(), runConfiguration.getDebugPort());
+            else
+                cmd = new Perl6ScriptRunner(getEnvironment().getProject(), runConfiguration.getDebugPort());
         } else {
-            cmd = new Perl6CommandLine(getEnvironment().getProject());
+            if (PlatformUtil.isWindows())
+                cmd = new Perl6CommandLine(getEnvironment().getProject());
+            else
+                cmd = new Perl6ScriptRunner(getEnvironment().getProject());
         }
         cmd.setWorkDirectory(runConfiguration.getWorkingDirectory());
         cmd.addParameters(command);

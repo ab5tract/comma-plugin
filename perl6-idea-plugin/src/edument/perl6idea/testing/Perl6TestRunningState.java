@@ -26,6 +26,7 @@ import com.intellij.openapi.util.Disposer;
 import edument.perl6idea.run.Perl6DebuggableConfiguration;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
+import edument.perl6idea.utils.Perl6ScriptRunner;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,13 +73,13 @@ public class Perl6TestRunningState extends CommandLineState {
 
     protected GeneralCommandLine createCommandLine() throws ExecutionException {
         Project project = getEnvironment().getProject();
-        Perl6CommandLine cmd;
+        Perl6ScriptRunner cmd;
 
         if (isDebugging) {
             Perl6DebuggableConfiguration runConf = ((Perl6DebuggableConfiguration)getEnvironment().getRunProfile());
-            cmd = new Perl6CommandLine(project, runConf.getDebugPort());
+            cmd = new Perl6ScriptRunner(project, runConf.getDebugPort());
         } else {
-            cmd = new Perl6CommandLine(project);
+            cmd = new Perl6ScriptRunner(project);
         }
         File script = Perl6Utils.getResourceAsFile("testing/perl6-test-harness.p6");
         if (script == null) throw new ExecutionException("Bundled resources are corrupted");
