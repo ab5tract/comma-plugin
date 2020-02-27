@@ -201,6 +201,33 @@ public class FormatterTest extends CommaFixtureTestCase {
             custom.REGEX_GROUP_PARENS_SPACING = !custom.REGEX_GROUP_PARENS_SPACING;
             custom.REGEX_POSITIONAL_PARENS_SPACING = !custom.REGEX_POSITIONAL_PARENS_SPACING;
         });
+        // Alignment
+        reformatTest("align", (common, custom) -> {
+            common.RIGHT_MARGIN = 20;
+        });
+        reformatTest("align-wrap", (common, custom) -> {
+            common.RIGHT_MARGIN = 20;
+            // Wrap
+            custom.PARAMETER_WRAP = !custom.PARAMETER_WRAP;
+            custom.TRAIT_WRAP = !custom.TRAIT_WRAP;
+            custom.CALL_ARGUMENTS_WRAP = !custom.CALL_ARGUMENTS_WRAP;
+            custom.ARRAY_ELEMENTS_WRAP = !custom.ARRAY_ELEMENTS_WRAP;
+            custom.METHOD_CALL_WRAP = !custom.METHOD_CALL_WRAP;
+            custom.INFIX_APPLICATION_WRAP = !custom.INFIX_APPLICATION_WRAP;
+            // Align
+            custom.PARAMETER_ALIGNMENT = !custom.PARAMETER_ALIGNMENT;
+            custom.TRAIT_ALIGNMENT = !custom.TRAIT_ALIGNMENT;
+            custom.CALL_ARGUMENTS_ALIGNMENT = !custom.CALL_ARGUMENTS_ALIGNMENT;
+            custom.ARRAY_ELEMENTS_ALIGNMENT = !custom.ARRAY_ELEMENTS_ALIGNMENT;
+        });
+        reformatTest("align-reverse", (common, custom) -> {
+            common.RIGHT_MARGIN = 26;
+            // Align
+            custom.PARAMETER_ALIGNMENT = !custom.PARAMETER_ALIGNMENT;
+            custom.TRAIT_ALIGNMENT = !custom.TRAIT_ALIGNMENT;
+            custom.CALL_ARGUMENTS_ALIGNMENT = !custom.CALL_ARGUMENTS_ALIGNMENT;
+            custom.ARRAY_ELEMENTS_ALIGNMENT = !custom.ARRAY_ELEMENTS_ALIGNMENT;
+        });
     }
 
     /* -- HELPERS -- */

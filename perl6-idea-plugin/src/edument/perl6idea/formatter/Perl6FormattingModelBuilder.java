@@ -1,6 +1,5 @@
 package edument.perl6idea.formatter;
 
-import com.intellij.formatting.BraceStyle;
 import com.intellij.formatting.FormattingModel;
 import com.intellij.formatting.FormattingModelBuilder;
 import com.intellij.formatting.Spacing;
@@ -41,14 +40,15 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
     public FormattingModel createModel(@NotNull PsiElement element, @NotNull CodeStyleSettings settings) {
         final PsiFile psiFile = element.getContainingFile();
         List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules = new ArrayList<>();
-        initRules(settings, rules);
-        final Perl6Block block = new Perl6Block(psiFile.getNode(), null, null, settings, rules);
+        CommonCodeStyleSettings commonSettings = settings.getCommonSettings(Perl6Language.INSTANCE);
+        Perl6CodeStyleSettings customSettings = settings.getCustomSettings(Perl6CodeStyleSettings.class);
+        initRules(rules, commonSettings, customSettings);
+        final Perl6Block block = new Perl6Block(psiFile.getNode(), null, null, commonSettings, customSettings, rules);
         return new DocumentBasedFormattingModel(block, element.getProject(), settings, psiFile.getFileType(), psiFile);
     }
 
-    private void initRules(CodeStyleSettings settings, List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
-        CommonCodeStyleSettings commonSettings = settings.getCommonSettings(Perl6Language.INSTANCE);
-        Perl6CodeStyleSettings customSettings = settings.getCustomSettings(Perl6CodeStyleSettings.class);
+    private void initRules(List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules,
+                           CommonCodeStyleSettings commonSettings, Perl6CodeStyleSettings customSettings) {
 
         // Prepare fast constants for common cases
         EMPTY_SPACING = Spacing.createSpacing(0, 0, 0, commonSettings.KEEP_LINE_BREAKS, commonSettings.KEEP_LINE_BREAKS ? 3 : 1);

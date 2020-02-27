@@ -30,11 +30,11 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                 "    " +
                                                 "    # OUTPUT: «A1B1A1A2»\n" +
                                                 "}\n";
-    private static final String BRACES_SAMPLE = "say 1 +\n" +
-                                                "        41;\n" +
+    private static final String BRACES_SAMPLE = "say 12341234123412341234 + 1234123412342;\n" +
+                                                "   \n" +
                                                 "\n" +
                                                 "class Foo {\n" +
-                                                "    method foo {\n" +
+                                                "    method foo($aaa1, $aaa1, $aaa1) {\n" +
                                                 "        if True { say \"One-liner\" }\n" +
                                                 "        else {}\n" +
                                                 "\n" +
@@ -43,7 +43,9 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                 "        }\n" +
                                                 "    }\n" +
                                                 "\n" +
-                                                "    method answer { -> {} }\n" +
+                                                "    method answer is copy is copy is copy {\n" +
+                                                "        -> {}\n" +
+                                                "    }\n" +
                                                 "    method empty {}\n" +
                                                 "\n" +
                                                 "    class Empty {}\n" +
@@ -54,23 +56,42 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                 "    token long {\n" +
                                                 "        \\w \\w \\w \\w\n" +
                                                 "    }\n" +
-                                                "}";
-    private static final String SPACING_SAMPLE = "my @a = 1, 2, 3, n => 42;\n" +
+                                                "}\n" +
+                                                "\n" +
+                                                "Foo.a-very-long-method-name(424242).a-very-long-method-name(42424242);\n" +
+                                                "\n" +
+                                                "my $abc = [12341234, 12342134, 12342134];";
+    private static final String SPACING_SAMPLE = "say 123412341234 + 1234123412342;\n" +
                                                  "\n" +
-                                                 "my $bind := 'bind';\n" +
                                                  "\n" +
-                                                 "1 + (2 * 3) / 4;\n" +
+                                                 "class Foo {\n" +
+                                                 "  method foo($aaa1, $aaa1, $aaa1) {\n" +
+                                                 "    if True { say \"One-liner\" }\n" +
+                                                 "    else {}\n" +
                                                  "\n" +
-                                                 "@a.grep(* ~~ Int).grep(*.is-prime);\n" +
+                                                 "    for ^42 {\n" +
+                                                 "      LAST { say \"LAST\" }\n" +
+                                                 "    }\n" +
+                                                 "  }\n" +
                                                  "\n" +
-                                                 "for @a -> $item {\n" +
-                                                 "    $item.Str ~~ / (a && b) || <[c d* e ** 42]> /\n" +
+                                                 "  method answer is copy is copy is copy {\n" +
+                                                 "    -> {}\n" +
+                                                 "  }\n" +
+                                                 "  method empty {}\n" +
+                                                 "\n" +
+                                                 "  class Empty {}\n" +
                                                  "}\n" +
                                                  "\n" +
-                                                 "say $bind.comb(2);\n" +
+                                                 "grammar Bar {\n" +
+                                                 "  token a {}\n" +
+                                                 "  token long {\n" +
+                                                 "    \\w \\w \\w \\w\n" +
+                                                 "  }\n" +
+                                                 "}\n" +
                                                  "\n" +
-                                                 "my $array = [1, !True];\n" +
-                                                 "my $hash = {:a, :b};\n";
+                                                 "Foo.a-very-long-method-name(424242).a-very-long-method-name(42424242);\n" +
+                                                 "\n" +
+                                                 "my $abc = [12341234, 12342134, 12342134];";
 
     @Nullable
     @Override

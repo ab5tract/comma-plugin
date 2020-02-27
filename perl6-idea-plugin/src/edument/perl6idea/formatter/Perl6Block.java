@@ -7,7 +7,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
@@ -35,7 +35,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         PARAMETER, REGEX_DECLARATION, ENUM, SUBSET, CONSTANT
     );
     private final List<BiFunction<Perl6Block, Perl6Block, Spacing>> myRules;
-    private final CodeStyleSettings mySettings;
+    private final CommonCodeStyleSettings myCommonSettings;
+    private final Perl6CodeStyleSettings myCustomSettings;
     private BlockWithParent myParent;
     private Boolean isStatementContinuation;
 
@@ -48,20 +49,22 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     Perl6Block(ASTNode node,
                Wrap wrap,
                Alignment align,
-               CodeStyleSettings settings,
+               CommonCodeStyleSettings commonSettings, Perl6CodeStyleSettings customSettings,
                List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         super(node, wrap, align);
         myRules = rules;
-        mySettings = settings;
+        myCommonSettings = commonSettings;
+        myCustomSettings = customSettings;
         this.isStatementContinuation = false;
     }
 
     private Perl6Block(ASTNode node, Wrap wrap, Alignment align, Boolean isStatementContinuation,
-                       CodeStyleSettings settings,
+                       CommonCodeStyleSettings commonSettings, Perl6CodeStyleSettings customSettings,
                        List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         super(node, wrap, align);
         myRules = rules;
-        mySettings = settings;
+        myCommonSettings = commonSettings;
+        myCustomSettings = customSettings;
         this.isStatementContinuation = isStatementContinuation;
     }
 
@@ -84,7 +87,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             else if (nodeInStatementContinuation(child))
                 childIsStatementContinuation = true;
             Alignment align = alignFunction == null ? null : alignFunction.first.apply(child) ? alignFunction.second : null;
-            childBlock = new Perl6Block(child, null, align, childIsStatementContinuation, mySettings, myRules);
+            childBlock = new Perl6Block(child, null, align, childIsStatementContinuation, myCommonSettings, myCustomSettings, myRules);
             childBlock.setParent(this);
             children.add(childBlock);
         }
@@ -93,25 +96,36 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     @Override
     public Wrap getWrap() {
-        if (myNode.getElementType() == PARAMETER || myNode.getElementType() == Perl6ElementTypes.TRAIT)
+        if (myNode.getElementType() == PARAMETER && myCustomSettings.PARAMETER_WRAP) {
             return Wrap.createWrap(WrapType.NORMAL, true);
-        if (myNode.getPsi() instanceof Perl6MethodCall && myNode.getText().startsWith("."))
+        }
+        if (myNode.getElementType() == Perl6ElementTypes.TRAIT && myCustomSettings.TRAIT_WRAP) {
+            return Wrap.createWrap(WrapType.NORMAL, true);
+        }
+        if (myNode.getPsi() instanceof Perl6MethodCall && myNode.getText().startsWith(".") && myCustomSettings.METHOD_CALL_WRAP)
             return Wrap.createWrap(WrapType.NORMAL, false);
         if (myNode.getTreeParent() != null && myNode.getTreeParent().getPsi() instanceof Perl6InfixApplication &&
             myNode.getElementType() != Perl6TokenTypes.NULL_TERM && myNode.getElementType() != Perl6ElementTypes.INFIX) {
             Perl6InfixApplication application = (Perl6InfixApplication)myNode.getTreeParent().getPsi();
-            if (!application.getOperator().equals("."))
+            PsiElement parent = PsiTreeUtil.getParentOfType(application, Perl6SubCall.class, Perl6MethodCall.class,
+                                                            Perl6ArrayComposer.class, Perl6VariableDecl.class);
+            if (application.getOperator().equals(",") && (parent instanceof Perl6SubCall || parent instanceof Perl6MethodCall))
+                return myCustomSettings.CALL_ARGUMENTS_WRAP ? Wrap.createWrap(WrapType.NORMAL, false) : null;
+            if (application.getOperator().equals(",") && (parent instanceof Perl6SubCall || parent instanceof Perl6MethodCall) &&
+                parent instanceof Perl6ArrayComposer || parent instanceof Perl6VariableDecl)
+                return myCustomSettings.ARRAY_ELEMENTS_WRAP ? Wrap.createWrap(WrapType.NORMAL, false) : null;
+            if (!application.getOperator().equals(".") && myCustomSettings.INFIX_APPLICATION_WRAP)
                 return Wrap.createWrap(WrapType.NORMAL, false);
         }
         return null;
     }
 
     @Nullable
-    private static Pair<Function<ASTNode, Boolean>, Alignment> calculateAlignment(ASTNode node) {
+    private Pair<Function<ASTNode, Boolean>, Alignment> calculateAlignment(ASTNode node) {
         IElementType type = node.getElementType();
-        if (type == SIGNATURE) {
+        if (type == SIGNATURE && myCustomSettings.PARAMETER_ALIGNMENT) {
             return Pair.create((child) -> child.getElementType() == PARAMETER, Alignment.createAlignment());
-        } else if (type == ARRAY_COMPOSER) {
+        } else if (type == ARRAY_COMPOSER && myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT) {
             return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN && child.getElementType() == ARRAY_COMPOSER_CLOSE, Alignment.createAlignment());
         } else if (type == Perl6OPPElementTypes.INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof Perl6MethodCall)) {
             if (!(node.getPsi() instanceof Perl6InfixApplication))
@@ -125,7 +139,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
                 return Pair.create(
                     (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM,
                     Alignment.createAlignment());
-        } else if (TRAIT_CARRIERS.contains(type)) {
+        } else if (TRAIT_CARRIERS.contains(type) && myCustomSettings.TRAIT_ALIGNMENT) {
             return Pair.create((child) -> child.getElementType() == Perl6ElementTypes.TRAIT, Alignment.createAlignment());
         }
         return null;

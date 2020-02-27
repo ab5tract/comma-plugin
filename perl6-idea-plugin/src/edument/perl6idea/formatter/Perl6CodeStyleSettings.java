@@ -54,7 +54,7 @@ public class Perl6CodeStyleSettings extends CustomCodeStyleSettings {
     public boolean CALL_ARGUMENTS_WRAP = true;
     public boolean ARRAY_ELEMENTS_WRAP = true;
     public boolean METHOD_CALL_WRAP = true;
-    public boolean INFIX_APPLICATION_WRAP = true;
+    public boolean INFIX_APPLICATION_WRAP = false;
 
     // Alignment
     public boolean PARAMETER_ALIGNMENT = true;
