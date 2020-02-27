@@ -148,7 +148,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
             }
 
             // Keep metaop like `+=` close
-            if (left.getNode().getElementType() == Perl6ElementTypes.INFIX && right.getNode().getElementType() == METAOP) {
+            if (left.getNode().getElementType() == Perl6ElementTypes.INFIX && right.getNode().getElementType() == METAOP ||
+                right.getNode().getElementType() == Perl6ElementTypes.INFIX && left.getNode().getElementType() == METAOP) {
                 return CONSTANT_EMPTY_SPACING;
             }
 
