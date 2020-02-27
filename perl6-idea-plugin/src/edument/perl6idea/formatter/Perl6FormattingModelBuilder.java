@@ -142,7 +142,7 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
             if (!isLeftInfix && !isRightInfix) return null;
 
             // Don't play with regexes, they have separate rules
-            if (!(PsiTreeUtil.getParentOfType(left.getNode().getPsi(), Perl6QuoteRegex.class,
+            if (!(PsiTreeUtil.getParentOfType(left.getNode().getPsi(), Perl6QuoteRegex.class, Perl6RegexDecl.class,
                                               Perl6StatementList.class) instanceof Perl6StatementList)) {
                 return null;
             }
