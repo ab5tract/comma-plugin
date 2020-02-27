@@ -61,6 +61,7 @@ public class Perl6CodeStyleSettings extends CustomCodeStyleSettings {
     public boolean TRAIT_ALIGNMENT = true;
     public boolean CALL_ARGUMENTS_ALIGNMENT = false;
     public boolean ARRAY_ELEMENTS_ALIGNMENT = true;
+    public boolean INFIX_APPLICATION_ALIGNMENT = false;
 
     public Perl6CodeStyleSettings(CodeStyleSettings container) {
         super(Perl6Language.INSTANCE.getID(), container);

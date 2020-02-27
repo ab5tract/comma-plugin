@@ -9,7 +9,7 @@ sub foobar($one,
         B: while $y++ < 2 {
             $t ~= "B$y";
             redo A if $y++ ==
-                      1;
+                    1;
             last A
         }
     }

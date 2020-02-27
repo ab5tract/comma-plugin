@@ -1,5 +1,5 @@
 say 1 +
-    41;
+        41;
 
 class Foo
 {

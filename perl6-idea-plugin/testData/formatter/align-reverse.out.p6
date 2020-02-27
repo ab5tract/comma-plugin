@@ -34,4 +34,4 @@ Foo
         .a-very-long-method-name(424242)
         .a-very-long-method-name(42424242);
 
-my $abc = [12341234, 12342134, 12342134];
+my $abc = [12341234, 12342134, 12342134, 12341234];

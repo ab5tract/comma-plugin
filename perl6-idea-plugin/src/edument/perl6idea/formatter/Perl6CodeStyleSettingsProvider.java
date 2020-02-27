@@ -15,7 +15,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                 "        $two,\n" +
                                                 "        $three) {\n" +
                                                 "    my $x = 0;\n" +
-                                                "    my $y = 0;\n" +
+                                                "    my $y = 0;\n    \n" +
                                                 "    my $t = '';\n" +
                                                 "    A: while $x++ < 2 {\n" +
                                                 "        $t ~= \"A$x\";\n" +
@@ -58,7 +58,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
                                                 "    }\n" +
                                                 "}\n" +
                                                 "\n" +
-                                                "Foo.a-very-long-method-name(424242).a-very-long-method-name(42424242);\n" +
+                                                "Foo.a-very-long-method-name(4242,4242,4242,4242).a-very-long-method-name(42424242);\n" +
                                                 "\n" +
                                                 "my $abc = [12341234, 12342134, 12342134];";
     private static final String SPACING_SAMPLE = "say 123412341234 + 1234123412342;\n" +
@@ -123,10 +123,8 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
     public void customizeSettings(@NotNull CodeStyleSettingsCustomizable consumer, @NotNull SettingsType settingsType) {
         if (settingsType == SettingsType.WRAPPING_AND_BRACES_SETTINGS) {
             consumer.showStandardOptions(
-                "RIGHT_MARGIN", "WRAP_ON_TYPING", "KEEP_LINE_BREAKS", "KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE",
-                "KEEP_SIMPLE_BLOCKS_IN_ONE_LINE"
+                "RIGHT_MARGIN", "WRAP_ON_TYPING", "KEEP_LINE_BREAKS", "KEEP_SIMPLE_BLOCKS_IN_ONE_LINE"
             );
-            addKeeping(consumer, "ROUTINES_DECLARATION_IN_ONE_LINE", "Routine declaration in one line");
             addKeeping(consumer, "ROUTINES_DECLARATION_IN_ONE_LINE", "Routine declaration in one line");
             addKeeping(consumer, "REGEX_DECLARATION_IN_ONE_LINE", "Regex declaration in one line");
             addKeeping(consumer, "PACKAGE_DECLARATION_IN_ONE_LINE", "Package declaration in one line");
@@ -144,8 +142,9 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
             addWrapRelated(consumer, "CALL_ARGUMENTS_ALIGNMENT", "Align", "Call arguments");
             addWrapRelated(consumer, "ARRAY_ELEMENTS_WRAP", "Wrap", "Array initializer");
             addWrapRelated(consumer, "ARRAY_ELEMENTS_ALIGNMENT", "Align", "Array initializer");
-            addWrapRelated(consumer, "METHOD_CALL_WRAP", "Wrap method calls", "Other");
             addWrapRelated(consumer, "INFIX_APPLICATION_WRAP", "Wrap infix operands", "Other");
+            addWrapRelated(consumer, "INFIX_APPLICATION_ALIGNMENT", "Align infix operands", "Other");
+            addWrapRelated(consumer, "METHOD_CALL_WRAP", "Wrap method calls", "Other");
         }
         else if (settingsType == SettingsType.SPACING_SETTINGS) {
             addSpacing(consumer, "BEFORE_COMMA", "Before comma", "Other");

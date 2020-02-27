@@ -77,8 +77,8 @@ public class FormatterTest extends CommaFixtureTestCase {
 
     public void testAlignment() {
         // Expressions
-        reformatTest("say 1 +\n4;", "say 1 +\n    4;");
-        reformatTest("foobaz 1 +\n4;", "foobaz 1 +\n       4;");
+        reformatTest("say 1 +\n4;", "say 1 +\n        4;");
+        reformatTest("foobaz 1 +\n4;", "foobaz 1 +\n        4;");
         // Array, hash literals
         reformatTest("my @ab = 12,2333,3,4,\n5,6,7;", "my @ab = 12, 2333, 3, 4,\n         5, 6, 7;");
         // TODO when we have a better processing of this literal
@@ -89,7 +89,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("traits");
         // parameters, calls
         reformatTest("sub foobar($first-one,\n$second-one) {}", "sub foobar($first-one,\n           $second-one) {}");
-        reformatTest("push 42,\n42", "push 42,\n     42");
+        reformatTest("push 42,\n42", "push 42,\n        42");
         // call chains
         reformatTest("Foo\n.method(42)\n.method2(24)", "Foo\n        .method(42)\n        .method2(24)");
     }
@@ -116,14 +116,14 @@ public class FormatterTest extends CommaFixtureTestCase {
         enterTest("", "\n");
         enterTest("if True {<caret>\n}", "if True {\n    <caret>\n}");
         enterTest("if True {\n    say 42;<caret>\n}", "if True {\n    say 42;\n    <caret>\n}");
-        enterTest("say 1 +<caret>", "say 1 +\n    <caret>");
+        enterTest("say 1 +<caret>", "say 1 +\n        <caret>");
         enterTest("sub abcd($abc,<caret>)","sub abcd($abc,\n         <caret>)");
         enterTest("abcd(42,<caret>)","abcd(42,\n     <caret>)");
         enterTest("my @a = [42, 42,<caret>]", "my @a = [42, 42,\n         <caret>]");
         enterTest("my @ab = 42, 42,<caret>", "my @ab = 42, 42,\n         <caret>");
         enterTest("class AAAA is export<caret>", "class AAAA is export\n           <caret>");
         // With block indent
-        enterTest("if True {\n    say 42,<caret>\n    say 42;\n}", "if True {\n    say 42,\n        <caret>\n    say 42;\n}");
+        enterTest("if True {\n    say 42,<caret>\n    say 42;\n}", "if True {\n    say 42,\n            <caret>\n    say 42;\n}");
         enterTest("if True {\n    say 42,<caret>\n}", "if True {\n    say 42,\n        <caret>\n}");
     }
 

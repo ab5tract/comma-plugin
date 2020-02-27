@@ -135,7 +135,25 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
             if (infixApp.getOperator().equals("??"))
                 return null; // Do not align ?? !!, we'll just indent it
-            else
+
+            if (infixApp.getOperator().equals(",")) {
+                // If we have a comma separated list, there can be two cases: non-literal array init or signature
+                // check those cases, otherwise just do as infix guides us
+                PsiElement origin = PsiTreeUtil.getParentOfType(infixApp, Perl6VariableDecl.class, P6CodeBlockCall.class, Perl6ArrayComposer.class, Perl6Statement.class);
+                // This case is handled by another option
+                if (origin instanceof Perl6ArrayComposer)
+                    return null;
+                if (origin instanceof P6CodeBlockCall)
+                    return myCustomSettings.CALL_ARGUMENTS_ALIGNMENT ? Pair.create(
+                    (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM,
+                    Alignment.createAlignment()) : null;
+                if (origin instanceof Perl6VariableDecl)
+                    return myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT ? Pair.create(
+                    (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM,
+                    Alignment.createAlignment()) : null;
+            }
+
+            if (myCustomSettings.INFIX_APPLICATION_ALIGNMENT)
                 return Pair.create(
                     (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM,
                     Alignment.createAlignment());
@@ -272,7 +290,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
                 else if (statementHolder instanceof Perl6SemiList) {
                     // Might be an array literal.
                     if (statementHolder.getParent() instanceof Perl6ArrayComposer)
-                        return true;
+                        return false;
                 }
             }
         }
