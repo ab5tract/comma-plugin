@@ -73,6 +73,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("/ [<var=.foo>] /", "/ [<var=.foo>] /");
         reformatTest("token foo { \\d \\w }", "token foo {\n    \\d \\w\n}");
         reformatTest("42 += 15", "42 += 15");
+        reformatTest("foobarcall(\na => 42,\nb => 50);", "foobarcall(\n        a => 42,\n        b => 50);");
     }
 
     public void testAlignment() {

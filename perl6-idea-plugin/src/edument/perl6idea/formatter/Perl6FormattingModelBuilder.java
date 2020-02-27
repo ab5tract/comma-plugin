@@ -77,8 +77,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
             if (left.getNode().getElementType() == PARENTHESES_OPEN || right.getNode().getElementType() == PARENTHESES_CLOSE) {
                 PsiElement parent = left.getNode().getTreeParent().getPsi();
                 if (parent instanceof Perl6SubCall || parent instanceof Perl6MethodCall)
-                    return customSettings.CALL_PARENS_SPACING ? SINGLE_SPACE_SPACING : CONSTANT_EMPTY_SPACING;
-                return customSettings.GROUPING_PARENS_SPACING ? SINGLE_SPACE_SPACING : CONSTANT_EMPTY_SPACING;
+                    return customSettings.CALL_PARENS_SPACING ? SINGLE_SPACE_SPACING : EMPTY_SPACING;
+                return customSettings.GROUPING_PARENS_SPACING ? SINGLE_SPACE_SPACING : EMPTY_SPACING;
             }
             return null;
         });
