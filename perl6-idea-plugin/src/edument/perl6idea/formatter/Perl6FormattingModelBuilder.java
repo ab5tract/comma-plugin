@@ -114,7 +114,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                                        : customSettings.AFTER_COMMA ? SINGLE_SPACE_SPACING : CONSTANT_EMPTY_SPACING)) : null);
         // Comma operator, nothing before one
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.INFIX &&
-                                   right.getNode().getText().equals(",") ? EMPTY_SPACING : null);
+                                   right.getNode().getText().equals(",")
+                                   ? (customSettings.BEFORE_COMMA ? SINGLE_SPACE_SPACING : CONSTANT_EMPTY_SPACING) : null);
 
         // Fatarrow
         rules.add((left, right) -> {

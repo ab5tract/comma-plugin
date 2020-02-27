@@ -1,4 +1,4 @@
-my @a=1,2,3,n=>42;
+my @a=1 ,2 ,3 ,n=>42;
 
 my $bind:='bind';
 
@@ -12,5 +12,5 @@ for @a ->$item {
 
 say $bind.comb( 2 );
 
-my $array=[ 1,! True ];
-my $hash={ :a,:b };
+my $array=[ 1 ,! True ];
+my $hash={ :a ,:b };
