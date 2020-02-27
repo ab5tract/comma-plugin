@@ -579,7 +579,8 @@ for CORE::.keys -> $_ {
     when /^"&"<:Ll>/ | '&EVAL' {
         @EXTERNAL_COMMA_ELEMS.push: pack-variable($_, CORE::{$_}, |%( :d($_) with %CORE-DOCS<ops>{$_} ) );
         if ($_.starts-with('&')) {
-            @EXTERNAL_COMMA_ELEMS.push: pack-code($_, $_.multi ?? 1 !! 0, :!is-method) for CORE::{$_}.candidates;
+            my $name = .substr(1);
+            @EXTERNAL_COMMA_ELEMS.push: pack-code($_, $_.multi ?? 1 !! 0, $name, :!is-method) for CORE::{$_}.candidates;
         }
     }
     # Collect all types.

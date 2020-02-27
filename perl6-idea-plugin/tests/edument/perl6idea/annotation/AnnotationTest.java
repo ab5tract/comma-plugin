@@ -84,6 +84,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testDeclaredAliasedCoreSubAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = [1,2], [3,4]; cross(@a)");
+        myFixture.checkHighlighting();
+    }
+
     public void testInfixBracketedInVariableIsNotConsideredUndeclared() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my &add = &[+];");
         myFixture.checkHighlighting();
