@@ -325,6 +325,9 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         else if (elementType == SIGNATURE || elementType == INFIX_APPLICATION) {
             return new ChildAttributes(Indent.getContinuationIndent(), obtainAlign(this));
         }
+        else if (elementType == METHOD_CALL) {
+            return new ChildAttributes(Indent.getContinuationIndent(), null);
+        }
         else if (myNode.getPsi() instanceof Perl6PsiDeclaration) {
             List<Block> blocks = getSubBlocks();
             Block block = blocks.get(newIndex - 1);

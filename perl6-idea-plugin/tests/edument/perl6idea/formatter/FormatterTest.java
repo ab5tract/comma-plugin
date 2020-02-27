@@ -125,6 +125,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         // With block indent
         enterTest("if True {\n    say 42,<caret>\n    say 42;\n}", "if True {\n    say 42,\n            <caret>\n    say 42;\n}");
         enterTest("if True {\n    say 42,<caret>\n}", "if True {\n    say 42,\n        <caret>\n}");
+        enterTest("Int.foo:<caret>", "Int.foo:\n        <caret>");
     }
 
     public void testIntegrationCases() {
