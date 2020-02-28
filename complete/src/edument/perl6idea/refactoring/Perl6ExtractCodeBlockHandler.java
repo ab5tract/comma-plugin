@@ -592,17 +592,18 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     }
 
     protected void replaceStatementsWithCall(Project project, NewCodeBlockData data, PsiElement parentScope, PsiElement[] elements) {
-        Perl6Statement call;
+        PsiElement call = null;
         if (data.type == Perl6CodeBlockType.ROUTINE) {
             call = CompletePerl6ElementFactory.createSubCall(parentScope.getProject(), data);
         } else {
             call = CompletePerl6ElementFactory.createMethodCall(parentScope.getProject(), data);
         }
 
+        PsiElement finalCall = call;
         WriteCommandAction.runWriteCommandAction(project, () -> {
             PsiElement closestParent = elements[0].getParent();
             // Insert a call
-            closestParent.addBefore(call, elements[elements.length - 1].getNextSibling());
+            closestParent.addBefore(finalCall, elements[elements.length - 1].getNextSibling());
             // Delete present statements
             closestParent.deleteChildRange(elements[0], elements[elements.length - 1]);
         });

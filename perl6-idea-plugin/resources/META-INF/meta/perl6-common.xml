@@ -5,6 +5,7 @@
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
+    <postFormatProcessor implementation="edument.perl6idea.formatter.Perl6FormatPostprocessor"/>
     <fileType name="Raku Script" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ScriptFileType" fieldName="INSTANCE" extensions="p6;pl6;raku"/>
     <fileType name="Raku Module" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ModuleFileType" fieldName="INSTANCE" extensions="pm6;rakumod"/>
     <fileType name="Raku Test" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6TestFileType" fieldName="INSTANCE" extensions="t;t6;rakutest"/>
@@ -18,6 +19,7 @@
     <lang.parserDefinition language="Perl6" implementationClass="edument.perl6idea.parsing.Perl6ParserDefinition"/>
     <colorSettingsPage implementation="edument.perl6idea.highlighter.Perl6ColorSettingsPage"/>
     <lang.formatter language="Perl6" implementationClass="edument.perl6idea.formatter.Perl6FormattingModelBuilder"/>
+    <langCodeStyleSettingsProvider implementation="edument.perl6idea.formatter.Perl6CodeStyleSettingsProvider"/>
     <lang.braceMatcher language="Perl6" implementationClass="edument.perl6idea.editor.Perl6BraceMatcher"/>
     <lang.psiStructureViewFactory language="Perl6" implementationClass="edument.perl6idea.structureView.Perl6StructureViewFactory"/>
     <declarationRangeHandler key="edument.perl6idea.psi.Perl6PackageDecl"

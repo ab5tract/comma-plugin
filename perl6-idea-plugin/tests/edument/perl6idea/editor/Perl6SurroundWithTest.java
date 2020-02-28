@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.psi.PsiElement;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.surrountWith.descriptors.Perl6RegexGroupSurrounder;
@@ -18,13 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class Perl6SurroundWithTest extends LightCodeInsightFixtureTestCase {
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
+public class Perl6SurroundWithTest extends CommaFixtureTestCase {
     @NotNull
     @Override
     protected String getTestDataPath() {
@@ -138,18 +133,18 @@ public class Perl6SurroundWithTest extends LightCodeInsightFixtureTestCase {
     private void doTest(Surrounder surrounder) {
         myFixture.configureByFile(getTestName(true) + "Before.p6");
         List<SurroundDescriptor> descriptors = LanguageSurrounders.INSTANCE.allForLanguage(Perl6Language.INSTANCE);
-        SelectionModel selectionModel = getEditor().getSelectionModel();
+        SelectionModel selectionModel = myFixture.getEditor().getSelectionModel();
         PsiElement[] elements = null;
         for (SurroundDescriptor descriptor : descriptors) {
             elements = descriptor.getElementsToSurround(
-                getFile(), selectionModel.getSelectionStart(), selectionModel.getSelectionEnd());
+                myFixture.getFile(), selectionModel.getSelectionStart(), selectionModel.getSelectionEnd());
             if (elements.length > 0)
                 break;
         }
         assertNotNull(elements);
         assertFalse(elements.length == 0);
         assertTrue(surrounder.isApplicable(elements));
-        SurroundWithHandler.invoke(getProject(), getEditor(), getFile(), surrounder);
+        SurroundWithHandler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), surrounder);
         myFixture.checkResultByFile(getTestName(true) + ".p6");
     }
 }

@@ -1,1 +1,1 @@
-/[\d+ 'file' ]{$*A = True}/
+/[\d+ 'file']{$*A = True}/

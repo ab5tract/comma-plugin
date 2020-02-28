@@ -1,6 +1,6 @@
 try {
     my $long-lines = q:to/END/;
-    HEREDOC
+HEREDOC
 END
 
     CATCH {

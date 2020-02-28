@@ -5,8 +5,12 @@ import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.*;
 
 public class CompletePerl6ElementFactory extends Perl6ElementFactory {
-    public static Perl6Statement createSubCall(Project project, NewCodeBlockData data) {
-        return produceElement(project, getSubCallText(data), Perl6Statement.class);
+    public static PsiElement createSubCall(Project project, NewCodeBlockData data) {
+        if (data.containsExpression) {
+            return produceElement(project, getSubCallText(data), Perl6SubCall.class);
+        } else {
+            return produceElement(project, getSubCallText(data), Perl6Statement.class);
+        }
     }
 
     private static String getSubCallText(NewCodeBlockData data) {
@@ -16,8 +20,12 @@ public class CompletePerl6ElementFactory extends Perl6ElementFactory {
                              data.containsExpression ? "" : ";");
     }
 
-    public static Perl6Statement createMethodCall(Project project, NewCodeBlockData data) {
-        return produceElement(project, getMethodCallText(data), Perl6Statement.class);
+    public static PsiElement createMethodCall(Project project, NewCodeBlockData data) {
+        if (data.containsExpression) {
+            return produceElement(project, getMethodCallText(data), Perl6MethodCall.class);
+        } else {
+            return produceElement(project, getMethodCallText(data), Perl6Statement.class);
+        }
     }
 
     private static String getMethodCallText(NewCodeBlockData data) {

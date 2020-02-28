@@ -101,10 +101,9 @@ public class Perl6InlineRoutineProcessor extends Perl6InlineProcessor {
 
             PsiElement replacement = createReplacement(myProject, usageElement, blockNodes, myRoutine);
 
-            usageElement.getWholeCallNode().replace(replacement.copy());
-
+            PsiElement newStatement = usageElement.getWholeCallNode().replace(replacement.copy());
             PsiDocumentManager.getInstance(myProject).doPostponedOperationsAndUnblockDocument(myEditor.getDocument());
-            CodeStyleManager.getInstance(myProject).reformat(replacement);
+            CodeStyleManager.getInstance(myProject).reformat(newStatement);
         }
 
         PsiDocumentManager.getInstance(myProject).commitAllDocuments();

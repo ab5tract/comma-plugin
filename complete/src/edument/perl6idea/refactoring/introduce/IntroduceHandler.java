@@ -242,8 +242,14 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     protected static void removeLeftoverStatement(IntroduceOperation operation) {
         PsiElement initializer = operation.getInitializer();
         Perl6Statement statement = PsiTreeUtil.getParentOfType(initializer, Perl6Statement.class, false);
-        if (statement != null)
-            WriteCommandAction.writeCommandAction(operation.getProject()).run(() -> statement.delete());
+        if (statement != null) {
+            WriteCommandAction.writeCommandAction(operation.getProject()).run(() -> {
+                if (statement.getPrevSibling() instanceof PsiWhiteSpace) {
+                    statement.getPrevSibling().delete();
+                }
+                statement.delete();
+            });
+        }
     }
 
     private static PsiElement findOccurrenceUnderCaret(List<PsiElement> occurrences, Editor editor) {
@@ -266,13 +272,12 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     private PsiElement performReplace(PsiElement declaration, IntroduceOperation operation) {
         PsiElement expression = operation.getInitializer();
         Project project = operation.getProject();
-        return WriteCommandAction.writeCommandAction(project, expression.getContainingFile()).compute(() -> {
+        return WriteCommandAction.writeCommandAction(project).compute(() -> {
             try {
                     RefactoringEventData afterData = new RefactoringEventData();
                     afterData.addElement(declaration);
                     project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
                            .refactoringStarted(getRefactoringId(), afterData);
-                    //result.setResult(addDeclaration(operation, declaration));
                     PsiElement newExpression = createExpression(project, operation.getName());
 
                     PsiElement operationElement = operation.getElement();
@@ -308,10 +313,8 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
 
     protected void postRefactoring(PsiElement statementList, IntroduceOperation operation) {
         if (statementList != null) {
-            WriteCommandAction.writeCommandAction(operation.getProject()).run(() -> {
-                PsiDocumentManager.getInstance(operation.getProject()).doPostponedOperationsAndUnblockDocument(operation.getEditor().getDocument());
-                CodeStyleManager.getInstance(operation.getProject()).reformat(statementList);
-            });
+            PsiDocumentManager.getInstance(operation.getProject()).doPostponedOperationsAndUnblockDocument(operation.getEditor().getDocument());
+            CodeStyleManager.getInstance(operation.getProject()).reformat(statementList);
         }
     }
 
@@ -319,7 +322,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         return expression.replace(newExpression);
     }
 
-    private static PsiElement createExpression(Project project, String name) {
+    private static Perl6Variable createExpression(Project project, String name) {
         return Perl6ElementFactory.createVariable(project, name);
     }
 
@@ -342,6 +345,11 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
 
     @NotNull
     private static PsiElement findTopmostStatementOfExpression(PsiElement expression) {
+        // If we are extracting a whole statement, it is already a good enough anchor,
+        // but if it is a statement in some other context (say, hash index), we need to search for another one
+        if (expression instanceof Perl6Statement && expression.getParent() instanceof Perl6StatementList)
+            return expression;
+
         PsiElement anchor = expression;
         do {
             // It is possible that first element will be a statement already,

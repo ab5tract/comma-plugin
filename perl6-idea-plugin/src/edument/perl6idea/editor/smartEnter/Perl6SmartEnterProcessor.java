@@ -52,7 +52,7 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
 
         int oldLine = editor.getDocument().getLineNumber(editor.getCaretModel().getOffset());
         CodeStyleManager.getInstance(project).reformat(psiFile);
-        editor.getCaretModel().moveToOffset(editor.getDocument().getLineStartOffset(oldLine));
+        editor.getCaretModel().moveToOffset(editor.getDocument().getLineStartOffset(Math.min(editor.getDocument().getLineCount() - 1, oldLine)));
 
         CommandProcessor.getInstance().executeCommand(project, () -> {
             EditorActionManager actionManager = EditorActionManager.getInstance();

@@ -3,6 +3,4 @@ role Bar {
         ...
     }
 }
-class A does Bar {
-
-}
+class A does Bar {}
