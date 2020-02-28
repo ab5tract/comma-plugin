@@ -36,9 +36,9 @@
 <li>Allow configuration of indentation size and continuation indent size (the defaults are as before)</li>
 <li>Allow configuration of whether to use tabs or spaces (the default continues to be spaces)</li>
 <li>Implement optional wrapping of long lines of code</li>
-<li>Allow configuration of whether curly braces go on the same line of code or the line below (defaults to same line, as before). This can be configured separately for packages, routines, regexes, phasers, and other blocks.</li>
-<li>Implement wrapping and alignment for parameter lists, argument lists, trait lists, array initializers, and infix operands; these can all be configured.</li>
-<li>The formatter can now apply spacing rules, with over 20 different cases being configurable. For example, it&#39;s now possible to have formatting ensure there are spaces around infix operators.</li>
+<li>Allow configuration of whether curly braces go on the same line of code or the line below (defaults to same line, as before). This can be configured separately for packages, routines, regexes, phasers, and other blocks</li>
+<li>Implement wrapping and alignment for parameter lists, argument lists, trait lists, array initializers, and infix operands; these can all be configured</li>
+<li>The formatter can now apply spacing rules, with over 20 different cases being configurable. For example, it&#39;s now possible to have formatting ensure there are spaces around infix operators</li>
 <li>Implement Find Usages for Cro templates, to allow all usages of a template sub, macro, or variable to be found</li>
 <li>Fix a parsing bug with the infix fatarrow operator, which could lead to some odd selection or formatting behaviors</li>
 <li>Fix a bug that led to Comma thinking the cross buit-in did not exist, when in fact it does</li>
