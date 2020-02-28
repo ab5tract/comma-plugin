@@ -1,11 +1,9 @@
 package edument.perl6idea.utils;
 
 import com.intellij.execution.ExecutionException;
-import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.PtyCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,26 +19,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A thin wrapper around GeneralCommandLine
- * Features include:
- * * Adds Raku interpreter from Sdk set for the project passed to constructor
- * * Contains a shortcut for executing and gathering output of process
- * Warning: Perl6CommandLine usage is *synchronous*. It means that it will block
- * for scripts that take a lot of time to execute and setting execution
- * into separate thread is on the caller side.
+ * FIXME
  */
-public class Perl6CommandLine extends GeneralCommandLine {
-    private static Logger LOG = Logger.getInstance(Perl6CommandLine.class);
+public class Perl6ScriptRunner extends PtyCommandLine {
+    private static Logger LOG = Logger.getInstance(Perl6ScriptRunner.class);
 
-    public Perl6CommandLine(Sdk sdk) throws ExecutionException {
-        this(sdk.getHomePath());
-    }
-
-    public Perl6CommandLine(Project project) throws ExecutionException {
+    public Perl6ScriptRunner(Project project) throws ExecutionException {
         this(Perl6SdkType.getSdkHomeByProject(project));
     }
 
-    protected Perl6CommandLine(@Nullable String sdkHome) throws ExecutionException {
+    protected Perl6ScriptRunner(@Nullable String sdkHome) throws ExecutionException {
         if (sdkHome == null)
             throw new ExecutionException("No SDK for project");
         if (Paths.get(sdkHome).toFile().isFile())
@@ -53,7 +41,7 @@ public class Perl6CommandLine extends GeneralCommandLine {
         }
     }
 
-    public Perl6CommandLine(Project project, int debugPort) throws ExecutionException {
+    public Perl6ScriptRunner(Project project, int debugPort) throws ExecutionException {
         List<String> parameters = populateDebugCommandLine(project, debugPort);
         if (parameters == null)
             throw new ExecutionException("SDK is not valid for debugging");
