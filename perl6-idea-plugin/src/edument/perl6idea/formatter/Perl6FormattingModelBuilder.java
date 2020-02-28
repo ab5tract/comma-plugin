@@ -128,7 +128,7 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         });
 
         // Prefix operators
-        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.PREFIX
+        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.PREFIX && !left.getNode().getText().trim().matches("^[a-zA-Z]*$")
                                    ? (customSettings.AFTER_PREFIX_OPS ? SINGLE_SPACE_SPACING : CONSTANT_EMPTY_SPACING) : null);
 
         // Various infix operator related rules
@@ -258,7 +258,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
 
         // Brace style for phasers and everything else
         rules.add((left, right) -> {
-            if (!(PsiTreeUtil.getParentOfType(right.getNode().getPsi(), Perl6QuoteRegex.class, Perl6RegexDecl.class, Perl6Statement.class) instanceof Perl6Statement))
+            if (!(PsiTreeUtil.getParentOfType(right.getNode().getPsi(), Perl6QuoteRegex.class, Perl6RegexDecl.class,
+                                              Perl6Statement.class, Perl6StrLiteral.class) instanceof Perl6Statement))
                 return null;
             return right.getNode().getElementType() == Perl6ElementTypes.BLOCK
                    ? (right.getNode().getTreeParent().getElementType() == Perl6ElementTypes.PHASER

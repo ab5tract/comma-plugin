@@ -79,6 +79,8 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("/<?{ $*lone-start-line }>/","/<?{ $*lone-start-line }>/");
         reformatTest("/<{'abc'}>/", "/<{ 'abc' }>/");
         reformatTest("/<!{'abc'}>/", "/<!{ 'abc' }>/");
+        reformatTest("42 if not .IO.d", "42 if not .IO.d");
+        reformatTest("“{$CONFIG<mothership>}/$full-commit-hash?type=$backend&arch=$arch”", "“{ $CONFIG<mothership> }/$full-commit-hash?type=$backend&arch=$arch”");
     }
 
     public void testAlignment() {
