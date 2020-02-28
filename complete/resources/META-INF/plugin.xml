@@ -32,28 +32,17 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Migrate to the 2019.03 version of IntelliJ platform</li>
-<li>Update the user interface to call the language Raku instead of Perl 6</li>
-<li>Go to Related Symbol (<code>Ctrl+Alt+Home</code> on an action method name or a
-grammar rule name) now allows to jump from the grammar rule to the
-respective actions method and back. In an action method, the <code>$/</code>
-variable now completes based on the rule&#39;s captures</li>
-<li>Support module usage syntax, named parameters and arguments in Cro template language</li>
-<li>Resolution and auto-complete of subs and macros between Cro template files now works</li>
-<li>Cro template language subs and macro are now indexed and available through the Navigate to Symbol feature</li>
-<li>Cro template language symbols are now shown in Structure View</li>
-<li>For Cro template language subs, parameter info (<code>Ctrl+P</code>) is now available</li>
-<li>Improve the default color scheme for Cro template language files</li>
-<li>Enable setting environment variables for a Test Run Configuration</li>
-<li>Prevent a possible exception related to method completion.</li>
-<li>Fix a parser exception triggered by typing a specific case of regexp syntax</li>
-<li>Fix regex-based variables completion bug when some non-capturing assertions were suggested by mistake</li>
-<li>Make sure changes to project structure related to directories made using the IDE are reflected
-in <code>META6.json</code></li>
-<li>Prevent a rare exception sometimes occuring on project closing</li>
-<li>Fix a bug where an optional parameter with a trait was not recognized as being optional, and thus
-caused bogus parameter ordering annotations to be shown</li>
-<li>Fix a bug of console input not being recognized by Run tab window</li>
+<li>Add a Raku Code Style page to the settings, where numerous new formatting configuration options are available</li>
+<li>Allow configuration of indentation size and continuation indent size (the defaults are as before)</li>
+<li>Allow configuration of whether to use tabs or spaces (the default continues to be spaces)</li>
+<li>Implement optional wrapping of long lines of code</li>
+<li>Allow configuration of whether curly braces go on the same line of code or the line below (defaults to same line, as before). This can be configured separately for packages, routines, regexes, phasers, and other blocks.</li>
+<li>Implement wrapping and alignment for parameter lists, argument lists, trait lists, array initializers, and infix operands; these can all be configured.</li>
+<li>The formatter can now apply spacing rules, with over 20 different cases being configurable. For example, it&#39;s now possible to have formatting ensure there are spaces around infix operators.</li>
+<li>Implement Find Usages for Cro templates, to allow all usages of a template sub, macro, or variable to be found</li>
+<li>Fix a parsing bug with the infix fatarrow operator, which could lead to some odd selection or formatting behaviors</li>
+<li>Fix a bug that led to Comma thinking the cross buit-in did not exist, when in fact it does</li>
+<li>Fix external modules symbol loading on Windows</li>
 </ul>
   ]]>
   </change-notes>
