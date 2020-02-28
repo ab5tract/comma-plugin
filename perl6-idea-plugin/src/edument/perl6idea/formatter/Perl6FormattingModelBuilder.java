@@ -259,7 +259,7 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         // Brace style for phasers and everything else
         rules.add((left, right) -> {
             if (!(PsiTreeUtil.getParentOfType(right.getNode().getPsi(), Perl6QuoteRegex.class, Perl6RegexDecl.class,
-                                              Perl6Statement.class, Perl6StrLiteral.class) instanceof Perl6Statement))
+                                              Perl6Statement.class, Perl6StrLiteral.class, Perl6Heredoc.class) instanceof Perl6Statement))
                 return null;
             return right.getNode().getElementType() == Perl6ElementTypes.BLOCK
                    ? (right.getNode().getTreeParent().getElementType() == Perl6ElementTypes.PHASER

@@ -96,6 +96,10 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     @Override
     public Wrap getWrap() {
+        // Basic sanity check: we don't wrap anything when interpolated in a str literal
+        if (!(PsiTreeUtil.getParentOfType(myNode.getPsi(), Perl6File.class, Perl6StrLiteral.class, Perl6Heredoc.class) instanceof Perl6File))
+            return null;
+
         if (myNode.getElementType() == PARAMETER && myCustomSettings.PARAMETER_WRAP) {
             return Wrap.createWrap(WrapType.NORMAL, true);
         }

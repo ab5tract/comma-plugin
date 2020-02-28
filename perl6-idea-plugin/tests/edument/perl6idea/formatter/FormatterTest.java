@@ -81,6 +81,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("/<!{'abc'}>/", "/<!{ 'abc' }>/");
         reformatTest("42 if not .IO.d", "42 if not .IO.d");
         reformatTest("“{$CONFIG<mothership>}/$full-commit-hash?type=$backend&arch=$arch”", "“{ $CONFIG<mothership> }/$full-commit-hash?type=$backend&arch=$arch”");
+        reformatTest("“{$t.our-nick}, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”", "“{ $t.our-nick }, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”");
     }
 
     public void testAlignment() {
