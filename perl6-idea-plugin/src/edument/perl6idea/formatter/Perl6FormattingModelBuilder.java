@@ -257,18 +257,26 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                                    : null);
 
         // Brace style for phasers and everything else
-        rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.BLOCK
-                                   ? (right.getNode().getTreeParent().getElementType() == Perl6ElementTypes.PHASER
-                                      ? (customSettings.PHASER_BRACE_STYLE == 1
-                                         ? SINGLE_SPACE_SPACING : SINGLE_LINE_BREAK)
-                                      : (customSettings.OTHER_BRACE_STYLE == 1
-                                         ? SINGLE_SPACE_SPACING : SINGLE_LINE_BREAK))
-                                   : null);
+        rules.add((left, right) -> {
+            if (!(PsiTreeUtil.getParentOfType(right.getNode().getPsi(), Perl6QuoteRegex.class, Perl6RegexDecl.class, Perl6Statement.class) instanceof Perl6Statement))
+                return null;
+            return right.getNode().getElementType() == Perl6ElementTypes.BLOCK
+                   ? (right.getNode().getTreeParent().getElementType() == Perl6ElementTypes.PHASER
+                      ? (customSettings.PHASER_BRACE_STYLE == 1
+                         ? SINGLE_SPACE_SPACING : SINGLE_LINE_BREAK)
+                      : (customSettings.OTHER_BRACE_STYLE == 1
+                         ? SINGLE_SPACE_SPACING : SINGLE_LINE_BREAK))
+                   : null;
+        });
 
         rules.add((left, right) -> {
             boolean isOpener = left.getNode().getElementType() == BLOCK_CURLY_BRACKET_OPEN;
             boolean isCloser = right.getNode().getElementType() == Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE;
             if (!isOpener && !isCloser) return null;
+
+            // Do not play with {} in regexes
+            if (left.getNode().getElementType() == REGEX_LOOKAROUND)
+                return null;
 
             ASTNode blockoid = left.getNode().getTreeParent();
             if (blockoid.getElementType() == Perl6ElementTypes.BLOCKOID) {

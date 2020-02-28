@@ -76,6 +76,9 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("foobarcall(\na => 42,\nb => 50);", "foobarcall(\n        a => 42,\n        b => 50);");
         reformatTest("token foo { <iteration-v=.p(:a)> }", "token foo { <iteration-v=.p(:a)> }");
         reformatTest("first(* !~~ 'rows')", "first(* !~~ 'rows')");
+        reformatTest("/<?{ $*lone-start-line }>/","/<?{ $*lone-start-line }>/");
+        reformatTest("/<{'abc'}>/", "/<{ 'abc' }>/");
+        reformatTest("/<!{'abc'}>/", "/<!{ 'abc' }>/");
     }
 
     public void testAlignment() {
