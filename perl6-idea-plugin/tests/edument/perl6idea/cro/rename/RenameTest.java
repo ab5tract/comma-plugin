@@ -13,9 +13,11 @@ public class RenameTest extends CommaFixtureTestCase {
 
     public void testRenameOfVariable() {
         doTest(15, "$name", "<:sub fofo($name)><$name></:sub><&fofo><:macro page></:macro><|page>");
+        doTest(22, "$name", "<:sub fofo($name)><$name></:sub><&fofo><:macro page></:macro><|page>");
     }
 
-    public void testRenameOfVariableFromUsage() {
-        doTest(22, "$name", "<:sub fofo($name)><$name></:sub><&fofo><:macro page></:macro><|page>");
+    public void testRenameOfSubroutine() {
+        doTest(8, "toto", "<:sub toto($title)><$title></:sub><&toto><:macro page></:macro><|page>");
+        doTest(38, "toto", "<:sub toto($title)><$title></:sub><&toto><:macro page></:macro><|page>");
     }
 }

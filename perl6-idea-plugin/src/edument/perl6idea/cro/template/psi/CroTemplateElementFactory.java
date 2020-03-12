@@ -1,5 +1,6 @@
 package edument.perl6idea.cro.template.psi;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
@@ -27,5 +28,9 @@ public class CroTemplateElementFactory {
 
     public static CroTemplateVariableAccess createVariableAccess(Project project, String name) {
         return produceElement(project, String.format("<%s>", name), CroTemplateVariableAccess.class);
+    }
+
+    public static CroTemplateCall createSubCall(Project project, String name) {
+        return produceElement(project, String.format("<&%s>", name), CroTemplateCall.class);
     }
 }

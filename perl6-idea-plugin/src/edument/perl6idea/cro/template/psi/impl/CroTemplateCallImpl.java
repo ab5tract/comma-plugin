@@ -5,12 +5,14 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.impl.source.codeStyle.CodeEditUtil;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes;
 import edument.perl6idea.cro.template.psi.CroTemplateArgList;
 import edument.perl6idea.cro.template.psi.CroTemplateCall;
+import edument.perl6idea.cro.template.psi.CroTemplateElementFactory;
 import edument.perl6idea.cro.template.psi.reference.CroTemplateCallReference;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,7 +40,13 @@ public class CroTemplateCallImpl extends ASTWrapperPsiElement implements CroTemp
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        throw new IncorrectOperationException();
+        ASTNode oldNameNode = findChildByType(TokenSet.create(SUB_NAME));
+        if (oldNameNode != null) {
+            CroTemplateCall newName = CroTemplateElementFactory.createSubCall(getProject(), name);
+            ASTNode newNameNode = newName.getNode().getChildren(TokenSet.create(SUB_NAME))[0];
+            CodeEditUtil.replaceChild(getNode(), oldNameNode, newNameNode);
+        }
+        return this;
     }
 
     @Override
@@ -51,10 +59,10 @@ public class CroTemplateCallImpl extends ASTWrapperPsiElement implements CroTemp
 
         while (node != null) {
             if (!(node instanceof PsiWhiteSpace ||
-                node.getNode().getElementType() == SYNTAX_WHITE_SPACE ||
-                node.getNode().getElementType() == OPEN_PAREN ||
-                node.getNode().getElementType() == CLOSE_PAREN ||
-                node.getNode().getElementType() == COMMA)) {
+                  node.getNode().getElementType() == SYNTAX_WHITE_SPACE ||
+                  node.getNode().getElementType() == OPEN_PAREN ||
+                  node.getNode().getElementType() == CLOSE_PAREN ||
+                  node.getNode().getElementType() == COMMA)) {
                 args.add(node);
             }
             node = node.getNextSibling();
