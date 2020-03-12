@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes;
+import edument.perl6idea.cro.template.psi.CroTemplateElementFactory;
 import edument.perl6idea.cro.template.psi.CroTemplateParameter;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +29,6 @@ public class CroTemplateParameterImpl extends ASTWrapperPsiElement implements Cr
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        throw new IncorrectOperationException();
+        return replace(CroTemplateElementFactory.createSubParameter(getProject(), name));
     }
 }

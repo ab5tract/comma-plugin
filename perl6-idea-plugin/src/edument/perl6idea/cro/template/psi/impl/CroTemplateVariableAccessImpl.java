@@ -7,6 +7,7 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes;
+import edument.perl6idea.cro.template.psi.CroTemplateElementFactory;
 import edument.perl6idea.cro.template.psi.CroTemplateVariableAccess;
 import edument.perl6idea.cro.template.psi.reference.CroTemplateVariableReference;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +30,6 @@ public class CroTemplateVariableAccessImpl extends ASTWrapperPsiElement implemen
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        throw new IncorrectOperationException();
+        return replace(CroTemplateElementFactory.createVariableAccess(getProject(), name));
     }
 }
