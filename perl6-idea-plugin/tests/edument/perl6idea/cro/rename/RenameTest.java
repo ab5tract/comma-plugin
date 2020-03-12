@@ -20,4 +20,9 @@ public class RenameTest extends CommaFixtureTestCase {
         doTest(8, "toto", "<:sub toto($title)><$title></:sub><&toto><:macro page></:macro><|page>");
         doTest(38, "toto", "<:sub toto($title)><$title></:sub><&toto><:macro page></:macro><|page>");
     }
+
+    public void testRenameOfMacro() {
+        doTest(49, "page2", "<:sub fofo($title)><$title></:sub><&fofo><:macro page2></:macro><|page2>");
+        doTest(65, "page2", "<:sub fofo($title)><$title></:sub><&fofo><:macro page2></:macro><|page2>");
+    }
 }

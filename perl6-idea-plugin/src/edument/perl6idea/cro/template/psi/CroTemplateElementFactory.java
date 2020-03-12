@@ -33,4 +33,8 @@ public class CroTemplateElementFactory {
     public static CroTemplateCall createSubCall(Project project, String name) {
         return produceElement(project, String.format("<&%s>", name), CroTemplateCall.class);
     }
+
+    public static CroTemplateApply createMacroCall(Project project, String name) {
+        return produceElement(project, String.format("<|%s>", name), CroTemplateApply.class);
+    }
 }
