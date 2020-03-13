@@ -1,0 +1,5 @@
+<:macro pa<caret>ge()>
+<!doctype html>
+<html lang="en">
+</html>
+</:macro>

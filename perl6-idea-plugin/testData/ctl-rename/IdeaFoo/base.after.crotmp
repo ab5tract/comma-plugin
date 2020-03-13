@@ -1,0 +1,5 @@
+<:macro re-named()>
+<!doctype html>
+<html lang="en">
+</html>
+</:macro>
