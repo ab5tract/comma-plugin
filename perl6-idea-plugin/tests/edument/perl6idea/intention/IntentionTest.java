@@ -295,6 +295,14 @@ public class IntentionTest extends CommaFixtureTestCase {
         executeIntention("Convert to block");
     }
 
+    public void testTernaryStatementConversion() {
+        executeIntention("Convert");
+    }
+
+    public void testTernaryExprConversion() {
+        executeIntention("Convert");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }

@@ -140,6 +140,10 @@
       <className>edument.perl6idea.intention.ConvertToBlockFormIntention</className>
       <category>Raku intentions</category>
     </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.TernaryExpandingIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
 
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6StatementSurroundDescriptor"/>
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6ExpressionSurroundDescriptor"/>
