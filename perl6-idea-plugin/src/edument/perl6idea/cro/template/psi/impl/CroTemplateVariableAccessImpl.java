@@ -30,6 +30,12 @@ public class CroTemplateVariableAccessImpl extends ASTWrapperPsiElement implemen
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        return replace(CroTemplateElementFactory.createVariableAccess(getProject(), name));
+        CroTemplateVariableAccess access = CroTemplateElementFactory.createVariableAccess(getProject(), name);
+        ASTNode[] newName = access.getNode().getChildren(TokenSet.create(CroTemplateTokenTypes.VARIABLE_NAME));
+        ASTNode[] oldName = getNode().getChildren(TokenSet.create(CroTemplateTokenTypes.VARIABLE_NAME));
+        if (newName.length == 1 && oldName.length == 1) {
+            getNode().replaceChild(oldName[0], newName[0]);
+        }
+        return this;
     }
 }
