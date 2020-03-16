@@ -24,7 +24,8 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
 
     @Override
     public PsiElement getVariableToken() {
-        return findChildByType(Perl6TokenTypes.VARIABLE);
+        PsiElement normalVar = findChildByType(Perl6TokenTypes.VARIABLE);
+        return normalVar != null ? normalVar : findChildByType(Perl6TokenTypes.REGEX_CAPTURE_NAME);
     }
 
     @Override
@@ -33,6 +34,7 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         return nameIdent != null ? nameIdent.getText() : "";
     }
 
+    @Nullable
     @Override
     public String getVariableName() {
         PsiElement infix = findChildByType(Perl6ElementTypes.INFIX);
