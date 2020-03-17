@@ -27,7 +27,7 @@ public class ConvertNonCapturingGroupIntoNamedIntention extends ConvertNonCaptur
         String regexContent = group.getText();
         return PsiTreeUtil.findChildOfType(
             Perl6ElementFactory
-                .createStatementFromText(project, String.format("/$<a>=(%s)/", regexContent.substring(1, regexContent.length() - 1))),
+                .createStatementFromText(project, String.format("/$<x>=(%s)/", regexContent.substring(1, regexContent.length() - 1))),
             Perl6RegexVariable.class);
     }
 
