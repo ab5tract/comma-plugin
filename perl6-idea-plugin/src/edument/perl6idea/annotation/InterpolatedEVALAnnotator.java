@@ -32,7 +32,7 @@ public class InterpolatedEVALAnnotator implements Annotator {
                 for (PsiElement child : statement.getChildren()) {
                     if (!(child instanceof Perl6UseStatement)) continue;
                     String moduleName = ((Perl6UseStatement)child).getModuleName();
-                    if (moduleName.equals("MONKEY") ||
+                    if (moduleName == null || moduleName.equals("MONKEY") ||
                         moduleName.equals("MONKEY-SEE-NO-EVAL"))
                         return;
                 }
