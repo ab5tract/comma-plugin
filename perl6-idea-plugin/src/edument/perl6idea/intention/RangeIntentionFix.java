@@ -21,6 +21,9 @@ public class RangeIntentionFix extends PsiElementBaseIntentionAction implements 
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element) throws IncorrectOperationException {
         Perl6InfixApplication application = PsiTreeUtil.getParentOfType(element, Perl6InfixApplication.class);
+        if (application != null && application.getOperator().equals("-")) {
+            application = PsiTreeUtil.getParentOfType(application, Perl6InfixApplication.class);
+        }
         if (application == null) return;
 
         element = PsiTreeUtil.findChildOfType(application, Perl6Infix.class);

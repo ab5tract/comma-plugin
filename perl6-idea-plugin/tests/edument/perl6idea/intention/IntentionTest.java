@@ -32,6 +32,10 @@ public class IntentionTest extends CommaFixtureTestCase {
         executeIntention("Use simpler range syntax");
     }
 
+    public void testRangeSimplificationRegress1() {
+        executeIntention("Use simpler range syntax");
+    }
+
     public void testEVALOfVariable() {
         executeIntention("Add MONKEY");
     }
