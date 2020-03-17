@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public interface Perl6RegexDriver {
+public interface Perl6RegexDriver extends PsiElement {
     default Collection<PsiNamedElement> collectRegexVariables() {
         if (!(this instanceof Perl6PsiElement))
             return new ArrayList<>();
-        Collection<Perl6RegexAtom> atoms = PsiTreeUtil.findChildrenOfType((PsiElement)this, Perl6RegexAtom.class);
+        Collection<Perl6RegexAtom> atoms = PsiTreeUtil.findChildrenOfType(this, Perl6RegexAtom.class);
         List<PsiNamedElement> symbols = new ArrayList<>();
         for (Perl6RegexAtom atom : atoms) {
             PsiElement firstChild = atom.getFirstChild();

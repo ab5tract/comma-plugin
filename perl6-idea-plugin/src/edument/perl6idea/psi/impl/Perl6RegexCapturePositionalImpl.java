@@ -3,12 +3,11 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.Perl6QuoteRegex;
-import edument.perl6idea.psi.Perl6Regex;
-import edument.perl6idea.psi.Perl6RegexCapturePositional;
-import edument.perl6idea.psi.Perl6RegexDriver;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

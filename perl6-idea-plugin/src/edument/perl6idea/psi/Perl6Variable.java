@@ -8,6 +8,7 @@ public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, 
 
     PsiElement getVariableToken();
 
+    @Nullable
     String getVariableName();
 
     /* This method is used to factor out code of deciding

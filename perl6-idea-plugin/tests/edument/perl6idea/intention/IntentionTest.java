@@ -299,6 +299,10 @@ public class IntentionTest extends CommaFixtureTestCase {
         executeIntention("Convert to block");
     }
 
+    public void testNonCapturingGroupIntoPos() { executeIntention("Convert into positional"); }
+
+    public void testNonCapturingGroupIntoNamed() { executeIntention("Convert into named"); }
+
     public void testTernaryStatementConversion() {
         executeIntention("Convert");
     }
