@@ -185,17 +185,36 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             PsiElementProcessor.CollectElements<PsiElement> processor = new PsiElementProcessor.CollectElements<PsiElement>() {
                 @Override
                 public boolean execute(@NotNull PsiElement each) {
-                    if (!(each instanceof Perl6InfixApplication))
-                        return true;
-                    Perl6InfixApplication application = (Perl6InfixApplication)each;
-                    if (application.getOperator().equals("~~")) {
-                        PsiElement[] ops = application.getOperands();
+                    if (each instanceof Perl6InfixApplication)
+                        return searchForRegexApplication((Perl6InfixApplication)each);
+                    else if (each instanceof Perl6WhenStatement || each instanceof Perl6IfStatement || each instanceof Perl6UnlessStatement)
+                        return searchForControlContextualizer((P6Control)each);
+                    else if (each instanceof Perl6Statement)
+                        return searchForSinkRegex((Perl6Statement)each);
+                    return true;
+                }
+
+                private boolean searchForSinkRegex(Perl6Statement statement) {
+                    if (statement.getFirstChild() instanceof Perl6RegexDriver)
+                        return super.execute(statement.getFirstChild());
+                    return true;
+                }
+
+                private boolean searchForControlContextualizer(P6Control control) {
+                    if (control.getTopic() instanceof Perl6RegexDriver)
+                        return super.execute(control.getTopic());
+                    return true;
+                }
+
+                private boolean searchForRegexApplication(@NotNull Perl6InfixApplication app) {
+                    if (app.getOperator().equals("~~")) {
+                        PsiElement[] ops = app.getOperands();
                         if (ops.length == 2) {
                             if (ops[1] instanceof Perl6PsiElement && ((Perl6PsiElement)ops[1]).inferType().equals("Regex"))
                                 return super.execute(ops[1]);
                         }
                     }
-                    return application.getTextOffset() < anchor.getTextOffset();
+                    return app.getTextOffset() < anchor.getTextOffset();
                 }
             };
             PsiTreeUtil.processElements(level, processor);

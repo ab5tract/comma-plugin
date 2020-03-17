@@ -342,6 +342,12 @@ public class AnnotationTest extends CommaFixtureTestCase {
     public void testUndeclaredAnnotatorRegexVars() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "if <error descr=\"Variable $sub-key is not declared\">$sub-key</error> ~~ /^ <[\\w-]>+ $/ {<error descr=\"Variable $0 is not declared\">$0</error>}");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "when m{ ^ ( '#' .+? ) \\s*? $ } { say $0; }");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "unless m{ ^ ( '#' .+? ) \\s*? $ } {}; say $0;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "if True { m{ ^ ( '#' .+? ) \\s*? $ }; $0; }");
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredAnnotatorRegexVarsCorrectComparisonIsUsed() {
