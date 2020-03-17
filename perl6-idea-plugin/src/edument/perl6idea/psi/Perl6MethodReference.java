@@ -49,16 +49,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
         }
 
         boolean isSelf() {
-            if (targetTypeName.equals("self"))
-                return true;
-            if (targetTypeElement != null) {
-                Perl6Symbol type = ((Perl6PsiElement)targetTypeElement).resolveLexicalSymbol(Perl6SymbolKind.TypeOrConstant, targetTypeName);
-                if (type != null) {
-                    PsiElement psi = type.getPsi();
-                    return psi instanceof Perl6PackageDecl && psi.isEquivalentTo(PsiTreeUtil.getParentOfType(targetTypeElement, Perl6PackageDecl.class));
-                }
-            }
-            return false;
+            return targetTypeName.equals("self") || (methodName.startsWith("!") && !trustNeeded);
         }
 
         public String getTargetTypeName() {
