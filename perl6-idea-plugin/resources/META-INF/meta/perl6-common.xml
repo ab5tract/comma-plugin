@@ -111,35 +111,39 @@
 
     <intentionAction>
       <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.MakeMethodPublicIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.MakeAttributeRequiredIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.UnparenthesizeIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.UnwrapPromiseAllOfIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.SingleQuotesToDoubleIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.DoubleQuotesToSingleIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.ConvertToBlockFormIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.TernaryExpandingIntention</className>
+      <category>Raku intentions</category>
     </intentionAction>
 
     <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6StatementSurroundDescriptor"/>
