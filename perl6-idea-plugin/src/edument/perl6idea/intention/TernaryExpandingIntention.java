@@ -8,14 +8,16 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiParserFacade;
 import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.intellij.psi.codeStyle.CodeStyleSettings;
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 public class TernaryExpandingIntention extends PsiElementBaseIntentionAction implements IntentionAction {
     @Override
@@ -35,21 +37,24 @@ public class TernaryExpandingIntention extends PsiElementBaseIntentionAction imp
         Perl6IfStatement newIf = Perl6ElementFactory.createIfStatement(project, true, 2);
         Perl6ConditionalBranch[] branches = newIf.getBranches();
         branches[0].condition.replace(condition);
-        PsiTreeUtil.findChildOfType(branches[0].block, Perl6StatementList.class)
-            .add(Perl6ElementFactory.createStatementFromText(project, trueBranch.getText() + ";"));
-        PsiTreeUtil.findChildOfType(branches[1].block, Perl6StatementList.class)
-            .add(Perl6ElementFactory.createStatementFromText(project, falseBranch.getText() + ";"));
+        boolean isStatementForm = infix.getParent() instanceof Perl6Statement;
+        String branchPattern = isStatementForm ? "if True {\n%s;\n}" : "if True { %s; }";
+        branches[0].block.replace(PsiTreeUtil.findChildOfType(
+            Perl6ElementFactory.createStatementFromText(project, String.format(branchPattern, trueBranch.getText())), Perl6Block.class));
+        branches[1].block.replace(PsiTreeUtil.findChildOfType(
+            Perl6ElementFactory.createStatementFromText(project, String.format(branchPattern, falseBranch.getText())), Perl6Block.class));
 
         // Check if the ternary is at statement-level or a part of expression
-        if (infix.getParent() instanceof Perl6Statement) {
+        if (isStatementForm) {
             PsiElement newInfix = infix.replace(newIf);
             PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
             CodeStyleManager.getInstance(project).reformat(newInfix);
         }
         else {
             PsiElement newline = newIf.getChildren()[1].getNextSibling();
-            if (newline.getText().equals("\n"))
+            if (newline.getText().equals("\n")) {
                 newline.replace(PsiParserFacade.SERVICE.getInstance(project).createWhiteSpaceFromText(" "));
+            }
             Perl6Statement doWrapper = Perl6ElementFactory.createStatementFromText(project, "do " + newIf.getText());
             infix.replace(doWrapper.getFirstChild());
         }
