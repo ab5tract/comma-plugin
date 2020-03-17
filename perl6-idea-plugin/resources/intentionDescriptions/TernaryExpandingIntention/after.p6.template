@@ -2,6 +2,6 @@ say do if $foo { "Foo!"; } else { "No foo..."; };
 
 if $foo {
     "Foo!";
-else {
+} else {
     "No foo...";
 }
