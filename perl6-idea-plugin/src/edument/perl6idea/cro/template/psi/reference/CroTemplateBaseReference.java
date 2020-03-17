@@ -2,7 +2,9 @@ package edument.perl6idea.cro.template.psi.reference;
 
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,4 +31,12 @@ public abstract class CroTemplateBaseReference<T extends PsiElement> extends Psi
     }
 
     protected abstract CroTemplateSymbolKind getSymbolKind();
+
+    @Override
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
+        if (myElement instanceof PsiNamedElement) {
+            return ((PsiNamedElement)myElement).setName(newElementName);
+        }
+        return myElement;
+    }
 }

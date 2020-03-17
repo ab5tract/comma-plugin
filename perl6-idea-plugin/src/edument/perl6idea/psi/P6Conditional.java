@@ -31,7 +31,7 @@ public interface P6Conditional extends Perl6PsiElement {
             } else if (temp != null) {
                 // With everything else, if condition is not encountered yet,
                 // we have a condition to save
-                if (temp.condition == null) {
+                if (temp.condition == null && !temp.term.getText().equals("else")) {
                     temp.condition = node;
                 } else if (node instanceof Perl6Block) {
                     // Save a block otherwise

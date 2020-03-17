@@ -84,6 +84,7 @@
     <enterHandlerDelegate implementation="edument.perl6idea.editor.Perl6EnterDelegate"/>
     <lang.findUsagesProvider language="Perl6" implementationClass="edument.perl6idea.findUsages.Perl6FindUsagesProvider"/>
     <lang.namesValidator language="Perl6" implementationClass="edument.perl6idea.rename.Perl6InputValidator"/>
+    <lang.namesValidator language="CroTemplate" implementationClass="edument.perl6idea.rename.Perl6InputValidator"/>
     <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6ModuleRenameProcessor"/>
     <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6PsiElementProcessor"/>
     <usageTypeProvider implementation="edument.perl6idea.findUsages.Perl6UsageTypeProvider"/>
@@ -110,35 +111,39 @@
 
     <intentionAction>
       <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.MakeMethodPublicIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.MakeAttributeRequiredIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.UnparenthesizeIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.UnwrapPromiseAllOfIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.SingleQuotesToDoubleIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.DoubleQuotesToSingleIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.ConvertToBlockFormIntention</className>
-      <category>Raku Intentions</category>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.TernaryExpandingIntention</className>
+      <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
       <className>edument.perl6idea.intention.ConvertNonCapturingGroupIntoPosIntention</className>

@@ -30,24 +30,26 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
     }
 
     static class CallInfo {
+        @NotNull
         private final String targetTypeName;
-        private final Object targetTypeElement;
+        @Nullable
+        private final PsiElement targetTypeElement;
         private final String methodName;
         private boolean trustNeeded = false;
 
-        CallInfo(String targetTypeName, Object targetTypeElement, String methodName) {
+        CallInfo(@NotNull String targetTypeName, @Nullable PsiElement targetTypeElement, String methodName) {
             this.targetTypeName = targetTypeName;
             this.targetTypeElement = targetTypeElement;
             this.methodName = methodName;
         }
 
-        CallInfo(String targetTypeName, Object targetTypeElement, String methodName, boolean trustNeeded) {
+        CallInfo(String targetTypeName, @Nullable PsiElement targetTypeElement, String methodName, boolean trustNeeded) {
             this(targetTypeName, targetTypeElement, methodName);
             this.trustNeeded = trustNeeded;
         }
 
         boolean isSelf() {
-            return targetTypeName.equals("self");
+            return targetTypeName.equals("self") || (methodName.startsWith("!") && !trustNeeded);
         }
 
         public String getTargetTypeName() {

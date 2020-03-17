@@ -164,6 +164,14 @@ public class GoToDeclarationTest extends CommaFixtureTestCase {
             });
     }
 
+    public void testIndirectPrivateMethod() {
+        doTest("class A { class C { method !p() { say 42 }; method m() { my $c = A::C.new; $c!<caret>p } }; }; A::C.m;", 1,
+               Perl6MethodCall.class, (decl) -> {
+                assertNotNull(decl);
+                assertEquals("method !p() { say 42 }", decl.getText());
+        });
+    }
+
     public void doTest(String text, int offset, Class<? extends Perl6PsiElement> clazz, Consumer<PsiElement> check) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - offset);

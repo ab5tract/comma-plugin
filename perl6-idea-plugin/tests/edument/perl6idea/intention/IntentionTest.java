@@ -299,6 +299,14 @@ public class IntentionTest extends CommaFixtureTestCase {
 
     public void testNonCapturingGroupIntoNamed() { executeIntention("Convert into named"); }
 
+    public void testTernaryStatementConversion() {
+        executeIntention("Convert");
+    }
+
+    public void testTernaryExprConversion() {
+        executeIntention("Convert");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }

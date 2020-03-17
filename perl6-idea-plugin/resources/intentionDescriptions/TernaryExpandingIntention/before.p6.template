@@ -1,0 +1,3 @@
+say $foo ?? "Foo!" !! "No foo...";
+
+$foo ?? "Foo!" !! "No foo...";
