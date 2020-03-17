@@ -1,6 +1,6 @@
 if True {
     say 42;
-    if 42 {
+    if 42 > 5 {
         555.floor;
     }
     else {

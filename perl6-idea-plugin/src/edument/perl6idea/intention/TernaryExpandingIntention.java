@@ -8,21 +8,18 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiParserFacade;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class TernaryExpandingIntention extends PsiElementBaseIntentionAction implements IntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element) throws IncorrectOperationException {
-        Perl6InfixApplication infix = PsiTreeUtil.getParentOfType(element, Perl6InfixApplication.class);
+        Perl6InfixApplication infix = obtainTernary(element);
         if (infix == null) return;
 
         PsiElement[] wrap = infix.getOperands();
@@ -39,10 +36,8 @@ public class TernaryExpandingIntention extends PsiElementBaseIntentionAction imp
         branches[0].condition.replace(condition);
         boolean isStatementForm = infix.getParent() instanceof Perl6Statement;
         String branchPattern = isStatementForm ? "if True {\n%s;\n}" : "if True { %s; }";
-        branches[0].block.replace(PsiTreeUtil.findChildOfType(
-            Perl6ElementFactory.createStatementFromText(project, String.format(branchPattern, trueBranch.getText())), Perl6Block.class));
-        branches[1].block.replace(PsiTreeUtil.findChildOfType(
-            Perl6ElementFactory.createStatementFromText(project, String.format(branchPattern, falseBranch.getText())), Perl6Block.class));
+        branches[0].block.replace(PsiTreeUtil.findChildOfType(Perl6ElementFactory.createStatementFromText(project, String.format(branchPattern, trueBranch.getText())), Perl6Block.class));
+        branches[1].block.replace(PsiTreeUtil.findChildOfType(Perl6ElementFactory.createStatementFromText(project, String.format(branchPattern, falseBranch.getText())), Perl6Block.class));
 
         // Check if the ternary is at statement-level or a part of expression
         if (isStatementForm) {
@@ -52,9 +47,8 @@ public class TernaryExpandingIntention extends PsiElementBaseIntentionAction imp
         }
         else {
             PsiElement newline = newIf.getChildren()[1].getNextSibling();
-            if (newline.getText().equals("\n")) {
+            if (newline.getText().equals("\n"))
                 newline.replace(PsiParserFacade.SERVICE.getInstance(project).createWhiteSpaceFromText(" "));
-            }
             Perl6Statement doWrapper = Perl6ElementFactory.createStatementFromText(project, "do " + newIf.getText());
             infix.replace(doWrapper.getFirstChild());
         }
@@ -62,8 +56,18 @@ public class TernaryExpandingIntention extends PsiElementBaseIntentionAction imp
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
+        return obtainTernary(element) != null;
+    }
+
+    @Nullable
+    private static Perl6InfixApplication obtainTernary(@NotNull PsiElement element) {
         Perl6InfixApplication app = PsiTreeUtil.getParentOfType(element, Perl6InfixApplication.class);
-        return app != null && app.getOperator().equals("??");
+        while (app != null) {
+            if (app.getOperator().equals("??"))
+                return app;
+            app = PsiTreeUtil.getParentOfType(app, Perl6InfixApplication.class);
+        }
+        return null;
     }
 
     @Nls(capitalization = Nls.Capitalization.Sentence)
