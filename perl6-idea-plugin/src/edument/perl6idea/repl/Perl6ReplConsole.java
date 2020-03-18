@@ -1,10 +1,7 @@
 package edument.perl6idea.repl;
 
 import com.intellij.execution.ExecutionException;
-import com.intellij.execution.console.ConsoleExecuteAction;
-import com.intellij.execution.console.LanguageConsoleBuilder;
-import com.intellij.execution.console.LanguageConsoleView;
-import com.intellij.execution.console.ProcessBackedConsoleExecuteActionHandler;
+import com.intellij.execution.console.*;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -13,7 +10,6 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.keymap.KeymapUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiManager;
 import com.intellij.ui.JBColor;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.utils.Perl6CommandLine;
@@ -39,8 +35,17 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
     protected LanguageConsoleView createConsoleView() {
         LanguageConsoleBuilder builder = new LanguageConsoleBuilder();
         builder.oneLineInput(false);
-        LanguageConsoleView consoleView = builder.build(getProject(), Perl6Language.INSTANCE);
-        addHint(consoleView.getConsoleEditor());
+        LanguageConsoleView consoleView = builder
+                .gutterContentProvider(new Perl6ReplGutter())
+                .build(getProject(), Perl6Language.INSTANCE);
+
+        EditorEx consoleEditor = consoleView.getConsoleEditor();
+        addHint(consoleEditor);
+        showGutter(consoleEditor);
+        consoleEditor.getSettings().setCaretRowShown(true);
+
+        showGutter(consoleView.getHistoryViewer());
+
         return consoleView;
     }
 
@@ -56,6 +61,11 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
         editor.setPlaceholderAttributes(placeholderAttrs);
     }
 
+    private static void showGutter(EditorEx editor) {
+        editor.getSettings().setLineMarkerAreaShown(true);
+        editor.getSettings().setFoldingOutlineShown(true);
+    }
+
     @Nullable
     @Override
     protected Process createProcess() throws ExecutionException {
@@ -68,7 +78,7 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
 
     @Override
     protected OSProcessHandler createProcessHandler(Process process) {
-        return new OSProcessHandler(process, commandLine.getCommandLineString());
+        return new Perl6ReplOutputHandler(process, commandLine.getCommandLineString(), this);
     }
 
     @NotNull
