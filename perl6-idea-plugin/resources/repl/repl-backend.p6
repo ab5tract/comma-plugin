@@ -20,7 +20,6 @@ $*ERR.out-buffer = 0;
 my $*NEXT-EVAL = -> $code { EVAL $code };
 loop {
     my $command = $*IN.get;
-    state $eval-count = 1;
     given $command {
         when /^'EVAL '(\d+)$/ {
             my @lines = (^+$0).map({ $*IN.get });
@@ -31,7 +30,6 @@ loop {
             if $*OUT.tell == $output-pos {
                 say $result;
             }
-            $eval-count++;
             CATCH {
                 when X::Comp {
                     note "\x01 COMPILE-ERROR-START";
@@ -43,14 +41,13 @@ loop {
                 }
                 default {
                     note "\x01 RUNTIME-ERROR-START";
-                    # Drop last two lines of the backtrace, they ain't useful.
-                    note .backtrace.nice.split("\n")[0..*-(1 + 2 * $eval-count)]
+                    note .backtrace.nice.split("\n")
+                            .grep(* !~~ /"at $*PROGRAM.absolute()"/)
                             .map(*.subst(/'at EVAL_'\d+ ' line ' (\d+)/, -> $/ { "at REPL evaluation line {$0 - 1}" }))
                             .join("\n");
                     note "---";
                     note .message;
                     note "\x01 ERROR-END";
-                    $eval-count++;
                 }
             }
         }
