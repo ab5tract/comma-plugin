@@ -23,7 +23,7 @@ loop {
     given $command {
         when /^'EVAL '(\d+)$/ {
             my @lines = (^+$0).map({ $*IN.get });
-            my $code = '{ use MONKEY; $*NEXT-EVAL = -> $code { EVAL $code }; ' ~
+            my $code = '{ use MONKEY; $*NEXT-EVAL = -> $code { EVAL $code }; note "\x01 COMPILED-OK"; ' ~
                 "\n" ~ @lines.join("\n") ~ "\n}";
             my $output-pos = $*OUT.tell;
             my $result = $*NEXT-EVAL($code);

@@ -21,14 +21,25 @@ import java.util.List;
 /** Keeps track of previous executions, so we can do auto-completions based upon
  * them. */
 public class Perl6ReplState {
+    private static class HistoryEntry {
+        public final Perl6File file;
+        public boolean compiledOk;
+        private HistoryEntry(Perl6File file) {
+            this.file = file;
+        }
+    }
+
     private final Perl6ReplConsole console;
-    private final List<Perl6File> executionHistory = new ArrayList<>();
+    private final List<HistoryEntry> executionHistory = new ArrayList<>();
     public static final Key<Perl6ReplState> PERL6_REPL_STATE = Key.create("PERL6_REPL_STATE");
 
     public Perl6ReplState(Perl6ReplConsole console) {
         this.console = console;
     }
 
+    /**
+     * Adds an executed line. Note that it may not compile, and so we don't yet
+     * use it to contribute symbols until we're told it worked out OK. */
     public void addExecuted(String code) {
         ReadAction.run(() -> {
             // Obtain the virtual file for the console view.
@@ -44,7 +55,7 @@ public class Perl6ReplState {
             PsiFile psiFile = ((PsiFileFactoryImpl)PsiFileFactory.getInstance(project)).trySetupPsiForFile(
                     file, Perl6Language.INSTANCE, true, false);
             if (psiFile instanceof Perl6File)
-                executionHistory.add((Perl6File)psiFile);
+                executionHistory.add(new HistoryEntry((Perl6File)psiFile));
 
             // Make sure the REPL state is attached to the console virtual file.
             consoleFile.putUserDataIfAbsent(PERL6_REPL_STATE, this);
@@ -53,9 +64,16 @@ public class Perl6ReplState {
 
     public void contributeFromHistory(Perl6SymbolCollector collector) {
         for (int i = executionHistory.size() - 1; i >= 0; i--) {
-            for (Perl6LexicalSymbolContributor contributor : executionHistory.get(i).getSymbolContributors()) {
-                contributor.contributeLexicalSymbols(collector);
+            HistoryEntry entry = executionHistory.get(i);
+            if (entry.compiledOk) {
+                for (Perl6LexicalSymbolContributor contributor : entry.file.getSymbolContributors()) {
+                    contributor.contributeLexicalSymbols(collector);
+                }
             }
         }
+    }
+
+    public void markLatestCompiledOk() {
+        executionHistory.get(executionHistory.size() - 1).compiledOk = true;
     }
 }

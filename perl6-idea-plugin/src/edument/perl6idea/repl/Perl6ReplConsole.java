@@ -83,8 +83,7 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
                 sendText("EVAL " + lines.length + "\n" +
                          String.join("\n", lines) + "\n");
 
-                // Add this line to the history, so we can auto-complete anything that
-                // is declared in it. TODO only for successfully executed lines.
+                // Add this line to the history, (used for history and auto-complete).
                 replState.addExecuted(line);
             }
         };
@@ -93,5 +92,9 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
     @Override
     protected AnAction createConsoleExecAction(@NotNull ProcessBackedConsoleExecuteActionHandler consoleExecuteActionHandler) {
         return new ConsoleExecuteAction(getConsoleView(), consoleExecuteActionHandler, "Perl6ReplExecute", consoleExecuteActionHandler);
+    }
+
+    public Perl6ReplState getReplState() {
+        return replState;
     }
 }
