@@ -78,7 +78,7 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
 
     public void testRegexProviding() {
         doTest("'test' ~~ /(\\w) (\\w) $<testtt> = \\w /; say $<caret>", "$0", "$1", "$<testtt>");
-        doNegativeTest("/(\\w)/; say $<caret>", "$0");
+        doTest("/(\\w)/; say $<caret>", "$0");
         doNegativeTest("'' ~~ /(\\w)/; sub t { say $<caret> }", "$0");
         doNegativeTest("'test' ~~ /(\\w)/; given {} -> $/ { $<caret> }", "$0");
         doNegativeTest("'test' ~~ /(\\w)/; my $/; $<caret>", "$0");
