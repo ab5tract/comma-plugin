@@ -246,7 +246,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     @Override
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
-        for (String symbol : VARIABLE_SYMBOLS.keySet()) {
+       for (String symbol : VARIABLE_SYMBOLS.keySet()) {
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, symbol));
             if (collector.isSatisfied())
                 return;

@@ -36,15 +36,11 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
         LanguageConsoleBuilder builder = new LanguageConsoleBuilder();
         builder.oneLineInput(false);
         LanguageConsoleView consoleView = builder
-                .gutterContentProvider(new Perl6ReplGutter())
                 .build(getProject(), Perl6Language.INSTANCE);
 
         EditorEx consoleEditor = consoleView.getConsoleEditor();
         addHint(consoleEditor);
-        showGutter(consoleEditor);
         consoleEditor.getSettings().setCaretRowShown(true);
-
-        showGutter(consoleView.getHistoryViewer());
 
         return consoleView;
     }
@@ -59,11 +55,6 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
         placeholderAttrs.setForegroundColor(JBColor.LIGHT_GRAY);
         placeholderAttrs.setFontType(Font.ITALIC);
         editor.setPlaceholderAttributes(placeholderAttrs);
-    }
-
-    private static void showGutter(EditorEx editor) {
-        editor.getSettings().setLineMarkerAreaShown(true);
-        editor.getSettings().setFoldingOutlineShown(true);
     }
 
     @Nullable
