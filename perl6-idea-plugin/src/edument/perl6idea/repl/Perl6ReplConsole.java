@@ -41,6 +41,7 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
         EditorEx consoleEditor = consoleView.getConsoleEditor();
         addHint(consoleEditor);
         consoleEditor.getSettings().setCaretRowShown(true);
+        consoleEditor.getContentComponent().addKeyListener(new Perl6ReplHistoryKeyListener(this));
 
         return consoleView;
     }

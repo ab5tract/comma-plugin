@@ -32,9 +32,14 @@ public class Perl6ReplState {
     private final Perl6ReplConsole console;
     private final List<HistoryEntry> executionHistory = new ArrayList<>();
     public static final Key<Perl6ReplState> PERL6_REPL_STATE = Key.create("PERL6_REPL_STATE");
+    private List<Runnable> newHistoryListeners = new ArrayList<>();
 
     public Perl6ReplState(Perl6ReplConsole console) {
         this.console = console;
+    }
+
+    public void addNewHistoryListener(Runnable listener) {
+        newHistoryListeners.add(listener);
     }
 
     /**
@@ -59,6 +64,10 @@ public class Perl6ReplState {
 
             // Make sure the REPL state is attached to the console virtual file.
             consoleFile.putUserDataIfAbsent(PERL6_REPL_STATE, this);
+
+            // Fire any new history listeners.
+            for (Runnable listener : newHistoryListeners)
+                listener.run();
         });
     }
 
@@ -75,5 +84,13 @@ public class Perl6ReplState {
 
     public void markLatestCompiledOk() {
         executionHistory.get(executionHistory.size() - 1).compiledOk = true;
+    }
+
+    public int getHistorySize() {
+        return executionHistory.size();
+    }
+
+    public CharSequence getExecutionText(int index) {
+        return executionHistory.get(index).file.getText();
     }
 }
