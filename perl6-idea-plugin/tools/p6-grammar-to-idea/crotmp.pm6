@@ -180,7 +180,10 @@ grammar MAIN {
         <.tlt>
         <.iter-sigil>
         [
-            <.deref>
+            [
+            || <.deref>
+            || <.variable> [<.dot> <.deref>?]?
+            ]
             <.hws>?
             [
                 <.start-token('COLON')>

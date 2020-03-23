@@ -1840,10 +1840,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsMark(32);
+                this.bsMark(41);
                 this.state = 3;
                 break;
             case 3:
+                this.bsFailMark(13);
+                this.bsMark(5);
                 this.setArgs();
                 this.state = 4;
                 return 43;
@@ -1858,13 +1860,14 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsMark(7);
-                this.state = 5;
-                break;
+                this.bsCommit(13);
+                this.state = 13;
+                continue;
+
             case 5:
                 this.setArgs();
                 this.state = 6;
-                return 51;
+                return 40;
 
             case 6:
                 if (this.lastResult.isFailed()) {
@@ -1876,36 +1879,15 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(7);
-                this.state = 7;
-                continue;
-
-            case 7:
-                this.bsMark(19);
-                this.state = 8;
-                break;
-            case 8:
-                this.startToken(CroTemplateTokenTypes.COLON);
-                if (!(this.literal(":"))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
-                this.state = 9;
-                return -3;
-
-            case 9:
                 this.bsMark(12);
-                this.state = 10;
+                this.state = 7;
                 break;
-            case 10:
+            case 7:
                 this.setArgs();
-                this.state = 11;
-                return 51;
+                this.state = 8;
+                return 55;
 
-            case 11:
+            case 8:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -1915,30 +1897,45 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(12);
-                this.state = 12;
-                continue;
-
-            case 12:
-                this.bsMark(18);
-                this.state = 13;
+                this.bsMark(11);
+                this.state = 9;
                 break;
-            case 13:
-                this.startToken(CroTemplateTokenTypes.VARIABLE_NAME);
-                if (!(this.literal("$"))) {
+            case 9:
+                this.setArgs();
+                this.state = 10;
+                return 43;
+
+            case 10:
+                if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
                     } else {
                         return -2;
                     }
+                } else {
+                    this.pos = this.lastResult.getPos();
                 }
+                this.bsCommit(11);
+                this.state = 11;
+                continue;
+
+            case 11:
+                this.bsCommit(12);
+                this.state = 12;
+                continue;
+
+            case 12:
+                this.state = 13;
+                continue;
+
+            case 13:
                 this.bsMark(16);
                 this.state = 14;
                 break;
             case 14:
                 this.setArgs();
                 this.state = 15;
-                return 64;
+                return 51;
 
             case 15:
                 if (this.lastResult.isFailed()) {
@@ -1955,66 +1952,64 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 continue;
 
             case 16:
+                this.bsMark(28);
                 this.state = 17;
+                break;
+            case 17:
+                this.startToken(CroTemplateTokenTypes.COLON);
+                if (!(this.literal(":"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 18;
                 return -3;
 
-            case 17:
-                this.bsCommit(18);
-                this.state = 18;
-                continue;
-
             case 18:
-                this.bsCommit(19);
+                this.bsMark(21);
                 this.state = 19;
-                continue;
-
-            case 19:
-                this.bsMark(31);
-                this.state = 20;
                 break;
-            case 20:
+            case 19:
                 this.setArgs();
+                this.state = 20;
+                return 51;
+
+            case 20:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(21);
                 this.state = 21;
-                return 53;
+                continue;
 
             case 21:
-                if (this.lastResult.isFailed()) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                } else {
-                    this.pos = this.lastResult.getPos();
-                }
-                this.setArgs();
+                this.bsMark(27);
                 this.state = 22;
-                return 3;
-
+                break;
             case 22:
-                if (this.lastResult.isFailed()) {
+                this.startToken(CroTemplateTokenTypes.VARIABLE_NAME);
+                if (!(this.literal("$"))) {
                     if (this.backtrack()) {
                         continue;
                     } else {
                         return -2;
                     }
-                } else {
-                    this.pos = this.lastResult.getPos();
                 }
-                this.bsMark(30);
+                this.bsMark(25);
                 this.state = 23;
                 break;
             case 23:
-                if (!(this.lookahead(74))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
                 this.setArgs();
                 this.state = 24;
-                return 52;
+                return 64;
 
             case 24:
                 if (this.lastResult.isFailed()) {
@@ -2026,43 +2021,34 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.setArgs();
+                this.bsCommit(25);
                 this.state = 25;
-                return 54;
+                continue;
 
             case 25:
-                if (this.lastResult.isFailed()) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                } else {
-                    this.pos = this.lastResult.getPos();
-                }
-                this.setArgs();
                 this.state = 26;
-                return 59;
+                return -3;
 
             case 26:
-                if (this.lastResult.isFailed()) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                } else {
-                    this.pos = this.lastResult.getPos();
-                }
-                this.bsMark(29);
+                this.bsCommit(27);
                 this.state = 27;
-                break;
+                continue;
+
             case 27:
-                this.setArgs();
+                this.bsCommit(28);
                 this.state = 28;
-                return 53;
+                continue;
 
             case 28:
+                this.bsMark(40);
+                this.state = 29;
+                break;
+            case 29:
+                this.setArgs();
+                this.state = 30;
+                return 53;
+
+            case 30:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -2072,26 +2058,111 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(29);
-                this.state = 29;
-                continue;
-
-            case 29:
-                this.bsCommit(30);
-                this.state = 30;
-                continue;
-
-            case 30:
-                this.bsCommit(31);
+                this.setArgs();
                 this.state = 31;
-                continue;
+                return 3;
 
             case 31:
-                this.bsCommit(32);
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsMark(39);
                 this.state = 32;
+                break;
+            case 32:
+                if (!(this.lookahead(74))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.setArgs();
+                this.state = 33;
+                return 52;
+
+            case 33:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.setArgs();
+                this.state = 34;
+                return 54;
+
+            case 34:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.setArgs();
+                this.state = 35;
+                return 59;
+
+            case 35:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsMark(38);
+                this.state = 36;
+                break;
+            case 36:
+                this.setArgs();
+                this.state = 37;
+                return 53;
+
+            case 37:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(38);
+                this.state = 38;
                 continue;
 
-            case 32:
+            case 38:
+                this.bsCommit(39);
+                this.state = 39;
+                continue;
+
+            case 39:
+                this.bsCommit(40);
+                this.state = 40;
+                continue;
+
+            case 40:
+                this.bsCommit(41);
+                this.state = 41;
+                continue;
+
+            case 41:
                 return -1;
 
             }
