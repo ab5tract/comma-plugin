@@ -1,11 +1,15 @@
 package edument.perl6idea.repl;
 
 import com.intellij.execution.ExecutionException;
+import com.intellij.execution.Executor;
 import com.intellij.execution.console.*;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
+import com.intellij.execution.ui.RunContentDescriptor;
+import com.intellij.ide.CommonActionsManager;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.keymap.KeymapUtil;
@@ -19,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageConsoleView> {
     private Perl6CommandLine commandLine;
@@ -93,6 +99,17 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
     @Override
     protected AnAction createConsoleExecAction(@NotNull ProcessBackedConsoleExecuteActionHandler consoleExecuteActionHandler) {
         return new ConsoleExecuteAction(getConsoleView(), consoleExecuteActionHandler, "Perl6ReplExecute", consoleExecuteActionHandler);
+    }
+
+    @Override
+    protected java.util.List<AnAction> fillToolBarActions(final DefaultActionGroup toolbarActions,
+                                                          final Executor defaultExecutor,
+                                                          final RunContentDescriptor contentDescriptor) {
+        List<AnAction> actionList = new ArrayList<>();
+        actionList.add(createCloseAction(defaultExecutor, contentDescriptor));
+        actionList.add(createConsoleExecAction(getConsoleExecuteActionHandler()));
+        toolbarActions.addAll(actionList);
+        return actionList;
     }
 
     public Perl6ReplState getReplState() {
