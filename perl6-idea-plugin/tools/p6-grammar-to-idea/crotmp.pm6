@@ -27,7 +27,7 @@ grammar MAIN {
     token comment-tag {
         <.start-element('COMMENT')>
         <.start-token('COMMENT')>
-        '<!--' <-[>]>* '>'?
+        '<!--' [\w+ || \s+ || <!before '-->'> .]* '-->'?
         <.end-token('COMMENT')>
         <.end-element('COMMENT')>
     }
