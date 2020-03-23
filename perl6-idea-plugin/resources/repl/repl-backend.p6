@@ -10,6 +10,8 @@
 #    \x01 COMPILE-ERROR-START
 #    \x01 RUNTIME-ERROR-START
 #    \x01 ERROR-END
+#    \x01 COMPILED-OK
+#    \x01 ERROR-SPLIT
 
 use MONKEY;
 
@@ -32,12 +34,10 @@ loop {
             }
             CATCH {
                 when X::Comp {
-                    note "\x01 COMPILE-ERROR-START";
-                    note .line - 1;
-                    note .pre // '';
-                    note .post // '';
-                    note .message;
-                    note "\x01 ERROR-END";
+                    report-compile-errors([$_]);
+                }
+                when X::Comp::Group {
+                    report-compile-errors(flat .sorrows, .panic);
                 }
                 default {
                     note "\x01 RUNTIME-ERROR-START";
@@ -52,4 +52,17 @@ loop {
             }
         }
     }
+}
+
+sub report-compile-errors(@errors) {
+    note "\x01 COMPILE-ERROR-START";
+    note @errors.elems;
+    for @errors {
+        note .line - 1;
+        note .pre // '';
+        note .post // '';
+        note .message;
+        note "\x01 ERROR-SPLIT";
+    }
+    note "\x01 ERROR-END";
 }

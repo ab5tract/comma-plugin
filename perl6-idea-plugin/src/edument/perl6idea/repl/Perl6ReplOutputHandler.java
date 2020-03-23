@@ -103,13 +103,38 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
         }
     }
 
+    private static class CompileError {
+        public final int line;
+        public final String pre;
+        public final String post;
+        public final String message;
+        private CompileError(int line, String pre, String post, String message) {
+            this.line = line;
+            this.pre = pre;
+            this.post = post;
+            this.message = message;
+        }
+    }
+
     private void emitError() {
         if (specialOutputKind == SpecialOutputKind.CompileError && specialOutputLines.size() >= 4) {
-            int line = Integer.parseInt(specialOutputLines.get(0));
-            String pre = specialOutputLines.get(1);
-            String post = specialOutputLines.get(2);
-            String message = specialOutputLines.stream().skip(3).collect(Collectors.joining());
-            ApplicationManager.getApplication().invokeAndWait(() -> emitCompileError(line, pre, post, message));
+            int outputLineIdx = 0;
+            int numErrors = Integer.parseInt(specialOutputLines.get(outputLineIdx++));
+            CompileError[] errors = new CompileError[numErrors];
+            for (int i = 0; i < numErrors; i++) {
+                int line = Integer.parseInt(specialOutputLines.get(outputLineIdx++));
+                String pre = specialOutputLines.get(outputLineIdx++);
+                String post = specialOutputLines.get(outputLineIdx++);
+                String message = "";
+                while (true) {
+                    String messagePart = specialOutputLines.get(outputLineIdx++);
+                    if (messagePart.equals("\u0001 ERROR-SPLIT"))
+                        break;
+                    message += messagePart;
+                }
+                errors[i] = new CompileError(line, pre, post, message);
+            }
+            ApplicationManager.getApplication().invokeAndWait(() -> emitCompileErrors(errors));
         }
         else if (specialOutputKind == SpecialOutputKind.RuntimeError) {
             // Collect backtrace lines and message lines.
@@ -139,18 +164,20 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
         specialOutputLines.clear();
     }
 
-    private void emitCompileError(int line, String pre, String post, String message) {
+    private void emitCompileErrors(CompileError[] errors) {
         LanguageConsoleView view = repl.getConsoleView();
         view.print("===", ConsoleViewContentType.getConsoleViewType(SORRY_HEADER));
         view.print("SORRY", ConsoleViewContentType.NORMAL_OUTPUT);
         view.print("===\n", ConsoleViewContentType.getConsoleViewType(SORRY_HEADER));
-        view.print(message + "\nat evaluation line " + line + "\n",
-                   ConsoleViewContentType.NORMAL_OUTPUT);
-        if (!pre.isEmpty() && !post.isEmpty()) {
-            view.print("------> ", ConsoleViewContentType.NORMAL_OUTPUT);
-            view.print(pre, ConsoleViewContentType.getConsoleViewType(PRE_CODE));
-            view.print("⏏", ConsoleViewContentType.getConsoleViewType(EJECT_MARKER));
-            view.print(post + "\n", ConsoleViewContentType.getConsoleViewType(POST_CODE));
+        for (CompileError error : errors) {
+            view.print(error.message + "\nat evaluation line " + error.line + "\n",
+                       ConsoleViewContentType.NORMAL_OUTPUT);
+            if (!error.pre.isEmpty() && !error.post.isEmpty()) {
+                view.print("------> ", ConsoleViewContentType.NORMAL_OUTPUT);
+                view.print(error.pre, ConsoleViewContentType.getConsoleViewType(PRE_CODE));
+                view.print("⏏", ConsoleViewContentType.getConsoleViewType(EJECT_MARKER));
+                view.print(error.post + "\n", ConsoleViewContentType.getConsoleViewType(POST_CODE));
+            }
         }
     }
 
