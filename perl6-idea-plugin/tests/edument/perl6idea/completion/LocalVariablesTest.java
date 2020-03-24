@@ -99,6 +99,8 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
         // Regressions
         doTest("grammar G { token foo:sym<bar> { (.) $<foo> = \\w } }; class G { method foo:sym<bar>($/) { say $<caret> } }", "$0", "$<foo>");
         doNegativeTest("my $foo = \"omg42 wow\" ~~ /[<:L>\\d] (x(y)) (zzz)/; say $<caret>", "$2");
+        doTest("'foo' ~~ /$<a>=[<foo> <bar>]/; $<caret>", "$<a>", "$<foo>", "$<bar>");
+        doNegativeTest("'foo' ~~ /$<a>=(<foo> <bar>)/; $<caret>", "$<foo>", "$<bar>");
     }
 
     private void doTest(String text, String... elems) {
