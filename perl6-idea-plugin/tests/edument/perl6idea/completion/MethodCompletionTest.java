@@ -482,7 +482,7 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
     }
 
     public void testTypelessHashAttributeInference() {
-        doTestContainsAll("class C { has %.a; method mmm(--> C) { self.a.<caret> } }", ".STORE_AT_KEY");
+        doTestContainsAll("class C { has %.a; method mmm(--> C) { self.a.<caret> } }", ".EXISTS-KEY");
     }
 
     public void testTypelessCallableAttributeInference() {
