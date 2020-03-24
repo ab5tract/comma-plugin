@@ -12,9 +12,10 @@ public interface Perl6RegexDriver extends PsiElement {
     default Collection<PsiNamedElement> collectRegexVariables() {
         if (!(this instanceof Perl6PsiElement))
             return new ArrayList<>();
-        Collection<Perl6RegexAtom> atoms = PsiTreeUtil.findChildrenOfType(this, Perl6RegexAtom.class);
+        Perl6Regex regex = PsiTreeUtil.findChildOfType(this, Perl6Regex.class, false);
+        if (regex == null) return new ArrayList<>();
         List<PsiNamedElement> symbols = new ArrayList<>();
-        for (Perl6RegexAtom atom : atoms) {
+        for (PsiElement atom : regex.getChildren()) {
             PsiElement firstChild = atom.getFirstChild();
             if (firstChild instanceof Perl6RegexCapturePositional) {
                 symbols.add(((Perl6RegexCapturePositional)firstChild));
