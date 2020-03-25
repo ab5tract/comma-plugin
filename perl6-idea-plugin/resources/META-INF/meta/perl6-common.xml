@@ -11,6 +11,9 @@
     <fileType name="Raku Test" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6TestFileType" fieldName="INSTANCE" extensions="t;t6;rakutest"/>
     <fileType name="Raku Pod" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6PodFileType" fieldName="INSTANCE" extensions="pod6;rakudoc"/>
     <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
+    <fileTypeDetector implementation="edument.perl6idea.filetypes.Perl6FileShebangTypeDetector"/>
+    <fileTypeDetector implementation="edument.perl6idea.filetypes.RakuFileShebangTypeDetector"/>
+    <fileTypeDetector implementation="edument.perl6idea.filetypes.RakudoFileShebangTypeDetector"/>
     <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
     <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>
     <programRunner implementation="edument.perl6idea.debugger.Perl6DebugRunner"/>
