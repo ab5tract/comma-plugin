@@ -2,7 +2,9 @@ package edument.perl6idea.sdk;
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.execution.ExecutionException;
-import com.intellij.openapi.application.Application;
+import com.intellij.notification.*;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditor;
@@ -15,6 +17,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.actions.ShowPerl6ProjectStructureAction;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.external.ExternalPerl6File;
@@ -44,6 +47,9 @@ public class Perl6SdkType extends SdkType {
     private static final String NAME = "Raku SDK";
     public static final String SETTING_FILE_NAME = "SETTINGS.pm6";
     private static final Set<String> BINARY_NAMES = new HashSet<>();
+    public static final NotificationGroup
+        RAKU_SDK_ERRORS_GROUP = new NotificationGroup("Raku SDK errors", NotificationDisplayType.BALLOON, true);
+    private boolean sdkIssueNotified = false;
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
     private Map<String, String> moarBuildConfig;
 
@@ -167,7 +173,7 @@ public class Perl6SdkType extends SdkType {
                     return null;
             }
         } catch (IOException|InterruptedException e) {
-            LOG.warn(e);
+            reactToSDKIssue(null);
         }
         return line;
     }
@@ -211,7 +217,7 @@ public class Perl6SdkType extends SdkType {
             }
             moarBuildConfig = buildConfig;
         } catch (ExecutionException e) {
-            LOG.warn(e);
+            reactToSDKIssue(project);
             return null;
         }
 
@@ -235,7 +241,7 @@ public class Perl6SdkType extends SdkType {
                                   : coreSymbols == null
                                     ? "getCoreSettingFile is called with corrupted resources bundle, using fallback"
                                     : "getCoreSettingFile is called with corrupted resources bundle";
-            LOG.warn(errorMessage);
+            reactToSDKIssue(project, errorMessage);
             return getFallback(project);
         }
 
@@ -249,7 +255,7 @@ public class Perl6SdkType extends SdkType {
                     try {
                         String settingLines = String.join("\n", cmd.executeAndRead());
                         if (settingLines.isEmpty()) {
-                            LOG.warn("getCoreSettingFile got no symbols from Raku, using fallback");
+                            reactToSDKIssue(project, "getCoreSettingFile got no symbols from Raku, using fallback");
                             getFallback(project);
                         }
                         else {
@@ -263,8 +269,27 @@ public class Perl6SdkType extends SdkType {
             }
             return new ExternalPerl6File(project, new LightVirtualFile("DUMMY"));
         } catch (ExecutionException e) {
-            LOG.error(e);
+            reactToSDKIssue(project);
             return getFallback(project);
+        }
+    }
+
+    private synchronized void reactToSDKIssue(@Nullable Project project) {
+        reactToSDKIssue(project, "Cannot use currently set SDK to obtain necessary symbols");
+    }
+
+    private synchronized void reactToSDKIssue(@Nullable Project project, String message) {
+        if (!sdkIssueNotified) {
+            sdkIssueNotified = true;
+            Notification notification = RAKU_SDK_ERRORS_GROUP
+                .createNotification(message, NotificationType.WARNING);
+            notification = notification.addAction(new AnAction("Project Structure") {
+                @Override
+                public void actionPerformed(@NotNull AnActionEvent e) {
+                    new ShowPerl6ProjectStructureAction().actionPerformed(e);
+                }
+            });
+            Notifications.Bus.notify(notification, project);
         }
     }
 
@@ -285,14 +310,14 @@ public class Perl6SdkType extends SdkType {
     private Perl6File getFallback(Project project) {
         File fallback = Perl6Utils.getResourceAsFile("symbols/CORE.fallback");
         if (fallback == null) {
-            LOG.error("getCoreSettingFile is called with corrupted resources bundle");
+            reactToSDKIssue(project, "getCoreSettingFile is called with corrupted resources bundle, try to set a proper SDK for this project");
             return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
         }
 
         try {
             return setting = makeSettingSymbols(project, new String(Files.readAllBytes(fallback.toPath()), StandardCharsets.UTF_8));
         } catch (IOException e) {
-            LOG.error(e);
+            reactToSDKIssue(project);
             return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
         }
     }
@@ -302,7 +327,7 @@ public class Perl6SdkType extends SdkType {
             settingJson = new JSONArray(json);
             return makeSettingSymbols(project, settingJson);
         } catch (JSONException e) {
-            Logger.getInstance(Perl6SdkType.class).warn(e);
+            reactToSDKIssue(project);
         }
         return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
     }
@@ -325,7 +350,7 @@ public class Perl6SdkType extends SdkType {
 
         if (!myPackageStarted.contains(name)) {
             myPackageStarted.add(name);
-            Thread thread = new Thread(() -> {
+            ApplicationManager.getApplication().executeOnPooledThread(() -> {
                 try {
                     // if not, check if we have symbol cache, if yes, parse, save and return it
                     if (symbolCache.containsKey(name))
@@ -333,11 +358,11 @@ public class Perl6SdkType extends SdkType {
                     // if no symbol cache, compute as usual
                     cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, invocation));
                     triggerCodeAnalysis(project);
-                } catch (AssertionError e) {
+                }
+                catch (AssertionError e) {
                     // If the project was already disposed, do not die in a background thread
                 }
             });
-            thread.start();
         }
         return new ExternalPerl6File(project, new LightVirtualFile("DUMMY"));
     }
@@ -372,14 +397,14 @@ public class Perl6SdkType extends SdkType {
         setting = null;
     }
 
-    public void invalidateSymbolCache() {
+    public synchronized void invalidateSymbolCache() {
         useNameSymbolCache = new ConcurrentHashMap<>();
         needNameSymbolCache = new ConcurrentHashMap<>();
         settingJson = new JSONArray();
+        sdkIssueNotified = false;
     }
 
     private static List<Perl6Symbol> loadModuleSymbols(Project project, Perl6File perl6File, String invocation) {
-
         if (invocation.equals("use nqp")) {
             return getNQPSymbols(project, perl6File);
         }
@@ -387,10 +412,10 @@ public class Perl6SdkType extends SdkType {
         String homePath = getSdkHomeByProject(project);
         File moduleSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-module-symbols.p6");
         if (homePath == null) {
-            LOG.warn(new ExecutionException("SDK path is not set"));
+            LOG.info(new ExecutionException("SDK path is not set"));
             return new ArrayList<>();
         } else if (moduleSymbols == null) {
-            LOG.warn(new ExecutionException("Necessary distribution file is missing"));
+            LOG.info(new ExecutionException("Necessary distribution file is missing"));
             return new ArrayList<>();
         }
         try {
@@ -427,7 +452,7 @@ public class Perl6SdkType extends SdkType {
                                                        String parentName,
                                                        MOPSymbolsAllowed allowed) {
         Perl6SingleResolutionSymbolCollector parentCollector =
-          new Perl6SingleResolutionSymbolCollector(parentName, Perl6SymbolKind.TypeOrConstant);
+            new Perl6SingleResolutionSymbolCollector(parentName, Perl6SymbolKind.TypeOrConstant);
         coreSetting.contributeGlobals(parentCollector, new HashSet<>());
         if (parentCollector.isSatisfied()) {
             Perl6PackageDecl decl = (Perl6PackageDecl)parentCollector.getResult().getPsi();
