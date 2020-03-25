@@ -3,10 +3,11 @@ package edument.perl6idea.repl;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.console.*;
+import com.intellij.execution.impl.ConsoleViewImpl;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.runners.AbstractConsoleRunnerWithHistory;
+import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.ui.RunContentDescriptor;
-import com.intellij.ide.CommonActionsManager;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -83,6 +84,18 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
     @Override
     protected ProcessBackedConsoleExecuteActionHandler createExecuteActionHandler() {
         return new ProcessBackedConsoleExecuteActionHandler(getProcessHandler(), true) {
+            @Override
+            protected void beforeExecution(@NotNull LanguageConsoleView view) {
+                // Ensure that the current REPL document ends in a newline before adding the text of
+                // the command.
+                String currentText = view.getHistoryViewer().getDocument().getText();
+                if (!currentText.endsWith("\n"))
+                    view.print("\n", ConsoleViewContentType.NORMAL_OUTPUT);
+                ((ConsoleViewImpl)view).flushDeferredText();
+
+                super.beforeExecution(view);
+            }
+
             @Override
             public void processLine(@NotNull String line) {
                 // Wrap in envelope for REPL backend.
