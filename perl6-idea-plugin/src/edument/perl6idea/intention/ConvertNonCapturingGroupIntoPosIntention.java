@@ -31,6 +31,11 @@ public class ConvertNonCapturingGroupIntoPosIntention extends ConvertNonCapturin
     protected void postProcess(Project project, Editor editor, PsiElement element) {
         // Here, we want to rename all positional capture variables from this regex
         // to consider newly added one
+        // At zero step, check if this new positional is a top level,
+        // only in this case we should update variables count, as recursive
+        // positional captures are not flattened
+        if (!(PsiTreeUtil.getParentOfType(element, Perl6RegexDriver.class, Perl6RegexCapturePositional.class, Perl6RegexVariable.class) instanceof Perl6RegexDriver))
+            return;
         // First, find all positional variables this regex provides
         Perl6RegexDriver driver = PsiTreeUtil.getParentOfType(element, Perl6RegexDriver.class);
         assert driver != null;
