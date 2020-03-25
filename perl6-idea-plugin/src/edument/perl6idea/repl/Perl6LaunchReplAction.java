@@ -2,12 +2,16 @@ package edument.perl6idea.repl;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
+import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.actions.ShowPerl6ProjectStructureAction;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6LaunchReplAction extends AnAction {
@@ -22,8 +26,21 @@ public class Perl6LaunchReplAction extends AnAction {
             console.initAndRun();
         }
         catch (ExecutionException ex) {
-            // TODO report
-            ex.printStackTrace();
+            Notification notification = new Notification("Raku REPL errors", Perl6Icons.CAMELIA, "Cannot run REPL",
+                                                         "", "Could not start Raku REPL", NotificationType.ERROR, null);
+            notification = notification.addAction(new AnAction("Check SDK") {
+                @Override
+                public void actionPerformed(@NotNull AnActionEvent e) {
+                    new ShowPerl6ProjectStructureAction().actionPerformed(e);
+                }
+            });
+            notification = notification.addAction(new AnAction("Show Exception Details to Report") {
+                @Override
+                public void actionPerformed(@NotNull AnActionEvent e) {
+                    Logger.getInstance(Perl6LaunchReplAction.class).error(ex);
+                }
+            });
+            Notifications.Bus.notify(notification, project);
         }
     }
 
