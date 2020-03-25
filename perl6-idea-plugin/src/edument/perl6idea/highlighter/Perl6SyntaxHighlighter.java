@@ -4,7 +4,7 @@ import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
-import edument.perl6idea.parsing.Perl6Lexer;
+import edument.perl6idea.parsing.Perl6HighlighterLexer;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -126,7 +126,7 @@ public class Perl6SyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public Lexer getHighlightingLexer() {
-        return new Perl6Lexer();
+        return new Perl6HighlighterLexer();
     }
 
     @NotNull

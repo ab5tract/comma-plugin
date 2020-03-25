@@ -6,6 +6,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
@@ -20,6 +21,7 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.repl.Perl6ReplState;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -244,7 +246,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     @Override
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
-        for (String symbol : VARIABLE_SYMBOLS.keySet()) {
+       for (String symbol : VARIABLE_SYMBOLS.keySet()) {
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, symbol));
             if (collector.isSatisfied())
                 return;
@@ -253,11 +255,19 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         if (collector.isSatisfied())
             return;
         PsiElement list = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
-        if (list == null) return;
-        PsiElement finish = PsiTreeUtil.findChildOfType(list, PodBlockFinish.class);
-        if (finish != null) {
-            Perl6Symbol finishBlock = new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$=finish");
-            collector.offerSymbol(finishBlock);
+        if (list != null) {
+            PsiElement finish = PsiTreeUtil.findChildOfType(list, PodBlockFinish.class);
+            if (finish != null) {
+                Perl6Symbol finishBlock = new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$=finish");
+                collector.offerSymbol(finishBlock);
+            }
+        }
+
+        VirtualFile virtualFile = getOriginalFile().getVirtualFile();
+        if (virtualFile != null) {
+            Perl6ReplState replState = virtualFile.getUserData(Perl6ReplState.PERL6_REPL_STATE);
+            if (replState != null)
+                replState.contributeFromHistory(collector);
         }
     }
 

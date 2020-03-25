@@ -189,6 +189,15 @@
             description="Create new Cro template in current project" icon="/icons/cro.png">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewTestAction"/>
     </action>
+    <action id="edument.perl6idea.repl.Perl6LaunchReplAction" class="edument.perl6idea.repl.Perl6LaunchReplAction" text="Launch Raku REPL"
+            description="Runs the Raku REPL associated with the current project&#39;s SDK.">
+      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
+    </action>
+    <action id="Perl6ReplExecute" class="com.intellij.openapi.actionSystem.EmptyAction"
+            text="Execute Raku Code"
+            description="Execute Raku code in REPL console">
+      <keyboard-shortcut first-keystroke="control ENTER" keymap="$default"/>
+    </action>
   </actions>
 
   <module-components>
