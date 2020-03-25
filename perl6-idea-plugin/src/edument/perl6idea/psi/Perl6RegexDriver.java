@@ -12,19 +12,25 @@ public interface Perl6RegexDriver extends PsiElement {
     default Collection<PsiNamedElement> collectRegexVariables() {
         if (!(this instanceof Perl6PsiElement))
             return new ArrayList<>();
-        Collection<Perl6RegexAtom> atoms = PsiTreeUtil.findChildrenOfType(this, Perl6RegexAtom.class);
+        Perl6Regex regex = PsiTreeUtil.findChildOfType(this, Perl6Regex.class, false);
+        if (regex == null) return new ArrayList<>();
         List<PsiNamedElement> symbols = new ArrayList<>();
-        for (Perl6RegexAtom atom : atoms) {
+        // Positionals
+        for (PsiElement atom : regex.getChildren()) {
             PsiElement firstChild = atom.getFirstChild();
             if (firstChild instanceof Perl6RegexCapturePositional) {
                 symbols.add(((Perl6RegexCapturePositional)firstChild));
-            } else if (firstChild instanceof Perl6RegexVariable) {
-                symbols.add((Perl6RegexVariable)firstChild);
-            } else if (firstChild instanceof Perl6RegexAssertion && firstChild.getText().matches("^<\\w.*")) {
-                Perl6RegexAssertion regexAssertion = (Perl6RegexAssertion)firstChild;
-                if (regexAssertion.getName() != null)
-                    symbols.add(regexAssertion);
             }
+        }
+        // Nameds
+        Collection<PsiNamedElement> nameds = PsiTreeUtil.findChildrenOfAnyType(regex, Perl6RegexVariable.class, Perl6RegexAssertion.class);
+        for (PsiNamedElement named : nameds) {
+            if (named instanceof Perl6RegexAssertion && named.getText().matches("^<\\w.*")) {
+                if (PsiTreeUtil.getParentOfType(named, Perl6RegexCapturePositional.class, Perl6Regex.class) instanceof Perl6Regex
+                    && named.getName() != null)
+                    symbols.add(named);
+            } else if (named instanceof Perl6RegexVariable)
+                symbols.add(named);
         }
         return symbols;
     }

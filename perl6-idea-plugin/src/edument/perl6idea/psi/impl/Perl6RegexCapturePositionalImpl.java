@@ -10,7 +10,10 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class Perl6RegexCapturePositionalImpl extends ASTWrapperPsiElement implements Perl6RegexCapturePositional {
     public Perl6RegexCapturePositionalImpl(@NotNull ASTNode node) {
@@ -21,12 +24,15 @@ public class Perl6RegexCapturePositionalImpl extends ASTWrapperPsiElement implem
     public String getName() {
         // This is not very efficient, since we want to use alias in caller in Perl6QuoteRegexImpl,
         // but we sacrifice some performance for code consistency
-        Perl6RegexDriver regex = PsiTreeUtil.getParentOfType(this, Perl6QuoteRegex.class, Perl6Regex.class);
-        if (regex != null) {
-            Collection<Perl6RegexCapturePositional> captures = PsiTreeUtil.findChildrenOfType((PsiElement)regex, Perl6RegexCapturePositional.class);
-            int captureCounter = 0;
-            for (Perl6RegexCapturePositional capture : captures) {
-                if (this.equals(capture))
+        Perl6RegexDriver driver = PsiTreeUtil.getParentOfType(this, Perl6RegexDriver.class);
+        if (driver == null) return "";
+        Perl6Regex regex = PsiTreeUtil.findChildOfType(driver, Perl6Regex.class, false);
+        if (regex == null) return "";
+
+        int captureCounter = 0;
+        for (PsiElement s : regex.getChildren()) {
+            if (s.getFirstChild() instanceof Perl6RegexCapturePositional) {
+                if (s.getFirstChild().equals(this))
                     return "$" + captureCounter;
                 captureCounter++;
             }

@@ -301,6 +301,10 @@ public class IntentionTest extends CommaFixtureTestCase {
 
     public void testNonCapturingGroupIntoPos() { executeIntention("Convert into positional"); }
 
+    public void testNonCapturingGroupIntoPosNonFlatting() {
+        executeIntention("Convert into positional");
+    }
+
     public void testNonCapturingGroupIntoNamed() { executeIntention("Convert into named"); }
 
     public void testTernaryStatementConversion() {
