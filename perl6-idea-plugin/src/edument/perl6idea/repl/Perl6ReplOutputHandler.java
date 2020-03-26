@@ -5,7 +5,6 @@ import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessOutputType;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.editor.FoldRegion;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.editor.ex.EditorEx;
@@ -18,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Perl6ReplOutputHandler extends OSProcessHandler {
     private static Key<ConsoleViewContentType> SORRY_HEADER = Key.create("perl6.repl.out.sorryHeader");
@@ -50,6 +48,7 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
     private final StringBuilder buffer;
     private SpecialOutputKind specialOutputKind;
     private final List<String> specialOutputLines;
+    private boolean sawFirstSystemOutputLine;
 
     public Perl6ReplOutputHandler(@NotNull Process process, String commandLine, Perl6ReplConsole repl) {
         super(process, commandLine);
@@ -57,9 +56,6 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
         this.buffer = new StringBuilder();
         this.specialOutputKind = SpecialOutputKind.None;
         this.specialOutputLines = new ArrayList<>();
-
-        LanguageConsoleView view = repl.getConsoleView();
-
     }
 
     @Override
@@ -70,6 +66,12 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
                 processErrorBuffer(buffer.toString());
                 buffer.setLength(0);
             }
+        }
+        else if (outputType == ProcessOutputType.SYSTEM) {
+            if (sawFirstSystemOutputLine)
+                super.notifyTextAvailable(text, outputType);
+            else
+                sawFirstSystemOutputLine = true;
         }
         else {
             super.notifyTextAvailable(text, outputType);
