@@ -151,7 +151,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
                     return myCustomSettings.CALL_ARGUMENTS_ALIGNMENT ? Pair.create(
                     (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM,
                     Alignment.createAlignment()) : null;
-                if (origin instanceof Perl6VariableDecl)
+                else
                     return myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT ? Pair.create(
                     (child) -> child.getElementType() != Perl6TokenTypes.INFIX && child.getElementType() != Perl6TokenTypes.NULL_TERM,
                     Alignment.createAlignment()) : null;
@@ -206,6 +206,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         if (myNode.getElementType() == SEMI_LIST && (myNode.getTreeParent().getElementType() == ARRAY_COMPOSER ||
                                                      myNode.getTreeParent().getElementType() == Perl6ElementTypes.CONTEXTUALIZER))
             return myNode.getTextLength() == 0 ? Indent.getNoneIndent() : Indent.getNormalIndent();
+        if (myNode.getElementType() == STATEMENT_TERMINATOR)
+            return Indent.getContinuationIndent();
         if (isStatementContinuation != null && isStatementContinuation) {
             if (myNode.getElementType() == PARENTHESES_CLOSE && myNode.getTreeParent().getPsi() instanceof Perl6Signature) {
                 return Indent.getSpaceIndent(1, true);
@@ -218,15 +220,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
                 }
             }
             else if (myNode.getElementType() == ARRAY_COMPOSER_CLOSE) {
-                if (myNode.getTreeParent().getPsi() instanceof Perl6ArrayComposer) {
-                    PsiElement maybeSemilist = Perl6PsiUtil.skipSpaces(myNode.getTreePrev().getPsi(), false);
-                    if (maybeSemilist instanceof Perl6SemiList) {
-                        if (maybeSemilist.getText().trim().endsWith(","))
-                            return Indent.getSpaceIndent(1, true);
-                        else
-                            return Indent.getNoneIndent();
-                    }
-                }
+                return Indent.getNoneIndent();
             }
             return Indent.getContinuationIndent();
         }

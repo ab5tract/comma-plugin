@@ -39,6 +39,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("class ABC\n  is export {}", "class ABC\n        is export {}");
         reformatTest("unit module A;\nrole Foo {}", "unit module A;\nrole Foo {}");
         reformatTest("42\n?? 100\n!! 88;", "42\n        ?? 100\n        !! 88;");
+        reformatTest("constant @a = [\n    'Doctor',\n    'Master',\n];", "constant @a = [\n    'Doctor',\n    'Master',\n];");
     }
 
     public void testSpacing() {
@@ -128,13 +129,15 @@ public class FormatterTest extends CommaFixtureTestCase {
         enterTest("say 1 +<caret>", "say 1 +\n        <caret>");
         enterTest("sub abcd($abc,<caret>)","sub abcd($abc,\n         <caret>)");
         enterTest("abcd(42,<caret>)","abcd(42,\n     <caret>)");
-        enterTest("my @a = [42, 42,<caret>]", "my @a = [42, 42,\n         <caret>]");
+        enterTest("my @a = [42, 42,<caret>]", "my @a = [42, 42,\n<caret>]");
         enterTest("my @ab = 42, 42,<caret>", "my @ab = 42, 42,\n         <caret>");
         enterTest("class AAAA is export<caret>", "class AAAA is export\n           <caret>");
         // With block indent
         enterTest("if True {\n    say 42,<caret>\n    say 42;\n}", "if True {\n    say 42,\n            <caret>\n    say 42;\n}");
         enterTest("if True {\n    say 42,<caret>\n}", "if True {\n    say 42,\n        <caret>\n}");
         enterTest("Int.foo:<caret>", "Int.foo:\n        <caret>");
+        enterTest("has $.a is rw<caret>;", "has $.a is rw\n        ;");
+        enterTest("constant @a = [\n    'Doctor',<caret>\n    'Master',\n];", "constant @a = [\n    'Doctor',\n    <caret>\n    'Master',\n];");
     }
 
     public void testIntegrationCases() {
