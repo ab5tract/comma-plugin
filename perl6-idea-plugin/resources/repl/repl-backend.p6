@@ -9,6 +9,7 @@
 # interesting output, such as errors. They are:
 #    \x01 COMPILE-ERROR-START
 #    \x01 RUNTIME-ERROR-START
+#    \x01 AWAIT-BACKTRACE-END
 #    \x01 ERROR-END
 #    \x01 COMPILED-OK
 #    \x01 ERROR-SPLIT
@@ -41,10 +42,11 @@ loop {
                 }
                 default {
                     note "\x01 RUNTIME-ERROR-START";
-                    note .backtrace.nice.split("\n")
-                            .grep(* !~~ /"at $*PROGRAM.absolute()"/)
-                            .map(*.subst(/'at EVAL_'\d+ ' line ' (\d+)/, -> $/ { "at REPL evaluation line {$0 - 1}" }))
-                            .join("\n");
+                    for .*await-backtrace {
+                        note tidy-backtrace($_);
+                        note "\x01 AWAIT-BACKTRACE-END";
+                    }
+                    note tidy-backtrace(.backtrace);
                     note "---";
                     note .message;
                     note "\x01 ERROR-END";
@@ -65,4 +67,11 @@ sub report-compile-errors(@errors) {
         note "\x01 ERROR-SPLIT";
     }
     note "\x01 ERROR-END";
+}
+
+sub tidy-backtrace($backtrace) {
+    $backtrace.nice.split("\n")
+          .grep(* !~~ /"at $*PROGRAM.absolute()"/)
+          .map(*.subst(/'at EVAL_'\d+ ' line ' (\d+)/, -> $/ { "at REPL evaluation line {$0 - 1}" }))
+          .join("\n")
 }

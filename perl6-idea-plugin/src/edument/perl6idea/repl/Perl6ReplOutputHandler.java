@@ -140,10 +140,15 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
             // Collect backtrace lines and message lines.
             boolean inMessage = false;
             List<String> backtraceLines = new ArrayList<>();
+            List<List<String>> awaitBacktraces = new ArrayList<>();
             String message = "";
             for (String line : specialOutputLines) {
                 if (inMessage) {
                     message += line + "\n";
+                }
+                else if (line.equals("\u0001 AWAIT-BACKTRACE-END")) {
+                    awaitBacktraces.add(backtraceLines);
+                    backtraceLines = new ArrayList<>();
                 }
                 else if (line.equals("---")) {
                     inMessage = true;
@@ -152,8 +157,10 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
                     backtraceLines.add(line);
                 }
             }
-            final String javaSucks = message;
-            ApplicationManager.getApplication().invokeAndWait(() -> emitRuntimeError(javaSucks, backtraceLines));
+            final String finalMessage = message;
+            final List<String> finalBacktrace = backtraceLines;
+            ApplicationManager.getApplication().invokeAndWait(() -> emitRuntimeError(finalMessage,
+                    finalBacktrace, awaitBacktraces));
         }
         else {
             // Confused, just pass the output up.
@@ -181,7 +188,7 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
         }
     }
 
-    private void emitRuntimeError(String message, List<String> backtrace) {
+    private void emitRuntimeError(String message, List<String> backtrace, List<List<String>> awaitBacktraces) {
         // Add the error.
         LanguageConsoleView view = repl.getConsoleView();
         view.print(message, ConsoleViewContentType.ERROR_OUTPUT);
@@ -190,7 +197,11 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
             EditorEx historyViewer = view.getHistoryViewer();
             int startFolding = historyViewer.getDocument().getTextLength();
             view.print(String.join("\n", backtrace) + "\n", ConsoleViewContentType.ERROR_OUTPUT);
-            if (backtrace.size() > 1) {
+            for (List<String> awaitBacktrace : awaitBacktraces) {
+                view.print("Awaited at:\n", ConsoleViewContentType.ERROR_OUTPUT);
+                view.print(String.join("\n", awaitBacktrace) + "\n", ConsoleViewContentType.ERROR_OUTPUT);
+            }
+            if (backtrace.size() > 1 || awaitBacktraces.size() > 0) {
                 view.performWhenNoDeferredOutput(() -> {
                     int endFolding = historyViewer.getDocument().getTextLength() - 1;
                     FoldingModelEx folding = historyViewer.getFoldingModel();
