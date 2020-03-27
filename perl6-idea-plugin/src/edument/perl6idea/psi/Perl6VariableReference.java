@@ -57,7 +57,10 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                         return psi;
                 }
             } else {
-                for (PsiNamedElement regexVar : obtainRegexDrivenVars(var)) {
+                Collection<PsiNamedElement> regexDrivenVars = obtainRegexDrivenVars(var);
+                if (regexDrivenVars == null)
+                    return null;
+                for (PsiNamedElement regexVar : regexDrivenVars) {
                     if (Objects.equals(regexVar.getName(), name))
                         return regexVar;
                 }
@@ -77,9 +80,11 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                     true, true, true, enclosingPackage.getPackageKind().equals("role")));
             syms.addAll(collector.getVariants());
         }
+        Collection<PsiNamedElement> regexDrivenVars = obtainRegexDrivenVars(getElement());
+        Collection<PsiNamedElement> elements = regexDrivenVars == null ? new ArrayList<>() : regexDrivenVars;
         return Stream
             .concat(syms.stream().filter(this::isDeclaredAfterCurrentPosition).map(sym -> sym.getName()),
-                    obtainRegexDrivenVars(getElement()).stream())
+                    elements.stream())
             .toArray();
     }
 
@@ -108,7 +113,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
         return false;
     }
 
-    private static Collection<PsiNamedElement> obtainRegexDrivenVars(Perl6Variable starter) {
+    @Nullable
+    public static Collection<PsiNamedElement> obtainRegexDrivenVars(Perl6Variable starter) {
         // Firstly, we check if we are in inline-statement (s///, subst etc) we need
         // to complete based on, or we want some more complex resolution
         Perl6PsiElement anchor = PsiTreeUtil.getParentOfType(starter, Perl6Regex.class, Perl6QuoteRegex.class, Perl6Statement.class);
@@ -141,7 +147,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                             PsiElement rule = items.get(0).getElement();
                             if (rule instanceof Perl6RegexDecl) {
                                 Perl6RegexDriver driver = PsiTreeUtil.findChildOfType(rule, Perl6Regex.class);
-                                return driver == null ? new ArrayList<>() : driver.collectRegexVariables();
+                                return driver == null ? null : driver.collectRegexVariables();
                             }
                         }
                     }
@@ -152,7 +158,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
         } else if (anchor instanceof Perl6RegexDriver) {
             return ((Perl6RegexDriver)anchor).collectRegexVariables();
         }
-        return new ArrayList<>();
+        return null;
     }
 
     private static boolean derefAndCollectRegexVars(PsiElement arg, List<PsiNamedElement> elemsToReturn) {
@@ -175,12 +181,13 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
         return false;
     }
 
+    @Nullable
     private static Collection<PsiNamedElement> deduceRegexValuesFromStatement(PsiElement anchor,
                                                                               Perl6Variable starter) {
         PsiElement level = anchor;
         while (true) {
             level = PsiTreeUtil.getParentOfType(level, Perl6File.class, Perl6RoutineDecl.class, Perl6StatementList.class);
-            if (level == null || level instanceof Perl6RoutineDecl) return new ArrayList<>();
+            if (level == null || level instanceof Perl6RoutineDecl) return null;
 
             PsiElementProcessor.CollectElements<PsiElement> processor = new PsiElementProcessor.CollectElements<PsiElement>() {
                 @Override
@@ -232,7 +239,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             }
             if (curr != null) {
                 List<PsiNamedElement> elemsToReturn = new ArrayList<>();
-                return derefAndCollectRegexVars(curr, elemsToReturn) ? elemsToReturn : new ArrayList<>();
+                return derefAndCollectRegexVars(curr, elemsToReturn) ? elemsToReturn : null;
             }
         }
     }

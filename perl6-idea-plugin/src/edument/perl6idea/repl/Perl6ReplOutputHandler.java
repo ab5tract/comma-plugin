@@ -12,6 +12,7 @@ import com.intellij.openapi.editor.ex.FoldingModelEx;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.util.Key;
 import com.intellij.ui.JBColor;
+import com.intellij.util.io.BaseOutputReader;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -215,5 +216,11 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
                 });
             }
         });
+    }
+
+    @NotNull
+    @Override
+    protected BaseOutputReader.Options readerOptions() {
+        return BaseOutputReader.Options.forMostlySilentProcess();
     }
 }

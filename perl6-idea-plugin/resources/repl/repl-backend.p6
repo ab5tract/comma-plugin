@@ -24,6 +24,7 @@ my $*NEXT-EVAL = -> $code { EVAL $code };
 loop {
     my $command = $*IN.get;
     given $command {
+        my $/;
         when /^'EVAL '(\d+)$/ {
             my @lines = (^+$0).map({ $*IN.get });
             my $code = '{ use MONKEY; $*NEXT-EVAL = -> $code { EVAL $code }; note "\x01 COMPILED-OK"; ' ~

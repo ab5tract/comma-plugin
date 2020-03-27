@@ -17,6 +17,10 @@ public class Perl6ElementFactory {
     public static final String ARRAY_CONTEXTUALIZER = "@";
     public static final String HASH_CONTEXTUALIZER = "%";
 
+    public static Perl6File createFileFromText(Project project, String text) {
+        return produceElement(project, text, Perl6File.class);
+    }
+
     public static Perl6Statement createStatementFromText(Project project, String def) {
         return produceElement(project, def, Perl6Statement.class);
     }
@@ -161,7 +165,7 @@ public class Perl6ElementFactory {
         String filename = "dummy." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
         Perl6File dummyFile = (Perl6File) PsiFileFactory.getInstance(project)
                 .createFileFromText(filename, Perl6ScriptFileType.INSTANCE, text);
-        return PsiTreeUtil.findChildOfType(dummyFile, clazz);
+        return PsiTreeUtil.findChildOfType(dummyFile, clazz, false);
     }
 
     public static Perl6InfixApplication createInfixApplication(Project project, String infix, List<PsiElement> parts) {
