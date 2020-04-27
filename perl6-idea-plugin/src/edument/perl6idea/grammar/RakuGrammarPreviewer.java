@@ -1,8 +1,10 @@
 package edument.perl6idea.grammar;
 
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.JBSplitter;
@@ -11,7 +13,6 @@ import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6IndexableType;
 import edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex;
-import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.JXComboBox;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +26,7 @@ import java.util.Objects;
 public class RakuGrammarPreviewer extends JPanel {
     private final Project myProject;
     private JComboBox myGrammarComboBox;
-    private JEditorPane myInputDataEditor;
+    private Editor myInputDataEditor;
     private JLabel myParseTree;
     private JPanel myMainPanel;
     private JBSplitter mySplitter;
@@ -80,20 +81,17 @@ public class RakuGrammarPreviewer extends JPanel {
         myParseTree.setBorder(BorderFactory.createLineBorder(JBColor.BLACK));
         mySplitter = new JBSplitter(true);
         mySplitter.setProportion(0.5f);
-        JBScrollPane leftPane = new JBScrollPane(myInputDataEditor);
-        mySplitter.setFirstComponent(leftPane);
+        mySplitter.setFirstComponent(myInputDataEditor.getComponent());
         JBScrollPane rightPane = new JBScrollPane(myParseTree);
         mySplitter.setSecondComponent(rightPane);
     }
 
     @NotNull
-    private JEditorPane getInputDataEditor() {
-        return new JEditorPane() {
-            @Override
-            public boolean getScrollableTracksViewportWidth() {
-                return true;
-            }
-        };
+    private Editor getInputDataEditor() {
+        EditorFactory factory = EditorFactory.getInstance();
+        EditorEx editor = (EditorEx)factory.createEditor(factory.createDocument(""));
+        editor.setPlaceholder("Enter input to test the grammar with here.");
+        return editor;
     }
 
     @NotNull
