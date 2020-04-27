@@ -92,6 +92,8 @@ public class CroTemplateParserDefinition implements ParserDefinition {
             return new CroTemplateSignatureImpl(node);
         if (type == CroTemplateElementTypes.PARAMETER)
             return new CroTemplateParameterImpl(node);
+        if (type == CroTemplateElementTypes.PARAMETER_DEFAULT)
+            return new CroTemplateParameterDefaultImpl(node);
         if (type == CroTemplateElementTypes.ARGLIST)
             return new CroTemplateArgListImpl(node);
         if (type == CroTemplateElementTypes.DEREF_SMART)
