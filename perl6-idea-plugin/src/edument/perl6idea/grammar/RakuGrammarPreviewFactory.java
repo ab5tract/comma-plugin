@@ -35,7 +35,7 @@ public class RakuGrammarPreviewFactory implements ToolWindowFactory {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         if (ApplicationManager.getApplication().isUnitTestMode()) return;
-        RakuGrammarPreviewer previewer = new RakuGrammarPreviewer();
+        RakuGrammarPreviewer previewer = new RakuGrammarPreviewer(project);
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Content content = contentFactory.createContent(previewer, "", false);
         content.setCloseable(false);
