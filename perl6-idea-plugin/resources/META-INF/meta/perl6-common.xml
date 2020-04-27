@@ -1,15 +1,19 @@
 <idea-plugin>
   <extensionPoints>
     <extensionPoint qualifiedName="edument.perl6idea.frameworkCall"
-                    interface="edument.perl6idea.extensions.Perl6FrameworkCall" />
+                    interface="edument.perl6idea.extensions.Perl6FrameworkCall"/>
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
     <postFormatProcessor implementation="edument.perl6idea.formatter.Perl6FormatPostprocessor"/>
-    <fileType name="Raku Script" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ScriptFileType" fieldName="INSTANCE" extensions="p6;pl6;raku"/>
-    <fileType name="Raku Module" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ModuleFileType" fieldName="INSTANCE" extensions="pm6;rakumod"/>
-    <fileType name="Raku Test" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6TestFileType" fieldName="INSTANCE" extensions="t;t6;rakutest"/>
-    <fileType name="Raku Pod" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6PodFileType" fieldName="INSTANCE" extensions="pod6;rakudoc"/>
+    <fileType name="Raku Script" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ScriptFileType" fieldName="INSTANCE"
+              extensions="p6;pl6;raku"/>
+    <fileType name="Raku Module" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ModuleFileType" fieldName="INSTANCE"
+              extensions="pm6;rakumod"/>
+    <fileType name="Raku Test" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6TestFileType" fieldName="INSTANCE"
+              extensions="t;t6;rakutest"/>
+    <fileType name="Raku Pod" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6PodFileType" fieldName="INSTANCE"
+              extensions="pod6;rakudoc"/>
     <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
     <fileTypeDetector implementation="edument.perl6idea.filetypes.Perl6FileShebangTypeDetector"/>
     <fileTypeDetector implementation="edument.perl6idea.filetypes.RakuFileShebangTypeDetector"/>
@@ -96,19 +100,22 @@
     <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
     <consoleFilterProvider implementation="edument.perl6idea.run.Perl6OutputLinkProvider"/>
     <codeInsight.lineMarkerProvider language="Perl6" implementationClass="edument.perl6idea.providers.Perl6LineMarkerProvider"/>
-    <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor" />
+    <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor"/>
     <programRunner implementation="edument.perl6idea.timeline.Perl6TimelineRunner"/>
     <stubIndex implementation="edument.perl6idea.cro.CroRouteIndex"/>
     <codeInsight.parameterInfo language="Perl6" implementationClass="edument.perl6idea.Perl6ParameterInfoHandler"/>
     <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
 
-    <fileType name="Cro Template" language="CroTemplate" implementationClass="edument.perl6idea.cro.template.CroTemplateFileType" fieldName="INSTANCE" extensions="crotmp"/>
+    <fileType name="Cro Template" language="CroTemplate" implementationClass="edument.perl6idea.cro.template.CroTemplateFileType"
+              fieldName="INSTANCE" extensions="crotmp"/>
     <lang.parserDefinition language="CroTemplate" implementationClass="edument.perl6idea.cro.template.parsing.CroTemplateParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="CroTemplate" implementationClass="edument.perl6idea.cro.template.highlighter.CroTemplateSyntaxHighlighterFactory"/>
+    <lang.syntaxHighlighterFactory language="CroTemplate"
+                                   implementationClass="edument.perl6idea.cro.template.highlighter.CroTemplateSyntaxHighlighterFactory"/>
     <colorSettingsPage implementation="edument.perl6idea.cro.template.highlighter.CroTemplateColorSettingsPage"/>
     <lang.braceMatcher language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateBraceMatcher"/>
     <lang.quoteHandler language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateQuoteHandler"/>
-    <spellchecker.support language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateSpellCheckingStrategy"/>
+    <spellchecker.support language="CroTemplate"
+                          implementationClass="edument.perl6idea.cro.template.editor.CroTemplateSpellCheckingStrategy"/>
     <lang.foldingBuilder language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateFoldingBuilder"/>
     <codeInsight.parameterInfo language="CroTemplate" implementationClass="edument.perl6idea.cro.template.CroTemplateParameterInfoHandler"/>
 
@@ -157,12 +164,15 @@
       <category>Raku intentions</category>
     </intentionAction>
 
-    <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6StatementSurroundDescriptor"/>
-    <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6ExpressionSurroundDescriptor"/>
-    <lang.surroundDescriptor language="Perl6" implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6SRegexAtomSurroundDescriptor"/>
+    <lang.surroundDescriptor language="Perl6"
+                             implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6StatementSurroundDescriptor"/>
+    <lang.surroundDescriptor language="Perl6"
+                             implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6ExpressionSurroundDescriptor"/>
+    <lang.surroundDescriptor language="Perl6"
+                             implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6SRegexAtomSurroundDescriptor"/>
     <lang.documentationProvider language="Perl6" implementationClass="edument.perl6idea.docs.Perl6DocumentationProvider"/>
     <virtualFileSystem key="raku" implementationClass="edument.perl6idea.vfs.Perl6FileSystem"/>
-    <library.type implementation="edument.perl6idea.library.Perl6LibraryType" />
+    <library.type implementation="edument.perl6idea.library.Perl6LibraryType"/>
 
     <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoActionMethodProvider"/>
     <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoGrammarRuleProvider"/>
@@ -171,8 +181,11 @@
     <gotoSymbolContributor implementation="edument.perl6idea.cro.template.CroTemplateSymbolNameContributor"/>
     <lang.psiStructureViewFactory language="CroTemplate"
                                   implementationClass="edument.perl6idea.cro.template.structureView.CroTemplateStructureViewFactory"/>
-    <lang.findUsagesProvider language="CroTemplate" implementationClass="edument.perl6idea.cro.template.findUsages.CroTemplateFindUsagesProvider"/>
+    <lang.findUsagesProvider language="CroTemplate"
+                             implementationClass="edument.perl6idea.cro.template.findUsages.CroTemplateFindUsagesProvider"/>
     <usageTypeProvider implementation="edument.perl6idea.cro.template.findUsages.CroTemplateUsageTypeProvider"/>
+    <toolWindow id="Raku Grammar Preview" anchor="bottom" factoryClass="edument.perl6idea.grammar.RakuGrammarPreviewFactory"
+                secondary="false" canCloseContents="false"/>
   </extensions>
 
   <actions>
@@ -200,6 +213,10 @@
             text="Execute Raku Code"
             description="Execute Raku code in REPL console">
       <keyboard-shortcut first-keystroke="control ENTER" keymap="$default"/>
+    </action>
+    <action id="edument.perl6idea.grammar.RakuGrammarPreviewAction" class="edument.perl6idea.grammar.RakuGrammarPreviewAction" text="Preview Raku Grammar"
+            description="Opens a tool to preview Raku grammar parsing results">
+      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
     </action>
   </actions>
 

@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class Perl6ModuleType extends ModuleType<Perl6ModuleBuilder> {
-    private static final String ID = "PERL6_MODULE_TYPE";
+    public static final String ID = "PERL6_MODULE_TYPE";
 
     public Perl6ModuleType() {
         super(ID);
