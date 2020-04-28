@@ -13,6 +13,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.JBSplitter;
+import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import edument.perl6idea.psi.Perl6PackageDecl;
@@ -36,12 +37,15 @@ import java.util.Objects;
 
 public class RakuGrammarPreviewer extends JPanel {
     private static final TextAttributes SELECTION_TEXT_ATTRS;
+    private static final SimpleTextAttributes FAILED_NODE;
 
     static {
         SELECTION_TEXT_ATTRS = new TextAttributes();
         SELECTION_TEXT_ATTRS.setEffectColor(JBColor.black);
         SELECTION_TEXT_ATTRS.setEffectType(EffectType.BOXED);
         SELECTION_TEXT_ATTRS.setBackgroundColor(JBColor.lightGray);
+
+        FAILED_NODE = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.RED);
     }
 
     private final Project myProject;
@@ -136,7 +140,10 @@ public class RakuGrammarPreviewer extends JPanel {
                 DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)value;
                 if (treeNode.getUserObject() instanceof ParseResultsModel.Node) {
                     ParseResultsModel.Node node = (ParseResultsModel.Node)treeNode.getUserObject();
-                    append(node.getName());
+                    if (node.isSuccessful())
+                        append(node.getName());
+                    else
+                        append(node.getName(), FAILED_NODE);
                 }
             }
         });
