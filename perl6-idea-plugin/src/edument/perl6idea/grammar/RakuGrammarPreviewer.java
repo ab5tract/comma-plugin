@@ -153,7 +153,9 @@ public class RakuGrammarPreviewer extends JPanel {
     }
 
     private void updateResultsTree(ParseResultsModel modelData) {
-        myParseTree.setModel(new DefaultTreeModel(buildTreeModelNode(modelData.getTop())));
+        ParseResultsModel.Node top = modelData.getTop();
+        if (top != null)
+            myParseTree.setModel(new DefaultTreeModel(buildTreeModelNode(top)));
     }
 
     private MutableTreeNode buildTreeModelNode(ParseResultsModel.Node node) {

@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CurrentGrammar {
@@ -86,7 +87,19 @@ public class CurrentGrammar {
                     cmd.setWorkDirectory(project.getBasePath());
                     cmd.addParameter("-Ilib");
                     cmd.addParameter(tweakedGrammarAsFile.getAbsolutePath());
-                    String jsonOutput = String.join("\n", cmd.executeAndRead());
+                    List<String> lines = cmd.executeAndRead();
+
+                    // Find the lines that we need (we ignore those before a marker, in
+                    // case the user has added prints or whatever).
+                    StringBuilder jsonLines = new StringBuilder();
+                    boolean on = false;
+                    for (String line : lines) {
+                        if (on)
+                            jsonLines.append(line);
+                        else if (line.equals("___PARSER__OUTPUT__BEGINS__"))
+                            on = true;
+                    }
+                    String jsonOutput = String.join("\n", jsonLines);
                     updateUsing(jsonOutput);
                 }
                 catch (ExecutionException e) {
@@ -120,11 +133,11 @@ public class CurrentGrammar {
         StringBuilder builder = new StringBuilder(content);
         builder.append(";\n");
         builder.append(supportCode.replace("__GRAMMAR_LIVE_PREVIEW_GRAMMAR_NAME__", grammarName));
-        builder.append("\n");
+        builder.append("\ntry { ");
         builder.append(grammarName);
         builder.append(".parse(slurp(Q[[[");
         builder.append(inputFile.getAbsolutePath());
-        builder.append("]]]));\n");
+        builder.append("]]])); CATCH { default { $error = $_ } } }\n");
         return builder.toString();
     }
 

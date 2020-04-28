@@ -37,17 +37,19 @@ public class ParseResultsModel {
         }
     }
 
-    public final Node top;
+    private final Node top;
+    private final String error;
 
     public ParseResultsModel(String json) {
-        JSONObject topNode = new JSONObject(json);
-        top = nodeFromJSON(topNode);
+        JSONObject wrapper = new JSONObject(json);
+        top = wrapper.has("t") ? nodeFromJSON(wrapper.getJSONObject("t")) : null;
+        error = wrapper.has("e") ? wrapper.getString("e") : null;
     }
 
     private Node nodeFromJSON(JSONObject nodeJson) {
         String name = nodeJson.getString("n");
         int start = nodeJson.getInt("s");
-        int end = nodeJson.getBoolean("p") ? nodeJson.getInt("e") : -1;
+        int end = nodeJson.has("p") && nodeJson.getBoolean("p") ? nodeJson.getInt("e") : -1;
         JSONArray childrenJson = nodeJson.getJSONArray("c");
         List<Node> children = new ArrayList<>(childrenJson.length());
         for (Object obj : childrenJson)
@@ -58,5 +60,9 @@ public class ParseResultsModel {
 
     public Node getTop() {
         return top;
+    }
+
+    public String getError() {
+        return error;
     }
 }

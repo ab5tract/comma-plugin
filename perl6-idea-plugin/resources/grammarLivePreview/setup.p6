@@ -1,6 +1,7 @@
 # Tracing / output logic
 
 my $cur-node;
+my $error;
 for __GRAMMAR_LIVE_PREVIEW_GRAMMAR_NAME__.^methods.grep({ try Regex.ACCEPTS($_) }) {
     my $name = .name;
     .wrap: -> |args {
@@ -22,7 +23,13 @@ for __GRAMMAR_LIVE_PREVIEW_GRAMMAR_NAME__.^methods.grep({ try Regex.ACCEPTS($_) 
     }
 }
 
-END say to-json $cur-node;
+END {
+    my %json;
+    %json<t> = $_ with $cur-node;
+    %json<e> = .message with $error;
+    say "\n___PARSER__OUTPUT__BEGINS__";
+    say to-json %json;
+}
 
 # ========== JSON CODE FROM JSON::Fast ==========
 
