@@ -2,6 +2,8 @@ package edument.perl6idea.grammar;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.event.DocumentEvent;
+import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
@@ -30,6 +32,7 @@ public class RakuGrammarPreviewer extends JPanel {
     private JLabel myParseTree;
     private JPanel myMainPanel;
     private JBSplitter mySplitter;
+    private CurrentGrammar current;
 
     public RakuGrammarPreviewer(Project project) {
         this.myProject = project;
@@ -73,6 +76,8 @@ public class RakuGrammarPreviewer extends JPanel {
                 }
             }
             myGrammarComboBox.setEnabled(true);
+            myGrammarComboBox.addItemListener(i -> changeCurrentGrammar());
+            changeCurrentGrammar();
         });
 
         myInputDataEditor = getInputDataEditor();
@@ -91,6 +96,14 @@ public class RakuGrammarPreviewer extends JPanel {
         EditorFactory factory = EditorFactory.getInstance();
         EditorEx editor = (EditorEx)factory.createEditor(factory.createDocument(""));
         editor.setPlaceholder("Enter input to test the grammar with here.");
+        editor.getSettings().setLineNumbersShown(true);
+        editor.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void documentChanged(@NotNull DocumentEvent event) {
+                if (current != null)
+                    current.scheduleUpdate();
+            }
+        });
         return editor;
     }
 
@@ -108,6 +121,15 @@ public class RakuGrammarPreviewer extends JPanel {
                 return new JLabel(((Perl6PackageDecl)value).getPackageName());
             }
             return new JLabel();
+        }
+    }
+
+    private void changeCurrentGrammar() {
+        Object selected = myGrammarComboBox.getSelectedItem();
+        if (selected instanceof Perl6PackageDecl) {
+            if (current != null)
+                current.dispose();
+            current = new CurrentGrammar((Perl6PackageDecl)selected, myInputDataEditor.getDocument());
         }
     }
 }
