@@ -2,6 +2,7 @@ package edument.perl6idea.grammar;
 
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
@@ -189,6 +190,8 @@ public class RakuGrammarPreviewer extends JPanel {
 
     private void highlightCurrentSelection(ParseResultsModel.Node node) {
         clearCurrentSelectionHighlight();
+        myInputDataEditor.getCaretModel().moveToOffset(node.getStart());
+        myInputDataEditor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
         if (node.isSuccessful()) {
             currentSelectionHighlight = myInputDataEditor.getMarkupModel().addRangeHighlighter(
                     node.getStart(), node.getEnd(),
