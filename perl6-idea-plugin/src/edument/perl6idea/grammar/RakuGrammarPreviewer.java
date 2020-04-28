@@ -80,7 +80,7 @@ public class RakuGrammarPreviewer extends JPanel {
         myMainPanel = new JPanel();
         MigLayout migLayout = new MigLayout();
         myMainPanel.setLayout(migLayout);
-        myMainPanel.add(myGrammarComboBox, "wrap, w 25%, gapright push");
+        myMainPanel.add(myGrammarComboBox, "wrap, w 100%");
         myMainPanel.add(mySplitter, "w 100%, h 100%");
         add(myMainPanel);
     }
