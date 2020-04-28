@@ -17,6 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class CurrentGrammar {
@@ -29,8 +32,11 @@ public class CurrentGrammar {
     private final Document inputDocument;
     private final Consumer<ParseResultsModel> resultsUpdate;
     private final Runnable processing;
+    private final ScheduledExecutorService debounceExecutor;
+
     private boolean currentlyRunning;
     private boolean needsAnotherRun;
+    private long debounceCounter;
 
     public CurrentGrammar(Perl6PackageDecl decl, Document input, Consumer<ParseResultsModel> resultsUpdateCallback,
                           Runnable processingCallback) {
@@ -47,9 +53,17 @@ public class CurrentGrammar {
         inputDocument = input;
         resultsUpdate = resultsUpdateCallback;
         processing = processingCallback;
+        debounceExecutor = Executors.newSingleThreadScheduledExecutor();
     }
 
     public synchronized void scheduleUpdate() {
+        long target = ++debounceCounter;
+        debounceExecutor.schedule(() -> scheduleIfNotBouncy(target), 1000, TimeUnit.MILLISECONDS);
+    }
+
+    private synchronized void scheduleIfNotBouncy(long got) {
+        if (got != debounceCounter)
+            return;
         if (currentlyRunning) {
             needsAnotherRun = true;
         }
@@ -169,5 +183,6 @@ public class CurrentGrammar {
 
     public void dispose() {
         grammarDocument.removeDocumentListener(grammarDocumentChangeListener);
+        debounceExecutor.shutdownNow();
     }
 }
