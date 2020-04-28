@@ -37,13 +37,11 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class RakuGrammarPreviewer extends JPanel {
     private static final TextAttributes SELECTION_TEXT_ATTRS;
     private static final TextAttributes HIGHWATER_TEXT_ATTRS;
     private static final TextAttributes FAILED_TEXT_ATTRS;
-
 
     private static final SimpleTextAttributes NODE_TEXT_ATTRS;
     private static final SimpleTextAttributes CAPTURED_NODE_TEXT_ATTRS;
@@ -72,6 +70,7 @@ public class RakuGrammarPreviewer extends JPanel {
     private JComboBox myGrammarComboBox;
     private Editor myInputDataEditor;
     private Tree myParseTree;
+    private JLabel myStatusLabel;
     private JPanel myMainPanel;
     private JBSplitter mySplitter;
     private CurrentGrammar current;
@@ -92,6 +91,7 @@ public class RakuGrammarPreviewer extends JPanel {
         myMainPanel.setLayout(migLayout);
         myMainPanel.add(myGrammarComboBox, "wrap, w 100%");
         myMainPanel.add(mySplitter, "w 100%, h 100%");
+        myMainPanel.add(myStatusLabel, "newline, w 100%");
         add(myMainPanel);
     }
 
@@ -133,6 +133,10 @@ public class RakuGrammarPreviewer extends JPanel {
         mySplitter.setProportion(0.3f);
         mySplitter.setFirstComponent(myInputDataEditor.getComponent());
         mySplitter.setSecondComponent(new JBScrollPane(myParseTree));
+
+        myStatusLabel = new JLabel();
+        myStatusLabel.setText("Waiting for input...");
+        myStatusLabel.setForeground(JBColor.DARK_GRAY);
     }
 
     @NotNull
@@ -253,12 +257,33 @@ public class RakuGrammarPreviewer extends JPanel {
     }
 
     private void updateResultsTree(ParseResultsModel modelData) {
+        // Update tree view.
         ParseResultsModel.Node top = modelData.getTop();
         if (top != null) {
             clearCurrentSelectionHighlight();
             myParseTree.clearSelection();
             ((DefaultTreeModel)myParseTree.getModel()).setRoot(buildTreeModelNode(top));
             highlightFailAndHighwater(modelData);
+        }
+
+        // Update status.
+        String errorMessage = null;
+        if (modelData.getError() != null) {
+            errorMessage = "Error: " + modelData.getError();
+        }
+        else if (modelData.getFailurePositions() != null) {
+            errorMessage = top.isSuccessful()
+                    ? "Grammar didn't match all input"
+                    : "Grammar failed to match";
+        }
+        if (errorMessage != null) {
+            myStatusLabel.setText("✘ " + errorMessage);
+            myStatusLabel.setToolTipText(errorMessage);
+            myStatusLabel.setForeground(JBColor.RED);
+        }
+        else {
+            myStatusLabel.setText("✔ Parsed successfully");
+            myStatusLabel.setForeground(JBColor.GREEN);
         }
     }
 
