@@ -32,6 +32,10 @@ public class ParseResultsModel {
             return start;
         }
 
+        public int getEnd() {
+            return end;
+        }
+
         public List<Node> getChildren() {
             return children;
         }

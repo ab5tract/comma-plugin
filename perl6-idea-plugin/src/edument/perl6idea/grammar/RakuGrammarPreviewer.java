@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -22,16 +23,26 @@ import org.jdesktop.swingx.JXComboBox;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class RakuGrammarPreviewer extends JPanel {
+    private static final TextAttributes SELECTION_TEXT_ATTRS;
+
+    static {
+        SELECTION_TEXT_ATTRS = new TextAttributes();
+        SELECTION_TEXT_ATTRS.setEffectColor(JBColor.black);
+        SELECTION_TEXT_ATTRS.setEffectType(EffectType.BOXED);
+        SELECTION_TEXT_ATTRS.setBackgroundColor(JBColor.lightGray);
+    }
+
     private final Project myProject;
     private JComboBox myGrammarComboBox;
     private Editor myInputDataEditor;
@@ -39,6 +50,7 @@ public class RakuGrammarPreviewer extends JPanel {
     private JPanel myMainPanel;
     private JBSplitter mySplitter;
     private CurrentGrammar current;
+    private RangeHighlighter currentSelectionHighlight;
 
     public RakuGrammarPreviewer(Project project) {
         this.myProject = project;
@@ -127,9 +139,19 @@ public class RakuGrammarPreviewer extends JPanel {
                 }
             }
         });
+        tree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                DefaultMutableTreeNode[] selectedNodes = myParseTree.getSelectedNodes(DefaultMutableTreeNode.class, null);
+                if (selectedNodes.length == 1) {
+                    Object modelNode = selectedNodes[0].getUserObject();
+                    if (modelNode instanceof ParseResultsModel.Node)
+                        highlightCurrentSelection((ParseResultsModel.Node)modelNode);
+                }
+            }
+        });
         return tree;
     }
-
     private static class GrammarComboBoxRenderer implements ListCellRenderer {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -163,5 +185,22 @@ public class RakuGrammarPreviewer extends JPanel {
         for (ParseResultsModel.Node childNode : node.getChildren())
             treeNode.add(buildTreeModelNode(childNode));
         return treeNode;
+    }
+
+    private void highlightCurrentSelection(ParseResultsModel.Node node) {
+        clearCurrentSelectionHighlight();
+        if (node.isSuccessful()) {
+            currentSelectionHighlight = myInputDataEditor.getMarkupModel().addRangeHighlighter(
+                    node.getStart(), node.getEnd(),
+                    HighlighterLayer.SELECTION, SELECTION_TEXT_ATTRS,
+                    HighlighterTargetArea.EXACT_RANGE);
+        }
+    }
+
+    private void clearCurrentSelectionHighlight() {
+        if (currentSelectionHighlight != null) {
+            myInputDataEditor.getMarkupModel().removeHighlighter(currentSelectionHighlight);
+            currentSelectionHighlight = null;
+        }
     }
 }
