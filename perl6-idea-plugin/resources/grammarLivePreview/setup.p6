@@ -6,18 +6,39 @@ for __GRAMMAR_LIVE_PREVIEW_GRAMMAR_NAME__.^methods.grep({ try Regex.ACCEPTS($_) 
     my $name = .name;
     .wrap: -> |args {
         my $prev-node = $cur-node;
-        $cur-node = { n => $name, s => args[0].pos, c => [] };
+        $cur-node = { n => $name, s => args[0].pos, c => [], CHILD-MATCHES => []  };
         my \result = callsame;
         LEAVE {
             if result {
+                # Indicate that it matched and store the end pos.
                 $cur-node<p> = True;
                 $cur-node<e> = result.pos;
+
+                # Go through captures and annotate any child matches
+                # with what we captured them as.
+                for result.MATCH.caps {
+                    my $capture-name := .key;
+                    my $capture-match := .value;
+                    with $cur-node<CHILD-MATCHES>.first({ $_ === $capture-match }, :k) -> $child-idx {
+                        $cur-node<c>[$child-idx]<x>.push($capture-name);
+                    }
+                }
             }
             else {
+                # Indicate that it failed to match.
                 $cur-node<p> = False;
             }
+
+            # Clean up child match objects we retained for capture
+            # handling.
+            $cur-node<CHILD-MATCHES>:delete;
+
+
+            # Attach this as a child of the current node, and if we
+            # were successful also attach the match object.
             if $prev-node {
                 $prev-node<c>.push($cur-node);
+                $prev-node<CHILD-MATCHES>.push(result ?? result.MATCH !! Nil);
                 $cur-node = $prev-node;
             }
         }

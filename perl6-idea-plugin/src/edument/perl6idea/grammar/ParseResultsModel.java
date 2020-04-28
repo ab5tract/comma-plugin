@@ -2,6 +2,7 @@ package edument.perl6idea.grammar;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +13,14 @@ public class ParseResultsModel {
         private final int start;
         private final int end;
         private final List<Node> children;
+        private final List<String> captureNames;
 
-        public Node(String name, int start, int end, List<Node> children) {
+        public Node(String name, int start, int end, List<Node> children, List<String> captureNames) {
             this.name = name;
             this.start = start;
             this.end = end;
             this.children = children;
+            this.captureNames = captureNames;
         }
 
         public boolean isSuccessful() {
@@ -38,6 +41,10 @@ public class ParseResultsModel {
 
         public List<Node> getChildren() {
             return children;
+        }
+
+        public List<String> getCaptureNames() {
+            return captureNames;
         }
 
         public int findFurthestMatchPoint() {
@@ -98,12 +105,26 @@ public class ParseResultsModel {
         String name = nodeJson.getString("n");
         int start = nodeJson.getInt("s");
         int end = nodeJson.has("p") && nodeJson.getBoolean("p") ? nodeJson.getInt("e") : -1;
+
         JSONArray childrenJson = nodeJson.getJSONArray("c");
         List<Node> children = new ArrayList<>(childrenJson.length());
         for (Object obj : childrenJson)
             if (obj instanceof JSONObject)
                 children.add(nodeFromJSON((JSONObject)obj));
-        return new Node(name, start, end, children);
+
+        List<String> captureNames;
+        if (nodeJson.has("x")) {
+            JSONArray captureNamesJson = nodeJson.getJSONArray("x");
+            captureNames = new ArrayList<>(captureNamesJson.length());
+            for (Object captureName : captureNamesJson)
+                if (captureName instanceof String)
+                    captureNames.add((String)captureName);
+        }
+        else {
+            captureNames = null;
+        }
+
+        return new Node(name, start, end, children, captureNames);
     }
 
     public Node getTop() {

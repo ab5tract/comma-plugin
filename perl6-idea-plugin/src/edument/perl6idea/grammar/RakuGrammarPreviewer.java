@@ -18,6 +18,7 @@ import com.intellij.ui.JBSplitter;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6IndexableType;
@@ -36,12 +37,18 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class RakuGrammarPreviewer extends JPanel {
     private static final TextAttributes SELECTION_TEXT_ATTRS;
     private static final TextAttributes HIGHWATER_TEXT_ATTRS;
     private static final TextAttributes FAILED_TEXT_ATTRS;
+
+
+    private static final SimpleTextAttributes NODE_TEXT_ATTRS;
+    private static final SimpleTextAttributes CAPTURED_NODE_TEXT_ATTRS;
     private static final SimpleTextAttributes FAILED_NODE_TEXT_ATTRS;
+    private static final SimpleTextAttributes FAILED_CAPTURED_NODE_TEXT_ATTRS;
 
     static {
         SELECTION_TEXT_ATTRS = new TextAttributes();
@@ -55,7 +62,10 @@ public class RakuGrammarPreviewer extends JPanel {
         FAILED_TEXT_ATTRS = new TextAttributes();
         FAILED_TEXT_ATTRS.setBackgroundColor(JBColor.red);
 
+        NODE_TEXT_ATTRS = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK);
+        CAPTURED_NODE_TEXT_ATTRS = new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, JBColor.BLACK);
         FAILED_NODE_TEXT_ATTRS = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.RED);
+        FAILED_CAPTURED_NODE_TEXT_ATTRS = new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, JBColor.RED);
     }
 
     private final Project myProject;
@@ -172,10 +182,38 @@ public class RakuGrammarPreviewer extends JPanel {
                 DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)value;
                 if (treeNode.getUserObject() instanceof ParseResultsModel.Node) {
                     ParseResultsModel.Node node = (ParseResultsModel.Node)treeNode.getUserObject();
-                    if (node.isSuccessful())
-                        append(node.getName());
-                    else
-                        append(node.getName(), FAILED_NODE_TEXT_ATTRS);
+                    if (node.isSuccessful()) {
+                        appendNode(node, NODE_TEXT_ATTRS, CAPTURED_NODE_TEXT_ATTRS);
+                    }
+                    else {
+                        appendNode(node, FAILED_NODE_TEXT_ATTRS, FAILED_CAPTURED_NODE_TEXT_ATTRS);
+                    }
+                }
+            }
+
+            private void appendNode(ParseResultsModel.Node node, SimpleTextAttributes anonAttrs, SimpleTextAttributes capturedAttrs) {
+                List<String> captureNames = node.getCaptureNames();
+                if (captureNames == null || captureNames.isEmpty()) {
+                    // Not captured
+                    append(node.getName(), anonAttrs);
+                }
+                else if (captureNames.size() == 1 && captureNames.get(0).equals(node.getName())) {
+                    // Common case of being captured under the node's own name
+                    append(node.getName(), capturedAttrs);
+                }
+                else {
+                    List<String> aliases = ContainerUtil.filter(captureNames, n -> n != node.getName());
+                    append(node.getName(), aliases.size() == captureNames.size() ? anonAttrs : capturedAttrs);
+                    append(" (");
+                    boolean first = true;
+                    for (String alias : aliases) {
+                        if (first)
+                            first = false;
+                        else
+                            append(", ");
+                        append(alias, capturedAttrs);
+                    }
+                    append(")");
                 }
             }
         });
