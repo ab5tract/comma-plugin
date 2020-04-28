@@ -8,9 +8,11 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.JBSplitter;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.treeStructure.Tree;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6IndexableType;
@@ -20,6 +22,10 @@ import org.jdesktop.swingx.JXComboBox;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +35,7 @@ public class RakuGrammarPreviewer extends JPanel {
     private final Project myProject;
     private JComboBox myGrammarComboBox;
     private Editor myInputDataEditor;
-    private JLabel myParseTree;
+    private Tree myParseTree;
     private JPanel myMainPanel;
     private JBSplitter mySplitter;
     private CurrentGrammar current;
@@ -108,8 +114,20 @@ public class RakuGrammarPreviewer extends JPanel {
     }
 
     @NotNull
-    private JLabel getParseTree() {
-        return new JLabel("Parse tree");
+    private Tree getParseTree() {
+        Tree tree = new Tree();
+        tree.setCellRenderer(new ColoredTreeCellRenderer() {
+            @Override
+            public void customizeCellRenderer(@NotNull JTree tree, Object value,
+                    boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)value;
+                if (treeNode.getUserObject() instanceof ParseResultsModel.Node) {
+                    ParseResultsModel.Node node = (ParseResultsModel.Node)treeNode.getUserObject();
+                    append(node.getName());
+                }
+            }
+        });
+        return tree;
     }
 
     private static class GrammarComboBoxRenderer implements ListCellRenderer {
@@ -129,7 +147,19 @@ public class RakuGrammarPreviewer extends JPanel {
         if (selected instanceof Perl6PackageDecl) {
             if (current != null)
                 current.dispose();
-            current = new CurrentGrammar((Perl6PackageDecl)selected, myInputDataEditor.getDocument());
+            current = new CurrentGrammar((Perl6PackageDecl)selected,
+                    myInputDataEditor.getDocument(), this::updateResultsTree);
         }
+    }
+
+    private void updateResultsTree(ParseResultsModel modelData) {
+        myParseTree.setModel(new DefaultTreeModel(buildTreeModelNode(modelData.getTop())));
+    }
+
+    private MutableTreeNode buildTreeModelNode(ParseResultsModel.Node node) {
+        DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
+        for (ParseResultsModel.Node childNode : node.getChildren())
+            treeNode.add(buildTreeModelNode(childNode));
+        return treeNode;
     }
 }

@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.util.Consumer;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.utils.Perl6CommandLine;
 import org.jetbrains.annotations.NotNull;
@@ -25,10 +26,11 @@ public class CurrentGrammar {
     private final Document grammarDocument;
     private final DocumentListener grammarDocumentChangeListener;
     private final Document inputDocument;
+    private final Consumer<ParseResultsModel> resultsUpdate;
     private boolean currentlyRunning;
     private boolean needsAnotherRun;
 
-    public CurrentGrammar(Perl6PackageDecl decl, Document input) {
+    public CurrentGrammar(Perl6PackageDecl decl, Document input, Consumer<ParseResultsModel> resultsUpdateCallback) {
         project = decl.getProject();
         grammarName = decl.getPackageName();
         grammarDocument = decl.getContainingFile().getViewProvider().getDocument();
@@ -40,6 +42,7 @@ public class CurrentGrammar {
         };
         grammarDocument.addDocumentListener(grammarDocumentChangeListener);
         inputDocument = input;
+        resultsUpdate = resultsUpdateCallback;
     }
 
     public synchronized void scheduleUpdate() {
@@ -84,7 +87,7 @@ public class CurrentGrammar {
                     cmd.addParameter("-Ilib");
                     cmd.addParameter(tweakedGrammarAsFile.getAbsolutePath());
                     String jsonOutput = String.join("\n", cmd.executeAndRead());
-                    System.err.println(jsonOutput);
+                    updateUsing(jsonOutput);
                 }
                 catch (ExecutionException e) {
                     LOG.error(e);
@@ -135,6 +138,16 @@ public class CurrentGrammar {
             LOG.error(e);
             return null;
         }
+    }
+
+    private void updateUsing(String json) {
+        ParseResultsModel model = new ParseResultsModel(json);
+        Application application = ApplicationManager.getApplication();
+        application.invokeAndWait(() -> {
+            ApplicationManager.getApplication().runWriteAction(() -> {
+                resultsUpdate.consume(model);
+            });
+        });
     }
 
     public void dispose() {
