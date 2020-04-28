@@ -5,6 +5,8 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
+import com.intellij.openapi.editor.event.EditorMouseEvent;
+import com.intellij.openapi.editor.event.EditorMouseListener;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.project.DumbService;
@@ -27,11 +29,11 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,13 +50,9 @@ public class RakuGrammarPreviewer extends JPanel {
         SELECTION_TEXT_ATTRS.setBackgroundColor(JBColor.lightGray);
 
         HIGHWATER_TEXT_ATTRS = new TextAttributes();
-        HIGHWATER_TEXT_ATTRS.setEffectColor(JBColor.black);
-        HIGHWATER_TEXT_ATTRS.setEffectType(EffectType.BOXED);
         HIGHWATER_TEXT_ATTRS.setBackgroundColor(JBColor.yellow);
 
         FAILED_TEXT_ATTRS = new TextAttributes();
-        FAILED_TEXT_ATTRS.setEffectColor(JBColor.black);
-        FAILED_TEXT_ATTRS.setEffectType(EffectType.BOXED);
         FAILED_TEXT_ATTRS.setBackgroundColor(JBColor.red);
 
         FAILED_NODE_TEXT_ATTRS = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.RED);
@@ -83,7 +81,7 @@ public class RakuGrammarPreviewer extends JPanel {
         MigLayout migLayout = new MigLayout();
         myMainPanel.setLayout(migLayout);
         myMainPanel.add(myGrammarComboBox, "wrap, w 25%, gapright push");
-        myMainPanel.add(new JScrollPane(mySplitter), "w 100%, h 100%");
+        myMainPanel.add(mySplitter, "w 100%, h 100%");
         add(myMainPanel);
     }
 
@@ -122,10 +120,9 @@ public class RakuGrammarPreviewer extends JPanel {
         myParseTree = getParseTree();
         myParseTree.setBorder(BorderFactory.createLineBorder(JBColor.BLACK));
         mySplitter = new JBSplitter(true);
-        mySplitter.setProportion(0.5f);
+        mySplitter.setProportion(0.3f);
         mySplitter.setFirstComponent(myInputDataEditor.getComponent());
-        JBScrollPane rightPane = new JBScrollPane(myParseTree);
-        mySplitter.setSecondComponent(rightPane);
+        mySplitter.setSecondComponent(new JBScrollPane(myParseTree));
     }
 
     @NotNull
@@ -134,11 +131,32 @@ public class RakuGrammarPreviewer extends JPanel {
         EditorEx editor = (EditorEx)factory.createEditor(factory.createDocument(""));
         editor.setPlaceholder("Enter input to test the grammar with here.");
         editor.getSettings().setLineNumbersShown(true);
+        editor.getSettings().setMouseClickSelectionHonorsCamelWords(false);
         editor.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void documentChanged(@NotNull DocumentEvent event) {
-                if (current != null)
+                if (current != null) {
                     current.scheduleUpdate();
+                    clearCurrentSelectionHighlight();
+                    clearHighwaterHighlight();
+                    clearFailHighlight();
+                }
+            }
+        });
+        editor.addEditorMouseListener(new EditorMouseListener() {
+            private int clickOffset;
+            @Override
+            public void mouseClicked(@NotNull EditorMouseEvent editorEvent) {
+                MouseEvent event = editorEvent.getMouseEvent();
+                if (event.getButton() == MouseEvent.BUTTON1) {
+                    if (event.getClickCount() == 2) {
+                        editor.getSelectionModel().removeSelection();
+                        navigateParseTreeToNodeAt(clickOffset);
+                    }
+                    else {
+                        clickOffset = editor.getCaretModel().getOffset();
+                    }
+                }
             }
         });
         return editor;
@@ -238,12 +256,12 @@ public class RakuGrammarPreviewer extends JPanel {
         ParseResultsModel.FailurePositions positions = data.getFailurePositions();
         if (positions == null)
             return;
-        if (positions.getHighwaterStart() != positions.getFailureStart()) {
+        if (positions.getHighwaterStart() != -1 && positions.getHighwaterStart() < positions.getFailureStart()) {
             highWaterHighlight = myInputDataEditor.getMarkupModel().addRangeHighlighter(
                     positions.getHighwaterStart(), positions.getFailureStart(),
                     HighlighterLayer.ERROR, HIGHWATER_TEXT_ATTRS, HighlighterTargetArea.EXACT_RANGE);
         }
-        if (positions.getFailureStart() != positions.getFailureEnd()) {
+        if (positions.getFailureStart() != -1 && positions.getFailureStart() < positions.getFailureEnd()) {
             failHighlight = myInputDataEditor.getMarkupModel().addRangeHighlighter(
                     positions.getFailureStart(), positions.getFailureEnd(),
                     HighlighterLayer.ERROR, FAILED_TEXT_ATTRS, HighlighterTargetArea.EXACT_RANGE);
@@ -262,5 +280,56 @@ public class RakuGrammarPreviewer extends JPanel {
             myInputDataEditor.getMarkupModel().removeHighlighter(failHighlight);
             failHighlight = null;
         }
+    }
+
+    private void navigateParseTreeToNodeAt(int offset) {
+        Object root = myParseTree.getModel().getRoot();
+        if (root instanceof DefaultMutableTreeNode) {
+            // First try with only successful nodes, and then retry with those
+            // ultimately unsuccessful (e.g. in the highwater).
+            if (!selectNodeCoveringOffset((DefaultMutableTreeNode)root, offset, false))
+                selectNodeCoveringOffset((DefaultMutableTreeNode)root, offset, true);
+        }
+    }
+
+    // Look for the deepest node in the tree that covers the offset and select
+    // it.
+    private boolean selectNodeCoveringOffset(DefaultMutableTreeNode treeNode, int offset, boolean visitUnsuccessful) {
+        Object maybeNode = treeNode.getUserObject();
+        if (maybeNode instanceof ParseResultsModel.Node) {
+            // See if this node covers.
+            ParseResultsModel.Node node = (ParseResultsModel.Node)maybeNode;
+            boolean covers = false;
+            if (node.isSuccessful()) {
+                if (offset >= node.getStart() && offset <= node.getEnd()) {
+                    covers = true;
+                }
+            }
+
+            // If it covers, or we're visiting unsuccessful nodes, see if any of its
+            // children do.
+            boolean childCovers = false;
+            if (covers || visitUnsuccessful) {
+                for (Enumeration e = treeNode.children(); e.hasMoreElements(); ) {
+                    TreeNode child = (TreeNode)e.nextElement();
+                    if (child instanceof DefaultMutableTreeNode) {
+                        if (selectNodeCoveringOffset((DefaultMutableTreeNode)child, offset, visitUnsuccessful)) {
+                            childCovers = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // If we cover but no child covers, then pick this node to select.
+            if (covers && !childCovers) {
+                TreePath path = new TreePath(treeNode.getPath());
+                myParseTree.getSelectionModel().setSelectionPath(path);
+                myParseTree.scrollPathToVisible(path);
+            }
+
+            return covers || childCovers;
+        }
+        return false;
     }
 }
