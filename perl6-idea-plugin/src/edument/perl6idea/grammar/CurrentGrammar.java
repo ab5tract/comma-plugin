@@ -28,10 +28,12 @@ public class CurrentGrammar {
     private final DocumentListener grammarDocumentChangeListener;
     private final Document inputDocument;
     private final Consumer<ParseResultsModel> resultsUpdate;
+    private final Runnable processing;
     private boolean currentlyRunning;
     private boolean needsAnotherRun;
 
-    public CurrentGrammar(Perl6PackageDecl decl, Document input, Consumer<ParseResultsModel> resultsUpdateCallback) {
+    public CurrentGrammar(Perl6PackageDecl decl, Document input, Consumer<ParseResultsModel> resultsUpdateCallback,
+                          Runnable processingCallback) {
         project = decl.getProject();
         grammarName = decl.getPackageName();
         grammarDocument = decl.getContainingFile().getViewProvider().getDocument();
@@ -44,6 +46,7 @@ public class CurrentGrammar {
         grammarDocument.addDocumentListener(grammarDocumentChangeListener);
         inputDocument = input;
         resultsUpdate = resultsUpdateCallback;
+        processing = processingCallback;
     }
 
     public synchronized void scheduleUpdate() {
@@ -66,6 +69,7 @@ public class CurrentGrammar {
 
     private void startUpdate() {
         Application application = ApplicationManager.getApplication();
+        application.invokeAndWait(() -> application.runWriteAction(processing));
         application.runReadAction(() -> {
             String currentInput = inputDocument.getText();
             String grammarFileContent = grammarDocument.getText();

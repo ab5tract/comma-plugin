@@ -252,8 +252,16 @@ public class RakuGrammarPreviewer extends JPanel {
             if (current != null)
                 current.dispose();
             current = new CurrentGrammar((Perl6PackageDecl)selected,
-                    myInputDataEditor.getDocument(), this::updateResultsTree);
+                    myInputDataEditor.getDocument(), this::updateResultsTree,
+                    this::startedProcessing);
         }
+    }
+
+    private void startedProcessing() {
+        myStatusLabel.setText("Collecting results...");
+        myStatusLabel.setForeground(JBColor.YELLOW);
+        clearHighwaterHighlight();
+        clearFailHighlight();
     }
 
     private void updateResultsTree(ParseResultsModel modelData) {
