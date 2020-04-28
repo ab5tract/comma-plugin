@@ -100,7 +100,7 @@ public class CurrentGrammar {
                             on = true;
                     }
                     String jsonOutput = String.join("\n", jsonLines);
-                    updateUsing(jsonOutput);
+                    updateUsing(currentInput, jsonOutput);
                 }
                 catch (ExecutionException e) {
                     LOG.error(e);
@@ -153,8 +153,8 @@ public class CurrentGrammar {
         }
     }
 
-    private void updateUsing(String json) {
-        ParseResultsModel model = new ParseResultsModel(json);
+    private void updateUsing(String input, String json) {
+        ParseResultsModel model = new ParseResultsModel(input, json);
         Application application = ApplicationManager.getApplication();
         application.invokeAndWait(() -> {
             ApplicationManager.getApplication().runWriteAction(() -> {

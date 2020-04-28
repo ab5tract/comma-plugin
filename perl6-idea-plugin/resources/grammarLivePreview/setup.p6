@@ -8,16 +8,18 @@ for __GRAMMAR_LIVE_PREVIEW_GRAMMAR_NAME__.^methods.grep({ try Regex.ACCEPTS($_) 
         my $prev-node = $cur-node;
         $cur-node = { n => $name, s => args[0].pos, c => [] };
         my \result = callsame;
-        if result {
-            $cur-node<p> = True;
-            $cur-node<e> = result.pos;
-        }
-        else {
-            $cur-node<p> = False;
-        }
-        if $prev-node {
-            $prev-node<c>.push($cur-node) ;
-            $cur-node = $prev-node;
+        LEAVE {
+            if result {
+                $cur-node<p> = True;
+                $cur-node<e> = result.pos;
+            }
+            else {
+                $cur-node<p> = False;
+            }
+            if $prev-node {
+                $prev-node<c>.push($cur-node);
+                $cur-node = $prev-node;
+            }
         }
         result
     }

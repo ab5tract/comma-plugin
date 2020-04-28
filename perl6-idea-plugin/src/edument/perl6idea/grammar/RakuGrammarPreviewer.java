@@ -37,7 +37,9 @@ import java.util.Objects;
 
 public class RakuGrammarPreviewer extends JPanel {
     private static final TextAttributes SELECTION_TEXT_ATTRS;
-    private static final SimpleTextAttributes FAILED_NODE;
+    private static final TextAttributes HIGHWATER_TEXT_ATTRS;
+    private static final TextAttributes FAILED_TEXT_ATTRS;
+    private static final SimpleTextAttributes FAILED_NODE_TEXT_ATTRS;
 
     static {
         SELECTION_TEXT_ATTRS = new TextAttributes();
@@ -45,7 +47,17 @@ public class RakuGrammarPreviewer extends JPanel {
         SELECTION_TEXT_ATTRS.setEffectType(EffectType.BOXED);
         SELECTION_TEXT_ATTRS.setBackgroundColor(JBColor.lightGray);
 
-        FAILED_NODE = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.RED);
+        HIGHWATER_TEXT_ATTRS = new TextAttributes();
+        HIGHWATER_TEXT_ATTRS.setEffectColor(JBColor.black);
+        HIGHWATER_TEXT_ATTRS.setEffectType(EffectType.BOXED);
+        HIGHWATER_TEXT_ATTRS.setBackgroundColor(JBColor.yellow);
+
+        FAILED_TEXT_ATTRS = new TextAttributes();
+        FAILED_TEXT_ATTRS.setEffectColor(JBColor.black);
+        FAILED_TEXT_ATTRS.setEffectType(EffectType.BOXED);
+        FAILED_TEXT_ATTRS.setBackgroundColor(JBColor.red);
+
+        FAILED_NODE_TEXT_ATTRS = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.RED);
     }
 
     private final Project myProject;
@@ -56,6 +68,8 @@ public class RakuGrammarPreviewer extends JPanel {
     private JBSplitter mySplitter;
     private CurrentGrammar current;
     private RangeHighlighter currentSelectionHighlight;
+    private RangeHighlighter highWaterHighlight;
+    private RangeHighlighter failHighlight;
 
     public RakuGrammarPreviewer(Project project) {
         this.myProject = project;
@@ -143,7 +157,7 @@ public class RakuGrammarPreviewer extends JPanel {
                     if (node.isSuccessful())
                         append(node.getName());
                     else
-                        append(node.getName(), FAILED_NODE);
+                        append(node.getName(), FAILED_NODE_TEXT_ATTRS);
                 }
             }
         });
@@ -188,6 +202,7 @@ public class RakuGrammarPreviewer extends JPanel {
             clearCurrentSelectionHighlight();
             myParseTree.clearSelection();
             ((DefaultTreeModel)myParseTree.getModel()).setRoot(buildTreeModelNode(top));
+            highlightFailAndHighwater(modelData);
         }
     }
 
@@ -214,6 +229,38 @@ public class RakuGrammarPreviewer extends JPanel {
         if (currentSelectionHighlight != null) {
             myInputDataEditor.getMarkupModel().removeHighlighter(currentSelectionHighlight);
             currentSelectionHighlight = null;
+        }
+    }
+
+    private void highlightFailAndHighwater(ParseResultsModel data) {
+        clearHighwaterHighlight();
+        clearFailHighlight();
+        ParseResultsModel.FailurePositions positions = data.getFailurePositions();
+        if (positions == null)
+            return;
+        if (positions.getHighwaterStart() != positions.getFailureStart()) {
+            highWaterHighlight = myInputDataEditor.getMarkupModel().addRangeHighlighter(
+                    positions.getHighwaterStart(), positions.getFailureStart(),
+                    HighlighterLayer.ERROR, HIGHWATER_TEXT_ATTRS, HighlighterTargetArea.EXACT_RANGE);
+        }
+        if (positions.getFailureStart() != positions.getFailureEnd()) {
+            failHighlight = myInputDataEditor.getMarkupModel().addRangeHighlighter(
+                    positions.getFailureStart(), positions.getFailureEnd(),
+                    HighlighterLayer.ERROR, FAILED_TEXT_ATTRS, HighlighterTargetArea.EXACT_RANGE);
+        }
+    }
+
+    private void clearHighwaterHighlight() {
+        if (highWaterHighlight != null) {
+            myInputDataEditor.getMarkupModel().removeHighlighter(highWaterHighlight);
+            highWaterHighlight = null;
+        }
+    }
+
+    private void clearFailHighlight() {
+        if (failHighlight != null) {
+            myInputDataEditor.getMarkupModel().removeHighlighter(failHighlight);
+            failHighlight = null;
         }
     }
 }

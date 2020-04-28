@@ -39,12 +39,56 @@ public class ParseResultsModel {
         public List<Node> getChildren() {
             return children;
         }
+
+        public int findFurthestMatchPoint() {
+            int furthest = end;
+            for (Node child : children) {
+                int childFurthest = child.findFurthestMatchPoint();
+                if (childFurthest > furthest)
+                    furthest = childFurthest;
+            }
+            return furthest;
+        }
+
+        public int findEndOfMostSuccessfulChild() {
+            int end = start;
+            for (Node child : children)
+                if (child.isSuccessful() && child.getEnd() > end)
+                        end = child.getEnd();
+            return end;
+        }
     }
 
+    public static class FailurePositions {
+        private final int highwaterStart;
+        private final int failureStart;
+        private final int failureEnd;
+
+        public FailurePositions(int highwaterStart, int failureStart, int failureEnd) {
+            this.highwaterStart = highwaterStart;
+            this.failureStart = failureStart;
+            this.failureEnd = failureEnd;
+        }
+
+        public int getHighwaterStart() {
+            return highwaterStart;
+        }
+
+        public int getFailureStart() {
+            return failureStart;
+        }
+
+        public int getFailureEnd() {
+            return failureEnd;
+        }
+    }
+
+    private final String input;
     private final Node top;
     private final String error;
 
-    public ParseResultsModel(String json) {
+    public ParseResultsModel(String input, String json) {
+        this.input = input;
         JSONObject wrapper = new JSONObject(json);
         top = wrapper.has("t") ? nodeFromJSON(wrapper.getJSONObject("t")) : null;
         error = wrapper.has("e") ? wrapper.getString("e") : null;
@@ -68,5 +112,27 @@ public class ParseResultsModel {
 
     public String getError() {
         return error;
+    }
+
+    public FailurePositions getFailurePositions() {
+        // If we parsed the whole thing, no error.
+        if (top == null)
+            return null;
+        if (top.isSuccessful() && top.getEnd() == input.length())
+            return null;
+
+        // Start of the highwater depends on if we matched or not (if TOP did
+        // then we just didn't eat what comes next; otherwise, we look through
+        // the children of top to find the furthest that it got).
+        int startHighwater = top.isSuccessful()
+                             ? top.getEnd()
+                             : top.findEndOfMostSuccessfulChild();
+
+        // Otherwise, find the furthest point we ever matched, which is our
+        // highwater mark.
+        int endHighwater = top.findFurthestMatchPoint();
+
+        // Finally, end of error is the length of the input.
+        return new FailurePositions(startHighwater, endHighwater, input.length());
     }
 }
