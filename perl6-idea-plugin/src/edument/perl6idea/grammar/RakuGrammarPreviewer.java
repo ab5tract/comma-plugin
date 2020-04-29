@@ -329,7 +329,8 @@ public class RakuGrammarPreviewer extends JPanel {
                 myInputDataEditor.getDocument(), this::updateResultsTree,
                 this::startedProcessing, timedExecutor);
         clearParseTree();
-        performUpdate();
+        if (myInputDataEditor.getDocument().getTextLength() != 0)
+            performUpdate();
     }
 
     private void clearParseTree() {
