@@ -1,6 +1,8 @@
 package edument.perl6idea.grammar;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.navigation.NavigationItem;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -16,14 +18,13 @@ import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StringStubIndexExtension;
-import com.intellij.ui.ColoredTreeCellRenderer;
-import com.intellij.ui.JBColor;
-import com.intellij.ui.JBSplitter;
-import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.ui.*;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.Perl6PackageDecl;
+import edument.perl6idea.psi.Perl6RegexDecl;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6IndexableType;
 import edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex;
@@ -114,22 +115,59 @@ public class RakuGrammarPreviewer extends JPanel {
         myInputDataEditor = getInputDataEditor();
         myInputDataEditor.setBorder(BorderFactory.createLineBorder(JBColor.BLACK));
 
-        myParseTree = getParseTree();
-        myParseTree.setBorder(BorderFactory.createLineBorder(JBColor.BLACK));
-
         myStatusLabel = new JLabel();
         myStatusLabel.setText("Waiting for input...");
         myStatusLabel.setForeground(JBColor.DARK_GRAY);
 
+        myParseTree = getParseTree();
+        myParseTree.setBorder(BorderFactory.createEmptyBorder());
+
+        ToolbarDecorator decorator = ToolbarDecorator.createDecorator(myParseTree);
+        decorator.addExtraAction(new AnActionButton("Go To Rule Source", AllIcons.General.Locate) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                navigateToRuleSource();
+            }
+
+            @Override
+            public void updateButton(@NotNull AnActionEvent e) {
+                DefaultMutableTreeNode[] selectedNodes = myParseTree.getSelectedNodes(DefaultMutableTreeNode.class, null);
+                e.getPresentation().setEnabled(selectedNodes.length == 1);
+            }
+        });
+
         JPanel resultsArea = new JPanel();
         resultsArea.setLayout(new MigLayout("fill, insets 0"));
         resultsArea.add(myStatusLabel, "wrap, w 100%");
-        resultsArea.add(new JBScrollPane(myParseTree), "w 100%, h 100%");
+        resultsArea.add(decorator.createPanel(), "w 100%, h 100%");
 
         mySplitter = new JBSplitter(true);
         mySplitter.setProportion(0.3f);
         mySplitter.setFirstComponent(myInputDataEditor.getComponent());
         mySplitter.setSecondComponent(resultsArea);
+    }
+
+    private void navigateToRuleSource() {
+        DefaultMutableTreeNode[] selectedNodes = myParseTree.getSelectedNodes(DefaultMutableTreeNode.class, null);
+        if (selectedNodes.length == 1) {
+            Object node = selectedNodes[0].getUserObject();
+            if (node instanceof ParseResultsModel.Node) {
+                Object selectedGrammar = myGrammarComboBox.getSelectedItem();
+                if (selectedGrammar instanceof Perl6PackageDecl) {
+                    Perl6PackageDecl grammar = (Perl6PackageDecl)selectedGrammar;
+                    if (grammar.isValid()) {
+                        Collection<Perl6RegexDecl> decls = PsiTreeUtil.findChildrenOfType(grammar, Perl6RegexDecl.class);
+                        String name = ((ParseResultsModel.Node)node).getName();
+                        for (Perl6RegexDecl decl : decls) {
+                            if (Objects.equals(name, decl.getRegexName())) {
+                                decl.navigate(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void startWachingGrammars() {
@@ -173,7 +211,7 @@ public class RakuGrammarPreviewer extends JPanel {
                     for (int i = 0; i < packages.size(); i++) {
                         Object item = myGrammarComboBox.getItemAt(i);
                         if (!(item instanceof Perl6PackageDecl) ||
-                                !Objects.equals(packages.get(i).getName(), ((Perl6PackageDecl)item).getName())) {
+                                !Objects.equals(packages.get(i), ((Perl6PackageDecl)item))) {
                             needChange = true;
                             break;
                         }
