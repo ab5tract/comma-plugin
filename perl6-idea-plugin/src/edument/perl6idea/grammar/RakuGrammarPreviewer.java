@@ -20,7 +20,6 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StringStubIndexExtension;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.*;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.Perl6PackageDecl;
@@ -94,14 +93,14 @@ public class RakuGrammarPreviewer extends JPanel {
     }
 
     private void initUI() {
-        setLayout(new MigLayout());
+        setLayout(new MigLayout("fill, insets 0"));
         createUIComponents();
         myMainPanel = new JPanel();
         MigLayout migLayout = new MigLayout();
         myMainPanel.setLayout(migLayout);
         myMainPanel.add(myGrammarComboBox, "wrap, w 100%");
         myMainPanel.add(mySplitter, "w 100%, h 100%");
-        add(myMainPanel);
+        add(myMainPanel, "w 100%, h 100%");
     }
 
     private void createUIComponents() {
