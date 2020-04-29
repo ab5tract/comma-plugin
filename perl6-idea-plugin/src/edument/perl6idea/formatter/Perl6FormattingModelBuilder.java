@@ -307,14 +307,20 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                         return Spacing.createSpacing(1, 1, 0, true, 1);
                     }
                     if (source instanceof Perl6RegexDecl && customSettings.REGEX_DECLARATION_IN_ONE_LINE) {
-                        return Spacing.createSpacing(1, 1, 0, true, 1);
+                        int spaces = 1;
+                        if (left.getNode().getElementType() == Perl6ElementTypes.REGEX && left.getNode().getText().endsWith("  "))
+                            spaces = 0;
+                        return Spacing.createSpacing(spaces, spaces, 0, true, 1);
                     }
                 }
                 if (statementCount < 2) {
                     return Spacing.createSpacing(0, 0, 1, false, 0);
                 }
             }
-            return Spacing.createSpacing(0, 0, 1, true, 1);
+            int lineFeeds = 1;
+            if (left.getNode().getElementType() == Perl6ElementTypes.REGEX && left.getNode().getText().replaceAll(" ", "").endsWith("\n"))
+                lineFeeds = 0;
+            return Spacing.createSpacing(0, 0, lineFeeds, true, 1);
         });
 
         rules.add((left, right) -> STATEMENTS.contains(left.getNode().getElementType())

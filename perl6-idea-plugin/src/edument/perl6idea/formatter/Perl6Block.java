@@ -176,6 +176,9 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         Perl6Block left = (Perl6Block) child1;
         Perl6Block right = (Perl6Block) child2;
 
+        if (right.getNode().getElementType() == Perl6ElementTypes.REGEX_SIGSPACE)
+            return null;
+
         int i = 0;
         for (BiFunction<Perl6Block, Perl6Block, Spacing> rule : myRules) {
             i++;
