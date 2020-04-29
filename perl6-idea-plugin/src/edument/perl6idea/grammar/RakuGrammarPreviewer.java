@@ -1,5 +1,9 @@
 package edument.perl6idea.grammar;
 
+import com.intellij.navigation.NavigationItem;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.ScrollType;
@@ -11,7 +15,10 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.impl.cache.impl.IndexCacheManagerImpl;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.stubs.StringStubIndexExtension;
+import com.intellij.psi.stubs.StubIndex;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.JBSplitter;
@@ -33,10 +40,12 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class RakuGrammarPreviewer extends JPanel {
     private static final TextAttributes SELECTION_TEXT_ATTRS;
@@ -47,6 +56,7 @@ public class RakuGrammarPreviewer extends JPanel {
     private static final SimpleTextAttributes CAPTURED_NODE_TEXT_ATTRS;
     private static final SimpleTextAttributes FAILED_NODE_TEXT_ATTRS;
     private static final SimpleTextAttributes FAILED_CAPTURED_NODE_TEXT_ATTRS;
+    public static final String NO_GRAMMARS_FOUND_IN_PROJECT = "No grammars found in project";
 
     static {
         SELECTION_TEXT_ATTRS = new TextAttributes();
@@ -77,9 +87,11 @@ public class RakuGrammarPreviewer extends JPanel {
     private RangeHighlighter currentSelectionHighlight;
     private RangeHighlighter highWaterHighlight;
     private RangeHighlighter failHighlight;
+    private final ScheduledExecutorService timedExecutor;
 
     public RakuGrammarPreviewer(Project project) {
         this.myProject = project;
+        this.timedExecutor = Executors.newSingleThreadScheduledExecutor();
         initUI();
     }
 
@@ -101,29 +113,7 @@ public class RakuGrammarPreviewer extends JPanel {
         myGrammarComboBox.setRenderer(new GrammarComboBoxRenderer());
         myGrammarComboBox.addItem("Awaiting indexes...");
 
-        DumbService.getInstance(myProject).smartInvokeLater(() -> {
-            List<Perl6IndexableType> packages = new ArrayList<>();
-
-            Perl6GlobalTypeStubIndex globalIndex = Perl6GlobalTypeStubIndex.getInstance();
-            for (String globalType : globalIndex.getAllKeys(myProject))
-                packages.addAll(globalIndex.get(globalType, myProject, GlobalSearchScope.projectScope(myProject)));
-
-            Perl6LexicalTypeStubIndex lexicalIndex = Perl6LexicalTypeStubIndex.getInstance();
-            for (String lexicalType : lexicalIndex.getAllKeys(myProject))
-                packages.addAll(lexicalIndex.get(lexicalType, myProject, GlobalSearchScope.projectScope(myProject)));
-
-            myGrammarComboBox.removeAllItems();
-            for (Perl6IndexableType type : packages) {
-                if (type instanceof Perl6PackageDecl) {
-                    if (Objects.equals(((Perl6PackageDecl)type).getPackageKind(), "grammar")) {
-                        myGrammarComboBox.addItem(type);
-                    }
-                }
-            }
-            myGrammarComboBox.setEnabled(true);
-            myGrammarComboBox.addItemListener(i -> changeCurrentGrammar());
-            changeCurrentGrammar();
-        });
+        DumbService.getInstance(myProject).smartInvokeLater(this::startWachingGrammars);
 
         myInputDataEditor = getInputDataEditor();
         myInputDataEditor.setBorder(BorderFactory.createLineBorder(JBColor.BLACK));
@@ -139,6 +129,83 @@ public class RakuGrammarPreviewer extends JPanel {
         myStatusLabel.setForeground(JBColor.DARK_GRAY);
     }
 
+    private void startWachingGrammars() {
+        myGrammarComboBox.removeAllItems();
+        myGrammarComboBox.addItem(NO_GRAMMARS_FOUND_IN_PROJECT);
+        myGrammarComboBox.addItemListener(i -> changeCurrentGrammar());
+        timedExecutor.scheduleAtFixedRate(this::syncGrammarList, 0, 1000, TimeUnit.MILLISECONDS);
+    }
+
+    private void syncGrammarList() {
+        // Gather current set of grammars and sort them.
+        List<Perl6IndexableType> packages = new ArrayList<>();
+        Application application = ApplicationManager.getApplication();
+        application.runReadAction(() -> {
+            Perl6GlobalTypeStubIndex globalIndex = Perl6GlobalTypeStubIndex.getInstance();
+            Perl6LexicalTypeStubIndex lexicalIndex = Perl6LexicalTypeStubIndex.getInstance();
+            addGrammarsFrom(globalIndex, packages);
+            addGrammarsFrom(lexicalIndex, packages);
+            packages.sort(Comparator.comparing(NavigationItem::getName));
+        });
+
+        // Sync the combo box.
+        application.invokeLater(() -> {
+            if (packages.isEmpty()) {
+                // Put the message in place saying no grammars if it's not there
+                // already.
+                if (myGrammarComboBox.getItemCount() != 1 ||
+                        !Objects.equals(myGrammarComboBox.getItemAt(0), NO_GRAMMARS_FOUND_IN_PROJECT)) {
+                    myGrammarComboBox.removeAllItems();
+                    myGrammarComboBox.addItem(NO_GRAMMARS_FOUND_IN_PROJECT);
+                    myGrammarComboBox.setEnabled(false);
+                    clearParseTree();
+                    myStatusLabel.setText("Waiting for input...");
+                    myStatusLabel.setForeground(JBColor.DARK_GRAY);
+                }
+            }
+            else {
+                // Check if there's a difference.
+                boolean needChange = myGrammarComboBox.getItemCount() != packages.size();
+                if (!needChange) {
+                    for (int i = 0; i < packages.size(); i++) {
+                        Object item = myGrammarComboBox.getItemAt(i);
+                        if (!(item instanceof Perl6PackageDecl) ||
+                                !Objects.equals(packages.get(i).getName(), ((Perl6PackageDecl)item).getName())) {
+                            needChange = true;
+                            break;
+                        }
+                    }
+                }
+
+                // If so, we need to sync up what's there now with what's new. We shall
+                // reslect the current item also.
+                if (needChange) {
+                    Object previousSelection = myGrammarComboBox.getSelectedItem();
+                    String previouslySelectedName = previousSelection instanceof Perl6PackageDecl
+                            ? ((Perl6PackageDecl)previousSelection).getName()
+                            : null;
+                    myGrammarComboBox.removeAllItems();
+                    for (Perl6IndexableType grammar : packages){
+                        myGrammarComboBox.addItem(grammar);
+                        if (Objects.equals(grammar.getName(), previouslySelectedName))
+                            myGrammarComboBox.setSelectedIndex(myGrammarComboBox.getItemCount() - 1);
+                    }
+                    myGrammarComboBox.setEnabled(true);
+                    changeCurrentGrammar();
+                }
+            }
+        });
+    }
+
+    private void addGrammarsFrom(StringStubIndexExtension<Perl6IndexableType> index, List<Perl6IndexableType> packages) {
+        for (String globalType : index.getAllKeys(myProject))
+            packages.addAll(index.get(globalType, myProject, GlobalSearchScope.projectScope(myProject))
+                .stream()
+                .filter(maybeGrammar -> maybeGrammar instanceof Perl6PackageDecl &&
+                        Objects.equals(((Perl6PackageDecl)maybeGrammar).getPackageKind(), "grammar"))
+                .collect(Collectors.toList()));
+    }
+
     @NotNull
     private Editor getInputDataEditor() {
         EditorFactory factory = EditorFactory.getInstance();
@@ -149,12 +216,8 @@ public class RakuGrammarPreviewer extends JPanel {
         editor.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void documentChanged(@NotNull DocumentEvent event) {
-                if (current != null) {
-                    current.scheduleUpdate();
-                    clearCurrentSelectionHighlight();
-                    clearHighwaterHighlight();
-                    clearFailHighlight();
-                }
+                if (current != null)
+                    performUpdate();
             }
         });
         editor.addEditorMouseListener(new EditorMouseListener() {
@@ -174,6 +237,13 @@ public class RakuGrammarPreviewer extends JPanel {
             }
         });
         return editor;
+    }
+
+    private void performUpdate() {
+        current.scheduleUpdate();
+        clearCurrentSelectionHighlight();
+        clearHighwaterHighlight();
+        clearFailHighlight();
     }
 
     @NotNull
@@ -248,13 +318,22 @@ public class RakuGrammarPreviewer extends JPanel {
 
     private void changeCurrentGrammar() {
         Object selected = myGrammarComboBox.getSelectedItem();
-        if (selected instanceof Perl6PackageDecl) {
-            if (current != null)
-                current.dispose();
-            current = new CurrentGrammar((Perl6PackageDecl)selected,
-                    myInputDataEditor.getDocument(), this::updateResultsTree,
-                    this::startedProcessing);
+        if (!(selected instanceof Perl6PackageDecl))
+            return;
+        if (current != null) {
+            if (current.getGrammarName().equals(((Perl6PackageDecl)selected).getPackageName()))
+                return;
+            current.dispose();
         }
+        current = new CurrentGrammar((Perl6PackageDecl)selected,
+                myInputDataEditor.getDocument(), this::updateResultsTree,
+                this::startedProcessing, timedExecutor);
+        clearParseTree();
+        performUpdate();
+    }
+
+    private void clearParseTree() {
+        ((DefaultTreeModel)myParseTree.getModel()).setRoot(new DefaultMutableTreeNode(""));
     }
 
     private void startedProcessing() {

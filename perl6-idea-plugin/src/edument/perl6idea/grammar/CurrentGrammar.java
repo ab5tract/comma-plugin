@@ -39,7 +39,7 @@ public class CurrentGrammar {
     private long debounceCounter;
 
     public CurrentGrammar(Perl6PackageDecl decl, Document input, Consumer<ParseResultsModel> resultsUpdateCallback,
-                          Runnable processingCallback) {
+                          Runnable processingCallback, ScheduledExecutorService timedExecutor) {
         project = decl.getProject();
         grammarName = decl.getPackageName();
         grammarDocument = decl.getContainingFile().getViewProvider().getDocument();
@@ -53,7 +53,11 @@ public class CurrentGrammar {
         inputDocument = input;
         resultsUpdate = resultsUpdateCallback;
         processing = processingCallback;
-        debounceExecutor = Executors.newSingleThreadScheduledExecutor();
+        debounceExecutor = timedExecutor;
+    }
+
+    public String getGrammarName() {
+        return grammarName;
     }
 
     public synchronized void scheduleUpdate() {
@@ -117,12 +121,14 @@ public class CurrentGrammar {
                         else if (line.equals("___PARSER__OUTPUT__BEGINS__"))
                             on = true;
                     }
-                    String jsonOutput = String.join("\n", jsonLines);
-                    updateUsing(currentInput, jsonOutput);
+                    String jsonOutput = String.join("\n", jsonLines).trim();
+                    updateUsing(currentInput, jsonOutput.startsWith("{")
+                            ? jsonOutput
+                            : "{ \"e\": \"Failed to compile grammar\" }");
                 }
                 catch (ExecutionException e) {
                     LOG.error(e);
-                    // TODO report to user
+                    updateUsing(currentInput, "{ \"e\": \"Failed to run Raku to process grammar\" }");
                 }
                 finally {
                     runningDone();
@@ -183,6 +189,5 @@ public class CurrentGrammar {
 
     public void dispose() {
         grammarDocument.removeDocumentListener(grammarDocumentChangeListener);
-        debounceExecutor.shutdownNow();
     }
 }
