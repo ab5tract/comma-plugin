@@ -1,7 +1,6 @@
 package edument.perl6idea.grammar;
 
 import com.intellij.navigation.NavigationItem;
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -15,10 +14,8 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.impl.cache.impl.IndexCacheManagerImpl;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StringStubIndexExtension;
-import com.intellij.psi.stubs.StubIndex;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.JBSplitter;
@@ -103,7 +100,6 @@ public class RakuGrammarPreviewer extends JPanel {
         myMainPanel.setLayout(migLayout);
         myMainPanel.add(myGrammarComboBox, "wrap, w 100%");
         myMainPanel.add(mySplitter, "w 100%, h 100%");
-        myMainPanel.add(myStatusLabel, "newline, w 100%");
         add(myMainPanel);
     }
 
@@ -117,16 +113,23 @@ public class RakuGrammarPreviewer extends JPanel {
 
         myInputDataEditor = getInputDataEditor();
         myInputDataEditor.setBorder(BorderFactory.createLineBorder(JBColor.BLACK));
+
         myParseTree = getParseTree();
         myParseTree.setBorder(BorderFactory.createLineBorder(JBColor.BLACK));
-        mySplitter = new JBSplitter(true);
-        mySplitter.setProportion(0.3f);
-        mySplitter.setFirstComponent(myInputDataEditor.getComponent());
-        mySplitter.setSecondComponent(new JBScrollPane(myParseTree));
 
         myStatusLabel = new JLabel();
         myStatusLabel.setText("Waiting for input...");
         myStatusLabel.setForeground(JBColor.DARK_GRAY);
+
+        JPanel resultsArea = new JPanel();
+        resultsArea.setLayout(new MigLayout("fill, insets 0"));
+        resultsArea.add(myStatusLabel, "wrap, w 100%");
+        resultsArea.add(new JBScrollPane(myParseTree), "w 100%, h 100%");
+
+        mySplitter = new JBSplitter(true);
+        mySplitter.setProportion(0.3f);
+        mySplitter.setFirstComponent(myInputDataEditor.getComponent());
+        mySplitter.setSecondComponent(resultsArea);
     }
 
     private void startWachingGrammars() {
