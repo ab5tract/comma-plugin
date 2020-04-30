@@ -9,19 +9,14 @@ import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SeparatorFactory;
 import com.intellij.ui.ToolbarDecorator;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.panels.HorizontalLayout;
 import com.intellij.ui.table.JBTable;
-import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.ui.EditableModel;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
@@ -194,7 +189,12 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
 
     private JComponent createParametersPanel() {
         JTable table = new JBTable();
-        Perl6ParameterTableModel parameterTableModel = new Perl6ParameterTableModel(myInputVariables, table);
+        Perl6ParameterTableModel parameterTableModel = new Perl6ParameterTableModel(myInputVariables, table) {
+            @Override
+            public void updateOwner() {
+                update();
+            }
+        };
         table.setModel(parameterTableModel);
         table.getColumnModel().getColumn(LEXICAL_SCOPE_COLUMN_INDEX).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
@@ -238,108 +238,5 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
 
     public String getReturnType() {
         return myReturnTypeField.getText();
-    }
-
-    private class Perl6ParameterTableModel extends AbstractTableModel implements EditableModel {
-        String[] columns = {"Name", "Type", "Pass as Parameter", "Available Lexically"};
-        private final Perl6VariableData[] myVars;
-        protected final JTable myTable;
-
-        public Perl6ParameterTableModel(Perl6VariableData[] variableData, JTable table) {
-            super();
-            myVars = variableData;
-            myTable = table;
-        }
-
-        @Override
-        public int getRowCount() {
-            return myVars.length;
-        }
-
-        @Override
-        public int getColumnCount() {
-            return columns.length;
-        }
-
-        @Override
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return columnIndex != LEXICAL_SCOPE_COLUMN_INDEX;
-        }
-
-        @Override
-        public void setValueAt(Object newValue, int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 0: {
-                    myVars[rowIndex].parameterName = (String)newValue;
-                    break;
-                }
-                case 1: {
-                    myVars[rowIndex].type = (String)newValue;
-                    break;
-                }
-                case PASSED_AS_PARAMETER_COLUMN_INDEX:
-                case LEXICAL_SCOPE_COLUMN_INDEX: {
-                    myVars[rowIndex].isPassed = (boolean)newValue;
-                    break;
-                }
-            }
-            fireTableCellUpdated(rowIndex, columnIndex);
-            update();
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            Perl6VariableData var = myVars[rowIndex];
-            switch (columnIndex) {
-                case 0: return var.parameterName;
-                case 1: return var.type;
-                case 2: return var.isPassed;
-                default: return var.getLexicalState();
-            }
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            return columns[column];
-        }
-
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                case 1: return String.class;
-                case 2: return Boolean.class;
-                default: return String.class;
-            }
-        }
-
-        @Override
-        public void addRow() {
-            throw new IncorrectOperationException("Cannot add a row");
-        }
-
-        @Override
-        public void exchangeRows(int oldIndex, int newIndex) {
-            if (!canExchangeRows(oldIndex, newIndex)) return;
-
-            final Perl6VariableData targetVar = myVars[newIndex];
-            myVars[newIndex] = myVars[oldIndex];
-            myVars[oldIndex] = targetVar;
-
-            myTable.getSelectionModel().setSelectionInterval(newIndex, newIndex);
-            updateSignature();
-        }
-
-        @Override
-        public boolean canExchangeRows(int oldIndex, int newIndex) {
-            if (oldIndex < 0 || oldIndex >= myVars.length) return false;
-            if (newIndex < 0 || newIndex >= myVars.length) return false;
-            return true;
-        }
-
-        @Override
-        public void removeRow(int idx) {
-            throw new IncorrectOperationException("Cannot remove a row");
-        }
     }
 }

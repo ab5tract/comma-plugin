@@ -43,7 +43,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     private List<Perl6StatementList> myScopes;
     private boolean selfIsPassed = false;
     protected boolean isExpr = false;
-    private Pattern REGEX_DRIVEN_VARIABLES_PATTERN = Pattern.compile("^\\$\\d+$");
+    public static Pattern REGEX_DRIVEN_VARIABLES_PATTERN = Pattern.compile("^\\$\\d+$");
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;

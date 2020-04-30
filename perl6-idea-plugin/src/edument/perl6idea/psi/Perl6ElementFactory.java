@@ -101,8 +101,8 @@ public class Perl6ElementFactory {
         return String.format("%s();", name);
     }
 
-    public static Perl6RegexCall createRegexCall(Project project, String name) {
-        return produceElement(project, getRegexCallText(name), Perl6RegexCall.class);
+    public static Perl6RegexAtom createRegexCall(Project project, String name) {
+        return produceElement(project, getRegexCallText(name), Perl6RegexAtom.class);
     }
 
     private static String getRegexCallText(String name) {
