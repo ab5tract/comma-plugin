@@ -2,6 +2,7 @@ package edument.perl6idea.refactoring;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.psi.PsiElement;
 import com.intellij.refactoring.ui.MethodSignatureComponent;
 import com.intellij.refactoring.ui.RefactoringDialog;
@@ -134,6 +135,16 @@ public abstract class Perl6ExtractRegexDialog extends RefactoringDialog {
         });
         table.setFillsViewportHeight(true);
         return ToolbarDecorator.createDecorator(table).disableAddAction().disableRemoveAction().createPanel();
+    }
+
+    @Nullable
+    @Override
+    protected ValidationInfo doValidate() {
+        if (getNewRegexName() != null && !getNewRegexName().isEmpty()) {
+            return null;
+        } else {
+            return new ValidationInfo("Name is required", myNameField);
+        }
     }
 
     private void update() {
