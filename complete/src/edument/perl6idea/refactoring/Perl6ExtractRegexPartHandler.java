@@ -12,7 +12,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.RefactoringActionHandler;
 import edument.perl6idea.psi.*;
@@ -43,12 +42,15 @@ public class Perl6ExtractRegexPartHandler implements RefactoringActionHandler {
         PsiElement anchor = getAnchor(atoms);
         if (anchor == null) return;
         Perl6RegexDriver regex = PsiTreeUtil.getParentOfType(atoms[0], Perl6RegexDriver.class);
+        Perl6RegexDecl regexDecl = PsiTreeUtil.getParentOfType(regex, Perl6RegexDecl.class);
         if (regex == null) return;
         Perl6PsiScope parentToCreateAt = PsiTreeUtil.getParentOfType(anchor, Perl6PsiScope.class);
         if (parentToCreateAt == null) return;
         Perl6PackageDecl parentPackage = PsiTreeUtil.getParentOfType(regex, Perl6PackageDecl.class);
         boolean isLexical = parentPackage == null || !parentPackage.getPackageKind().equals("grammar");
-        NewRegexPartData data = getNewRegexPartData(project, parentToCreateAt, atoms, isLexical);
+        Perl6RegexPartType parentType = isLexical || regexDecl == null ? Perl6RegexPartType.REGEX :
+                                        convertRegexTypes(regexDecl.getRegexKind());
+        NewRegexPartData data = getNewRegexPartData(project, parentToCreateAt, atoms, isLexical, parentType);
         if (data == null) return;
         PsiElement newRegex = createNewRegex(project, data, atoms);
         WriteCommandAction.runWriteCommandAction(project, "Extract Regex", null, () -> {
@@ -59,6 +61,14 @@ public class Perl6ExtractRegexPartHandler implements RefactoringActionHandler {
             PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(document);
             CodeStyleManager.getInstance(project).reformat(parent);
         });
+    }
+
+    private static Perl6RegexPartType convertRegexTypes(String kind) {
+        switch (kind) {
+            case "token": return Perl6RegexPartType.TOKEN;
+            case "rule": return Perl6RegexPartType.RULE;
+            default: return Perl6RegexPartType.REGEX;
+        }
     }
 
     private static void replaceNodesWithCall(Project project, NewRegexPartData data, PsiElement[] atoms) {
@@ -75,15 +85,17 @@ public class Perl6ExtractRegexPartHandler implements RefactoringActionHandler {
         return CompletePerl6ElementFactory.createRegexPart(project, data, atoms);
     }
 
-    protected NewRegexPartData getNewRegexPartData(Project project, Perl6PsiScope parentToCreateAt, PsiElement[] atoms, boolean isLexical) {
+    protected NewRegexPartData getNewRegexPartData(Project project, Perl6PsiScope parentToCreateAt, PsiElement[] atoms, boolean isLexical,
+                                                   Perl6RegexPartType parentType) {
         CompletableFuture<NewRegexPartData> futureData = new CompletableFuture<>();
         TransactionGuard.getInstance().submitTransactionAndWait(() -> {
-            Perl6ExtractRegexDialog dialog = new Perl6ExtractRegexDialog(project, getCapturedVariables(parentToCreateAt, atoms), atoms, isLexical) {
+            Perl6ExtractRegexDialog dialog = new Perl6ExtractRegexDialog(project, getCapturedVariables(parentToCreateAt, atoms), atoms, isLexical, parentType) {
                 @Override
                 protected void doAction() {
                     futureData.complete(new NewRegexPartData(getType(), getNewRegexName(),
                                                              getSignatureParameterBlock(),
-                                                             getCaptureStatus(), isLexical));
+                                                             getCaptureStatus(), isLexical,
+                                                             parentType));
                     closeOKAction();
                 }
 

@@ -35,12 +35,17 @@ public abstract class Perl6ExtractRegexDialog extends RefactoringDialog {
     private JCheckBox myCaptureCheckField;
     private MethodSignatureComponent mySignature;
 
-    protected Perl6ExtractRegexDialog(@NotNull Project project, Perl6VariableData[] inputVariables, PsiElement[] atoms, boolean isLexical) {
+    protected Perl6ExtractRegexDialog(@NotNull Project project,
+                                      Perl6VariableData[] inputVariables,
+                                      PsiElement[] atoms,
+                                      boolean isLexical,
+                                      Perl6RegexPartType parentType) {
         super(project, true);
         myInputVariables = inputVariables;
         myAtoms = atoms;
         myNameField = new JTextField();
         myTypeField = new ComboBox<>(new String[]{"token", "regex", "rule"});
+        myTypeField.setSelectedItem(parentType.name().toLowerCase());
         myCaptureCheckField = new JBCheckBox();
         mySignature = new MethodSignatureComponent("", project, Perl6ScriptFileType.INSTANCE);
         mySignature.setMinimumSize(new Dimension(500, 160));

@@ -41,14 +41,15 @@ public class ExtractRegexTest extends CommaFixtureTestCase {
         }
 
         @Override
-        protected NewRegexPartData getNewRegexPartData(Project project, Perl6PsiScope parentToCreateAt, PsiElement[] atoms, boolean isLexical) {
+        protected NewRegexPartData getNewRegexPartData(Project project, Perl6PsiScope parentToCreateAt,
+                                                       PsiElement[] atoms, boolean isLexical, Perl6RegexPartType parentType) {
             Perl6VariableData[] params = getCapturedVariables(parentToCreateAt, atoms);
             String base = "";
             if (params.length != 0)
                 base += NewCodeBlockData.formSignature(params, false);
             return new NewRegexPartData(myType, "foo",
                                         base.isEmpty() ? "" : "(" + base + ")",
-                                        myIsCapture, isLexical);
+                                        myIsCapture, isLexical, myType);
         }
     }
 }
