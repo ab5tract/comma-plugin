@@ -1,7 +1,9 @@
 package edument.perl6idea.refactoring.introduce;
 
-public class IntroduceValidator {
-    public static boolean isNameValid(String name) {
+import edument.perl6idea.refactoring.RakuNameValidator;
+
+public class IntroduceValidator implements RakuNameValidator {
+    public boolean isNameValid(String name) {
         return name != null && isIdentifier(name);
     }
 

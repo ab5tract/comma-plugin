@@ -9,6 +9,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Perl6RegexVariableImpl extends ASTWrapperPsiElement implements Perl6RegexVariable {
     public Perl6RegexVariableImpl(@NotNull ASTNode node) {
@@ -19,6 +20,12 @@ public class Perl6RegexVariableImpl extends ASTWrapperPsiElement implements Perl
     public String getName() {
         Perl6Variable var = PsiTreeUtil.getChildOfType(this, Perl6Variable.class);
         return var == null ? "" : var.getText();
+    }
+
+    @Nullable
+    @Override
+    public PsiElement getNameIdentifier() {
+        return PsiTreeUtil.getChildOfType(this, Perl6Variable.class);
     }
 
     @NotNull

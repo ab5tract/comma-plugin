@@ -23,6 +23,7 @@ import com.intellij.refactoring.listeners.RefactoringEventData;
 import com.intellij.refactoring.listeners.RefactoringEventListener;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.refactoring.helpers.Perl6IntroduceDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -199,7 +200,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         if (operation.getName() == null) {
             Perl6IntroduceDialog dialog = new Perl6IntroduceDialog(project, myDialogTitle,
                                                                    myValidator, getHelpId(),
-                                                                   operation);
+                                                                   operation.getSuggestedNames());
             if (!dialog.showAndGet())
                 return;
             operation.setName(dialog.getName());
