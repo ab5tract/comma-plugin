@@ -2,6 +2,7 @@ package edument.perl6idea.grammar;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.navigation.NavigationItem;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
@@ -16,6 +17,7 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StringStubIndexExtension;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -300,6 +302,12 @@ public class RakuGrammarPreviewer extends JPanel {
                         clickOffset = editor.getCaretModel().getOffset();
                     }
                 }
+            }
+        });
+        Disposer.register(myProject, new Disposable() {
+            @Override
+            public void dispose() {
+                factory.releaseEditor(editor);
             }
         });
         return editor;
