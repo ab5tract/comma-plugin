@@ -96,7 +96,7 @@ range of annotations and intentions</li>
       <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt R"/>
       <add-to-group group-id="IntroduceActionsGroup" anchor="before" relative-to-action="ExtractMethod"/>
     </action>
-    <action id="Perl6Plugin.ExtractRegex" class="edument.perl6idea.actions.ExtractRegexAction" text="Regex Part..."
+    <action id="Perl6Plugin.ExtractRegex" class="edument.perl6idea.actions.ExtractRegexAction" text="Extract Rule..."
             description="Turn this selected code fragment into a separate regex">
       <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt B"/>
       <add-to-group group-id="IntroduceActionsGroup" anchor="before" relative-to-action="ExtractMethod"/>
