@@ -449,7 +449,18 @@ public class RakuGrammarPreviewer extends JPanel {
     }
 
     private void reloadTree() {
+        List<TreePath> expanded = new ArrayList<>();
+        for (int i = 0; i < myParseTree.getRowCount() - 1; i++) {
+            TreePath currPath = myParseTree.getPathForRow(i);
+            TreePath nextPath = myParseTree.getPathForRow(i + 1);
+            if (currPath.isDescendant(nextPath))
+                expanded.add(currPath);
+        }
+        TreePath selected = myParseTree.getSelectionPath();
         ((DefaultTreeModel)myParseTree.getModel()).reload();
+        for (TreePath path : expanded)
+            myParseTree.expandPath(path);
+        myParseTree.setSelectionPath(selected);
     }
 
     private class GrammarTreeNode extends DefaultMutableTreeNode {
