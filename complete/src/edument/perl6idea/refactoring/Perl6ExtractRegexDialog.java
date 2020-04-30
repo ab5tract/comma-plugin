@@ -91,6 +91,12 @@ public abstract class Perl6ExtractRegexDialog extends RefactoringDialog {
 
     @Nullable
     @Override
+    public JComponent getPreferredFocusedComponent() {
+        return myNameField;
+    }
+
+    @Nullable
+    @Override
     protected JComponent createCenterPanel() {
         JPanel centerPanel = new JPanel(new BorderLayout());
 
