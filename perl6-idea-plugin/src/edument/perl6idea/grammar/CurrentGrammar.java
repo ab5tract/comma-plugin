@@ -127,7 +127,7 @@ public class CurrentGrammar {
                             : "{ \"e\": \"Failed to compile grammar\" }");
                 }
                 catch (ExecutionException e) {
-                    LOG.error(e);
+                    LOG.warn(e);
                     updateUsing(currentInput, "{ \"e\": \"Failed to run Raku to process grammar\" }");
                 }
                 finally {
@@ -145,7 +145,7 @@ public class CurrentGrammar {
             return tempFile;
         }
         catch (IOException e) {
-            LOG.error(e);
+            LOG.warn(e);
             return null;
         }
     }
