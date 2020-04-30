@@ -44,6 +44,7 @@ public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIn
         }
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
         VariableInplaceRenameHandler handler = new VariableInplaceRenameHandler();
+        editor.getCaretModel().moveToOffset(element.getTextOffset() + 1);
         handler.doRename(element, editor, DataContext.EMPTY_CONTEXT);
     }
 
