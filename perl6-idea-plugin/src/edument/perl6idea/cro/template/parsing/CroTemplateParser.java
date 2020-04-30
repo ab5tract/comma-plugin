@@ -1398,6 +1398,40 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
+    private boolean parameter_38_quant_4(PsiBuilder builder, OPP opp) {
+        if (!(this.expression_22(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean parameter_38_quant_5(PsiBuilder builder, OPP opp) {
+        PsiBuilder.Marker marker5;
+        marker5 = builder.mark();
+        if (!(this.ws_66(builder))) {
+            return false;
+        }
+        String tt2;
+        tt2 = builder.getTokenText();
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.DEFAULT_PARAMETER_SYNTAX) && (tt2.equals("="))) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        if (!(this.ws_66(builder))) {
+            return false;
+        }
+        PsiBuilder.Marker quantMarker6;
+        quantMarker6 = builder.mark();
+        if (this.parameter_38_quant_4(builder, opp)) {
+            quantMarker6.drop();
+        } else {
+            quantMarker6.rollbackTo();
+        }
+        marker5.done(CroTemplateElementTypes.PARAMETER_DEFAULT);
+        return true;
+    }
+
     private boolean parameter_38(PsiBuilder builder) {
         OPP opp;
         opp = null;
@@ -1417,6 +1451,13 @@ public class CroTemplateParser implements PsiParser {
                 altMarker2.rollbackTo();
                 return false;
             }
+        }
+        PsiBuilder.Marker quantMarker7;
+        quantMarker7 = builder.mark();
+        if (this.parameter_38_quant_5(builder, opp)) {
+            quantMarker7.drop();
+        } else {
+            quantMarker7.rollbackTo();
         }
         marker1.done(CroTemplateElementTypes.PARAMETER);
         return true;

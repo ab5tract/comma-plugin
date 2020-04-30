@@ -1,0 +1,14 @@
+<:sub pos-default($a = 'foo', $b = 'bar')>
+  <$a> <$b>
+</:>
+<&pos-default>
+<&pos-default('x')>
+<&pos-default('x', 'y')>
+
+<:sub named-default(:$a = 'foo', :$b = 'bar')>
+  <$a> <$b>
+</:>
+<&named-default>
+<&named-default(:a('x'))>
+<&named-default(:b('y'))>
+<&named-default(:b('y'), :a('x'))>

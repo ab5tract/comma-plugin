@@ -17,6 +17,7 @@ public interface CroTemplateTokenTypes {
     IElementType COMMA = new CroTemplateElementType("COMMA");
     IElementType COMMENT = new CroTemplateElementType("COMMENT");
     IElementType DECL_OPENER = new CroTemplateElementType("DECL_OPENER");
+    IElementType DEFAULT_PARAMETER_SYNTAX = new CroTemplateElementType("DEFAULT_PARAMETER_SYNTAX");
     IElementType DOT = new CroTemplateElementType("DOT");
     IElementType END_OF_EXPR = new CroTemplateElementType("END_OF_EXPR");
     IElementType IDENTIFER = new CroTemplateElementType("IDENTIFER");

@@ -451,6 +451,17 @@ grammar MAIN {
            <.parameter-name>?
         || <.parameter-name>
         ]
+        [
+            <?before <.ws> '='>
+            <.start-element('PARAMETER_DEFAULT')>
+            <.ws>
+            <.start-token('DEFAULT_PARAMETER_SYNTAX')>
+            '='
+            <.end-token('DEFAULT_PARAMETER_SYNTAX')>
+            <.ws>
+            <.expression>?
+            <.end-element('PARAMETER_DEFAULT')>
+        ]?
         <.end-element('PARAMETER')>
     }
 
