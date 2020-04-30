@@ -244,7 +244,7 @@ public class RakuGrammarPreviewer extends JPanel {
                 }
 
                 // If so, we need to sync up what's there now with what's new. We shall
-                // reslect the current item also.
+                // reselect the current item also.
                 if (needChange) {
                     Object previousSelection = myGrammarComboBox.getSelectedItem();
                     String previouslySelectedName = previousSelection instanceof Perl6PackageDecl
