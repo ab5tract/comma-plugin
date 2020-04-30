@@ -1,4 +1,4 @@
-package edument.perl6idea.refactoring.introduce;
+package edument.perl6idea.refactoring.helpers;
 
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
@@ -10,6 +10,7 @@ import com.intellij.ui.EditorComboBoxRenderer;
 import com.intellij.ui.EditorTextField;
 import com.intellij.ui.StringComboboxEditor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import edument.perl6idea.refactoring.RakuNameValidator;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -19,24 +20,23 @@ import java.util.Collection;
 
 public class Perl6IntroduceDialog extends DialogWrapper {
     private final String myHelpId;
-    private final IntroduceValidator myValidator;
+    private final RakuNameValidator myValidator;
     private ComboBox myNameComboBox;
     private Project myProject;
     private JPanel myContentPane;
 
     public Perl6IntroduceDialog(Project project,
                                 String title,
-                                IntroduceValidator validator,
+                                RakuNameValidator validator,
                                 String id,
-                                IntroduceOperation operation) {
+                                Collection<String> names) {
         super(project, true);
         myProject = project;
         myHelpId = id;
         myValidator = validator;
-
         setTitle(title);
-        setUpNameComboBox(operation.getSuggestedNames());
         init();
+        setUpNameComboBox(names);
         updateControls();
     }
 

@@ -4,19 +4,28 @@ import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.TransactionGuard;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.refactoring.introduce.inplace.InplaceVariableIntroducer;
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenameHandler;
+import com.intellij.refactoring.rename.inplace.VariableInplaceRenamer;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.refactoring.RakuNameValidator;
+import edument.perl6idea.refactoring.helpers.Perl6IntroduceDialog;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,9 +52,23 @@ public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIn
             return;
         }
         PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
-        VariableInplaceRenameHandler handler = new VariableInplaceRenameHandler();
-        editor.getCaretModel().moveToOffset(element.getTextOffset() + 1);
-        handler.doRename(element, editor, DataContext.EMPTY_CONTEXT);
+        Perl6IntroduceDialog dialog = new Perl6IntroduceDialog(
+            project, "New named capture name",
+            new RakuNameValidator() {
+                @Override
+                public boolean isNameValid(String name) {
+                    return name.startsWith("$<") && name.endsWith(">");
+                }
+            }, null,
+            Collections.singletonList("$<x>"));
+        ApplicationManager.getApplication().invokeLater(() -> {
+            if (!dialog.showAndGet())
+                return;
+            if (element instanceof PsiNamedElement)
+                WriteCommandAction.runWriteCommandAction(project, () -> {
+                    ((PsiNamedElement)element).setName(dialog.getName());
+                });
+        });
     }
 
     @Nls(capitalization = Nls.Capitalization.Sentence)
@@ -62,5 +85,11 @@ public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIn
 
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
         return PsiTreeUtil.getNonStrictParentOfType(element, Perl6RegexCapturePositional.class) != null;
+    }
+
+    private static class NamedInplaceVariableIntroducer extends InplaceVariableIntroducer<PsiElement> {
+        public NamedInplaceVariableIntroducer(Project project, Editor editor, PsiNamedElement element) {
+            super(element, editor, project, "Introduce variable", PsiElement.EMPTY_ARRAY, null);
+        }
     }
 }
