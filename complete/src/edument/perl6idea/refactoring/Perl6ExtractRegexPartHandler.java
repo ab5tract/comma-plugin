@@ -78,7 +78,7 @@ public class Perl6ExtractRegexPartHandler implements RefactoringActionHandler {
     protected NewRegexPartData getNewRegexPartData(Project project, Perl6PsiScope parentToCreateAt, PsiElement[] atoms, boolean isLexical) {
         CompletableFuture<NewRegexPartData> futureData = new CompletableFuture<>();
         TransactionGuard.getInstance().submitTransactionAndWait(() -> {
-            Perl6ExtractRegexDialog dialog = new Perl6ExtractRegexDialog(project, getCapturedVariables(parentToCreateAt, atoms), atoms) {
+            Perl6ExtractRegexDialog dialog = new Perl6ExtractRegexDialog(project, getCapturedVariables(parentToCreateAt, atoms), atoms, isLexical) {
                 @Override
                 protected void doAction() {
                     futureData.complete(new NewRegexPartData(getType(), getNewRegexName(),

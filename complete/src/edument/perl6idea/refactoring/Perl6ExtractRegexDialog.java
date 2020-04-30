@@ -29,12 +29,13 @@ import static edument.perl6idea.refactoring.Perl6ExtractBlockDialog.PASSED_AS_PA
 public abstract class Perl6ExtractRegexDialog extends RefactoringDialog {
     private final Perl6VariableData[] myInputVariables;
     private final PsiElement[] myAtoms;
+    private final boolean myLexical;
     private JTextField myNameField;
     private JComboBox<String> myTypeField;
     private JCheckBox myCaptureCheckField;
     private MethodSignatureComponent mySignature;
 
-    protected Perl6ExtractRegexDialog(@NotNull Project project, Perl6VariableData[] inputVariables, PsiElement[] atoms) {
+    protected Perl6ExtractRegexDialog(@NotNull Project project, Perl6VariableData[] inputVariables, PsiElement[] atoms, boolean isLexical) {
         super(project, true);
         myInputVariables = inputVariables;
         myAtoms = atoms;
@@ -43,6 +44,7 @@ public abstract class Perl6ExtractRegexDialog extends RefactoringDialog {
         myCaptureCheckField = new JBCheckBox();
         mySignature = new MethodSignatureComponent("", project, Perl6ScriptFileType.INSTANCE);
         mySignature.setMinimumSize(new Dimension(500, 160));
+        myLexical = isLexical;
         init();
         update();
     }
@@ -159,8 +161,10 @@ public abstract class Perl6ExtractRegexDialog extends RefactoringDialog {
 
     private String getSignature() {
         String items = Arrays.stream(myAtoms).map(p -> p.getText()).collect(Collectors.joining(" "));
-        String baseFormat = "my %s %s%s { %s }";
-        return String.format(baseFormat, getType().name().toLowerCase(), getNewRegexName(), getSignatureParameterBlock(), items);
+        String baseFormat = "%s%s %s%s { %s }";
+        return String.format(
+            baseFormat, myLexical ? "my " : "", getType().name().toLowerCase(),
+            getNewRegexName(), getSignatureParameterBlock(), items);
     }
 
     public Perl6RegexPartType getType() {
