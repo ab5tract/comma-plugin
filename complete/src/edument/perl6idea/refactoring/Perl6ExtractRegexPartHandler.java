@@ -157,7 +157,7 @@ public class Perl6ExtractRegexPartHandler implements RefactoringActionHandler {
             if (Perl6ExtractCodeBlockHandler.REGEX_DRIVEN_VARIABLES_PATTERN.matcher(usedVariable.getVariableName()).matches()) {
                 continue;
             }
-            if (twigil != '!') {
+            if (twigil != '!' && twigil != '*') {
                 Perl6VariableData variableCapture = checkIfLexicalVariableCaptured(parentToCreateAt, elements, usedVariable);
                 if (variableCapture != null)
                     capturedVariables.add(variableCapture);
