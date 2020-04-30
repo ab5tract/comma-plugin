@@ -64,6 +64,10 @@ public class ParseResultsModel {
                         end = child.getEnd();
             return end;
         }
+
+        public boolean isProtoCandidate() {
+            return name.contains(":");
+        }
     }
 
     public static class FailurePositions {

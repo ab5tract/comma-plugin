@@ -81,6 +81,8 @@ public class RakuGrammarPreviewer extends JPanel {
     private JPanel myMainPanel;
     private JBSplitter mySplitter;
     private CurrentGrammar current;
+    private boolean showFailedRules = true;
+    private boolean showNonCapturingRules = true;
     private RangeHighlighter currentSelectionHighlight;
     private RangeHighlighter highWaterHighlight;
     private RangeHighlighter failHighlight;
@@ -132,6 +134,30 @@ public class RakuGrammarPreviewer extends JPanel {
             public void updateButton(@NotNull AnActionEvent e) {
                 DefaultMutableTreeNode[] selectedNodes = myParseTree.getSelectedNodes(DefaultMutableTreeNode.class, null);
                 e.getPresentation().setEnabled(selectedNodes.length == 1);
+            }
+        });
+        decorator.addExtraAction(new ToggleActionButton("Show Failed Rules", AllIcons.RunConfigurations.TestFailed) {
+            @Override
+            public boolean isSelected(AnActionEvent e) {
+                return showFailedRules;
+            }
+
+            @Override
+            public void setSelected(AnActionEvent e, boolean state) {
+                showFailedRules = state;
+                reloadTree();
+            }
+        });
+        decorator.addExtraAction(new ToggleActionButton("Show Non-Captruing Rules", AllIcons.RunConfigurations.TestIgnored) {
+            @Override
+            public boolean isSelected(AnActionEvent e) {
+                return showNonCapturingRules;
+            }
+
+            @Override
+            public void setSelected(AnActionEvent e, boolean state) {
+                showNonCapturingRules = state;
+                reloadTree();
             }
         });
 
@@ -416,10 +442,79 @@ public class RakuGrammarPreviewer extends JPanel {
     }
 
     private MutableTreeNode buildTreeModelNode(ParseResultsModel.Node node) {
-        DefaultMutableTreeNode treeNode = new DefaultMutableTreeNode(node);
+        DefaultMutableTreeNode treeNode = new GrammarTreeNode(node);
         for (ParseResultsModel.Node childNode : node.getChildren())
             treeNode.add(buildTreeModelNode(childNode));
         return treeNode;
+    }
+
+    private void reloadTree() {
+        ((DefaultTreeModel)myParseTree.getModel()).reload();
+    }
+
+    private class GrammarTreeNode extends DefaultMutableTreeNode {
+        public GrammarTreeNode(Object userObject) {
+            super(userObject, true);
+        }
+
+        @Override
+        public TreeNode getChildAt(int index) {
+            if (children == null)
+                throw new ArrayIndexOutOfBoundsException("Node has no children");
+
+            int realIndex = -1;
+            int visibleIndex = -1;
+            Enumeration e = children.elements();
+            while (e.hasMoreElements()) {
+                GrammarTreeNode node = (GrammarTreeNode)e.nextElement();
+                if (shouldDisplay(node))
+                    visibleIndex++;
+                realIndex++;
+                if (visibleIndex == index)
+                    return (TreeNode)children.elementAt(realIndex);
+            }
+
+            throw new ArrayIndexOutOfBoundsException("Index unmatched");
+        }
+
+        @Override
+        public int getChildCount() {
+            int count = 0;
+            if (children != null) {
+                Enumeration e = children.elements();
+                while (e.hasMoreElements())
+                    if (shouldDisplay((GrammarTreeNode)e.nextElement()))
+                        count++;
+            }
+            return count;
+        }
+
+        @Override
+        public Enumeration children() {
+            int n = getChildCount();
+            return new Enumeration() {
+                private int i = 0;
+
+                @Override
+                public boolean hasMoreElements() {
+                    return i < n;
+                }
+
+                @Override
+                public Object nextElement() {
+                    return getChildAt(i++);
+                }
+            };
+        }
+
+        private boolean shouldDisplay(GrammarTreeNode treeNode) {
+            ParseResultsModel.Node node = (ParseResultsModel.Node)treeNode.getUserObject();
+            if (!showFailedRules && !node.isSuccessful())
+                return false;
+            if (!showNonCapturingRules && node.getCaptureNames() == null && !node.isProtoCandidate())
+                return false;
+            return true;
+        }
     }
 
     private void highlightCurrentSelection(ParseResultsModel.Node node) {
