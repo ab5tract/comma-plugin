@@ -36,53 +36,47 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Migrate to the 2019.03 version of IntelliJ platform</li>
-<li>Update the user interface to call the language Raku instead of Perl 6</li>
-<li>Go to Related Symbol (<code>Ctrl+Alt+Home</code> on an action method name or a
-grammar rule name) now allows to jump from the grammar rule to the
-respective actions method and back. In an action method, the <code>$/</code>
-variable now completes based on the rule&#39;s captures</li>
-<li>In the Cro template language, resolution and completion of variables, calls and macros now works within a single file</li>
-<li>Resolve and complete match variables resulting from regex application, including back-references within a regex</li>
-<li>Improve documentation support: fix wrong documentation cases, properly display tables, update documentation cache</li>
-<li>Make it possible to view documentation for operators: both the standard operator syntax (e.g. &#39;+&#39;) and the function form (e.g. &#39;&amp;infix:&lt;+&gt;&#39;)</li>
-<li>Provide integration with external libraries used. Now sources of externals are accessible in read-only files, support jumping from definition to usage and the other way around. The profiling tool window supports jumping to definition of external calls, and the debugger supports it as well, with stepping</li>
-<li>Improve support of operator syntax. Now usages of both <code>&amp;[+]</code> and <code>&amp;infix:&lt;+&gt;*</code> will not be marked as undeclared anymore, while usage of missing operators will be marked as such</li>
-<li>Add an intention for converting double quotes into single ones (removing interpolation) and the other way around (adding interpolation)</li>
-<li>Add an intention to convert one-line control flow statements into blocks (e.g. &#39;say 42 if True&#39; is converted into &#39;if True { say 42 }&#39;)</li>
-<li>The annotation and quickfix for stubbing missing role methods in a class now considers the &#39;handles&#39; trait</li>
-<li>Support module usage syntax, named parameters and arguments in Cro template language</li>
-<li>Resolution and auto-complete of subs and macros between Cro template files now works</li>
-<li>Cro template language subs and macro are now indexed and available through the Navigate to Symbol feature</li>
-<li>Cro template language symbols are now shown in Structure View</li>
-<li>For Cro template language subs, parameter info (<code>Ctrl+P</code>) is now available</li>
-<li>Improve the default color scheme for Cro template language files</li>
-<li>Enable setting environment variables for a Test Run Configuration</li>
-<li>Fix a parsing exception caused by a <code>;</code> in an argument list</li>
-<li>Fix a long standing parsing exception caused by <code>&gt;&gt;.foo</code> calls ambiguity.</li>
-<li>Add a <code>New Cro Template</code> action</li>
-<li>Fix different parser exceptions for Cro template language</li>
-<li>Support the new <code>&lt;?$foo&gt;</code> and <code>&lt;!$foo&gt;</code> syntax added in the latest release of Cro::WebApp</li>
-<li>An escaped <code>#</code> symbol is no longer misparsed in regex language</li>
-<li>New file associations (<code>.raku</code>, <code>.rakumod</code>, <code>.rakutest</code>, <code>.rakudoc</code>) are suggested in the Windows installer</li>
-<li>The undeclared symbol annotator will not run until the SETTING symbols are available, which makes it less noisy at the start</li>
-<li>Fix data race in SETTING symbols loading, making it more stable</li>
-<li>For &#39;unit&#39;-scoped MAIN subroutines, the parameters are now resolved and completed properly</li>
-<li>Improve recognizing file URLs as clickable links in console output</li>
-<li>Don&#39;t perform bogus extract refactors on a variable or its type from a declaration or a parameter</li>
-<li>Fix a race which could lead to an exception when closing a project shortly after starting the IDE</li>
-<li>Fix an exception involving usage of the PsiViewer plugin</li>
-<li>Fix an exception related to usage of an external module that does not exist</li>
-<li>Do not mistakenly suggest to simplify a range with whatever star</li>
-<li>Prevent a possible exception related to method completion.</li>
-<li>Fix a parser exception triggered by typing a specific case of regexp syntax</li>
-<li>Fix regex-based variables completion bug when some non-capturing assertions were suggested by mistake</li>
-<li>Make sure changes to project structure related to directories made using the IDE are reflected
-in <code>META6.json</code></li>
-<li>Prevent a rare exception sometimes occuring on project closing</li>
-<li>Fix a bug where an optional parameter with a trait was not recognized as being optional, and thus
-caused bogus parameter ordering annotations to be shown</li>
-<li>Fix a bug of console input not being recognized by Run tab window</li>
+<li>A new grammar live preview feature. A grammar can be run against a specified input, and is
+automatically re-run on code changes or input changes. A trace of the parse is displayed,
+like that produced by Grammar::Tracer, except it&#39;s in a tree view and selecting an entry
+shows which bit of the input text it matched. Further, double-clicking a matched part of
+the input text shows the rule that matched it. It is possible to navigate onward to the
+source code of the rule.</li>
+<li>An extract regex refactor is now available. A selected portion of a rule in a grammar
+can be extracted to a new token/rule/regex, with the choice of whether to capture or not.
+In an anonymous regex outside of a grammar, this extracts a lexical named regex.</li>
+<li>An intention is now available to turn a positional capture in a regex into a
+named capture.</li>
+<li>Cro template default parameter syntax is now parsed and handled correctly.</li>
+<li>Add a Raku REPL with multiline commands, history, auto-completion of symbols, and the usual range of annotations and intentions</li>
+<li>Add an intention to convert a ternary expression into a conditional construct</li>
+<li>Add an intention to convert a non-capturing regex group into a named capture</li>
+<li>Add an intention to convert a non-capturing regex group into a positional capture, with subsequent capture variables being renumbered appropriately</li>
+<li>Improve completion and resolving of variables obtained from regex matching, supporting more code cases which implicitly set the <code>$/</code> variable and its matches</li>
+<li>Allow renaming of Cro template parameters, as well as template sub and macro names</li>
+<li>Correctly parse iteration over a variable in Cro template parameters (e.g. <code>@$foo</code>)</li>
+<li>Correctly parse multiline comments in Cro templates</li>
+<li>When a project SDK can&#39;t be used or is missing, now a notification is shown to the user suggesting to set one, instead of throwing an exception which could occur earlier</li>
+<li>Shebang lines in scripts which end with <code>perl6</code>, <code>raku</code> and <code>rakudo</code> are used to detect Raku scripts with no file extension</li>
+<li>Improve provision of positional capture variables (<code>$0</code>, <code>$1</code> etc): earlier, <code>/(a(b))/</code> would provide two variables, but now only a single one is provided</li>
+<li>Improve provision of named capture variables: earlier <code>/$&lt;a&gt;=(&lt;foo&gt; &lt;bar&gt;)/</code> would provide three named variables, but now only a single one is provided</li>
+<li>Do not highlight an unqualified call of a private method on a variable as undeclared if there is a private method in the current class of the same type, as Rakudo does</li>
+<li>Make the intention which simplifies range literals work when the left range side includes an infix operator application (e.g. <code>$foo - 5 .. *</code>)</li>
+<li>Fix formatting of array literals</li>
+<li>Fix indentation when pressing enter during typing multiple traits</li>
+<li>Fix a bug when during debugging the attributes of <code>self</code> on a <code>Match</code> objects were not shown</li>
+<li>Prevent an exception in the annotation which checks <code>EVAL</code> interpolation usage</li>
+<li>Add a Raku Code Style page to the settings, where numerous new formatting configuration options are available</li>
+<li>Allow configuration of indentation size and continuation indent size (the defaults are as before)</li>
+<li>Allow configuration of whether to use tabs or spaces (the default continues to be spaces)</li>
+<li>Implement optional wrapping of long lines of code</li>
+<li>Allow configuration of whether curly braces go on the same line of code or the line below (defaults to same line, as before). This can be configured separately for packages, routines, regexes, phasers, and other blocks</li>
+<li>Implement wrapping and alignment for parameter lists, argument lists, trait lists, array initializers, and infix operands; these can all be configured</li>
+<li>The formatter can now apply spacing rules, with over 20 different cases being configurable. For example, it&#39;s now possible to have formatting ensure there are spaces around infix operators</li>
+<li>Implement Find Usages for Cro templates, to allow all usages of a template sub, macro, or variable to be found</li>
+<li>Fix a parsing bug with the infix fatarrow operator, which could lead to some odd selection or formatting behaviors</li>
+<li>Fix a bug that led to Comma thinking the cross buit-in did not exist, when in fact it does</li>
+<li>Fix external modules symbol loading on Window</li>
 </ul>
   ]]></change-notes>
 
