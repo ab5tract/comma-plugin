@@ -87,7 +87,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             return;
         }
 
-        element1 = PsiTreeUtil.findCommonParent(element1, element2);
+        element1 = PsiTreeUtil.getParentOfType(PsiTreeUtil.findCommonParent(element1, element2), Perl6PsiElement.class, false);
         if (element1 == null || !isValidIntroduceContext(element1)) {
             showCannotPerformError(project, editor);
             return;
