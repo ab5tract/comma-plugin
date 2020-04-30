@@ -1,6 +1,6 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <id>edument.perl6-idea-plugin</id>
-  <version>2020.01.0</version>
+  <version>2020.04.0</version>
   <name>Comma Community Edition (Raku Language Support)</name>
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
