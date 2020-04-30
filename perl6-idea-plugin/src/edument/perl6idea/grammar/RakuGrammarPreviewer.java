@@ -64,10 +64,12 @@ public class RakuGrammarPreviewer extends JPanel {
         SELECTION_TEXT_ATTRS.setBackgroundColor(JBColor.lightGray);
 
         HIGHWATER_TEXT_ATTRS = new TextAttributes();
-        HIGHWATER_TEXT_ATTRS.setBackgroundColor(JBColor.yellow);
+        HIGHWATER_TEXT_ATTRS.setForegroundColor(new JBColor(Gray._64, Gray._230));
+        HIGHWATER_TEXT_ATTRS.setBackgroundColor(new JBColor(Color.yellow, new Color(132, 96, 6)));
 
         FAILED_TEXT_ATTRS = new TextAttributes();
-        FAILED_TEXT_ATTRS.setBackgroundColor(JBColor.red);
+        FAILED_TEXT_ATTRS.setForegroundColor(new JBColor(Gray._64, Gray._230));
+        FAILED_TEXT_ATTRS.setBackgroundColor(new JBColor(Color.red, new Color(142, 6, 37)));
 
         NODE_TEXT_ATTRS = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK);
         CAPTURED_NODE_TEXT_ATTRS = new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, JBColor.BLACK);
