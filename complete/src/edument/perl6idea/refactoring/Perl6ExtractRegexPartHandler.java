@@ -51,7 +51,7 @@ public class Perl6ExtractRegexPartHandler implements RefactoringActionHandler {
         NewRegexPartData data = getNewRegexPartData(project, parentToCreateAt, atoms, isLexical);
         if (data == null) return;
         PsiElement newRegex = createNewRegex(project, data, atoms);
-        WriteCommandAction.runWriteCommandAction(project, () -> {
+        WriteCommandAction.runWriteCommandAction(project, "Extract Regex", null, () -> {
             PsiElement parent = anchor.getParent();
             parent.addBefore(newRegex, anchor);
             parent.addBefore(Perl6ElementFactory.createNewLine(project), anchor);
