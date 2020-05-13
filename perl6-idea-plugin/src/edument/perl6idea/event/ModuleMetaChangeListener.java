@@ -78,11 +78,13 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
                 continue;
             }
 
-            ApplicationManager.getApplication().invokeLater(
-                () -> {
-                    ProjectView.getInstance(myModule.getProject()).refresh();
-                    LocalFileSystem.getInstance().refresh(false);
-                });
+            if (!ApplicationManager.getApplication().isUnitTestMode()) {
+                ApplicationManager.getApplication().invokeLater(
+                  () -> {
+                      ProjectView.getInstance(myModule.getProject()).refresh();
+                      LocalFileSystem.getInstance().refresh(false);
+                  });
+            }
         }
     }
 
