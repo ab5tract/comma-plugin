@@ -1,12 +1,12 @@
 package edument.perl6idea.actions;
 
 import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import org.jetbrains.annotations.NotNull;
 
-public class EnterHandlerTest extends LightCodeInsightFixtureTestCase {
+public class EnterHandlerTest extends CommaFixtureTestCase {
     @NotNull
     @Override
     protected LightProjectDescriptor getProjectDescriptor() {
