@@ -15,22 +15,22 @@ import java.util.Collection;
 public class Perl6ProjectStructureProvider implements TreeStructureProvider {
     @NotNull
     @Override
-    public Collection<AbstractTreeNode> modify(@NotNull AbstractTreeNode parent,
-                                               @NotNull Collection<AbstractTreeNode> children,
+    public Collection<AbstractTreeNode<?>> modify(@NotNull AbstractTreeNode<?> parent,
+                                               @NotNull Collection<AbstractTreeNode<?>> children,
                                                ViewSettings settings) {
         if (parent instanceof FavoritesRootNode)
             return children;
-        ArrayList<AbstractTreeNode> list = new ArrayList<>(children);
+        ArrayList<AbstractTreeNode<?>> list = new ArrayList<>(children);
 
         // Remove .precomp directories
         list.removeIf(f -> {
             if (!(f instanceof ProjectViewNode)) return false;
-            VirtualFile file = ((ProjectViewNode) f).getVirtualFile();
+            VirtualFile file = ((ProjectViewNode<?>) f).getVirtualFile();
             return file != null && file.getName().equals(".precomp");
         });
 
         for (int i = 0; i < list.size(); i++) {
-            AbstractTreeNode node = list.get(i);
+            AbstractTreeNode<?> node = list.get(i);
             if (node instanceof PsiDirectoryNode) {
                 VirtualFile file = ((PsiDirectoryNode)node).getVirtualFile();
                 if (file != null && file.getUrl().startsWith("raku:///"))

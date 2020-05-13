@@ -31,7 +31,7 @@ public class CroTemplateWordsScannar extends VersionedWordsScanner {
     }
 
     @Override
-    public void processWords(CharSequence fileText, Processor<WordOccurrence> processor) {
+    public void processWords(@NotNull CharSequence fileText, @NotNull Processor<? super WordOccurrence> processor) {
         myLexer.start(fileText);
         WordOccurrence occurrence = new WordOccurrence(fileText, 0, 0, null); // shared occurrence
 
@@ -74,7 +74,7 @@ public class CroTemplateWordsScannar extends VersionedWordsScanner {
         }
     }
 
-    private static boolean indexByDash(Processor<WordOccurrence> processor, WordOccurrence occurrence, String text) {
+    private static boolean indexByDash(Processor<? super WordOccurrence> processor, WordOccurrence occurrence, String text) {
         String[] splitted = text.split("-");
         for (int i = 0; i < splitted.length; i++) {
             occurrence.init(splitted[i], 0, splitted[i].length(), WordOccurrence.Kind.CODE);
