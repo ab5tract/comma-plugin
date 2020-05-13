@@ -12,7 +12,6 @@ import com.intellij.openapi.project.Project;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.debugger.Perl6DebugCommandLineState;
 import edument.perl6idea.run.Perl6RunCommandLineState;
-import edument.perl6idea.run.Perl6RunConfiguration;
 import edument.perl6idea.timeline.Perl6TimelineCommandLineState;
 import edument.perl6idea.timeline.Perl6TimelineExecutor;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +23,11 @@ public class Perl6CommunityCroRunConfigurationType extends ConfigurationTypeBase
     protected Perl6CommunityCroRunConfigurationType() {
         super(PERL6_CRO_RUN_CONFIGURATION_ID, "Cro Service", "Run Cro service", Perl6Icons.CRO);
         addFactory(new ConfigurationFactory(this) {
+            @Override
+            public @NotNull String getId() {
+                return PERL6_CRO_RUN_CONFIGURATION_ID + "_FACTORY";
+            }
+
             @NotNull
             @Override
             public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
