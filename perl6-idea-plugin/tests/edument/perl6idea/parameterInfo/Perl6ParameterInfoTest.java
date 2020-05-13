@@ -22,7 +22,7 @@ public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
         return new Perl6LightProjectDescriptor();
     }
 
-    private void doTest(String text, String args, Consumer<MockParameterInfoUIContext>... checks) {
+    private void doTest(String text, String args, Consumer<MockParameterInfoUIContext<?>>... checks) {
         StringBuilder builder = new StringBuilder();
         for (String signature : text.split(" \\|\\|\\| "))
             builder.append(String.format("multi a(%s); ", signature));
@@ -30,7 +30,7 @@ public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
         doTest(builder.toString(), checks);
     }
 
-    private void doTest(String text, Consumer<MockParameterInfoUIContext>... checks) {
+    private void doTest(String text, Consumer<MockParameterInfoUIContext<?>>... checks) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         MockCreateParameterInfoContext createContext = new MockCreateParameterInfoContext(myFixture.getEditor(), myFixture.getFile());
         P6CodeBlockCall owner = HANDLER.findElementForParameterInfo(createContext);
@@ -38,7 +38,7 @@ public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
         Object[] items = createContext.getItemsToShow();
         assertNotNull(items);
         assertTrue(items.length != 0);
-        MockParameterInfoUIContext uiContext = new MockParameterInfoUIContext<>(owner);
+        MockParameterInfoUIContext<?> uiContext = new MockParameterInfoUIContext<>(owner);
         assertEquals(items.length, checks.length);
         for (int i = 0; i < items.length; i++) {
             Object item = items[i];
@@ -47,7 +47,7 @@ public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
         }
     }
 
-    private static void assertParameterInfo(MockParameterInfoUIContext context, boolean isEnabled, String text, int start, int end) {
+    private static void assertParameterInfo(MockParameterInfoUIContext<?> context, boolean isEnabled, String text, int start, int end) {
         assertEquals(text, context.getText());
         assertEquals(isEnabled, context.isUIComponentEnabled());
         assertEquals(start, context.getHighlightStart());
@@ -101,9 +101,9 @@ public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
                context -> assertParameterInfo(context, true, "$a, $b, $asdf", 4, 6));
     }
 
-    public void testExternalParameterInfo() {
-        doTest("slurp(<caret>",
-               context -> assertParameterInfo(context, true, "IO::Handle:D $fh = { ... }, |c is raw", 0, 26),
-               context -> assertParameterInfo(context, true, "$path, |c is raw", 0, 5));
-    }
+    //public void testExternalParameterInfo() {
+    //    doTest("slurp(<caret>",
+    //           context -> assertParameterInfo(context, true, "IO::Handle:D $fh = { ... }, |c is raw", 0, 26),
+    //           context -> assertParameterInfo(context, true, "$path, |c is raw", 0, 5));
+    //}
 }
