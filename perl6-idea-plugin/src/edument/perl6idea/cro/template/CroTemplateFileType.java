@@ -24,7 +24,7 @@ public class CroTemplateFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getDescription() {
-        return "A Cro::HTTP::WebApp template";
+        return "Cro::HTTP::WebApp template";
     }
 
     @NotNull
