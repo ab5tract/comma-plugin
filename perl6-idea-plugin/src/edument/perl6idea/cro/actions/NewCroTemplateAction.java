@@ -80,6 +80,9 @@ public class NewCroTemplateAction extends AnAction {
             templatePath = Paths.get(path.getPath(), "templates").toString();
         }
 
+        if (fileName.indexOf('.') < 0)
+            fileName += ".crotmp";
+
         templatePath = stubTemplate(Paths.get(templatePath), fileName);
         VirtualFile testFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(templatePath);
         assert testFile != null;
