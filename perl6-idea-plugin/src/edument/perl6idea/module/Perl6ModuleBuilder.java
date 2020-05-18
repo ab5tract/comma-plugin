@@ -32,8 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuilder {
-    private static Logger LOG = Logger.getInstance(Perl6ModuleBuilder.class);
+public class Perl6ModuleBuilder extends ModuleBuilder {
+    private static final Logger LOG = Logger.getInstance(Perl6ModuleBuilder.class);
     private Perl6ProjectType myModuleType = Perl6ProjectType.PERL6_SCRIPT;
     private Perl6ModuleBuilderGeneric myBuilder = new Perl6ModuleBuilderScript();
     private List<Pair<String, String>> mySourcePaths = new ArrayList<>();
@@ -53,7 +53,8 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
         updateBuilder();
         ContentEntry contentEntry = doAddContentEntry(model);
         if (contentEntry == null) return;
-        List<Pair<String, String>> sourcePaths = getSourcePaths();
+        updateBuilder();
+        List<Pair<String, String>> sourcePaths = myBuilder.getSourcePaths(getContentEntryPath());
         for (final Pair<String, String> sourcePathPair : sourcePaths) {
             Path sourcePath = addSourceRoot(contentEntry, sourcePathPair);
             myBuilder.setupRootModelOfPath(model, sourcePath);
@@ -106,7 +107,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
 
     @NotNull
     @Override
-    public ModuleType getModuleType() {
+    public ModuleType<Perl6ModuleBuilder> getModuleType() {
         return Perl6ModuleType.getInstance();
     }
 
@@ -118,22 +119,6 @@ public class Perl6ModuleBuilder extends ModuleBuilder implements SourcePathsBuil
     @Override
     public String getGroupName() {
         return "Raku";
-    }
-
-    @Override
-    public List<Pair<String, String>> getSourcePaths() {
-        updateBuilder();
-        return myBuilder.getSourcePaths(getContentEntryPath());
-    }
-
-    @Override
-    public void setSourcePaths(List<Pair<String, String>> sourcePaths) {
-        mySourcePaths = sourcePaths;
-    }
-
-    @Override
-    public void addSourcePath(Pair<String, String> sourcePathInfo) {
-        mySourcePaths.add(sourcePathInfo);
     }
 
     @Override
