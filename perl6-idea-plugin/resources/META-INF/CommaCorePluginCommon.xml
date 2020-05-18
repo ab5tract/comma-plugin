@@ -67,15 +67,7 @@
                      implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.SourcesOrderRootTypeUIFactory"/>
     <OrderRootTypeUI key="DOCUMENTATION"
                      implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.DocumentationOrderRootTypeUIFactory"/>
-    <sdkType implementation="com.intellij.openapi.projectRoots.impl.JavaSdkImpl"/>
   </extensions>
-
-  <application-components>
-    <component>
-      <interface-class>com.intellij.openapi.projectRoots.JavaSdk</interface-class>
-      <implementation-class>com.intellij.openapi.projectRoots.impl.JavaSdkImpl</implementation-class>
-    </component>
-  </application-components>
 
   <project-components>
     <component>
