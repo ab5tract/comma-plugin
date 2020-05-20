@@ -101,9 +101,9 @@ public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
                context -> assertParameterInfo(context, true, "$a, $b, $asdf", 4, 6));
     }
 
-    //public void testExternalParameterInfo() {
-    //    doTest("slurp(<caret>",
-    //           context -> assertParameterInfo(context, true, "IO::Handle:D $fh = { ... }, |c is raw", 0, 26),
-    //           context -> assertParameterInfo(context, true, "$path, |c is raw", 0, 5));
-    //}
+    public void testExternalParameterInfo() {
+        doTest("slurp(<caret>",
+               context -> assertParameterInfo(context, true, "IO::Handle:D $fh = { ... }, |c is raw", 0, 26),
+               context -> assertParameterInfo(context, true, "$path, |c is raw", 0, 5));
+    }
 }
