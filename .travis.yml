@@ -1,13 +1,16 @@
-language: java
+language: generic
 dist: trusty
 before_install:
 - git clone --progress --depth 1 -b comma-201 git@github.com:edumentab/intellij-community.git
 - mkdir intellij-community/comma-build
 - shopt -s extglob
 - mv !(intellij-community) intellij-community/comma-build/
+# JetBrains custom SDK
+- (mkdir jdk && cd jdk && wget https://jetbrains.bintray.com/intellij-jbr/jbrsdk-8u202-linux-x64-b1483.58.tar.gz && tar -xzf jbrsdk-8u202-linux-x64-b1483.58.tar.gz)
 env:
   global:
   - export PATH="/opt/rakudo-pkg/bin:/opt/rakudo-pkg/share/perl6/site/bin:$PATH"
+  - export JAVA_HOME="$(pwd)/jdk"
 addons:
   apt:
     sources:
