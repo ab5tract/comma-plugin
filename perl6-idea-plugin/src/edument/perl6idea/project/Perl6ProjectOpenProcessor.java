@@ -12,18 +12,18 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class Perl6ProjectOpenProcessor extends ProjectOpenProcessorBase<Perl6ProjectBuilder> {
+public class Perl6ProjectOpenProcessor<T> extends ProjectOpenProcessorBase<Perl6ProjectBuilder<T>> {
     private static final Logger LOG = Logger.getInstance(Perl6ProjectOpenProcessor.class);
 
     @NotNull
     @Override
-    protected Perl6ProjectBuilder doGetBuilder() {
-        return new Perl6ProjectBuilder();
+    protected Perl6ProjectBuilder<T> doGetBuilder() {
+        return new Perl6ProjectBuilder<>();
     }
 
     @NotNull
     @Override
-    public String[] getSupportedExtensions() {
+    public String @NotNull [] getSupportedExtensions() {
         return new String[]{ "META6.json", "META.list" };
     }
 

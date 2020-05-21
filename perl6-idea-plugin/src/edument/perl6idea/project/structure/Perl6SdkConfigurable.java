@@ -1,6 +1,5 @@
 package edument.perl6idea.project.structure;
 
-import com.intellij.openapi.application.ApplicationBundle;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
@@ -10,7 +9,7 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.JdkComboBox;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.util.Comparing;
-import edument.perl6idea.project.structure.Perl6JdkComboBox;
+import edument.perl6idea.sdk.Perl6SdkType;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,13 +19,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Perl6SdkConfigurable implements UnnamedConfigurable {
-    private Project myProject;
+    private final Project myProject;
     private JComponent myJdkPanel;
-    private Perl6JdkComboBox myCbProjectJdk;
-    private ProjectSdksModel myJdksModel;
+    private JdkComboBox myCbProjectJdk;
+    private final ProjectSdksModel myJdksModel;
     private final SdkModel.Listener myListener = new SdkModel.Listener() {
         @Override
-        public void sdkAdded(Sdk sdk) {
+        public void sdkAdded(@NotNull Sdk sdk) {
             try {
                 myJdksModel.apply(null, true);
             }
@@ -37,17 +36,17 @@ public class Perl6SdkConfigurable implements UnnamedConfigurable {
         }
 
         @Override
-        public void beforeSdkRemove(Sdk sdk) {
+        public void beforeSdkRemove(@NotNull Sdk sdk) {
             reloadModel();
         }
 
         @Override
-        public void sdkChanged(Sdk sdk, String previousName) {
+        public void sdkChanged(@NotNull Sdk sdk, String previousName) {
             reloadModel();
         }
 
         @Override
-        public void sdkHomeSelected(Sdk sdk, String newSdkHome) {
+        public void sdkHomeSelected(@NotNull Sdk sdk, @NotNull String newSdkHome) {
             reloadModel();
         }
     };
@@ -68,8 +67,8 @@ public class Perl6SdkConfigurable implements UnnamedConfigurable {
     public JComponent createComponent() {
         if (myJdkPanel == null) {
             myJdkPanel = new JPanel(new MigLayout("", "left", "top"));
-            myCbProjectJdk = new Perl6JdkComboBox(myJdksModel);
-            myCbProjectJdk.insertItemAt(new Perl6JdkComboBox.NoneJdkComboBoxItem(), 0);
+            myCbProjectJdk = new JdkComboBox(myJdksModel,
+                                             (sdkType) -> sdkType instanceof Perl6SdkType);
             myCbProjectJdk.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -80,20 +79,14 @@ public class Perl6SdkConfigurable implements UnnamedConfigurable {
                                 "A module-specific SDK can be configured for each of the modules as required.</html>";
             myJdkPanel.add(new JLabel(text), "wrap, span 3");
             myJdkPanel.add(myCbProjectJdk);
-            final JButton setUpButton = new JButton(ApplicationBundle.message("button.new"));
-            myCbProjectJdk.setSetupButton(setUpButton, myProject, myJdksModel, new JdkComboBox.NoneJdkComboBoxItem(), null, false);
-            myJdkPanel.add(setUpButton);
-            final JButton editButton = new JButton(ApplicationBundle.message("button.edit"));
-            myCbProjectJdk.setEditButton(editButton, myProject, () -> myJdksModel.getProjectSdk());
-            myJdkPanel.add(editButton);
-           }
+        }
         return myJdkPanel;
     }
 
     private void reloadModel() {
         final Sdk projectJdk = myJdksModel.getProjectSdk();
         if (myCbProjectJdk != null)
-            myCbProjectJdk.reloadModel(new Perl6JdkComboBox.NoneJdkComboBoxItem(), myProject);
+            myCbProjectJdk.reloadModel();
         final String sdkName = projectJdk == null ? ProjectRootManager.getInstance(myProject).getProjectSdkName() : projectJdk.getName();
         if (sdkName != null) {
             final Sdk jdk = myJdksModel.findSdk(sdkName);

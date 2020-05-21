@@ -28,6 +28,11 @@ public class Perl6CompleteCroRunConfigurationType extends ConfigurationTypeBase 
     protected Perl6CompleteCroRunConfigurationType() {
         super(PERL6_CRO_RUN_CONFIGURATION_ID, "Cro Service", "Run Cro service", Perl6Icons.CRO);
         addFactory(new ConfigurationFactory(this) {
+            @Override
+            public @NotNull String getId() {
+                return PERL6_CRO_RUN_CONFIGURATION_ID + "_FACTORY";
+            }
+
             @NotNull
             @Override
             public RunConfiguration createTemplateConfiguration(@NotNull Project project) {

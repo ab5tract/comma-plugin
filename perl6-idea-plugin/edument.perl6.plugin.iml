@@ -78,5 +78,6 @@
     <orderEntry type="library" name="snakeyaml" level="project" />
     <orderEntry type="module" module-name="intellij.platform.serviceContainer" />
     <orderEntry type="module" module-name="intellij.xml.langInjection" />
+    <orderEntry type="module" module-name="intellij.platform.execution.impl" />
   </component>
 </module>

@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ import java.util.List;
 
 import static com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor;
 
-public class Perl6ProjectBuilder extends ProjectImportBuilder {
+public class Perl6ProjectBuilder<T> extends ProjectImportBuilder<T> {
     private final Logger LOG = Logger.getInstance(getClass());
 
     public Perl6ProjectBuilder() {}
@@ -54,7 +53,7 @@ public class Perl6ProjectBuilder extends ProjectImportBuilder {
     }
 
     @Override
-    public List getList() {
+    public List<T> getList() {
         return null;
     }
 

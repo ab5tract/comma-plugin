@@ -23,6 +23,11 @@ public class Perl6CommunityRunConfigurationType extends ConfigurationTypeBase {
         super(PERL6_RUN_CONFIGURATION_ID, "Raku",
               "Raku run configuration", Perl6Icons.CAMELIA);
         addFactory(new ConfigurationFactory(this) {
+            @Override
+            public @NotNull String getId() {
+                return PERL6_RUN_CONFIGURATION_ID + "_FACTORY";
+            }
+
             @NotNull
             @Override
             public RunConfiguration createTemplateConfiguration(@NotNull Project project) {

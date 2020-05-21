@@ -20,6 +20,11 @@ public class Perl6CommunityTestConfigurationType extends ConfigurationTypeBase i
         super(PERL6_TEST_CONFIGURATION_ID, "Raku test",
               "Run Raku tests", Perl6Icons.CAMELIA);
         addFactory(new ConfigurationFactory(this) {
+            @Override
+            public @NotNull String getId() {
+                return PERL6_TEST_CONFIGURATION_ID + "_FACTORY";
+            }
+
             @NotNull
             @Override
             public RunConfiguration createTemplateConfiguration(@NotNull Project project) {

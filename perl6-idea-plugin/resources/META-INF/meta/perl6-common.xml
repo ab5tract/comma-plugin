@@ -188,7 +188,7 @@
     <lang.findUsagesProvider language="CroTemplate"
                              implementationClass="edument.perl6idea.cro.template.findUsages.CroTemplateFindUsagesProvider"/>
     <usageTypeProvider implementation="edument.perl6idea.cro.template.findUsages.CroTemplateUsageTypeProvider"/>
-    <toolWindow id="Raku Grammar Preview" anchor="bottom" factoryClass="edument.perl6idea.grammar.RakuGrammarPreviewFactory"
+    <toolWindow id="Raku Grammar Preview" anchor="right" factoryClass="edument.perl6idea.grammar.RakuGrammarPreviewFactory"
                 secondary="false" canCloseContents="false"/>
   </extensions>
 

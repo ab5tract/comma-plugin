@@ -70,20 +70,6 @@
     <sdkType implementation="com.intellij.openapi.projectRoots.impl.JavaSdkImpl"/>
   </extensions>
 
-  <application-components>
-    <component>
-      <interface-class>com.intellij.openapi.projectRoots.JavaSdk</interface-class>
-      <implementation-class>com.intellij.openapi.projectRoots.impl.JavaSdkImpl</implementation-class>
-    </component>
-  </application-components>
-
-  <project-components>
-    <component>
-      <interface-class>com.intellij.packaging.artifacts.ArtifactManager</interface-class>
-      <implementation-class>com.intellij.packaging.impl.artifacts.ArtifactManagerImpl</implementation-class>
-    </component>
-  </project-components>
-
   <!-- Actions for standalone Comma -->
   <actions>
     <!-- Actions for Welcome Screen -->

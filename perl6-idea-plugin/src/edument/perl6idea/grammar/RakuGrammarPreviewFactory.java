@@ -31,7 +31,6 @@ public class RakuGrammarPreviewFactory implements ToolWindowFactory {
     @Override
     public void init(ToolWindow window) {
         window.setIcon(Perl6Icons.CAMELIA_13x13);
-        window.setAnchor(ToolWindowAnchor.RIGHT, null);
     }
 
     @Override

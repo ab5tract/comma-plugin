@@ -202,6 +202,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
 
     @Override
     public Indent getIndent() {
+        if (myNode.getTreeParent() == null) return null;
+
         if (myNode.getTreeParent().getPsi() instanceof Perl6Heredoc)
             return Indent.getAbsoluteNoneIndent();
         if (myNode.getTreeParent().getPsi() instanceof Perl6Blockoid && myNode.getTreeNext() != null && myNode.getTreePrev() != null)
