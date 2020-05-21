@@ -546,4 +546,10 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         assertNoThrowable(() -> myFixture.getLookupElementStrings());
     }
+
+    public void testMethodOnExplicitlyTypedTopicCompletion() {
+        doTestContainsAll("class Foo { has $.aaa; has $.bbb; }\n" +
+                          "sub foo(Foo $_) { .<caret> }",
+                          ".aaa", ".bbb");
+    }
 }

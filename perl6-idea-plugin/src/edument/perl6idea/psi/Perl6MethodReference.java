@@ -118,8 +118,16 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
         if (prev instanceof PsiWhiteSpace)
             return new CallInfo("self", null, name);
 
-        if (prev == null) // .foo
-            return new CallInfo("Mu", null, name);
+        if (prev == null) { // .foo
+            Perl6Symbol symbol = call.resolveLexicalSymbol(Perl6SymbolKind.Variable, "$_");
+            if (symbol != null) {
+                PsiElement psi = symbol.getPsi();
+                if (psi instanceof Perl6PsiElement) {
+                    return new CallInfo(((Perl6PsiElement)psi).inferType(), psi, name);
+                }
+            }
+            return new CallInfo("Any", null, name);
+        }
 
         if (prev instanceof Perl6PsiElement) {
             Perl6PsiElement element = (Perl6PsiElement) prev;
