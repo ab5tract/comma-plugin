@@ -122,7 +122,10 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             Perl6Symbol symbol = call.resolveLexicalSymbol(Perl6SymbolKind.Variable, "$_");
             if (symbol != null) {
                 PsiElement psi = symbol.getPsi();
-                if (psi instanceof Perl6PsiElement) {
+                if (psi instanceof P6Topicalizer) {
+                    return new CallInfo(((P6Topicalizer)psi).inferTopicType(), psi, name);
+                }
+                else if (psi instanceof Perl6PsiElement) {
                     return new CallInfo(((Perl6PsiElement)psi).inferType(), psi, name);
                 }
             }
