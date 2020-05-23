@@ -123,7 +123,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             if (symbol != null) {
                 PsiElement psi = symbol.getPsi();
                 if (psi instanceof P6Topicalizer) {
-                    return new CallInfo(((P6Topicalizer)psi).inferTopicType(), psi, name);
+                    return new CallInfo(((P6Topicalizer)psi).calculateTopicType(call), psi, name);
                 }
                 else if (psi instanceof Perl6PsiElement) {
                     return new CallInfo(((Perl6PsiElement)psi).inferType(), psi, name);

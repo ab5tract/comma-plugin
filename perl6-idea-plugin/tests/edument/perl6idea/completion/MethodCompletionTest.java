@@ -598,4 +598,9 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
         doTestContainsAll("CONTROL { default { .<caret> } }",
                 ".resume");
     }
+
+    public void testMethodOnTopicCompletionRefinedByWhen() {
+        doTestContainsAll("CATCH { when X::NYI { .<caret> } }",
+                ".resume", ".feature");
+    }
 }
