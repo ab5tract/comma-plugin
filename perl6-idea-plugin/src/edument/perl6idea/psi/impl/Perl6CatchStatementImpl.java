@@ -9,4 +9,7 @@ public class Perl6CatchStatementImpl extends ASTWrapperPsiElement implements Per
     public Perl6CatchStatementImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferTopicType() { return "Exception"; }
 }

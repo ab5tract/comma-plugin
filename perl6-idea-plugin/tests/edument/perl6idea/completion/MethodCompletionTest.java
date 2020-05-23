@@ -588,4 +588,14 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
                         "sub foo() { given Foo.new { without 42 -> $x { .<caret> } } }",
                 ".aaa", ".bbb");
     }
+
+    public void testMethodOnTopicSetByCatchCompletion() {
+        doTestContainsAll("CATCH { default { .<caret> } }",
+                ".resume");
+    }
+
+    public void testMethodOnTopicSetByControlCompletion() {
+        doTestContainsAll("CONTROL { default { .<caret> } }",
+                ".resume");
+    }
 }
