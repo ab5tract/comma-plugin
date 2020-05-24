@@ -11,6 +11,8 @@ import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.keymap.KeymapUtil;
@@ -71,6 +73,7 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
         File replBackend = Perl6Utils.getResourceAsFile("repl/repl-backend.p6");
         commandLine = new Perl6CommandLine(getProject());
         commandLine.setWorkDirectory(getProject().getBasePath());
+        commandLine.addParameter("-Ilib");
         commandLine.addParameter(replBackend.getAbsolutePath());
         return commandLine.createProcess();
     }
@@ -127,5 +130,12 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
 
     public Perl6ReplState getReplState() {
         return replState;
+    }
+
+    public void executeStatement(String command) {
+        ApplicationManager.getApplication().runWriteAction(() -> {
+            getConsoleView().getEditorDocument().setText(command);
+            getConsoleExecuteActionHandler().runExecuteAction(getConsoleView());
+        });
     }
 }
