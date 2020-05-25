@@ -110,7 +110,10 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
         }
 
         if (element instanceof Perl6Documented) {
-            return ((Perl6Documented)element).getDocsString();
+            String docsString = ((Perl6Documented)element).getDocsString();
+            return docsString == null || docsString.isEmpty() || docsString.equals("<br>")
+                   ? null
+                   : docsString;
         }
         return null;
     }
