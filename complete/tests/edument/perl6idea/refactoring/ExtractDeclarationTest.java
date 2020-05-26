@@ -182,4 +182,11 @@ public class ExtractDeclarationTest extends CommaFixtureTestCase {
             handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null)
         );
     }
+
+    public void testExtractMethodCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "1.is-pr<caret>ime;");
+        Perl6VariableExtractionHandlerMock handler = new Perl6VariableExtractionHandlerMock(null, "$result");
+        handler.invoke(getProject(), myFixture.getEditor(), myFixture.getFile(), null);
+        myFixture.checkResult("my $result = 1.is-prime;");
+    }
 }
