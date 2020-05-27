@@ -32,7 +32,7 @@ public class Perl6LaunchReplAction extends AnAction {
         try {
             console.initAndRun();
             if (useModule != null)
-                ApplicationManager.getApplication().invokeLater(() -> {
+                ApplicationManager.getApplication().invokeAndWait(() -> {
                     console.executeStatement("use " + useModule + ";");
                 });
         }
