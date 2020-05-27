@@ -11,8 +11,9 @@ public interface P6Topicalizer extends Perl6PsiElement {
     default String inferTopicType() { return "Any"; }
 
     /** Tries to work out the topic type. It defaults to whatever inferTopicType
-     * is implemented to return, however also considers any when block inbetween
-     * that may also offer a type. */
+     * is implemented to return, however if there is a when block matching on a
+     * type between the current location and the found topicalizer, that type
+     * is taken instead. */
     default String calculateTopicType(Perl6PsiElement lookup) {
         Perl6WhenStatement when = PsiTreeUtil.getParentOfType(lookup, Perl6WhenStatement.class);
         if (when != null && PsiTreeUtil.isAncestor(this, when, false)) {
