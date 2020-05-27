@@ -26,7 +26,7 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
             return null;
         String path = file.getPath();
         String extension = file.getExtension();
-        path = path.substring(0, path.length() - (extension == null ? 0 : extension.length()));
+        path = path.substring(0, path.length() - (extension == null ? 0 : extension.length() + 1));
 
         // Make sure it's within the project and trim the project path
         // off the start.
