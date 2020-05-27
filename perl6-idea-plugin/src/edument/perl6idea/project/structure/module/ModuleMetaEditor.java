@@ -133,6 +133,13 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
                 setMaximumSize(myNameField.getSize());
                 super.validate();
             }
+
+            @Override
+            public void paint(Graphics g) {
+                setMinimumSize(myNameField.getSize());
+                setMaximumSize(myNameField.getSize());
+                super.paint(g);
+            }
         };
         initLicenseComboBox();
         mySettingsPanel.add(myLicenseField, "wrap");
