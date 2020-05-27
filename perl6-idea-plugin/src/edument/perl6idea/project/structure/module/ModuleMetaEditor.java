@@ -126,21 +126,8 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
         mySettingsPanel.add(new JLabel("License:"));
         myLicenseField = new TextFieldWithAutoCompletion<String>(myModule.getProject(),
                                                            new TextFieldWithAutoCompletion.StringsCompletionProvider(new HashSet<>(),
-                                                                                                                     null), true, null) {
-            @Override
-            public void validate() {
-                setMinimumSize(myNameField.getSize());
-                setMaximumSize(myNameField.getSize());
-                super.validate();
-            }
-
-            @Override
-            public void paint(Graphics g) {
-                setMinimumSize(myNameField.getSize());
-                setMaximumSize(myNameField.getSize());
-                super.paint(g);
-            }
-        };
+                                                                                                                     null), true, null);
+        myLicenseField.setPreferredWidth(1000);
         initLicenseComboBox();
         mySettingsPanel.add(myLicenseField, "wrap");
     }
