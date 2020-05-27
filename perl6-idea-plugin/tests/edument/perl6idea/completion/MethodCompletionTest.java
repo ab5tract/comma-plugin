@@ -546,4 +546,61 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         assertNoThrowable(() -> myFixture.getLookupElementStrings());
     }
+
+    public void testMethodOnExplicitlyTypedTopicCompletion() {
+        doTestContainsAll("class Foo { has $.aaa; has $.bbb; }\n" +
+                          "sub foo(Foo $_) { .<caret> }",
+                          ".aaa", ".bbb");
+    }
+
+    public void testMethodOnTopicSetByGivenCompletion() {
+        doTestContainsAll("class Foo { has $.aaa; has $.bbb; }\n" +
+                        "sub foo() { given Foo.new { .<caret> } }",
+                ".aaa", ".bbb");
+    }
+
+    public void testMethodOnTopicSetByWithCompletion() {
+        doTestContainsAll("class Foo { has $.aaa; has $.bbb; }\n" +
+                        "sub foo() { with Foo.new { .<caret> } }",
+                ".aaa", ".bbb");
+    }
+
+    public void testMethodOnTopicSetByWithoutCompletion() {
+        doTestContainsAll("class Foo { has $.aaa; has $.bbb; }\n" +
+                        "sub foo() { without Foo.new { .<caret> } }",
+                ".aaa", ".bbb");
+    }
+
+    public void testMethodOnTopicSetByGivenNotHiddenBySignaturedGivenCompletion() {
+        doTestContainsAll("class Foo { has $.aaa; has $.bbb; }\n" +
+                        "sub foo() { given Foo.new { given 42 -> $x { .<caret> } } }",
+                ".aaa", ".bbb");
+    }
+
+    public void testMethodOnTopicSetByGivenNotHiddenBySignaturedWithCompletion() {
+        doTestContainsAll("class Foo { has $.aaa; has $.bbb; }\n" +
+                        "sub foo() { given Foo.new { with 42 -> $x { .<caret> } } }",
+                ".aaa", ".bbb");
+    }
+
+    public void testMethodOnTopicSetByGivenNotHiddenBySignaturedWithoutCompletion() {
+        doTestContainsAll("class Foo { has $.aaa; has $.bbb; }\n" +
+                        "sub foo() { given Foo.new { without 42 -> $x { .<caret> } } }",
+                ".aaa", ".bbb");
+    }
+
+    public void testMethodOnTopicSetByCatchCompletion() {
+        doTestContainsAll("CATCH { default { .<caret> } }",
+                ".resume");
+    }
+
+    public void testMethodOnTopicSetByControlCompletion() {
+        doTestContainsAll("CONTROL { default { .<caret> } }",
+                ".resume");
+    }
+
+    public void testMethodOnTopicCompletionRefinedByWhen() {
+        doTestContainsAll("CATCH { when X::NYI { .<caret> } }",
+                ".resume", ".feature");
+    }
 }

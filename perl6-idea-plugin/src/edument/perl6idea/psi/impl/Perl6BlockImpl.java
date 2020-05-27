@@ -11,10 +11,6 @@ import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6BlockImpl extends ASTWrapperPsiElement implements Perl6Block {
-    private static final Class[] TOPICALIZERS = new Class[] {
-        Perl6GivenStatement.class, Perl6ForStatement.class, Perl6WithoutStatement.class
-    };
-
     public Perl6BlockImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -27,23 +23,7 @@ public class Perl6BlockImpl extends ASTWrapperPsiElement implements Perl6Block {
     @Override
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
         PsiElement parent = getParent();
-        boolean isTopicalizer = false;
-
-        // If the parent is an `if`, we need to look more carefully at it.
-        if (parent instanceof Perl6IfStatement) {
-            isTopicalizer = ((Perl6IfStatement)parent).getLeadingStatementControl().equals("with");
-        }
-        // Some other things are always unconditionally topicalizers.
-        else {
-            for (Class c : TOPICALIZERS) {
-                if (c.isAssignableFrom(parent.getClass())) {
-                    isTopicalizer = true;
-                    break;
-                }
-            }
-        }
-
-        if (isTopicalizer)
+        if (parent instanceof P6Topicalizer && ((P6Topicalizer)parent).isTopicalizing())
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$_", parent));
     }
 }
