@@ -21,6 +21,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ModuleMetaEditor implements ModuleConfigurationEditor {
@@ -79,13 +80,10 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     private TextFieldWithAutoCompletion<String> myLicenseField;
     private final Map<String, String> myMeta = new HashMap<>();
     private static final String[] keys = new String[]{
-        "name", "version", "auth", "description", "license"
+        "name", "version", "auth", "description", "license", "source", "authors"
+    };
     private JTextField mySourceURLField;
     private JTextField myAuthorsField;
-    private Map<String, String> myMeta = new HashMap<>();
-    private static String[] keys = new String[]{
-      "name", "version", "auth", "description", "license", "source", "authors"
-    };
     private final Set<String> myMissingFields = new HashSet<>();
     private Set<String> myEmptyFields = new HashSet<>();
 
@@ -131,7 +129,7 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
         mySettingsPanel.add(myAuthField, "wrap");
 
         mySettingsPanel.add(new JLabel("License:"));
-        myLicenseField = new TextFieldWithAutoCompletion<String>(myModule.getProject(),
+        myLicenseField = new TextFieldWithAutoCompletion<>(myModule.getProject(),
                                                            new TextFieldWithAutoCompletion.StringsCompletionProvider(new HashSet<>(),
                                                                                                                      null), true, null);
         myLicenseField.setPreferredWidth(1000);
