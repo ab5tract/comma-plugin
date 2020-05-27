@@ -25,7 +25,7 @@ public class CompletePerl6ElementFactory extends Perl6ElementFactory {
 
     public static PsiElement createMethodCall(Project project, NewCodeBlockData data) {
         if (data.containsExpression) {
-            return produceElement(project, getMethodCallText(data), Perl6MethodCall.class);
+            return produceElement(project, getMethodCallText(data), Perl6PostfixApplication.class);
         } else {
             return produceElement(project, getMethodCallText(data), Perl6Statement.class);
         }

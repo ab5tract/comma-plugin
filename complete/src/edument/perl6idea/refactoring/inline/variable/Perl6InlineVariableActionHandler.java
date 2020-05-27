@@ -60,6 +60,8 @@ public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
 
         for (PsiReference callRef : usages) {
             PsiElement variable = callRef.getElement();
+            if (reference != null && variable.getTextOffset() == reference.getElement().getTextOffset())
+                continue;
             if (checkIfVariableIsLeftValue(variable)) {
                 reportError(project, editor,"variable to be inlined has occurrences as lvalue" );
                 return;

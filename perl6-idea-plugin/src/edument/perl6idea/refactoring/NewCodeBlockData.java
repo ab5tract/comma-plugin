@@ -12,6 +12,7 @@ public class NewCodeBlockData {
     public final Perl6VariableData[] variables;
     public boolean isPrivateMethod;
     public boolean containsExpression;
+    public boolean wantsSemicolon;
 
     public NewCodeBlockData(Perl6CodeBlockType type, String name, Perl6VariableData[] variableData) {
         this.type = type;

@@ -8,6 +8,7 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
 import com.intellij.ui.TextFieldWithAutoCompletion;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nls;
@@ -20,6 +21,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ModuleMetaEditor implements ModuleConfigurationEditor {
     public static final String MISSING_FIELD_MESSAGE = "Does not exist, must be set!";
@@ -78,6 +80,11 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     private final Map<String, String> myMeta = new HashMap<>();
     private static final String[] keys = new String[]{
         "name", "version", "auth", "description", "license"
+    private JTextField mySourceURLField;
+    private JTextField myAuthorsField;
+    private Map<String, String> myMeta = new HashMap<>();
+    private static String[] keys = new String[]{
+      "name", "version", "auth", "description", "license", "source", "authors"
     };
     private final Set<String> myMissingFields = new HashSet<>();
     private Set<String> myEmptyFields = new HashSet<>();
@@ -130,6 +137,16 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
         myLicenseField.setPreferredWidth(1000);
         initLicenseComboBox();
         mySettingsPanel.add(myLicenseField, "wrap");
+
+        mySettingsPanel.add(new JLabel("Source URL:"));
+        mySourceURLField = new JTextField(80);
+        addListener(mySourceURLField, "source");
+        mySettingsPanel.add(mySourceURLField, "wrap");
+
+        mySettingsPanel.add(new JLabel("Authors (comma separated):"));
+        myAuthorsField = new JTextField(80);
+        addListener(myAuthorsField, "authors");
+        mySettingsPanel.add(myAuthorsField, "wrap");
     }
 
     private void initLicenseComboBox() {
@@ -209,6 +226,12 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
             myMeta.put("auth", auth == null ? MISSING_FIELD_MESSAGE : auth);
             String license = metaData.getLicense();
             myMeta.put("license", license == null ? MISSING_FIELD_MESSAGE : license);
+            String source = metaData.getSourceURL();
+            myMeta.put("source-url", source == null ? MISSING_FIELD_MESSAGE : source);
+            List<Object> authors = metaData.getAuthors();
+            String authorsString = authors == null ? MISSING_FIELD_MESSAGE :
+                                   authors.stream().filter(s -> s instanceof String).map(s -> (String)s).collect(Collectors.joining(","));
+            myMeta.put("authors", authorsString);
         } else {
             for (String key : keys)
                 myMeta.put(key, MISSING_FIELD_MESSAGE);
@@ -222,6 +245,8 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
         myVersionField.setText(myMeta.get("version"));
         myAuthField.setText(myMeta.get("auth"));
         myLicenseField.setText(myMeta.get("license"));
+        mySourceURLField.setText(myMeta.get("source-url"));
+        myAuthorsField.setText(myMeta.get("authors"));
     }
 
     private Map<String, String> gatherFields() {
@@ -231,6 +256,8 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
         fields.put("version", myVersionField.getText());
         fields.put("auth", myAuthField.getText());
         fields.put("license", myLicenseField.getText());
+        fields.put("source-url", mySourceURLField.getText());
+        fields.put("authors", myAuthorsField.getText());
         return fields;
     }
 
@@ -265,6 +292,8 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
             metaData.setAuth(myAuthField.getText());
             metaData.setVersion(myVersionField.getText());
             metaData.setLicense(myLicenseField.getText());
+            metaData.setSourceURL(mySourceURLField.getText());
+            metaData.setAuthors(ContainerUtil.map(myAuthorsField.getText().split(","), s -> s.trim()));
         }));
     }
 }

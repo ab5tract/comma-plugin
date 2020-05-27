@@ -122,7 +122,14 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         // Next thing is syncing META6.json dependencies with the libraries of the module
         // First, collect names of all dependencies that should be in this module
         Set<String> dependenciesFromMeta = new HashSet<>();
-        List<Object> starterDeps = meta.getJSONArray("depends").toList();
+        List<Object> starterDeps = new ArrayList<>();
+        try {
+            starterDeps.addAll(meta.getJSONArray("depends").toList());
+            starterDeps.addAll(meta.getJSONArray("test-depends").toList());
+            starterDeps.addAll(meta.getJSONArray("build-depends").toList());
+        } catch (JSONException ignored) {} // It purely means there was e.g. no key or meta may be corrupted, so we should abort synking anyway
+
+        if (starterDeps.size() == 0) return;
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             for (Object dep : starterDeps) {
@@ -519,6 +526,24 @@ public class Perl6MetaDataComponent implements ModuleComponent {
 
     public void setLicense(String license) {
         myMeta.put("license", license); saveFile();
+    }
+
+    @Nullable
+    public String getSourceURL() {
+        return isMetaDataExist() && myMeta.has("source-url") ? myMeta.getString("source-url") : null;
+    }
+
+    public void setSourceURL(String sourceURL) {
+        myMeta.put("source-url", sourceURL); saveFile();
+    }
+
+    @Nullable
+    public List<Object> getAuthors() {
+        return isMetaDataExist() && myMeta.has("authors") ? myMeta.getJSONArray("authors").toList() : null;
+    }
+
+    public void setAuthors(List<String> authors) {
+        myMeta.put("authors", authors); saveFile();
     }
 
     private void saveFile() {
