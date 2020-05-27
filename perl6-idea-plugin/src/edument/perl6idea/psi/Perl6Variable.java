@@ -31,8 +31,8 @@ public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, 
         }
     }
 
-    static char getTwigil(String text) {
-        if (text.length() < 2) return ' ';
+    static char getTwigil(@Nullable String text) {
+        if (text == null || text.length() < 2) return ' ';
         switch (text.charAt(1)) {
             case '*': return '*';
             case '?': return '?';
