@@ -32,19 +32,16 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>A new grammar live preview feature. A grammar can be run against a specified input, and is
-automatically re-run on code changes or input changes. A trace of the parse is displayed,
-like that produced by Grammar::Tracer, except it&#39;s in a tree view and selecting an entry
-shows which bit of the input text it matched. Further, double-clicking a matched part of
-the input text shows the rule that matched it. It is possible to navigate onward to the
-source code of the rule.</li>
-<li>An extract regex refactor is now available. A selected portion of a rule in a grammar
-can be extracted to a new token/rule/regex, with the choice of whether to capture or not.
-In an anonymous regex outside of a grammar, this extracts a lexical named regex.</li>
-<li>An intention is now available to turn a positional capture in a regex into a
-named capture.</li>
-<li>Cro template default parameter syntax is now parsed and handled correctly.</li>
-<li>Fix some cases of literal extraction into a variable which were mistakenly detected as impossible before</li>
+<li>Support the 2020.01 version of the IntelliJ platform, which is now the minimal version requirement to use the plugin as well as the platform version used by Comma</li>
+<li>Provide better method completion for <code>.foo</code> style calls as well as explicit operations on the topic variable <code>$_</code> in cases when a type can be inferred</li>
+<li>Add a &quot;REPL using this module&quot; action which starts a REPL session with the current module used</li>
+<li>&quot;External Libraries&quot; now include items from &quot;test-depends&quot; and &quot;build-depends&quot; along with the previously available distributions from the &quot;depends&quot; section</li>
+<li>License types compatible with SPDX are now auto-completed in Project Structure dialog</li>
+<li>The <code>META6.json</code> file fields &quot;authors&quot; and &quot;source-url&quot; now can be modified using the Project Structure dialog</li>
+<li>For Rakudo 2019.07 or newer a simpler debug starting process is used, which supports the case where Rakudo was relocated</li>
+<li>Fix extraction of method calls into a variable</li>
+<li>Fix extracting of constructs which are used as expressions using the &quot;do&quot; construct</li>
+<li>Allow inline of a variable when there is a single assignment, which was previously wrongly reported as impossible</li>
 </ul>
   ]]>
   </change-notes>
