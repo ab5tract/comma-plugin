@@ -528,6 +528,24 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         myMeta.put("license", license); saveFile();
     }
 
+    @Nullable
+    public String getSourceURL() {
+        return isMetaDataExist() && myMeta.has("source-url") ? myMeta.getString("source-url") : null;
+    }
+
+    public void setSourceURL(String sourceURL) {
+        myMeta.put("source-url", sourceURL); saveFile();
+    }
+
+    @Nullable
+    public List<Object> getAuthors() {
+        return isMetaDataExist() && myMeta.has("authors") ? myMeta.getJSONArray("authors").toList() : null;
+    }
+
+    public void setAuthors(List<String> authors) {
+        myMeta.put("authors", authors); saveFile();
+    }
+
     private void saveFile() {
         if (myMetaFile == null || myMeta == null) return;
         String json = MetaDataJSONSerializer.serializer(myMeta);
