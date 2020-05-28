@@ -67,7 +67,6 @@
                      implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.SourcesOrderRootTypeUIFactory"/>
     <OrderRootTypeUI key="DOCUMENTATION"
                      implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.DocumentationOrderRootTypeUIFactory"/>
-    <sdkType implementation="com.intellij.openapi.projectRoots.impl.JavaSdkImpl"/>
   </extensions>
 
   <!-- Actions for standalone Comma -->
