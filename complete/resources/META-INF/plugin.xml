@@ -74,6 +74,8 @@
     <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6CompleteRefactoringSupportProvider"/>
     <inlineActionHandler implementation="edument.perl6idea.refactoring.inline.variable.Perl6InlineVariableActionHandler"/>
     <inlineActionHandler implementation="edument.perl6idea.refactoring.inline.call.Perl6InlineCallActionHandler"/>
+    <projectService serviceImplementation="edument.perl6idea.coverage.Perl6CoverageDataManagerImpl"
+                    serviceInterface="edument.perl6idea.coverage.Perl6CoverageDataManager"/>
   </extensions>
 
   <actions>
@@ -107,11 +109,6 @@
 
   <project-components>
     <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/project-components/*)"/>
-    <component>
-      <interface-class>edument.perl6idea.coverage.Perl6CoverageDataManager</interface-class>
-      <implementation-class>edument.perl6idea.coverage.Perl6CoverageDataManagerImpl</implementation-class>
-      <option name="workspace" value="true"/>
-    </component>
   </project-components>
 
 </idea-plugin>

@@ -3,6 +3,7 @@ package edument.perl6idea.coverage;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.ProjectViewNodeDecorator;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.packageDependencies.ui.PackageDependenciesNode;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -12,8 +13,8 @@ import com.intellij.ui.SimpleTextAttributes;
 public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorator {
     private final Perl6CoverageDataManager coverageDataManager;
 
-    public Perl6ProjectViewCoverageDecorator(Perl6CoverageDataManager coverageDataManager) {
-        this.coverageDataManager = coverageDataManager;
+    public Perl6ProjectViewCoverageDecorator() {
+        coverageDataManager = ServiceManager.getService(Perl6CoverageDataManager.class);
     }
 
     @Override
@@ -41,7 +42,7 @@ public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorat
         }
     }
 
-    private void addCoverageStatistics(PresentationData data, CoverageStatistics stats) {
+    private static void addCoverageStatistics(PresentationData data, CoverageStatistics stats) {
         data.addText(" (" + stats.getCoveredLines() + " / " + stats.getCoverableLines() +
                      " statements; ", SimpleTextAttributes.GRAY_ATTRIBUTES);
         data.addText(stats.percent() + "%)", percentAttributes(stats));

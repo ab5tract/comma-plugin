@@ -1,14 +1,13 @@
 package edument.perl6idea.coverage;
 
-import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.File;
 
-public abstract class Perl6CoverageDataManager implements ProjectComponent {
+public abstract class Perl6CoverageDataManager {
     public static Perl6CoverageDataManager getInstance(Project project) {
-        return project.getComponent(Perl6CoverageDataManager.class);
+        return project.getService(Perl6CoverageDataManager.class);
     }
 
     abstract void addSuiteFromSingleCoverageFile(File data, Perl6CoverageCommandLineState state);
