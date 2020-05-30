@@ -34,7 +34,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         Path directoryName = path.getFileName();
         CroAppTemplateConfig conf = new CroAppTemplateConfig(myModuleName, myWebsocketSupport, myTemplatingSupport);
         if (Objects.equals(directoryName.toString(), "lib")) {
-            Perl6MetaDataComponent metaData = model.getModule().getComponent(Perl6MetaDataComponent.class);
+            Perl6MetaDataComponent metaData = model.getModule().getService(Perl6MetaDataComponent.class);
             stubRoutes(metaData, path, conf);
         } else if (Objects.equals(directoryName.toString(), "t")) {
             stubCroTest(path, conf);

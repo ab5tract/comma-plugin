@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -41,7 +42,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Perl6MetaDataComponent implements ModuleComponent {
+@Service
+public class Perl6MetaDataComponent {
     public static final String META6_JSON_NAME = "META6.json";
     public static final String META_OBSOLETE_NAME = "META.info";
     private static final Logger LOG = Logger.getInstance(Perl6MetaDataComponent.class);

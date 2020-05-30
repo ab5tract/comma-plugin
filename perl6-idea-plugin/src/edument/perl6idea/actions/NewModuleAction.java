@@ -69,7 +69,7 @@ public class NewModuleAction extends AnAction {
         if (module == null)
             throw new IllegalStateException("Cannot create a module in this IDEA module");
         String modulePrefix = processNavigatable(module, psiDirectory);
-        Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
+        Perl6MetaDataComponent metaData = module.getService(Perl6MetaDataComponent.class);
 
         NewModuleDialog dialog = new NewModuleDialog(project, false, modulePrefix);
         boolean isOk = dialog.showAndGet();

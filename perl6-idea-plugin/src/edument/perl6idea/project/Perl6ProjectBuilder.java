@@ -108,7 +108,7 @@ public class Perl6ProjectBuilder extends ProjectBuilder {
                 if (metaFile != null) {
                     Module firstModule = ModuleUtilCore.findModuleForFile(metaFile, project);
                     if (firstModule == null) return;
-                    Perl6MetaDataComponent component = firstModule.getComponent(Perl6MetaDataComponent.class);
+                    Perl6MetaDataComponent component = firstModule.getService(Perl6MetaDataComponent.class);
                     component.triggerMetaBuild(metaFile);
                 }
             });

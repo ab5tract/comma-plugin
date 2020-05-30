@@ -36,7 +36,7 @@ public class AddMonitorModuleFix implements IntentionAction {
         editor.getDocument().insertString(0, "use OO::Monitors;\n");
         Module module = ModuleUtilCore.findModuleForFile(file);
         assert module != null;
-        Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
+        Perl6MetaDataComponent metaData = module.getService(Perl6MetaDataComponent.class);
         if (!metaData.getDepends(true).contains("OO::Monitors")) {
             metaData.addDepends("OO::Monitors");
         }

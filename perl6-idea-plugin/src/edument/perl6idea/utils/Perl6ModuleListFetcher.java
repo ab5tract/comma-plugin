@@ -1,12 +1,14 @@
 package edument.perl6idea.utils;
 
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
+import com.intellij.util.containers.ContainerUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -23,44 +25,34 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class Perl6ModuleListFetcher implements ProjectComponent {
+@Service
+public class Perl6ModuleListFetcher {
     public static final String GITHUB_MIRROR1 = "http://ecosystem-api.p6c.org/projects.json";
     public static final String GITHUB_MIRROR2 = "http://ecosystem-api.p6c.org/projects1.json";
-    public static final String CPAN_MIRROR1   = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan.json";
+    public static final String CPAN_MIRROR1 = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan.json";
     public static final List<String> PREINSTALLED_MODULES =
-        Arrays.asList("CompUnit::Repository::Staging",
-                      "CompUnit::Repository::FileSystem",
-                      "CompUnit::Repository::Installation",
-                      "CompUnit::Repository::AbsolutePath",
-                      "CompUnit::Repository::Unknown",
-                      "CompUnit::Repository::NQP", "CompUnit::Repository::Perl6",
-                      "CompUnit::Repository::RepositoryRegistry",
-                      "NativeCall", "NativeCall::Types", "NativeCall::Compiler::GNU",
-                      "NativeCall::Compiler::MSVC",
-                      "Test", "Pod::To::Text", "Telemetry");
-    public static final List<String> PRAGMAS =
-        Arrays.asList("v6.c", "v6.d", "MONKEY-GUTS", "MONKEY-SEE-NO-EVAL",
-                      "MONKEY-TYPING", "MONKEY", "experimental", "fatal",
-                      "internals", "invocant", "isms", "lib", "nqp", "newline",
-                      "parameters", "precompilation", "soft", "strict",
-                      "trace", "v6", "variables", "worries");
+        ContainerUtil.immutableList("CompUnit::Repository::Staging",
+                                    "CompUnit::Repository::FileSystem",
+                                    "CompUnit::Repository::Installation",
+                                    "CompUnit::Repository::AbsolutePath",
+                                    "CompUnit::Repository::Unknown",
+                                    "CompUnit::Repository::NQP", "CompUnit::Repository::Perl6",
+                                    "CompUnit::Repository::RepositoryRegistry",
+                                    "NativeCall", "NativeCall::Types", "NativeCall::Compiler::GNU",
+                                    "NativeCall::Compiler::MSVC",
+                                    "Test", "Pod::To::Text", "Telemetry");
+    public static final List<String> PRAGMAS = ContainerUtil.immutableList("v6.c", "v6.d", "MONKEY-GUTS", "MONKEY-SEE-NO-EVAL",
+                                                                           "MONKEY-TYPING", "MONKEY", "experimental", "fatal",
+                                                                           "internals", "invocant", "isms", "lib", "nqp", "newline",
+                                                                           "parameters", "precompilation", "soft", "strict",
+                                                                           "trace", "v6", "variables", "worries");
     private static Pair<Map<String, JSONObject>, Instant> modulesList = null;
     private static boolean isFirst = true;
-    private final Project myProject;
 
-    public Perl6ModuleListFetcher(Project project) {
-        this.myProject = project;
-    }
-
-    @Override
-    public void initComponent() {
-        refreshModules(myProject);
-    }
-
-    private static void refreshModules(Project project) {
+    public static void refreshModules(Project project) {
         Instant now = Instant.now();
         if (modulesList == null || now.isAfter(modulesList.second)) {
-                populateModules(project);
+            populateModules(project);
         }
     }
 
@@ -129,27 +121,28 @@ public class Perl6ModuleListFetcher implements ProjectComponent {
             isFirst = false;
             CompletableFuture<Boolean> isCacheLoaded = new CompletableFuture<>();
             ProgressManager.getInstance()
-                           .runProcessWithProgressAsynchronously(new Task.Backgroundable(project, "Getting Raku Modules List") {
-                               @Override
-                               public void run(@NotNull ProgressIndicator indicator) {
-                                   populateModules();
-                                   isCacheLoaded.complete(true);
-                                   indicator.setFraction(1.0);
-                                   indicator.setText("finished");
-                               }
+                .runProcessWithProgressAsynchronously(new Task.Backgroundable(project, "Getting Raku Modules List") {
+                    @Override
+                    public void run(@NotNull ProgressIndicator indicator) {
+                        populateModules();
+                        isCacheLoaded.complete(true);
+                        indicator.setFraction(1.0);
+                        indicator.setText("Finished");
+                    }
 
-                               @Override
-                               public void onThrowable(@NotNull Throwable error) {
-                                   modulesList = new Pair<>(new HashMap<>(), Instant.now().plus(3,ChronoUnit.MINUTES));
-                               }
+                    @Override
+                    public void onThrowable(@NotNull Throwable error) {
+                        modulesList = new Pair<>(new HashMap<>(), Instant.now().plus(3, ChronoUnit.MINUTES));
+                    }
 
-                               @Override
-                               public void onCancel() {
-                                   modulesList = new Pair<>(new HashMap<>(), Instant.now().plus(3,ChronoUnit.MINUTES));
-                               }
-                           }, new EmptyProgressIndicator());
+                    @Override
+                    public void onCancel() {
+                        modulesList = new Pair<>(new HashMap<>(), Instant.now().plus(3, ChronoUnit.MINUTES));
+                    }
+                }, new EmptyProgressIndicator());
             return isCacheLoaded;
-        } else {
+        }
+        else {
             return CompletableFuture.completedFuture(true);
         }
     }
@@ -198,7 +191,8 @@ public class Perl6ModuleListFetcher implements ProjectComponent {
         if (i < version1.length && i < version2.length) {
             try {
                 return Integer.valueOf(version1[i]) < Integer.valueOf(version2[i]);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 return true;
             }
         }
@@ -211,7 +205,9 @@ public class Perl6ModuleListFetcher implements ProjectComponent {
         if (output == null) return;
         try {
             new JSONArray(output).forEach((o) -> array.put(o));
-        } catch (JSONException ignored) {}
+        }
+        catch (JSONException ignored) {
+        }
     }
 
     private static String doRequest(String url) {

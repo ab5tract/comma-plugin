@@ -191,7 +191,13 @@
     <usageTypeProvider implementation="edument.perl6idea.cro.template.findUsages.CroTemplateUsageTypeProvider"/>
     <toolWindow id="Raku Grammar Preview" anchor="right" factoryClass="edument.perl6idea.grammar.RakuGrammarPreviewFactory"
                 secondary="false" canCloseContents="false"/>
+    <projectImportProvider implementation="edument.perl6idea.project.Perl6ProjectImportProvider"/>
+    <moduleConfigurationEditorProvider implementation="edument.perl6idea.project.structure.module.Perl6ModuleConfigurationEditorProvider" order="FIRST"/>
+    <backgroundPostStartupActivity implementation="edument.perl6idea.utils.Perl6ModuleListStarter"/>
     <projectService configurationSchemaKey="raku.backup.sdk" serviceImplementation="edument.perl6idea.services.Perl6BackupSDKService" />
+    <projectService serviceImplementation="edument.perl6idea.utils.Perl6ModuleListFetcher"/>
+    <moduleService serviceImplementation="edument.perl6idea.metadata.Perl6MetaDataComponent" />
+    <moduleService serviceImplementation="edument.perl6idea.event.ModuleMetaChangeListener"/>
   </extensions>
 
   <actions>
@@ -236,21 +242,13 @@
   </actions>
 
   <module-components>
-    <component>
-      <implementation-class>edument.perl6idea.metadata.Perl6MetaDataComponent</implementation-class>
-    </component>
-    <component>
-      <implementation-class>edument.perl6idea.event.ModuleMetaChangeListener</implementation-class>
-    </component>
   </module-components>
 
   <project-components>
-    <component>
-      <implementation-class>edument.perl6idea.utils.Perl6ModuleListFetcher</implementation-class>
-    </component>
-    <component>
-      <implementation-class>edument.perl6idea.sdk.Perl6SdkCacheManager</implementation-class>
-    </component>
   </project-components>
+
+  <applicationListeners>
+    <listener class="edument.perl6idea.sdk.Perl6SdkCacheManager" topic="com.intellij.openapi.project.ProjectManagerListener"/>
+  </applicationListeners>
 
 </idea-plugin>

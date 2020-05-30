@@ -42,7 +42,7 @@ public class MissingModuleFix implements IntentionAction {
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
         Module module = ModuleUtilCore.findModuleForFile(file);
         if (module == null) throw new IncorrectOperationException("Cannot be used in files outside of a module");
-        Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
+        Perl6MetaDataComponent metaData = module.getService(Perl6MetaDataComponent.class);
         metaData.addDepends(moduleName);
         DaemonCodeAnalyzer.getInstance(project).restart(file);
     }

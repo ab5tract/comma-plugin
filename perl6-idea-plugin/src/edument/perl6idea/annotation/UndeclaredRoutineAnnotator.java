@@ -14,7 +14,6 @@ import edument.perl6idea.highlighter.Perl6Highlighter;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
-import edument.perl6idea.sdk.Perl6SdkCacheManager;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 

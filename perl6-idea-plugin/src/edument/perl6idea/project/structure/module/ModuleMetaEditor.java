@@ -212,7 +212,7 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
 
     @Override
     public void reset() {
-        Perl6MetaDataComponent metaData = myModule.getComponent(Perl6MetaDataComponent.class);
+        Perl6MetaDataComponent metaData = myModule.getService(Perl6MetaDataComponent.class);
         if (metaData.isMetaDataExist()) {
             String name = metaData.getName();
             myMeta.put("name", name == null ? MISSING_FIELD_MESSAGE : name);
@@ -280,7 +280,7 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     }
 
     private void saveFields() throws IOException {
-        Perl6MetaDataComponent metaData = myModule.getComponent(Perl6MetaDataComponent.class);
+        Perl6MetaDataComponent metaData = myModule.getService(Perl6MetaDataComponent.class);
         if (!metaData.isMetaDataExist()) {
             metaData.createStubMetaFile(myModule.getName(), null, false);
         }
