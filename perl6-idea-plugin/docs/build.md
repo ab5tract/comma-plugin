@@ -61,7 +61,7 @@ While in the `comma-build` directory.
 * Because of plugin absence, `Check out from version control` always has no options, but those are present in final build.
 
 * Open Run Configurations tab. Create a new Run Configuration of type "Application":
-  - Name: `Comma`(does not matter for build, you also should specify wanted edition, "Complete" or "Community")
+  - Name: `Comma`(does not matter for build, you also should specify an edition, "Complete" or "Community")
   - Main class: `com.intellij.idea.Main` (type `Main` in Search by Name and select needed)
   - VM options: `-ea  -Xmx192m -Didea.is.internal=true -Didea.platform.prefix=CommaCore -Didea.paths.selector=Comma`
   - Working directory: `intellij-community/bin`
