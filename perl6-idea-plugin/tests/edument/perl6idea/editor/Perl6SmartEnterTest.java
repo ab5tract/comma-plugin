@@ -2,15 +2,10 @@ package edument.perl6idea.editor;
 
 import com.intellij.codeInsight.editorActions.smartEnter.SmartEnterProcessor;
 import com.intellij.codeInsight.editorActions.smartEnter.SmartEnterProcessors;
-import com.intellij.openapi.application.Result;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
 import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.Perl6Language;
-import edument.perl6idea.Perl6LightProjectDescriptor;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
