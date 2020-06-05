@@ -2,7 +2,6 @@
 package edument.perl6idea.project.projectWizard.components;
 
 import com.intellij.ide.IdeBundle;
-import com.intellij.ide.JavaUiBundle;
 import com.intellij.ide.highlighter.ModuleFileType;
 import com.intellij.ide.util.BrowseFilesListener;
 import com.intellij.ide.util.projectWizard.AbstractModuleBuilder;
@@ -13,13 +12,13 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.DocumentAdapter;
+import edument.perl6idea.project.structure.Perl6ProjectStructureConfigurable;
 import edument.perl6idea.utils.CommaProjectWizardUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -95,8 +94,8 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
             }
         });
 
-        myModuleContentRoot.addBrowseFolderListener(JavaUiBundle.message("project.new.wizard.module.content.root.chooser.title"),
-                                                    JavaUiBundle.message("project.new.wizard.module.content.root.chooser.description"),
+        myModuleContentRoot.addBrowseFolderListener("Select Module Content Root",
+                                                    "Selected directory will be marked as module content root",
                                                     myWizardContext.getProject(), BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR);
 
         namePathComponent.getPathComponent().getDocument().addDocumentListener(new DocumentAdapter() {
@@ -151,8 +150,8 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
             }
         });
 
-        myModuleFileLocation.addBrowseFolderListener(JavaUiBundle.message("project.new.wizard.module.file.chooser.title"),
-                                                     JavaUiBundle.message("project.new.wizard.module.file.description"),
+        myModuleFileLocation.addBrowseFolderListener("Select File Module Parent Directory",
+                                                     "Module .iml file would be placed in selected directory",
                                                      myWizardContext.getProject(), BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR);
         myModuleFileLocation.getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
@@ -207,7 +206,7 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
 
         final String moduleName = getModuleName();
         final Module module;
-        final ProjectStructureConfigurable fromConfigurable = ProjectStructureConfigurable.getInstance(project);
+        final Perl6ProjectStructureConfigurable fromConfigurable = Perl6ProjectStructureConfigurable.getInstance(project);
         if (fromConfigurable != null) {
             module = fromConfigurable.getModulesConfig().getModule(moduleName);
         }
@@ -229,20 +228,20 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
             throw new ConfigurationException("Enter a module name");
         }
 
-        if (!CommaProjectWizardUtil.createDirectoryIfNotExists(JavaUiBundle.message("directory.module.file"), moduleFileDirectory,
+        if (!CommaProjectWizardUtil.createDirectoryIfNotExists("The module file directory\n", moduleFileDirectory,
                                                                myImlLocationChangedByUser)) {
             return false;
         }
         if (!CommaProjectWizardUtil
-            .createDirectoryIfNotExists(JavaUiBundle.message("directory.module.content.root"), myModuleContentRoot.getText(),
+            .createDirectoryIfNotExists("The module content root.\n", myModuleContentRoot.getText(),
                                         myContentRootChangedByUser)) {
             return false;
         }
 
         File moduleFile = new File(moduleFileDirectory, moduleName + ModuleFileType.DOT_DEFAULT_EXTENSION);
         if (moduleFile.exists()) {
-            int answer = Messages.showYesNoDialog(JavaUiBundle.message("prompt.overwrite.project.file", moduleFile.getAbsolutePath(),
-                                                                       IdeBundle.message("project.new.wizard.module.identification")),
+            int answer = Messages.showYesNoDialog(String.format("The %s file \n%s\nalready exists.\nWould you like to overwrite it?",
+                                                                IdeBundle.message("project.new.wizard.module.identification"), moduleFile.getAbsolutePath()),
                                                   IdeBundle.message("title.file.already.exists"), Messages.getQuestionIcon());
             if (answer != Messages.YES) {
                 return false;

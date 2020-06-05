@@ -2,7 +2,6 @@
 package edument.perl6idea.project.projectWizard.components;
 
 import com.intellij.CommonBundle;
-import com.intellij.ide.JavaUiBundle;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
@@ -16,7 +15,6 @@ import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.roots.ui.configuration.JdkComboBox;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Condition;
@@ -185,8 +183,8 @@ public class SdkSettingsStep extends ModuleWizardStep {
     JdkComboBox.JdkComboBoxItem item = myJdkComboBox.getSelectedItem();
     if (myJdkComboBox.getSelectedJdk() == null && !(item instanceof JdkComboBox.ProjectJdkComboBoxItem)) {
       if (Messages.showDialog(getNoSdkMessage(),
-                                       JavaUiBundle.message("title.no.jdk.specified"),
-                                       new String[]{CommonBundle.getYesButtonText(), CommonBundle.getNoButtonText()}, 1, Messages.getWarningIcon()) != Messages.YES) {
+                              "No SDK Specified",
+                              new String[]{CommonBundle.getYesButtonText(), CommonBundle.getNoButtonText()}, 1, Messages.getWarningIcon()) != Messages.YES) {
         return false;
       }
     }
@@ -194,7 +192,7 @@ public class SdkSettingsStep extends ModuleWizardStep {
       myModel.apply(null, true);
     } catch (ConfigurationException e) {
       //IDEA-98382 We should allow Next step if user has wrong SDK
-      if (Messages.showDialog(JavaUiBundle.message("dialog.message.0.do.you.want.to.proceed", e.getMessage()),
+      if (Messages.showDialog(e.getMessage() + "\n\nDo you want to proceed?",
                               e.getTitle(),
                               new String[]{CommonBundle.getYesButtonText(), CommonBundle.getNoButtonText()}, 1, Messages.getWarningIcon()) != Messages.YES) {
         return false;
@@ -204,6 +202,6 @@ public class SdkSettingsStep extends ModuleWizardStep {
   }
 
   protected String getNoSdkMessage() {
-    return JavaUiBundle.message("prompt.confirm.project.no.jdk");
+    return "Do you want to create a project with no SDK assigned?\\nAn SDK is required for compiling, debugging and running applications,\\nas well as for the standard SDK symbols resolution.";
   }
 }

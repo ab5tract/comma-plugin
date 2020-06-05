@@ -1,7 +1,5 @@
 package edument.perl6idea.editor.smartEnter;
 
-import com.intellij.codeInsight.editorActions.smartEnter.EnterProcessor;
-import com.intellij.codeInsight.editorActions.smartEnter.PlainEnterProcessor;
 import com.intellij.codeInsight.editorActions.smartEnter.SmartEnterProcessor;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.IdeActions;
@@ -29,7 +27,7 @@ import java.util.concurrent.TimeoutException;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
-    private static Logger LOG = Logger.getInstance(Perl6SmartEnterProcessor.class);
+    private static final Logger LOG = Logger.getInstance(Perl6SmartEnterProcessor.class);
 
     @Override
     public boolean process(@NotNull Project project, @NotNull Editor editor, @NotNull PsiFile psiFile) {
@@ -47,8 +45,8 @@ public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
         if (statement == null) return false;
 
         processEnter(statement, editor, project);
-        EnterProcessor plain = new PlainEnterProcessor();
-        plain.doEnter(editor, psiFile, true);
+        PlainEnterProcessor plain = new PlainEnterProcessor();
+        plain.doEnter(editor, psiFile);
 
         int oldLine = editor.getDocument().getLineNumber(editor.getCaretModel().getOffset());
         CodeStyleManager.getInstance(project).reformat(psiFile);

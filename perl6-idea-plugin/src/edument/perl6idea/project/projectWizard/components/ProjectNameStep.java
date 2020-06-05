@@ -2,10 +2,8 @@
 package edument.perl6idea.project.projectWizard.components;
 
 import com.intellij.ide.IdeBundle;
-import com.intellij.ide.JavaUiBundle;
 import com.intellij.ide.highlighter.ModuleFileType;
 import com.intellij.ide.highlighter.ProjectFileType;
-import com.intellij.ide.util.projectWizard.NamePathComponent;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.application.ApplicationNamesInfo;
 import com.intellij.openapi.options.ConfigurationException;
@@ -14,6 +12,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ui.JBInsets;
+import edument.perl6idea.utils.CommaProjectWizardUtil;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
@@ -27,24 +26,21 @@ import static com.intellij.openapi.components.StorageScheme.DIRECTORY_BASED;
  * @author Eugene Zhuravlev
  */
 public class ProjectNameStep extends ModuleWizardStep {
-    private final com.intellij.ide.util.projectWizard.NamePathComponent myNamePathComponent;
+    private final NamePathComponent myNamePathComponent;
     private final JPanel myPanel;
     private final WizardContext myWizardContext;
 
     public ProjectNameStep(WizardContext wizardContext) {
         myWizardContext = wizardContext;
         myNamePathComponent = new NamePathComponent(IdeBundle.message("label.project.name"),
-                                                    JavaUiBundle.message("label.component.file.location",
-                                                                         StringUtil.capitalize(myWizardContext.getPresentationName())),
-                                                    JavaUiBundle.message("title.select.project.file.directory",
-                                                                         myWizardContext.getPresentationName()),
-                                                    JavaUiBundle.message("description.select.project.file.directory",
-                                                                         myWizardContext.getPresentationName()));
+                                                    String.format("%s file &location:", StringUtil.capitalize(myWizardContext.getPresentationName())),
+                                                    String.format("Select %s file directory", myWizardContext.getPresentationName()),
+                                                    String.format("%s file will be stored in this directory", myWizardContext.getPresentationName()));
         myPanel = new JPanel(new GridBagLayout());
         myPanel.setBorder(BorderFactory.createEtchedBorder());
 
         String appName = ApplicationNamesInfo.getInstance().getFullProductName();
-        myPanel.add(new JLabel(JavaUiBundle.message("label.please.enter.project.name", appName, wizardContext.getPresentationName())),
+        myPanel.add(new JLabel(String.format("Please enter a name to create a new %s %s.", appName, wizardContext.getPresentationName())),
                     new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1.0, 0.0, GridBagConstraints.NORTHWEST,
                                            GridBagConstraints.HORIZONTAL,
                                            JBInsets.create(8, 10), 0, 0));
@@ -105,18 +101,18 @@ public class ProjectNameStep extends ModuleWizardStep {
         if (name.length() == 0) {
             ApplicationNamesInfo info = ApplicationNamesInfo.getInstance();
             throw new ConfigurationException(
-                JavaUiBundle.message("prompt.new.project.file.name", info.getFullProductName(), myWizardContext.getPresentationName()));
+                String.format("Enter a file name to create a new %s %s", info.getFullProductName(), myWizardContext.getPresentationName()));
         }
 
         final String projectFileDirectory = getProjectFileDirectory();
         if (projectFileDirectory.length() == 0) {
             throw new ConfigurationException(
-                JavaUiBundle.message("prompt.enter.project.file.location", myWizardContext.getPresentationName()));
+                String.format("Enter %s file location", myWizardContext.getPresentationName()));
         }
 
         final boolean shouldPromptCreation = myNamePathComponent.isPathChangedByUser();
-        String prefix = JavaUiBundle.message("directory.project.file.directory", myWizardContext.getPresentationName());
-        if (!ProjectWizardUtil.createDirectoryIfNotExists(prefix, projectFileDirectory, shouldPromptCreation)) {
+        String prefix = String.format("The %s directory", myWizardContext.getPresentationName());
+        if (!CommaProjectWizardUtil.createDirectoryIfNotExists(prefix, projectFileDirectory, shouldPromptCreation)) {
             return false;
         }
 
@@ -130,10 +126,10 @@ public class ProjectNameStep extends ModuleWizardStep {
                                  ? IdeBundle.message("title.new.project")
                                  : IdeBundle.message("title.add.module");
             final String message = myWizardContext.isCreatingNewProject() && myWizardContext.getProjectStorageFormat() == DIRECTORY_BASED
-                                   ? JavaUiBundle.message("prompt.overwrite.project.folder",
-                                                          Project.DIRECTORY_STORE_FOLDER, projectFile.getParentFile().getAbsolutePath())
-                                   : JavaUiBundle.message("prompt.overwrite.project.file",
-                                                          projectFile.getAbsolutePath(), myWizardContext.getPresentationName());
+                                   ? String.format("%s folder already exists in %s.\nIts content may be overwritten.\nContinue?",
+                                                   Project.DIRECTORY_STORE_FOLDER, projectFile.getParentFile().getAbsolutePath())
+                                   : String.format("The %s file \n%s\nalready exists.\nWould you like to overwrite it?",
+                                                   myWizardContext.getPresentationName(), projectFile.getAbsolutePath());
             int answer = Messages.showYesNoDialog(message, title, Messages.getQuestionIcon());
             shouldContinue = answer == Messages.YES;
         }

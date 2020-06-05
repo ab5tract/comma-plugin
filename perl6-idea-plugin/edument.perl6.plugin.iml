@@ -13,8 +13,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="library" name="tcServiceMessages" level="project" />
-    <orderEntry type="module" module-name="intellij.java.ui" />
-    <orderEntry type="module" module-name="intellij.java.impl" />
     <orderEntry type="module" module-name="intellij.platform.core" />
     <orderEntry type="module" module-name="intellij.platform.core.impl" />
     <orderEntry type="module" module-name="intellij.platform.coverage" />

@@ -29,7 +29,6 @@
                         serviceImplementation="edument.perl6idea.module.Perl6ModuleTypeManager" overrides="true"/>
     <applicationService serviceInterface="com.intellij.openapi.roots.ui.OrderEntryAppearanceService"
                         serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
-    <projectWizard.projectCategory implementation="edument.perl6idea.module.Perl6ModuleTypeCategory"/>
     <projectService serviceImplementation="edument.perl6idea.project.structure.Perl6ProjectStructureConfigurable"/>
     <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable"/>
     <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectLibrariesConfigurable"/>

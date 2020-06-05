@@ -4,7 +4,6 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.AccessToken;
-import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.BaseConfigurable;
@@ -12,11 +11,8 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable;
-import com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurableFilter;
-import com.intellij.openapi.roots.ui.configuration.SidePanel;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.*;
-import com.intellij.openapi.ui.DetailsComponent;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.MasterDetailsComponent;
 import com.intellij.openapi.util.ActionCallback;
 import com.intellij.openapi.wm.IdeFocusManager;
@@ -29,6 +25,7 @@ import com.intellij.ui.navigation.History;
 import com.intellij.ui.navigation.Place;
 import com.intellij.util.io.storage.HeavyProcessLatch;
 import com.intellij.util.ui.UIUtil;
+import edument.perl6idea.project.structure.ui.SidePanel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,17 +41,18 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
                                                                                    Configurable.NoScroll {
     private static final Logger LOG = Logger.getInstance(Perl6ProjectStructureConfigurable.class);
     private static final String CATEGORY = "category";
-    public static final DataKey<ProjectStructureConfigurable> KEY = DataKey.create("ProjectStructureConfiguration");
-    protected final ProjectStructureConfigurable.UIState myUiState = new ProjectStructureConfigurable.UIState();
-    private final Project myProject;
-    private final Perl6ModulesConfigurator myModuleConfigurator;
-    private ModuleStructureConfigurable myModulesConfig;
-    private final StructureConfigurableContext myContext;
+    public static final DataKey<Perl6ProjectStructureConfigurable> KEY = DataKey.create("Perl6ProjectStructureConfiguration");
+    protected final Perl6ProjectStructureConfigurable.UIState myUiState = new Perl6ProjectStructureConfigurable.UIState();
+    private Project myProject;
+    private Perl6ModulesConfigurator myModuleConfigurator;
+    private Perl6StructureConfigurableContext myContext;
     private JPanel myComponent;
     private OnePixelSplitter mySplitter;
     private SidePanel mySidePanel;
-    private final ProjectSdksModel myProjectSdkModel = new ProjectSdksModel();
-    private Perl6ProjectConfigurable myProjectConfig;
+    private ProjectSdksModel myProjectSdkModel = new ProjectSdksModel();
+    // Configurables
+    private Perl6ModuleStructureConfigurable myModulesConfigurable;
+    private Perl6ProjectConfigurable myProjectConfigurable;
     private final List<Configurable> myName2Config = new ArrayList<>();
     private JComponent myToolbarComponent;
     private Wrapper myDetails = new Wrapper();
@@ -62,19 +60,41 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     private Configurable mySelectedConfigurable;
     private History myHistory = new History(this);
     private JComponent myToFocus;
-    private JLabel myEmptySelection = new JLabel("<html><body><center>Select a setting to view or edit its details here</center></body></html>",
-                                                 SwingConstants.CENTER);
+    private JLabel myEmptySelection =
+        new JLabel("<html><body><center>Select a setting to view or edit its details here</center></body></html>",
+                   SwingConstants.CENTER);
 
-    public Perl6ProjectStructureConfigurable(final Project project,
-                                             final ModuleStructureConfigurable moduleStructureConfigurable) {
+    public Perl6ModuleStructureConfigurable getModulesConfig() {
+        return myModulesConfigurable;
+    }
+
+    public Perl6StructureConfigurableContext getContext() {
+        return myContext;
+    }
+
+    public ActionCallback select(@NotNull Sdk sdk, final boolean requestFocus) {
+        return null;
+        // TODO tie to SDK tab when available
+        //Place place = createPlaceFor(myJdkListConfig);
+        //place.putPath(MasterDetailsComponent.TREE_NAME, sdk.getName());
+        //return navigateTo(place, requestFocus);
+    }
+
+    public static class UIState {
+        public float proportion;
+        public float sideProportion;
+
+        public String lastEditedConfigurable;
+    }
+
+    public Perl6ProjectStructureConfigurable(final Project project) {
         myProject = project;
-
         myModuleConfigurator = new Perl6ModulesConfigurator(myProject);
-        myContext = new StructureConfigurableContext(myProject, myModuleConfigurator);
+        myContext = new Perl6StructureConfigurableContext(myProject, myModuleConfigurator);
         myModuleConfigurator.setContext(myContext);
 
-        myModulesConfig = moduleStructureConfigurable;
-        myModulesConfig.init(myContext);
+        myModulesConfigurable = new Perl6ModuleStructureConfigurable(project, myContext);
+        myModulesConfigurable.init(myContext);
 
         final PropertiesComponent propertiesComponent = PropertiesComponent.getInstance(myProject);
         final String proportion = propertiesComponent.getValue("project.structure.proportion");
@@ -101,14 +121,14 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         myComponent = new MyComponentPanel();
 
         mySplitter = new OnePixelSplitter(false, .15f);
-        mySplitter.setSplitterProportionKey("ProjectStructure.TopLevelElements");
+        mySplitter.setSplitterProportionKey("Raku.ProjectStructure.TopLevelElements");
         mySplitter.setHonorComponentsMinimumSize(true);
         mySplitter.setFirstComponent(createLeftBar());
         mySplitter.setSecondComponent(myDetails);
 
         myComponent.add(mySplitter, BorderLayout.CENTER);
 
-        navigateTo(createPlaceFor(myProjectConfig), true);
+        navigateTo(createPlaceFor(myProjectConfigurable), true);
         myUiInitialized = true;
 
         return myComponent;
@@ -127,7 +147,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         final DefaultActionGroup toolbarGroup = new DefaultActionGroup();
         toolbarGroup.add(new BackAction(myComponent, this));
         toolbarGroup.add(new ForwardAction(myComponent, this));
-        final ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("ProjectStructure", toolbarGroup, true);
+        final ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("Raku.ProjectStructure", toolbarGroup, true);
         toolbar.setTargetComponent(myComponent);
         myToolbarComponent = toolbar.getComponent();
         left.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
@@ -142,39 +162,33 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     private void initSidePanel() {
         mySidePanel = new SidePanel(this);
         mySidePanel.addSeparator("Project Settings");
-        addProjectConfig();
-        addModulesConfig();
+        addProjectConfigurable();
+        addModulesConfigurable();
     }
 
-    private void addModulesConfig() {
-        addConfigurable(myModulesConfig, ProjectStructureConfigurableFilter.ConfigurableId.MODULES);
+    private void addModulesConfigurable() {
+        myModulesConfigurable = new Perl6ModuleStructureConfigurable(myProject, myContext);
+        myModulesConfigurable.init(myContext);
+        addConfigurable(myModulesConfigurable);
     }
 
-    private void addConfigurable(Configurable config, ProjectStructureConfigurableFilter.ConfigurableId configurableId) {
-        addConfigurable(config, isAvailable(configurableId));
+    private void addProjectConfigurable() {
+        myProjectConfigurable = new Perl6ProjectConfigurable(myProject, myContext, myProjectSdkModel);
+        addConfigurable(myProjectConfigurable);
     }
 
-    private void addConfigurable(Perl6ProjectConfigurable config, ProjectStructureConfigurableFilter.ConfigurableId configurableId) {
-        addConfigurable(config, isAvailable(configurableId));
-    }
-
-    private void addProjectConfig() {
-        myProjectConfig = new Perl6ProjectConfigurable(myProject, myContext, myProjectSdkModel);
-        addConfigurable(myProjectConfig, ProjectStructureConfigurableFilter.ConfigurableId.PROJECT);
-    }
-
-    private void addConfigurable(Configurable configurable, boolean addToSidePanel) {
+    private void addConfigurable(Configurable configurable) {
         myName2Config.add(configurable);
-        if (addToSidePanel)
-            mySidePanel.addPlace(createPlaceFor(configurable), new Presentation(configurable.getDisplayName()));
+        mySidePanel.addPlace(createPlaceFor(configurable), new Presentation(configurable.getDisplayName()));
     }
 
-    public ProjectSdksModel getProjectSdkModel() {
+    // TODO SDK tab
+    //public JdkListConfigurable getJdkConfig() {
+    //    return myJdkListConfig;
+    //}
+
+    public ProjectSdksModel getProjectSdksModel() {
         return myProjectSdkModel;
-    }
-
-    public StructureConfigurableContext getContext() {
-        return myContext;
     }
 
     @Override
@@ -184,42 +198,35 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         return new Place().putPath(CATEGORY, configurable);
     }
 
-    private boolean isAvailable(ProjectStructureConfigurableFilter.ConfigurableId id) {
-        for (ProjectStructureConfigurableFilter filter : ProjectStructureConfigurableFilter.EP_NAME.getExtensions()) {
-            if (!filter.isAvailable(id, myProject)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     @Override
     public void reset() {
-        AccessToken token = HeavyProcessLatch.INSTANCE.processStarted("Resetting Project Structure");
+        AccessToken token = HeavyProcessLatch.INSTANCE.processStarted("Resetting Raku Project Structure");
         try {
             myContext.reset();
             myProjectSdkModel.reset(myProject);
-            myProjectConfig.reset();
-            myModulesConfig.reset();
-        } finally {
+            myProjectConfigurable.reset();
+            myModulesConfigurable.reset();
+        }
+        finally {
             token.finish();
         }
     }
 
     @Override
     public boolean isModified() {
-        for (Configurable each : myName2Config)
+        for (Configurable each : myName2Config) {
             if (each.isModified()) return true;
+        }
         return false;
     }
 
     @Override
     public void apply() throws ConfigurationException {
-        LOG.assertTrue(TransactionGuard.getInstance().getContextTransaction() != null, "Project Structure should be shown in a transaction, see AnAction#startInTransaction");
-
-        for (Configurable each : myName2Config)
-            if (each.isModified())
+        for (Configurable each : myName2Config) {
+            if (each.isModified()) {
                 each.apply();
+            }
+        }
     }
 
     @Override
@@ -228,8 +235,6 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         JComponent detailsContent = myDetails.getTargetComponent();
 
         if (mySelectedConfigurable != toSelect) {
-            if (mySelectedConfigurable instanceof BaseStructureConfigurable)
-                ((BaseStructureConfigurable)mySelectedConfigurable).onStructureUnselected();
             saveSideProportion();
             removeSelected();
 
@@ -243,17 +248,11 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
 
             if (toSelect instanceof MasterDetailsComponent) {
                 final MasterDetailsComponent master = (MasterDetailsComponent)toSelect;
-                if (myUiState.sideProportion > 0)
+                if (myUiState.sideProportion > 0) {
                     master.getSplitter().setProportion(myUiState.sideProportion);
+                }
                 master.setHistory(myHistory);
             }
-
-            if (toSelect instanceof DetailsComponent.Facade) {
-                DetailsComponent details = ((DetailsComponent.Facade)toSelect).getDetailsComponent();
-                details.setBannerMinHeight(myToolbarComponent.getPreferredSize().height);
-            }
-            if (toSelect instanceof BaseStructureConfigurable)
-                ((BaseStructureConfigurable)toSelect).onStructureSelected();
         }
 
         if (detailsContent != null) {
@@ -265,15 +264,14 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
             }
         }
 
-        final ActionCallback result = new ActionCallback();
-        Place.goFurther(toSelect, place, requestFocus).notifyWhenDone(result);
         myDetails.revalidate();
         myDetails.repaint();
 
         if (toSelect != null) mySidePanel.select(createPlaceFor(toSelect));
-        if (!myHistory.isNavigatingNow() && mySelectedConfigurable != null)
+        if (!myHistory.isNavigatingNow() && mySelectedConfigurable != null) {
             myHistory.pushQueryPlace();
-        return result;
+        }
+        return ActionCallback.DONE;
     }
 
     private void removeSelected() {
@@ -293,21 +291,18 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     public void disposeUIResources() {
         if (!myUiInitialized) return;
         final PropertiesComponent propertiesComponent = PropertiesComponent.getInstance(myProject);
-        propertiesComponent.setValue("project.structure.last.edited", myUiState.lastEditedConfigurable);
-        propertiesComponent.setValue("project.structure.proportion", String.valueOf(myUiState.proportion));
-        propertiesComponent.setValue("project.structure.side.proportion", String.valueOf(myUiState.sideProportion));
+        propertiesComponent.setValue("raku.project.structure.last.edited", myUiState.lastEditedConfigurable);
+        propertiesComponent.setValue("raku.project.structure.proportion", String.valueOf(myUiState.proportion));
+        propertiesComponent.setValue("raku.project.structure.side.proportion", String.valueOf(myUiState.sideProportion));
 
         myUiState.proportion = mySplitter.getProportion();
         saveSideProportion();
-        myContext.getDaemonAnalyzer().stop();
-        for (Configurable each : myName2Config)
+        for (Configurable each : myName2Config) {
             each.disposeUIResources();
+        }
         myContext.clear();
         myName2Config.clear();
-
-        myModuleConfigurator.getFacetsConfigurator().clearMaps();
         myModuleConfigurator.disposeUIResources();
-
         myUiInitialized = false;
     }
 
@@ -320,23 +315,18 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         return myToFocus;
     }
 
-    @Override
-    public void queryPlace(@NotNull Place place) {
-        place.putPath(CATEGORY, mySelectedConfigurable);
-        Place.queryFurther(mySelectedConfigurable, place);
-    }
-
-    private class MyComponentPanel extends JPanel implements DataProvider {
+    protected class MyComponentPanel extends JPanel implements DataProvider {
         public MyComponentPanel() {
             super(new BorderLayout());
         }
 
         @Nullable
         @Override
-        public Object getData(String dataId) {
+        public Object getData(@NotNull String dataId) {
             if (KEY.is(dataId)) {
                 return Perl6ProjectStructureConfigurable.this;
-            } else if (History.KEY.is(dataId)) {
+            }
+            else if (History.KEY.is(dataId)) {
                 return myHistory;
             }
             return null;
