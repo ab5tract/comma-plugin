@@ -5,4 +5,5 @@ import edument.perl6idea.psi.stub.Perl6SubCallStub;
 
 public interface Perl6SubCall extends Perl6PsiElement, P6CodeBlockCall, P6Extractable,
                                       StubBasedPsiElement<Perl6SubCallStub> {
+    boolean maybeCoercion();
 }
