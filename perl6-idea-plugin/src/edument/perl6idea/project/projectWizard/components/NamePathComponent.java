@@ -7,6 +7,7 @@ import com.intellij.ide.impl.ProjectUtil;
 import com.intellij.ide.util.BrowseFilesListener;
 import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ApplicationNamesInfo;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.ConfigurationException;
@@ -128,25 +129,28 @@ public class NamePathComponent extends JPanel {
 
     String projectDirectoryPath = getPath();
     if (StringUtil.isEmptyOrSpaces(projectDirectoryPath)) {
-      throw new ConfigurationException("1");
+      ApplicationNamesInfo info = ApplicationNamesInfo.getInstance();
+      throw new ConfigurationException(
+          String.format("Enter a file name to create a new %s %s", info.getFullProductName(), context.getPresentationName()));
     }
     if (myShouldBeAbsolute && !new File(projectDirectoryPath).isAbsolute()) {
-      throw new ConfigurationException(StringUtil.capitalize("2"));
+      throw new ConfigurationException(StringUtil.capitalize(
+          String.format("Enter %s file location", context.getPresentationName())));
     }
 
     boolean shouldPromptCreation = isPathChangedByUser();
-    String message = "3";
+    String message = String.format("The %s directory\n", context.getPresentationName());
     if (!CommaProjectWizardUtil.createDirectoryIfNotExists(message, projectDirectoryPath, shouldPromptCreation)) {
       return false;
     }
 
     File projectDirectory = new File(projectDirectoryPath);
     if (projectDirectory.exists() && !projectDirectory.canWrite()) {
-      throw new ConfigurationException("4");
+      throw new ConfigurationException(String.format("Directory %s  doesn't seem to be writeable. Please choose another location.", projectDirectoryPath));
     }
     for (Project p : ProjectManager.getInstance().getOpenProjects()) {
       if (ProjectUtil.isSameProject(projectDirectoryPath, p)) {
-        throw new ConfigurationException("5");
+        throw new ConfigurationException(String.format("Directory %s is already taken by the project %s. Please choose another location.", projectDirectoryPath, p.getName()));
       }
     }
     if (projectDirectory.exists() && !projectDirectory.isDirectory()) {
@@ -157,7 +161,7 @@ public class NamePathComponent extends JPanel {
       String fileName = defaultFormat ? name + ProjectFileType.DOT_DEFAULT_EXTENSION : Project.DIRECTORY_STORE_FOLDER;
       File projectFile = new File(projectDirectory, fileName);
       if (projectFile.exists()) {
-        message = "6";
+        message = "File already exists";
         int answer = Messages.showYesNoDialog(message, IdeBundle.message("title.file.already.exists"), Messages.getQuestionIcon());
         shouldContinue = (answer == Messages.YES);
       }
