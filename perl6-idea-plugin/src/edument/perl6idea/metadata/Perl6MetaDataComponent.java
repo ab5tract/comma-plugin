@@ -159,7 +159,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                     return true;
                 });
                 // Second, remove libraries that are not specifies in META
-                removeReundantLibraries(application, existingLibraryNames, dependenciesFromMeta);
+                removeRedundantLibraries(application, existingLibraryNames, dependenciesFromMeta);
                 dependenciesFromMeta.removeAll(existingLibraryNames);
                 // Third, add those specified there, but no duplicates, hence the remove above
                 syncMetaEntriesIntoLibraries(sdk, application, dependenciesFromMeta);
@@ -169,7 +169,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         });
     }
 
-    private void removeReundantLibraries(Application application, Set<String> libraryNames, Set<String> metaEntries) {
+    private void removeRedundantLibraries(Application application, Set<String> libraryNames, Set<String> metaEntries) {
         application.invokeAndWait(() -> {
             libraryNames.removeAll(metaEntries);
             for (String redundant : libraryNames) {
@@ -416,7 +416,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         AtomicReference<IOException> ex = new AtomicReference<>();
         ex.set(null);
         VirtualFile finalFirstRoot = firstRoot;
-        ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(() -> {
+        ApplicationManager.getApplication().invokeAndWait(() -> WriteAction.run(() -> {
             try {
                 JSONObject meta = getStubMetaObject(moduleName);
                 VirtualFile metaFile = finalFirstRoot.findOrCreateChildData(this, META6_JSON_NAME);
@@ -555,6 +555,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                     if (!myMetaFile.isValid())
                         myMetaFile = myMetaFile.getParent().createChildData(this, myMetaFile.getName());
                     myMetaFile.setBinaryContent(json.getBytes(CharsetToolkit.UTF8_CHARSET));
+                    triggerMetaBuild(myMetaFile);
                 }
                 catch (IOException e) {
                     notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
