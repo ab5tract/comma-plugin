@@ -2,11 +2,13 @@ package edument.perl6idea.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.util.BuildNumber;
 import com.intellij.openapi.util.Condition;
 import edument.perl6idea.project.projectWizard.components.JdkComboBox;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -29,7 +31,13 @@ public class ShowSecondarySdkSetter extends AnAction {
 
     @Override
     public void update(@NotNull AnActionEvent e) {
-        e.getPresentation().setEnabledAndVisible(e.getProject() != null);
+        if (e.getProject() == null) {
+            e.getPresentation().setEnabledAndVisible(false);
+        }
+        BuildNumber build = ApplicationInfo.getInstance().getBuild();
+        if ("CP".equals(build.getProductCode()) ||
+            "CT".equals(build.getProductCode()))
+            e.getPresentation().setEnabledAndVisible(false);
     }
 
     static class SecondarySdkSelector extends DialogWrapper {
