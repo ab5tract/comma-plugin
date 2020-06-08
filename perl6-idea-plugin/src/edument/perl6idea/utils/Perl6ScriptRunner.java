@@ -8,6 +8,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.util.text.VersionComparatorUtil;
 import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.services.Perl6BackupSDKService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +26,7 @@ import java.util.Map;
  * FIXME
  */
 public class Perl6ScriptRunner extends PtyCommandLine {
-    private static Logger LOG = Logger.getInstance(Perl6ScriptRunner.class);
+    private static final Logger LOG = Logger.getInstance(Perl6ScriptRunner.class);
 
     public Perl6ScriptRunner(Project project) throws ExecutionException {
         this(Perl6SdkType.getSdkHomeByProject(project));
@@ -78,19 +79,32 @@ public class Perl6ScriptRunner extends PtyCommandLine {
     private static List<String> populateDebugCommandLine(Project project, int debugPort) {
         List<String> command = new ArrayList<>();
         @Nullable Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        if (sdk == null) return null;
-        Perl6SdkType projectSdk = Perl6SdkType.getInstance();
-        String versionString = projectSdk.getVersionString(sdk);
-        if (versionString == null) return null;
+        @Nullable String versionString = null;
+        @Nullable String homePath = null;
+        if (sdk == null) {
+            Perl6BackupSDKService backupSDKService = project.getService(Perl6BackupSDKService.class);
+            String backupSDKPath = backupSDKService.getProjectSdkPath(project.getProjectFilePath());
+            if (backupSDKPath != null) {
+                Perl6SdkType sdkType = Perl6SdkType.getInstance();
+                versionString = sdkType.getVersionString(backupSDKPath);
+                homePath = backupSDKPath;
+            }
+        } else {
+            versionString = sdk.getVersionString();
+            homePath = sdk.getHomePath();
+        }
+
+        if (versionString == null || homePath == null)
+            return null;
 
         if (VersionComparatorUtil.compare(versionString, "v2019.07") >= 0) {
-            String rakuBinary = Perl6SdkType.findPerl6InSdkHome(sdk.getHomePath());
+            String rakuBinary = Perl6SdkType.findPerl6InSdkHome(homePath);
             if (rakuBinary == null) return null;
             command.add(rakuBinary);
             command.add("--debug-port=" + debugPort);
             command.add("--debug-suspend");
         } else {
-            Map<String, String> moarBuildConfiguration = projectSdk.getMoarBuildConfiguration(project);
+            Map<String, String> moarBuildConfiguration = Perl6SdkType.getInstance().getMoarBuildConfiguration(project);
             if (moarBuildConfiguration == null) {
                 return null;
             }
