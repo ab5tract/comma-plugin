@@ -1,6 +1,9 @@
 package edument.perl6idea.module;
 
-import com.intellij.ide.util.projectWizard.*;
+import com.intellij.ide.util.projectWizard.ModuleBuilder;
+import com.intellij.ide.util.projectWizard.ModuleWizardStep;
+import com.intellij.ide.util.projectWizard.SettingsStep;
+import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.ModifiableModuleModel;
@@ -27,7 +30,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +38,6 @@ public class Perl6ModuleBuilder extends ModuleBuilder {
     private static final Logger LOG = Logger.getInstance(Perl6ModuleBuilder.class);
     private Perl6ProjectType myModuleType = Perl6ProjectType.PERL6_SCRIPT;
     private Perl6ModuleBuilderGeneric myBuilder = new Perl6ModuleBuilderScript();
-    private List<Pair<String, String>> mySourcePaths = new ArrayList<>();
 
     @Override
     public String getName() {

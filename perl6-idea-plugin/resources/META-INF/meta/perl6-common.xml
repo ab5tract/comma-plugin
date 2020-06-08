@@ -97,7 +97,6 @@
     <usageTypeProvider implementation="edument.perl6idea.findUsages.Perl6UsageTypeProvider"/>
     <lang.smartEnterProcessor language="Perl6" implementationClass="edument.perl6idea.editor.smartEnter.Perl6SmartEnterProcessor"/>
     <enterBetweenBracesDelegate language="Perl6" implementationClass="edument.perl6idea.editor.Perl6EnterBetweenBracesDelegate"/>
-    <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
     <consoleFilterProvider implementation="edument.perl6idea.run.Perl6OutputLinkProvider"/>
     <codeInsight.lineMarkerProvider language="Perl6" implementationClass="edument.perl6idea.providers.Perl6LineMarkerProvider"/>
     <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor"/>

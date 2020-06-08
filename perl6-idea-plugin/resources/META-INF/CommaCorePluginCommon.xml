@@ -2,71 +2,12 @@
 <idea-plugin>
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
-  <extensionPoints>
-    <extensionPoint qualifiedName="com.intellij.moduleConfigurable"
-                    beanClass="com.intellij.openapi.options.ModuleConfigurableEP"
-                    area="IDEA_MODULE">
-      <with attribute="instance" implements="com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleConfigurable"/>
-    </extensionPoint>
-    <extensionPoint name="projectWizard.projectCategory" interface="com.intellij.ide.projectWizard.ProjectCategory"/>
-    <extensionPoint name="projectImportProvider" interface="com.intellij.projectImport.ProjectImportProvider"/>
-    <extensionPoint name="projectStructureDetector" interface="com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector"/>
-    <extensionPoint name="configuration.ModuleStructureExtension"
-                    interface="com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleStructureExtension"/>
-    <extensionPoint name="projectStructureConfigurableFilter"
-                    interface="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurableFilter"/>
-    <extensionPoint name="projectStructureConfigurableAdder"
-                    interface="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurableContributor"/>
-    <extensionPoint name="projectStructureValidator"
-                    interface="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureValidator"/>
-    <extensionPoint name="OrderRootTypeUI" beanClass="com.intellij.openapi.extensions.KeyedFactoryEPBean">
-      <with attribute="implementationClass" implements="com.intellij.openapi.roots.ui.OrderRootTypeUIFactory"/>
-    </extensionPoint>
-  </extensionPoints>
-
   <extensions defaultExtensionNs="com.intellij">
-    <projectImportProvider implementation="com.intellij.ide.util.projectWizard.ModuleImportProvider"/>
-    <applicationService serviceInterface="com.intellij.openapi.module.ModuleTypeManager"
-                        serviceImplementation="edument.perl6idea.module.Perl6ModuleTypeManager" overrides="true"/>
-    <projectImportProvider implementation="edument.perl6idea.project.Perl6ProjectImportProvider"/>
-    <applicationService serviceImplementation="com.intellij.ide.util.newProjectWizard.SelectTemplateSettings"/>
-    <applicationService serviceInterface="com.intellij.openapi.roots.ui.OrderEntryAppearanceService"
-                        serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
-    <projectWizard.projectCategory implementation="edument.perl6idea.module.Perl6ModuleTypeCategory"/>
     <projectService serviceImplementation="edument.perl6idea.project.structure.Perl6ProjectStructureConfigurable"/>
-    <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.ProjectStructureConfigurable"/>
-    <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectLibrariesConfigurable"/>
-    <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.ModuleStructureConfigurable"/>
-    <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.GlobalLibrariesConfigurable"/>
-    <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.FacetStructureConfigurable"/>
-    <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.artifacts.ArtifactsStructureConfigurable"/>
-    <projectService serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.JdkListConfigurable"/>
-    <projectService serviceInterface="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureProblemsSettings"
-                    serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureProblemsSettingsImpl"/>
-    <projectService serviceInterface="com.intellij.openapi.roots.LanguageLevelProjectExtension"
-                    serviceImplementation="com.intellij.openapi.roots.impl.LanguageLevelProjectExtensionImpl"/>
-    <projectService serviceInterface="com.intellij.openapi.roots.CompilerProjectExtension"
-                    serviceImplementation="com.intellij.openapi.roots.impl.CompilerProjectExtensionImpl"/>
-    <projectService serviceInterface="com.intellij.packaging.artifacts.ArtifactPointerManager"
-                    serviceImplementation="com.intellij.packaging.impl.artifacts.ArtifactPointerManagerImpl"/>
-    <applicationService serviceInterface="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureProblemsSettings"
-                        serviceImplementation="com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.GlobalProjectStructureProblemsSettings"/>
     <favoritesListProvider implementation="com.intellij.ide.bookmarks.BookmarksFavoriteListProvider"/>
     <favoritesListProvider implementation="com.intellij.xdebugger.impl.breakpoints.BreakpointsFavoriteListProvider"/>
     <moduleConfigurationEditorProvider implementation="edument.perl6idea.project.structure.module.Perl6ModuleConfigurationEditorProvider" order="FIRST"/>
     <projectViewPane implementation="com.intellij.ide.projectView.impl.ProjectViewPane"/>
-    <OrderRootTypeUI key="JAVADOC"
-                     implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.JavadocOrderRootTypeUIFactory"/>
-    <OrderRootTypeUI key="ANNOTATIONS"
-                     implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.AnnotationsOrderRootTypeUIFactory"/>
-    <OrderRootTypeUI key="NATIVE"
-                     implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.NativeLibraryOrderRootTypeUIFactory"/>
-    <OrderRootTypeUI key="CLASSES"
-                     implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.ClassesOrderRootTypeUIFactory"/>
-    <OrderRootTypeUI key="SOURCES"
-                     implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.SourcesOrderRootTypeUIFactory"/>
-    <OrderRootTypeUI key="DOCUMENTATION"
-                     implementationClass="com.intellij.openapi.roots.ui.configuration.libraryEditor.DocumentationOrderRootTypeUIFactory"/>
   </extensions>
 
   <!-- Actions for standalone Comma -->
@@ -79,22 +20,21 @@
       <add-to-group group-id="NavBarToolBar" anchor="last"/>
     </action>
     <group id="WelcomeScreen.QuickStart.IDEA">
-      <action id="WelcomeScreen.CreateNewProject" class="com.intellij.ide.actions.NewProjectAction"
-              icon="AllIcons.Welcome.CreateNewProject"/>
-      <action id="WelcomeScreen.ImportProject" class="com.intellij.ide.actions.ImportProjectAction" icon="AllIcons.ToolbarDecorator.Import"/>
+      <action id="WelcomeScreen.CreateNewProject" class="edument.perl6idea.actions.comma.NewProjectAction" icon="AllIcons.Welcome.CreateNewProject"/>
+      <action id="WelcomeScreen.ImportProject" class="edument.perl6idea.actions.comma.ImportProjectAction" icon="AllIcons.ToolbarDecorator.Import"/>
       <action id="WelcomeScreen.OpenProject" class="com.intellij.ide.actions.OpenFileAction" icon="AllIcons.Actions.Menu_open"/>
       <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
     </group>
     <group id="OpenProjectGroup">
-      <group id="NewElementInMenuGroup" class="com.intellij.ide.actions.NewActionGroup" text="New" popup="true"/>
+      <group id="NewElementInMenuGroup" class="edument.perl6idea.actions.comma.NewActionGroup" text="New" popup="true"/>
       <add-to-group group-id="FileOpenGroup" anchor="first"/>
     </group>
 
-    <action id="NewProject" class="edument.perl6idea.actions.newActions.NewProjectAction" text="Project...">
+    <action id="NewProject" class="edument.perl6idea.actions.comma.NewProjectAction" text="Project...">
       <add-to-group group-id="NewProjectOrModuleGroup"/>
     </action>
 
-    <action id="ImportProject" class="edument.perl6idea.actions.newActions.ImportProjectAction" text="Project from Existing Sources...">
+    <action id="ImportProject" class="edument.perl6idea.actions.comma.ImportProjectAction" text="Project from Existing Sources...">
       <add-to-group group-id="NewProjectOrModuleGroup"/>
     </action>
 
