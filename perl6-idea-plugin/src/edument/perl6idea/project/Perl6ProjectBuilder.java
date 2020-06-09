@@ -1,12 +1,12 @@
 package edument.perl6idea.project;
 
+import com.intellij.ide.util.projectWizard.ProjectBuilder;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.ModifiableModuleModel;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
@@ -19,8 +19,6 @@ import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.packaging.artifacts.ModifiableArtifactModel;
-import com.intellij.projectImport.ProjectImportBuilder;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.Perl6ModuleType;
@@ -36,39 +34,28 @@ import java.util.List;
 
 import static com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor;
 
-public class Perl6ProjectBuilder<T> extends ProjectImportBuilder<T> {
+public class Perl6ProjectBuilder extends ProjectBuilder {
+    private boolean myUpdate;
+    private String myFileToImport;
     private final Logger LOG = Logger.getInstance(getClass());
 
     public Perl6ProjectBuilder() {}
 
     @NotNull
-    @Override
     public String getName() {
         return "Raku sources";
     }
 
-    @Override
     public Icon getIcon() {
         return Perl6Icons.CAMELIA;
     }
 
-    @Override
-    public List<T> getList() {
-        return null;
+    public String getFileToImport() {
+        return myFileToImport;
     }
 
-    @Override
-    public boolean isMarked(Object element) {
-        return false;
-    }
-
-    @Override
-    public void setList(List list) throws ConfigurationException {
-    }
-
-    @Override
-    public void setOpenProjectSettingsAfter(boolean on) {
-
+    public void setFileToImport(String fileToImport) {
+        myFileToImport = fileToImport;
     }
 
     @Override
@@ -80,8 +67,7 @@ public class Perl6ProjectBuilder<T> extends ProjectImportBuilder<T> {
     @Override
     public List<Module> commit(Project project,
                                ModifiableModuleModel model,
-                               ModulesProvider modulesProvider,
-                               ModifiableArtifactModel artifactModel) {
+                               ModulesProvider modulesProvider) {
         // XXX This builder could be used when importing project from Project Structure,
         // in this case `model` parameter is not null
         final List<Module> result = new ArrayList<>();
@@ -115,8 +101,9 @@ public class Perl6ProjectBuilder<T> extends ProjectImportBuilder<T> {
                 // Perl6ProjectOpenProcessor and Perl6ImportProvider would not call a project builder
                 // without either `META6.json` or `META.list` present
                 Path metaPath = Paths.get(getFileToImport(), "META6.json");
-                if (!metaPath.toFile().exists())
+                if (!metaPath.toFile().exists()) {
                     metaPath = Paths.get(getFileToImport(), "META.list");
+                }
                 VirtualFile metaFile = lfs.findFileByPath(metaPath.toString());
                 if (metaFile != null) {
                     Module firstModule = ModuleUtilCore.findModuleForFile(metaFile, project);
@@ -134,7 +121,17 @@ public class Perl6ProjectBuilder<T> extends ProjectImportBuilder<T> {
 
     private static void addSourceDirectory(String name, VirtualFile contentRoot, ContentEntry entry, boolean isTest) {
         VirtualFile child = contentRoot.findChild(name);
-        if (child != null && isEqualOrAncestor(entry.getUrl(), child.getUrl()))
+        if (child != null && isEqualOrAncestor(entry.getUrl(), child.getUrl())) {
             entry.addSourceFolder(child, isTest);
+        }
+    }
+
+    @Override
+    public boolean isUpdate() {
+        return myUpdate;
+    }
+
+    public void setUpdate(final boolean update) {
+        myUpdate = update;
     }
 }

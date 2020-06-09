@@ -97,7 +97,6 @@
     <usageTypeProvider implementation="edument.perl6idea.findUsages.Perl6UsageTypeProvider"/>
     <lang.smartEnterProcessor language="Perl6" implementationClass="edument.perl6idea.editor.smartEnter.Perl6SmartEnterProcessor"/>
     <enterBetweenBracesDelegate language="Perl6" implementationClass="edument.perl6idea.editor.Perl6EnterBetweenBracesDelegate"/>
-    <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
     <consoleFilterProvider implementation="edument.perl6idea.run.Perl6OutputLinkProvider"/>
     <codeInsight.lineMarkerProvider language="Perl6" implementationClass="edument.perl6idea.providers.Perl6LineMarkerProvider"/>
     <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor"/>
@@ -217,6 +216,10 @@
             text="Execute Raku Code"
             description="Execute Raku code in REPL console">
       <keyboard-shortcut first-keystroke="control ENTER" keymap="$default"/>
+    </action>
+    <action id="edument.perl6idea.repl.Perl6ReplUsingThisModuleAction" class="edument.perl6idea.repl.Perl6ReplUsingThisModuleAction"
+            text="REPL using this module" description="Launch a Raku REPL with this module used">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </action>
     <action id="edument.perl6idea.grammar.RakuGrammarPreviewAction" class="edument.perl6idea.grammar.RakuGrammarPreviewAction" text="Preview Raku Grammar"
             description="Opens a tool to preview Raku grammar parsing results">

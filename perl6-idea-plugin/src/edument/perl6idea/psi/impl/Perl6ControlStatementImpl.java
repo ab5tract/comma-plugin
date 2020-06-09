@@ -9,4 +9,7 @@ public class Perl6ControlStatementImpl extends ASTWrapperPsiElement implements P
     public Perl6ControlStatementImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public String inferTopicType() { return "Exception"; }
 }

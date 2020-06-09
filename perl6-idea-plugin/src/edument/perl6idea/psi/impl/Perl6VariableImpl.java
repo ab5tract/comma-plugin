@@ -95,11 +95,15 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         PsiReference ref = getReference();
         if (ref == null) return "Any";
         PsiElement resolved = ref.resolve();
-        if (resolved instanceof Perl6VariableDecl) {
+        if (text.equals("$_") && resolved instanceof P6Topicalizer) {
+            String type = ((P6Topicalizer)resolved).calculateTopicType(this);
+            if (type != null) return type;
+        }
+        else if (resolved instanceof Perl6VariableDecl) {
             String type = ((Perl6VariableDecl) resolved).inferType();
-            if (!type.equals("Any"))
-                return type;
-        } else if (resolved instanceof Perl6ParameterVariable) {
+            if (!type.equals("Any")) return type;
+        }
+        else if (resolved instanceof Perl6ParameterVariable) {
             String type = ((Perl6ParameterVariable) resolved).inferType();
             if (!type.equals("Any"))
                 return type;

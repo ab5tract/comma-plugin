@@ -38,8 +38,7 @@ public class Perl6PsiUtil {
         if (!(element instanceof Perl6Statement))
             return;
 
-        Perl6Statement statement = (Perl6Statement)element;
-        PsiElement untermMarker = statement.getLastChild();
-        untermMarker.replace(Perl6ElementFactory.createStatementFromText(element.getProject(), ";").getLastChild());
+        Perl6Statement statement = Perl6ElementFactory.createStatementFromText(element.getProject(), element.getText() + ";");
+        element.replace(statement);
     }
 }

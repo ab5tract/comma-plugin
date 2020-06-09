@@ -2,13 +2,13 @@ package edument.perl6idea.module;
 
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
-import com.intellij.ide.util.projectWizard.SdkSettingsStep;
 import com.intellij.ide.util.projectWizard.SettingsStep;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.util.Condition;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.project.projectWizard.components.SdkSettingsStep;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -3,12 +3,12 @@ package edument.perl6idea.commenter;
 import com.intellij.codeInsight.generation.actions.CommentByBlockCommentAction;
 import com.intellij.codeInsight.generation.actions.CommentByLineCommentAction;
 import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import org.jetbrains.annotations.NotNull;
 
-public class CommenterTest extends LightCodeInsightFixtureTestCase {
+public class CommenterTest extends BasePlatformTestCase {
     @NotNull
     @Override
     protected LightProjectDescriptor getProjectDescriptor() {

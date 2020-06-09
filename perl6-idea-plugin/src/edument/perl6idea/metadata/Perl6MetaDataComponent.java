@@ -122,7 +122,14 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         // Next thing is syncing META6.json dependencies with the libraries of the module
         // First, collect names of all dependencies that should be in this module
         Set<String> dependenciesFromMeta = new HashSet<>();
-        List<Object> starterDeps = meta.getJSONArray("depends").toList();
+        List<Object> starterDeps = new ArrayList<>();
+        try {
+            starterDeps.addAll(meta.getJSONArray("depends").toList());
+            starterDeps.addAll(meta.getJSONArray("test-depends").toList());
+            starterDeps.addAll(meta.getJSONArray("build-depends").toList());
+        } catch (JSONException ignored) {} // It purely means there was e.g. no key or meta may be corrupted, so we should abort synking anyway
+
+        if (starterDeps.size() == 0) return;
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             for (Object dep : starterDeps) {
@@ -152,7 +159,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                     return true;
                 });
                 // Second, remove libraries that are not specifies in META
-                removeReundantLibraries(application, existingLibraryNames, dependenciesFromMeta);
+                removeRedundantLibraries(application, existingLibraryNames, dependenciesFromMeta);
                 dependenciesFromMeta.removeAll(existingLibraryNames);
                 // Third, add those specified there, but no duplicates, hence the remove above
                 syncMetaEntriesIntoLibraries(sdk, application, dependenciesFromMeta);
@@ -162,7 +169,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         });
     }
 
-    private void removeReundantLibraries(Application application, Set<String> libraryNames, Set<String> metaEntries) {
+    private void removeRedundantLibraries(Application application, Set<String> libraryNames, Set<String> metaEntries) {
         application.invokeAndWait(() -> {
             libraryNames.removeAll(metaEntries);
             for (String redundant : libraryNames) {
@@ -409,7 +416,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         AtomicReference<IOException> ex = new AtomicReference<>();
         ex.set(null);
         VirtualFile finalFirstRoot = firstRoot;
-        ApplicationManager.getApplication().invokeLater(() -> WriteAction.run(() -> {
+        ApplicationManager.getApplication().invokeAndWait(() -> WriteAction.run(() -> {
             try {
                 JSONObject meta = getStubMetaObject(moduleName);
                 VirtualFile metaFile = finalFirstRoot.findOrCreateChildData(this, META6_JSON_NAME);
@@ -521,6 +528,24 @@ public class Perl6MetaDataComponent implements ModuleComponent {
         myMeta.put("license", license); saveFile();
     }
 
+    @Nullable
+    public String getSourceURL() {
+        return isMetaDataExist() && myMeta.has("source-url") ? myMeta.getString("source-url") : null;
+    }
+
+    public void setSourceURL(String sourceURL) {
+        myMeta.put("source-url", sourceURL); saveFile();
+    }
+
+    @Nullable
+    public List<Object> getAuthors() {
+        return isMetaDataExist() && myMeta.has("authors") ? myMeta.getJSONArray("authors").toList() : null;
+    }
+
+    public void setAuthors(List<String> authors) {
+        myMeta.put("authors", authors); saveFile();
+    }
+
     private void saveFile() {
         if (myMetaFile == null || myMeta == null) return;
         String json = MetaDataJSONSerializer.serializer(myMeta);
@@ -530,6 +555,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                     if (!myMetaFile.isValid())
                         myMetaFile = myMetaFile.getParent().createChildData(this, myMetaFile.getName());
                     myMetaFile.setBinaryContent(json.getBytes(CharsetToolkit.UTF8_CHARSET));
+                    triggerMetaBuild(myMetaFile);
                 }
                 catch (IOException e) {
                     notifyMetaIssue(e.getMessage(), NotificationType.ERROR);

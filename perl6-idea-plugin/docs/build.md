@@ -2,36 +2,56 @@
 
 #### Preparation
 
-Currently, Comma is based upon 191 Intellij revision/branch.
-Raku Comma plugin supports versions in range from 145 (2016.1) to 191 (2019.1).
+Currently, Comma is based upon 201 Intellij revision/branch.
+Raku Comma plugin supports versions starting revision 201 (2020.01).
+
+To develop Comma, version of IDEA you use **must** correspond to version
+of the platform used (see above for the current version).
 
 Do the following steps inside a work-related directory, for example, `comma`.
 * `git clone https://github.com/edumentab/intellij-community.git`
 * `cd intellij-community`
-* `git checkout comma-193`
+* `git checkout comma-201`
 * Do steps from `intellij-community` repo [README](https://github.com/JetBrains/intellij-community/#opening-the-intellij-source-code-for-build): creating `IDEA jdk` JDK and setting it to the project, running `getPlugins.sh` script.
 * `git clone https://github.com/edumentab/perl6-idea-plugin.git comma-build` (so the structure is `intellij-community/comma-build`)
-* Make sure that revisions of android-related repo are the same as the IDEA checkout, 193.6015.9.
-  * `cd android; git checkout idea/193.6015.9`
-  * `cd tools-base; git checkout idea/193.6015.9`
+* Make sure revisions of android-related repos are the same as the IDEA checkout, `201.7223`.
+  * `cd android; git checkout idea/201.7223.18`
+  * `cd tools-base; git checkout idea/201.7223.18`
   * `cd ../..`
-* Start IDEA instance, open existing project from `intellij-community` directory.
-* A `Unregistered VCS root detected` for `comma-bulid` will appear - let IDEA add this root.
+* Start IDEA instance, open existing project from `intellij-community` directory. Make sure you are using correct IDEA version.
+* An `Unregistered VCS root detected` for `comma-bulid` will appear - let IDEA add this root.
 * At this point, `json` and`tap4j` dependencies may be missing.
   * Open `Project Structure` -> `Libraries` and add them manually using `From Maven` submenu.
   * Maven coordinates are: `org.tap4j:tap4j:4.3`, `org.json:json:20171018`. Add them to the `edument.perl6.plugin` module.
 
+#### SDK
+
+While OpenJDK installations *may* work, it is not assumed and for recent years of development (2020)
+we encountered various errors.
+
+If you have Oracle JDK, e.g. 1.8.0_191 or above, it will work fine.
+
+Otherwise, you need to download JetBrains patched JDK:
+
+For GNU/Linux:
+
+* `mkdir jdk && cd jdk && wget https://jetbrains.bintray.com/intellij-jbr/jbrsdk-8u202-linux-x64-b1483.58.tar.gz && tar -xzf jbrsdk-8u202-linux-x64-b1483.58.tar.gz`
+
+For other systems, choose appropriate JBR SDK image, revision 8u202 is recommended.
+
+Then set `JAVA_HOME` to point to either oracle JDK or the downloaded one.
+
 #### How to build a plugin
 
 While in the `comma-build` directory.
-* `ant community-plugin-build` or `ant complete-plugin-build` for Community version or Complete version.
-* The plugin will be placed in `../out/commaCT/artifacts/CT-plugins/` and `out/commaCP/artifacts/CP-plugins/` directories relatively.
+* `ant community-plugin-build` or `ant complete-plugin-build` for the Community version or Complete version.
+* The plugin will be placed in `../out/commaCT/artifacts/CT-plugins/` and `out/commaCP/artifacts/CP-plugins/` directory depending on the version built (CT or CP).
 
 #### How to build a standalone Comma
 
 While in the `comma-build` directory.
-* `ant community-build` or `ant complete-build` for Community version or Complete version.
-* Built images will be in `../out/commaCT/artifacts` directory.
+* `ant community-build` or `ant complete-build` for the Community version or Complete version.
+* Built images will be in `../out/comma/artifacts` directory.
 
 #### How to run Comma from IDEA Run Configuration for testing features during development
 
@@ -41,7 +61,7 @@ While in the `comma-build` directory.
 * Because of plugin absence, `Check out from version control` always has no options, but those are present in final build.
 
 * Open Run Configurations tab. Create a new Run Configuration of type "Application":
-  - Name: `Comma`(does not matter for build, you also should specify wanted edition, "Complete" or "Community")
+  - Name: `Comma`(does not matter for build, you also should specify an edition, "Complete" or "Community")
   - Main class: `com.intellij.idea.Main` (type `Main` in Search by Name and select needed)
   - VM options: `-ea  -Xmx192m -Didea.is.internal=true -Didea.platform.prefix=CommaCore -Didea.paths.selector=Comma`
   - Working directory: `intellij-community/bin`
@@ -68,7 +88,7 @@ While in the `comma-build` directory.
 * `ant test`
 
 Or one can execute either `ant test-complete` and `ant test-community` to run dedicated set of tests.
-`ant test` target consists of `test-complete` and `test-community`.
+`ant test` target runs `test-complete` and `test-community` sequentially.
 The `test-complete` target consists of tests that are common for both editions and dedicated ones. The same is true for `test-community`.
 
 ### How to update version

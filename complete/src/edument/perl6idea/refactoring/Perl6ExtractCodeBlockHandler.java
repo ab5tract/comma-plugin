@@ -2,6 +2,7 @@ package edument.perl6idea.refactoring;
 
 import com.intellij.lang.ContextAwareActionHandler;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
@@ -318,7 +319,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
     protected NewCodeBlockData getNewBlockData(Project project, Perl6StatementList parentToCreateAt, PsiElement[] elements) {
         CompletableFuture<NewCodeBlockData> futureData = new CompletableFuture<>();
-        TransactionGuard.getInstance().submitTransactionAndWait(() -> {
+        ApplicationManager.getApplication().invokeAndWait(() -> {
             Perl6ExtractBlockDialog dialog = new Perl6ExtractBlockDialog(project, TITLE, myCodeBlockType, getCapturedVariables(parentToCreateAt, elements)) {
                 @Override
                 protected void doAction() {
@@ -328,6 +329,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
                             getInputVariables()
                     );
                     data.containsExpression = isExpr;
+                    data.wantsSemicolon = isExpr && elements.length == 1 && checkNeedsSemicolon(elements[0]);
                     futureData.complete(data);
                     closeOKAction();
                 }
@@ -346,6 +348,12 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         catch (InterruptedException|ExecutionException e) {
             return null;
         }
+    }
+
+    protected boolean checkNeedsSemicolon(PsiElement element) {
+        Perl6Statement statement = PsiTreeUtil.getParentOfType(element, Perl6Statement.class);
+        if (statement == null) return false; // won't happen, because we already checked isExpr in the caller
+        return statement.getNextSibling() != null && element.getNextSibling() == null;
     }
 
     protected Perl6VariableData[] getCapturedVariables(Perl6StatementList parentToCreateAt, PsiElement[] elements) {
@@ -587,12 +595,11 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             } else {
                 parent.addAfter(newBlock, anchor);
             }
-
         });
     }
 
     protected void replaceStatementsWithCall(Project project, NewCodeBlockData data, PsiElement parentScope, PsiElement[] elements) {
-        PsiElement call = null;
+        PsiElement call;
         if (data.type == Perl6CodeBlockType.ROUTINE) {
             call = CompletePerl6ElementFactory.createSubCall(parentScope.getProject(), data);
         } else {
@@ -603,9 +610,14 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         WriteCommandAction.runWriteCommandAction(project, () -> {
             PsiElement closestParent = elements[0].getParent();
             // Insert a call
-            closestParent.addBefore(finalCall, elements[elements.length - 1].getNextSibling());
+            PsiElement newCall = closestParent.addBefore(finalCall, elements[elements.length - 1].getNextSibling());
             // Delete present statements
             closestParent.deleteChildRange(elements[0], elements[elements.length - 1]);
+            if (data.wantsSemicolon) {
+                Perl6Statement statement = PsiTreeUtil.getParentOfType(newCall, Perl6Statement.class);
+                if (statement != null)
+                    Perl6PsiUtil.terminateStatement(statement);
+            }
         });
     }
 

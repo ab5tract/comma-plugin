@@ -5,12 +5,9 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ex.ProjectEx;
-import com.intellij.openapi.roots.ui.configuration.GeneralProjectSettingsElement;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectStructureElementConfigurable;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.StructureConfigurableContext;
-import com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ProjectStructureElement;
 import com.intellij.openapi.ui.DetailsComponent;
+import com.intellij.openapi.ui.NamedConfigurable;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.project.ProjectKt;
 import com.intellij.util.ui.JBUI;
@@ -20,18 +17,16 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurable<Project> implements DetailsComponent.Facade {
+public class Perl6ProjectConfigurable extends NamedConfigurable<Project> implements DetailsComponent.Facade {
     private final Project myProject;
-    private final GeneralProjectSettingsElement mySettingsElement;
     private DetailsComponent myDetailsComponent;
     private JPanel myPanel;
     private JTextField myProjectName;
     private Perl6SdkConfigurable myProjectSdkConfigurable;
 
-    public Perl6ProjectConfigurable(Project project, StructureConfigurableContext context,
+    public Perl6ProjectConfigurable(Project project, Perl6StructureConfigurableContext context,
                                     ProjectSdksModel model) {
         myProject = project;
-        mySettingsElement = new GeneralProjectSettingsElement(context);
         model.reset(myProject);
         initUI(model);
     }
@@ -50,15 +45,8 @@ public class Perl6ProjectConfigurable extends ProjectStructureElementConfigurabl
         myPanel.add(myProjectSdkConfigurable.createComponent(), "shrink 0");
     }
 
-    @Nullable
     @Override
-    public ProjectStructureElement getProjectStructureElement() {
-        return mySettingsElement;
-    }
-
-    @Override
-    public void setDisplayName(String name) {
-    }
+    public void setDisplayName(String name) {}
 
     @Override
     public Project getEditableObject() {

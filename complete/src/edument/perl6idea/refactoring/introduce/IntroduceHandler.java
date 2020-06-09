@@ -90,7 +90,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         }
 
         element1 = PsiTreeUtil.getParentOfType(PsiTreeUtil.findCommonParent(element1, element2), Perl6PsiElement.class, false);
-        if (element1 == null || !isValidIntroduceContext(element1)) {
+        if (element1 == null || isValidIntroduceContext(element1) == null) {
             showCannotPerformError(project, editor);
             return;
         }
@@ -381,7 +381,8 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     }
 
     private boolean checkIntroduceContext(PsiFile file, Editor editor, PsiElement element) {
-        if (!isValidIntroduceContext(element)) {
+        element = isValidIntroduceContext(element);
+        if (element == null) {
             CommonRefactoringUtil.showErrorHint(file.getProject(), editor, "Cannot refactor with this selection",
                                                 myDialogTitle, "refactoring.extractMethod");
             return false;
@@ -396,14 +397,16 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         return findTopmostStatementOfExpression(element);
     }
 
-    private static boolean isValidIntroduceContext(PsiElement element) {
+    private static PsiElement isValidIntroduceContext(PsiElement element) {
         boolean valid = element instanceof P6Extractable;
         if (element instanceof Perl6TypeName) {
-            return !(element.getParent() instanceof Perl6Parameter) && !(element.getParent() instanceof Perl6ScopedDecl);
+            valid = !(element.getParent() instanceof Perl6Parameter) && !(element.getParent() instanceof Perl6ScopedDecl);
         } else if (element instanceof Perl6Variable) {
-            return !(element.getParent() instanceof Perl6VariableDecl) && !(element.getParent() instanceof Perl6ParameterVariable);
+            valid = !(element.getParent() instanceof Perl6VariableDecl) && !(element.getParent() instanceof Perl6ParameterVariable);
+        } else if (element instanceof Perl6LongName) {
+            return PsiTreeUtil.getParentOfType(element, Perl6PostfixApplication.class);
         }
-        return valid;
+        return valid ? element : null;
     }
 
     @Override

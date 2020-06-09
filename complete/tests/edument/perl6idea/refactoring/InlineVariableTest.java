@@ -101,6 +101,10 @@ public class InlineVariableTest extends CommaFixtureTestCase {
         doTest();
     }
 
+    public void testSingleAssignment() {
+        doTest();
+    }
+
     public void testAttributeVariableException() {
         assertThrows(CommonRefactoringUtil.RefactoringErrorHintException.class,
                      "Cannot perform inline refactoring: attributes of class are used that are not available at inlining location",

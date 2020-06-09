@@ -235,6 +235,11 @@ public class ExtractCodeBlockTest extends CommaFixtureTestCase {
                 "cond", Perl6CodeBlockType.ROUTINE);
     }
 
+    public void testConstructWithBracesExtractionAsLastExpr() {
+        doTest(() -> getClosestStatementListByText("method"),
+               "foo", Perl6CodeBlockType.METHOD, 0);
+    }
+
     // Helper methods
     /**
      * Gets innermost statement list in an opened file around a line of text passed
@@ -316,6 +321,7 @@ public class ExtractCodeBlockTest extends CommaFixtureTestCase {
         protected NewCodeBlockData getNewBlockData(Project project, Perl6StatementList parentToCreateAt, PsiElement[] elements) {
             NewCodeBlockData data = new NewCodeBlockData(myCodeBlockType, name, getCapturedVariables(parent, elements));
             data.containsExpression = isExpr;
+            data.wantsSemicolon = isExpr && elements.length == 1 && checkNeedsSemicolon(elements[0]);
             if (userAction == null)
                 return data;
             else
