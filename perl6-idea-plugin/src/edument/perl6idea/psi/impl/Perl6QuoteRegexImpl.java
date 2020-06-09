@@ -11,7 +11,7 @@ public class Perl6QuoteRegexImpl extends ASTWrapperPsiElement implements Perl6Qu
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Regex";
     }
 }

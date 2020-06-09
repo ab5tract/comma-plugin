@@ -220,7 +220,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         Perl6VariableDeclStub stub = getStub();
         if (stub != null) {
             String variableType = stub.getVariableType();
@@ -231,7 +231,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (type != null) return getCutName(type.getText());
         String assignBasedType = resolveAssign();
         if (assignBasedType != null) return assignBasedType;
-        return inferBySigil();
+        String typeBySigil = inferBySigil();
+        return typeBySigil == null ? "Any" : typeBySigil;
     }
 
     private String inferBySigil() {

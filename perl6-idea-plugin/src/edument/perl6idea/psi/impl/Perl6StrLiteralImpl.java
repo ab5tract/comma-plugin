@@ -13,7 +13,7 @@ public class Perl6StrLiteralImpl extends ASTWrapperPsiElement implements Perl6St
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Str";
     }
 

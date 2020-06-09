@@ -11,7 +11,7 @@ public class Perl6VersionImpl extends ASTWrapperPsiElement implements Perl6Versi
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Version";
     }
 }

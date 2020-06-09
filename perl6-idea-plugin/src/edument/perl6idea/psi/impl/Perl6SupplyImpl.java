@@ -11,7 +11,7 @@ public class Perl6SupplyImpl extends ASTWrapperPsiElement implements Perl6Supply
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Supply";
     }
 }

@@ -15,7 +15,7 @@ public class Perl6ArrayComposerImpl extends ASTWrapperPsiElement implements Perl
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Array";
     }
 }

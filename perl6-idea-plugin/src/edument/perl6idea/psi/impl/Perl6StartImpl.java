@@ -13,7 +13,7 @@ public class Perl6StartImpl extends ASTWrapperPsiElement implements Perl6Start {
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Promise";
     }
 

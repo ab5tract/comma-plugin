@@ -11,7 +11,7 @@ public class Perl6LazyImpl extends ASTWrapperPsiElement implements Perl6Lazy {
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Seq";
     }
 }

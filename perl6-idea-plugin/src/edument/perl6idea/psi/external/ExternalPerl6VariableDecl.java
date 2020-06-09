@@ -77,7 +77,7 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return myType;
     }
 

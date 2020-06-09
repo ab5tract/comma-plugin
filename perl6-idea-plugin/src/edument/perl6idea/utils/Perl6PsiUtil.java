@@ -6,6 +6,7 @@ import edument.perl6idea.psi.Perl6Comment;
 import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6UnterminatedStatement;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
@@ -23,6 +24,14 @@ public class Perl6PsiUtil {
         while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE) || temp instanceof Perl6Comment))
             temp = toRight ? temp.getNextSibling() : temp.getPrevSibling();
         return temp;
+    }
+
+    @Nullable
+    public static PsiElement getLastNonSpaceChild(@NotNull PsiElement node) {
+        PsiElement[] children = node.getChildren();
+        if (children.length == 0)
+            return null;
+        return skipSpaces(children[children.length - 1], false);
     }
 
     public static void terminateStatement(PsiElement element) {

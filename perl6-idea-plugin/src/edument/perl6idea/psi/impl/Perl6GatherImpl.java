@@ -11,7 +11,7 @@ public class Perl6GatherImpl extends ASTWrapperPsiElement implements Perl6Gather
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Seq";
     }
 }

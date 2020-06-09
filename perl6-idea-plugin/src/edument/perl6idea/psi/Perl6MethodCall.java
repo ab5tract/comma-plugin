@@ -7,4 +7,5 @@ public interface Perl6MethodCall extends Perl6PsiElement, P6CodeBlockCall {
     @NotNull
     String getCallOperator();
     PsiElement getCallOperatorNode();
+    PsiElement getSimpleName();
 }

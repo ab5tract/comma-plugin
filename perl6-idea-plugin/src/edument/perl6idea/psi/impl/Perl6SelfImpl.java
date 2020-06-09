@@ -18,7 +18,7 @@ public class Perl6SelfImpl extends ASTWrapperPsiElement implements Perl6Self {
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "self";
     }
 }

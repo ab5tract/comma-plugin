@@ -61,14 +61,15 @@ public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> 
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         PsiElement name = getFirstChild();
         if (!(name instanceof Perl6SubCallName)) return "Mu";
         PsiReference ref = name.getReference();
         if (ref == null) return "Mu";
         PsiElement resolved = ref.resolve();
         if (resolved instanceof Perl6RoutineDecl) {
-            return ((Perl6RoutineDecl)resolved).getReturnType();
+            String returnType = ((Perl6RoutineDecl)resolved).getReturnType();
+            return returnType == null ? "Mu" : returnType;
         }
         return "Mu";
     }

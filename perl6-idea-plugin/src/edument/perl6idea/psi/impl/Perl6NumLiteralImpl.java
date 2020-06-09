@@ -11,7 +11,7 @@ public class Perl6NumLiteralImpl extends ASTWrapperPsiElement implements Perl6Nu
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Num";
     }
 }

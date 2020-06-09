@@ -79,7 +79,7 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         String text = getText();
         // Special cases, regex
         if (text.substring(1).chars().allMatch(Character::isDigit)) return "Match";
@@ -101,11 +101,11 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         }
         else if (resolved instanceof Perl6VariableDecl) {
             String type = ((Perl6VariableDecl) resolved).inferType();
-            if (type != null) return type;
+            if (!type.equals("Any")) return type;
         }
         else if (resolved instanceof Perl6ParameterVariable) {
             String type = ((Perl6ParameterVariable) resolved).inferType();
-            if (type != null)
+            if (!type.equals("Any"))
                 return type;
         }
         // Handle $ case

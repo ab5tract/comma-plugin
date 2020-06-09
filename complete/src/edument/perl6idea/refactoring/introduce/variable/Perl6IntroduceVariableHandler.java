@@ -28,7 +28,7 @@ public class Perl6IntroduceVariableHandler extends IntroduceHandler {
     }
 
     private static boolean isInitializerControlStatement(PsiElement initializer) {
-        // We might already have Statement or it's child, so normalize our node first
+        // We might already have Statement or its child, so normalize our node first
         PsiElement statement = PsiTreeUtil.getParentOfType(initializer, Perl6Statement.class, false);
         assert statement != null;
         PsiElement child = statement.getFirstChild();

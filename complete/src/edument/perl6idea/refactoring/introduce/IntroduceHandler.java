@@ -24,6 +24,7 @@ import com.intellij.refactoring.listeners.RefactoringEventListener;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.refactoring.helpers.Perl6IntroduceDialog;
+import edument.perl6idea.refactoring.Perl6NameSuggester;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -186,9 +187,9 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
 
     protected static void ensureName(IntroduceOperation operation) {
         if (operation.getName() == null) {
-            Collection<String> suggestednames = operation.getSuggestedNames();
-            if (suggestednames.size() > 0) {
-                operation.setName(suggestednames.iterator().next());
+            Collection<String> suggestedNames = operation.getSuggestedNames();
+            if (suggestedNames.size() > 0) {
+                operation.setName(suggestedNames.iterator().next());
             } else {
                 operation.setName("$x");
             }
@@ -234,7 +235,8 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             editor.getCaretModel().moveToOffset(occurrence.getTextRange().getStartOffset());
             final InplaceVariableIntroducer<PsiElement> introducer =
                 new Perl6InplaceVariableIntroducer(declaration, operation, occurrences);
-            introducer.performInplaceRefactoring(new LinkedHashSet<>(operation.getSuggestedNames()));
+            Collection<String> names = operation.getSuggestedNames();
+            introducer.performInplaceRefactoring(new LinkedHashSet<>(names));
         } else {
             removeLeftoverStatement(operation);
         }
@@ -274,41 +276,45 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         PsiElement expression = operation.getInitializer();
         Project project = operation.getProject();
         return WriteCommandAction.writeCommandAction(project).compute(() -> {
+            PsiElement anchor = operation.isReplaceAll()
+                                ? findAnchor(operation.getOccurrences())
+                                : findTopmostStatementOfExpression(expression);
             try {
-                    RefactoringEventData afterData = new RefactoringEventData();
-                    afterData.addElement(declaration);
-                    project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
-                           .refactoringStarted(getRefactoringId(), afterData);
-                    PsiElement newExpression = createExpression(project, operation.getName());
+                RefactoringEventData afterData = new RefactoringEventData();
+                afterData.addElement(declaration);
+                project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
+                    .refactoringStarted(getRefactoringId(), afterData);
+                PsiElement newExpression = createExpression(project, operation.getName());
 
-                    PsiElement operationElement = operation.getElement();
-                    PsiElement list = PsiTreeUtil.getNonStrictParentOfType(operationElement, Perl6StatementList.class);
-                    boolean needsToBeReplaced = !(operationElement.getParent() instanceof Perl6StatementList || operationElement.getParent().getParent() instanceof Perl6StatementList);
-                    operation.setOccurrencesReplaceable(needsToBeReplaced);
+                PsiElement operationElement = operation.getElement();
+                PsiElement list = PsiTreeUtil.getNonStrictParentOfType(operationElement, Perl6StatementList.class);
+                boolean needsToBeReplaced = !(operationElement.getParent() instanceof Perl6StatementList ||
+                                              operationElement.getParent().getParent() instanceof Perl6StatementList);
+                operation.setOccurrencesReplaceable(needsToBeReplaced);
 
-                    if (needsToBeReplaced) {
-                        if (operation.isReplaceAll()) {
-                            List<PsiElement> newOccurrences = new ArrayList<>();
-                            for (PsiElement occurrence : operation.getOccurrences()) {
-                                PsiElement replaced = replaceExpression(occurrence, newExpression);
-                                if (replaced != null)
-                                    newOccurrences.add(replaced);
-                            }
-                            operation.setOccurrences(newOccurrences);
+                if (needsToBeReplaced) {
+                    if (operation.isReplaceAll()) {
+                        List<PsiElement> newOccurrences = new ArrayList<>();
+                        for (PsiElement occurrence : operation.getOccurrences()) {
+                            PsiElement replaced = replaceExpression(occurrence, newExpression);
+                            if (replaced != null)
+                                newOccurrences.add(replaced);
                         }
-                        else {
-                            PsiElement replaced = replaceExpression(expression, newExpression);
-                            operation.setOccurrences(Collections.singletonList(replaced));
-                        }
+                        operation.setOccurrences(newOccurrences);
                     }
-                    postRefactoring(list, operation);
-                } finally {
-                    final RefactoringEventData afterData = new RefactoringEventData();
-                    afterData.addElement(declaration);
-                    project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
-                           .refactoringDone(getRefactoringId(), afterData);
+                    else {
+                        PsiElement replaced = replaceExpression(expression, newExpression);
+                        operation.setOccurrences(Collections.singletonList(replaced));
+                    }
                 }
-            return addDeclaration(operation, declaration);
+                postRefactoring(list, operation);
+            } finally {
+                final RefactoringEventData afterData = new RefactoringEventData();
+                afterData.addElement(declaration);
+                project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
+                    .refactoringDone(getRefactoringId(), afterData);
+            }
+            return anchor.getParent().addBefore(declaration, anchor);
         });
     }
 
@@ -327,22 +333,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         return Perl6ElementFactory.createVariable(project, name);
     }
 
-    private static PsiElement addDeclaration(IntroduceOperation operation, PsiElement declaration) {
-        PsiElement expression = operation.getInitializer();
-        return addDeclaration(expression, declaration, operation.getOccurrences(), operation.isReplaceAll());
-    }
-
     protected abstract String getRefactoringId();
-
-    protected static PsiElement addDeclaration(PsiElement expression,
-                                               PsiElement declaration,
-                                               List<PsiElement> occurrences,
-                                               Boolean all) {
-        PsiElement anchor = all ? findAnchor(occurrences) : findTopmostStatementOfExpression(expression);
-        assert anchor != null;
-        PsiElement parent = anchor.getParent();
-        return parent.addBefore(declaration, anchor);
-    }
 
     @NotNull
     private static PsiElement findTopmostStatementOfExpression(PsiElement expression) {
@@ -371,12 +362,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     protected abstract PsiElement createDeclaration(IntroduceOperation operation);
 
     private static Collection<String> getSuggestedNames(PsiElement element) {
-        return generateSuggestedNames(element);
-    }
-
-    private static Collection<String> generateSuggestedNames(PsiElement element) {
-        // TODO Smarter heuristic can be used here
-        return new ArrayList<>(Collections.singletonList("$x"));
+        return Perl6NameSuggester.suggest(element);
     }
 
     private static List<PsiElement> getOccurrences(PsiElement element, PsiElement scope) {
