@@ -25,7 +25,7 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
         } else if (last instanceof Perl6MethodCall) {
             return tryToCalculateMethodReturnType((Perl6MethodCall)last);
         }
-        return null;
+        return "Any";
     }
 
     @Nullable
@@ -40,16 +40,18 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
         return getLastChild();
     }
 
+    @NotNull
     private static String tryToCalculateMethodReturnType(Perl6MethodCall last) {
         PsiReference ref = last.getReference();
         if (ref == null) return "Mu";
         PsiElement resolved = ref.resolve();
         if (resolved == null) return "Mu";
         if (resolved instanceof Perl6RoutineDecl) {
-            return ((Perl6RoutineDecl) resolved).getReturnType();
+            String subReturnType = ((Perl6RoutineDecl)resolved).getReturnType();
+            return subReturnType == null ? "Mu" : subReturnType;
         } else if (resolved instanceof Perl6VariableDecl) {
             return ((Perl6VariableDecl) resolved).inferType();
         }
-        return null;
+        return "Mu";
     }
 }

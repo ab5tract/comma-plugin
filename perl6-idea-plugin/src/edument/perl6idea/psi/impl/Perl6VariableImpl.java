@@ -97,10 +97,11 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         PsiElement resolved = ref.resolve();
         if (resolved instanceof Perl6VariableDecl) {
             String type = ((Perl6VariableDecl) resolved).inferType();
-            if (type != null) return type;
+            if (!type.equals("Any"))
+                return type;
         } else if (resolved instanceof Perl6ParameterVariable) {
             String type = ((Perl6ParameterVariable) resolved).inferType();
-            if (type != null)
+            if (!type.equals("Any"))
                 return type;
         }
         // Handle $ case
