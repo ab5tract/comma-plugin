@@ -5,8 +5,10 @@ import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.extensions.Perl6FrameworkCall;
+import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6SubCallStub;
 import edument.perl6idea.psi.stub.Perl6SubCallStubElementType;
@@ -17,6 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> implements Perl6SubCall {
+
+    public static final @NotNull TokenSet OPEN_PAREN_TOKEN_SET = TokenSet.create(Perl6TokenTypes.PARENTHESES_OPEN);
+
     public Perl6SubCallImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -96,6 +101,11 @@ public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> 
                     return ext.getNavigatePresentation(this, ext.getFrameworkData(this));
         }
         return null;
+    }
+
+    @Override
+    public boolean maybeCoercion() {
+        return getNode().getChildren(OPEN_PAREN_TOKEN_SET).length == 1;
     }
 
     public String toString() {

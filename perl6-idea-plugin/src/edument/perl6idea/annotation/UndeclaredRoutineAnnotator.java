@@ -3,13 +3,15 @@ package edument.perl6idea.annotation;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.ResolveResult;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.annotation.fix.ConstKeywordFix;
-import edument.perl6idea.psi.Perl6File;
-import edument.perl6idea.psi.Perl6InfixApplication;
-import edument.perl6idea.psi.Perl6SubCallName;
-import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.highlighter.Perl6Highlighter;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.sdk.Perl6SdkCacheManager;
@@ -21,17 +23,22 @@ public class UndeclaredRoutineAnnotator implements Annotator {
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6SubCallName))
             return;
-        final Perl6SubCallName call = (Perl6SubCallName)element;
-        String subName = call.getCallName();
-        if (subName == null) return;
 
         // Only do the analysis if the core setting symbols are available.
         Perl6File setting = Perl6SdkType.getInstance().getCoreSettingFile(element.getProject());
         if (setting.getVirtualFile().getName().equals("DUMMY"))
             return;
 
-        Perl6Symbol resolved = call.resolveLexicalSymbol(Perl6SymbolKind.Routine, subName);
-        if (resolved == null) {
+        // Resolve the reference.
+        final Perl6SubCallName call = (Perl6SubCallName)element;
+        String subName = call.getCallName();
+        PsiReferenceBase.Poly reference = (PsiReferenceBase.Poly)call.getReference();
+        if (reference == null)
+            return;
+        ResolveResult[] results = reference.multiResolve(false);
+
+        // If no resolve results, then we've got an error.
+        if (results.length == 0) {
             Annotation annotation = holder.createErrorAnnotation(
               element,
               String.format("Subroutine %s is not declared", subName));
@@ -40,6 +47,13 @@ public class UndeclaredRoutineAnnotator implements Annotator {
                  PsiTreeUtil.skipWhitespacesForward(call) instanceof Perl6InfixApplication)) {
                 annotation.registerFix(new ConstKeywordFix(call));
             }
+        }
+
+        // If it resolves to a type, highlight it as one.
+        else if (results.length == 1 && results[0].getElement() instanceof Perl6PackageDecl) {
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .textAttributes(Perl6Highlighter.TYPE_NAME)
+                    .create();
         }
     }
 }

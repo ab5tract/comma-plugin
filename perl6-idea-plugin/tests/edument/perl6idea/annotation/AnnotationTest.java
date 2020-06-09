@@ -84,6 +84,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testDeclaredSubAnnotatorWhenItIsReallyACoercion() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $x = DateTime('2020-01-01');");
+        myFixture.checkHighlighting(false, false, false, false);
+    }
+
     public void testDeclaredAliasedCoreSubAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = [1,2], [3,4]; cross(@a)");
         myFixture.checkHighlighting();
