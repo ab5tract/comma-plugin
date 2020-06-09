@@ -79,7 +79,7 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         String text = getText();
         // Special cases, regex
         if (text.substring(1).chars().allMatch(Character::isDigit)) return "Match";

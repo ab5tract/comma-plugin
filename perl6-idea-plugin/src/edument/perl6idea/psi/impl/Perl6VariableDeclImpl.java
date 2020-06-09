@@ -220,7 +220,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         Perl6VariableDeclStub stub = getStub();
         if (stub != null) {
             String variableType = stub.getVariableType();

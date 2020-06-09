@@ -9,6 +9,7 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.symbols.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -103,6 +104,7 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         }
     }
 
+    @NotNull
     default String inferType() {
         return "Any";
     }

@@ -14,7 +14,7 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         PsiElement first = getFirstChild();
         PsiElement last = getLastChild();
 

@@ -118,7 +118,7 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return myType;
     }
 

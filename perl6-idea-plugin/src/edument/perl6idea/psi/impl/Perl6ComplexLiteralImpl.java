@@ -11,7 +11,7 @@ public class Perl6ComplexLiteralImpl extends ASTWrapperPsiElement implements Per
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Complex";
     }
 }

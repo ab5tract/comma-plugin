@@ -11,7 +11,7 @@ public class Perl6CaptureImpl extends ASTWrapperPsiElement implements Perl6Captu
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Capture";
     }
 }

@@ -12,7 +12,7 @@ public class Perl6FatArrowImpl extends ASTWrapperPsiElement implements Perl6FatA
     }
 
     @Override
-    public String  inferType() {
+    public @NotNull String  inferType() {
         return "Pair";
     }
 

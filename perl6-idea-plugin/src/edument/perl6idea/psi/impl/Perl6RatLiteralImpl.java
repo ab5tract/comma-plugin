@@ -11,7 +11,7 @@ public class Perl6RatLiteralImpl extends ASTWrapperPsiElement implements Perl6Ra
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Rat";
     }
 }

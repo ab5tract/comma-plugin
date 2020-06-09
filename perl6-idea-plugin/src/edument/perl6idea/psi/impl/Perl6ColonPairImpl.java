@@ -17,7 +17,7 @@ public class Perl6ColonPairImpl extends ASTWrapperPsiElement implements Perl6Col
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         return "Pair";
     }
 

@@ -16,7 +16,7 @@ public class Perl6ParenthesizedExprImpl extends ASTWrapperPsiElement implements 
     }
 
     @Override
-    public String inferType() {
+    public @NotNull String inferType() {
         Collection<Perl6Statement> children = PsiTreeUtil.findChildrenOfType(this, Perl6Statement.class);
         ArrayList<Perl6Statement> list = new ArrayList<>(children);
         if (list.size() == 0) return "List";
