@@ -276,41 +276,45 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         PsiElement expression = operation.getInitializer();
         Project project = operation.getProject();
         return WriteCommandAction.writeCommandAction(project).compute(() -> {
+            PsiElement anchor = operation.isReplaceAll()
+                                ? findAnchor(operation.getOccurrences())
+                                : findTopmostStatementOfExpression(expression);
             try {
-                    RefactoringEventData afterData = new RefactoringEventData();
-                    afterData.addElement(declaration);
-                    project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
-                           .refactoringStarted(getRefactoringId(), afterData);
-                    PsiElement newExpression = createExpression(project, operation.getName());
+                RefactoringEventData afterData = new RefactoringEventData();
+                afterData.addElement(declaration);
+                project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
+                    .refactoringStarted(getRefactoringId(), afterData);
+                PsiElement newExpression = createExpression(project, operation.getName());
 
-                    PsiElement operationElement = operation.getElement();
-                    PsiElement list = PsiTreeUtil.getNonStrictParentOfType(operationElement, Perl6StatementList.class);
-                    boolean needsToBeReplaced = !(operationElement.getParent() instanceof Perl6StatementList || operationElement.getParent().getParent() instanceof Perl6StatementList);
-                    operation.setOccurrencesReplaceable(needsToBeReplaced);
+                PsiElement operationElement = operation.getElement();
+                PsiElement list = PsiTreeUtil.getNonStrictParentOfType(operationElement, Perl6StatementList.class);
+                boolean needsToBeReplaced = !(operationElement.getParent() instanceof Perl6StatementList ||
+                                              operationElement.getParent().getParent() instanceof Perl6StatementList);
+                operation.setOccurrencesReplaceable(needsToBeReplaced);
 
-                    if (needsToBeReplaced) {
-                        if (operation.isReplaceAll()) {
-                            List<PsiElement> newOccurrences = new ArrayList<>();
-                            for (PsiElement occurrence : operation.getOccurrences()) {
-                                PsiElement replaced = replaceExpression(occurrence, newExpression);
-                                if (replaced != null)
-                                    newOccurrences.add(replaced);
-                            }
-                            operation.setOccurrences(newOccurrences);
+                if (needsToBeReplaced) {
+                    if (operation.isReplaceAll()) {
+                        List<PsiElement> newOccurrences = new ArrayList<>();
+                        for (PsiElement occurrence : operation.getOccurrences()) {
+                            PsiElement replaced = replaceExpression(occurrence, newExpression);
+                            if (replaced != null)
+                                newOccurrences.add(replaced);
                         }
-                        else {
-                            PsiElement replaced = replaceExpression(expression, newExpression);
-                            operation.setOccurrences(Collections.singletonList(replaced));
-                        }
+                        operation.setOccurrences(newOccurrences);
                     }
-                    postRefactoring(list, operation);
-                } finally {
-                    final RefactoringEventData afterData = new RefactoringEventData();
-                    afterData.addElement(declaration);
-                    project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
-                           .refactoringDone(getRefactoringId(), afterData);
+                    else {
+                        PsiElement replaced = replaceExpression(expression, newExpression);
+                        operation.setOccurrences(Collections.singletonList(replaced));
+                    }
                 }
-            return addDeclaration(operation, declaration);
+                postRefactoring(list, operation);
+            } finally {
+                final RefactoringEventData afterData = new RefactoringEventData();
+                afterData.addElement(declaration);
+                project.getMessageBus().syncPublisher(RefactoringEventListener.REFACTORING_EVENT_TOPIC)
+                    .refactoringDone(getRefactoringId(), afterData);
+            }
+            return anchor.getParent().addBefore(declaration, anchor);
         });
     }
 
@@ -329,22 +333,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         return Perl6ElementFactory.createVariable(project, name);
     }
 
-    private static PsiElement addDeclaration(IntroduceOperation operation, PsiElement declaration) {
-        PsiElement expression = operation.getInitializer();
-        return addDeclaration(expression, declaration, operation.getOccurrences(), operation.isReplaceAll());
-    }
-
     protected abstract String getRefactoringId();
-
-    protected static PsiElement addDeclaration(PsiElement expression,
-                                               PsiElement declaration,
-                                               List<PsiElement> occurrences,
-                                               Boolean all) {
-        PsiElement anchor = all ? findAnchor(occurrences) : findTopmostStatementOfExpression(expression);
-        assert anchor != null;
-        PsiElement parent = anchor.getParent();
-        return parent.addBefore(declaration, anchor);
-    }
 
     @NotNull
     private static PsiElement findTopmostStatementOfExpression(PsiElement expression) {

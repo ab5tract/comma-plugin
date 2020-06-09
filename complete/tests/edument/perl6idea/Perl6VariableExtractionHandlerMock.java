@@ -8,6 +8,7 @@ import edument.perl6idea.refactoring.introduce.variable.Perl6IntroduceVariableHa
 
 public class Perl6VariableExtractionHandlerMock extends Perl6IntroduceVariableHandler {
     private final String myName;
+    public boolean replaceAll = true;
 
     public Perl6VariableExtractionHandlerMock(IntroduceValidator validator, String name) {
         super(validator, "Extract Mock");
@@ -17,7 +18,7 @@ public class Perl6VariableExtractionHandlerMock extends Perl6IntroduceVariableHa
     @Override
     protected void performActionOnElementOccurrences(IntroduceOperation operation) {
         operation.setName(myName);
-        operation.setReplaceAll(true);
+        operation.setReplaceAll(replaceAll);
         PsiElement declaration = performRefactoring(operation);
         removeLeftoverStatement(operation);
         Editor editor = operation.getEditor();
