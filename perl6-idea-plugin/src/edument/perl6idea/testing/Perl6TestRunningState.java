@@ -118,6 +118,11 @@ public class Perl6TestRunningState extends CommandLineState {
                 break;
             }
         }
+        if (!runConfiguration.getInterpreterParameters().isEmpty()) {
+            for (String arg : runConfiguration.getInterpreterParameters().split("\\s+")) {
+                cmd.addParameter("--args=" + arg);
+            }
+        }
         cmd.setWorkDirectory(project.getBasePath());
 
         cmd.withEnvironment("TEST_JOBS", String.valueOf(runConfiguration.getParallelismDegree()));

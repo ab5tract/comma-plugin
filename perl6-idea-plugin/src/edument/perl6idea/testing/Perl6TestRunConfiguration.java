@@ -36,6 +36,8 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
     private Map<String, String> myEnvs = new HashMap<>();
     private static final String PASS_PARENT_ENV = "PASS_PARENT_ENV";
     private boolean passParentEnvs;
+    private static final String INTERPRETER_PARAMETERS = "INTERPRETER_PARAMETERS";
+    private String interpreterParameters;
 
     public Perl6TestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory) {
         super(project, factory, "Raku test");
@@ -110,6 +112,8 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
         }
         Element isPassParentEnv = element.getChild(PASS_PARENT_ENV);
         passParentEnvs = isPassParentEnv == null ? true : Boolean.valueOf(isPassParentEnv.getText());
+        Element params = element.getChild(INTERPRETER_PARAMETERS);
+        interpreterParameters = params == null ? "-Ilib" : params.getText();
     }
 
     @Override
@@ -151,6 +155,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
         }
         element.addContent(envs);
         element.addContent(new Element(PASS_PARENT_ENV).setText(String.valueOf(passParentEnvs)));
+        element.addContent(new Element(INTERPRETER_PARAMETERS).setText(interpreterParameters));
     }
 
     public Integer getParallelismDegree() {
@@ -218,5 +223,13 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
 
     protected void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public String getInterpreterParameters() {
+        return interpreterParameters;
+    }
+
+    protected void setInterpreterParameters(String interpreterParameters) {
+        this.interpreterParameters = interpreterParameters;
     }
 }

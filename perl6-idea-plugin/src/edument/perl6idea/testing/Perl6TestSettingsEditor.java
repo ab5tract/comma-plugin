@@ -16,6 +16,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.util.Function;
 import edument.perl6idea.module.Perl6ModuleType;
 import org.jdesktop.swingx.prompt.PromptSupport;
@@ -37,18 +38,21 @@ import java.util.Objects;
 
 public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfiguration> {
     protected Project myProject;
+    protected JTextField myDegreeField;
+    protected RawCommandLineEditor myPerl6ParametersPanel;
+    protected EnvironmentVariablesComponent myEnvVariablesField;
+    // Specific controls
     protected JComboBox<RakUTestKind> myKindField;
     protected JComboBox<String> myModuleNameField;
     protected TextFieldWithBrowseButton myDirectoryPathField;
     protected JTextField myFilePatternField;
     protected TextFieldWithBrowseButton myFilePathField;
-    protected JTextField myDegreeField;
-    protected EnvironmentVariablesComponent myEnvVariablesField;
     private LabeledComponent<JComboBox<RakUTestKind>> myTestKind;
     private LabeledComponent<JComboBox<String>> myModuleName;
     private LabeledComponent<TextFieldWithBrowseButton> myDirectoryPath;
     private LabeledComponent<JTextField> myFilePattern;
     private LabeledComponent<TextFieldWithBrowseButton> myFilePath;
+
 
     public Perl6TestSettingsEditor(Project project) {
         myProject = project;
@@ -67,6 +71,7 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         myDegreeField.setText(String.valueOf(configuration.getParallelismDegree()));
         myEnvVariablesField.setEnvs(configuration.getEnvs());
         myEnvVariablesField.setPassParentEnvs(configuration.isPassParentEnvs());
+        myPerl6ParametersPanel.setText(configuration.getInterpreterParameters());
     }
 
     @Override
@@ -123,6 +128,7 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         }
         configuration.setEnvs(myEnvVariablesField.getEnvs());
         configuration.setPassParentEnvs(myEnvVariablesField.isPassParentEnvs());
+        configuration.setInterpreterParameters(myPerl6ParametersPanel.getText());
     }
 
     @NotNull
@@ -189,10 +195,13 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
             }
         };
         LabeledComponent<JTextField> degree = LabeledComponent.create(myDegreeField, "Tests run in parallel", BorderLayout.WEST);
+        myPerl6ParametersPanel = new RawCommandLineEditor();
+        LabeledComponent<RawCommandLineEditor> perl6Params = LabeledComponent.create(myPerl6ParametersPanel, "Compiler parameters:", BorderLayout.WEST);
         myEnvVariablesField = new EnvironmentVariablesComponent();
 
         setupSpecificComponents(panel);
         panel.add(degree);
+        panel.add(perl6Params);
         panel.add(myEnvVariablesField);
 
         return panel;
