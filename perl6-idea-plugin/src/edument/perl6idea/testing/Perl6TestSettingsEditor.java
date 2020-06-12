@@ -11,14 +11,13 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.ModuleListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.util.Function;
 import edument.perl6idea.module.Perl6ModuleType;
+import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.prompt.PromptSupport;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,12 +27,11 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
-import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfiguration> {
@@ -47,12 +45,11 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
     protected TextFieldWithBrowseButton myDirectoryPathField;
     protected JTextField myFilePatternField;
     protected TextFieldWithBrowseButton myFilePathField;
-    private LabeledComponent<JComboBox<RakUTestKind>> myTestKind;
-    private LabeledComponent<JComboBox<String>> myModuleName;
-    private LabeledComponent<TextFieldWithBrowseButton> myDirectoryPath;
-    private LabeledComponent<JTextField> myFilePattern;
-    private LabeledComponent<TextFieldWithBrowseButton> myFilePath;
-
+    private static final JLabel myTestKindLabel = new JLabel("Test kind");
+    private static final JLabel myModuleNameLabel = new JLabel("Module");
+    private static final JLabel myDirectoryPathLabel = new JLabel("Directory");
+    private static final JLabel myFilePatternLabel = new JLabel("Pattern");
+    private static final JLabel myFilePathLabel = new JLabel("File");
 
     public Perl6TestSettingsEditor(Project project) {
         myProject = project;
@@ -134,8 +131,7 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
     @NotNull
     @Override
     protected JComponent createEditor() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new VerticalFlowLayout(VerticalFlowLayout.TOP, 0, 5, true, false));
+        JPanel panel = new JPanel(new MigLayout("", "[][grow]", ""));
 
         // Create controls
         myKindField = new ComboBox<>(RakUTestKind.values());
@@ -194,38 +190,45 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
                 };
             }
         };
-        LabeledComponent<JTextField> degree = LabeledComponent.create(myDegreeField, "Tests run in parallel", BorderLayout.WEST);
         myPerl6ParametersPanel = new RawCommandLineEditor();
-        LabeledComponent<RawCommandLineEditor> perl6Params = LabeledComponent.create(myPerl6ParametersPanel, "Compiler parameters:", BorderLayout.WEST);
         myEnvVariablesField = new EnvironmentVariablesComponent();
 
         setupSpecificComponents(panel);
-        panel.add(degree);
-        panel.add(perl6Params);
-        panel.add(myEnvVariablesField);
+        panel.add(new JLabel("Tests run in parallel"), "align label");
+        panel.add(myDegreeField, "wrap, growx");
+        panel.add(new JLabel("Raku parameters"), "align label");
+        panel.add(myPerl6ParametersPanel, "wrap, growx");
+        panel.add(new JLabel("Environment variables:"), "align label");
+        panel.add(myEnvVariablesField.getComponent(), "growx");
 
         return panel;
     }
 
     private void setupSpecificComponents(JPanel panel) {
-        myTestKind = LabeledComponent.create(myKindField, "Test kind", BorderLayout.WEST);
-        panel.add(myTestKind);
-        myModuleName = LabeledComponent.create(myModuleNameField, "Module", BorderLayout.WEST);
-        panel.add(myModuleName);
-        myDirectoryPath = LabeledComponent.create(myDirectoryPathField, "Directory", BorderLayout.WEST);
-        panel.add(myDirectoryPath);
-        myFilePattern = LabeledComponent.create(myFilePatternField, "Pattern", BorderLayout.WEST);
-        panel.add(myFilePattern);
-        myFilePath = LabeledComponent.create(myFilePathField, "File", BorderLayout.WEST);
-        panel.add(myFilePath);
+        panel.add(myTestKindLabel, "align label");
+        panel.add(myKindField, "wrap, growx");
+
+        panel.add(myModuleNameLabel, "align label, hidemode 3");
+        panel.add(myModuleNameField, "wrap, growx, hidemode 3");
+        panel.add(myDirectoryPathLabel, "align label, hidemode 3");
+        panel.add(myDirectoryPathField, "wrap, growx, hidemode 3");
+        panel.add(myFilePatternLabel, "align label, hidemode 3");
+        panel.add(myFilePatternField, "wrap, growx, hidemode 3");
+        panel.add(myFilePathLabel, "align label, hidemode 3");
+        panel.add(myFilePathField, "wrap, growx, hidemode 3");
+
         reloadSpecificItems();
     }
 
     private void reloadSpecificItems() {
-        myModuleName.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.MODULE));
-        myDirectoryPath.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.DIRECTORY));
-        myFilePattern.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.PATTERN));
-        myFilePath.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.FILE));
+        myModuleNameLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.MODULE));
+        myModuleNameField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.MODULE));
+        myDirectoryPathLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.DIRECTORY));
+        myDirectoryPathField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.DIRECTORY));
+        myFilePatternLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.PATTERN));
+        myFilePatternField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.PATTERN));
+        myFilePathLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.FILE));
+        myFilePathField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.FILE));
     }
 
     private static class RakuModuleModel implements ComboBoxModel<String> {
