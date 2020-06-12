@@ -18,7 +18,7 @@ import java.util.Map;
 abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<RunProfileState> implements Perl6DebuggableConfiguration {
     // Kind and kind-specific fields
     private static final String TEST_KIND = "TEST_KIND";
-    private RakUTestKind testKind;
+    private RakuTestKind testKind;
 
     private static final String MODULE = "MODULE";
     private String moduleName;
@@ -73,7 +73,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
 
         // Read kind
         Element kind = element.getChild(TEST_KIND);
-        testKind = kind == null ? RakUTestKind.ALL : (RakUTestKind.valueOf(kind.getText()));
+        testKind = kind == null ? RakuTestKind.ALL : (RakuTestKind.valueOf(kind.getText()));
 
         // Read specific options
         switch (testKind) {
@@ -122,7 +122,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
         element.addContent(new Element(TEST_KIND).setText(testKind.baseString()));
         // Write kind specific options
         if (testKind == null) {
-            testKind = RakUTestKind.ALL;
+            testKind = RakuTestKind.ALL;
         }
         switch (testKind) {
             case ALL:
@@ -185,11 +185,11 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
         this.passParentEnvs = passParentEnvs;
     }
 
-    protected RakUTestKind getTestKind() {
+    protected RakuTestKind getTestKind() {
         return testKind;
     }
 
-    protected void setTestKind(RakUTestKind testKind) {
+    protected void setTestKind(RakuTestKind testKind) {
         this.testKind = testKind;
     }
 

@@ -40,7 +40,7 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
     protected RawCommandLineEditor myPerl6ParametersPanel;
     protected EnvironmentVariablesComponent myEnvVariablesField;
     // Specific controls
-    protected JComboBox<RakUTestKind> myKindField;
+    protected JComboBox<RakuTestKind> myKindField;
     protected JComboBox<String> myModuleNameField;
     protected TextFieldWithBrowseButton myDirectoryPathField;
     protected JTextField myFilePatternField;
@@ -74,8 +74,8 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
     @Override
     protected void applyEditorTo(@NotNull Perl6TestRunConfiguration configuration) throws ConfigurationException {
         // Specific options
-        configuration.setTestKind((RakUTestKind)myKindField.getSelectedItem());
-        switch ((RakUTestKind)myKindField.getSelectedItem()) {
+        configuration.setTestKind((RakuTestKind)myKindField.getSelectedItem());
+        switch ((RakuTestKind)myKindField.getSelectedItem()) {
             case ALL:
                 break;
             case MODULE: {
@@ -134,7 +134,7 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         JPanel panel = new JPanel(new MigLayout("", "[][grow]", ""));
 
         // Create controls
-        myKindField = new ComboBox<>(RakUTestKind.values());
+        myKindField = new ComboBox<>(RakuTestKind.values());
         myKindField.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -221,14 +221,14 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
     }
 
     private void reloadSpecificItems() {
-        myModuleNameLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.MODULE));
-        myModuleNameField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.MODULE));
-        myDirectoryPathLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.DIRECTORY));
-        myDirectoryPathField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.DIRECTORY));
-        myFilePatternLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.PATTERN));
-        myFilePatternField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.PATTERN));
-        myFilePathLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.FILE));
-        myFilePathField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakUTestKind.FILE));
+        myModuleNameLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.MODULE));
+        myModuleNameField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.MODULE));
+        myDirectoryPathLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.DIRECTORY));
+        myDirectoryPathField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.DIRECTORY));
+        myFilePatternLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.PATTERN));
+        myFilePatternField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.PATTERN));
+        myFilePathLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.FILE));
+        myFilePathField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.FILE));
     }
 
     private static class RakuModuleModel implements ComboBoxModel<String> {
