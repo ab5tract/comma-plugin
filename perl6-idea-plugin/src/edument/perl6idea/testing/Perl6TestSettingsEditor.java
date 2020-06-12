@@ -18,6 +18,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Function;
 import edument.perl6idea.module.Perl6ModuleType;
+import org.jdesktop.swingx.prompt.PromptSupport;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -150,6 +151,7 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
             ));
 
         myFilePatternField = new JTextField();
+        PromptSupport.setPrompt("unit-*;integration-*-32bit", myFilePatternField);
 
         myFilePathField = new TextFieldWithBrowseButton();
         myFilePathField.addBrowseFolderListener(
@@ -203,7 +205,7 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         panel.add(myModuleName);
         myDirectoryPath = LabeledComponent.create(myDirectoryPathField, "Directory", BorderLayout.WEST);
         panel.add(myDirectoryPath);
-        myFilePattern = LabeledComponent.create(myFilePatternField, "Glob pattern", BorderLayout.WEST);
+        myFilePattern = LabeledComponent.create(myFilePatternField, "Pattern", BorderLayout.WEST);
         panel.add(myFilePattern);
         myFilePath = LabeledComponent.create(myFilePathField, "File", BorderLayout.WEST);
         panel.add(myFilePath);
