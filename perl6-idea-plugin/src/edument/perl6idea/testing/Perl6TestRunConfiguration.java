@@ -115,7 +115,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
     @Override
     public void writeExternal(@NotNull Element element) throws WriteExternalException {
         // Write kind
-        element.addContent(new Element(TEST_KIND).setText(String.valueOf(testKind)));
+        element.addContent(new Element(TEST_KIND).setText(testKind.baseString()));
         // Write kind specific options
         if (testKind == null) {
             testKind = RakUTestKind.ALL;
@@ -128,7 +128,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
                 break;
             }
             case DIRECTORY: {
-                element.addContent(new Element(DIRECTORY_PATH).setText(directoryPath.toString()));
+                element.addContent(new Element(DIRECTORY_PATH).setText(directoryPath));
                 break;
             }
             case PATTERN: {
@@ -136,7 +136,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
                 break;
             }
             case FILE: {
-                element.addContent(new Element(FILE).setText(filePath.toString()));
+                element.addContent(new Element(FILE).setText(filePath));
                 break;
             }
         }
