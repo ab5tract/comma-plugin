@@ -35,7 +35,7 @@ sub compile-pattern($pattern-line) {
 sub populate-test-files(@test-files, @paths, :$pattern) {
     for @paths -> $path {
         if $path.IO.d {
-            populate-test-files-by-dir(@test-files, $path, patterns => compile-pattern($pattern));
+            populate-test-files-by-dir(@test-files, $path, patterns => $pattern ?? compile-pattern($pattern) !! ());
         } else {
             @test-files.push($path);
         }
