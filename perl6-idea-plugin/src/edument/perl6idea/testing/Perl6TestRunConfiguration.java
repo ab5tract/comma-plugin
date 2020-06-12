@@ -1,9 +1,6 @@
 package edument.perl6idea.testing;
 
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunConfigurationBase;
-import com.intellij.execution.configurations.RunProfileState;
+import com.intellij.execution.configurations.*;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
@@ -11,11 +8,13 @@ import com.intellij.openapi.util.WriteExternalException;
 import edument.perl6idea.run.Perl6DebuggableConfiguration;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<RunProfileState> implements Perl6DebuggableConfiguration {
+abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<RunProfileState> implements Perl6DebuggableConfiguration, LocatableConfiguration {
     // Kind and kind-specific fields
     private static final String TEST_KIND = "TEST_KIND";
     private RakuTestKind testKind;
@@ -31,13 +30,13 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
 
     // Generic fields
     private static final String PARALELLISM_DEGREE = "PARALELLISM_DEGREE";
-    private Integer parallelismDegree;
+    private Integer parallelismDegree = 1;
     private static final String ENVS = "ENVS";
     private Map<String, String> myEnvs = new HashMap<>();
     private static final String PASS_PARENT_ENV = "PASS_PARENT_ENV";
-    private boolean passParentEnvs;
+    private boolean passParentEnvs = false;
     private static final String INTERPRETER_PARAMETERS = "INTERPRETER_PARAMETERS";
-    private String interpreterParameters;
+    private String interpreterParameters = "";
 
     public Perl6TestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory) {
         super(project, factory, "Raku test");
@@ -118,12 +117,12 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
 
     @Override
     public void writeExternal(@NotNull Element element) throws WriteExternalException {
-        // Write kind
-        element.addContent(new Element(TEST_KIND).setText(testKind.baseString()));
-        // Write kind specific options
         if (testKind == null) {
             testKind = RakuTestKind.ALL;
         }
+        // Write kind
+        element.addContent(new Element(TEST_KIND).setText(testKind.baseString()));
+        // Write kind specific options
         switch (testKind) {
             case ALL:
                 break;
@@ -231,5 +230,22 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
 
     protected void setInterpreterParameters(String interpreterParameters) {
         this.interpreterParameters = interpreterParameters;
+    }
+
+    @Override
+    public @Nullable String suggestedName() {
+        switch (getTestKind()) {
+            case ALL: return "Test project";
+            case MODULE: return "Test module " + getModuleName();
+            case DIRECTORY: return "Test directory " + Paths.get(getDirectoryPath()).getFileName();
+            case PATTERN: return "Test '" + getFilePattern() + "'";
+            case FILE: return "Test " + Paths.get(getFilePath()).getFileName();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isGeneratedName() {
+        return suggestedName() != null && suggestedName().equals(getName());
     }
 }

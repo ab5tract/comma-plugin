@@ -28,7 +28,7 @@ public class Perl6CommunityTestConfigurationType extends ConfigurationTypeBase i
             @NotNull
             @Override
             public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
-                return new Perl6CommunityTestRunConfiguration(project, this, "Test project");
+                return new Perl6CommunityTestRunConfiguration(project, this);
             }
         });
     }
@@ -39,8 +39,8 @@ public class Perl6CommunityTestConfigurationType extends ConfigurationTypeBase i
     }
 
     private static class Perl6CommunityTestRunConfiguration extends Perl6TestRunConfiguration {
-        Perl6CommunityTestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
-            super(project, factory, name);
+        Perl6CommunityTestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory) {
+            super(project, factory);
         }
 
         @Nullable

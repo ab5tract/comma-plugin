@@ -2,10 +2,7 @@ package edument.perl6idea.testing;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.ConfigurationTypeBase;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunProfileState;
+import com.intellij.execution.configurations.*;
 import com.intellij.execution.executors.DefaultDebugExecutor;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.DumbAware;
@@ -19,32 +16,25 @@ import java.util.Objects;
 
 public class Perl6CompleteTestConfigurationType extends ConfigurationTypeBase implements DumbAware {
     private static final String PERL6_TEST_CONFIGURATION_ID = "PERL6_TEST_CONFIGURATION";
+    private final ConfigurationFactory myFactory = new Perl6ConfigurationFactory(this);
 
     protected Perl6CompleteTestConfigurationType() {
         super(PERL6_TEST_CONFIGURATION_ID, "Raku test",
               "Run Raku tests", Perl6Icons.CAMELIA);
-        addFactory(new ConfigurationFactory(this) {
-            @Override
-            public @NotNull String getId() {
-                return PERL6_TEST_CONFIGURATION_ID + "_FACTORY";
-            }
-
-            @NotNull
-            @Override
-            public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
-                return new Perl6CompleteTestRunConfiguration(project, this, "Test project");
-            }
-        });
+        addFactory(new Perl6ConfigurationFactory(this));
     }
 
-    @NotNull
+    ConfigurationFactory getFactory() {
+        return myFactory;
+    }
+
     public static Perl6CompleteTestConfigurationType getInstance() {
-        return CONFIGURATION_TYPE_EP.findExtension(Perl6CompleteTestConfigurationType.class);
+        return ConfigurationTypeUtil.findConfigurationType(Perl6CompleteTestConfigurationType.class);
     }
 
-    private static class Perl6CompleteTestRunConfiguration extends Perl6TestRunConfiguration {
-        Perl6CompleteTestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
-            super(project, factory, name);
+    public static class Perl6CompleteTestRunConfiguration extends Perl6TestRunConfiguration {
+        Perl6CompleteTestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory) {
+            super(project, factory);
         }
 
         @Nullable
@@ -54,6 +44,23 @@ public class Perl6CompleteTestConfigurationType extends ConfigurationTypeBase im
                 return new Perl6CoverageTestRunningState(environment);
             }
             return new Perl6TestRunningState(environment, executor instanceof DefaultDebugExecutor);
+        }
+    }
+
+    public static class Perl6ConfigurationFactory extends ConfigurationFactory {
+        protected Perl6ConfigurationFactory(ConfigurationType configurationType) {
+            super(configurationType);
+        }
+
+        @Override
+        @NotNull
+        public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
+            return new Perl6CompleteTestRunConfiguration(project, this);
+        }
+
+        @Override
+        public @NotNull String getId() {
+            return PERL6_TEST_CONFIGURATION_ID + "_FACTORY";
         }
     }
 }
