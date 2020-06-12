@@ -45,11 +45,11 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
     protected TextFieldWithBrowseButton myDirectoryPathField;
     protected JTextField myFilePatternField;
     protected TextFieldWithBrowseButton myFilePathField;
-    private static final JLabel myTestKindLabel = new JLabel("Test kind");
-    private static final JLabel myModuleNameLabel = new JLabel("Module");
-    private static final JLabel myDirectoryPathLabel = new JLabel("Directory");
-    private static final JLabel myFilePatternLabel = new JLabel("Pattern");
-    private static final JLabel myFilePathLabel = new JLabel("File");
+    private final JLabel myTestKindLabel = new JLabel("Test kind");
+    private final JLabel myModuleNameLabel = new JLabel("Module");
+    private final JLabel myDirectoryPathLabel = new JLabel("Directory");
+    private final JLabel myFilePatternLabel = new JLabel("Pattern");
+    private final JLabel myFilePathLabel = new JLabel("File");
 
     public Perl6TestSettingsEditor(Project project) {
         myProject = project;
