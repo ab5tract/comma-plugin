@@ -22,6 +22,12 @@ public class SnapshotData {
         topScores = null;
     }
 
+    /**
+     * Will read all available datablocks into fields of the object, but an
+     * exception inside a datablock will result in a null in the field rather
+     * than an exception.
+     * @throws IOException if reading data from the file fails spectacularly
+     */
     public void ensureData() throws IOException {
         for (TocEntry e : dataLocations) {
             sourceFile.seek(e.position);

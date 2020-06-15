@@ -1,6 +1,7 @@
 package edument.perl6idea.heapsnapshot;
 
 import com.github.luben.zstd.ZstdDirectBufferDecompressingStream;
+import com.intellij.openapi.diagnostic.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +14,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class HeapSnapshotCollection {
+public class HeapSnapshotCollection {
+    static Logger LOG = Logger.getInstance(HeapSnapshotCollection.class);
+
     /**
      * A reference to the file this data was made from.
      *
@@ -134,9 +137,7 @@ class HeapSnapshotCollection {
                     try {
                         highscoreStructure.dataOrder.add(index, dataOrder.getString(index));
                     } catch (JSONException jsonException) {
-                        // TODO logger
-                        System.err.println("Metadata contained something that is not a string at index " + index);
-                        jsonException.printStackTrace();
+                        LOG.error("Metadata contained something that is not a string at index " + index, jsonException);
                     }
                 }
 
@@ -223,8 +224,7 @@ class HeapSnapshotCollection {
                             dataPieces.add(innerToc);
                             break;
                         default:
-                            // TODO use logger
-                            System.err.println("Unrecognized inner kind: " + kind);
+                            LOG.error("Unrecognized inner kind: " + kind);
                     }
                 }
             }
@@ -252,6 +252,9 @@ class HeapSnapshotCollection {
         return b.getShort();
     }
 
+    /** Read a compressed datablock that has its start and end given by the toc from the file f
+     * @returns null if decompression fails, otherwise a low-level array of integer, long, short, or byte.
+     */
     static Object readCompressedDatablock(RandomAccessFile f, TocEntry toc) throws IOException {
         short sizePerEntry = readShort(f);
         /* Blocks start with their size, but since that requires seeking backwards after writing,
@@ -296,9 +299,7 @@ class HeapSnapshotCollection {
             try {
                 decompressStream.read(resultBuffer);
             } catch (IOException e) {
-                // TODO logger
-                System.out.println(toc.kind);
-                e.printStackTrace();
+                LOG.error("IOException while trying to read a " + toc.kind, e);
                 return null;
             }
             resultBuffer.flip();
@@ -410,9 +411,8 @@ class HeapSnapshotCollection {
                 decompressStream.read(resultBuffer);
             } catch (IOException e) {
                 // TODO logger or throw exception further upwards
-                /*System.out.println(toc.kind);
-                e.printStackTrace();*/
-                return;
+                LOG.error("IOException while trying to read string heap data", e);
+                throw e;
             }
             resultBuffer.flip();
 
