@@ -12,9 +12,9 @@ import java.util.Arrays;
  * by a starting position and end position relative to the file's start.
  */
 public class TocEntry {
-    public String kind;
-    public Long position;
-    public Long end;
+    public final String kind;
+    public final Long position;
+    public final Long end;
 
     public Integer length() {
         return Math.toIntExact(end - position);

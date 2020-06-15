@@ -15,14 +15,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class HeapSnapshotCollection {
-    static Logger LOG = Logger.getInstance(HeapSnapshotCollection.class);
+    static final Logger LOG = Logger.getInstance(HeapSnapshotCollection.class);
 
     /**
      * A reference to the file this data was made from.
      *
      * Necessary because data is read lazily.
      */
-    RandomAccessFile inputFile;
+    final RandomAccessFile inputFile;
 
     /**
      * The outermost TOC of the file points at one TOC for each snapshot. They go here.
@@ -269,83 +269,92 @@ public class HeapSnapshotCollection {
         inputBuffer.put(wholeBlock);
         inputBuffer.flip();
 
-        ZstdDirectBufferDecompressingStream decompressStream = new ZstdDirectBufferDecompressingStream(inputBuffer);
-
-        ByteBuffer resultBuffer = ByteBuffer.allocateDirect((wholeBlock.length >> 3) << 4);
-        resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
-
         Buffer castedBuffer;
         Object finalResult;
-        /* we make a very rough estimation that the result will be around
-        * 2x as big as the input. It's often better than that, haven't done any
-        * measurement of this yet. */
-        if (sizePerEntry == 8) {
-            castedBuffer = resultBuffer.asLongBuffer();
-            finalResult = new long[(wholeBlock.length >> 3) << 4];
-        } else if (sizePerEntry == 4) {
-            castedBuffer = resultBuffer.asIntBuffer();
-            finalResult = new int[(wholeBlock.length >> 2) << 3];
-        } else if (sizePerEntry == 2) {
-            castedBuffer = resultBuffer.asShortBuffer();
-            finalResult = new short[(wholeBlock.length >> 1) << 2];
-        } else {
-            castedBuffer = resultBuffer.asReadOnlyBuffer();
-            finalResult = new byte[(wholeBlock.length >> 1) << 2];
-        }
+        int pos;
+        try (ZstdDirectBufferDecompressingStream decompressStream = new ZstdDirectBufferDecompressingStream(inputBuffer)) {
 
-        int pos = 0;
+            ByteBuffer resultBuffer = ByteBuffer.allocateDirect((wholeBlock.length >> 3) << 4);
+            resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        while (decompressStream.hasRemaining()) {
-            try {
-                decompressStream.read(resultBuffer);
-            } catch (IOException e) {
-                LOG.error("IOException while trying to read a " + toc.kind, e);
-                return null;
+            /* we make a very rough estimation that the result will be around
+             * 2x as big as the input. It's often better than that, haven't done any
+             * measurement of this yet. */
+            if (sizePerEntry == 8) {
+                castedBuffer = resultBuffer.asLongBuffer();
+                finalResult = new long[(wholeBlock.length >> 3) << 4];
             }
-            resultBuffer.flip();
-            castedBuffer.rewind();
-            castedBuffer.limit(resultBuffer.limit() / sizePerEntry);
-
-            final int amountToTake = castedBuffer.limit() - castedBuffer.position();
-
-            if (castedBuffer instanceof LongBuffer) {
-                long[] castedFinalResult = (long[]) finalResult;
-                if (pos + amountToTake > castedFinalResult.length) {
-                    long[] orig = castedFinalResult;
-                    castedFinalResult = new long[Math.max(castedFinalResult.length * 2, castedFinalResult.length + amountToTake)];
-                    System.arraycopy(orig, 0, castedFinalResult, 0, orig.length);
-                    finalResult = castedFinalResult;
-                }
-                ((LongBuffer) castedBuffer).get(castedFinalResult, pos, amountToTake);
-            } else if (castedBuffer instanceof IntBuffer) {
-                int[] castedFinalResult = (int[]) finalResult;
-                if (pos + amountToTake > castedFinalResult.length) {
-                    int[] orig = castedFinalResult;
-                    castedFinalResult = new int[Math.max(castedFinalResult.length * 2, castedFinalResult.length + amountToTake)];
-                    System.arraycopy(orig, 0, castedFinalResult, 0, orig.length);
-                    finalResult = castedFinalResult;
-                }
-                ((IntBuffer) castedBuffer).get(castedFinalResult, pos, amountToTake);
-            } else if (castedBuffer instanceof ShortBuffer) {
-                short[] castedFinalResult = (short[]) finalResult;
-                if (pos + amountToTake > castedFinalResult.length) {
-                    short[] orig = castedFinalResult;
-                    castedFinalResult = new short[Math.max(castedFinalResult.length * 2, castedFinalResult.length + amountToTake)];
-                    System.arraycopy(orig, 0, castedFinalResult, 0, orig.length);
-                    finalResult = castedFinalResult;
-                }
-                ((ShortBuffer) castedBuffer).get(castedFinalResult, pos, amountToTake);
-            } else {
-                byte[] castedFinalResult = (byte[]) finalResult;
-                if (pos + amountToTake > castedFinalResult.length) {
-                    byte[] orig = castedFinalResult;
-                    castedFinalResult = new byte[Math.max(castedFinalResult.length * 2, castedFinalResult.length + amountToTake)];
-                    System.arraycopy(orig, 0, castedFinalResult, 0, orig.length);
-                    finalResult = castedFinalResult;
-                }
-                ((ByteBuffer) castedBuffer).get(castedFinalResult, pos, amountToTake);
+            else if (sizePerEntry == 4) {
+                castedBuffer = resultBuffer.asIntBuffer();
+                finalResult = new int[(wholeBlock.length >> 2) << 3];
             }
-            pos += amountToTake;
+            else if (sizePerEntry == 2) {
+                castedBuffer = resultBuffer.asShortBuffer();
+                finalResult = new short[(wholeBlock.length >> 1) << 2];
+            }
+            else {
+                castedBuffer = resultBuffer.asReadOnlyBuffer();
+                finalResult = new byte[(wholeBlock.length >> 1) << 2];
+            }
+
+            pos = 0;
+
+            while (decompressStream.hasRemaining()) {
+                try {
+                    decompressStream.read(resultBuffer);
+                }
+                catch (IOException e) {
+                    LOG.error("IOException while trying to read a " + toc.kind, e);
+                    return null;
+                }
+                resultBuffer.flip();
+                castedBuffer.rewind();
+                castedBuffer.limit(resultBuffer.limit() / sizePerEntry);
+
+                final int amountToTake = castedBuffer.limit() - castedBuffer.position();
+
+                if (castedBuffer instanceof LongBuffer) {
+                    long[] castedFinalResult = (long[])finalResult;
+                    if (pos + amountToTake > castedFinalResult.length) {
+                        long[] orig = castedFinalResult;
+                        castedFinalResult = new long[Math.max(castedFinalResult.length * 2, castedFinalResult.length + amountToTake)];
+                        System.arraycopy(orig, 0, castedFinalResult, 0, orig.length);
+                        finalResult = castedFinalResult;
+                    }
+                    ((LongBuffer)castedBuffer).get(castedFinalResult, pos, amountToTake);
+                }
+                else if (castedBuffer instanceof IntBuffer) {
+                    int[] castedFinalResult = (int[])finalResult;
+                    if (pos + amountToTake > castedFinalResult.length) {
+                        int[] orig = castedFinalResult;
+                        castedFinalResult = new int[Math.max(castedFinalResult.length * 2, castedFinalResult.length + amountToTake)];
+                        System.arraycopy(orig, 0, castedFinalResult, 0, orig.length);
+                        finalResult = castedFinalResult;
+                    }
+                    ((IntBuffer)castedBuffer).get(castedFinalResult, pos, amountToTake);
+                }
+                else if (castedBuffer instanceof ShortBuffer) {
+                    short[] castedFinalResult = (short[])finalResult;
+                    if (pos + amountToTake > castedFinalResult.length) {
+                        short[] orig = castedFinalResult;
+                        castedFinalResult = new short[Math.max(castedFinalResult.length * 2, castedFinalResult.length + amountToTake)];
+                        System.arraycopy(orig, 0, castedFinalResult, 0, orig.length);
+                        finalResult = castedFinalResult;
+                    }
+                    ((ShortBuffer)castedBuffer).get(castedFinalResult, pos, amountToTake);
+                }
+                else {
+                    byte[] castedFinalResult = (byte[])finalResult;
+                    if (pos + amountToTake > castedFinalResult.length) {
+                        byte[] orig = castedFinalResult;
+                        castedFinalResult = new byte[Math.max(castedFinalResult.length * 2, castedFinalResult.length + amountToTake)];
+                        System.arraycopy(orig, 0, castedFinalResult, 0, orig.length);
+                        finalResult = castedFinalResult;
+                    }
+                    ((ByteBuffer)castedBuffer).get(castedFinalResult, pos, amountToTake);
+                }
+                pos += amountToTake;
+            }
         }
 
         /* Finally, create an exactly fitting buffer. Perhaps skip trimming if it'd only save
@@ -395,37 +404,42 @@ public class HeapSnapshotCollection {
         inputBuffer.put(wholeBlock);
         inputBuffer.flip();
 
-        ZstdDirectBufferDecompressingStream decompressStream = new ZstdDirectBufferDecompressingStream(inputBuffer);
+        byte[] finalResult;
+        int pos;
+        try (ZstdDirectBufferDecompressingStream decompressStream = new ZstdDirectBufferDecompressingStream(inputBuffer)) {
 
-        ByteBuffer resultBuffer = ByteBuffer.allocateDirect(Math.max(ZstdDirectBufferDecompressingStream.recommendedTargetBufferSize(), (wholeBlock.length >> 3) << 4));
-        resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuffer resultBuffer = ByteBuffer
+              .allocateDirect(Math.max(ZstdDirectBufferDecompressingStream.recommendedTargetBufferSize(), (wholeBlock.length >> 3) << 4));
+            resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        byte[] finalResult = new byte[(wholeBlock.length >> 1) << 2];
+            finalResult = new byte[(wholeBlock.length >> 1) << 2];
 
-        int pos = 0;
+            pos = 0;
 
-        /* Read the entire compressed block at once */
+            /* Read the entire compressed block at once */
 
-        while (decompressStream.hasRemaining()) {
-            try {
-                decompressStream.read(resultBuffer);
-            } catch (IOException e) {
-                // TODO logger or throw exception further upwards
-                LOG.error("IOException while trying to read string heap data", e);
-                throw e;
+            while (decompressStream.hasRemaining()) {
+                try {
+                    decompressStream.read(resultBuffer);
+                }
+                catch (IOException e) {
+                    // TODO logger or throw exception further upwards
+                    LOG.error("IOException while trying to read string heap data", e);
+                    throw e;
+                }
+                resultBuffer.flip();
+
+                final int amountToTake = resultBuffer.limit() - resultBuffer.position();
+
+                if (pos + amountToTake > finalResult.length) {
+                    byte[] orig = finalResult;
+                    finalResult = new byte[Math.max(finalResult.length * 2, finalResult.length + amountToTake)];
+                    System.arraycopy(orig, 0, finalResult, 0, orig.length);
+                }
+                resultBuffer.get(finalResult, pos, amountToTake);
+
+                pos += amountToTake;
             }
-            resultBuffer.flip();
-
-            final int amountToTake = resultBuffer.limit() - resultBuffer.position();
-
-            if (pos + amountToTake > finalResult.length) {
-                byte[] orig = finalResult;
-                finalResult = new byte[Math.max(finalResult.length * 2, finalResult.length + amountToTake)];
-                System.arraycopy(orig, 0, finalResult, 0, orig.length);
-            }
-            resultBuffer.get(finalResult, pos, amountToTake);
-
-            pos += amountToTake;
         }
 
         /* Split apart strings; they are stored as a length prefix and then raw utf8 data */
