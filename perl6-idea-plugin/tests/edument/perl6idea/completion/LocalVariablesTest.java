@@ -103,6 +103,10 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
         doNegativeTest("'foo' ~~ /$<a>=(<foo> <bar>)/; $<caret>", "$<foo>", "$<bar>");
     }
 
+    public void testIntegration() {
+        doTest("'a' ~~ $foo.<caret>");
+    }
+
     private void doTest(String text, String... elems) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         myFixture.complete(CompletionType.BASIC, 1);

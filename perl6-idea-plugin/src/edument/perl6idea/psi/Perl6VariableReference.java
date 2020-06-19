@@ -57,6 +57,9 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                         return psi;
                 }
             } else {
+                Perl6InfixApplication infix = PsiTreeUtil.getParentOfType(var, Perl6InfixApplication.class);
+                if (infix != null && infix.getOperator().equals("~~"))
+                    return null;
                 Collection<PsiNamedElement> regexDrivenVars = obtainRegexDrivenVars(var);
                 if (regexDrivenVars == null)
                     return null;
