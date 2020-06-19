@@ -36,6 +36,7 @@ public class Perl6CompleteTestRunConfigurationProducer extends LazyRunConfigurat
             final VirtualFile virtualFile = file.getVirtualFile();
             if (virtualFile == null) return false;
             if (virtualFile instanceof LightVirtualFile) return false;
+            if (!Arrays.asList("t", "t6", "rakutest").contains(virtualFile.getExtension())) return false;
             configuration.setTestKind(RakuTestKind.FILE);
             configuration.setFilePath(virtualFile.getPath());
         }
