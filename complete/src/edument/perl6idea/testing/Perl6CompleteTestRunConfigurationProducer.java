@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Perl6TestRunConfigurationProducer extends LazyRunConfigurationProducer<Perl6TestRunConfiguration> {
+public class Perl6CompleteTestRunConfigurationProducer extends LazyRunConfigurationProducer<Perl6TestRunConfiguration> {
     @NotNull
     @Override
     public ConfigurationFactory getConfigurationFactory() {

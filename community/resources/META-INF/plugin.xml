@@ -97,6 +97,7 @@ named capture.</li>
 
   <extensions defaultExtensionNs="com.intellij">
     <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
+    <runConfigurationProducer implementation="edument.perl6idea.testing.Perl6CommunityTestRunConfigurationProducer"/>
     <configurationType implementation="edument.perl6idea.run.Perl6CommunityRunConfigurationType"/>
     <configurationType implementation="edument.perl6idea.testing.Perl6CommunityTestConfigurationType"/>
     <configurationType implementation="edument.perl6idea.cro.run.Perl6CommunityCroRunConfigurationType"/>

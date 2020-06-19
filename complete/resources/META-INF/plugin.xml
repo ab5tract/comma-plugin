@@ -65,8 +65,7 @@
     <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
     <configurationType implementation="edument.perl6idea.run.Perl6CompleteRunConfigurationType"/>
     <configurationType implementation="edument.perl6idea.testing.Perl6CompleteTestConfigurationType"/>
-    <runConfigurationProducer implementation="edument.perl6idea.testing.Perl6TestRunConfigurationProducer"/>
-    <runLineMarkerContributor language="Perl6" implementationClass="edument.perl6idea.testing.Perl6TestLineMarkerContributor" />
+    <runConfigurationProducer implementation="edument.perl6idea.testing.Perl6CompleteTestRunConfigurationProducer"/>
     <configurationType implementation="edument.perl6idea.cro.run.Perl6CompleteCroRunConfigurationType"/>
     <programRunner implementation="edument.perl6idea.coverage.Perl6CoverageRunner"/>
     <projectViewNodeDecorator implementation="edument.perl6idea.coverage.Perl6ProjectViewCoverageDecorator"/>

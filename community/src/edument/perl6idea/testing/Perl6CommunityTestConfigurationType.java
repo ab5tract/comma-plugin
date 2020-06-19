@@ -1,10 +1,7 @@
 package edument.perl6idea.testing;
 
 import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.ConfigurationTypeBase;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunProfileState;
+import com.intellij.execution.configurations.*;
 import com.intellij.execution.executors.DefaultDebugExecutor;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.DumbAware;
@@ -15,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class Perl6CommunityTestConfigurationType extends ConfigurationTypeBase implements DumbAware {
     private static final String PERL6_TEST_CONFIGURATION_ID = "PERL6_TEST_CONFIGURATION";
+    private final ConfigurationFactory myFactory = new Perl6ConfigurationFactory(this);
 
     protected Perl6CommunityTestConfigurationType() {
         super(PERL6_TEST_CONFIGURATION_ID, "Raku test",
@@ -33,12 +31,16 @@ public class Perl6CommunityTestConfigurationType extends ConfigurationTypeBase i
         });
     }
 
-    @NotNull
-    public static Perl6CommunityTestConfigurationType getInstance() {
-        return CONFIGURATION_TYPE_EP.findExtension(Perl6CommunityTestConfigurationType.class);
+    ConfigurationFactory getFactory() {
+        return myFactory;
     }
 
-    private static class Perl6CommunityTestRunConfiguration extends Perl6TestRunConfiguration {
+    @NotNull
+    public static Perl6CommunityTestConfigurationType getInstance() {
+        return ConfigurationTypeUtil.findConfigurationType(Perl6CommunityTestConfigurationType.class);
+    }
+
+    public static class Perl6CommunityTestRunConfiguration extends Perl6TestRunConfiguration {
         Perl6CommunityTestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory) {
             super(project, factory);
         }
@@ -47,6 +49,23 @@ public class Perl6CommunityTestConfigurationType extends ConfigurationTypeBase i
         @Override
         public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
             return new Perl6TestRunningState(environment, executor instanceof DefaultDebugExecutor);
+        }
+    }
+
+    public static class Perl6ConfigurationFactory extends ConfigurationFactory {
+        protected Perl6ConfigurationFactory(ConfigurationType configurationType) {
+            super(configurationType);
+        }
+
+        @Override
+        @NotNull
+        public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
+            return new Perl6CommunityTestRunConfiguration(project, this);
+        }
+
+        @Override
+        public @NotNull String getId() {
+            return PERL6_TEST_CONFIGURATION_ID + "_FACTORY";
         }
     }
 }
