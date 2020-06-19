@@ -4,7 +4,7 @@ plan *;
 
 constant $HARNESS-SCRIPT = '../../resources/testing/perl6-test-harness.p6';
 
-my $proc = run $*EXECUTABLE, $HARNESS-SCRIPT, :out;
+my $proc = run $*EXECUTABLE, $HARNESS-SCRIPT, '--paths=.', '--args=-Ilib', :out;
 my $output = $proc.out.slurp(:close);
 like $output, / 'ok 1 - a' /;
 like $output, / 'ok 1 - b' /;
