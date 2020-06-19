@@ -185,7 +185,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
     }
 
     protected RakuTestKind getTestKind() {
-        return testKind;
+        return testKind == null ? RakuTestKind.ALL : testKind;
     }
 
     protected void setTestKind(RakuTestKind testKind) {
