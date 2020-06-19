@@ -60,7 +60,7 @@ public class Perl6CompleteTestConfigurationType extends ConfigurationTypeBase im
 
         @Override
         public @NotNull String getId() {
-            return PERL6_TEST_CONFIGURATION_ID + "_FACTORY";
+            return "Raku test";
         }
     }
 }
