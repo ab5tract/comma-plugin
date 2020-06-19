@@ -5,11 +5,11 @@ constant TEST_HARNESS_PREFIX = 'TEST_HARNESS_PREFIX';
 sub populate-test-files-by-dir(@test-files, $start, :@patterns) {
     my @todo = $start.IO;
     while @todo {
-        for @todo.pop.dir(test => { so (not $_.Str eq '.'|'..') && ($_.IO.d || .IO.extension eq 't'|'t6'|'rakutest') }) {
+        for @todo.pop.dir(test => { so (not $_.Str eq '.' | '..') }) {
             if .IO.d {
                 @todo.push($_);
             }
-            else {
+            elsif .IO.extension eq 't' | 't6' | 'rakutest' {
                 if @patterns {
                     for @patterns -> $pattern {
                         @test-files.push($_) if $_ ~~ $pattern;
