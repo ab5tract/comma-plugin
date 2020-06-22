@@ -231,7 +231,11 @@ public class IntentionTest extends CommaFixtureTestCase {
     }
 
     public void testMakeMethodPublicIntentionIsForPrivateOnly() {
-        checkIntentionAbsence("Make");
+        checkIntentionAbsence("Make method public");
+    }
+
+    public void testMakeMethodPrivateIntention() {
+        executeIntention("Make method private");
     }
 
     public void testMakeMethodSubmethod() {

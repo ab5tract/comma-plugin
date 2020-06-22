@@ -250,10 +250,6 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
 
     @Override
     public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
-        PsiElement resolved = resolve();
-        Perl6MethodCall call = myElement;
-        if (resolved instanceof Perl6LongName && !call.getCallName().startsWith("!"))
-            throw new IncorrectOperationException("Rename for non-private methods is not yet supported");
-        return call.setName(newElementName);
+        return myElement.setName(newElementName);
     }
 }
