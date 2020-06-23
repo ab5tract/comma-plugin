@@ -319,6 +319,14 @@ public class IntentionTest extends CommaFixtureTestCase {
         executeIntention("Convert");
     }
 
+    public void testNoSplittingWithoutInitializer() {
+        checkIntentionAbsence("Split into");
+    }
+
+    public void testSplittingDeclaration() {
+        executeIntention("Split into");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }

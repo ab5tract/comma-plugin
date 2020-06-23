@@ -1,0 +1,4 @@
+sub answer {
+    my $foo;
+    $foo = 42;
+}
