@@ -2,8 +2,7 @@ package edument.perl6idea.testing;
 
 public enum RakuTestKind {
     ALL("All in project"), MODULE("All in module"),
-    DIRECTORY("All in directory"), PATTERN("Pattern"),
-    FILE("Test file");
+    DIRECTORY("All in directory"), FILE("Test file");
 
     private final String prettyString;
 
@@ -20,7 +19,6 @@ public enum RakuTestKind {
         switch (this) {
             case FILE: return "FILE";
             case DIRECTORY: return "DIRECTORY";
-            case PATTERN: return "PATTERN";
             case MODULE: return "MODULE";
             case ALL: return "ALL";
             default:

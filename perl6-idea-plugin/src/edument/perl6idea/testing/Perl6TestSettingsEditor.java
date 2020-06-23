@@ -48,7 +48,6 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
     private final JLabel myTestKindLabel = new JLabel("Test kind");
     private final JLabel myModuleNameLabel = new JLabel("Module");
     private final JLabel myDirectoryPathLabel = new JLabel("Directory");
-    private final JLabel myFilePatternLabel = new JLabel("Pattern");
     private final JLabel myFilePathLabel = new JLabel("File");
 
     public Perl6TestSettingsEditor(Project project) {
@@ -62,13 +61,13 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         String moduleNameFromConfig = configuration.getModuleName();
         myModuleNameField.setSelectedItem(moduleNameFromConfig);
         myDirectoryPathField.setText(configuration.getDirectoryPath());
-        myFilePatternField.setText(configuration.getFilePattern());
+        myFilePatternField.setText(configuration.getTestPattern());
         myFilePathField.setText(configuration.getFilePath());
         // Generic options
         myDegreeField.setText(String.valueOf(configuration.getParallelismDegree()));
         myEnvVariablesField.setEnvs(configuration.getEnvs());
         myEnvVariablesField.setPassParentEnvs(configuration.isPassParentEnvs());
-        myPerl6ParametersPanel.setText(configuration.getInterpreterParameters());
+        myPerl6ParametersPanel.setText(configuration.getInterpreterArguments());
     }
 
     @Override
@@ -97,14 +96,6 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
                 }
                 break;
             }
-            case PATTERN: {
-                if (myFilePatternField.getText().isEmpty()) {
-                    throw new ConfigurationException("A pattern must be specified");
-                } else {
-                    configuration.setFilePattern(myFilePatternField.getText());
-                }
-                break;
-            }
             case FILE: {
                 String filepath = myFilePathField.getText();
                 VirtualFile file = LocalFileSystem.getInstance().findFileByPath(filepath);
@@ -125,7 +116,8 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         }
         configuration.setEnvs(myEnvVariablesField.getEnvs());
         configuration.setPassParentEnvs(myEnvVariablesField.isPassParentEnvs());
-        configuration.setInterpreterParameters(myPerl6ParametersPanel.getText());
+        configuration.setInterpreterArguments(myPerl6ParametersPanel.getText());
+        configuration.setTestPattern(myFilePatternField.getText());
     }
 
     @NotNull
@@ -194,6 +186,8 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         myEnvVariablesField = new EnvironmentVariablesComponent();
 
         setupSpecificComponents(panel);
+        panel.add(new JLabel("Pattern"), "align label");
+        panel.add(myFilePatternField, "wrap, growx");
         panel.add(new JLabel("Tests run in parallel"), "align label");
         panel.add(myDegreeField, "wrap, growx");
         panel.add(new JLabel("Raku parameters"), "align label");
@@ -212,8 +206,6 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         panel.add(myModuleNameField, "wrap, growx, hidemode 3");
         panel.add(myDirectoryPathLabel, "align label, hidemode 3");
         panel.add(myDirectoryPathField, "wrap, growx, hidemode 3");
-        panel.add(myFilePatternLabel, "align label, hidemode 3");
-        panel.add(myFilePatternField, "wrap, growx, hidemode 3");
         panel.add(myFilePathLabel, "align label, hidemode 3");
         panel.add(myFilePathField, "wrap, growx, hidemode 3");
 
@@ -225,8 +217,6 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
         myModuleNameField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.MODULE));
         myDirectoryPathLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.DIRECTORY));
         myDirectoryPathField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.DIRECTORY));
-        myFilePatternLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.PATTERN));
-        myFilePatternField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.PATTERN));
         myFilePathLabel.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.FILE));
         myFilePathField.setVisible(Objects.equals(myKindField.getSelectedItem(), RakuTestKind.FILE));
     }

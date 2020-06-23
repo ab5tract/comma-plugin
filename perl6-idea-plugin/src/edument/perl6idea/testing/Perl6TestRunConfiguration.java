@@ -23,12 +23,12 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
     private String moduleName;
     private static final String DIRECTORY_PATH = "DIRECTORY_PATH";
     private String directoryPath;
-    private static final String PATTERN = "PATTERN";
-    private String filePattern;
     private static final String FILE = "FILE";
     private String filePath;
 
     // Generic fields
+    private static final String TEST_PATTERN = "TEST_PATTERN";
+    private String testPattern = "";
     private static final String PARALELLISM_DEGREE = "PARALELLISM_DEGREE";
     private Integer parallelismDegree = 1;
     private static final String ENVS = "ENVS";
@@ -36,7 +36,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
     private static final String PASS_PARENT_ENV = "PASS_PARENT_ENV";
     private boolean passParentEnvs = false;
     private static final String INTERPRETER_PARAMETERS = "INTERPRETER_PARAMETERS";
-    private String interpreterParameters = "";
+    private String interpreterArguments = "";
 
     public Perl6TestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory) {
         super(project, factory, "Raku test");
@@ -88,11 +88,6 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
                 directoryPath = directory == null ? "" : directory.getText();
                 break;
             }
-            case PATTERN: {
-                Element pattern = element.getChild(PATTERN);
-                filePattern = pattern == null ? "*" : pattern.getText();
-                break;
-            }
             case FILE: {
                 Element file = element.getChild(FILE);
                 filePath = file == null ? "" : file.getText();
@@ -112,7 +107,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
         Element isPassParentEnv = element.getChild(PASS_PARENT_ENV);
         passParentEnvs = isPassParentEnv == null ? true : Boolean.valueOf(isPassParentEnv.getText());
         Element params = element.getChild(INTERPRETER_PARAMETERS);
-        interpreterParameters = params == null ? "-Ilib" : params.getText();
+        interpreterArguments = params == null ? "-Ilib" : params.getText();
     }
 
     @Override
@@ -134,10 +129,6 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
                 element.addContent(new Element(DIRECTORY_PATH).setText(directoryPath));
                 break;
             }
-            case PATTERN: {
-                element.addContent(new Element(PATTERN).setText(filePattern));
-                break;
-            }
             case FILE: {
                 element.addContent(new Element(FILE).setText(filePath));
                 break;
@@ -154,7 +145,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
         }
         element.addContent(envs);
         element.addContent(new Element(PASS_PARENT_ENV).setText(String.valueOf(passParentEnvs)));
-        element.addContent(new Element(INTERPRETER_PARAMETERS).setText(interpreterParameters));
+        element.addContent(new Element(INTERPRETER_PARAMETERS).setText(interpreterArguments));
     }
 
     public Integer getParallelismDegree() {
@@ -208,14 +199,6 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
         this.directoryPath = directoryPath;
     }
 
-    protected String getFilePattern() {
-        return filePattern;
-    }
-
-    protected void setFilePattern(String filePattern) {
-        this.filePattern = filePattern;
-    }
-
     protected String getFilePath() {
         return filePath;
     }
@@ -224,12 +207,20 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
         this.filePath = filePath;
     }
 
-    public String getInterpreterParameters() {
-        return interpreterParameters;
+    public String getInterpreterArguments() {
+        return interpreterArguments;
     }
 
-    protected void setInterpreterParameters(String interpreterParameters) {
-        this.interpreterParameters = interpreterParameters;
+    protected void setInterpreterArguments(String interpreterArguments) {
+        this.interpreterArguments = interpreterArguments;
+    }
+
+    protected String getTestPattern() {
+        return testPattern;
+    }
+
+    protected void setTestPattern(String testPattern) {
+        this.testPattern = testPattern;
     }
 
     @Override
@@ -238,7 +229,6 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
             case ALL: return "Test project";
             case MODULE: return "Test module " + getModuleName();
             case DIRECTORY: return "Test directory " + Paths.get(getDirectoryPath()).getFileName();
-            case PATTERN: return "Test '" + getFilePattern() + "'";
             case FILE: return "Test " + Paths.get(getFilePath()).getFileName();
         }
         return null;

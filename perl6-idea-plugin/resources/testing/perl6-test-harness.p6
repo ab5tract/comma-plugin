@@ -32,22 +32,15 @@ sub compile-pattern($pattern-line) {
     @patterns;
 }
 
-sub populate-test-files(@test-files, @paths, :$pattern) {
-    for @paths -> $path {
-        if $path.IO.d {
-            populate-test-files-by-dir(@test-files, $path, patterns => $pattern ?? compile-pattern($pattern) !! ());
-        } else {
-            @test-files.push($path);
-        }
+sub populate-test-files(@test-files, $path, :$pattern) {
+    if $path.IO.d {
+        populate-test-files-by-dir(@test-files, $path, patterns => $pattern ?? compile-pattern($pattern) !! ());
+    } else {
+        @test-files.push($path);
     }
 }
 
-sub MAIN(:@paths, :$pattern, :@args) {
-    # Gather and sort test files.
-    my @test-files;
-    populate-test-files(@test-files, @paths, :$pattern);
-    @test-files .= sort;
-
+sub MAIN(:@paths!, :@cwd!, :@args!, :$pattern) {
     # Check if we need to write coverage data.
     my $coverage-dir;
     with %*ENV<COMMA_TEST_COVERAGE> {
@@ -56,13 +49,29 @@ sub MAIN(:@paths, :$pattern, :@args) {
     }
     my %coverage-index;
 
+    for @paths Z @cwd Z @args -> $data {
+        process-path($data[0], $data[1], $data[2], $coverage-dir, %coverage-index, :$pattern);
+    }
+
+    if %coverage-index {
+        $coverage-dir.add('index').spurt: %coverage-index.fmt("%s\t%s");
+    }
+}
+
+sub process-path($path, $cwd, $args, $coverage-dir, %coverage-index, :$pattern) {
+    chdir $cwd;
+    # Gather and sort test files.
+    my @test-files;
+    populate-test-files(@test-files, $path, :$pattern);
+    @test-files .= sort;
+
     react {
         my $jobs = %*ENV<TEST_JOBS> // $*KERNEL.cpu-cores;
         run-a-test-file for ^$jobs;
 
         sub run-a-test-file {
             with @test-files.shift -> $file {
-                my $proc = Proc::Async.new($*EXECUTABLE, @args, $file);
+                my $proc = Proc::Async.new($*EXECUTABLE, $args.words, $file);
                 my $output;
                 whenever $proc {
                     $output ~= $_;
@@ -103,9 +112,5 @@ sub MAIN(:@paths, :$pattern, :@args) {
                 }
             }
         }
-    }
-
-    if %coverage-index {
-        $coverage-dir.add('index').spurt: %coverage-index.fmt("%s\t%s");
     }
 }
