@@ -180,7 +180,14 @@ public class Perl6ModulesConfigurator implements ModulesProvider, ModuleEditor.C
     }
 
     public boolean isModified() {
-        return myModified || myModuleModel.isChanged();
+        if (myModuleModel.isChanged() || myModified)
+            return true;
+        for (ModuleEditor moduleEditor : myModuleEditors.values()) {
+            if (moduleEditor.isModified()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void apply() throws ConfigurationException {
