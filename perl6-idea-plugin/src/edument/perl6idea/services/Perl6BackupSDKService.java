@@ -2,6 +2,7 @@ package edument.perl6idea.services;
 
 import com.intellij.openapi.components.*;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +35,8 @@ public class Perl6BackupSDKService implements PersistentStateComponent<Perl6Back
 
     public void setProjectSdkPath(String projectFilePath, String sdkPath) {
         projectSdkPaths.put(projectFilePath, sdkPath);
+        // The secondary SDK was set, invalidate caches
+        Perl6SdkType.getInstance().invalidateCaches();
     }
 
     public String getProjectSdkPath(String projectFilePath) {
