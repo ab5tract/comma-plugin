@@ -21,18 +21,22 @@ public class ShowPerl6ProjectStructureAction extends AnAction {
         Project project = e.getProject();
         if (project == null)
             project = ProjectManager.getInstance().getDefaultProject();
-        showDialog(project);
+        showDialog(project, e);
     }
 
-    private static void showDialog(Project project) {
+    private static void showDialog(Project project, AnActionEvent e) {
         Configurable instance = Perl6ProjectStructureConfigurable.getInstance(project);
-        new SingleConfigurableEditor(project, instance,
-                                     SettingsDialog.DIMENSION_KEY) {
-            @NotNull
-            @Override
-            protected DialogStyle getStyle() {
-                return DialogStyle.COMPACT;
-            }
-        }.show();
+        if (instance != null) {
+            new SingleConfigurableEditor(project, instance,
+                                         SettingsDialog.DIMENSION_KEY) {
+                @NotNull
+                @Override
+                protected DialogStyle getStyle() {
+                    return DialogStyle.COMPACT;
+                }
+            }.show();
+        } else {
+            new ShowSecondarySdkSetter().actionPerformed(e);
+        }
     }
 }

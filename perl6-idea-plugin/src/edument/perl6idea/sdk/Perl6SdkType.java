@@ -285,12 +285,12 @@ public class Perl6SdkType extends SdkType {
         reactToSDKIssue(project, "Cannot use currently set SDK to obtain necessary symbols");
     }
 
-    private synchronized void reactToSDKIssue(@Nullable Project project, String message) {
+    public synchronized void reactToSDKIssue(@Nullable Project project, String message) {
         if (!sdkIssueNotified) {
             sdkIssueNotified = true;
             Notification notification = RAKU_SDK_ERRORS_GROUP
                 .createNotification(message, NotificationType.WARNING);
-            notification = notification.addAction(new AnAction("Project Structure") {
+            notification = notification.addAction(new AnAction("Configure Raku SDK") {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
                     new ShowPerl6ProjectStructureAction().actionPerformed(e);
