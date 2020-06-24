@@ -302,7 +302,6 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         }
         myContext.clear();
         myName2Config.clear();
-        myModuleConfigurator.disposeUIResources();
         myUiInitialized = false;
     }
 
