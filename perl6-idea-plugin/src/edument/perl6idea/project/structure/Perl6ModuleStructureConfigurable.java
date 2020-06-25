@@ -80,7 +80,6 @@ public class Perl6ModuleStructureConfigurable extends Perl6StructureConfigurable
     public void disposeUIResources() {
         super.disposeUIResources();
         myContext.myModulesConfigurator.disposeUIResources();
-        super.disposeUIResources();
     }
 
     @Override
