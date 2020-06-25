@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class SplitDeclarationIntention extends PsiElementBaseIntentionAction implements IntentionAction {
     @Override
@@ -22,6 +23,8 @@ public class SplitDeclarationIntention extends PsiElementBaseIntentionAction imp
         PsiFile psiFile = element.getContainingFile();
         Perl6VariableDecl originalDecl = PsiTreeUtil.getParentOfType(element, Perl6VariableDecl.class);
         if (originalDecl == null) return;
+        if (!Objects.equals(originalDecl.getScope(), "my")) return;
+        if (originalDecl.getTraits().size() != 0) return;
         int reformatStart = originalDecl.getTextOffset();
         // Create a new
         Perl6Variable[] variableNames = originalDecl.getVariables();
@@ -44,6 +47,8 @@ public class SplitDeclarationIntention extends PsiElementBaseIntentionAction imp
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
         Perl6VariableDecl declaration = PsiTreeUtil.getParentOfType(element, Perl6VariableDecl.class);
         if (declaration == null || !declaration.hasInitializer()) return false;
+        if (!Objects.equals(declaration.getScope(), "my")) return false;
+        if (declaration.getTraits().size() != 0) return false;
 
         Perl6Variable[] variables = declaration.getVariables();
 
