@@ -167,7 +167,7 @@
       <category>Raku intentions</category>
     </intentionAction>
     <intentionAction>
-      <className>edument.perl6idea.intention.SplitDeclaration</className>
+      <className>edument.perl6idea.intention.SplitDeclarationIntention</className>
       <category>Raku intentions</category>
     </intentionAction>
 
