@@ -1,5 +1,6 @@
 package edument.perl6idea.psi;
 
+import com.intellij.codeInsight.PsiEquivalenceUtil;
 import com.intellij.codeInsight.navigation.NavigationUtil;
 import com.intellij.navigation.GotoRelatedItem;
 import com.intellij.openapi.util.TextRange;
@@ -57,6 +58,17 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                         return psi;
                 }
             } else {
+                // Trying to resolve `(42 ~~ $foo)` is dangerous. If $foo is undeclared,
+                // we search for nearest regex (which is the application we are in) to obtain $0, $1 etc to maybe resolve there,
+                // so we get the var on the right of the smartmatch, this $foo, try to resolve its type, to do so we search
+                // for a declaration and infinite loop from there. Fix this by never trying to resolve right variable
+                // if there is no lexical.
+                Perl6InfixApplication infix = PsiTreeUtil.getParentOfType(var, Perl6InfixApplication.class);
+                if (infix != null && infix.getOperator().equals("~~") &&
+                    (PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var) ||
+                     PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var.getParent())))
+                    return null;
+
                 Collection<PsiNamedElement> regexDrivenVars = obtainRegexDrivenVars(var);
                 if (regexDrivenVars == null)
                     return null;
