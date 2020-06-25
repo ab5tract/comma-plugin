@@ -24,6 +24,11 @@ import java.util.Collection;
 
 public class MakeMethodPrivateIntention extends PsiElementBaseIntentionAction implements IntentionAction {
     @Override
+    public boolean startInWriteAction() {
+        return false;
+    }
+
+    @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element) throws IncorrectOperationException {
         Perl6RoutineDecl decl = PsiTreeUtil.getParentOfType(element, Perl6RoutineDecl.class);
         if (decl == null) {
@@ -74,10 +79,8 @@ public class MakeMethodPrivateIntention extends PsiElementBaseIntentionAction im
         Perl6RoutineDecl decl = PsiTreeUtil.getParentOfType(element, Perl6RoutineDecl.class);
 
         Perl6PackageDecl owner = PsiTreeUtil.getParentOfType(decl, Perl6PackageDecl.class);
-        return owner != null &&
-               (decl.getRoutineKind().equals("method") || decl.getRoutineKind().equals("multi")) &&
-               !decl.getRoutineName().equals("<anon>") &&
-               !decl.isPrivate();
+        return owner != null && decl.getRoutineKind().equals("method") && !decl.getRoutineName().equals("<anon>") && !decl.isPrivate()
+            && decl.getMultiness().equals("only");
     }
 
     @Override
