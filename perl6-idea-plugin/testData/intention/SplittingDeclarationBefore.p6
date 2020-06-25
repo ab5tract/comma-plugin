@@ -1,0 +1,1 @@
+if True { my @aaa <caret>= 1, 2, 3; say 42; }
