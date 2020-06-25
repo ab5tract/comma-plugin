@@ -64,7 +64,9 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 // for a declaration and infinite loop from there. Fix this by never trying to resolve right variable
                 // if there is no lexical.
                 Perl6InfixApplication infix = PsiTreeUtil.getParentOfType(var, Perl6InfixApplication.class);
-                if (infix != null && infix.getOperator().equals("~~") && PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var))
+                if (infix != null && infix.getOperator().equals("~~") &&
+                    (PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var) ||
+                     PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var.getParent())))
                     return null;
 
                 Collection<PsiNamedElement> regexDrivenVars = obtainRegexDrivenVars(var);

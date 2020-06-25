@@ -105,6 +105,8 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
 
     public void testIntegration() {
         doTest("'a' ~~ $foo.<caret>");
+        doTest("'a' ~~ /{ $42.<caret> }");
+        doTest("'a' ~~ /{ $foo.<caret> }");
     }
 
     private void doTest(String text, String... elems) {
