@@ -52,7 +52,8 @@ public class SplitDeclarationIntention extends PsiElementBaseIntentionAction imp
 
         Perl6Variable[] variables = declaration.getVariables();
 
-        return variables.length == 1 && variables[0].getVariableName() != null;
+        return variables.length == 1 && variables[0].getVariableName() != null &&
+               Perl6Variable.getTwigil(variables[0].getVariableName()) == ' ';
     }
 
     @Override
