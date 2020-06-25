@@ -1,6 +1,5 @@
 package edument.perl6idea.repl;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.psi.PsiFile;
@@ -11,7 +10,7 @@ public class Perl6ReplUsingThisModuleAction extends Perl6LaunchReplAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         boolean available = false;
-        if (getSdk(e) != null) {
+        if (getSdkHome(e) != null) {
             PsiFile currentFile = e.getData(CommonDataKeys.PSI_FILE);
             available = currentFile instanceof Perl6File &&
                     ((Perl6File)currentFile).getEnclosingPerl6ModuleName() != null;

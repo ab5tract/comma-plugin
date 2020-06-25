@@ -27,6 +27,7 @@ import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.library.Perl6LibraryType;
 import edument.perl6idea.module.Perl6ModuleType;
+import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
@@ -146,7 +147,7 @@ public class Perl6MetaDataComponent implements ModuleComponent {
                     dependenciesFromMeta.addAll(depsCollectorScript.executeAndRead());
                 }
                 catch (ExecutionException e) {
-                    LOG.warn(e);
+                    Perl6SdkType.getInstance().reactToSDKIssue(myModule.getProject(), "Cannot use current Raku SDK");
                 }
             }
 

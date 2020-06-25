@@ -1,7 +1,6 @@
 package edument.perl6idea.repl;
 
 import com.intellij.execution.ExecutionException;
-import com.intellij.ide.ApplicationActivationStateManager;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -14,6 +13,8 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.actions.ShowPerl6ProjectStructureAction;
+import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.services.Perl6BackupSDKService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,8 +25,7 @@ public class Perl6LaunchReplAction extends AnAction {
     }
 
     protected void startRepl(@NotNull AnActionEvent e, @Nullable String useModule) {
-        Sdk sdk = getSdk(e);
-        if (sdk == null)
+        if (getSdkHome(e) == null)
             return;
         Project project = e.getProject();
         Perl6ReplConsole console = new Perl6ReplConsole(project, "Raku REPL", project.getBasePath());
@@ -62,14 +62,19 @@ public class Perl6LaunchReplAction extends AnAction {
 
     @Override
     public void update(@NotNull AnActionEvent e) {
-        boolean available = getSdk(e) != null;
+        boolean available = getSdkHome(e) != null;
         e.getPresentation().setEnabled(available);
     }
 
-    protected static Sdk getSdk(@NotNull AnActionEvent e) {
+    protected static String getSdkHome(@NotNull AnActionEvent e) {
         Project project = e.getProject();
         if (project == null)
             return null;
-        return ProjectRootManager.getInstance(project).getProjectSdk();
+        Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
+        if (sdk != null && sdk.getSdkType() instanceof Perl6SdkType) {
+            return sdk.getHomePath();
+        } else {
+            return project.getService(Perl6BackupSDKService.class).getProjectSdkPath(project.getProjectFilePath());
+        }
     }
 }

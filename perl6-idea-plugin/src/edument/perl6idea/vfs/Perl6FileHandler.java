@@ -5,6 +5,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.vfs.impl.ArchiveHandler;
+import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,7 @@ import java.util.regex.Pattern;
 public class Perl6FileHandler extends ArchiveHandler {
     private final Pattern pathPattern = Pattern.compile("/?(-?\\d+?):(.+?)");
     private String myPath;
-    private static Map <String, String> packagesCache = new HashMap<>();
+    private static Map<String, String> packagesCache = new HashMap<>();
     private final Logger LOG = Logger.getInstance(Perl6FileHandler.class);
 
     public Perl6FileHandler(@NotNull String path) {
@@ -40,7 +41,8 @@ public class Perl6FileHandler extends ArchiveHandler {
         Sdk sdk;
         if (matcher.matches()) {
             sdk = getSdkByMatch(matcher.group(1));
-        } else {
+        }
+        else {
             LOG.warn("Sdk is empty for path: [" + myPath + "], skipping");
             return entries;
         }
@@ -70,7 +72,14 @@ public class Perl6FileHandler extends ArchiveHandler {
         File locateScript = Perl6Utils.getResourceAsFile("zef/locate.p6");
         if (locateScript == null)
             throw new ExecutionException("Resource bundle is corrupted: locate script is missing");
-        Perl6CommandLine cmd = new Perl6CommandLine(sdk);
+        Perl6CommandLine cmd;
+        try {
+            cmd = new Perl6CommandLine(sdk);
+        }
+        catch (ExecutionException e) {
+            Perl6SdkType.getInstance().reactToSDKIssue(null, "Cannot use current Raku SDK");
+            throw e;
+        }
         cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
         cmd.addParameters(locateScript.getAbsolutePath());
         cmd.addParameter(argument);

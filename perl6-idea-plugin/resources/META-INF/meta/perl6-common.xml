@@ -191,6 +191,7 @@
     <usageTypeProvider implementation="edument.perl6idea.cro.template.findUsages.CroTemplateUsageTypeProvider"/>
     <toolWindow id="Raku Grammar Preview" anchor="right" factoryClass="edument.perl6idea.grammar.RakuGrammarPreviewFactory"
                 secondary="false" canCloseContents="false"/>
+    <projectService configurationSchemaKey="raku.backup.sdk" serviceImplementation="edument.perl6idea.services.Perl6BackupSDKService" />
   </extensions>
 
   <actions>
@@ -226,6 +227,10 @@
     <action id="edument.perl6idea.grammar.RakuGrammarPreviewAction" class="edument.perl6idea.grammar.RakuGrammarPreviewAction"
             text="Preview Raku Grammar"
             description="Opens a tool to preview Raku grammar parsing results">
+      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
+    </action>
+    <action id="edument.perl6idea.actions.ShowSecondarySdkSetter" class="edument.perl6idea.actions.ShowSecondarySdkSetter" text="Setup Raku SDK"
+            description="Opens a tool to setup Raku SDK of this project, which can be used by different components">
       <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
     </action>
   </actions>

@@ -6,6 +6,7 @@ import com.intellij.notification.*;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -22,6 +23,7 @@ import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.external.ExternalPerl6File;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.services.Perl6BackupSDKService;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jdom.Element;
@@ -130,7 +132,12 @@ public class Perl6SdkType extends SdkType {
         Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
         return sdk != null && sdk.getSdkType() instanceof Perl6SdkType
                ? sdk.getHomePath()
-               : null;
+               : secondarySDKHome(project);
+    }
+
+    public static String secondarySDKHome(@NotNull Project project) {
+        Perl6BackupSDKService service = ServiceManager.getService(project, Perl6BackupSDKService.class);
+        return service.getProjectSdkPath(project.getProjectFilePath());
     }
 
     @Override
@@ -278,12 +285,12 @@ public class Perl6SdkType extends SdkType {
         reactToSDKIssue(project, "Cannot use currently set SDK to obtain necessary symbols");
     }
 
-    private synchronized void reactToSDKIssue(@Nullable Project project, String message) {
+    public synchronized void reactToSDKIssue(@Nullable Project project, String message) {
         if (!sdkIssueNotified) {
             sdkIssueNotified = true;
             Notification notification = RAKU_SDK_ERRORS_GROUP
                 .createNotification(message, NotificationType.WARNING);
-            notification = notification.addAction(new AnAction("Project Structure") {
+            notification = notification.addAction(new AnAction("Configure Raku SDK") {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
                     new ShowPerl6ProjectStructureAction().actionPerformed(e);
