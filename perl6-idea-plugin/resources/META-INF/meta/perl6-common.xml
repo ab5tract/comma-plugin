@@ -191,7 +191,6 @@
     <usageTypeProvider implementation="edument.perl6idea.cro.template.findUsages.CroTemplateUsageTypeProvider"/>
     <toolWindow id="Raku Grammar Preview" anchor="right" factoryClass="edument.perl6idea.grammar.RakuGrammarPreviewFactory"
                 secondary="false" canCloseContents="false"/>
-    <projectImportProvider implementation="edument.perl6idea.project.Perl6ProjectImportProvider"/>
     <moduleConfigurationEditorProvider implementation="edument.perl6idea.project.structure.module.Perl6ModuleConfigurationEditorProvider" order="FIRST"/>
     <backgroundPostStartupActivity implementation="edument.perl6idea.utils.Perl6ModuleListStarter"/>
     <projectService configurationSchemaKey="raku.backup.sdk" serviceImplementation="edument.perl6idea.services.Perl6BackupSDKService" />
