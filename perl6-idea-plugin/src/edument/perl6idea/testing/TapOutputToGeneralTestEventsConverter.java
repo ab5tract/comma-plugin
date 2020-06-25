@@ -68,9 +68,8 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         if (!currentTap.isEmpty()) {
             TestSet set;
             String testSuiteStarted = ServiceMessageBuilder
-                .testSuiteStarted(currentFile)
-                .addAttribute("locationHint", myBaseUrl + "/" + currentFile).toString()
-                .toString();
+                .testSuiteStarted(calculateSuiteName())
+                .addAttribute("locationHint", myBaseUrl + "/" + currentFile).toString();
             handleMessageSend(testSuiteStarted);
             try {
                 set = myConsumer.load(currentTap);
@@ -79,9 +78,18 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             } catch (TapConsumerException e) {
                 processBreakage();
             }
-            handleMessageSend(ServiceMessageBuilder.testSuiteFinished(currentFile).toString());
+            handleMessageSend(ServiceMessageBuilder.testSuiteFinished(calculateSuiteName()).toString());
             currentTap = "";
         }
+    }
+
+    @NotNull
+    private String calculateSuiteName() {
+        String projectPrefix = myBaseUrl.substring(7);
+        if (currentFile.startsWith(projectPrefix) && currentFile.length() > projectPrefix.length() + 1)
+            return currentFile.substring(projectPrefix.length() + 1);
+        else
+            return currentFile;
     }
 
     private void processBreakage() throws ParseException {
@@ -96,7 +104,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
     private void processSingleSuite(List<TapElement> results) throws ParseException {
         // Apparently, Team City test protocol does not allow us
         // to send more than 1 `stdOutput` message, so we need to collect
-        // all in a single string. `StringJoinger` here gives us neater
+        // all in a single string. `StringJoiner` here gives us neater
         // handling of `\n` between lines and uses fast StringBuilder internally
         StringJoiner stdOut = new StringJoiner("\n");
 

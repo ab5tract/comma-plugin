@@ -30,7 +30,7 @@ public class Perl6CompleteCroRunConfigurationType extends ConfigurationTypeBase 
         addFactory(new ConfigurationFactory(this) {
             @Override
             public @NotNull String getId() {
-                return PERL6_CRO_RUN_CONFIGURATION_ID + "_FACTORY";
+                return "Cro Service";
             }
 
             @NotNull

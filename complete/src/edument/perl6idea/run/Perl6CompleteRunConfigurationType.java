@@ -29,7 +29,7 @@ public class Perl6CompleteRunConfigurationType extends ConfigurationTypeBase {
         addFactory(new ConfigurationFactory(this) {
             @Override
             public @NotNull String getId() {
-                return PERL6_RUN_CONFIGURATION_ID + "_FACTORY";
+                return "Raku";
             }
 
             @NotNull
