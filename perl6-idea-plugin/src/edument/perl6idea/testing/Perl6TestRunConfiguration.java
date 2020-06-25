@@ -36,7 +36,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
     private static final String PASS_PARENT_ENV = "PASS_PARENT_ENV";
     private boolean passParentEnvs = false;
     private static final String INTERPRETER_PARAMETERS = "INTERPRETER_PARAMETERS";
-    private String interpreterArguments = "";
+    private String interpreterArguments = "-Ilib";
 
     public Perl6TestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory) {
         super(project, factory, "Raku test");
