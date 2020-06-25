@@ -3,7 +3,6 @@ package edument.perl6idea.coverage;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.ProjectViewNodeDecorator;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.packageDependencies.ui.PackageDependenciesNode;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -11,21 +10,18 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 
 public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorator {
-    private final Perl6CoverageDataManager coverageDataManager;
-
-    public Perl6ProjectViewCoverageDecorator() {
-        coverageDataManager = ServiceManager.getService(Perl6CoverageDataManager.class);
-    }
-
     @Override
     public void decorate(ProjectViewNode node, PresentationData data) {
         VirtualFile file = node.getVirtualFile();
-        if (file == null)
+        if (file == null || node.getProject() == null)
+            return;
+        Perl6CoverageDataManager coverageDataManager = node.getProject().getService(Perl6CoverageDataManager.class);
+        if (coverageDataManager == null)
             return;
         if (file.isDirectory()) {
             data.clearText();
             data.addText(file.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-            if (coverageDataManager != null && coverageDataManager.hasCurrentCoverageSuite()) {
+            if (coverageDataManager.hasCurrentCoverageSuite()) {
                 CoverageStatistics stats = coverageDataManager.coverageForDirectory(file);
                 if (stats != null)
                     addCoverageStatistics(data, stats);
@@ -34,7 +30,7 @@ public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorat
         else if (file.getPath().endsWith(".pm6")) {
             data.clearText();
             data.addText(file.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-            if (coverageDataManager != null && coverageDataManager.hasCurrentCoverageSuite()) {
+            if (coverageDataManager.hasCurrentCoverageSuite()) {
                 CoverageStatistics stats = coverageDataManager.coverageForFile(file);
                 if (stats != null)
                     addCoverageStatistics(data, stats);
