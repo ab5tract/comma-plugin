@@ -74,8 +74,7 @@ public class SdkSettingsStep extends ModuleWizardStep {
     myJdkPanel = new JPanel(new GridBagLayout());
 
     final PropertiesComponent component = project == null ? PropertiesComponent.getInstance() : PropertiesComponent.getInstance(project);
-    ModuleType moduleType = moduleBuilder.getModuleType();
-    final String selectedJdkProperty = "jdk.selected." + (moduleType == null ? "" : moduleType.getId());
+    final String selectedJdkProperty = "raku.sdk.selected";
     myJdkComboBox.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
