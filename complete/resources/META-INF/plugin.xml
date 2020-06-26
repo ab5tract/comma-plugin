@@ -1,6 +1,6 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <id>edument.perl6-idea-plugin</id>
-  <version>2020.05.0</version>
+  <version>2020.06.0</version>
   <name>Comma Complete Edition (Raku Language Support)</name>
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
@@ -32,16 +32,17 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Support the 2020.01 version of the IntelliJ platform, which is now the minimal version requirement to use the plugin as well as the platform version used by Comma</li>
-<li>Provide better method completion for <code>.foo</code> style calls as well as explicit operations on the topic variable <code>$_</code> in cases when a type can be inferred</li>
-<li>Add a &quot;REPL using this module&quot; action which starts a REPL session with the current module used</li>
-<li>&quot;External Libraries&quot; now include items from &quot;test-depends&quot; and &quot;build-depends&quot; along with the previously available distributions from the &quot;depends&quot; section</li>
-<li>License types compatible with SPDX are now auto-completed in Project Structure dialog</li>
-<li>The <code>META6.json</code> file fields &quot;authors&quot; and &quot;source-url&quot; now can be modified using the Project Structure dialog</li>
-<li>For Rakudo 2019.07 or newer a simpler debug starting process is used, which supports the case where Rakudo was relocated</li>
-<li>Fix extraction of method calls into a variable</li>
-<li>Fix extracting of constructs which are used as expressions using the &quot;do&quot; construct</li>
-<li>Allow inline of a variable when there is a single assignment, which was previously wrongly reported as impossible</li>
+<li>Re-work Test Run Configurations. They now support running tests based on source roots for either a project, a module, a directory or a single file. Test Run Configurations can be created from tests and directories in the project file view, or based on the file you are currently in. They can be filtered by patterns and support various parameters that the Raku Run Configuration has as well. Fix backward compatibility with run configurations created before the regressed 2020.05 release.</li>
+<li>For the plugin version of Comma, add a tool to set the Raku compiler in to be used in IntelliJ platform IDE products such as IntelliJ IDEA or WebStorm. Now it is not required to change the global project SDK to a Raku one, a &quot;secondary&quot; SDK can be set using <code>Tools -&gt; Setup Raku SDK</code>. This SDK will be used as a backup for all features which depend on it, including completion, running programs, the REPL etc</li>
+<li>Overhaul the implementation of key internal components and make sure Comma is self-contained and the Raku plugin correctly works with a range of IntelliJ platform products</li>
+<li>The extract Variable refactoring now suggests variable names based on extracted value</li>
+<li>The extract Variable refactoring now supports extraction of literals like <code>42</code> or <code>&quot;foo&quot;</code> when they are statements and not parts of expressions</li>
+<li>Add an intention to split the declaration of a lexical variable (<code>my $foo = 42</code>) into a declaration (<code>my $foo</code>) and an assignment (<code>$foo = 42</code>)</li>
+<li>Add an intention to make a method private; it checks there are no known calls to it from outside of the class first</li>
+<li>Suppress redundant annotation related to non-ASCII symbols in code, as Raku sources are Unicode-friendly</li>
+<li>Fix a bug when smartmatching of an undeclared variable could potentially lead to a stack overflow exception or freezes</li>
+<li>Fix cases of treating coercions like <code>DateTime($foo)</code> as errors; they are now correctly displayed as types</li>
+<li>Fix a rare bug when external libraries might not be displayed after project creation</li>
 </ul>
   ]]>
   </change-notes>
