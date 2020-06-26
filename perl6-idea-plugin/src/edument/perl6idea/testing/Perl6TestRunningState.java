@@ -30,7 +30,9 @@ import com.intellij.openapi.roots.SourceFolder;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.sun.javafx.PlatformUtil;
 import edument.perl6idea.run.Perl6DebuggableConfiguration;
+import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6ScriptRunner;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
@@ -80,15 +82,12 @@ public class Perl6TestRunningState extends CommandLineState {
 
     protected GeneralCommandLine createCommandLine() throws ExecutionException {
         Project project = getEnvironment().getProject();
-        Perl6ScriptRunner cmd;
+        GeneralCommandLine cmd;
 
-        if (isDebugging) {
-            Perl6DebuggableConfiguration runConf = ((Perl6DebuggableConfiguration)getEnvironment().getRunProfile());
-            cmd = new Perl6ScriptRunner(project, runConf.getDebugPort());
-        }
-        else {
-            cmd = new Perl6ScriptRunner(project);
-        }
+        if (PlatformUtil.isWindows())
+            cmd = new Perl6CommandLine(getEnvironment().getProject());
+        else
+            cmd = new Perl6ScriptRunner(getEnvironment().getProject());
         File script = Perl6Utils.getResourceAsFile("testing/perl6-test-harness.p6");
         if (script == null)
             throw new ExecutionException("Bundled resources are corrupted");
@@ -110,7 +109,7 @@ public class Perl6TestRunningState extends CommandLineState {
         return cmd;
     }
 
-    private void fillTestHarnessArguments(Project project, Perl6ScriptRunner cmd) throws ExecutionException {
+    private void fillTestHarnessArguments(Project project, GeneralCommandLine cmd) throws ExecutionException {
         // Depending on the target, we have to fill one or more data points
         // consisting of the path to test, current working directory and arguments
         switch (runConfiguration.getTestKind()) {
@@ -145,7 +144,7 @@ public class Perl6TestRunningState extends CommandLineState {
     }
 
     @NotNull
-    private List<Module> populateTestDirectoriesByModules(Project project, Perl6ScriptRunner cmd,
+    private List<Module> populateTestDirectoriesByModules(Project project, GeneralCommandLine cmd,
                                                           Predicate<Module> modulesPredicate) {
         List<Module> modules = Arrays.stream(ModuleManager.getInstance(project).getModules())
             .filter(modulesPredicate).collect(Collectors.toList());
@@ -164,7 +163,7 @@ public class Perl6TestRunningState extends CommandLineState {
         return modules;
     }
 
-    private void addParametersForContentEntry(Module module, Perl6ScriptRunner cmd, VirtualFile virtualFileToTest, ContentEntry[] contentEntries) {
+    private void addParametersForContentEntry(Module module, GeneralCommandLine cmd, VirtualFile virtualFileToTest, ContentEntry[] contentEntries) {
         if (contentEntries.length != 1) {
             Logger.getInstance(Perl6TestRunningState.class).warn("Abundant content entries for module " + module.getName());
             return;
