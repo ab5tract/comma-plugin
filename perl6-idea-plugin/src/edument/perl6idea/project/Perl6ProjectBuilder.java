@@ -1,13 +1,12 @@
 package edument.perl6idea.project;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ProjectBuilder;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.ModifiableModuleModel;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.module.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
@@ -89,17 +88,13 @@ public class Perl6ProjectBuilder extends ProjectBuilder {
                 addSourceDirectory("t", contentRoot, entry, true);
                 manager.commit();
                 rootModel.commit();
-                Perl6SdkType perl6SdkType = Perl6SdkType.getInstance();
-                String homePath = perl6SdkType.suggestHomePath();
-                if (homePath != null) {
-                    Sdk sdk = SdkConfigurationUtil.findOrCreateSdk((o1, o2) -> {
-                        // TODO Write real Sdk version comparator
-                        return 1;
-                    }, perl6SdkType);
+                final PropertiesComponent properties = PropertiesComponent.getInstance(project);
+                final String selectedJdkProperty = "raku.sdk.selected";
+                String sdkHome = properties.getValue(selectedJdkProperty);
+                if (sdkHome != null) {
+                    Sdk sdk = ProjectJdkTable.getInstance().findJdk(sdkHome);
                     ProjectRootManager.getInstance(project).setProjectSdk(sdk);
                 }
-                // Perl6ProjectOpenProcessor and Perl6ImportProvider would not call a project builder
-                // without either `META6.json` or `META.list` present
                 Path metaPath = Paths.get(getFileToImport(), "META6.json");
                 if (!metaPath.toFile().exists()) {
                     metaPath = Paths.get(getFileToImport(), "META.list");
@@ -108,7 +103,7 @@ public class Perl6ProjectBuilder extends ProjectBuilder {
                 if (metaFile != null) {
                     Module firstModule = ModuleUtilCore.findModuleForFile(metaFile, project);
                     if (firstModule == null) return;
-                    Perl6MetaDataComponent component = firstModule.getComponent(Perl6MetaDataComponent.class);
+                    Perl6MetaDataComponent component = firstModule.getService(Perl6MetaDataComponent.class);
                     component.triggerMetaBuild(metaFile);
                 }
             });

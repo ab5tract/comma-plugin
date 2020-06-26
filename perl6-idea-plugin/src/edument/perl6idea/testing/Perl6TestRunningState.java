@@ -96,6 +96,8 @@ public class Perl6TestRunningState extends CommandLineState {
         cmd.addParameter(script.getAbsolutePath());
 
         fillTestHarnessArguments(project, cmd);
+        if (!cmd.getParametersList().getParametersString().contains("--path"))
+            throw new ExecutionException("No test source roots in the project: is it properly configured?");
         if (!runConfiguration.getTestPattern().isEmpty())
             cmd.addParameter("--pattern=" + runConfiguration.getTestPattern());
         cmd.setWorkDirectory(project.getBasePath());

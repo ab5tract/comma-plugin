@@ -50,7 +50,7 @@ public class DependenciesTableModel extends ListTableModel<Perl6DependencyTableI
 
     public void init() {
         Module module = myState.getRootModel().getModule();
-        Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
+        Perl6MetaDataComponent metaData = module.getService(Perl6MetaDataComponent.class);
         List<String> depends = metaData.getDepends(false);
         List<String> testDepends = metaData.getTestDepends(false);
         List<String> buildDepends = metaData.getBuildDepends(false);

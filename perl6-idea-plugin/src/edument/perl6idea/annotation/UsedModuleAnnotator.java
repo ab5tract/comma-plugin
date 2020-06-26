@@ -48,7 +48,7 @@ public class UsedModuleAnnotator implements Annotator {
         Module module = ModuleUtilCore.findModuleForPsiElement(element);
         if (module == null) return;
 
-        Perl6MetaDataComponent metaData = module.getComponent(Perl6MetaDataComponent.class);
+        Perl6MetaDataComponent metaData = module.getService(Perl6MetaDataComponent.class);
 
         // No need to annotate "missing" modules, if there are
         // no META data available

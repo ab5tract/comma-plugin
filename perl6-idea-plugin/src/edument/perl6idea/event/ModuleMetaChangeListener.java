@@ -2,9 +2,9 @@ package edument.perl6idea.event;
 
 import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
@@ -27,15 +27,16 @@ import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListener {
-    private final MessageBusConnection conn;
+@Service
+public class ModuleMetaChangeListener implements BulkFileListener {
     private final Perl6MetaDataComponent myMetaData;
     private final Module myModule;
 
     public ModuleMetaChangeListener(Module module) {
-        conn = ApplicationManager.getApplication().getMessageBus().connect();
-        myMetaData = module.getComponent(Perl6MetaDataComponent.class);
         myModule = module;
+        MessageBusConnection conn = ApplicationManager.getApplication().getMessageBus().connect();
+        conn.subscribe(VirtualFileManager.VFS_CHANGES, this);
+        myMetaData = module.getService(Perl6MetaDataComponent.class);
     }
 
     @Nullable
@@ -206,21 +207,5 @@ public class ModuleMetaChangeListener implements ModuleComponent, BulkFileListen
         if (newName != null) {
             myMetaData.addNamespaceToProvides(newName);
         }
-    }
-
-    @Override
-    public void initComponent() {
-        conn.subscribe(VirtualFileManager.VFS_CHANGES, this);
-    }
-
-    @Override
-    public void disposeComponent() {
-        conn.disconnect();
-    }
-
-    @NotNull
-    @Override
-    public String getComponentName() {
-        return "Raku Module Change Listener";
     }
 }

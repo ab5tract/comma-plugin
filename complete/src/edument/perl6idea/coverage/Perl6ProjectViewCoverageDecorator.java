@@ -10,21 +10,18 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 
 public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorator {
-    private final Perl6CoverageDataManager coverageDataManager;
-
-    public Perl6ProjectViewCoverageDecorator(Perl6CoverageDataManager coverageDataManager) {
-        this.coverageDataManager = coverageDataManager;
-    }
-
     @Override
     public void decorate(ProjectViewNode node, PresentationData data) {
         VirtualFile file = node.getVirtualFile();
-        if (file == null)
+        if (file == null || node.getProject() == null)
+            return;
+        Perl6CoverageDataManager coverageDataManager = node.getProject().getService(Perl6CoverageDataManager.class);
+        if (coverageDataManager == null)
             return;
         if (file.isDirectory()) {
             data.clearText();
             data.addText(file.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-            if (coverageDataManager != null && coverageDataManager.hasCurrentCoverageSuite()) {
+            if (coverageDataManager.hasCurrentCoverageSuite()) {
                 CoverageStatistics stats = coverageDataManager.coverageForDirectory(file);
                 if (stats != null)
                     addCoverageStatistics(data, stats);
@@ -33,7 +30,7 @@ public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorat
         else if (file.getPath().endsWith(".pm6")) {
             data.clearText();
             data.addText(file.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-            if (coverageDataManager != null && coverageDataManager.hasCurrentCoverageSuite()) {
+            if (coverageDataManager.hasCurrentCoverageSuite()) {
                 CoverageStatistics stats = coverageDataManager.coverageForFile(file);
                 if (stats != null)
                     addCoverageStatistics(data, stats);
@@ -41,7 +38,7 @@ public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorat
         }
     }
 
-    private void addCoverageStatistics(PresentationData data, CoverageStatistics stats) {
+    private static void addCoverageStatistics(PresentationData data, CoverageStatistics stats) {
         data.addText(" (" + stats.getCoveredLines() + " / " + stats.getCoverableLines() +
                      " statements; ", SimpleTextAttributes.GRAY_ATTRIBUTES);
         data.addText(stats.percent() + "%)", percentAttributes(stats));

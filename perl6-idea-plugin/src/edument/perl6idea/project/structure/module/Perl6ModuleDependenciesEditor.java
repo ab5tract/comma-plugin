@@ -38,7 +38,7 @@ public class Perl6ModuleDependenciesEditor extends ModuleElementsEditor implemen
 
     @Override
     public void apply() throws ConfigurationException {
-        Perl6MetaDataComponent metaData = getState().getRootModel().getModule().getComponent(Perl6MetaDataComponent.class);
+        Perl6MetaDataComponent metaData = getState().getRootModel().getModule().getService(Perl6MetaDataComponent.class);
         if (!metaData.isMetaDataExist()) {
             try {
                 metaData.createStubMetaFile(

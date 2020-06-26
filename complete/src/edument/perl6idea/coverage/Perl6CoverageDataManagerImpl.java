@@ -5,6 +5,7 @@ import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
@@ -39,6 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Service
 public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private final Project project;
     private static final Pattern indexMatcher = Pattern.compile("^([^\\t]+)\\t(.+)");
@@ -52,6 +54,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
 
     public Perl6CoverageDataManagerImpl(@NotNull Project project) {
         this.project = project;
+        EditorFactory.getInstance().addEditorFactoryListener(new CoverageEditorFactoryListener(), project);
     }
 
     @Override
@@ -180,11 +183,6 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
                 }
             }
         }
-    }
-
-    @Override
-    public void projectOpened() {
-        EditorFactory.getInstance().addEditorFactoryListener(new CoverageEditorFactoryListener(), project);
     }
 
     private class CoverageEditorFactoryListener implements EditorFactoryListener {
