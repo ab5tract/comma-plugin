@@ -290,9 +290,10 @@ public class Perl6SdkType extends SdkType {
             sdkIssueNotified = true;
             Notification notification = RAKU_SDK_ERRORS_GROUP
                 .createNotification(message, NotificationType.WARNING);
-            notification = notification.addAction(new AnAction("Configure Raku SDK") {
+            notification.addAction(new AnAction("Configure Raku SDK") {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
+                    notification.expire();
                     new ShowPerl6ProjectStructureAction().actionPerformed(e);
                 }
 

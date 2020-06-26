@@ -100,7 +100,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder {
         List<Module> modules = super.commit(project, model, modulesProvider);
         if (modules != null) {
             for (Module module : modules) {
-                module.getComponent(Perl6MetaDataComponent.class).triggerMetaBuild();
+                module.getService(Perl6MetaDataComponent.class).triggerMetaBuild();
             }
         }
         return modules;

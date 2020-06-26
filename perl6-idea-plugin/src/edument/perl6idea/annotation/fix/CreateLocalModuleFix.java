@@ -69,7 +69,7 @@ public class CreateLocalModuleFix implements IntentionAction {
         if (!isOk) return;
 
         String newModulePath = Perl6ModuleBuilderModule.stubModule(
-            module.getComponent(Perl6MetaDataComponent.class),
+            module.getService(Perl6MetaDataComponent.class),
             Paths.get(moduleLibraryPath),
             dialog.getModuleName(), false, true,
             moduleLibraryRoot.getParent(), dialog.getModuleType(), false);
