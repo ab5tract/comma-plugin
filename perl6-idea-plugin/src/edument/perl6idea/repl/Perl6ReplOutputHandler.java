@@ -20,27 +20,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Perl6ReplOutputHandler extends OSProcessHandler {
-    private static Key<ConsoleViewContentType> SORRY_HEADER = Key.create("perl6.repl.out.sorryHeader");
-    private static Key<ConsoleViewContentType> PRE_CODE = Key.create("perl6.repl.out.preCode");
-    private static Key<ConsoleViewContentType> EJECT_MARKER = Key.create("perl6.repl.out.ejectMarker");
-    private static Key<ConsoleViewContentType> POST_CODE = Key.create("perl6.repl.out.postCode");
+    private static final Key<ConsoleViewContentType> SORRY_HEADER = Key.create("perl6.repl.out.sorryHeader");
+    private static final Key<ConsoleViewContentType> PRE_CODE = Key.create("perl6.repl.out.preCode");
+    private static final Key<ConsoleViewContentType> EJECT_MARKER = Key.create("perl6.repl.out.ejectMarker");
+    private static final Key<ConsoleViewContentType> POST_CODE = Key.create("perl6.repl.out.postCode");
 
     static {
-        TextAttributes sorryHeaderAttrs = new TextAttributes(JBColor.RED, null, null, null, Font.BOLD);
+        TextAttributesKey sorryHeaderAttrsKey = TextAttributesKey.createTempTextAttributesKey(
+            SORRY_HEADER.toString(), new TextAttributes(JBColor.RED, null, null, null, Font.BOLD));
         ConsoleViewContentType.registerNewConsoleViewType(SORRY_HEADER,
-                TextAttributesKey.createTextAttributesKey(SORRY_HEADER.toString(), sorryHeaderAttrs));
+                TextAttributesKey.createTextAttributesKey(SORRY_HEADER.toString(), sorryHeaderAttrsKey));
 
-        TextAttributes preCodeAttrs = new TextAttributes(JBColor.GREEN, null, null, null, Font.BOLD);
+        TextAttributesKey preCodeAttrsKey = TextAttributesKey.createTempTextAttributesKey(
+            PRE_CODE.toString(), new TextAttributes(JBColor.GREEN, null, null, null, Font.BOLD));
         ConsoleViewContentType.registerNewConsoleViewType(PRE_CODE,
-                TextAttributesKey.createTextAttributesKey(PRE_CODE.toString(), preCodeAttrs));
+                TextAttributesKey.createTextAttributesKey(PRE_CODE.toString(), preCodeAttrsKey));
 
-        TextAttributes ejectMarkerAttrs = new TextAttributes(JBColor.YELLOW, null, null, null, Font.BOLD);
+        TextAttributesKey ejectMarkerAttrsKey = TextAttributesKey.createTempTextAttributesKey(
+            EJECT_MARKER.toString(), new TextAttributes(JBColor.YELLOW, null, null, null, Font.BOLD));
         ConsoleViewContentType.registerNewConsoleViewType(EJECT_MARKER,
-                TextAttributesKey.createTextAttributesKey(EJECT_MARKER.toString(), ejectMarkerAttrs));
+                TextAttributesKey.createTextAttributesKey(EJECT_MARKER.toString(), ejectMarkerAttrsKey));
 
-        TextAttributes postCodeAttrs = new TextAttributes(JBColor.RED, null, null, null, Font.BOLD);
+        TextAttributesKey postCodeAttrsKey = TextAttributesKey.createTempTextAttributesKey(
+            POST_CODE.toString(), new TextAttributes(JBColor.RED, null, null, null, Font.BOLD));
         ConsoleViewContentType.registerNewConsoleViewType(POST_CODE,
-                TextAttributesKey.createTextAttributesKey(POST_CODE.toString(), postCodeAttrs));
+                TextAttributesKey.createTextAttributesKey(POST_CODE.toString(), postCodeAttrsKey));
     }
 
     private enum SpecialOutputKind { None, CompileError, RuntimeError };

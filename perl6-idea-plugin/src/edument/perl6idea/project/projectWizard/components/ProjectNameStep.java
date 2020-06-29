@@ -112,7 +112,7 @@ public class ProjectNameStep extends ModuleWizardStep {
 
         final boolean shouldPromptCreation = myNamePathComponent.isPathChangedByUser();
         String prefix = String.format("The %s directory", myWizardContext.getPresentationName());
-        if (!CommaProjectWizardUtil.createDirectoryIfNotExists(projectFileDirectory, shouldPromptCreation)) {
+        if (!CommaProjectWizardUtil.createDirectoryIfNotExists(prefix, projectFileDirectory, shouldPromptCreation)) {
             return false;
         }
 

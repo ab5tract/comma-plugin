@@ -67,8 +67,11 @@ public class Perl6SdkConfigurable implements UnnamedConfigurable {
     public JComponent createComponent() {
         if (myJdkPanel == null) {
             myJdkPanel = new JPanel(new MigLayout("", "left", "top"));
-            myCbProjectJdk = new JdkComboBox(myJdksModel,
-                                             (sdkType) -> sdkType instanceof Perl6SdkType);
+            myCbProjectJdk = new JdkComboBox(myProject, myJdksModel,
+                                             (sdkType) -> sdkType instanceof Perl6SdkType,
+                                             JdkComboBox.getSdkFilter((sdkType) -> sdkType instanceof Perl6SdkType),
+                                             (sdkType) -> sdkType instanceof Perl6SdkType,
+                                             (foo) -> {});
             myCbProjectJdk.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
