@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -47,8 +48,7 @@ public class InterpolatedEVALAnnotator implements Annotator {
             // Check is variable used
             if (PsiTreeUtil.findChildOfType(arg, Perl6Variable.class) == null) return;
         }
-        holder
-            .createErrorAnnotation(arg, "Cannot EVAL interpolated expression without MONKEY-SEE-NO-EVAL pragma")
-            .registerFix(new AddEvalPragmaFix());
+        holder.newAnnotation(HighlightSeverity.ERROR, "Cannot EVAL interpolated expression without MONKEY-SEE-NO-EVAL pragma")
+            .range(arg).withFix(new AddEvalPragmaFix()).create();
     }
 }

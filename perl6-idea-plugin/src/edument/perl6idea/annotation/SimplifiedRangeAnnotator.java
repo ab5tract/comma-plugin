@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -61,9 +62,9 @@ public class SimplifiedRangeAnnotator implements Annotator {
         if (!shouldAnnotate)
             return;
 
-        holder.createWeakWarningAnnotation(
-            new TextRange(rangeStart.getTextOffset(), rangeEnd.getTextOffset() + rangeEnd.getTextLength()), "Range can be simplified")
-            .registerFix(new RangeIntentionFix());
+        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Range can be simplified")
+            .range(new TextRange(rangeStart.getTextOffset(), rangeEnd.getTextOffset() + rangeEnd.getTextLength()))
+            .withFix(new RangeIntentionFix());
     }
 
     private static boolean checkInfix(PsiElement[] children) {

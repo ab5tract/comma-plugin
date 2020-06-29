@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6React;
@@ -18,8 +19,8 @@ public class WheneverOutsideOfReactAnnotator implements Annotator {
             return;
         PsiElement react = PsiTreeUtil.findFirstParent(element, true, p -> p instanceof Perl6React || p instanceof Perl6Supply);
         if (react == null)
-            holder.createErrorAnnotation(element,
-                                         "A whenever must be within a supply or react block");
+            holder.newAnnotation(HighlightSeverity.ERROR, "A whenever must be within a supply or react block")
+                .range(element).create();
     }
 
 }

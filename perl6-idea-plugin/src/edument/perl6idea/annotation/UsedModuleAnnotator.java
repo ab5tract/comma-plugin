@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
@@ -80,13 +81,15 @@ public class UsedModuleAnnotator implements Annotator {
         String holderPackage = Perl6ModuleListFetcher.getModuleByProvide(project, moduleName);
         if (holderPackage != null) {
             holder
-                .createErrorAnnotation(element, String.format("Cannot find %s based on dependencies from META6.json", moduleName))
-                .registerFix(new MissingModuleFix(holderPackage));
+                .newAnnotation(HighlightSeverity.ERROR, String.format("Cannot find %s based on dependencies from META6.json", moduleName))
+                .range(element)
+                .withFix(new MissingModuleFix(holderPackage)).create();
         }
         else {
             holder
-                .createErrorAnnotation(element, String.format("Cannot find %s in the ecosystem", moduleName))
-                .registerFix(new CreateLocalModuleFix(module, (Perl6ModuleName)element));
+                .newAnnotation(HighlightSeverity.ERROR, String.format("Cannot find %s in the ecosystem", moduleName))
+                .range(element)
+                .withFix(new CreateLocalModuleFix(module, (Perl6ModuleName)element)).create();
         }
     }
 }

@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -40,9 +41,8 @@ public class GrepFirstAnnotation implements Annotator {
         if (firstArgs.length != 0 || grepArgs.length != 1)
             return;
 
-        holder.createWeakWarningAnnotation(
-            new TextRange(element.getTextOffset(), nonWhitespacePostfix.getTextOffset() + nonWhitespacePostfix.getTextLength()),
-            "Can be simplified into a single first method call")
-            .registerFix(new GrepFirstFix((Perl6MethodCall)element, (Perl6MethodCall)nonWhitespacePostfix));
+        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Can be simplified into a single first method call")
+            .range(new TextRange(element.getTextOffset(), nonWhitespacePostfix.getTextOffset() + nonWhitespacePostfix.getTextLength()))
+            .withFix(new GrepFirstFix((Perl6MethodCall)element, (Perl6MethodCall)nonWhitespacePostfix)).create();
     }
 }

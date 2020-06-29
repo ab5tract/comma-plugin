@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6ScopedDecl;
@@ -26,15 +27,19 @@ public class IllegalVariableDeclarationAnnotator implements Annotator {
             if (var.getFirstChild().getText().equals("$<") && var.getLastChild().getText().equals(">") || // $<foo>
                 var.getFirstChild().getText().equals("@<") && var.getLastChild().getText().equals(">") || // @<foo>
                 var.getFirstChild().getText().equals("%<") && var.getLastChild().getText().equals(">"))   // %<foo>
-                holder.createErrorAnnotation(element, "Cannot declare a regex named match variable");
+                holder.newAnnotation(HighlightSeverity.ERROR, "Cannot declare a regex named match variable")
+                    .range(element).create();
+
             else // $ + integer
-                holder.createErrorAnnotation(element, "Cannot declare a regex positional match variable");
+                holder.newAnnotation(HighlightSeverity.ERROR, "Cannot declare a regex positional match variable")
+                    .range(element).create();
 
         // Check out contextualizer
         if ((var.getText().equals("$") ||
              var.getText().equals("@") ||
              var.getText().equals("%")) &&
             var.getNextSibling() instanceof Perl6Signature)
-            holder.createErrorAnnotation(element, "Cannot declare a contextualizer");
+            holder.newAnnotation(HighlightSeverity.ERROR, "Cannot declare a contextualizer")
+                    .range(element).create();
     }
 }

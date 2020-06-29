@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.annotation.fix.UseBindingToDestructureFix;
@@ -30,9 +31,9 @@ public class ListAssignmentAnnotator implements Annotator {
 
         for (int i = 0, length = variables.length; i < length; i++) {
             String name = variables[i].getVariableName();
-            if (i != length - 1 && name.startsWith("@") || name.startsWith("%"))
-                holder.createWarningAnnotation(variables[i], String.format("%s slurps everything from assignment", name.startsWith("@") ? "Array" : "Hash"))
-                    .registerFix(new UseBindingToDestructureFix(infix));
+            if (i != length - 1 && name != null && (name.startsWith("@") || name.startsWith("%")))
+                holder.newAnnotation(HighlightSeverity.WARNING, String.format("%s slurps everything from assignment", name.startsWith("@") ? "Array" : "Hash"))
+                    .range(variables[i]).withFix(new UseBindingToDestructureFix(infix)).create();
         }
     }
 }

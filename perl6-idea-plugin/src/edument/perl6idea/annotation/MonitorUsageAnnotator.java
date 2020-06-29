@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -41,9 +42,8 @@ public class MonitorUsageAnnotator implements Annotator {
 
         String packageName = ((Perl6PackageDecl)element).getPackageName();
         if (packageName == null) return;
-        holder.createErrorAnnotation(new TextRange(elementTextOffset,
-                                                   elementTextOffset + packageName.length()),
-                                     "Cannot use monitor type package without OO::Monitors module being included")
-              .registerFix(new AddMonitorModuleFix());
+        holder.newAnnotation(HighlightSeverity.ERROR, "Cannot use monitor type package without OO::Monitors module being included")
+            .range(new TextRange(elementTextOffset, elementTextOffset + packageName.length()))
+            .withFix(new AddMonitorModuleFix()).create();
     }
 }

@@ -3,6 +3,7 @@ package edument.perl6idea.annotation;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
@@ -39,10 +40,9 @@ public class MissingUnitKeywordAnnotator implements Annotator {
                         int textOffset = firstChild.getTextOffset();
                         int textOffset1 = ref.getTextOffset();
                         int length = ref.getPackageName().length();
-                        holder.createErrorAnnotation(
-                                new TextRange(textOffset, textOffset1 + length),
-                                "Cannot use 'unit' with block form of declaration")
-                              .registerFix(new RemoveUnitDeclaratorQuickFix(textOffset, ref));
+                        holder.newAnnotation(HighlightSeverity.ERROR,"Cannot use 'unit' with block form of declaration")
+                            .range(new TextRange(textOffset, textOffset1 + length))
+                            .withFix(new RemoveUnitDeclaratorQuickFix(textOffset, ref)).create();
                     }
             }
         }
@@ -69,7 +69,8 @@ public class MissingUnitKeywordAnnotator implements Annotator {
                                       "Semicolon form of package declaration without 'unit' is illegal." :
                                       String.format("Semicolon form of '%s' without 'unit' is illegal.", declaratorType);
 
-                holder.createErrorAnnotation(ref, errorMessage).registerFix(new AddUnitDeclaratorQuickFix(ref));
+                holder.newAnnotation(HighlightSeverity.ERROR, errorMessage).range(ref)
+                    .withFix(new AddUnitDeclaratorQuickFix(ref)).create();
             }
         }
     }

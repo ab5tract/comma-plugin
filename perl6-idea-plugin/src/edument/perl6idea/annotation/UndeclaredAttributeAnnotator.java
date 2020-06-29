@@ -2,14 +2,15 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.*;
-import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
+import edument.perl6idea.psi.Perl6PackageDecl;
+import edument.perl6idea.psi.Perl6ParameterVariable;
+import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
 import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,17 +32,16 @@ public class UndeclaredAttributeAnnotator implements Annotator {
             return;
         Perl6PackageDecl enclosingPackage = ((Perl6Variable)element).getSelfType();
         if (enclosingPackage == null) {
-            holder.createErrorAnnotation(
-                    element,
-                    String.format("Attribute %s is used where no self is in scope", variableName));
+            holder.newAnnotation(HighlightSeverity.ERROR,
+                                 String.format("Attribute %s is used where no self is in scope", variableName))
+                .range(element).create();
             return;
         }
         Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(variableName, Perl6SymbolKind.Variable);
         enclosingPackage.contributeMOPSymbols(collector, new MOPSymbolsAllowed(
                 true, true, true, enclosingPackage.getPackageKind().equals("role")));
         if (collector.getResult() == null)
-            holder.createErrorAnnotation(
-                    element,
-                    String.format("Attribute %s is used, but not declared", variableName));
+            holder.newAnnotation(HighlightSeverity.ERROR, String.format("Attribute %s is used, but not declared", variableName))
+                .range(element).create();
     }
 }

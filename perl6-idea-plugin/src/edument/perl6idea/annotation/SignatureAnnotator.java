@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6Signature;
@@ -60,21 +61,24 @@ public class SignatureAnnotator implements Annotator {
                         break;
                     }
                 }
-                holder.createErrorAnnotation(parameter, String.format(message, parameter.getVariableName()));
+                holder.newAnnotation(HighlightSeverity.ERROR, String.format(message, parameter.getVariableName()))
+                    .range(parameter).create();
                 return;
             }
 
             if (isOptional(summary) && state == SignatureState.VARIADIC) {
-                holder.createErrorAnnotation(
-                    parameter, String.format("Cannot put optional parameter %s after a variadic parameter",
-                                             parameter.getVariableName()));
+                holder.newAnnotation(HighlightSeverity.ERROR,
+                                     String.format("Cannot put optional parameter %s after a variadic parameter",
+                                                   parameter.getVariableName()))
+                    .range(parameter).create();
                 return;
             }
 
             if (isOptional(summary) && state == SignatureState.NAMED) {
-                holder.createErrorAnnotation(
-                    parameter, String.format("Cannot put an optional parameter %s after a named parameter",
-                                             parameter.getVariableName()));
+                holder.newAnnotation(HighlightSeverity.ERROR,
+                                     String.format("Cannot put an optional parameter %s after a named parameter",
+                                                   parameter.getVariableName()))
+                    .range(parameter).create();
                 return;
             }
 

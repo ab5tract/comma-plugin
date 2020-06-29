@@ -1,9 +1,6 @@
 package edument.perl6idea.annotation;
 
-import com.intellij.lang.annotation.Annotation;
-import com.intellij.lang.annotation.AnnotationHolder;
-import com.intellij.lang.annotation.Annotator;
-import com.intellij.lang.annotation.HighlightSeverity;
+import com.intellij.lang.annotation.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceBase;
@@ -38,14 +35,15 @@ public class UndeclaredRoutineAnnotator implements Annotator {
 
         // If no resolve results, then we've got an error.
         if (results.length == 0) {
-            Annotation annotation = holder.createErrorAnnotation(
-              element,
-              String.format("Subroutine %s is not declared", subName));
+            AnnotationBuilder annBuilder = holder.newAnnotation(HighlightSeverity.ERROR,
+                                                                String.format("Subroutine %s is not declared", subName))
+                .range(element);
             if (subName.equals("const") &&
                 (PsiTreeUtil.skipWhitespacesForward(call) instanceof Perl6Variable ||
                  PsiTreeUtil.skipWhitespacesForward(call) instanceof Perl6InfixApplication)) {
-                annotation.registerFix(new ConstKeywordFix(call));
+                annBuilder = annBuilder.withFix(new ConstKeywordFix(call));
             }
+            annBuilder.create();
         }
 
         // If it resolves to a type, highlight it as one.
