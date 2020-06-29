@@ -10,9 +10,9 @@ import edument.perl6idea.cro.template.psi.CroTemplateVariableAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class CroTemplateUsageTypeProvider implements UsageTypeProvider {
-    public static final UsageType MACRO_CALL_USAGE = new UsageType("Macro call usage");
-    public static final UsageType SUB_CALL_USAGE = new UsageType("Sub call usage");
-    public static final UsageType VARIABLE_USAGE = new UsageType("Variable usage");
+    public static final UsageType MACRO_CALL_USAGE = new UsageType(() -> "Macro call usage");
+    public static final UsageType SUB_CALL_USAGE = new UsageType(() -> "Sub call usage");
+    public static final UsageType VARIABLE_USAGE = new UsageType(() -> "Variable usage");
 
     @Nullable
     @Override

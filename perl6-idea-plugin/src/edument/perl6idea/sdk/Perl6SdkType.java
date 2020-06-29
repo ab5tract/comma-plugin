@@ -296,11 +296,6 @@ public class Perl6SdkType extends SdkType {
                     notification.expire();
                     new ShowPerl6ProjectStructureAction().actionPerformed(e);
                 }
-
-                @Override
-                public boolean startInTransaction() {
-                    return true;
-                }
             });
             Notifications.Bus.notify(notification, project);
         }

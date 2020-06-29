@@ -44,11 +44,6 @@ public class Perl6LaunchReplAction extends AnAction {
                 public void actionPerformed(@NotNull AnActionEvent e) {
                     new ShowPerl6ProjectStructureAction().actionPerformed(e);
                 }
-
-                @Override
-                public boolean startInTransaction() {
-                    return true;
-                }
             });
             notification = notification.addAction(new AnAction("Show Exception Details to Report") {
                 @Override
