@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.annotation.fix.RemoveInitializerFix;
 import edument.perl6idea.psi.*;
@@ -34,8 +35,8 @@ public class EmptyInitializationAnnotator implements Annotator {
         }
 
         if (shouldAnnotate)
-            holder
-                .createWeakWarningAnnotation(initializer, String.format("Initialization of empty %s is redundant", sigil == '@' ? "Array" : "Hash"))
-                .registerFix(new RemoveInitializerFix(decl, name));
+            holder.newAnnotation(HighlightSeverity.WEAK_WARNING,
+                                 String.format("Initialization of empty %s is redundant", sigil == '@' ? "Array" : "Hash"))
+            .range(initializer).withFix(new RemoveInitializerFix(decl, name)).create();
     }
 }

@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -35,12 +36,12 @@ public class IncomposableDoesAnnotator implements Annotator {
 
         if (declaration.getPackageKind().equals("role") &&
             ((Perl6PackageDecl)composedDeclaration).getPackageKind().equals("class")) {
-            holder.createErrorAnnotation(trait, "Role cannot compose a class")
-                  .registerFix(new ChangeDoesToIsFix(trait));
+            holder.newAnnotation(HighlightSeverity.ERROR,"Role cannot compose a class")
+                .range(trait).withFix(new ChangeDoesToIsFix(trait)).create();
         } else if (declaration.getPackageKind().equals("class") &&
                    ((Perl6PackageDecl)composedDeclaration).getPackageKind().equals("class")) {
-            holder.createErrorAnnotation(trait, "Class cannot compose a class")
-                  .registerFix(new ChangeDoesToIsFix(trait));
+            holder.newAnnotation(HighlightSeverity.ERROR, "Class cannot compose a class")
+                .range(trait).withFix(new ChangeDoesToIsFix(trait)).create();
         }
     }
 }

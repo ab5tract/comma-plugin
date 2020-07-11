@@ -153,7 +153,7 @@ public class TimelineClient {
     private static void processMessage(byte[] message, ConnectionState state) {
         try {
             String decoded = new String(message, StandardCharsets.UTF_8);
-            JsonObject json = new JsonParser().parse(decoded).getAsJsonObject();
+            JsonObject json = JsonParser.parseString(decoded).getAsJsonObject();
             if (state.handshook) {
                 String module = json.get("m").getAsString();
                 String category = json.get("c").getAsString();

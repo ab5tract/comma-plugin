@@ -1,4 +1,3 @@
-// Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.utils;
 
 import com.intellij.CommonBundle;
@@ -11,7 +10,6 @@ import com.intellij.openapi.util.io.FileUtil;
 import java.io.File;
 
 public class CommaProjectWizardUtil {
-
     public static String findNonExistingFileName(String searchDirectory, String preferredName, String extension) {
         for (int idx = 0; ; idx++) {
             String fileName = (idx > 0 ? preferredName + idx : preferredName) + extension;
@@ -30,7 +28,8 @@ public class CommaProjectWizardUtil {
                 String message = String.format("%s\"%s\"\ndoes not exist. It will be created by %s",
                                                promptPrefix, dir, ide);
                 int answer = Messages
-                    .showOkCancelDialog(message, "Directory Does Not Exist", Messages.getQuestionIcon());
+                    .showOkCancelDialog(message, "Directory Does Not Exist", "OK", "Cancel",
+                                        Messages.getQuestionIcon());
                 if (answer != Messages.OK) {
                     return false;
                 }

@@ -12,11 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ShowPerl6ProjectStructureAction extends AnAction {
     @Override
-    public boolean startInTransaction() {
-        return true;
-    }
-
-    @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getProject();
         if (project == null)

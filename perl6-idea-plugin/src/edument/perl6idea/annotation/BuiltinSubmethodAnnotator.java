@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.annotation.fix.MakeSubmethodFix;
 import edument.perl6idea.psi.Perl6RoutineDecl;
@@ -25,8 +26,9 @@ public class BuiltinSubmethodAnnotator implements Annotator {
             return;
 
         if (routineDecl.getRoutineKind().equals("method"))
-            holder
-                .createWarningAnnotation(routineDecl.getDeclaratorNode(), String.format("%s should be declared as a submethod", name))
-                .registerFix(new MakeSubmethodFix(routineDecl));
+            holder.newAnnotation(HighlightSeverity.WARNING,
+                                 String.format("%s should be declared as a submethod", name))
+                .withFix(new MakeSubmethodFix(routineDecl))
+                .range(routineDecl.getDeclaratorNode()).create();
     }
 }

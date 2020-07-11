@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
@@ -18,7 +19,7 @@ public class ProblematicReturnAnnotator implements Annotator {
         }
     }
 
-    private void checkReturn(AnnotationHolder holder, PsiElement returnCall) {
+    private static void checkReturn(AnnotationHolder holder, PsiElement returnCall) {
         /* Look for the return target, or something blocking a return. */
         PsiElement curBlockoid = PsiTreeUtil.getParentOfType(returnCall, Perl6Blockoid.class);
         while (curBlockoid != null) {
@@ -32,19 +33,23 @@ public class ProblematicReturnAnnotator implements Annotator {
             if (parent instanceof Perl6Block)
                 parent = parent.getParent();
             if (parent instanceof Perl6Start) {
-                holder.createErrorAnnotation(returnCall, "Cannot use return to produce a result in a start block");
+                holder.newAnnotation(HighlightSeverity.ERROR, "Cannot use return to produce a result in a start block")
+                    .range(returnCall).create();
                 return;
             }
             if (parent instanceof Perl6React) {
-                holder.createErrorAnnotation(returnCall, "Cannot use return to exit a react block");
+                holder.newAnnotation(HighlightSeverity.ERROR, "Cannot use return to exit a react block")
+                    .range(returnCall).create();
                 return;
             }
             if (parent instanceof Perl6Supply) {
-                holder.createErrorAnnotation(returnCall, "Cannot use return to exit a supply block");
+                holder.newAnnotation(HighlightSeverity.ERROR, "Cannot use return to exit a supply block")
+                    .range(returnCall).create();
                 return;
             }
             if (parent instanceof Perl6WheneverStatement) {
-                holder.createErrorAnnotation(returnCall, "Cannot use return in a whenever block");
+                holder.newAnnotation(HighlightSeverity.ERROR, "Cannot use return in a whenever block")
+                    .range(returnCall).create();
                 return;
             }
 
@@ -53,6 +58,7 @@ public class ProblematicReturnAnnotator implements Annotator {
         }
 
         /* If we didn't find a return target, then we're outside of any routine. */
-        holder.createErrorAnnotation(returnCall, "Return outside of routine");
+        holder.newAnnotation(HighlightSeverity.ERROR, "Return outside of routine")
+            .range(returnCall).create();
     }
 }

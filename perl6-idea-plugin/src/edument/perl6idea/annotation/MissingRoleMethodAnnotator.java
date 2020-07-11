@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -68,8 +69,10 @@ public class MissingRoleMethodAnnotator implements Annotator {
             // Block is not yet typed
             if (blockoid == null) return;
             int end = blockoid.getTextOffset();
-            holder.createErrorAnnotation(new TextRange(start, end), String.format("Composed roles require to implement methods: %s", names))
-                  .registerFix(new StubMissingMethodsFix(packageDecl, ContainerUtil.map(methodsToImplement.values(), p -> p.second)));
+            holder.newAnnotation(HighlightSeverity.ERROR, String.format("Composed roles require to implement methods: %s", names))
+                .range(new TextRange(start, end))
+                .withFix(new StubMissingMethodsFix(packageDecl, ContainerUtil.map(methodsToImplement.values(), p -> p.second)))
+                .create();
         }
     }
 

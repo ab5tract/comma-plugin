@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
@@ -43,9 +44,8 @@ public class UndeclaredVariableAnnotator implements Annotator {
             if (list == null) return;
             PsiElement maybeFinish = PsiTreeUtil.findChildOfType(list, PodBlockFinish.class);
             if (maybeFinish == null)
-                holder.createErrorAnnotation(
-                    element,
-                    "There is no =finish section in this file");
+                holder.newAnnotation(HighlightSeverity.ERROR, "There is no =finish section in this file")
+                    .range(element).create();
         }
 
         // We only check usual variables in this annotator
@@ -71,16 +71,18 @@ public class UndeclaredVariableAnnotator implements Annotator {
             PsiElement resolved = reference.resolve();
             if (resolved == null) {
                 // Straight resolution failure
-                holder.createErrorAnnotation(element,
-                                             String.format("Variable %s is not declared", variableName));
+                holder.newAnnotation(HighlightSeverity.ERROR,
+                                     String.format("Variable %s is not declared", variableName))
+                    .range(element).create();
             }
         }
         else {
             if (Perl6Variable.getSigil(variableName) != '&') {
                 PsiElement psi = symbol.getPsi();
                 if (psi != null && psi.getContainingFile() == variable.getContainingFile() && psi.getTextOffset() > variable.getTextOffset())
-                    holder.createErrorAnnotation(element,
-                                                 String.format("Variable %s is not declared in this scope yet", variableName));
+                    holder.newAnnotation(HighlightSeverity.ERROR,
+                                         String.format("Variable %s is not declared in this scope yet", variableName))
+                        .range(element).create();
             }
         }
     }

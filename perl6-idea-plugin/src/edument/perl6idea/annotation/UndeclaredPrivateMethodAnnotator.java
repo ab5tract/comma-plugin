@@ -1,8 +1,6 @@
 package edument.perl6idea.annotation;
 
-import com.intellij.lang.annotation.Annotation;
-import com.intellij.lang.annotation.AnnotationHolder;
-import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.*;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiPolyVariantReference;
@@ -34,17 +32,16 @@ public class UndeclaredPrivateMethodAnnotator implements Annotator {
             return;
         PsiElement prev = call.getPrevSibling();
         if (prev instanceof Perl6RoutineDecl) {
-            holder.createErrorAnnotation(
-                    element,
-                    "Subroutine cannot start with '!'");
+            holder.newAnnotation(HighlightSeverity.ERROR, "Subroutine cannot start with '!'")
+            .range(element).create();
         } else {
             int offset = call.getTextOffset();
-            Annotation annotation = holder.createErrorAnnotation(
-                new TextRange(offset, offset + methodName.length()),
-                String.format("Private method %s is used, but not declared", methodName));
+            AnnotationBuilder annBuilder = holder.newAnnotation(
+                HighlightSeverity.ERROR, String.format("Private method %s is used, but not declared", methodName))
+                .range(new TextRange(offset, offset + methodName.length()));
             if (caller instanceof Perl6Self)
-                annotation.registerFix(
-                    new StubMissingPrivateMethodFix(methodName, call));
+                annBuilder = annBuilder.withFix(new StubMissingPrivateMethodFix(methodName, call));
+            annBuilder.create();
         }
     }
 }

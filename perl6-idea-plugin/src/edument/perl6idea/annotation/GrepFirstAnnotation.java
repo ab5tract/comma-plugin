@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -14,35 +15,38 @@ import java.util.Objects;
 public class GrepFirstAnnotation implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6MethodCall))
+        if (!(element instanceof Perl6PostfixApplication))
             return;
 
-        // First call is "grep"
-        if (!((Perl6MethodCall)element).getCallName().equals(".grep"))
+        if (!(((Perl6PostfixApplication)element).getCaller() instanceof Perl6PostfixApplication))
+            return;
+        Perl6PostfixApplication innerApplication = (Perl6PostfixApplication)((Perl6PostfixApplication)element).getCaller();
+        Perl6MethodCall grepCall;
+        if (innerApplication != null && innerApplication.getPostfix() instanceof Perl6MethodCall &&
+            ((Perl6MethodCall)innerApplication.getPostfix()).getCallName().equals(".grep")) {
+            grepCall = (Perl6MethodCall)innerApplication.getPostfix();
+        }
+        else {
+            return;
+        }
+
+        PsiElement firstCall = ((Perl6PostfixApplication)element).getPostfix();
+        if (!(firstCall instanceof Perl6MethodCall))
             return;
 
-        Perl6PostfixApplication upperApplication = PsiTreeUtil.getParentOfType(element, Perl6PostfixApplication.class);
-        if (upperApplication == null)
+        if (!((Perl6MethodCall)firstCall).getCallName().equals(".first"))
             return;
 
-        PsiElement nonWhitespacePostfix = upperApplication.skipWhitespacesForward();
-        if (!(nonWhitespacePostfix instanceof Perl6MethodCall))
-            return;
-
-        if (!((Perl6MethodCall)nonWhitespacePostfix).getCallName().equals(".first"))
-            return;
-
-        PsiElement[] grepArgs = ((Perl6MethodCall)element).getCallArguments();
-        PsiElement[] firstArgs = ((Perl6MethodCall)nonWhitespacePostfix).getCallArguments();
+        PsiElement[] grepArgs = grepCall.getCallArguments();
+        PsiElement[] firstArgs = ((Perl6MethodCall)firstCall).getCallArguments();
 
         // Firstly, check if first call is arg-less, otherwise we don't
         // need to calculate grep at all
         if (firstArgs.length != 0 || grepArgs.length != 1)
             return;
 
-        holder.createWeakWarningAnnotation(
-            new TextRange(element.getTextOffset(), nonWhitespacePostfix.getTextOffset() + nonWhitespacePostfix.getTextLength()),
-            "Can be simplified into a single first method call")
-            .registerFix(new GrepFirstFix((Perl6MethodCall)element, (Perl6MethodCall)nonWhitespacePostfix));
+        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Can be simplified into a single first method call")
+            .range(new TextRange(grepCall.getTextOffset(), element.getTextOffset() + element.getTextLength()))
+            .withFix(new GrepFirstFix(grepCall, (Perl6MethodCall)firstCall)).create();
     }
 }

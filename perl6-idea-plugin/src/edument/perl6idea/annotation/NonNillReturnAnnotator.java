@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6RoutineDecl;
@@ -31,6 +32,7 @@ public class NonNillReturnAnnotator implements Annotator {
         if (!Objects.equals("Nil", retType))
             return;
 
-        holder.createErrorAnnotation(call, "A value is returned from subroutine returning Nil");
+        holder.newAnnotation(HighlightSeverity.ERROR, "A value is returned from subroutine returning Nil")
+            .range(call).create();
     }
 }

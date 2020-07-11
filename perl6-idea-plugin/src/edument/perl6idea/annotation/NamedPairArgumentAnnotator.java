@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.annotation.fix.PairSimplificationFix;
@@ -48,8 +49,8 @@ public class NamedPairArgumentAnnotator implements Annotator {
         int prefixLength = Perl6Variable.getTwigil(name) == ' ' ? 1 : 2;
 
         if (Objects.equals(key, name.substring(prefixLength))) {
-            holder.createWeakWarningAnnotation(pair, "Pair literal can be simplified")
-                  .registerFix(new PairSimplificationFix(pair, (Perl6Variable)element));
+            holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Pair literal can be simplified")
+                .range(pair).withFix(new PairSimplificationFix(pair, (Perl6Variable)element)).create();
         }
     }
 }

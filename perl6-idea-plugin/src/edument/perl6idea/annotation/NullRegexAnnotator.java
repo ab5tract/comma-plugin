@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.annotation.fix.NullRegexFix;
 import edument.perl6idea.psi.Perl6Regex;
@@ -13,8 +14,7 @@ public class NullRegexAnnotator implements Annotator {
         if (!(element instanceof Perl6Regex))
             return;
         if (element.getText().isEmpty())
-            holder.createErrorAnnotation(element.getParent(), "Empty regex is not allowed").registerFix(
-                new NullRegexFix()
-            );
+            holder.newAnnotation(HighlightSeverity.ERROR, "Empty regex is not allowed")
+                .range(element.getParent()).withFix(new NullRegexFix()).create();
     }
 }

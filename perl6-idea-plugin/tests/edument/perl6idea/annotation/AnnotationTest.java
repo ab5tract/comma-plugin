@@ -391,7 +391,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testEVALCase4() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; EVAL <error descr=\"Cannot EVAL interpolated expression without MONKEY-SEE-NO-EVAL pragma\">qq[$foo]</error>;");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; <error descr=\"Cannot EVAL interpolated expression without MONKEY-SEE-NO-EVAL pragma\">EVAL qq[$foo]</error>;");
         myFixture.checkHighlighting();
     }
 

@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import edument.perl6idea.annotation.fix.NoEndPointRangeFix;
@@ -30,8 +31,8 @@ public class NoEndpointRangeAnnotator implements Annotator {
             next instanceof Perl6PrefixApplication ||
             next instanceof Perl6PostfixApplication)
             return;
-        holder.createErrorAnnotation(element, "The range operator must have a second argument")
-              .registerFix(new NoEndPointRangeFix(element.getTextOffset() + element.getTextLength()));
+        holder.newAnnotation(HighlightSeverity.ERROR, "The range operator must have a second argument")
+            .range(element).withFix(new NoEndPointRangeFix(element.getTextOffset() + element.getTextLength())).create();
 
     }
 }

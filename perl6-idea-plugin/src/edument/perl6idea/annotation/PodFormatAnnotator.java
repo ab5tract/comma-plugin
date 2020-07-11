@@ -1,6 +1,5 @@
 package edument.perl6idea.annotation;
 
-import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -17,21 +16,21 @@ public class PodFormatAnnotator implements Annotator {
             String formatCode = formatted.getFormatCode();
             switch (formatCode) {
                 case "B": {
-                    Annotation ann = annotationHolder.createAnnotation(HighlightSeverity.INFORMATION,
-                            formatted.getFormattedTextRange(), null);
-                    ann.setTextAttributes(Perl6Highlighter.POD_TEXT_BOLD);
+                    annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .textAttributes(Perl6Highlighter.POD_TEXT_BOLD)
+                        .range(formatted.getFormattedTextRange()).create();
                     break;
                 }
                 case "I": {
-                    Annotation ann = annotationHolder.createAnnotation(HighlightSeverity.INFORMATION,
-                            formatted.getFormattedTextRange(), null);
-                    ann.setTextAttributes(Perl6Highlighter.POD_TEXT_ITALIC);
+                    annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .textAttributes(Perl6Highlighter.POD_TEXT_ITALIC)
+                        .range(formatted.getFormattedTextRange()).create();
                     break;
                 }
                 case "U": {
-                    Annotation ann = annotationHolder.createAnnotation(HighlightSeverity.INFORMATION,
-                            formatted.getFormattedTextRange(), null);
-                    ann.setTextAttributes(Perl6Highlighter.POD_TEXT_UNDERLINE);
+                    annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .textAttributes(Perl6Highlighter.POD_TEXT_UNDERLINE)
+                        .range(formatted.getFormattedTextRange()).create();
                     break;
                 }
             }

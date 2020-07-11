@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6Trait;
@@ -22,10 +23,12 @@ public class NonInheritableComposableDeclAnnotator implements Annotator {
         for (Perl6Trait trait : traits) {
             String modifier = trait.getTraitModifier();
             if (modifier.equals("does")) {
-                holder.createErrorAnnotation(trait, messageBase + "compose a role");
+                holder.newAnnotation(HighlightSeverity.ERROR, messageBase + "compose a role")
+                    .range(trait).create();
             }
             else if (modifier.equals("is")) {
-                holder.createErrorAnnotation(trait, messageBase + "inherit a class");
+                holder.newAnnotation(HighlightSeverity.ERROR, messageBase + "inherit a class")
+                    .range(trait).create();
             }
         }
     }

@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -20,14 +21,10 @@ public class SimplifiedRangeAnnotator implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element.getNode().getElementType() == INFIX))
+        if (!(element instanceof Perl6InfixApplication))
             return;
 
-        Perl6InfixApplication application = PsiTreeUtil.getParentOfType(element, Perl6InfixApplication.class);
-        if (application == null)
-            return;
-
-        PsiElement infix = PsiTreeUtil.getChildOfType(application, Perl6Infix.class);
+        PsiElement infix = PsiTreeUtil.getChildOfType(element, Perl6Infix.class);
         if (infix == null) return;
         String op = infix.getText();
         if (!OPS.contains(op)) return;
@@ -61,9 +58,9 @@ public class SimplifiedRangeAnnotator implements Annotator {
         if (!shouldAnnotate)
             return;
 
-        holder.createWeakWarningAnnotation(
-            new TextRange(rangeStart.getTextOffset(), rangeEnd.getTextOffset() + rangeEnd.getTextLength()), "Range can be simplified")
-            .registerFix(new RangeIntentionFix());
+        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Range can be simplified")
+            .range(new TextRange(rangeStart.getTextOffset(), rangeEnd.getTextOffset() + rangeEnd.getTextLength()))
+            .withFix(new RangeIntentionFix()).create();
     }
 
     private static boolean checkInfix(PsiElement[] children) {

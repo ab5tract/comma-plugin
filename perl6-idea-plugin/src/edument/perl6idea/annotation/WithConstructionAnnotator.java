@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.annotation.fix.UseWithSyntaxFix;
@@ -15,38 +16,41 @@ import java.util.Set;
 
 public class WithConstructionAnnotator implements Annotator {
     public static Set<String> terms = new HashSet<>();
+
     static {
         Collections.addAll(terms, "if", "elsif", "unless");
     }
 
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-        if (!(psiElement instanceof P6Conditional))
+        if (!(psiElement instanceof P6Conditional)) {
             return;
+        }
 
-        P6Conditional conditional = (P6Conditional) psiElement;
+        P6Conditional conditional = (P6Conditional)psiElement;
 
         for (Perl6ConditionalBranch branch : conditional.getBranches()) {
             if (terms.contains(branch.term.getText()) && checkIfReplaceable((branch.condition))) {
-                annotationHolder.createWeakWarningAnnotation(
-                        new TextRange(branch.term.getTextOffset(),
-                                branch.condition.getTextOffset() + branch.condition.getTextLength()),
-                        psiElement instanceof Perl6IfStatement ? "'with' construction can be used instead" : "'without' construction can be used instead"
-                ).registerFix(new UseWithSyntaxFix(branch));
+                annotationHolder.newAnnotation(HighlightSeverity.WEAK_WARNING, psiElement instanceof Perl6IfStatement
+                                                                               ? "'with' construction can be used instead"
+                                                                               : "'without' construction can be used instead")
+                    .range(new TextRange(branch.term.getTextOffset(), branch.condition.getTextOffset() + branch.condition.getTextLength()))
+                    .withFix(new UseWithSyntaxFix(branch)).create();
             }
         }
     }
 
-    private boolean checkIfReplaceable(PsiElement condition) {
-        if (!(condition instanceof Perl6PostfixApplication))
+    private static boolean checkIfReplaceable(PsiElement condition) {
+        if (!(condition instanceof Perl6PostfixApplication)) {
             return false;
+        }
 
         PsiElement maybeMethodCall = condition.getLastChild();
-        if (!(maybeMethodCall instanceof Perl6MethodCall))
+        if (!(maybeMethodCall instanceof Perl6MethodCall)) {
             return false;
+        }
 
-        String methodName = ((Perl6MethodCall) maybeMethodCall).getCallName();
+        String methodName = ((Perl6MethodCall)maybeMethodCall).getCallName();
         return Objects.equals(methodName, ".defined");
-
     }
 }
