@@ -13,23 +13,20 @@ import org.jetbrains.annotations.NotNull;
 public class InterpolatedEVALAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6SubCallName)) return;
-        if (!element.getText().equals("EVAL")) return;
+        if (!(element instanceof Perl6SubCall)) return;
+        if (!((Perl6SubCall)element).getCallName().equals("EVAL")) return;
 
-        PsiElement arg = element.getNextSibling();
-        if (arg == null) return;
-        while (arg instanceof PsiWhiteSpace)
-            arg = arg.getNextSibling();
-        if (arg == null) return;
+        PsiElement[] args = ((Perl6SubCall)element).getCallArguments();
+        if (args == null) return;
 
-        Perl6PsiScope scope = PsiTreeUtil.getParentOfType(arg, Perl6PsiScope.class);
+        Perl6PsiScope scope = PsiTreeUtil.getParentOfType(element, Perl6PsiScope.class);
         while (scope != null) {
             Perl6StatementList list = PsiTreeUtil.findChildOfType(scope, Perl6StatementList.class);
             if (list == null) break;
             Perl6Statement[] stats = PsiTreeUtil.getChildrenOfType(list, Perl6Statement.class);
             if (stats == null) stats = new Perl6Statement[0];
             for (Perl6Statement statement : stats) {
-                if (statement.getTextOffset() > arg.getTextOffset()) break;
+                if (statement.getTextOffset() > element.getTextOffset()) break;
                 for (PsiElement child : statement.getChildren()) {
                     if (!(child instanceof Perl6UseStatement)) continue;
                     String moduleName = ((Perl6UseStatement)child).getModuleName();
@@ -41,14 +38,17 @@ public class InterpolatedEVALAnnotator implements Annotator {
             scope = PsiTreeUtil.getParentOfType(scope, Perl6PsiScope.class);
         }
 
-        if (arg instanceof Perl6StrLiteral) {
-            String t = arg.getText(); // Literal text
-            if (t.startsWith("Q")) return;
-            if (t.startsWith("q") && !t.startsWith("qq")) return;
-            // Check is variable used
-            if (PsiTreeUtil.findChildOfType(arg, Perl6Variable.class) == null) return;
+        for (PsiElement arg : args) {
+            if (arg instanceof Perl6StrLiteral) {
+                String t = arg.getText(); // Literal text
+                if (t.startsWith("Q")) return;
+                if (t.startsWith("q") && !t.startsWith("qq")) return;
+                // Check is variable used
+                if (PsiTreeUtil.findChildOfType(arg, Perl6Variable.class) == null) return;
+            }
         }
+
         holder.newAnnotation(HighlightSeverity.ERROR, "Cannot EVAL interpolated expression without MONKEY-SEE-NO-EVAL pragma")
-            .range(arg).withFix(new AddEvalPragmaFix()).create();
+            .range(element).withFix(new AddEvalPragmaFix()).create();
     }
 }

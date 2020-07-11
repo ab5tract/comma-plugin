@@ -50,7 +50,7 @@ public class NamedPairArgumentAnnotator implements Annotator {
 
         if (Objects.equals(key, name.substring(prefixLength))) {
             holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Pair literal can be simplified")
-                .range(pair).withFix(new PairSimplificationFix(pair, (Perl6Variable)element));
+                .range(pair).withFix(new PairSimplificationFix(pair, (Perl6Variable)element)).create();
         }
     }
 }
