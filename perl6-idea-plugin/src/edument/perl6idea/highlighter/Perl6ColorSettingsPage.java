@@ -114,18 +114,45 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDemoText() {
-        return "use JSON::Tiny;\n\n" +
-               "grammar IPv4 {\n" +
+        return "use v6;\n" +
+               "use JSON::Tiny;\n" +
+               "\n" +
+               "role R[:param] {}\n" +
+               "\n" +
+               "grammar IPv4 is default {\n" +
                "    token TOP { <seg> ** 4 % '.' }\n" +
-               "    token seg { \\d+ { 0 <= $/ <= 255 } }\n" +
-               "}\n\n" +
+               "    token seg {\n" +
+               "        \\d+ { 0 <= $/ <= 255 }\n" +
+               "    }\n" +
+               "\n" +
+               "    proto method dummy() {*}\n" +
+               "    multi method dummy(Cool(Int) $coerced) {!!!}\n" +
+               "    multi method dummy($pos? where 1 ; :alias($named) --> Nil) {\n" +
+               "        constant \\foo = key => 'value';\n" +
+               "        LABEL: [+] self.dummy(:$named);\n" +
+               "    }\n" +
+               "}\n" +
+               "\n" +
                "# Find all IPv4 data sources and show them.\n" +
                "my @data = from-json(slurp 'input.json');\n" +
                "for @data.map(*<from>) -> $from {\n" +
                "    if IPv4.parse($from) {\n" +
-               "        say \"Address: $from\";\n" +
+               "        do say \"Address: $from\";\n" +
                "    }\n" +
-               "}\n";
+               "}\n" +
+               "\n" +
+               "BEGIN {\n" +
+               "    my $capture = \\(\"capture\\n\", 42);\n" +
+               "    quasi { ++$capture[42]++; }\n" +
+               "    my $array[1;1] = ['composed'][0];\n" +
+               "    say @$array, $$array; # <- contextualizers work...\n" +
+               "    \n" +
+               "}\n" +
+               "\n" +
+               "# Regex fun begins!\n" +
+               "'foo' ~~ m:g!^ [(f) <[o]> $<foo>=[]] || 'constant' \\invalid !;\n" +
+               "\n" +
+               "\\";
     }
 
     @Nullable
@@ -134,15 +161,13 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
         return null;
     }
 
-    @NotNull
     @Override
-    public AttributesDescriptor[] getAttributeDescriptors() {
+    public AttributesDescriptor @NotNull [] getAttributeDescriptors() {
         return DESCRIPTORS;
     }
 
-    @NotNull
     @Override
-    public ColorDescriptor[] getColorDescriptors() {
+    public ColorDescriptor @NotNull [] getColorDescriptors() {
         return ColorDescriptor.EMPTY_ARRAY;
     }
 
