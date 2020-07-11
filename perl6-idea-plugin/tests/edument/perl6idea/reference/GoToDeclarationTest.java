@@ -177,6 +177,10 @@ public class GoToDeclarationTest extends CommaFixtureTestCase {
             assertNotNull(var);
             assertEquals("$^a", var.getText());
         });
+        doTest("sub foo { $:a + $<caret>a }", 1, Perl6Variable.class, (var) -> {
+            assertNotNull(var);
+            assertEquals("$:a", var.getText());
+        });
     }
 
     public void doTest(String text, int offset, Class<? extends Perl6PsiElement> clazz, Consumer<PsiElement> check) {
