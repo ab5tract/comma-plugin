@@ -1,6 +1,8 @@
 package edument.perl6idea.actions;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.roots.ContentEntry;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiManager;
@@ -15,7 +17,9 @@ public class ModuleCompletionTest extends CommaFixtureTestCase {
 
     public void testNewModuleProperties() {
         PsiManagerImpl psiManager = (PsiManagerImpl)PsiManager.getInstance(getProject());
-        VirtualFile baseDir = getProject().getBaseDir();
+        ContentEntry[] entries = ModuleRootManager.getInstance(getModule()).getContentEntries();
+        assert entries.length == 1;
+        VirtualFile baseDir = entries[0].getFile();
         NewModuleAction newModuleAction = new NewModuleAction();
 
         // Test project dir case
