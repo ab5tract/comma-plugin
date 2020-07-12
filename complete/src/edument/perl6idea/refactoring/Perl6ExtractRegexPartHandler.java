@@ -1,6 +1,7 @@
 package edument.perl6idea.refactoring;
 
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
@@ -88,7 +89,7 @@ public class Perl6ExtractRegexPartHandler implements RefactoringActionHandler {
     protected NewRegexPartData getNewRegexPartData(Project project, Perl6PsiScope parentToCreateAt, PsiElement[] atoms, boolean isLexical,
                                                    Perl6RegexPartType parentType) {
         CompletableFuture<NewRegexPartData> futureData = new CompletableFuture<>();
-        TransactionGuard.getInstance().submitTransactionAndWait(() -> {
+        ApplicationManager.getApplication().invokeAndWait(() -> {
             Perl6ExtractRegexDialog dialog = new Perl6ExtractRegexDialog(project, getCapturedVariables(parentToCreateAt, atoms), atoms, isLexical, parentType) {
                 @Override
                 protected void doAction() {
