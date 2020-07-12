@@ -1,6 +1,11 @@
 package edument.perl6idea.psi.stub;
 
 import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
+import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.roots.ContentEntry;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.stubs.DefaultStubBuilder;
@@ -36,9 +41,20 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
 
         String filePath = vf.getPath();
         if (FileTypeManager.getInstance().getFileTypeByFile(vf) instanceof Perl6ModuleFileType) {
-            String basePath = file.getProject().getBaseDir().getPath();
-            if (filePath.startsWith(basePath)) {
-                String relPath = filePath.substring(basePath.length() + 1);
+            Module parentModule = ModuleUtilCore.findModuleForFile(vf, file.getProject());
+            if (parentModule == null)
+                return null;
+
+            ContentEntry[] entries = ModuleRootManager.getInstance(parentModule).getContentEntries();
+            if (entries.length != 1)
+                return null;
+
+            VirtualFile moduleDirectory = entries[0].getFile();
+            if (moduleDirectory == null)
+                return null;
+
+            if (filePath.startsWith(moduleDirectory.getPath())) {
+                String relPath = filePath.substring(moduleDirectory.getPath().length() + 1);
                 if (relPath.startsWith("lib/") || relPath.startsWith("lib\\"))
                     relPath = relPath.substring(4);
                 String[] parts = relPath.split("/|\\\\");
