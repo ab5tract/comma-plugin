@@ -47,8 +47,8 @@ public class LocalVariablesTest extends CommaFixtureTestCase {
     }
 
     public void testFormalVariables() {
-        doTest("sub foo { $^a + $<caret> }", "$a", "$^a");
-        doTest("sub foo { $:a + $<caret> }", "$a", "$:a");
+        doTest("sub foo { $^a + $<caret> }", "$a");
+        doTest("sub foo { $:a + $<caret> }", "$a");
     }
 
     public void testRoleParameterVariable() {

@@ -147,7 +147,6 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         if (varName != null) {
             if (Perl6Variable.getTwigil(varName) == '^' ||
                 Perl6Variable.getTwigil(varName) == ':') {
-                collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
                 collector.offerSymbol(
                     new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, Perl6Variable.getSigil(varName) + varName.substring(2)));
             }
