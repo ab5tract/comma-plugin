@@ -100,7 +100,7 @@ sub process-path($path, $cwd, $args, $coverage-dir, %coverage-index, :$pattern) 
 
                 whenever $proc.start(:$ENV) -> $exit {
                     say $output;
-                    say "{ TEST_HARNESS_PREFIX } file $file";
+                    say "{ TEST_HARNESS_PREFIX } file $file.IO().absolute()";
                     try $*OUT.flush;
                     if $cov-file && $cov-file.IO.e {
                         %coverage-index{$file} = $cov-file;

@@ -7,6 +7,7 @@ import com.intellij.execution.testframework.sm.runner.OutputToGeneralTestEventsC
 import com.intellij.openapi.util.Key;
 import com.intellij.util.ArrayUtil;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageVisitor;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tap4j.consumer.TapConsumer;
 import org.tap4j.consumer.TapConsumerException;
@@ -26,7 +27,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
     public static final Pattern EXPECTED_GOT_PATTERN = Pattern.compile("expected: (.+?)\ngot: (.+?)\n", Pattern.DOTALL);
     public static final String TEST_HARNESS_PREFIX = "TEST_HARNESS_PREFIX";
     public static final String FILE_COMMAND = "file";
-    private final String myBaseUrl;
+    private final List<String> myBasePaths;
     @NotNull
     private TapConsumer myConsumer;
     private String currentTap = "";
@@ -35,10 +36,10 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
     public TapOutputToGeneralTestEventsConverter(@NotNull String testFrameworkName,
                                                  @NotNull TestConsoleProperties consoleProperties,
-                                                 String url) {
+                                                 List<String> paths) {
         super(testFrameworkName, consoleProperties);
         myConsumer = TapConsumerFactory.makeTap13YamlConsumer();
-        myBaseUrl = url;
+        myBasePaths = paths;
     }
 
     @Override
@@ -51,13 +52,16 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
         if (outputType == ProcessOutputTypes.STDOUT || outputType == ProcessOutputTypes.STDERR) {
             if (text.startsWith(String.join(" ", TEST_HARNESS_PREFIX, FILE_COMMAND))) {
-                currentFile = text.substring(TEST_HARNESS_PREFIX.length() + FILE_COMMAND.length() + 2, text.length() - 1); // 2 == spaces length
+                currentFile =
+                    text.substring(TEST_HARNESS_PREFIX.length() + FILE_COMMAND.length() + 2, text.length() - 1); // 2 == spaces length
                 if (!currentTap.isEmpty())
                     processTapOutput();
-            } else {
+            }
+            else {
                 currentTap += text;
             }
-        } else if (outputType == ProcessOutputTypes.SYSTEM && text.equals("\n")) {
+        }
+        else if (outputType == ProcessOutputTypes.SYSTEM && text.equals("\n")) {
             // Last time.
             processTapOutput();
         }
@@ -69,13 +73,14 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             TestSet set;
             String testSuiteStarted = ServiceMessageBuilder
                 .testSuiteStarted(calculateSuiteName())
-                .addAttribute("locationHint", myBaseUrl + "/" + currentFile).toString();
+                .addAttribute("locationHint", currentFile).toString();
             handleMessageSend(testSuiteStarted);
             try {
                 set = myConsumer.load(currentTap);
                 processTestsCount(set);
                 processSingleSuite(set.getTapLines());
-            } catch (TapConsumerException e) {
+            }
+            catch (TapConsumerException e) {
                 processBreakage();
             }
             handleMessageSend(ServiceMessageBuilder.testSuiteFinished(calculateSuiteName()).toString());
@@ -85,18 +90,19 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
     @NotNull
     private String calculateSuiteName() {
-        String projectPrefix = myBaseUrl.substring(7);
-        if (currentFile.startsWith(projectPrefix) && currentFile.length() > projectPrefix.length() + 1)
-            return currentFile.substring(projectPrefix.length() + 1);
-        else
-            return currentFile;
+        for (String path : myBasePaths) {
+            if (currentFile.startsWith(path)) {
+                return currentFile.substring(path.length() + 1);
+            }
+        }
+        return currentFile;
     }
 
     private void processBreakage() throws ParseException {
         String name = "Test file died";
         handleMessageSend(ServiceMessageBuilder.testStarted(name).toString());
         String message = ServiceMessageBuilder.testFailed(name)
-                                              .addAttribute("message", String.format("%s", currentTap)).toString();
+            .addAttribute("message", String.format("%s", currentTap)).toString();
         handleMessageSend(message);
         handleMessageSend(ServiceMessageBuilder.testFinished(name).toString());
     }
@@ -169,7 +175,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
     private void processTestsCount(TestSet set) throws ParseException {
         String message = new ServiceMessageBuilder("testCount")
-                .addAttribute("count", String.valueOf(set.getNumberOfTestResults())).toString();
+            .addAttribute("count", String.valueOf(set.getNumberOfTestResults())).toString();
         handleMessageSend(message);
     }
 
@@ -183,7 +189,8 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
                 processSingleTest(sub, stdOut);
                 stdOut = null;
             }
-        } else {
+        }
+        else {
             handleMessageSend(ServiceMessageBuilder.testStarted(testName).toString());
             if (stdOut != null) {
                 ServiceMessageBuilder testStdOut = ServiceMessageBuilder.testStdOut(testName);
@@ -195,12 +202,14 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         //noinspection StatementWithEmptyBody
         if (!hasSubtests && testResult.getStatus() == StatusValues.OK &&
             testResult.getDirective() == null) {
-        } else if (!hasSubtests && ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP) ||
-                   (directive != null && directive.getDirectiveValue() == DirectiveValues.TODO))) {
+        }
+        else if (!hasSubtests && ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP) ||
+                                  (directive != null && directive.getDirectiveValue() == DirectiveValues.TODO))) {
             String testIgnored = ServiceMessageBuilder.testIgnored(testName)
-                    .addAttribute("message", String.format("%s %s", testName, testResult.getDirective().getReason())).toString();
+                .addAttribute("message", String.format("%s %s", testName, testResult.getDirective().getReason())).toString();
             handleMessageSend(testIgnored);
-        } else if (!hasSubtests && testResult.getStatus() == StatusValues.NOT_OK) {
+        }
+        else if (!hasSubtests && testResult.getStatus() == StatusValues.NOT_OK) {
             StringBuilder errorMessageBuilder = new StringBuilder(testResult.getDescription() + "\n");
             for (Comment comment : testResult.getComments()) {
                 errorMessageBuilder.append(comment.getText()).append("\n");
