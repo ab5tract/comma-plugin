@@ -405,9 +405,10 @@ public class Perl6MetaDataComponent {
         if (firstRoot == null) {
             if (myModule == null)
                 return;
+            ContentEntry[] entries = ModuleRootManager.getInstance(myModule).getContentEntries();
             VirtualFile file = FileChooser.chooseFile(
                 FileChooserDescriptorFactory.createSingleFolderDescriptor(),
-                myModule.getProject(), myModule.getProject().getBaseDir());
+                myModule.getProject(), entries.length == 1 && entries[0].getFile() != null ? entries[0].getFile() : null);
             if (file == null) {
                 notifyMetaIssue("Directory was not selected, meta file creation is canceled", NotificationType.INFORMATION);
                 return;
