@@ -8,15 +8,16 @@ import edument.perl6idea.profiler.model.Perl6ProfileModel;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.List;
 
 public class Perl6ProfileNodeRenderer extends ColoredTableCellRenderer {
     private static final SimpleTextAttributes DEFAULT_ATTRIBUTES = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, null);
     private static final SimpleTextAttributes SPECIAL_NODE_ATTRIBUTES = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, new JBColor(
         JBColor.LIGHT_GRAY, Gray._130));
-    private final String myBaseProjectPath;
+    private final List<String> myModuleBasePaths;
 
-    public Perl6ProfileNodeRenderer(String baseProjectPath) {
-        myBaseProjectPath = baseProjectPath;
+    public Perl6ProfileNodeRenderer(List<String> moduleBasePaths) {
+        myModuleBasePaths = moduleBasePaths;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class Perl6ProfileNodeRenderer extends ColoredTableCellRenderer {
         Perl6ProfileModel model = (Perl6ProfileModel)table.getModel();
 
         SimpleTextAttributes style;
-        if (myBaseProjectPath == null || model.isCellInternal(table.convertRowIndexToModel(row), myBaseProjectPath)) {
+        if (myModuleBasePaths == null || model.isCellInternal(table.convertRowIndexToModel(row), myModuleBasePaths)) {
             style = SPECIAL_NODE_ATTRIBUTES;
         } else {
             style = DEFAULT_ATTRIBUTES;
