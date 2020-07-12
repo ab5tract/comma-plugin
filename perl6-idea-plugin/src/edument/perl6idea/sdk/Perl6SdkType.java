@@ -62,7 +62,7 @@ public class Perl6SdkType extends SdkType {
     private Map<String, JSONArray> needNameSymbolCache = new ConcurrentHashMap<>();
     private Map<String, Perl6File> needNameFileCache = new ConcurrentHashMap<>();
 
-    private JSONArray settingJson;
+    private JSONArray settingJson = null;
     private Perl6File setting;
     private final AtomicBoolean mySettingsStarted = new AtomicBoolean(false);
     private Set<String> myPackageStarted = ContainerUtil.newConcurrentSet();
@@ -408,7 +408,7 @@ public class Perl6SdkType extends SdkType {
     public synchronized void invalidateSymbolCache() {
         useNameSymbolCache = new ConcurrentHashMap<>();
         needNameSymbolCache = new ConcurrentHashMap<>();
-        settingJson = new JSONArray();
+        settingJson = null;
         sdkIssueNotified = false;
     }
 
