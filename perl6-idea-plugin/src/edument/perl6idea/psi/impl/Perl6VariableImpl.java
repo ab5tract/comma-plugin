@@ -10,6 +10,7 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -138,5 +139,17 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     @Override
     public PsiElement getNameIdentifier() {
         return getVariableToken();
+    }
+
+    @Override
+    public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
+        String varName = getVariableName();
+        if (varName != null) {
+            if (Perl6Variable.getTwigil(varName) == '^' ||
+                Perl6Variable.getTwigil(varName) == ':') {
+                collector.offerSymbol(
+                    new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, Perl6Variable.getSigil(varName) + varName.substring(2)));
+            }
+        }
     }
 }
