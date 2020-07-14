@@ -10,6 +10,7 @@ import com.intellij.openapi.module.ModifiableModuleModel;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ContentEntry;
@@ -170,6 +171,11 @@ public class Perl6ModulesConfigurator implements ModulesProvider, ModuleEditor.C
         ProjectBuilder builder = wizard.getProjectBuilder();
         if (!builder.validate(myProject, myProject)) return null;
         return builder;
+    }
+
+    public static boolean showDialog(@NotNull Project project, @Nullable final String moduleToSelect, @Nullable final String editorNameToSelect) {
+        final Perl6ProjectStructureConfigurable config = Perl6ProjectStructureConfigurable.getInstance(project);
+        return ShowSettingsUtil.getInstance().editConfigurable(project, config, () -> config.select(moduleToSelect, editorNameToSelect, true));
     }
 
     public void moduleRenamed(@NotNull Module module, String oldName, @NotNull String name) {

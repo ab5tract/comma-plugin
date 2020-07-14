@@ -20,7 +20,6 @@ public class CommaNewProjectWizard extends CommaAbstractProjectWizard {
         init(modulesProvider);
     }
 
-    // XXX Will be used by our configurator later
     public CommaNewProjectWizard(Project project, Component dialogParent, ModulesProvider modulesProvider, String defaultModuleName) {
         super("New Module", project, dialogParent);
         myWizardContext.setDefaultModuleName(defaultModuleName);
