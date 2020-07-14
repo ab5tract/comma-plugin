@@ -55,6 +55,7 @@ public class CommaAddModuleWizard extends CommaAbstractProjectWizard {
         myImportProvider.getBuilder().setFileToImport(defaultPath);
         Perl6ProjectBuilder builder = myImportProvider.getBuilder();
         myWizardContext.setProjectBuilder(builder);
+        myWizardContext.setProjectFileDirectory(defaultPath);
         builder.setUpdate(myWizardContext.getProject() != null);
         init();
     }
