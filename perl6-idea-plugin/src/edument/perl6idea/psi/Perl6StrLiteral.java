@@ -1,5 +1,7 @@
 package edument.perl6idea.psi;
 
-public interface Perl6StrLiteral extends Perl6PsiElement, P6Extractable {
+import com.intellij.psi.PsiLanguageInjectionHost;
+
+public interface Perl6StrLiteral extends Perl6PsiElement, P6Extractable, PsiLanguageInjectionHost {
     String getStringText();
 }
