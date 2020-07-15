@@ -108,7 +108,6 @@
     <lang.inspectionSuppressor language="Perl6" implementationClass="edument.perl6idea.inspection.Perl6InspectionSuppressor"/>
     <moduleConfigurationEditorProvider implementation="edument.perl6idea.project.structure.module.Perl6ModuleConfigurationEditorProvider"
                                        order="FIRST"/>
-    <projectImportProvider implementation="edument.perl6idea.project.Perl6ProjectImportProvider" />
 
     <fileType name="Cro Template" language="CroTemplate" implementationClass="edument.perl6idea.cro.template.CroTemplateFileType"
               fieldName="INSTANCE" extensions="crotmp"/>
