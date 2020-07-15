@@ -134,6 +134,7 @@ public class Perl6ModulesConfigurator implements ModulesProvider, ModuleEditor.C
             List<Module> modules = new ArrayList<>();
             List<Module> committedModules;
             committedModules = builder.commit(myProject, myModuleModel, this);
+            myModuleModel = ModuleManager.getInstance(myProject).getModifiableModel();
             if (committedModules != null) {
                 modules.addAll(committedModules);
             }
@@ -163,6 +164,11 @@ public class Perl6ModulesConfigurator implements ModulesProvider, ModuleEditor.C
         }
         if (!wizard.showAndGet()) {
             return null;
+        }
+        for (Module module : myModuleModel.getModules()) {
+            if (Objects.equals(wizard.getProjectName(), module.getName())) {
+                return null;
+            }
         }
         return wizard.getBuilder(myProject);
     }

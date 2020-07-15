@@ -5,6 +5,7 @@ import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.ide.util.projectWizard.SettingsStep;
 import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.ModifiableModuleModel;
 import com.intellij.openapi.module.Module;
@@ -98,6 +99,8 @@ public class Perl6ModuleBuilder extends ModuleBuilder {
     @Override
     public List<Module> commit(@NotNull Project project, ModifiableModuleModel model, ModulesProvider modulesProvider) {
         List<Module> modules = super.commit(project, model, modulesProvider);
+        if (model != null)
+            WriteAction.run(() -> model.commit());
         if (modules != null) {
             for (Module module : modules) {
                 module.getService(Perl6MetaDataComponent.class).triggerMetaBuild();
