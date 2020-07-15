@@ -99,13 +99,16 @@
     <enterBetweenBracesDelegate language="Perl6" implementationClass="edument.perl6idea.editor.Perl6EnterBetweenBracesDelegate"/>
     <consoleFilterProvider implementation="edument.perl6idea.run.Perl6OutputLinkProvider"/>
     <codeInsight.lineMarkerProvider language="Perl6" implementationClass="edument.perl6idea.providers.Perl6LineMarkerProvider"/>
-    <runLineMarkerContributor language="Perl6" implementationClass="edument.perl6idea.testing.Perl6TestLineMarkerContributor" />
+    <runLineMarkerContributor language="Perl6" implementationClass="edument.perl6idea.testing.Perl6TestLineMarkerContributor"/>
     <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor"/>
     <programRunner implementation="edument.perl6idea.timeline.Perl6TimelineRunner"/>
     <stubIndex implementation="edument.perl6idea.cro.CroRouteIndex"/>
     <codeInsight.parameterInfo language="Perl6" implementationClass="edument.perl6idea.Perl6ParameterInfoHandler"/>
     <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
-    <lang.inspectionSuppressor language="Perl6" implementationClass="edument.perl6idea.inspection.Perl6InspectionSuppressor" />
+    <lang.inspectionSuppressor language="Perl6" implementationClass="edument.perl6idea.inspection.Perl6InspectionSuppressor"/>
+    <moduleConfigurationEditorProvider implementation="edument.perl6idea.project.structure.module.Perl6ModuleConfigurationEditorProvider"
+                                       order="FIRST"/>
+    <projectImportProvider implementation="edument.perl6idea.project.Perl6ProjectImportProvider" />
 
     <fileType name="Cro Template" language="CroTemplate" implementationClass="edument.perl6idea.cro.template.CroTemplateFileType"
               fieldName="INSTANCE" extensions="crotmp"/>
@@ -200,9 +203,9 @@
     <toolWindow id="Raku Grammar Preview" anchor="right" factoryClass="edument.perl6idea.grammar.RakuGrammarPreviewFactory"
                 secondary="false" canCloseContents="false"/>
     <backgroundPostStartupActivity implementation="edument.perl6idea.utils.Perl6ModuleListStarter"/>
-    <projectService configurationSchemaKey="raku.backup.sdk" serviceImplementation="edument.perl6idea.services.Perl6BackupSDKService" />
+    <projectService configurationSchemaKey="raku.backup.sdk" serviceImplementation="edument.perl6idea.services.Perl6BackupSDKService"/>
     <projectService serviceImplementation="edument.perl6idea.utils.Perl6ModuleListFetcher"/>
-    <moduleService serviceImplementation="edument.perl6idea.metadata.Perl6MetaDataComponent" />
+    <moduleService serviceImplementation="edument.perl6idea.metadata.Perl6MetaDataComponent"/>
     <moduleService serviceImplementation="edument.perl6idea.event.ModuleMetaChangeListener"/>
   </extensions>
 
@@ -241,7 +244,8 @@
             description="Opens a tool to preview Raku grammar parsing results">
       <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
     </action>
-    <action id="edument.perl6idea.actions.ShowSecondarySdkSetter" class="edument.perl6idea.actions.ShowSecondarySdkSetter" text="Setup Raku SDK"
+    <action id="edument.perl6idea.actions.ShowSecondarySdkSetter" class="edument.perl6idea.actions.ShowSecondarySdkSetter"
+            text="Setup Raku SDK"
             description="Opens a tool to setup Raku SDK of this project, which can be used by different components">
       <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
     </action>

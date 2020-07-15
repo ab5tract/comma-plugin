@@ -6,7 +6,6 @@
     <projectService serviceImplementation="edument.perl6idea.project.structure.Perl6ProjectStructureConfigurable"/>
     <favoritesListProvider implementation="com.intellij.ide.bookmarks.BookmarksFavoriteListProvider"/>
     <favoritesListProvider implementation="com.intellij.xdebugger.impl.breakpoints.BreakpointsFavoriteListProvider"/>
-    <moduleConfigurationEditorProvider implementation="edument.perl6idea.project.structure.module.Perl6ModuleConfigurationEditorProvider" order="FIRST"/>
     <projectViewPane implementation="com.intellij.ide.projectView.impl.ProjectViewPane"/>
   </extensions>
 
