@@ -133,7 +133,7 @@ public class Perl6ModuleBuilder extends ModuleBuilder {
     @Nullable
     @Override
     public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
-        TypeWizardStepForm step = new TypeWizardStepForm(this);
+        TypeWizardStepForm step = new TypeWizardStepForm(this, context.isCreatingNewProject());
         Disposer.register(parentDisposable, step);
         return step;
     }
