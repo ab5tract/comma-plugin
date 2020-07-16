@@ -1,6 +1,8 @@
 package edument.perl6idea.project.structure.module.dependency.panel;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -14,8 +16,10 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.*;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.IconUtil;
+import com.intellij.util.containers.ArrayListSet;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.JBUI;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.utils.Perl6ModuleListFetcher;
 import gnu.trove.TIntArrayList;
 import net.miginfocom.swing.MigLayout;
@@ -30,6 +34,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Perl6DependenciesPanelImpl extends JPanel {
     private final DependenciesTableModel myModel;
@@ -71,8 +77,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             @Override
             public void run(AnActionButton button) {
                 Perl6DependencyAddAction action = new Perl6DependencyAddAction(
-                  myProject,
-                  new HashSet<>(myModel.getItems()));
+                  myProject, myModel);
                 boolean isOk = action.showAndGet();
                 if (isOk)
                     myModel.addRow(new Perl6DependencyTableItem(
@@ -86,8 +91,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
                 // Should not happen
                 if (getSelectedItem() == null) return;
                 Perl6DependencyAddAction action = new Perl6DependencyAddAction(
-                  myProject,
-                  new HashSet<>(myModel.getItems()), getSelectedItem());
+                  myProject, myModel, getSelectedItem());
                 boolean isOk = action.showAndGet();
                 if (isOk) {
                     int rowIndex = myEntryTable.getSelectedRow();
@@ -176,6 +180,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
     }
 
     private static class Perl6DependencyAddAction extends DialogWrapper {
+        private final DependenciesTableModel myModel;
         private Project myProject;
         private Set<Perl6DependencyTableItem> alreadyAdded;
         private JPanel myPanel;
@@ -196,18 +201,20 @@ public class Perl6DependenciesPanelImpl extends JPanel {
         }
 
         protected Perl6DependencyAddAction(Project project,
-                                           Set<Perl6DependencyTableItem> existing) {
+                                           DependenciesTableModel model) {
             super(project, false);
+            myModel = model;
             myProject = project;
-            alreadyAdded = existing;
+            alreadyAdded = new HashSet<>(model.getItems());
             init();
             setTitle("Add Dependency");
         }
 
-        public Perl6DependencyAddAction(Project project, Set<Perl6DependencyTableItem> set, Perl6DependencyTableItem item) {
+        public Perl6DependencyAddAction(Project project, DependenciesTableModel model, Perl6DependencyTableItem item) {
             super(project, false);
+            myModel = model;
             myProject = project;
-            alreadyAdded = set;
+            alreadyAdded = new HashSet<>(model.getItems());
             init();
             setTitle("Edit Dependency");
             myNameField.setText(item.getEntry());
@@ -224,10 +231,21 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             myPanel.add(myNameField, "wrap");
             myPanel.add(new JLabel("Scope:"));
             myPanel.add(myScopeCombo);
-            ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(myProject, "Getting Raku Modules List"){
+            ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(myProject, "Getting Raku Modules List") {
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
-                    myNameField.setVariants(Perl6ModuleListFetcher.getNames(myProject));
+                    Set<String> names = Perl6ModuleListFetcher.getNames(myProject);
+                    Set<String> localNames = new ArrayListSet<>();
+                    Module currentlyEditedModule = myModel.getState().getRootModel().getModule();
+                    Module[] modules = ModuleManager.getInstance(myProject).getModules();
+                    for (Module module : modules) {
+                        if (module.equals(currentlyEditedModule))
+                            continue;
+                        Perl6MetaDataComponent component = module.getService(Perl6MetaDataComponent.class);
+                        if (component != null && component.getName() != null)
+                            localNames.add(component.getName());
+                    }
+                    myNameField.setVariants(Stream.concat(names.stream(), localNames.stream()).collect(Collectors.toSet()));
                 }
             }, new EmptyProgressIndicator());
             return myPanel;

@@ -78,6 +78,10 @@ public class DependenciesTableModel extends ListTableModel<Perl6DependencyTableI
         init();
     }
 
+    public ModuleConfigurationState getState() {
+        return myState;
+    }
+
     public boolean isModified() {
         return !(myInitialSet.containsAll(getItems()) && getItems().containsAll(myInitialSet));
     }
