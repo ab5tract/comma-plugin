@@ -193,6 +193,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, $bar? is copy) {}");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$foo, <warning descr=\"Explicit `?` on the named parameter $bar is redundant, as all nameds are optional by default\">:$bar?</warning>) {}");
+        myFixture.checkHighlighting();
     }
 
     public void testOptionalParameterAfterDefaultWithReturnType() {
