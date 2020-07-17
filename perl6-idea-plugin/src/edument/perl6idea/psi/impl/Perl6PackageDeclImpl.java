@@ -94,6 +94,9 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (collector.isSatisfied())
             return;
         collector.decreasePriority();
+        String packageName = getPackageName();
+        if (packageName != null && !collector.shouldTraverse(packageName))
+            return;
         contributeFromElders(collector, symbolsAllowed);
     }
 

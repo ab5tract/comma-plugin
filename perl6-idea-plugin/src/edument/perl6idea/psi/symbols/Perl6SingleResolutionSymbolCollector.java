@@ -1,10 +1,9 @@
 package edument.perl6idea.psi.symbols;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollector {
+    private Set<String> traversedNames = new HashSet<>();
     private List<Perl6Symbol> results = new ArrayList<>();
     private String wantedName;
     private Perl6SymbolKind wantedKind;
@@ -13,6 +12,11 @@ public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollecto
     public Perl6SingleResolutionSymbolCollector(String wantedName, Perl6SymbolKind wantedKind) {
         this.wantedName = wantedName;
         this.wantedKind = wantedKind;
+    }
+
+    @Override
+    public boolean shouldTraverse(String packageName) {
+        return traversedNames.add(packageName);
     }
 
     @Override

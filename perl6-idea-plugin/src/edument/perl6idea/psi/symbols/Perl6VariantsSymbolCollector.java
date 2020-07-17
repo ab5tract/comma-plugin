@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Perl6VariantsSymbolCollector implements Perl6SymbolCollector {
+    private Set<String> traversedNames = new HashSet<>();
     private Set<Perl6SymbolKind> wantedKinds;
     private Map<String, Perl6Symbol> seen = new HashMap<>();
     private List<Perl6Symbol> multi = new LinkedList<>();
@@ -12,6 +13,11 @@ public class Perl6VariantsSymbolCollector implements Perl6SymbolCollector {
 
     public Perl6VariantsSymbolCollector(Perl6SymbolKind... wantedKinds) {
         this.wantedKinds = new HashSet<>(Arrays.asList(wantedKinds));
+    }
+
+    @Override
+    public boolean shouldTraverse(String packageName) {
+        return traversedNames.add(packageName);
     }
 
     @Override
