@@ -1,26 +1,17 @@
 package edument.perl6idea.parameterInfo;
 
-import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.utils.parameterInfo.MockCreateParameterInfoContext;
 import com.intellij.testFramework.utils.parameterInfo.MockParameterInfoUIContext;
 import edument.perl6idea.CommaFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.Perl6ParameterInfoHandler;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.P6CodeBlockCall;
 import edument.perl6idea.psi.Perl6RoutineDecl;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
 public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
     public static final Perl6ParameterInfoHandler HANDLER = new Perl6ParameterInfoHandler();
-
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
 
     private void doTest(String text, String args, Consumer<MockParameterInfoUIContext<?>>... checks) {
         StringBuilder builder = new StringBuilder();
