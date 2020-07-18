@@ -21,11 +21,6 @@ public class CommaFixtureTestCase extends BasePlatformTestCase {
         return new Perl6LightProjectDescriptor();
     }
 
-    @Override
-    protected String getTestDataPath() {
-        return "perl6-idea-plugin/testData/completion";
-    }
-
     protected void ensureModuleIsLoaded(String moduleName) throws InterruptedException {
         ensureModuleIsLoaded(moduleName, "use");
     }
