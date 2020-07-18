@@ -1,18 +1,9 @@
 package edument.perl6idea.actions;
 
-import com.intellij.testFramework.LightProjectDescriptor;
 import edument.perl6idea.CommaFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import org.jetbrains.annotations.NotNull;
 
 public class EnterHandlerTest extends CommaFixtureTestCase {
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
     public void testPodContinuation() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "#| Foo!<caret>");
         myFixture.performEditorAction("EditorEnter");
