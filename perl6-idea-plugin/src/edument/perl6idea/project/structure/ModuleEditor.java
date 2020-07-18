@@ -3,6 +3,7 @@ package edument.perl6idea.project.structure;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.module.Module;
@@ -118,8 +119,8 @@ public abstract class ModuleEditor implements Place.Navigator, Disposable {
         if (myModifiableRootModel == null) {
             final Module module = getModule();
             if (module != null) {
-                myModifiableRootModel =
-                    ModuleRootManagerEx.getInstanceEx(module).getModifiableModel(new UIRootConfigurationAccessor(myProject));
+                ReadAction.run(() -> myModifiableRootModel =
+                    ModuleRootManagerEx.getInstanceEx(module).getModifiableModel(new UIRootConfigurationAccessor(myProject)));
             }
         }
         return myModifiableRootModel;
