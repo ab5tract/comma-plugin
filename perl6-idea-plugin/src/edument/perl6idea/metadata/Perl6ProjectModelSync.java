@@ -20,12 +20,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class Perl6ProjectModelSync {
     public static void syncExternalLibraries(Module module, Set<String> firstLevelDeps) {
         ApplicationManager.getApplication().invokeLaterOnWriteThread(() -> ModuleRootModificationUtil.updateModel(module, model -> {
-            Set<String> completeMETADependencies = firstLevelDeps;
+            Set<String> completeMETADependencies = ConcurrentHashMap.newKeySet();
+            completeMETADependencies.addAll(firstLevelDeps);
             Sdk sdk = obtainSDKAndGatherLibraryDeps(module, firstLevelDeps, model, completeMETADependencies);
             Map<String, Perl6MetaDataComponent> projectModules = getProjectModules(module);
             Set<String> entriesPresentInMETA = new HashSet<>();
