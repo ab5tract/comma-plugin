@@ -43,7 +43,8 @@ public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierO
     }
 
     default boolean isExported() {
-        return findTrait("is", "export") != null;
+        return findTrait("is", "export") != null ||
+               !getScope().equals("my");
     }
 
     default String getCutName(String text) {

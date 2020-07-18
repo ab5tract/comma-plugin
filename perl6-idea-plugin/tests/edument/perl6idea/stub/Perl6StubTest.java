@@ -57,7 +57,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
         assertEquals(1, childrenStubs.size());
         Perl6EnumStub enumStub = (Perl6EnumStub)childrenStubs.get(0);
         assertEquals("Class", enumStub.getTypeName());
-        assertFalse(enumStub.isExported());
+        assertTrue(enumStub.isExported());
         assertEquals("our", enumStub.getScope());
         assertEquals(Arrays.asList("Wizard", "Crusader", "Priest"), enumStub.getEnumValues());
     }
@@ -112,7 +112,9 @@ public class Perl6StubTest extends CommaFixtureTestCase {
 
     public void testVariableScopedDependantStubbing() {
         doTest("my $foo; our $baz",
-                "Perl6FileStubImpl\n");
+                "Perl6FileStubImpl\n" +
+                "  SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n" +
+                "    VARIABLE_DECLARATION:Perl6VariableDeclStubImpl\n");
         doTest("has $foo;",
                 "Perl6FileStubImpl\n" +
                         "  SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n" +

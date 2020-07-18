@@ -169,7 +169,7 @@ public class FindUsageTest extends CommaFixtureTestCase {
         myFixture.configureByFiles("IdeaFoo5/Base.pm6", "IdeaFoo5/User.pm6");
         myFixture.getEditor().getCaretModel().moveToOffset(50);
         Collection<UsageInfo> usages = myFixture.findUsages(myFixture.getElementAtCaret());
-        assertEquals(0, usages.size());
+        assertEquals(2, usages.size());
     }
 
     public void testEnum() {
