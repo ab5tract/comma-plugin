@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class Perl6ProjectModelSync {
     public static void syncExternalLibraries(Module module, Set<String> firstLevelDeps) {
+        if (ApplicationManager.getApplication().isUnitTestMode())
+            return;
         ApplicationManager.getApplication().invokeLaterOnWriteThread(() -> ModuleRootModificationUtil.updateModel(module, model -> {
             Set<String> completeMETADependencies = ConcurrentHashMap.newKeySet();
             completeMETADependencies.addAll(firstLevelDeps);
