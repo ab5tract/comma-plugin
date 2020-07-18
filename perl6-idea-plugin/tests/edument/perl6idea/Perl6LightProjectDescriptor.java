@@ -1,11 +1,12 @@
 package edument.perl6idea;
 
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.roots.ContentEntry;
-import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.RootModelProvider;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.*;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.LightProjectDescriptor;
@@ -17,24 +18,32 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class Perl6LightProjectDescriptor extends LightProjectDescriptor {
+    @Override
+    public void setUpProject(@NotNull Project project, @NotNull SetupHandler handler) {
+        WriteAction.run(() -> {
+            Module module = createMainModule(project);
+            ModuleRootModificationUtil.updateModel(module, (model) -> {
+                model.addContentEntry(Paths.get(module.getModuleFilePath()).getParent().toUri().toString());
+            });
+            handler.moduleCreated(module);
+            VirtualFile sourceRoot = createSourcesRoot(module);
+            if (sourceRoot != null) {
+                handler.sourceRootCreated(sourceRoot);
+            }
+        });
+    }
+
     @Nullable
     @Override
     public VirtualFile createSourcesRoot(@NotNull Module module) {
-        ContentEntry[] entries = ModuleRootManager.getInstance(module).getContentEntries();
-        if (entries.length == 0) {
-            ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
-            String stringPath = ModuleUtilCore.getModuleDirPath(module);
-            ContentEntry entry = rootModel.addContentEntry(Paths.get(stringPath).toUri().toString());
-            entries = new ContentEntry[]{entry};
-            rootModel.commit();
-        }
-        else if (entries.length != 1) {
-            assert false;
-        }
-        VirtualFile moduleRoot = entries[0].getFile();
+        VirtualFile moduleRoot = ModuleRootManager.getInstance(module).getContentEntries()[0].getFile();
         assert moduleRoot != null;
         moduleRoot.refresh(false, true);
         VirtualFile srcRoot = doCreateSourceRoot(moduleRoot, "lib");
+        ModuleRootModificationUtil.updateModel(module, model -> {
+            ContentEntry[] entries = model.getContentEntries();
+            entries[0].addSourceFolder(srcRoot, false);
+        });
         registerSourceRoot(module.getProject(), srcRoot);
         return srcRoot;
     }
