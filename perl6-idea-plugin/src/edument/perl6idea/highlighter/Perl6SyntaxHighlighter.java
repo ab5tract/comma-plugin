@@ -17,6 +17,9 @@ public class Perl6SyntaxHighlighter extends SyntaxHighlighterBase {
     static {
         ATTRIBUTES.put(Perl6TokenTypes.BAD_CHARACTER, Perl6Highlighter.BAD_CHARACTER);
         ATTRIBUTES.put(Perl6TokenTypes.COMMENT, Perl6Highlighter.COMMENT);
+        ATTRIBUTES.put(Perl6TokenTypes.COMMENT_STARTER, Perl6Highlighter.COMMENT);
+        ATTRIBUTES.put(Perl6TokenTypes.COMMENT_QUOTE_OPEN, Perl6Highlighter.COMMENT);
+        ATTRIBUTES.put(Perl6TokenTypes.COMMENT_QUOTE_CLOSE, Perl6Highlighter.COMMENT);
         ATTRIBUTES.put(Perl6TokenTypes.STATEMENT_CONTROL, Perl6Highlighter.STATEMENT_CONTROL);
         ATTRIBUTES.put(Perl6TokenTypes.PHASER, Perl6Highlighter.PHASER);
         ATTRIBUTES.put(Perl6TokenTypes.LABEL_NAME, Perl6Highlighter.LABEL_NAME);
