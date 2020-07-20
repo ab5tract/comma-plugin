@@ -212,7 +212,7 @@ grammar MAIN {
     }
 
     token pre-comment-multi {
-        <?before '#|' <.has-delimiter>>
+        <?before '#|' <.opener>>
         :my $*STARTER = '';
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
@@ -235,6 +235,7 @@ grammar MAIN {
     }
 
     token pre-comment {
+        <?before '#|' \h>
         <.start-element('POD_PRE_COMMENT')>
         <.start-token('COMMENT_STARTER')>
         '#|'
@@ -246,6 +247,7 @@ grammar MAIN {
     }
 
     token post-comment {
+        <?before '#=' \h>
         <.start-element('POD_POST_COMMENT')>
         <.start-token('COMMENT_STARTER')>
         '#='
@@ -257,7 +259,7 @@ grammar MAIN {
     }
 
     token post-comment-multi {
-        <?before '#=' <.has-delimiter>>
+        <?before '#=' <.opener>>
         :my $*STARTER = '';
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';

@@ -278,6 +278,9 @@ my class GrammarCompiler {
             when 'peek-delimiters' {
                 $append-to.push: unless(this-call('peekDelimiters'), [backtrack()]);
             }
+            when 'opener' {
+                $append-to.push: unless(this-call('opener'), [backtrack()]);
+            }
             when 'bracket-ending' {
                 $append-to.push: unless(this-call('bracketEnding'), [backtrack()]);
             }

@@ -12,7 +12,7 @@ use P6GrammarToIdea::AST;
 # inside of a token are not considered, for example. However, a quantifier or
 # alternation falling outside of any token will be part of the model.
 
-my constant %IGNORE-NAMES = set 'alpha', 'ww', 'MARKER', 'MARKED', 'peek-delimiters',
+my constant %IGNORE-NAMES = set 'alpha', 'ww', 'MARKER', 'MARKED', 'peek-delimiters', 'opener',
                                 'bracket-ending', 'start-queue-heredoc', 'has-heredoc',
                                 'end-queue-heredoc', 'dequeue-heredoc', 'scope-push',
                                 'scope-pop', 'start-symbol', 'end-symbol', 'is-name';
