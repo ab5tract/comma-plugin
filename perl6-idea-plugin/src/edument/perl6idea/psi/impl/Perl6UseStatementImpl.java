@@ -61,8 +61,6 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                 Set<String> seen = new HashSet<>();
                 seen.add(name);
                 file.contributeGlobals(collector, seen);
-                if (collector.isSatisfied())
-                    return;
             }
             else {
                 Collection<Perl6File> elements = StubIndex.getElements(Perl6StubIndexKeys.PROJECT_MODULES, name, project, GlobalSearchScope.allScope(project), Perl6File.class);
@@ -76,37 +74,6 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                 Perl6File file = Perl6SdkType.getInstance().getPsiFileForModule(project, name, getText());
                 if (file != null) {
                     file.contributeGlobals(collector, new HashSet<>());
-                    if (collector.isSatisfied())
-                        return;
-                }
-            }
-
-            // Workaround for https://intellij-support.jetbrains.com/hc/en-us/community/posts/360000437020-Usage-of-StringStubIndexExtension-during-unit-testing
-            // Quite a slow manual method which does not use stubs, that we hardly fallback to "in real life"
-            Collection <VirtualFile> slowFound = FileTypeIndex.getFiles(
-                Perl6ModuleFileType.INSTANCE,
-                GlobalSearchScope.projectScope(getProject()));
-
-            String newName = String.format(
-                "lib/%s.%s",
-                name.replaceAll("::", "/"), Perl6ModuleFileType.INSTANCE.getDefaultExtension()
-            );
-            for (VirtualFile file : slowFound) {
-                String path = file.getCanonicalPath();
-                if (path == null) continue;
-                if (!path.endsWith(newName)) continue;
-                PsiFile psiFile = PsiManager.getInstance(getProject()).findFile(file);
-                if (psiFile instanceof Perl6File) {
-                    for (Perl6PsiDeclaration export : ((Perl6File)psiFile).getExports()) {
-                        if (export instanceof Perl6LexicalSymbolContributor) {
-                            ((Perl6LexicalSymbolContributor)export).contributeLexicalSymbols(collector);
-                            if (collector.isSatisfied())
-                                return;
-                        }
-                    }
-                    Set<String> seen = new HashSet<>();
-                    seen.add(name);
-                    ((Perl6File)psiFile).contributeGlobals(collector, seen);
                 }
             }
         }

@@ -47,6 +47,11 @@ public class Perl6FileHandler extends ArchiveHandler {
             return entries;
         }
 
+        if (sdk == null) {
+            Perl6SdkType.getInstance().reactToSDKIssue(null, "Could not use Raku SDK to obtain dependency sources");
+            return entries;
+        }
+
         try {
             List<String> providesList = executeLocateScript(sdk, matcher.group(2));
 

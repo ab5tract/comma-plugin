@@ -1,12 +1,10 @@
 package edument.perl6idea.metadata;
 
-import com.intellij.execution.ExecutionException;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.components.Service;
@@ -15,29 +13,20 @@ import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleComponent;
-import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.*;
-import com.intellij.openapi.roots.impl.libraries.LibraryEx;
-import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.Function;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
-import edument.perl6idea.library.Perl6LibraryType;
 import edument.perl6idea.module.Perl6ModuleType;
-import edument.perl6idea.sdk.Perl6SdkType;
-import edument.perl6idea.utils.Perl6CommandLine;
-import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -47,7 +36,7 @@ public class Perl6MetaDataComponent {
     public static final String META6_JSON_NAME = "META6.json";
     public static final String META_OBSOLETE_NAME = "META.info";
     private static final Logger LOG = Logger.getInstance(Perl6MetaDataComponent.class);
-    private Module myModule = null;
+    public Module module = null;
     private VirtualFile myMetaFile = null;
     private JSONObject myMeta = null;
 
@@ -57,9 +46,9 @@ public class Perl6MetaDataComponent {
         if (name == null || !name.equals(Perl6ModuleType.getInstance().getId()))
             return;
 
-        myModule = module;
+        this.module = module;
 
-        myModule.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
+        this.module.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             @Override
             public void after(@NotNull List<? extends VFileEvent> events) {
                 for (VFileEvent event : events) {
@@ -70,7 +59,7 @@ public class Perl6MetaDataComponent {
                     myMeta = checkMetaSanity();
                     saveFile();
                     if (myMeta != null) {
-                        syncExternalLibraries(myMeta);
+                        Perl6ProjectModelSync.syncExternalLibraries(Perl6MetaDataComponent.this.module, getAllDependencies());
                     }
                 }
             }
@@ -96,123 +85,8 @@ public class Perl6MetaDataComponent {
 
         // Load dependencies
         if (myMeta != null) {
-            syncExternalLibraries(myMeta);
+            Perl6ProjectModelSync.syncExternalLibraries(this.module, getAllDependencies());
         }
-    }
-
-    private void syncExternalLibraries(JSONObject meta) {
-        Application application = ApplicationManager.getApplication();
-        Sdk sdk;
-        try {
-            sdk = ProjectRootManager.getInstance(myModule.getProject()).getProjectSdk();
-            if (sdk == null) {
-                application.invokeLater(() -> application.runWriteAction(() -> {
-                    ModifiableRootModel model = ModuleRootManager.getInstance(myModule).getModifiableModel();
-                    for (OrderEntry entry : model.getOrderEntries()) {
-                        model.removeOrderEntry(entry);
-                    }
-                    model.commit();
-                }));
-                return;
-            }
-        } catch (AssertionError ex) {
-            // The user likely closed the project already and the exception is
-            // caused by disposing of the Project object, thus just ignore
-            // and try to sync next time.
-            return;
-        }
-
-        // Next thing is syncing META6.json dependencies with the libraries of the module
-        // First, collect names of all dependencies that should be in this module
-        Set<String> dependenciesFromMeta = new HashSet<>();
-        List<Object> starterDeps = new ArrayList<>();
-        try {
-            starterDeps.addAll(meta.getJSONArray("depends").toList());
-            starterDeps.addAll(meta.getJSONArray("test-depends").toList());
-            starterDeps.addAll(meta.getJSONArray("build-depends").toList());
-        } catch (JSONException ignored) {} // It purely means there was e.g. no key or meta may be corrupted, so we should abort synking anyway
-
-        if (starterDeps.size() == 0) return;
-
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            for (Object dep : starterDeps) {
-                try {
-                    if (!(dep instanceof String))
-                        continue;
-                    dependenciesFromMeta.add((String)dep);
-                    File locateScript = Perl6Utils.getResourceAsFile("zef/gather-deps.p6");
-                    if (locateScript == null)
-                        throw new ExecutionException("Resource bundle is corrupted: locate script is missing");
-                    Perl6CommandLine depsCollectorScript = new Perl6CommandLine(sdk);
-                    depsCollectorScript.addParameter(locateScript.getAbsolutePath());
-                    depsCollectorScript.addParameter((String)dep);
-                    dependenciesFromMeta.addAll(depsCollectorScript.executeAndRead());
-                }
-                catch (ExecutionException e) {
-                    Perl6SdkType.getInstance().reactToSDKIssue(myModule.getProject(), "Cannot use current Raku SDK");
-                }
-            }
-
-            Set<String> existingLibraryNames = new HashSet<>();
-            try {
-                if (myModule.isDisposed())
-                    return;
-                ModuleRootManager.getInstance(myModule).orderEntries().forEachLibrary(library -> {
-                    existingLibraryNames.add(library.getName());
-                    return true;
-                });
-                // Second, remove libraries that are not specifies in META
-                removeRedundantLibraries(application, existingLibraryNames, dependenciesFromMeta);
-                dependenciesFromMeta.removeAll(existingLibraryNames);
-                // Third, add those specified there, but no duplicates, hence the remove above
-                syncMetaEntriesIntoLibraries(sdk, application, dependenciesFromMeta);
-            } catch (Exception ex) {
-                LOG.warn(ex);
-            }
-        });
-    }
-
-    private void removeRedundantLibraries(Application application, Set<String> libraryNames, Set<String> metaEntries) {
-        application.invokeAndWait(() -> {
-            libraryNames.removeAll(metaEntries);
-            for (String redundant : libraryNames) {
-                ModuleRootModificationUtil.updateModel(myModule, model -> {
-                    Library library = model.getModuleLibraryTable().getLibraryByName(redundant);
-                    if (library != null) {
-                    OrderEntry redundantEntry = model.findLibraryOrderEntry(library);
-                        if (redundantEntry != null)
-                            model.removeOrderEntry(redundantEntry);
-                    }
-                });
-            }
-        });
-    }
-
-    private void syncMetaEntriesIntoLibraries(Sdk sdk, Application application, Set<String> missingEntries) {
-        if (missingEntries.isEmpty())
-            return;
-
-        application.invokeAndWait(() -> application.runWriteAction(() -> {
-            for (String missingEntry : missingEntries) {
-                String url = String.format("raku://%d:%s!/", sdk.getName().hashCode(), missingEntry);
-                ModuleRootModificationUtil.updateModel(myModule, model -> {
-                    LibraryEx library = (LibraryEx)model.getModuleLibraryTable().createLibrary(missingEntry);
-                    LibraryEx.ModifiableModelEx libraryModel = library.getModifiableModel();
-                    libraryModel.setKind(Perl6LibraryType.LIBRARY_KIND);
-
-                    for (String rootUrl : Collections.singletonList(url)) {
-                        libraryModel.addRoot(rootUrl, OrderRootType.SOURCES);
-                    }
-
-                    LibraryOrderEntry entry = model.findLibraryOrderEntry(library);
-                    assert entry != null : library;
-                    entry.setScope(DependencyScope.COMPILE);
-                    entry.setExported(false);
-
-                    application.invokeAndWait(() -> WriteAction.run(libraryModel::commit));
-                });
-            }
-        }));
     }
 
     private VirtualFile checkOldMetaFile(VirtualFile metaParent) {
@@ -301,7 +175,7 @@ public class Perl6MetaDataComponent {
         myMetaFile = metaFile;
         myMeta = checkMetaSanity();
         if (myMeta != null) {
-            syncExternalLibraries(myMeta);
+            Perl6ProjectModelSync.syncExternalLibraries(module, getAllDependencies());
         }
     }
 
@@ -331,6 +205,14 @@ public class Perl6MetaDataComponent {
         dependsArray.put(name);
         myMeta.put(key, dependsArray);
         saveFile();
+    }
+
+    public Set<String> getAllDependencies() {
+        Set<String> metaDependencies = new HashSet<>();
+        metaDependencies.addAll(getDepends(false));
+        metaDependencies.addAll(getTestDepends(false));
+        metaDependencies.addAll(getBuildDepends(false));
+        return metaDependencies;
     }
 
     public List<String> getDepends(boolean normalize) {
@@ -403,11 +285,12 @@ public class Perl6MetaDataComponent {
         if (firstRoot == null)
             firstRoot = calculateMetaParent();
         if (firstRoot == null) {
-            if (myModule == null)
+            if (module == null)
                 return;
+            ContentEntry[] entries = ModuleRootManager.getInstance(module).getContentEntries();
             VirtualFile file = FileChooser.chooseFile(
                 FileChooserDescriptorFactory.createSingleFolderDescriptor(),
-                myModule.getProject(), myModule.getProject().getBaseDir());
+                module.getProject(), entries.length == 1 && entries[0].getFile() != null ? entries[0].getFile() : null);
             if (file == null) {
                 notifyMetaIssue("Directory was not selected, meta file creation is canceled", NotificationType.INFORMATION);
                 return;
@@ -428,7 +311,7 @@ public class Perl6MetaDataComponent {
                 myMetaFile = metaFile;
 
                 if (shouldOpenEditor)
-                    FileEditorManager.getInstance(myModule.getProject()).openFile(metaFile, true);
+                    FileEditorManager.getInstance(module.getProject()).openFile(metaFile, true);
             }
             catch (IOException e) {
                 ex.set(e);
@@ -441,9 +324,9 @@ public class Perl6MetaDataComponent {
     }
 
     private VirtualFile calculateMetaParent() {
-        if (myModule == null)
+        if (module == null)
             return null;
-        VirtualFile[] sourceRoots = ModuleRootManager.getInstance(myModule).getSourceRoots();
+        VirtualFile[] sourceRoots = ModuleRootManager.getInstance(module).getSourceRoots();
         for (VirtualFile root : sourceRoots) {
             if (!root.getName().equals("lib")) continue;
             return root.getParent();
@@ -579,8 +462,8 @@ public class Perl6MetaDataComponent {
             notification.addAction(new AnAction(String.format("Open %s", META6_JSON_NAME)) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
-                    if (myModule.isDisposed()) return;
-                    FileEditorManager.getInstance(myModule.getProject()).openFile(myMetaFile, true);
+                    if (module.isDisposed()) return;
+                    FileEditorManager.getInstance(module.getProject()).openFile(myMetaFile, true);
                     notification.expire();
                 }
             });
@@ -595,7 +478,7 @@ public class Perl6MetaDataComponent {
                 }
             });
         }
-        Notifications.Bus.notify(notification, myModule.getProject());
+        Notifications.Bus.notify(notification, module.getProject());
     }
 
     private void notifyMissingMETA() {
@@ -609,8 +492,8 @@ public class Perl6MetaDataComponent {
             public void actionPerformed(@NotNull AnActionEvent e) {
                 try {
                     notification.expire();
-                    if (myModule.isDisposed()) return;
-                    createStubMetaFile(myModule.getName(), null, true);
+                    if (module.isDisposed()) return;
+                    createStubMetaFile(module.getName(), null, true);
                 }
                 catch (IOException e1) {
                     Notifications.Bus.notify(new Notification(

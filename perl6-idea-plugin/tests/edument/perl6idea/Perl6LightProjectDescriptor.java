@@ -1,47 +1,51 @@
 package edument.perl6idea;
 
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.ModuleRootModificationUtil;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.LightProjectDescriptor;
+import edument.perl6idea.module.Perl6ModuleBuilder;
+import edument.perl6idea.module.Perl6ModuleType;
+import edument.perl6idea.module.Perl6ModuleWizardStep;
+import edument.perl6idea.utils.Perl6ProjectType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Perl6LightProjectDescriptor extends LightProjectDescriptor {
-    @Nullable
     @Override
-    public VirtualFile createSourcesRoot(@NotNull Module module) {
-        VirtualFile projectRoot = module.getProject().getBaseDir();
-        assert projectRoot != null;
-        projectRoot.refresh(false, true);
-        VirtualFile srcRoot = doCreateSourceRoot(projectRoot, "lib");
-        registerSourceRoot(module.getProject(), srcRoot);
-        return srcRoot;
+    public @NotNull String getModuleTypeId() {
+        return Perl6ModuleType.ID;
     }
 
     @Override
-    protected VirtualFile doCreateSourceRoot(VirtualFile root, String srcPath) {
-        VirtualFile srcRoot;
-        try {
-            VirtualFile child = root.findChild(srcPath);
-            if (child != null)
-                child.delete(this);
-            srcRoot = root.createChildDirectory(this, srcPath);
-            cleanSourceRoot(srcRoot);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return srcRoot;
+    public void setUpProject(@NotNull Project project, @NotNull SetupHandler handler) {
+        WriteAction.run(() -> createRakuModule(project, handler, "Module::Outer",
+                                           FileUtil.join(FileUtil.getTempDirectory(), TEST_MODULE_NAME + ".iml")));
     }
 
-    private void cleanSourceRoot(VirtualFile contentRoot) throws IOException {
-        LocalFileSystem vfs = (LocalFileSystem) contentRoot.getFileSystem();
-        for (VirtualFile child : contentRoot.getChildren()) {
-            if (vfs.exists(child))
-                child.delete(this);
+    protected void createRakuModule(@NotNull Project project,
+                                    @NotNull LightProjectDescriptor.@NotNull SetupHandler handler,
+                                    String moduleName,
+                                    String moduleFilePath) {
+        Perl6ModuleBuilder builder = new Perl6ModuleBuilder();
+        builder.setPerl6ModuleType(Perl6ProjectType.PERL6_MODULE);
+        builder.setModuleFilePath(moduleFilePath);
+        Map<String, String> data = new HashMap<>();
+        data.put(Perl6ModuleWizardStep.MODULE_NAME, moduleName);
+        builder.updateLocalBuilder(data);
+        Module module = createModule(project, moduleFilePath);
+        ModuleRootModificationUtil.updateModel(module, (model) -> builder.setupRootModel(model));
+        handler.moduleCreated(module);
+        VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots();
+        for (VirtualFile root : roots) {
+            if (root.getName().equals("lib"))
+                handler.sourceRootCreated(root);
         }
     }
 }

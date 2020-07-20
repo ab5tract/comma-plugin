@@ -92,7 +92,7 @@ public class Perl6ModuleStructureConfigurable extends Perl6StructureConfigurable
 
     @Override
     public @Nls(capitalization = Nls.Capitalization.Title) String getDisplayName() {
-        return "Distributions";
+        return "Modules";
     }
 
     @Override

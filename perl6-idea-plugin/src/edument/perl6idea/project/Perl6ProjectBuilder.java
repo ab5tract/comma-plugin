@@ -2,6 +2,7 @@ package edument.perl6idea.project;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ProjectBuilder;
+import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.*;
@@ -9,7 +10,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -34,11 +34,14 @@ import java.util.List;
 import static com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor;
 
 public class Perl6ProjectBuilder extends ProjectBuilder {
+    private final WizardContext myContext;
     private boolean myUpdate;
     private String myFileToImport;
     private final Logger LOG = Logger.getInstance(getClass());
 
-    public Perl6ProjectBuilder() {}
+    public Perl6ProjectBuilder(@Nullable WizardContext context) {
+        myContext = context;
+    }
 
     @NotNull
     public String getName() {
@@ -64,7 +67,7 @@ public class Perl6ProjectBuilder extends ProjectBuilder {
 
     @Nullable
     @Override
-    public List<Module> commit(Project project,
+    public List<Module> commit(@NotNull Project project,
                                ModifiableModuleModel model,
                                ModulesProvider modulesProvider) {
         // XXX This builder could be used when importing project from Project Structure,
@@ -75,18 +78,19 @@ public class Perl6ProjectBuilder extends ProjectBuilder {
                 final LocalFileSystem lfs = LocalFileSystem.getInstance();
                 String metaParentDirectory = Paths.get(getFileToImport()).toString();
                 String path = FileUtil.toSystemIndependentName(metaParentDirectory);
-                VirtualFile contentRoot = lfs.findFileByPath(
-                    path);
+                VirtualFile contentRoot = lfs.findFileByPath(path);
                 if (contentRoot == null) return;
-                ModifiableModuleModel manager = ModuleManager.getInstance(project).getModifiableModel();
-                String name = Paths.get(contentRoot.getPath(), project.getName() + ".iml").toString();
-                Module module = manager.newModule(name, Perl6ModuleType.getInstance().getId());
+                ModifiableModuleModel modelToPatch = model != null ? model : ModuleManager.getInstance(project).getModifiableModel();
+                String moduleName = myContext == null ? project.getName() : myContext.getProjectName();
+                String name = Paths.get(contentRoot.getPath(), moduleName + ".iml").toString();
+                Module module = modelToPatch.newModule(name, Perl6ModuleType.getInstance().getId());
+                result.add(module);
                 ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
                 ContentEntry entry = rootModel.addContentEntry(contentRoot);
                 addSourceDirectory("lib", contentRoot, entry, false);
                 addSourceDirectory("bin", contentRoot, entry, false);
                 addSourceDirectory("t", contentRoot, entry, true);
-                manager.commit();
+                modelToPatch.commit();
                 rootModel.commit();
                 final PropertiesComponent properties = PropertiesComponent.getInstance(project);
                 final String selectedJdkProperty = "raku.sdk.selected";

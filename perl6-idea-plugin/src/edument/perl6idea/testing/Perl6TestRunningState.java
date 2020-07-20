@@ -31,16 +31,15 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.sun.javafx.PlatformUtil;
-import edument.perl6idea.run.Perl6DebuggableConfiguration;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6ScriptRunner;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -188,7 +187,15 @@ public class Perl6TestRunningState extends CommandLineState {
         @Override
         public OutputToGeneralTestEventsConverter createTestEventsConverter(@NotNull String testFrameworkName,
                                                                             @NotNull TestConsoleProperties consoleProperties) {
-            return new TapOutputToGeneralTestEventsConverter(testFrameworkName, consoleProperties, getProject().getBaseDir().getUrl());
+            Project project = consoleProperties.getProject();
+            List<String> bases = new ArrayList<>();
+            for (Module module : ModuleManager.getInstance(project).getModules()) {
+                ContentEntry[] entries = ModuleRootManager.getInstance(module).getContentEntries();
+                if (entries.length == 1 && entries[0].getFile() != null) {
+                    bases.add(entries[0].getFile().getPath());
+                }
+            }
+            return new TapOutputToGeneralTestEventsConverter(testFrameworkName, consoleProperties, bases);
         }
     }
 }

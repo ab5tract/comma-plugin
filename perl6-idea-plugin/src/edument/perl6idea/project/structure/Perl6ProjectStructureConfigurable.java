@@ -6,6 +6,8 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.BaseConfigurable;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
@@ -70,6 +72,20 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
 
     public Perl6StructureConfigurableContext getContext() {
         return myContext;
+    }
+
+    public ActionCallback select(@Nullable final String moduleToSelect, @Nullable String editorNameToSelect, final boolean requestFocus) {
+        Place place = createModulesPlace();
+        if (moduleToSelect != null) {
+            final Module module = ModuleManager.getInstance(myProject).findModuleByName(moduleToSelect);
+            assert module != null;
+            place = place.putPath(MasterDetailsComponent.TREE_OBJECT, module).putPath(ModuleEditor.SELECTED_EDITOR_NAME, editorNameToSelect);
+        }
+        return navigateTo(place, requestFocus);
+    }
+
+    public Place createModulesPlace() {
+        return createPlaceFor(myModulesConfigurable);
     }
 
     public ActionCallback select(@NotNull Sdk sdk, final boolean requestFocus) {

@@ -32,7 +32,7 @@ public class ProjectNameStep extends ModuleWizardStep {
 
     public ProjectNameStep(WizardContext wizardContext) {
         myWizardContext = wizardContext;
-        myNamePathComponent = new NamePathComponent("Project name:",
+        myNamePathComponent = new NamePathComponent(myWizardContext.isCreatingNewProject() ? "Project name:" : "Module name:",
                                                     String.format("%s file location:", StringUtil.capitalize(myWizardContext.getPresentationName())),
                                                     String.format("Select %s file directory", myWizardContext.getPresentationName()),
                                                     String.format("%s file will be stored in this directory", myWizardContext.getPresentationName()));

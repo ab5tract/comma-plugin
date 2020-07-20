@@ -11,6 +11,7 @@ import com.intellij.openapi.roots.ui.configuration.DefaultModulesProvider;
 import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.project.projectWizard.CommaAbstractProjectWizard;
 import edument.perl6idea.project.projectWizard.CommaNewProjectWizard;
+import edument.perl6idea.project.structure.Perl6ModulesConfigurator;
 import org.jetbrains.annotations.NotNull;
 
 public class NewModuleAction extends AnAction implements DumbAware {
@@ -43,8 +44,7 @@ public class NewModuleAction extends AnAction implements DumbAware {
         else {
             builder.commit(project, null, new DefaultModulesProvider(project));
             if (builder.isOpenProjectSettingsAfter()) {
-                // FIXME re-instantiate ModulesConfigurator
-                //ModulesConfigurator.showDialog(project, null, null);
+                Perl6ModulesConfigurator.showDialog(project, null, null);
             }
         }
         project.save();

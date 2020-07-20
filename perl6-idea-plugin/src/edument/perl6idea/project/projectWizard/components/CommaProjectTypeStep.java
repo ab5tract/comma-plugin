@@ -197,10 +197,9 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
     }
 
     private List<TemplatesGroup> fillTemplatesMap(WizardContext context) {
-
         List<ModuleBuilder> builders = ModuleBuilder.getAllBuilders();
-        if (context.isCreatingNewProject()) {
-            builders.add(new EmptyModuleBuilder());
+        if (!context.isCreatingNewProject()) {
+            builders.removeIf(mb -> mb instanceof EmptyModuleBuilder);
         }
         Map<String, TemplatesGroup> groupMap = new HashMap<>();
         for (ModuleBuilder builder : builders) {

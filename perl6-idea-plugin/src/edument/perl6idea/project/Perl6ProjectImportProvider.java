@@ -21,7 +21,7 @@ public class Perl6ProjectImportProvider {
     protected Perl6ProjectBuilder myBuilder;
 
     public Perl6ProjectImportProvider() {
-        myBuilder = new Perl6ProjectBuilder();
+        myBuilder = new Perl6ProjectBuilder(null);
     }
 
     public boolean canImportFromFile(VirtualFile file) {
@@ -30,18 +30,20 @@ public class Perl6ProjectImportProvider {
     }
 
     public ModuleWizardStep[] createSteps(WizardContext context) {
+        myBuilder = new Perl6ProjectBuilder(context);
         final Condition<SdkTypeId> condition = (sdkType) -> sdkType instanceof Perl6SdkType;
-        return new ModuleWizardStep[]{new ProjectNameStep(context),
-            new SdkSettingsStep(context, new Perl6ModuleBuilder(), condition, null) {
-                @Override
-                public JComponent getComponent() {
-                    JComponent oldPanel = super.getComponent();
-                    JPanel newPanel = new JPanel(new MigLayout());
-                    newPanel.add(new JLabel("Select a Raku compiler to use"), "wrap 20");
-                    newPanel.add(oldPanel);
-                    return newPanel;
-                }
-            }};
+        return new ModuleWizardStep[] {
+          new ProjectNameStep(context),
+          new SdkSettingsStep(context, new Perl6ModuleBuilder(), condition, null) {
+              @Override
+              public JComponent getComponent() {
+                  JComponent oldPanel = super.getComponent();
+                  JPanel newPanel = new JPanel(new MigLayout());
+                  newPanel.add(new JLabel("Select a Raku compiler to use"), "wrap 20");
+                  newPanel.add(oldPanel);
+                  return newPanel;
+              }
+          }};
     }
 
     @NonNls
