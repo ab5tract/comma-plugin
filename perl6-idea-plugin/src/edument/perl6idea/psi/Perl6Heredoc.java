@@ -1,4 +1,8 @@
 package edument.perl6idea.psi;
 
-public interface Perl6Heredoc extends Perl6PsiElement {
+import com.intellij.psi.PsiLanguageInjectionHost;
+
+public interface Perl6Heredoc extends Perl6PsiElement, PsiLanguageInjectionHost {
+    String getStringText();
+    int getIndentation();
 }
