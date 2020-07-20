@@ -75,10 +75,17 @@ public class SignatureAnnotator implements Annotator {
             }
 
             if (isOptional(summary) && state == SignatureState.NAMED) {
-                holder.newAnnotation(HighlightSeverity.ERROR,
-                                     String.format("Cannot put an optional parameter %s after a named parameter",
-                                                   parameter.getVariableName()))
-                    .range(parameter).create();
+                if (isNamed(summary)) {
+                    holder.newAnnotation(HighlightSeverity.WARNING,
+                                         String.format("Explicit `?` on the named parameter %s is redundant, as all nameds are optional by default",
+                                                       parameter.getVariableName()))
+                        .range(parameter).create();
+                } else {
+                    holder.newAnnotation(HighlightSeverity.ERROR,
+                                         String.format("Cannot put an optional parameter %s after a named parameter",
+                                                       parameter.getVariableName()))
+                        .range(parameter).create();
+                }
                 return;
             }
 
