@@ -2,6 +2,9 @@ package edument.perl6idea.psi.symbols;
 
 /* Collects the result of a resolution. */
 public interface Perl6SymbolCollector {
+    /* Answers if the package should be traversed */
+    boolean shouldTraverse(String packageName);
+
     /* Offers a symbol to the collector, which if may or may not collect */
     void offerSymbol(Perl6Symbol symbol);
 

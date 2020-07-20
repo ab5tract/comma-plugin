@@ -509,6 +509,17 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
         });
     }
 
+    public void testRecursiveClassDefCompletion() {
+        assertNoThrowable(() -> {
+            myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo is Foo {}; Foo.<caret>");
+            myFixture.complete(CompletionType.BASIC, 1);
+        });
+        assertNoThrowable(() -> {
+            myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Foo does Foo {}; Foo.<caret>");
+            myFixture.complete(CompletionType.BASIC, 1);
+        });
+    }
+
     public void testPrivateMethodsAreNotVisibleFromOutside() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A { method !test2 {}; method !test {} }; A!<caret>;");
         complete(true);
