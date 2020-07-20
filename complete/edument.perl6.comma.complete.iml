@@ -19,5 +19,6 @@
     <orderEntry type="module" module-name="intellij.platform.coverage" />
     <orderEntry type="module" module-name="intellij.markdown" />
     <orderEntry type="module" module-name="intellij.platform.execution.impl" />
+    <orderEntry type="module" module-name="intellij.relaxng" />
   </component>
 </module>
