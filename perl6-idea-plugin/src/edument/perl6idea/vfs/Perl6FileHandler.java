@@ -47,6 +47,10 @@ public class Perl6FileHandler extends ArchiveHandler {
             return entries;
         }
 
+        if (sdk == null) {
+            return entries;
+        }
+
         try {
             List<String> providesList = executeLocateScript(sdk, matcher.group(2));
 
