@@ -15,7 +15,7 @@ use P6GrammarToIdea::AST;
 # means it also descends into rules.
 
 my constant %IGNORE-NAMES = set 'start-element', 'end-element', 'alpha', 'ww',
-                                'MARKER', 'MARKED', 'peek-delimiters', 'bracket-ending',
+                                'MARKER', 'MARKED', 'peek-delimiters', 'opener', 'bracket-ending',
                                 'start-queue-heredoc', 'end-queue-heredoc', 'has-heredoc',
                                 'dequeue-heredoc', 'opp-start-expr', 'opp-start-infix',
                                 'opp-end-expr', 'opp-start-prefixes', 'opp-end-prefixes',

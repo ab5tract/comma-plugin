@@ -576,6 +576,19 @@ public abstract class Cursor<TCursor extends Cursor> {
         return true;
     }
 
+    public boolean opener() {
+        // No opener at end of string.
+        CharSequence target = stack.target;
+        int pos = this.pos;
+        if (pos >= target.length())
+            return false;
+
+        // Check if it's in the bracket pairs list.
+        String maybeOpener = target.subSequence(pos, pos + 1).toString();
+        int brac = BRACKETS.indexOf(maybeOpener);
+        return brac >= 0 && brac % 2 == 0;
+    }
+
     private String repeat(String in, int n) {
         String out = "";
         for (int i = 0; i < n; i++)
