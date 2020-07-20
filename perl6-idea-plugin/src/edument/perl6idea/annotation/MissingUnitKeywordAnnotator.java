@@ -40,10 +40,10 @@ public class MissingUnitKeywordAnnotator implements Annotator {
                 if (maybeBlockoid instanceof Perl6Blockoid) {
                     int textOffset = firstChild.getTextOffset();
                     int textOffset1 = perl6PackageDecl.getTextOffset();
-                    int length = ((Perl6PackageDecl)perl6PackageDecl).getPackageName().length();
+                    int length = perl6PackageDecl.getPackageName().length();
                     holder.newAnnotation(HighlightSeverity.ERROR, "Cannot use 'unit' with block form of declaration")
                         .range(new TextRange(textOffset, textOffset1 + length))
-                        .withFix(new RemoveUnitDeclaratorQuickFix(textOffset, (Perl6PackageDecl)perl6PackageDecl)).create();
+                        .withFix(new RemoveUnitDeclaratorQuickFix(textOffset, perl6PackageDecl)).create();
                 }
             }
         }
@@ -59,6 +59,8 @@ public class MissingUnitKeywordAnnotator implements Annotator {
             }
 
             if (maybeStatementTerminator == null) return;
+            if (element.getParent() instanceof Perl6ScopedDecl && ((Perl6ScopedDecl)element.getParent()).getScope().equals("unit"))
+                return;
             ASTNode node = maybeStatementTerminator.getNode();
             if (node.getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR) {
                 PsiElement packageDeclarator = element.getFirstChild();
