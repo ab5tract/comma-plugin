@@ -201,6 +201,6 @@ public class SdkSettingsStep extends ModuleWizardStep {
   }
 
   protected String getNoSdkMessage() {
-    return "Do you want to create a project with no SDK assigned?\\nAn SDK is required for compiling, debugging and running applications,\\nas well as for the standard SDK symbols resolution.";
+    return "Do you want to create a project with no SDK assigned?\nAn SDK is required for compiling, debugging and running applications,\nas well as for the standard SDK symbols resolution.";
   }
 }
