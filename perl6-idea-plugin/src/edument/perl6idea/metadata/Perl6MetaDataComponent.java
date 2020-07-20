@@ -452,12 +452,15 @@ public class Perl6MetaDataComponent {
     }
 
     private static JSONObject getStubMetaObject(String moduleName) {
+        JSONArray authorsArray = new JSONArray();
+        authorsArray.put("Write me!");
         return new JSONObject()
             .put("perl", "6.*")
             .put("name", moduleName)
             .put("version", "0.1")
             .put("description", "Write me!")
             .put("auth", "Write me!")
+            .put("authors", authorsArray)
             .put("license", "Write me!")
             .put("depends", new JSONArray())
             .put("test-depends", new JSONArray())
