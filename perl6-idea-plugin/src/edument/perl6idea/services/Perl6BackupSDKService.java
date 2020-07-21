@@ -1,5 +1,6 @@
 package edument.perl6idea.services;
 
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -56,7 +57,7 @@ public class Perl6BackupSDKService implements PersistentStateComponent<Perl6Back
             @Nullable Sdk sdk = ProjectJdkTable.getInstance().findJdk(versionString);
             if (sdk == null) {
                 Sdk secondarySdk = ProjectJdkTable.getInstance().createSdk(versionString, instance);
-                ProjectJdkTable.getInstance().addJdk(secondarySdk);
+                WriteAction.run(() -> ProjectJdkTable.getInstance().addJdk(secondarySdk));
             }
         }
 
