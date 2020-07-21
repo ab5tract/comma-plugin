@@ -207,8 +207,6 @@
     <moduleService serviceImplementation="edument.perl6idea.metadata.Perl6MetaDataComponent"/>
     <moduleService serviceImplementation="edument.perl6idea.event.ModuleMetaChangeListener"/>
     <projectService serviceImplementation="edument.perl6idea.metadata.Perl6ProjectModelSync"/>
-    <languageInjector implementation="edument.perl6idea.providers.Perl6LanguageInjector"/>
-    <multiHostInjector implementation="edument.perl6idea.providers.Perl6MultiHostInjector"/>
   </extensions>
 
   <actions>
