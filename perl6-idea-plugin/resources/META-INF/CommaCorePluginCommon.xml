@@ -7,8 +7,6 @@
     <favoritesListProvider implementation="com.intellij.ide.bookmarks.BookmarksFavoriteListProvider"/>
     <favoritesListProvider implementation="com.intellij.xdebugger.impl.breakpoints.BreakpointsFavoriteListProvider"/>
     <projectViewPane implementation="com.intellij.ide.projectView.impl.ProjectViewPane"/>
-    <languageInjector implementation="edument.perl6idea.providers.Perl6LanguageInjector"/>
-    <multiHostInjector implementation="edument.perl6idea.providers.Perl6MultiHostInjector"/>
   </extensions>
 
   <!-- Actions for standalone Comma -->
