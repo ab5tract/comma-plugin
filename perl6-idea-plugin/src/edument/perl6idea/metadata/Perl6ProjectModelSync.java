@@ -7,12 +7,14 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.roots.libraries.Library;
 import edument.perl6idea.library.Perl6LibraryType;
 import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.services.Perl6BackupSDKService;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +32,7 @@ public class Perl6ProjectModelSync {
         ApplicationManager.getApplication().invokeLaterOnWriteThread(() -> ModuleRootModificationUtil.updateModel(module, model -> {
             Set<String> completeMETADependencies = ConcurrentHashMap.newKeySet();
             completeMETADependencies.addAll(firstLevelDeps);
-            Sdk sdk = obtainSDKAndGatherLibraryDeps(module, firstLevelDeps, model, completeMETADependencies);
+            Sdk sdk = obtainSDKAndGatherLibraryDeps(module, firstLevelDeps, completeMETADependencies);
             Map<String, Perl6MetaDataComponent> projectModules = getProjectModules(module);
             Set<String> entriesPresentInMETA = new HashSet<>();
 
@@ -90,11 +92,22 @@ public class Perl6ProjectModelSync {
     @Nullable
     private static Sdk obtainSDKAndGatherLibraryDeps(Module module,
                                                      Set<String> metaDependencies,
-                                                     ModifiableRootModel model,
                                                      Set<String> extendedDeps) {
         Sdk sdk = ModuleRootManager.getInstance(module).getSdk();
-        if (sdk == null)
-            sdk = ProjectRootManager.getInstance(model.getProject()).getProjectSdk();
+        if (sdk == null || !(sdk.getSdkType() instanceof Perl6SdkType))
+            sdk = ProjectRootManager.getInstance(module.getProject()).getProjectSdk();
+        if (sdk == null || !(sdk.getSdkType() instanceof Perl6SdkType)) {
+            Perl6BackupSDKService backupSDK = module.getProject().getService(Perl6BackupSDKService.class);
+            String homePath = backupSDK.getProjectSdkPath(module.getProject().getProjectFilePath());
+            if (homePath == null)
+                return null;
+            for (Sdk tempSdk : ProjectJdkTable.getInstance().getSdksOfType(Perl6SdkType.getInstance())) {
+                if (Objects.equals(tempSdk.getHomePath(), homePath)) {
+                    sdk = tempSdk;
+                    break;
+                }
+            }
+        }
         if (sdk != null)
             for (String dep : metaDependencies)
                 extendedDeps.addAll(collectDependenciesOfModule(module.getProject(), dep, sdk));
