@@ -32,17 +32,14 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Re-work Test Run Configurations. They now support running tests based on source roots for either a project, a module, a directory or a single file. Test Run Configurations can be created from tests and directories in the project file view, or based on the file you are currently in. They can be filtered by patterns and support various parameters that the Raku Run Configuration has as well. Fix backward compatibility with run configurations created before the regressed 2020.05 release.</li>
-<li>For the plugin version of Comma, add a tool to set the Raku compiler in to be used in IntelliJ platform IDE products such as IntelliJ IDEA or WebStorm. Now it is not required to change the global project SDK to a Raku one, a &quot;secondary&quot; SDK can be set using <code>Tools -&gt; Setup Raku SDK</code>. This SDK will be used as a backup for all features which depend on it, including completion, running programs, the REPL etc</li>
-<li>Overhaul the implementation of key internal components and make sure Comma is self-contained and the Raku plugin correctly works with a range of IntelliJ platform products</li>
-<li>The extract Variable refactoring now suggests variable names based on extracted value</li>
-<li>The extract Variable refactoring now supports extraction of literals like <code>42</code> or <code>&quot;foo&quot;</code> when they are statements and not parts of expressions</li>
-<li>Add an intention to split the declaration of a lexical variable (<code>my $foo = 42</code>) into a declaration (<code>my $foo</code>) and an assignment (<code>$foo = 42</code>)</li>
-<li>Add an intention to make a method private; it checks there are no known calls to it from outside of the class first</li>
-<li>Suppress redundant annotation related to non-ASCII symbols in code, as Raku sources are Unicode-friendly</li>
-<li>Fix a bug when smartmatching of an undeclared variable could potentially lead to a stack overflow exception or freezes</li>
-<li>Fix cases of treating coercions like <code>DateTime($foo)</code> as errors; they are now correctly displayed as types</li>
-<li>Fix a rare bug when external libraries might not be displayed after project creation</li>
+<li>Comma now supports projects comprised of more than a single module. It is possible to use the <code>Project Structure</code> dialog to create or import a Raku module which will be part of the current project. Local modules correctly resolve symbols between each other and other features officially support such project setups as well</li>
+<li>Formal variables such as <code>$^foo</code> and <code>$:bar</code> cause completion and navigation for implicitly declared <code>$foo</code> and <code>$bar</code> now</li>
+<li>The code sample for Raku at <code>Settings -&gt; Editor -&gt; Color Scheme</code> was extended to to show more elements</li>
+<li>Do not annotate <code>:$foo?</code> parameters as errors, instead explain the redundancy of <code>?</code> in a warning</li>
+<li>Fix a long-standing bug where optimized code to work with symbols was not used in situations where it could be</li>
+<li>Fix a bug where on new project creation symbols might not be loaded</li>
+<li>Fix parsing of comments starting with <code>#==</code></li>
+<li>Fix stack overflow errors for classes which depend on themselves, like <code>class Foo is Foo {}</code></li>
 </ul>
   ]]>
   </change-notes>

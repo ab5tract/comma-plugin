@@ -36,47 +36,35 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>A new grammar live preview feature. A grammar can be run against a specified input, and is
-automatically re-run on code changes or input changes. A trace of the parse is displayed,
-like that produced by Grammar::Tracer, except it&#39;s in a tree view and selecting an entry
-shows which bit of the input text it matched. Further, double-clicking a matched part of
-the input text shows the rule that matched it. It is possible to navigate onward to the
-source code of the rule.</li>
-<li>An extract regex refactor is now available. A selected portion of a rule in a grammar
-can be extracted to a new token/rule/regex, with the choice of whether to capture or not.
-In an anonymous regex outside of a grammar, this extracts a lexical named regex.</li>
-<li>An intention is now available to turn a positional capture in a regex into a
-named capture.</li>
-<li>Cro template default parameter syntax is now parsed and handled correctly.</li>
-<li>Add a Raku REPL with multiline commands, history, auto-completion of symbols, and the usual range of annotations and intentions</li>
-<li>Add an intention to convert a ternary expression into a conditional construct</li>
-<li>Add an intention to convert a non-capturing regex group into a named capture</li>
-<li>Add an intention to convert a non-capturing regex group into a positional capture, with subsequent capture variables being renumbered appropriately</li>
-<li>Improve completion and resolving of variables obtained from regex matching, supporting more code cases which implicitly set the <code>$/</code> variable and its matches</li>
-<li>Allow renaming of Cro template parameters, as well as template sub and macro names</li>
-<li>Correctly parse iteration over a variable in Cro template parameters (e.g. <code>@$foo</code>)</li>
-<li>Correctly parse multiline comments in Cro templates</li>
-<li>When a project SDK can&#39;t be used or is missing, now a notification is shown to the user suggesting to set one, instead of throwing an exception which could occur earlier</li>
-<li>Shebang lines in scripts which end with <code>perl6</code>, <code>raku</code> and <code>rakudo</code> are used to detect Raku scripts with no file extension</li>
-<li>Improve provision of positional capture variables (<code>$0</code>, <code>$1</code> etc): earlier, <code>/(a(b))/</code> would provide two variables, but now only a single one is provided</li>
-<li>Improve provision of named capture variables: earlier <code>/$&lt;a&gt;=(&lt;foo&gt; &lt;bar&gt;)/</code> would provide three named variables, but now only a single one is provided</li>
-<li>Do not highlight an unqualified call of a private method on a variable as undeclared if there is a private method in the current class of the same type, as Rakudo does</li>
-<li>Make the intention which simplifies range literals work when the left range side includes an infix operator application (e.g. <code>$foo - 5 .. *</code>)</li>
-<li>Fix formatting of array literals</li>
-<li>Fix indentation when pressing enter during typing multiple traits</li>
-<li>Fix a bug when during debugging the attributes of <code>self</code> on a <code>Match</code> objects were not shown</li>
-<li>Prevent an exception in the annotation which checks <code>EVAL</code> interpolation usage</li>
-<li>Add a Raku Code Style page to the settings, where numerous new formatting configuration options are available</li>
-<li>Allow configuration of indentation size and continuation indent size (the defaults are as before)</li>
-<li>Allow configuration of whether to use tabs or spaces (the default continues to be spaces)</li>
-<li>Implement optional wrapping of long lines of code</li>
-<li>Allow configuration of whether curly braces go on the same line of code or the line below (defaults to same line, as before). This can be configured separately for packages, routines, regexes, phasers, and other blocks</li>
-<li>Implement wrapping and alignment for parameter lists, argument lists, trait lists, array initializers, and infix operands; these can all be configured</li>
-<li>The formatter can now apply spacing rules, with over 20 different cases being configurable. For example, it&#39;s now possible to have formatting ensure there are spaces around infix operators</li>
-<li>Implement Find Usages for Cro templates, to allow all usages of a template sub, macro, or variable to be found</li>
-<li>Fix a parsing bug with the infix fatarrow operator, which could lead to some odd selection or formatting behaviors</li>
-<li>Fix a bug that led to Comma thinking the cross built-in did not exist, when in fact it does</li>
-<li>Fix external modules symbol loading on Window</li>
+<li>Comma now supports projects comprised of more than a single module. It is possible to use the <code>Project Structure</code> dialog to create or import a Raku module which will be part of the current project. Local modules correctly resolve symbols between each other and other features officially support such project setups as well</li>
+<li>Formal variables such as <code>$^foo</code> and <code>$:bar</code> cause completion and navigation for implicitly declared <code>$foo</code> and <code>$bar</code> now</li>
+<li>The code sample for Raku at <code>Settings -&gt; Editor -&gt; Color Scheme</code> was extended to to show more elements</li>
+<li>Do not annotate <code>:$foo?</code> parameters as errors, instead explain the redundancy of <code>?</code> in a warning</li>
+<li>Fix a long-standing bug where optimized code to work with symbols was not used in situations where it could be</li>
+<li>Fix a bug where on new project creation symbols might not be loaded</li>
+<li>Fix parsing of comments starting with <code>#==</code></li>
+<li>Fix stack overflow errors for classes which depend on themselves, like <code>class Foo is Foo {}</code></li>
+<li>Re-work Test Run Configurations. They now support running tests based on source roots for either a project, a module, a directory or a single file. Test Run Configurations can be created from tests and directories in the project file view, or based on the file you are currently in. They can be filtered by patterns and support various parameters that the Raku Run Configuration has as well. Fix backward compatibility with run configurations created before the regressed 2020.05 release</li>
+<li>For the plugin version of Comma, add a tool to set the Raku compiler in to be used in IntelliJ platform IDE products such as IntelliJ IDEA or WebStorm. Now it is not required to change the global project SDK to a Raku one, a \&quot;secondary\&quot; SDK can be set using <code>Tools -&gt; Setup Raku SDK</code>. This SDK will be used as a backup for all features which depend on it, including completion, running programs, the REPL etc</li>
+<li>&quot;Overhaul the implementation of key internal components and make sure Comma is self-contained and the Raku plugin correctly works with a range of IntelliJ platform products</li>
+<li>The extract Variable refactoring now suggests variable names based on extracted value</li>
+<li>The extract Variable refactoring now supports extraction of literals like 42 or \&quot;foo\&quot; when they are statements and not parts of expressions</li>
+<li>Add an intention to split the declaration of a lexical variable (my $foo = 42) into a declaration (my $foo) and an assignment ($foo = 42)</li>
+<li>Add an intention to make a method private; it checks there are no known calls to it from outside of the class first</li>
+<li>Suppress redundant annotation related to non-ASCII symbols in code, as Raku sources are Unicode-friendly</li>
+<li>Fix a bug when smartmatching of an undeclared variable could potentially lead to a stack overflow exception or freezes</li>
+<li>&quot;Fix cases of treating coercions like <code>DateTime($foo)</code> as errors; they are now correctly displayed as types</li>
+<li>Fix a rare bug when external libraries might not be displayed after project creation</li>
+<li>Support the 2020.01 version of the IntelliJ platform, which is now the minimal version requirement to use the plugin as well as the platform version used by Comma</li>
+<li>Provide better method completion for <code>.foo</code> style calls as well as explicit operations on the topic variable <code>$_</code> in cases when a type can be inferred</li>
+<li>Add a \&quot;REPL using this module\&quot; action which starts a REPL session with the current module used</li>
+<li>\&quot;External Libraries\&quot; now include items from \&quot;test-depends\&quot; and \&quot;build-depends\&quot; along with the previously available distributions from the \&quot;depends\&quot; section</li>
+<li>License types compatible with SPDX are now auto-completed in Project Structure dialog</li>
+<li>&quot;The <code>META6.json</code> file fields \&quot;authors\&quot; and \&quot;source-url\&quot; now can be modified using the Project Structure dialog</li>
+<li>For Rakudo 2019.07 or newer a simpler debug starting process is used, which supports the case where Rakudo was relocated</li>
+<li>Fix extraction of method calls into a variable</li>
+<li>Fix extracting of constructs which are used as expressions using the \&quot;do\&quot; construct</li>
+<li>Allow inline of a variable when there is a single assignment, which was previously wrongly reported as impossible</li>
 </ul>
   ]]></change-notes>
 
