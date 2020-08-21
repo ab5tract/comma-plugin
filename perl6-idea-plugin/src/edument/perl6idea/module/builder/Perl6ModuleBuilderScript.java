@@ -31,8 +31,6 @@ public class Perl6ModuleBuilderScript implements Perl6ModuleBuilderGeneric {
     }
 
     public static String stubScript(Path moduleLibraryPath, String scriptName, boolean shouldFill) {
-        if (!scriptName.endsWith(".pl6") && !scriptName.endsWith(Perl6ScriptFileType.INSTANCE.getDefaultExtension()))
-            scriptName += "." + Perl6ScriptFileType.INSTANCE.getDefaultExtension();
         List<String> lines = new ArrayList<>(Collections.singletonList("#!/usr/bin/env perl6"));
         if (shouldFill)
             lines.addAll(Arrays.asList("", "", "sub MAIN() { }"));

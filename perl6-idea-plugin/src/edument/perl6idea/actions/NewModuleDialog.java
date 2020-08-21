@@ -3,24 +3,45 @@ package edument.perl6idea.actions;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.util.ArrayUtil;
 import edument.perl6idea.utils.Patterns;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class NewModuleDialog extends DialogWrapper {
+    private final String myLibPath;
     private JTextField moduleNameField;
     private JComboBox<String> moduleTypeComboBox;
     private JPanel myPanel;
     private JCheckBox myIsUnitScopedCheckBox;
 
     public NewModuleDialog(@Nullable Project project,
-                              boolean canBeParent,
-                              String prefix) {
-        super(project, canBeParent);
+                           String libPath,
+                           String prefix) {
+        super(project, false);
+        myLibPath = formLibPath(libPath, prefix);
         init();
         setTitle("New Raku Module");
         moduleNameField.setText(prefix);
+    }
+
+    private static String formLibPath(String path, String prefix) {
+        Path tmpPath = Paths.get(path);
+
+        String[] prefixParts = prefix.split("::");
+
+        for (int i = prefixParts.length - 1; i >= 0; i--) {
+            String prefixPart = prefixParts[i];
+            if (Objects.equals(tmpPath.toFile().getName(), prefixPart)) {
+                tmpPath = tmpPath.getParent();
+            }
+        }
+        return tmpPath.toString();
     }
 
     @Nullable
@@ -32,10 +53,20 @@ public class NewModuleDialog extends DialogWrapper {
     @Nullable
     @Override
     protected ValidationInfo doValidate() {
-        boolean isCorrectModuleName = moduleNameField.getText().matches(Patterns.MODULE_PATTERN);
-        if (isCorrectModuleName)
-            return null;
-        return new ValidationInfo("Incorrect module name (examples: `Module`, `Foo::Bar`)", moduleNameField);
+        String newModuleName = moduleNameField.getText();
+        boolean isCorrectModuleName = newModuleName.matches(Patterns.MODULE_PATTERN);
+        if (!isCorrectModuleName)
+            return new ValidationInfo("Incorrect module name (examples: `Module`, `Foo::Bar`)", moduleNameField);
+        String[] parts = newModuleName.split("::");
+        String[] prefix = parts.length > 1 ? Arrays.copyOfRange(parts, 0, parts.length - 1) : ArrayUtil.EMPTY_STRING_ARRAY;
+        String name = parts[parts.length - 1];
+        Path directoryFile = Paths.get(myLibPath, prefix);
+
+        if (directoryFile.resolve(name + ".pm6").toFile().exists() ||
+            directoryFile.resolve(name + ".rakumod").toFile().exists())
+            return new ValidationInfo("Module + " + newModuleName + " already exists", moduleNameField);
+
+        return null;
     }
 
     @Nullable
