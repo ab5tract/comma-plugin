@@ -39,5 +39,12 @@
 
     <action id="NewElement" class="com.intellij.ide.actions.NewElementAction"/>
     <group id="MoveModuleToGroup" class="com.intellij.ide.projectView.impl.MoveModuleToGroupTopLevel" popup="true"/>
+
+    <group>
+      <action id="MarkRakuSourceRoot" class="edument.perl6idea.actions.moduleRoot.MarkRakuSourceRootAction"/>
+      <action id="MarkRakuTestsSourceRoot" class="edument.perl6idea.actions.moduleRoot.MarkRakuTestsSourceRootAction"/>
+      <action id="UnmarkRoot" class="com.intellij.ide.projectView.actions.UnmarkRootAction"/>
+      <add-to-group group-id="MarkRootGroup"/>
+    </group>
   </actions>
 </idea-plugin>
