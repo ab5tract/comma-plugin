@@ -49,10 +49,11 @@ public class NewTestAction extends AnAction {
         if (testPath == null)
             return;
 
+        String finalTestPath = testPath;
         InputValidator validator = new InputValidator() {
             @Override
             public boolean checkInput(String inputString) {
-                return !Paths.get(inputString).toFile().exists() && inputString.matches(Patterns.TEST_PATTERN);
+                return !Paths.get(finalTestPath, inputString).toFile().exists() && inputString.matches(Patterns.TEST_PATTERN);
             }
 
             @Override
