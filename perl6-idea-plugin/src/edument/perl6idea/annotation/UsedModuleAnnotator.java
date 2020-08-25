@@ -73,7 +73,7 @@ public class UsedModuleAnnotator implements Annotator {
         dependencies.addAll(metaData.getTestDepends(true));
         dependencies.addAll(metaData.getBuildDepends(true));
         for (String dependency : dependencies) {
-            Set<String> providesOfDependency = Perl6ModuleListFetcher.getProvidesByModule(project, dependency);
+            Set<String> providesOfDependency = Perl6ModuleListFetcher.getProvidesByModule(project, dependency, new HashSet<>());
             // If a module is in dependencies list, do nothing
             if (providesOfDependency.contains(moduleName))
                 return;
