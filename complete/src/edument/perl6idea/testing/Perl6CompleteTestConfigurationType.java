@@ -3,7 +3,6 @@ package edument.perl6idea.testing;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.*;
-import com.intellij.execution.executors.DefaultDebugExecutor;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
@@ -43,7 +42,7 @@ public class Perl6CompleteTestConfigurationType extends ConfigurationTypeBase im
             if (Objects.equals(executor.getClass().getSimpleName(), "CoverageExecutor")) {
                 return new Perl6CoverageTestRunningState(environment);
             }
-            return new Perl6TestRunningState(environment, executor instanceof DefaultDebugExecutor);
+            return new Perl6TestRunningState(environment);
         }
     }
 

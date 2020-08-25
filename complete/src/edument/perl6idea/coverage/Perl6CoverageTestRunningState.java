@@ -20,7 +20,7 @@ public class Perl6CoverageTestRunningState extends Perl6TestRunningState {
     private File coverageDir;
 
     public Perl6CoverageTestRunningState(ExecutionEnvironment environment) throws ExecutionException {
-        super(environment, false);
+        super(environment);
         try {
           coverageDir = FileUtil.createTempDirectory("coverage", Integer.toString(this.hashCode()));
           coverageDir.deleteOnExit();

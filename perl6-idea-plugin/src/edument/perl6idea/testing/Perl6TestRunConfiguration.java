@@ -34,7 +34,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
     private static final String ENVS = "ENVS";
     private Map<String, String> myEnvs = new HashMap<>();
     private static final String PASS_PARENT_ENV = "PASS_PARENT_ENV";
-    private boolean passParentEnvs = false;
+    private boolean passParentEnvs = true;
     private static final String INTERPRETER_PARAMETERS = "INTERPRETER_PARAMETERS";
     private String interpreterArguments = "-Ilib";
 

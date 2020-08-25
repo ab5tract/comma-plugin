@@ -7,10 +7,7 @@ import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.process.ColoredProcessHandler;
-import com.intellij.execution.process.OSProcessHandler;
-import com.intellij.execution.process.ProcessHandler;
-import com.intellij.execution.process.ProcessTerminatedListener;
+import com.intellij.execution.process.*;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.testframework.TestConsoleProperties;
@@ -45,28 +42,28 @@ import java.util.stream.Collectors;
 
 public class Perl6TestRunningState extends CommandLineState {
     private final Perl6TestRunConfiguration runConfiguration;
-    boolean isDebugging;
+    private final Project myProject;
 
-    public Perl6TestRunningState(ExecutionEnvironment environment, boolean debug) {
+    public Perl6TestRunningState(ExecutionEnvironment environment) {
         super(environment);
-        isDebugging = debug;
         runConfiguration = (Perl6TestRunConfiguration)getEnvironment().getRunProfile();
+        myProject = environment.getProject();
     }
 
     @Override
     @NotNull
     public ExecutionResult execute(@NotNull Executor executor, @NotNull ProgramRunner runner) throws ExecutionException {
-        final ConsoleView consoleView = createConsole(getEnvironment());
+        final ConsoleView consoleView = createConsole();
         final ProcessHandler processHandler = startProcess();
         consoleView.attachToProcess(processHandler);
         return new DefaultExecutionResult(consoleView, processHandler);
     }
 
-    private static ConsoleView createConsole(@NotNull ExecutionEnvironment env) {
-        final Perl6TestRunConfiguration runConfiguration = (Perl6TestRunConfiguration)env.getRunProfile();
-        final TestConsoleProperties testConsoleProperties = new Perl6TestConsoleProperties(runConfiguration, env);
+    private ConsoleView createConsole() {
+        final Perl6TestRunConfiguration runConfiguration = (Perl6TestRunConfiguration)getEnvironment().getRunProfile();
+        final TestConsoleProperties testConsoleProperties = new Perl6TestConsoleProperties(runConfiguration, getEnvironment());
         final ConsoleView consoleView = SMTestRunnerConnectionUtil.createConsole("Raku tests", testConsoleProperties);
-        Disposer.register(env.getProject(), consoleView);
+        Disposer.register(myProject, consoleView);
         return consoleView;
     }
 
@@ -80,46 +77,42 @@ public class Perl6TestRunningState extends CommandLineState {
     }
 
     protected GeneralCommandLine createCommandLine() throws ExecutionException {
-        Project project = getEnvironment().getProject();
         GeneralCommandLine cmd;
 
         if (PlatformUtil.isWindows())
-            cmd = new Perl6CommandLine(getEnvironment().getProject());
+            cmd = new Perl6CommandLine(myProject);
         else
-            cmd = new Perl6ScriptRunner(getEnvironment().getProject());
+            cmd = new Perl6ScriptRunner(myProject);
         File script = Perl6Utils.getResourceAsFile("testing/perl6-test-harness.p6");
         if (script == null)
             throw new ExecutionException("Bundled resources are corrupted");
 
         cmd.addParameter(script.getAbsolutePath());
 
-        fillTestHarnessArguments(project, cmd);
+        fillTestHarnessArguments(cmd);
         if (!cmd.getParametersList().getParametersString().contains("--path"))
             throw new ExecutionException("No test source roots in the project: is it properly configured?");
         if (!runConfiguration.getTestPattern().isEmpty())
             cmd.addParameter("--pattern=" + runConfiguration.getTestPattern());
-        cmd.setWorkDirectory(project.getBasePath());
+        cmd.setWorkDirectory(myProject.getBasePath());
 
         cmd.withEnvironment("TEST_JOBS", String.valueOf(runConfiguration.getParallelismDegree()));
         cmd.withEnvironment(runConfiguration.getEnvs());
-        cmd.withParentEnvironmentType(runConfiguration.isPassParentEnvs()
-                                      ? GeneralCommandLine.ParentEnvironmentType.SYSTEM
-                                      : GeneralCommandLine.ParentEnvironmentType.NONE);
         return cmd;
     }
 
-    private void fillTestHarnessArguments(Project project, GeneralCommandLine cmd) throws ExecutionException {
+    private void fillTestHarnessArguments(GeneralCommandLine cmd) throws ExecutionException {
         // Depending on the target, we have to fill one or more data points
         // consisting of the path to test, current working directory and arguments
         switch (runConfiguration.getTestKind()) {
             case ALL: {
                 Predicate<Module> modulesPredicate = m -> true;
-                populateTestDirectoriesByModules(project, cmd, modulesPredicate);
+                populateTestDirectoriesByModules(myProject, cmd, modulesPredicate);
                 break;
             }
             case MODULE: {
                 Predicate<Module> modulesPredicate = m -> m.getName().equals(runConfiguration.getModuleName());
-                List<Module> modules = populateTestDirectoriesByModules(project, cmd, modulesPredicate);
+                List<Module> modules = populateTestDirectoriesByModules(myProject, cmd, modulesPredicate);
                 if (modules.size() == 0)
                     throw new ExecutionException(
                         String.format("No module with name %s to run its tests", runConfiguration.getModuleName()));
@@ -133,7 +126,7 @@ public class Perl6TestRunningState extends CommandLineState {
                     : runConfiguration.getFilePath()
                 );
                 if (fileToTest == null) return;
-                Module module = ModuleUtilCore.findModuleForFile(fileToTest, project);
+                Module module = ModuleUtilCore.findModuleForFile(fileToTest, myProject);
                 if (module == null) return;
                 ContentEntry[] contentEntries = ModuleRootManager.getInstance(module).getContentEntries();
                 addParametersForContentEntry(module, cmd, fileToTest, contentEntries);
