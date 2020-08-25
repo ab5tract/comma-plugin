@@ -70,6 +70,9 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
         if (moduleType.equals("Monitor")) {
             metaData.addDepends("OO::Monitors");
         }
+        if (moduleType.equals("Model")) {
+            metaData.addDepends("Red");
+        }
         return modulePath;
     }
 
@@ -85,6 +88,10 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
                     return Arrays.asList(
                         "use OO::Monitors;", "",
                         String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name), "");
+                case "Model":
+                    return Arrays.asList(
+                        "use Red;", "",
+                        String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name), "");
                 default:
                     return Collections.singletonList("");
             }
@@ -99,6 +106,10 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
                 case "Monitor":
                     return Arrays.asList(
                         "use OO::Monitors;", "",
+                        String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name), "", "}");
+                case "Model":
+                    return Arrays.asList(
+                        "use Red;", "",
                         String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name), "", "}");
                 default:
                     return Collections.singletonList("");
