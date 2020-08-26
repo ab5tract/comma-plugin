@@ -26,9 +26,9 @@ import java.util.Map;
  */
 @Service
 @State(name = "Raku.Backup.Sdk", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
-public class Perl6BackupSDKService implements PersistentStateComponent<Perl6BackupSDKService> {
+public class Perl6BackupSDKService implements PersistentStateComponent<Perl6BackupSDKService.State> {
     private final Project myProject;
-    public Map<String, String> projectSdkPaths = new HashMap<>();
+    State myState;
 
     public Perl6BackupSDKService(Project project) {
         myProject = project;
@@ -36,17 +36,17 @@ public class Perl6BackupSDKService implements PersistentStateComponent<Perl6Back
 
     @Nullable
     @Override
-    public Perl6BackupSDKService getState() {
-        return this;
+    public State getState() {
+        return myState;
     }
 
     @Override
-    public void loadState(@NotNull Perl6BackupSDKService state) {
-        XmlSerializerUtil.copyBean(state, this);
+    public void loadState(@NotNull State state) {
+        myState = state;
     }
 
     public void setProjectSdkPath(String projectFilePath, String sdkPath) {
-        projectSdkPaths.put(projectFilePath, sdkPath);
+        myState.projectSdkPaths.put(projectFilePath, sdkPath);
 
         Perl6SdkType instance = Perl6SdkType.getInstance();
         String versionString = instance.getVersionString(sdkPath);
@@ -71,6 +71,14 @@ public class Perl6BackupSDKService implements PersistentStateComponent<Perl6Back
     }
 
     public String getProjectSdkPath(String projectFilePath) {
-        return projectSdkPaths.get(projectFilePath);
+        return myState.projectSdkPaths.get(projectFilePath);
+    }
+
+    public static class State {
+        public Map<String, String> projectSdkPaths;
+
+        public State() {
+            projectSdkPaths = new HashMap<>();
+        }
     }
 }
