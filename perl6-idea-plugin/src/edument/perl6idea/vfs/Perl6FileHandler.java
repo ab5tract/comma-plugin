@@ -88,7 +88,7 @@ public class Perl6FileHandler extends ArchiveHandler {
         cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
         cmd.addParameters(locateScript.getAbsolutePath());
         cmd.addParameter(argument);
-        return cmd.executeAndRead();
+        return cmd.executeAndRead(locateScript);
     }
 
     @Nullable

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -64,7 +65,7 @@ public class Perl6CommandLine extends GeneralCommandLine {
     }
 
     @NotNull
-    public List<String> executeAndRead() {
+    public List<String> executeAndRead(@Nullable File scriptFile) {
         List<String> results = new LinkedList<>();
         try {
             Process p = createProcess();
@@ -74,14 +75,19 @@ public class Perl6CommandLine extends GeneralCommandLine {
                 String line;
                 while ((line = reader.readLine()) != null)
                     results.add(line);
-                if (p.waitFor() != 0)
+                if (p.waitFor() != 0) {
+                    if (scriptFile != null)
+                        scriptFile.delete();
                     return new ArrayList<>();
+                }
             } catch (IOException e) {
                 LOG.warn(e);
             }
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn(e);
         }
+        if (scriptFile != null)
+            scriptFile.delete();
         return results;
     }
 

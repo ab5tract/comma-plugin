@@ -15,6 +15,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Perl6CoverageTestRunningState extends Perl6TestRunningState {
     private File coverageDir;
@@ -23,7 +26,6 @@ public class Perl6CoverageTestRunningState extends Perl6TestRunningState {
         super(environment);
         try {
           coverageDir = FileUtil.createTempDirectory("coverage", Integer.toString(this.hashCode()));
-          coverageDir.deleteOnExit();
         }
         catch (IOException e) {
             throw new ExecutionException(e);
@@ -54,6 +56,13 @@ public class Perl6CoverageTestRunningState extends Perl6TestRunningState {
                     Notifications.Bus.notify(new Notification("Coverage Error", "Coverage Error",
                             "No coverage data collected.", NotificationType.ERROR));
                 }
+                try {
+                    Files.walk(Paths.get(coverageDir.getAbsolutePath()))
+                        .map(Path::toFile)
+                        .sorted((o1, o2) -> -FileUtil.compareFiles(o1, o2))
+                        .forEach(File::delete);
+                }
+                catch (IOException ignored) {}
             }
         });
         return handler;

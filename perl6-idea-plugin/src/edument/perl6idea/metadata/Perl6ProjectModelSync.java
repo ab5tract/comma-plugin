@@ -139,7 +139,7 @@ public class Perl6ProjectModelSync {
             Perl6CommandLine depsCollectorScript = new Perl6CommandLine(sdk);
             depsCollectorScript.addParameter(locateScript.getAbsolutePath());
             depsCollectorScript.addParameter(metaDep);
-            return depsCollectorScript.executeAndRead();
+            return depsCollectorScript.executeAndRead(locateScript);
         }
         catch (ExecutionException e) {
             Perl6SdkType.getInstance().reactToSDKIssue(project, "Cannot use current Raku SDK");

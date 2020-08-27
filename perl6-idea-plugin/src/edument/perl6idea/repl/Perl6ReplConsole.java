@@ -32,6 +32,7 @@ import java.util.List;
 public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageConsoleView> {
     private Perl6CommandLine commandLine;
     private Perl6ReplState replState;
+    private File myReplBackendFile;
 
     public Perl6ReplConsole(@NotNull Project project,
                             @NotNull String consoleTitle,
@@ -45,7 +46,7 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
         LanguageConsoleBuilder builder = new LanguageConsoleBuilder();
         builder.oneLineInput(false);
         LanguageConsoleView consoleView = builder
-                .build(getProject(), Perl6Language.INSTANCE);
+            .build(getProject(), Perl6Language.INSTANCE);
 
         EditorEx consoleEditor = consoleView.getConsoleEditor();
         addHint(consoleEditor);
@@ -53,6 +54,12 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
         consoleEditor.getContentComponent().addKeyListener(new Perl6ReplHistoryKeyListener(this));
 
         return consoleView;
+    }
+
+    @Override
+    protected void finishConsole() {
+        super.finishConsole();
+        myReplBackendFile.delete();
     }
 
     private static void addHint(EditorEx editor) {
@@ -70,11 +77,11 @@ public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageC
     @Nullable
     @Override
     protected Process createProcess() throws ExecutionException {
-        File replBackend = Perl6Utils.getResourceAsFile("repl/repl-backend.p6");
+        myReplBackendFile = Perl6Utils.getResourceAsFile("repl/repl-backend.p6");
         commandLine = new Perl6CommandLine(getProject());
         commandLine.setWorkDirectory(getProject().getBasePath());
         commandLine.addParameter("-Ilib");
-        commandLine.addParameter(replBackend.getAbsolutePath());
+        commandLine.addParameter(myReplBackendFile.getAbsolutePath());
         return commandLine.createProcess();
     }
 

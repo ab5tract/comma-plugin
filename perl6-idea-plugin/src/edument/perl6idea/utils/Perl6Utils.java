@@ -32,7 +32,6 @@ public class Perl6Utils {
         File tempFile;
         try {
             tempFile = FileUtil.createTempFile("comma", ".tmp");
-            tempFile.deleteOnExit();
         }
         catch (IOException e) {
             LOG.error(e);
