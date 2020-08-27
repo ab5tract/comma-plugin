@@ -70,9 +70,13 @@ public class Perl6ModuleListFetcher {
     }
 
     @NotNull
-    public static Set<String> getProvidesByModule(Project project, String name) {
+    public static Set<String> getProvidesByModule(Project project, String name, Set<String> seen) {
         refreshModules(project);
         HashSet<String> provides = new HashSet<>();
+        if (seen.contains(name))
+            return provides;
+        else
+            seen.add(name);
         JSONObject module = modulesList.first.get(name);
         if (module != null) {
             if (module.has("provides")) {
@@ -84,7 +88,7 @@ public class Perl6ModuleListFetcher {
                 Object localDepends = module.get("depends");
                 if (localDepends instanceof JSONArray) {
                     for (Object depend : (JSONArray)localDepends) {
-                        provides.addAll(getProvidesByModule(project, (String)depend));
+                        provides.addAll(getProvidesByModule(project, (String)depend, seen));
                     }
                 }
             }
