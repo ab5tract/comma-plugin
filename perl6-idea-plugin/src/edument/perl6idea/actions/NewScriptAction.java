@@ -33,17 +33,6 @@ public class NewScriptAction extends AnAction {
         Project project = e.getData(CommonDataKeys.PROJECT);
         if (project == null) return;
 
-        NewScriptDialog dialog = new NewScriptDialog(project, false);
-        boolean isOk = dialog.showAndGet();
-        // User cancelled action
-        if (!isOk) return;
-
-        String fileName = dialog.getScriptName();
-        boolean shouldFill = dialog.shouldAddTemplate();
-        // If user cancelled action.
-        if (fileName == null)
-            return;
-
         Object navigatable = e.getData(CommonDataKeys.NAVIGATABLE);
         String scriptPath = null;
         if (navigatable != null) {
@@ -53,7 +42,19 @@ public class NewScriptAction extends AnAction {
                 if (((PsiFile) navigatable).getParent() != null)
                     scriptPath = ((PsiFile) navigatable).getParent().getVirtualFile().getPath();
         }
-        assert scriptPath != null;
+        if (scriptPath == null)
+            return;
+
+        NewScriptDialog dialog = new NewScriptDialog(project, scriptPath);
+        boolean isOk = dialog.showAndGet();
+        // User cancelled action
+        if (!isOk) return;
+
+        String fileName = dialog.getScriptName();
+        boolean shouldFill = dialog.shouldAddTemplate();
+        // If user cancelled action.
+        if (fileName == null)
+            return;
 
         scriptPath = Perl6ModuleBuilderScript.stubScript(
           Paths.get(scriptPath), fileName, shouldFill);

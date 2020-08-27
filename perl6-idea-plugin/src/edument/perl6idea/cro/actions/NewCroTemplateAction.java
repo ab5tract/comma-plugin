@@ -44,17 +44,6 @@ public class NewCroTemplateAction extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getData(CommonDataKeys.PROJECT);
         if (project == null) return;
-        InputValidator validator = new InputValidator() {
-            @Override
-            public boolean checkInput(String inputString) {
-                return inputString.matches(Patterns.CRO_TEMPLATE_PATTERN);
-            }
-
-            @Override
-            public boolean canClose(String inputString) {
-                return inputString.matches(Patterns.CRO_TEMPLATE_PATTERN);
-            }
-        };
 
         Object navigatable = e.getData(CommonDataKeys.NAVIGATABLE);
         String templatePath = null;
@@ -65,6 +54,24 @@ public class NewCroTemplateAction extends AnAction {
                 if (((PsiFile) navigatable).getParent() != null)
                     templatePath = ((PsiFile) navigatable).getParent().getVirtualFile().getPath();
         }
+        if (templatePath == null)
+            return;
+
+        String finalTemplatePath = templatePath;
+        InputValidator validator = new InputValidator() {
+            @Override
+            public boolean checkInput(String inputString) {
+                String string = inputString;
+                if (string.indexOf('.') < 0)
+                    string += ".crotmp";
+                return !Paths.get(finalTemplatePath, string).toFile().exists() && inputString.matches(Patterns.CRO_TEMPLATE_PATTERN);
+            }
+
+            @Override
+            public boolean canClose(String inputString) {
+                return inputString.matches(Patterns.CRO_TEMPLATE_PATTERN);
+            }
+        };
 
         String fileName = Messages.showInputDialog(
                 project,
@@ -73,12 +80,6 @@ public class NewCroTemplateAction extends AnAction {
                 Messages.getQuestionIcon(), null, validator);
         if (fileName == null)
             return;
-
-        if (templatePath == null) {
-            VirtualFile path = project.getBaseDir();
-            if (path == null) return;
-            templatePath = Paths.get(path.getPath(), "templates").toString();
-        }
 
         if (fileName.indexOf('.') < 0)
             fileName += ".crotmp";

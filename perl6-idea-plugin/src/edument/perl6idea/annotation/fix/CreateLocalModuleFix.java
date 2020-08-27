@@ -64,7 +64,7 @@ public class CreateLocalModuleFix implements IntentionAction {
         if (moduleLibraryPath == null)
             throw new IncorrectOperationException();
 
-        NewModuleDialog dialog = new NewModuleDialog(project, false, moduleName.getText());
+        NewModuleDialog dialog = new NewModuleDialog(project, moduleLibraryPath, moduleName.getText());
         boolean isOk = dialog.showAndGet();
         if (!isOk) return;
 

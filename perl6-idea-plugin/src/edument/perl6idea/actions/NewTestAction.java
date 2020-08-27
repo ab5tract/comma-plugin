@@ -36,17 +36,6 @@ public class NewTestAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getData(CommonDataKeys.PROJECT);
         if (project == null) return;
-        InputValidator validator = new InputValidator() {
-            @Override
-            public boolean checkInput(String inputString) {
-                return inputString.matches(Patterns.TEST_PATTERN);
-            }
-
-            @Override
-            public boolean canClose(String inputString) {
-                return inputString.matches(Patterns.TEST_PATTERN);
-            }
-        };
 
         Object navigatable = e.getData(CommonDataKeys.NAVIGATABLE);
         String testPath = null;
@@ -57,20 +46,17 @@ public class NewTestAction extends AnAction {
                 if (((PsiFile) navigatable).getParent() != null)
                     testPath = ((PsiFile) navigatable).getParent().getVirtualFile().getPath();
         }
-
-        String fileName = Messages.showInputDialog(
-            project,
-            "Test file name (type one without an extension to use a default '.t'):",
-            "New Test Name",
-            Messages.getQuestionIcon(), null, validator);
-        if (fileName == null)
+        if (testPath == null)
             return;
 
-        if (testPath == null) {
-            VirtualFile path = project.getBaseDir();
-            if (path == null) return;
-            testPath = Paths.get(path.getPath(), "t").toString();
-        }
+        String finalTestPath = testPath;
+        NewTestDialog dialog = new NewTestDialog(project, finalTestPath);
+        boolean isOk = dialog.showAndGet();
+        // User cancelled action
+        if (!isOk) return;
+        String fileName = dialog.getTestName();
+        if (fileName == null)
+            return;
 
         testPath = Perl6ModuleBuilderModule.stubTest(Paths.get(testPath), fileName, Collections.emptyList());
         VirtualFile testFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(testPath);
