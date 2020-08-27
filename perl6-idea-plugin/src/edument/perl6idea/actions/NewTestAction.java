@@ -50,23 +50,11 @@ public class NewTestAction extends AnAction {
             return;
 
         String finalTestPath = testPath;
-        InputValidator validator = new InputValidator() {
-            @Override
-            public boolean checkInput(String inputString) {
-                return !Paths.get(finalTestPath, inputString).toFile().exists() && inputString.matches(Patterns.TEST_PATTERN);
-            }
-
-            @Override
-            public boolean canClose(String inputString) {
-                return inputString.matches(Patterns.TEST_PATTERN);
-            }
-        };
-
-        String fileName = Messages.showInputDialog(
-            project,
-            "Test file name (type one without an extension to use a default '.t'):",
-            "New Test Name",
-            Messages.getQuestionIcon(), null, validator);
+        NewTestDialog dialog = new NewTestDialog(project, finalTestPath);
+        boolean isOk = dialog.showAndGet();
+        // User cancelled action
+        if (!isOk) return;
+        String fileName = dialog.getTestName();
         if (fileName == null)
             return;
 
