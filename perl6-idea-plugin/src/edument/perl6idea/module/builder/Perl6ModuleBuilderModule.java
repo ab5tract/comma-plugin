@@ -109,6 +109,8 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
     public static String stubTest(Path testDirectoryPath, String fileName, List<String> imports) {
         Path testPath = testDirectoryPath.resolve(fileName);
         // If no extension, add default `.t`
+        if (!testPath.toString().contains("."))
+            testPath = Paths.get(testDirectoryPath.toString(), fileName + "." + Perl6TestFileType.INSTANCE.getDefaultExtension());
         List<String> lines = new LinkedList<>();
         imports.forEach(i -> lines.add(String.format("use %s;", i)));
         lines.addAll(Arrays.asList("use Test;", "", "done-testing;"));
