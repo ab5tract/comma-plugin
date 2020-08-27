@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -92,15 +91,17 @@ public class CurrentGrammar {
             String currentInput = inputDocument.getText();
             String grammarFileContent = grammarDocument.getText();
             application.executeOnPooledThread(() -> {
+                File inputAsFile = null;
+                File tweakedGrammarAsFile = null;
                 try {
                     // Set up input file and tweaked grammar file to run with.
-                    File inputAsFile = writeToTempFile(currentInput);
+                    inputAsFile = writeToTempFile(currentInput);
                     if (inputAsFile == null)
                         return;
                     String tweakedGramamrFileContent = tweakGrammarFileContent(grammarFileContent, inputAsFile);
                     if (tweakedGramamrFileContent == null)
                         return;
-                    File tweakedGrammarAsFile = writeToTempFile(tweakedGramamrFileContent);
+                    tweakedGrammarAsFile = writeToTempFile(tweakedGramamrFileContent);
                     if (tweakedGrammarAsFile == null)
                         return;
 
@@ -131,17 +132,20 @@ public class CurrentGrammar {
                     updateUsing(currentInput, "{ \"e\": \"Failed to run Raku to process grammar\" }");
                 }
                 finally {
+                    if (inputAsFile != null && inputAsFile.exists())
+                        inputAsFile.delete();
+                    if (tweakedGrammarAsFile != null && tweakedGrammarAsFile.exists())
+                        inputAsFile.delete();
                     runningDone();
                 }
             });
         });
     }
 
-    private File writeToTempFile(String input) {
+    private static File writeToTempFile(String input) {
         try {
             File tempFile = FileUtil.createTempFile("comma", ".tmp");
             FileUtil.writeToFile(tempFile, input);
-            tempFile.deleteOnExit();
             return tempFile;
         }
         catch (IOException e) {

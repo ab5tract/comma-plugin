@@ -15,6 +15,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +29,6 @@ public class Perl6CoverageCommandLineState extends Perl6RunCommandLineState {
         super(environment);
         try {
             coverageDir = FileUtil.createTempDirectory("coverage", Integer.toString(this.hashCode()));
-            coverageDir.deleteOnExit();
         }
         catch (IOException e) {
             throw new ExecutionException(e);
@@ -68,12 +70,19 @@ public class Perl6CoverageCommandLineState extends Perl6RunCommandLineState {
                 maybeBest.sort(Comparator.comparing(Perl6CoverageCommandLineState::extractPid));
                 if (maybeBest.size() > 0) {
                     Perl6CoverageDataManager.getInstance(getEnvironment().getProject())
-                            .addSuiteFromSingleCoverageFile(maybeBest.get(0), state);
+                        .addSuiteFromSingleCoverageFile(maybeBest.get(0), state);
                 }
                 else {
                     Notifications.Bus.notify(new Notification("Coverage Error", "Coverage Error",
-                            "No coverage data collected.", NotificationType.ERROR));
+                                                              "No coverage data collected.", NotificationType.ERROR));
                 }
+                try {
+                    Files.walk(Paths.get(coverageDir.getAbsolutePath()))
+                        .map(Path::toFile)
+                        .sorted((o1, o2) -> -FileUtil.compareFiles(o1, o2))
+                        .forEach(File::delete);
+                }
+                catch (IOException ignored) {}
             }
         });
         return handler;
