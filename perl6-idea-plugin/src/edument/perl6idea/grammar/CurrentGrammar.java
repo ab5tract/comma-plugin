@@ -110,7 +110,7 @@ public class CurrentGrammar {
                     cmd.setWorkDirectory(project.getBasePath());
                     cmd.addParameter("-Ilib");
                     cmd.addParameter(tweakedGrammarAsFile.getAbsolutePath());
-                    List<String> lines = cmd.executeAndRead();
+                    List<String> lines = cmd.executeAndRead(tweakedGrammarAsFile);
 
                     // Find the lines that we need (we ignore those before a marker, in
                     // case the user has added prints or whatever).
@@ -133,8 +133,6 @@ public class CurrentGrammar {
                 }
                 finally {
                     if (inputAsFile != null && inputAsFile.exists())
-                        inputAsFile.delete();
-                    if (tweakedGrammarAsFile != null && tweakedGrammarAsFile.exists())
                         inputAsFile.delete();
                     runningDone();
                 }

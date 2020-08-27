@@ -211,7 +211,7 @@ public class Perl6SdkType extends SdkType {
             Perl6CommandLine cmd = new Perl6CommandLine(project);
             cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
             cmd.addParameter("--show-config");
-            subs = cmd.executeAndRead();
+            subs = cmd.executeAndRead(null);
             Map<String, String> buildConfig = new TreeMap<>();
 
             for (String line : subs) {
@@ -260,7 +260,8 @@ public class Perl6SdkType extends SdkType {
                 cmd.addParameter(coreDocs.getAbsolutePath());
                 ApplicationManager.getApplication().executeOnPooledThread(() -> {
                     try {
-                        String settingLines = String.join("\n", cmd.executeAndRead());
+                        String settingLines = String.join("\n", cmd.executeAndRead(coreSymbols));
+                        coreDocs.delete();
                         if (settingLines.isEmpty()) {
                             reactToSDKIssue(project, "getCoreSettingFile got no symbols from Raku, using fallback");
                             getFallback(project);
@@ -430,7 +431,7 @@ public class Perl6SdkType extends SdkType {
             Perl6CommandLine cmd = new Perl6CommandLine(project);
             cmd.setWorkDirectory(project.getBasePath());
             cmd.addParameters(moduleSymbols.getPath(), invocation);
-            String text = String.join("\n", cmd.executeAndRead());
+            String text = String.join("\n", cmd.executeAndRead(moduleSymbols));
             return new Perl6ExternalNamesParser(project, perl6File, text).parse().result();
         } catch (ExecutionException e) {
             return new ArrayList<>();
@@ -446,6 +447,7 @@ public class Perl6SdkType extends SdkType {
             Path nqpSymbolsPath = nqpSymbols.toPath();
             try {
                 ops = Files.readAllLines(nqpSymbolsPath);
+                nqpSymbols.delete();
             }
             catch (IOException e) {
                 ops.add("[]");

@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 public class Perl6TestRunningState extends CommandLineState {
     private final Perl6TestRunConfiguration runConfiguration;
     private final Project myProject;
+    private File myScriptFile;
 
     public Perl6TestRunningState(ExecutionEnvironment environment) {
         super(environment);
@@ -73,6 +74,12 @@ public class Perl6TestRunningState extends CommandLineState {
         final GeneralCommandLine commandLine = createCommandLine();
         final OSProcessHandler processHandler = new ColoredProcessHandler(commandLine);
         ProcessTerminatedListener.attach(processHandler, getEnvironment().getProject());
+        processHandler.addProcessListener(new ProcessAdapter() {
+            @Override
+            public void processTerminated(@NotNull ProcessEvent event) {
+                myScriptFile.delete();
+            }
+        });
         return processHandler;
     }
 
@@ -83,11 +90,11 @@ public class Perl6TestRunningState extends CommandLineState {
             cmd = new Perl6CommandLine(myProject);
         else
             cmd = new Perl6ScriptRunner(myProject);
-        File script = Perl6Utils.getResourceAsFile("testing/perl6-test-harness.p6");
-        if (script == null)
+        myScriptFile = Perl6Utils.getResourceAsFile("testing/perl6-test-harness.p6");
+        if (myScriptFile == null)
             throw new ExecutionException("Bundled resources are corrupted");
 
-        cmd.addParameter(script.getAbsolutePath());
+        cmd.addParameter(myScriptFile.getAbsolutePath());
 
         fillTestHarnessArguments(cmd);
         if (!cmd.getParametersList().getParametersString().contains("--path"))
