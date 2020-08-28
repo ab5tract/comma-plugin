@@ -34,9 +34,11 @@ public class NewTestDialog extends DialogWrapper {
         boolean isCorrectScriptName = newScriptName.matches(Patterns.TEST_PATTERN);
         if (!isCorrectScriptName)
             return new ValidationInfo("Incorrect test name (examples: `foo.rakutest`, `foo.t6`, `foo.t`)", testNameField);
-        if (Paths.get(myParentPath, newScriptName).toFile().exists() ||
-            Paths.get(myParentPath, newScriptName + ".t").toFile().exists())
+        if (Paths.get(myParentPath, newScriptName).toFile().exists())
             return new ValidationInfo("File " + newScriptName + " already exists", testNameField);
+        else if (Paths.get(myParentPath, newScriptName + ".t").toFile().exists())
+            return new ValidationInfo("File " + newScriptName + ".t already exists", testNameField);
+
         return null;
     }
 
