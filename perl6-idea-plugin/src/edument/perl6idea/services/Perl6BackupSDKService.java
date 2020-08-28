@@ -28,7 +28,7 @@ import java.util.Map;
 @State(name = "Raku.Backup.Sdk", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
 public class Perl6BackupSDKService implements PersistentStateComponent<Perl6BackupSDKService.State> {
     private final Project myProject;
-    State myState;
+    State myState = new State();
 
     public Perl6BackupSDKService(Project project) {
         myProject = project;
