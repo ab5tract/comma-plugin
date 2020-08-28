@@ -32,14 +32,14 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Comma now supports projects comprised of more than a single module. It is possible to use the <code>Project Structure</code> dialog to create or import a Raku module which will be part of the current project. Local modules correctly resolve symbols between each other and other features officially support such project setups as well</li>
-<li>Formal variables such as <code>$^foo</code> and <code>$:bar</code> cause completion and navigation for implicitly declared <code>$foo</code> and <code>$bar</code> now</li>
-<li>The code sample for Raku at <code>Settings -&gt; Editor -&gt; Color Scheme</code> was extended to to show more elements</li>
-<li>Do not annotate <code>:$foo?</code> parameters as errors, instead explain the redundancy of <code>?</code> in a warning</li>
-<li>Fix a long-standing bug where optimized code to work with symbols was not used in situations where it could be</li>
-<li>Fix a bug where on new project creation symbols might not be loaded</li>
-<li>Fix parsing of comments starting with <code>#==</code></li>
-<li>Fix stack overflow errors for classes which depend on themselves, like <code>class Foo is Foo {}</code></li>
+<li>Unify the UI of <code>New Script</code>, <code>New Module</code> and <code>New Test</code> actions, make them recognize the case when the file with the specified name already exists</li>
+<li>Add a <code>model</code> option to <code>New Module</code> action, which creates a stub for a Red ORM model and ensures that Red is specified in the dependencies</li>
+<li>Add a <code>Mark directory as</code> group of actions, which can be used to specify a directory as a source root of a particular type</li>
+<li>Fix possible exception related to the secondary Raku SDK</li>
+<li>Fix an exception for modules with recursive dependencies</li>
+<li>Fix Test Run Configuration execution for Windows</li>
+<li>Fix a hotkey specified in tip text</li>
+<li>Fix the <code>EVALFILE</code> subroutine being detected as undeclared</li>
 </ul>
   ]]>
   </change-notes>
