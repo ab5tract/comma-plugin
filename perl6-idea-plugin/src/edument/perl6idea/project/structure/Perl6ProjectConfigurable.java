@@ -22,7 +22,7 @@ public class Perl6ProjectConfigurable extends NamedConfigurable<Project> impleme
     private DetailsComponent myDetailsComponent;
     private JPanel myPanel;
     private JTextField myProjectName;
-    private Perl6SdkConfigurable myProjectSdkConfigurable;
+    private Perl6ProjectSdkConfigurable myProjectSdkConfigurable;
 
     public Perl6ProjectConfigurable(Project project, Perl6StructureConfigurableContext context,
                                     ProjectSdksModel model) {
@@ -41,7 +41,7 @@ public class Perl6ProjectConfigurable extends NamedConfigurable<Project> impleme
             myProjectName.setColumns(40);
             myPanel.add(myProjectName, "wrap");
         }
-        myProjectSdkConfigurable = new Perl6SdkConfigurable(myProject, model);
+        myProjectSdkConfigurable = new Perl6ProjectSdkConfigurable(myProject, model);
         myPanel.add(myProjectSdkConfigurable.createComponent(), "shrink 0");
     }
 

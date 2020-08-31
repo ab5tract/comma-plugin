@@ -65,6 +65,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     private JLabel myEmptySelection =
         new JLabel("<html><body><center>Select a setting to view or edit its details here</center></body></html>",
                    SwingConstants.CENTER);
+    private Perl6SdkListConfigurable myJdkListConfig;
 
     public Perl6ModuleStructureConfigurable getModulesConfig() {
         return myModulesConfigurable;
@@ -79,7 +80,8 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         if (moduleToSelect != null) {
             final Module module = ModuleManager.getInstance(myProject).findModuleByName(moduleToSelect);
             assert module != null;
-            place = place.putPath(MasterDetailsComponent.TREE_OBJECT, module).putPath(ModuleEditor.SELECTED_EDITOR_NAME, editorNameToSelect);
+            place =
+                place.putPath(MasterDetailsComponent.TREE_OBJECT, module).putPath(ModuleEditor.SELECTED_EDITOR_NAME, editorNameToSelect);
         }
         return navigateTo(place, requestFocus);
     }
@@ -89,11 +91,9 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     }
 
     public ActionCallback select(@NotNull Sdk sdk, final boolean requestFocus) {
-        return null;
-        // TODO tie to SDK tab when available
-        //Place place = createPlaceFor(myJdkListConfig);
-        //place.putPath(MasterDetailsComponent.TREE_NAME, sdk.getName());
-        //return navigateTo(place, requestFocus);
+        Place place = createPlaceFor(myJdkListConfig);
+        place.putPath(MasterDetailsComponent.TREE_NAME, sdk.getName());
+        return navigateTo(place, requestFocus);
     }
 
     public static class UIState {
@@ -180,6 +180,8 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         mySidePanel.addSeparator("Project Settings");
         addProjectConfigurable();
         addModulesConfigurable();
+        mySidePanel.addSeparator("Platform Settings");
+        addSdkListConfig();
     }
 
     private void addModulesConfigurable() {
@@ -193,15 +195,16 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         addConfigurable(myProjectConfigurable);
     }
 
+    private void addSdkListConfig() {
+        myJdkListConfig = new Perl6SdkListConfigurable(myProject);
+        myJdkListConfig.init(myContext);
+        addConfigurable(myJdkListConfig);
+    }
+
     private void addConfigurable(Configurable configurable) {
         myName2Config.add(configurable);
         mySidePanel.addPlace(createPlaceFor(configurable), new Presentation(configurable.getDisplayName()));
     }
-
-    // TODO SDK tab
-    //public JdkListConfigurable getJdkConfig() {
-    //    return myJdkListConfig;
-    //}
 
     public ProjectSdksModel getProjectSdksModel() {
         return myProjectSdkModel;
@@ -220,8 +223,30 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         try {
             myContext.reset();
             myProjectSdkModel.reset(myProject);
-            myProjectConfigurable.reset();
-            myModulesConfigurable.reset();
+            Configurable toSelect = null;
+            for (Configurable each : myName2Config) {
+                if (myUiState.lastEditedConfigurable != null && myUiState.lastEditedConfigurable.equals(each.getDisplayName())) {
+                    toSelect = each;
+                }
+                if (each instanceof MasterDetailsComponent) {
+                    ((MasterDetailsComponent)each).setHistory(myHistory);
+                }
+                each.reset();
+            }
+
+            myHistory.clear();
+
+            if (toSelect == null && myName2Config.size() > 0) {
+                toSelect = myName2Config.iterator().next();
+            }
+
+            removeSelected();
+
+            navigateTo(toSelect != null ? createPlaceFor(toSelect) : null, false);
+
+            if (myUiState.proportion > 0) {
+                mySplitter.setProportion(myUiState.proportion);
+            }
         }
         finally {
             token.finish();

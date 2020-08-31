@@ -1,136 +1,101 @@
+// Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.project.structure;
 
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkModel;
-import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.projectRoots.SdkType;
+import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
-import com.intellij.openapi.util.Comparing;
-import edument.perl6idea.project.projectWizard.components.JdkComboBox;
-import edument.perl6idea.sdk.Perl6SdkType;
-import net.miginfocom.swing.MigLayout;
+import com.intellij.openapi.ui.NamedConfigurable;
+import com.intellij.openapi.util.ActionCallback;
+import com.intellij.ui.navigation.History;
+import com.intellij.ui.navigation.Place;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class Perl6SdkConfigurable implements UnnamedConfigurable {
-    private final Project myProject;
-    private JComponent myJdkPanel;
-    private JdkComboBox myCbProjectJdk;
-    private final ProjectSdksModel myJdksModel;
-    private final SdkModel.Listener myListener = new SdkModel.Listener() {
-        @Override
-        public void sdkAdded(@NotNull Sdk sdk) {
-            try {
-                myJdksModel.apply(null, true);
-            }
-            catch (ConfigurationException e) {
-                throw new RuntimeException(e);
-            }
-            reloadModel();
-        }
+public class Perl6SdkConfigurable extends NamedConfigurable<Sdk> implements Place.Navigator {
+    private final ProjectJdkImpl myProjectJdk;
+    private final Perl6SdkEditor mySdkEditor;
 
-        @Override
-        public void beforeSdkRemove(@NotNull Sdk sdk) {
-            reloadModel();
-        }
-
-        @Override
-        public void sdkChanged(@NotNull Sdk sdk, String previousName) {
-            reloadModel();
-        }
-
-        @Override
-        public void sdkHomeSelected(@NotNull Sdk sdk, @NotNull String newSdkHome) {
-            reloadModel();
-        }
-    };
-
-    public Perl6SdkConfigurable(Project project, ProjectSdksModel model) {
-        myProject = project;
-        myJdksModel = model;
-        myJdksModel.addListener(myListener);
-    }
-
-    @Nullable
-    public Sdk getSelectedProjectJdk() {
-        return myJdksModel.findSdk(myCbProjectJdk.getSelectedJdk());
+    public Perl6SdkConfigurable(ProjectJdkImpl projectJdk,
+                                @NotNull ProjectSdksModel model,
+                                Runnable updateTree,
+                                History history,
+                                Project project) {
+        super(true, updateTree);
+        myProjectJdk = projectJdk;
+        mySdkEditor = createSdkEditor(project, model, history, myProjectJdk);
     }
 
     @NotNull
-    @Override
-    public JComponent createComponent() {
-        if (myJdkPanel == null) {
-            myJdkPanel = new JPanel(new MigLayout("", "left", "top"));
-            myCbProjectJdk = new JdkComboBox(myProject, myJdksModel,
-                                             (sdkType) -> sdkType instanceof Perl6SdkType,
-                                             JdkComboBox.getSdkFilter((sdkType) -> sdkType instanceof Perl6SdkType),
-                                             (sdkType) -> sdkType instanceof Perl6SdkType,
-                                             (foo) -> {});
-            myCbProjectJdk.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    myJdksModel.setProjectSdk(myCbProjectJdk.getSelectedJdk());
-                }
-            });
-            final String text = "<html><b>Project SDK:</b><br>This SDK is default for all project modules.<br>" +
-                                "A module-specific SDK can be configured for each of the modules as required.</html>";
-            myJdkPanel.add(new JLabel(text), "wrap, span 3");
-            myJdkPanel.add(myCbProjectJdk);
-        }
-        return myJdkPanel;
+    protected Perl6SdkEditor createSdkEditor(@NotNull Project project,
+                                        @NotNull ProjectSdksModel sdksModel,
+                                        @NotNull History history,
+                                        @NotNull ProjectJdkImpl projectJdk) {
+        return new Perl6SdkEditor(project, sdksModel, history, projectJdk);
     }
 
-    private void reloadModel() {
-        final Sdk projectJdk = myJdksModel.getProjectSdk();
-        if (myCbProjectJdk != null)
-            myCbProjectJdk.reloadModel();
-        final String sdkName = projectJdk == null ? ProjectRootManager.getInstance(myProject).getProjectSdkName() : projectJdk.getName();
-        if (sdkName != null) {
-            final Sdk jdk = myJdksModel.findSdk(sdkName);
-            if (jdk != null)
-                myCbProjectJdk.setSelectedJdk(jdk);
-            else
-                myCbProjectJdk.setInvalidJdk(sdkName);
-        } else
-            myCbProjectJdk.setSelectedJdk(null);
+    @Override
+    public void setDisplayName(String name) {
+        myProjectJdk.setName(name);
+    }
+
+    @Override
+    public Sdk getEditableObject() {
+        return myProjectJdk;
+    }
+
+    @Override
+    public String getBannerSlogan() {
+        return myProjectJdk.getName();
+    }
+
+    @Override
+    public JComponent createOptionsPanel() {
+        return mySdkEditor.createComponent();
+    }
+
+    @Override
+    public @Nls(capitalization = Nls.Capitalization.Title) String getDisplayName() {
+        return myProjectJdk.getName();
     }
 
     @Override
     public boolean isModified() {
-        final Sdk projectSdk = ProjectRootManager.getInstance(myProject).getProjectSdk();
-        return !Comparing.equal(projectSdk, getSelectedProjectJdk());
+        return mySdkEditor.isModified();
     }
 
     @Override
-    public void apply() {
-        ProjectRootManager.getInstance(myProject).setProjectSdk(getSelectedProjectJdk());
+    public void apply() throws ConfigurationException {
+        mySdkEditor.apply();
     }
 
     @Override
     public void reset() {
-        reloadModel();
-
-        final String sdkName = ProjectRootManager.getInstance(myProject).getProjectSdkName();
-        if (sdkName != null) {
-            final Sdk jdk = myJdksModel.findSdk(sdkName);
-            if (jdk != null)
-                myCbProjectJdk.setSelectedJdk(jdk);
-            else
-                myCbProjectJdk.setInvalidJdk(sdkName);
-        } else
-            myCbProjectJdk.setSelectedJdk(null);
+        mySdkEditor.reset();
     }
 
     @Override
     public void disposeUIResources() {
-        myJdksModel.removeListener(myListener);
-        myJdkPanel = null;
-        myCbProjectJdk = null;
+        mySdkEditor.disposeUIResources();
+    }
+
+    @Override
+    public ActionCallback navigateTo(@Nullable final Place place, final boolean requestFocus) {
+        return mySdkEditor.navigateTo(place, requestFocus);
+    }
+
+    @Override
+    public void queryPlace(@NotNull final Place place) {
+        mySdkEditor.queryPlace(place);
+    }
+
+    @Override
+    public Icon getIcon(boolean open) {
+        return ((SdkType) myProjectJdk.getSdkType()).getIcon();
     }
 }
