@@ -13,7 +13,7 @@
 
   <welcome-screen logo-url="/CommaCoreWelcomeScreen.png"/>
 
-  <plugins url="http://plugins.jetbrains.com/"/>
+  <plugins url="https://plugins.jetbrains.com/"/>
   <update-urls check="https://commaide.com/updates/updates.xml"/>
 
   <help webhelp-url="https://commaide.com/docs"/>
