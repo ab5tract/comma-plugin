@@ -31,6 +31,7 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.nio.file.Paths;
 
 import static java.awt.GridBagConstraints.*;
 
@@ -149,7 +150,7 @@ public class NamePathComponent extends JPanel {
       throw new ConfigurationException(String.format("Directory %s  doesn't seem to be writeable. Please choose another location.", projectDirectoryPath));
     }
     for (Project p : ProjectManager.getInstance().getOpenProjects()) {
-      if (ProjectUtil.isSameProject(projectDirectoryPath, p)) {
+      if (ProjectUtil.isSameProject(Paths.get(projectDirectoryPath), p)) {
         throw new ConfigurationException(String.format("Directory %s is already taken by the project %s. Please choose another location.", projectDirectoryPath, p.getName()));
       }
     }

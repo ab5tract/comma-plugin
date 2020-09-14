@@ -3,10 +3,8 @@ package edument.perl6idea.actions;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.util.Function;
-import edument.perl6idea.Perl6LightProjectDescriptor;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderScript;
 
@@ -16,12 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-public class NewActionsTest extends LightPlatformCodeInsightFixtureTestCase {
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new Perl6LightProjectDescriptor();
-    }
-
+public class NewActionsTest extends CommaFixtureTestCase {
     public void testNewScriptAction() {
         Path basePath = Paths.get(getProject().getBasePath());
         Perl6ModuleBuilderScript.stubScript(basePath, "test.p6", true);

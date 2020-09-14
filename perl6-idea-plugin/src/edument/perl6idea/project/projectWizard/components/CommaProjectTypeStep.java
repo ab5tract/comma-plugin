@@ -80,7 +80,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
         myContext = context;
         myWizard = wizard;
 
-        myTemplatesMap = new ConcurrentMultiMap<>();
+        myTemplatesMap = MultiMap.createConcurrent();
         final List<TemplatesGroup> groups = fillTemplatesMap(context);
         LOG.debug("groups=" + groups);
 
@@ -112,8 +112,8 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
                 if (index < 1) return false;
                 TemplatesGroup upper = groups.get(index - 1);
                 if (upper.getParentGroup() == null && value.getParentGroup() == null) return true;
-                return !Comparing.equal(upper.getParentGroup(), value.getParentGroup()) &&
-                       !Comparing.equal(upper.getName(), value.getParentGroup());
+                return !Objects.equals(upper.getParentGroup(), value.getParentGroup()) &&
+                       !Objects.equals(upper.getName(), value.getParentGroup());
             }
         }) {
             @Override
@@ -454,7 +454,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
     }
 
     private MultiMap<String, ProjectTemplate> loadLocalTemplates() {
-        ConcurrentMultiMap<String, ProjectTemplate> map = new ConcurrentMultiMap<>();
+        MultiMap<String, ProjectTemplate> map = MultiMap.createConcurrent();
         ProjectTemplateEP[] extensions = ProjectTemplateEP.EP_NAME.getExtensions();
         for (ProjectTemplateEP ep : extensions) {
             ClassLoader classLoader = ep.getLoaderForClass();

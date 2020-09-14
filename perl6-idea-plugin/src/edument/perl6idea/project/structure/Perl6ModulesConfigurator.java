@@ -355,14 +355,16 @@ public class Perl6ModulesConfigurator implements ModulesProvider, ModuleEditor.C
         return myModuleModel;
     }
 
-    public List<Module> deleteModules(Collection<? extends Module> modules) {
+    public List<Module> deleteModules(Collection<?> modules) {
         List<Module> deleted = new ArrayList<>();
         List<ModuleEditor> moduleEditors = new ArrayList<>();
-        for (Module module : modules) {
-            ModuleEditor moduleEditor = getModuleEditor(module);
-            if (moduleEditor != null) {
-                deleted.add(module);
-                moduleEditors.add(moduleEditor);
+        for (Object module : modules) {
+            if (module instanceof Module) {
+                ModuleEditor moduleEditor = getModuleEditor((Module)module);
+                if (moduleEditor != null) {
+                    deleted.add((Module)module);
+                    moduleEditors.add(moduleEditor);
+                }
             }
         }
         if (doRemoveModules(moduleEditors)) {

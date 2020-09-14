@@ -2,9 +2,8 @@
 package edument.perl6idea.project.structure;
 
 import com.intellij.openapi.ui.NamedConfigurable;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.List;
 
 public abstract class RemoveConfigurableHandler<T> {
   private final Class<? extends NamedConfigurable<T>> myConfigurableClass;
@@ -17,9 +16,9 @@ public abstract class RemoveConfigurableHandler<T> {
     return myConfigurableClass;
   }
 
-  public boolean canBeRemoved(@NotNull Collection<? extends T> objects) {
+  public boolean canBeRemoved(List<?> objects) {
     return true;
   }
 
-  public abstract boolean remove(@NotNull Collection<? extends T> objects);
+  public abstract boolean remove(List<?> objects);
 }

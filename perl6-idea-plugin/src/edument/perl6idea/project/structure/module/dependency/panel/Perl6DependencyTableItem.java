@@ -2,6 +2,8 @@ package edument.perl6idea.project.structure.module.dependency.panel;
 
 import com.intellij.openapi.util.Comparing;
 
+import java.util.Objects;
+
 public class Perl6DependencyTableItem {
     protected String myEntry;
     protected Perl6DependencyScope myScope;
@@ -28,7 +30,7 @@ public class Perl6DependencyTableItem {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Perl6DependencyTableItem item = (Perl6DependencyTableItem)obj;
-        return Comparing.equal(myEntry, item.myEntry) && Comparing.equal(myScope, item.getScope());
+        return Objects.equals(myEntry, item.myEntry) && Comparing.equal(myScope, item.getScope());
     }
 
     @Override

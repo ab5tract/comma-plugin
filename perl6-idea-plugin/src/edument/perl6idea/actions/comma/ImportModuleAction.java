@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.nio.file.Paths;
 
 public class ImportModuleAction extends AnAction {
     private static final String LAST_IMPORTED_LOCATION = "comma.last.imported.location";
@@ -98,7 +99,7 @@ public class ImportModuleAction extends AnAction {
         final VirtualFile file = files[0];
         if (project == null) { // wizard will create a new project
             for (Project p : ProjectManager.getInstance().getOpenProjects()) {
-                if (ProjectUtil.isSameProject(file.getPath(), p)) {
+                if (ProjectUtil.isSameProject(Paths.get(file.getPath()), p)) {
                     ProjectUtil.focusProjectWindow(p, false);
                     return null;
                 }
