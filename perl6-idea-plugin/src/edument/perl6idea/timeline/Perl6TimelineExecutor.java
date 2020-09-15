@@ -12,6 +12,7 @@ import javax.swing.*;
 public class Perl6TimelineExecutor extends Executor {
     public static final String EXECUTOR_ID = "Perl6Timeline";
 
+    @Override
     @NotNull
     public String getStartActionText() {
     return "Run and show _Timeline";
@@ -29,41 +30,50 @@ public class Perl6TimelineExecutor extends Executor {
         return configurationName.replace("_", "__");
     }
 
+    @Override
     public String getToolWindowId() {
         return ToolWindowId.RUN;
     }
 
+    @Override
     public Icon getToolWindowIcon() {
         return AllIcons.Toolwindows.ToolWindowRun;
     }
 
+    @Override
     @NotNull
     public Icon getIcon() {
         return Perl6Icons.RUN_WITH_TIMELINE;
     }
 
+    @Override
     public Icon getDisabledIcon() {
         return null;
     }
 
+    @Override
     public String getDescription() {
         return "Run and collect live program timeline";
     }
 
+    @Override
     @NotNull
     public String getActionName() {
         return "Timeline";
     }
 
+    @Override
     @NotNull
     public String getId() {
         return EXECUTOR_ID;
     }
 
+    @Override
     public String getContextActionId() {
         return "Perl6RunTimeline";
     }
 
+    @Override
     public String getHelpId() {
         return null;
     }

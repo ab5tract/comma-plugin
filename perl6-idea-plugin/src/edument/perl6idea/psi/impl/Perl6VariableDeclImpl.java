@@ -215,7 +215,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (variables.size() == 0) {
             variables = PsiTreeUtil.findChildrenOfType(this, Perl6Variable.class);
         }
-        return variables.toArray(new PsiNamedElement[0]);
+        return variables.toArray(PsiNamedElement.EMPTY_ARRAY);
     }
 
     @Override

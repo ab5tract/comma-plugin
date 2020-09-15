@@ -3,6 +3,7 @@ package edument.perl6idea.refactoring.introduce;
 import edument.perl6idea.refactoring.RakuNameValidator;
 
 public class IntroduceValidator implements RakuNameValidator {
+    @Override
     public boolean isNameValid(String name) {
         return name != null && isIdentifier(name);
     }

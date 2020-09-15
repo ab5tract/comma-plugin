@@ -57,7 +57,7 @@ public class UseWithSyntaxFix implements IntentionAction {
                 getReplacer(term.getText()));
     }
 
-    private String getReplacer(@NotNull String text) {
+    private static String getReplacer(@NotNull String text) {
         switch(text) {
             case "if": return "with";
             case "elsif": return "orwith";

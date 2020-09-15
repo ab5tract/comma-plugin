@@ -134,12 +134,12 @@ public class Perl6InlineVariableProcessor extends Perl6InlineProcessor {
         }
     }
 
-    private void inlineElement(PsiElement usageElement, PsiElement initializer) {
+    private static void inlineElement(PsiElement usageElement, PsiElement initializer) {
         PsiElement parent = usageElement.getParent();
         if (parent instanceof Perl6ColonPair) {
             // if ':$foo', we unwrap into foo => ...
             String key = ((Perl6ColonPair)parent).getKey();
-            parent.replace(CompletePerl6ElementFactory.createFatArrow(usageElement.getProject(), key, initializer));
+            parent.replace(Perl6ElementFactory.createFatArrow(usageElement.getProject(), key, initializer));
         } else {
             usageElement.replace(initializer);
         }

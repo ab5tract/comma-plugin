@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 
 public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIntentionAction implements IntentionAction {
+    @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element) throws IncorrectOperationException {
         Perl6RegexCapturePositional group = PsiTreeUtil.getNonStrictParentOfType(element, Perl6RegexCapturePositional.class);
         assert group != null;
@@ -62,18 +63,21 @@ public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIn
         });
     }
 
+    @Override
     @Nls(capitalization = Nls.Capitalization.Sentence)
     @NotNull
     public String getFamilyName() {
         return "Convert into named capture";
     }
 
+    @Override
     @Nls(capitalization = Nls.Capitalization.Sentence)
     @NotNull
     public String getText() {
         return getFamilyName();
     }
 
+    @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
         return PsiTreeUtil.getNonStrictParentOfType(element, Perl6RegexCapturePositional.class) != null;
     }

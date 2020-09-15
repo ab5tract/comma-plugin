@@ -371,7 +371,7 @@ public class Perl6ProfileCallGraph extends JPanel {
         }
     }
 
-    public class CallItem {
+    public static class CallItem {
         private final Rectangle myArea;
         public final Perl6ProfileCall myCall;
 

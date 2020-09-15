@@ -101,7 +101,7 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
             PsiElement toReplace = statements[0];
             toReplace = codeStyleManager.reformat(toReplace);
             // Create a do wrapper
-            PsiElement replacement = null;
+            PsiElement replacement;
             if (isControl()) {
                 Perl6Do doWrapper = Perl6ElementFactory.createDoStatement(project);
                 Perl6Block block = PsiTreeUtil.getParentOfType(doWrapper.getBlock(), Perl6Block.class);

@@ -38,7 +38,7 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
         return ROUTE_VERBS.contains(calleeName) && getRouteSignature(call) != null;
     }
 
-    private Perl6Parameter[] getRouteSignature(Perl6SubCall call) {
+    private static Perl6Parameter[] getRouteSignature(Perl6SubCall call) {
         Perl6PointyBlock pblock = PsiTreeUtil.getChildOfType(call, Perl6PointyBlock.class);
         if (pblock != null)
             return pblock.getParams();

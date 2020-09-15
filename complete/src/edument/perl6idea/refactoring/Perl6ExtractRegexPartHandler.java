@@ -73,7 +73,7 @@ public class Perl6ExtractRegexPartHandler implements RefactoringActionHandler {
 
     private static void replaceNodesWithCall(Project project, NewRegexPartData data, PsiElement[] atoms) {
         String name = data.isCapture ? data.name : data.isLexical ? "&" + data.name : "." + data.name;
-        Perl6RegexAtom newCall = CompletePerl6ElementFactory.createRegexCall(project, name);
+        Perl6RegexAtom newCall = Perl6ElementFactory.createRegexCall(project, name);
         PsiElement parent = PsiTreeUtil.findCommonParent(atoms);
         assert parent != null;
         atoms[atoms.length - 1].replace(newCall);
