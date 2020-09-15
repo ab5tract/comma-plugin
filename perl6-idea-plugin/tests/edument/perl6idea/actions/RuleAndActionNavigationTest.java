@@ -2,11 +2,8 @@ package edument.perl6idea.actions;
 
 import com.intellij.ide.actions.GotoRelatedSymbolAction;
 import com.intellij.navigation.GotoRelatedItem;
-import com.intellij.testFramework.LightProjectDescriptor;
 import edument.perl6idea.CommaFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 

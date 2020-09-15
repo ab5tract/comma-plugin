@@ -32,7 +32,7 @@ public class Perl6ModuleWizardStep extends ModuleWizardStep {
     private JTextField myModuleName = new JBTextField(40);
 
     // Application fields
-    private JTextField myEntryName = new JBTextField(40);;
+    private JTextField myEntryName = new JBTextField(40);
 
     // Cro application fields
     private JCheckBox myWebsocketSupport = new JCheckBox();

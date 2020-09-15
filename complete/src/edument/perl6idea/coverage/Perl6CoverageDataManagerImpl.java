@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private final Project project;
     private static final Pattern indexMatcher = Pattern.compile("^([^\\t]+)\\t(.+)");
-    private static final Pattern lineMatcher = Pattern.compile("^HIT  (.+?)(?: \\(.+\\))?  (\\d+)");
+    private static final Pattern lineMatcher = Pattern.compile("^HIT {2}(.+?)(?: \\(.+\\))? {2}(\\d+)");
     private Set<Perl6CoverageSuite> coverageSuites = new HashSet<>();
     private Perl6CoverageSuite currentSuite;
     private ConcurrentMap<Editor, Perl6CoverageSourceAnnotator> editorAnnotators =

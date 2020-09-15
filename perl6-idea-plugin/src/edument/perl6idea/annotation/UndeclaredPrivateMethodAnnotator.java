@@ -6,7 +6,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.ResolveResult;
-import com.intellij.psi.impl.source.resolve.reference.impl.PsiMultiReference;
 import edument.perl6idea.annotation.fix.StubMissingPrivateMethodFix;
 import edument.perl6idea.psi.Perl6MethodCall;
 import edument.perl6idea.psi.Perl6RoutineDecl;

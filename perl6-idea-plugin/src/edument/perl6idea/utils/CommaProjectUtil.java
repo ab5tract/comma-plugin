@@ -21,7 +21,6 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.platform.PlatformProjectOpenProcessor;
 import com.intellij.util.ui.UIUtil;
 import edument.perl6idea.project.projectWizard.CommaAbstractProjectWizard;
 import edument.perl6idea.project.projectWizard.CommaNewProjectWizard;

@@ -7,7 +7,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.stubs.IndexSink;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.Perl6SubCall;
-import edument.perl6idea.psi.impl.Perl6SubCallImpl;
 import edument.perl6idea.psi.stub.Perl6SubCallStub;
 
 import java.util.List;

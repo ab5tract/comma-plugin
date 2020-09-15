@@ -1,6 +1,5 @@
 package edument.perl6idea.formatter;
 
-import com.intellij.application.options.CodeStyleAbstractPanel;
 import com.intellij.application.options.TabbedLanguageCodeStylePanel;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import edument.perl6idea.Perl6Language;

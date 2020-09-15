@@ -47,7 +47,7 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
                 TextAttributesKey.createTextAttributesKey(POST_CODE.toString(), postCodeAttrsKey));
     }
 
-    private enum SpecialOutputKind { None, CompileError, RuntimeError };
+    private enum SpecialOutputKind { None, CompileError, RuntimeError }
 
     private final Perl6ReplConsole repl;
     private final StringBuilder buffer;

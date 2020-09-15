@@ -3,7 +3,6 @@ package edument.perl6idea.debugger.event;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.frame.XSuspendContext;
 import edument.perl6idea.debugger.Perl6DebugThread;
-import edument.perl6idea.debugger.Perl6StackFrameDescriptor;
 import edument.perl6idea.debugger.Perl6SuspendContext;
 import edument.perl6idea.debugger.Perl6ThreadDescriptor;
 

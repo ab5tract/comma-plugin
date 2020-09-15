@@ -10,7 +10,6 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;

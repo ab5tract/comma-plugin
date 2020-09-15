@@ -17,9 +17,7 @@ public class Perl6SubCallNameImpl extends ASTWrapperPsiElement implements Perl6S
     @Override
     public PsiReference getReference() {
         PsiElement parent = getParent();
-        boolean maybeCoercion = parent instanceof Perl6SubCall
-                ? ((Perl6SubCall)parent).maybeCoercion()
-                : false;
+        boolean maybeCoercion = parent instanceof Perl6SubCall && ((Perl6SubCall)parent).maybeCoercion();
         return new Perl6SubCallReference(this, maybeCoercion);
     }
 

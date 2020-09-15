@@ -2,7 +2,6 @@ package edument.perl6idea.psi.stub;
 
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -57,7 +56,7 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
                 String relPath = filePath.substring(moduleDirectory.getPath().length() + 1);
                 if (relPath.startsWith("lib/") || relPath.startsWith("lib\\"))
                     relPath = relPath.substring(4);
-                String[] parts = relPath.split("/|\\\\");
+                String[] parts = relPath.split("[/\\\\]");
                 int lastDot = parts[parts.length - 1].lastIndexOf('.');
                 if (lastDot > 0)
                     parts[parts.length - 1] = parts[parts.length - 1].substring(0, lastDot);

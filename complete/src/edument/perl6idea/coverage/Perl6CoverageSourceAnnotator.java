@@ -6,7 +6,6 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.DocumentMarkupModel;
 import com.intellij.openapi.editor.markup.*;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ArrayUtil;

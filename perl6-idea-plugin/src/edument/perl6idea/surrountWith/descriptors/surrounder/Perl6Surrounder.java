@@ -14,7 +14,6 @@ import edument.perl6idea.psi.Perl6Block;
 import edument.perl6idea.psi.Perl6Do;
 import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6Heredoc;
-import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

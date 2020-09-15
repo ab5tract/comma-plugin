@@ -7,7 +7,6 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.util.xmlb.XmlSerializerUtil;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;

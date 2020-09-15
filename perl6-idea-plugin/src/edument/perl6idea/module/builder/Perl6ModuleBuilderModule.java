@@ -78,39 +78,41 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
 
     private static List<String> getModuleCodeByType(String type, String name, boolean isUnitScoped) {
         if (isUnitScoped) {
+            String declText = String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name);
             switch (type) {
                 case "Class":
                 case "Role":
                 case "Grammar":
                 case "Module":
-                    return Arrays.asList(String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name), "");
+                    return Arrays.asList(declText, "");
                 case "Monitor":
                     return Arrays.asList(
-                        "use OO::Monitors;", "",
-                        String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name), "");
+                      "use OO::Monitors;", "",
+                      declText, "");
                 case "Model":
                     return Arrays.asList(
-                        "use Red;", "",
-                        String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name), "");
+                      "use Red;", "",
+                      declText, "");
                 default:
                     return Collections.singletonList("");
             }
         }
         else {
+            String declText = String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name);
             switch (type) {
                 case "Class":
                 case "Role":
                 case "Grammar":
                 case "Module":
-                    return Arrays.asList(String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name), "", "}");
+                    return Arrays.asList(declText, "", "}");
                 case "Monitor":
                     return Arrays.asList(
-                        "use OO::Monitors;", "",
-                        String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name), "", "}");
+                      "use OO::Monitors;", "",
+                      declText, "", "}");
                 case "Model":
                     return Arrays.asList(
-                        "use Red;", "",
-                        String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name), "", "}");
+                      "use Red;", "",
+                      declText, "", "}");
                 default:
                     return Collections.singletonList("");
             }

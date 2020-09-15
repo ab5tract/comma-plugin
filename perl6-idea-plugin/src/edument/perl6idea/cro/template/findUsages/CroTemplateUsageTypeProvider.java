@@ -3,7 +3,6 @@ package edument.perl6idea.cro.template.findUsages;
 import com.intellij.psi.PsiElement;
 import com.intellij.usages.impl.rules.UsageType;
 import com.intellij.usages.impl.rules.UsageTypeProvider;
-import edument.perl6idea.cro.template.parsing.CroTemplateElementTypes;
 import edument.perl6idea.cro.template.psi.CroTemplateApply;
 import edument.perl6idea.cro.template.psi.CroTemplateCall;
 import edument.perl6idea.cro.template.psi.CroTemplateVariableAccess;

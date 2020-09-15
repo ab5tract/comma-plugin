@@ -3,7 +3,6 @@ package edument.perl6idea.cro.template.structureView;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.pom.Navigatable;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.Perl6Icons;

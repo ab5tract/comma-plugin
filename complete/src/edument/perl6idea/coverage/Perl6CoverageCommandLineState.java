@@ -88,11 +88,10 @@ public class Perl6CoverageCommandLineState extends Perl6RunCommandLineState {
         return handler;
     }
 
-    private static Pattern digits = Pattern.compile("\\d+");
+    private static final Pattern digits = Pattern.compile("\\d+");
 
     private static Integer extractPid(File f) {
         Matcher matcher = digits.matcher(f.getName());
-        int result = matcher.matches() ? Integer.parseInt((matcher.toMatchResult().toString())) : 0;
-        return result;
+        return matcher.matches() ? Integer.parseInt((matcher.toMatchResult().toString())) : 0;
     }
 }

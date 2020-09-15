@@ -12,8 +12,6 @@ import edument.perl6idea.psi.Perl6PostfixApplication;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public class UseWithSyntaxFix implements IntentionAction {
     private final Perl6ConditionalBranch conditional;
 

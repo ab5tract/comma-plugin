@@ -41,7 +41,7 @@ public class Perl6Utils {
         try (
             InputStream in = Perl6Utils.class.getClassLoader().getResourceAsStream(resourcePath);
             FileOutputStream out = new FileOutputStream(tempFile);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
         ) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -58,7 +58,7 @@ public class Perl6Utils {
         List<String> lines = new ArrayList<>();
         try (
             InputStream resourceFileStream = Perl6Utils.class.getClassLoader().getResourceAsStream(filepath);
-            BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(resourceFileStream, StandardCharsets.UTF_8));
+            BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(resourceFileStream, StandardCharsets.UTF_8))
         ) {
             while (inputStreamReader.ready())
                 lines.add(inputStreamReader.readLine());

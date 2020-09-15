@@ -3,7 +3,6 @@ package edument.perl6idea.refactoring;
 import com.intellij.lang.ContextAwareActionHandler;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.TransactionGuard;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
@@ -44,7 +43,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     private List<Perl6StatementList> myScopes;
     private boolean selfIsPassed = false;
     protected boolean isExpr = false;
-    public static Pattern REGEX_DRIVEN_VARIABLES_PATTERN = Pattern.compile("^\\$\\d+$");
+    public static final Pattern REGEX_DRIVEN_VARIABLES_PATTERN = Pattern.compile("^\\$\\d+$");
 
     public Perl6ExtractCodeBlockHandler(Perl6CodeBlockType type) {
         myCodeBlockType = type;

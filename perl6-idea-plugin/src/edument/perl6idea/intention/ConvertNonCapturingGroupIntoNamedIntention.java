@@ -1,21 +1,13 @@
 package edument.perl6idea.intention;
 
-import com.intellij.codeInsight.template.TemplateBuilder;
-import com.intellij.codeInsight.template.TemplateBuilderFactory;
 import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.refactoring.RefactoringFactory;
-import com.intellij.refactoring.RenameRefactoring;
-import com.intellij.refactoring.rename.RenameHandler;
-import com.intellij.refactoring.rename.RenameHandlerRegistry;
 import com.intellij.refactoring.rename.inplace.VariableInplaceRenameHandler;
-import com.intellij.usageView.UsageInfo;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;

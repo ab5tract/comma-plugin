@@ -1,11 +1,8 @@
 package edument.perl6idea.surrountWith.descriptors.surrounder;
 
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
-
-import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public abstract class Perl6ConditionalSurrounder<T extends P6Conditional> extends Perl6Surrounder<T> {
     public Perl6ConditionalSurrounder(boolean isStatement) {

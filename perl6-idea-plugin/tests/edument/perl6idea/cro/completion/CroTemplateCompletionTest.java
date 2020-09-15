@@ -5,7 +5,6 @@ import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.cro.template.CroTemplateFileType;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class CroTemplateCompletionTest extends CommaFixtureTestCase {

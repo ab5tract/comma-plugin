@@ -3,7 +3,6 @@ package edument.perl6idea.formatter;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CustomCodeStyleSettings;
 import edument.perl6idea.Perl6Language;
-import org.jetbrains.annotations.NotNull;
 
 public class Perl6CodeStyleSettings extends CustomCodeStyleSettings {
     // Brace placement

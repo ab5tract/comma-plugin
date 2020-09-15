@@ -14,8 +14,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static edument.perl6idea.parsing.Perl6TokenTypes.*;
-
 public class SimplifiedRangeAnnotator implements Annotator {
     static final Set<String> OPS = new HashSet<>(Arrays.asList("..", "..^"));
 

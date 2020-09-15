@@ -4,7 +4,6 @@ import com.intellij.ide.util.projectWizard.ModuleNameLocationSettings;
 import com.intellij.ide.util.projectWizard.SettingsStep;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.text.StringUtil;
-import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.module.Perl6ModuleWizardStep;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;

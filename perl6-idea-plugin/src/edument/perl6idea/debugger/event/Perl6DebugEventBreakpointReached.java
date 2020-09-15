@@ -4,7 +4,6 @@ import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import edument.perl6idea.debugger.DebugUtils;
 import edument.perl6idea.debugger.Perl6DebugThread;
-import edument.perl6idea.debugger.Perl6StackFrameDescriptor;
 import edument.perl6idea.debugger.Perl6ThreadDescriptor;
 
 public class Perl6DebugEventBreakpointReached extends Perl6DebugEventStop implements Perl6DebugEventBreakpoint {

@@ -15,6 +15,9 @@ import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 
 public class FormatterTest extends CommaFixtureTestCase {
@@ -77,12 +80,15 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("foobarcall(\na => 42,\nb => 50);", "foobarcall(\n        a => 42,\n        b => 50);");
         reformatTest("token foo { <iteration-v=.p(:a)> }", "token foo { <iteration-v=.p(:a)> }");
         reformatTest("first(* !~~ 'rows')", "first(* !~~ 'rows')");
-        reformatTest("/<?{ $*lone-start-line }>/","/<?{ $*lone-start-line }>/");
+        reformatTest("/<?{ $*lone-start-line }>/", "/<?{ $*lone-start-line }>/");
         reformatTest("/<{'abc'}>/", "/<{ 'abc' }>/");
         reformatTest("/<!{'abc'}>/", "/<!{ 'abc' }>/");
         reformatTest("42 if not .IO.d", "42 if not .IO.d");
-        reformatTest("“{$CONFIG<mothership>}/$full-commit-hash?type=$backend&arch=$arch”", "“{ $CONFIG<mothership> }/$full-commit-hash?type=$backend&arch=$arch”");
-        reformatTest("“{$t.our-nick}, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”", "“{ $t.our-nick }, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”");
+        reformatTest("“{$CONFIG<mothership>}/$full-commit-hash?type=$backend&arch=$arch”",
+                     "“{ $CONFIG<mothership> }/$full-commit-hash?type=$backend&arch=$arch”");
+        reformatTest(
+          "“{$t.our-nick}, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”",
+          "“{ $t.our-nick }, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”");
     }
 
     public void testAlignment() {
@@ -127,8 +133,8 @@ public class FormatterTest extends CommaFixtureTestCase {
         enterTest("if True {<caret>\n}", "if True {\n    <caret>\n}");
         enterTest("if True {\n    say 42;<caret>\n}", "if True {\n    say 42;\n    <caret>\n}");
         enterTest("say 1 +<caret>", "say 1 +\n        <caret>");
-        enterTest("sub abcd($abc,<caret>)","sub abcd($abc,\n         <caret>)");
-        enterTest("abcd(42,<caret>)","abcd(42,\n     <caret>)");
+        enterTest("sub abcd($abc,<caret>)", "sub abcd($abc,\n         <caret>)");
+        enterTest("abcd(42,<caret>)", "abcd(42,\n     <caret>)");
         enterTest("my @a = [42, 42,<caret>]", "my @a = [42, 42,\n<caret>]");
         enterTest("my @ab = 42, 42,<caret>", "my @ab = 42, 42,\n         <caret>");
         enterTest("class AAAA is export<caret>", "class AAAA is export\n           <caret>");
@@ -250,7 +256,7 @@ public class FormatterTest extends CommaFixtureTestCase {
      */
     private void enterTest(String filename) {
         myFixture.configureByFile(filename + ".in.p6");
-        executeEnter();;
+        executeEnter();
         myFixture.checkResultByFile(filename + ".out.p6");
     }
 
@@ -264,7 +270,11 @@ public class FormatterTest extends CommaFixtureTestCase {
         CommandProcessor.getInstance().executeCommand(getProject(), () -> {
             EditorActionManager actionManager = EditorActionManager.getInstance();
             EditorActionHandler enterHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
-            enterHandler.execute(myFixture.getEditor(), null, DataManager.getInstance().getDataContextFromFocus().getResult());
+            try {
+                enterHandler.execute(myFixture.getEditor(), null, DataManager.getInstance().getDataContextFromFocusAsync().blockingGet(
+                  5, TimeUnit.SECONDS));
+            }
+            catch (TimeoutException|ExecutionException ignored) {}
         }, "", null);
     }
 
@@ -272,7 +282,8 @@ public class FormatterTest extends CommaFixtureTestCase {
      * These methods are used to supplement testing of explicit reformatting (guided by an action).
      */
     private void reformatTest(String input, String output) {
-        reformatTest(input, output, (s1, s2) -> {});
+        reformatTest(input, output, (s1, s2) -> {
+        });
     }
 
     private void reformatTest(String input, String output, BiConsumer<CommonCodeStyleSettings, Perl6CodeStyleSettings> config) {
@@ -282,7 +293,8 @@ public class FormatterTest extends CommaFixtureTestCase {
     }
 
     private void reformatTest(String filename) {
-        reformatTest(filename, (s1, s2) -> {});
+        reformatTest(filename, (s1, s2) -> {
+        });
     }
 
     private void reformatTest(String filename, BiConsumer<CommonCodeStyleSettings, Perl6CodeStyleSettings> config) {

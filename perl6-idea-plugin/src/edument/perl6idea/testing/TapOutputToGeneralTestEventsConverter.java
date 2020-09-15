@@ -7,7 +7,6 @@ import com.intellij.execution.testframework.sm.runner.OutputToGeneralTestEventsC
 import com.intellij.openapi.util.Key;
 import com.intellij.util.ArrayUtil;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageVisitor;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tap4j.consumer.TapConsumer;
 import org.tap4j.consumer.TapConsumerException;

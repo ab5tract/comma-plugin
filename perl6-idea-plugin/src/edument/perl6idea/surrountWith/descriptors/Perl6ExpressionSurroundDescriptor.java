@@ -13,8 +13,6 @@ import edument.perl6idea.surrountWith.descriptors.surrounder.*;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 
-import static edument.perl6idea.parsing.Perl6TokenTypes.STATEMENT_TERMINATOR;
-
 public class Perl6ExpressionSurroundDescriptor implements SurroundDescriptor {
     private static final Surrounder[] SURROUNDERS = {
         new Perl6IfSurrounder(false),

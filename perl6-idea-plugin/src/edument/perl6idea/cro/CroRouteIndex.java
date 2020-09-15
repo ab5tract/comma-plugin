@@ -3,7 +3,6 @@ package edument.perl6idea.cro;
 import com.intellij.psi.stubs.StringStubIndexExtension;
 import com.intellij.psi.stubs.StubIndexKey;
 import edument.perl6idea.psi.Perl6SubCall;
-import edument.perl6idea.psi.stub.index.Perl6AllAttributesStubIndex;
 import org.jetbrains.annotations.NotNull;
 
 public class CroRouteIndex extends StringStubIndexExtension<Perl6SubCall> {
