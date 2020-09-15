@@ -7,7 +7,6 @@ import com.intellij.execution.process.KillableColoredProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.sun.javafx.PlatformUtil;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6ScriptRunner;
@@ -16,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 public class Perl6RunCommandLineState extends CommandLineState {
     protected List<String> command = new LinkedList<>();
@@ -48,12 +48,12 @@ public class Perl6RunCommandLineState extends CommandLineState {
         setScript();
         GeneralCommandLine cmd;
         if (isDebug) {
-            if (PlatformUtil.isWindows())
+            if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win"))
                 cmd = new Perl6CommandLine(getEnvironment().getProject(), runConfiguration.getDebugPort());
             else
                 cmd = new Perl6ScriptRunner(getEnvironment().getProject(), runConfiguration.getDebugPort());
         } else {
-            if (PlatformUtil.isWindows())
+            if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win"))
                 cmd = new Perl6CommandLine(getEnvironment().getProject());
             else
                 cmd = new Perl6ScriptRunner(getEnvironment().getProject());
