@@ -1,14 +1,14 @@
 package edument.perl6idea.coverage;
 
 import com.intellij.execution.configurations.RunProfile;
-import com.intellij.execution.runners.DefaultProgramRunner;
+import edument.perl6idea.debugger.Perl6DefaultRunner;
 import edument.perl6idea.run.Perl6CompleteRunConfigurationType;
 import edument.perl6idea.run.Perl6RunConfiguration;
 import edument.perl6idea.testing.Perl6CompleteTestConfigurationType;
 import edument.perl6idea.testing.Perl6TestRunConfiguration;
 import org.jetbrains.annotations.NotNull;
 
-public class Perl6CoverageRunner extends DefaultProgramRunner {
+public class Perl6CoverageRunner extends Perl6DefaultRunner {
     @NotNull
     @Override
     public String getRunnerId() {
