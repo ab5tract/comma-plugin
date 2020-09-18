@@ -8,7 +8,7 @@ import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.parsing.Perl6TokenTypes;
-import edument.perl6idea.psi.impl.*;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 public class MissingThingsAnnotator implements Annotator {
@@ -29,58 +29,53 @@ public class MissingThingsAnnotator implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (element instanceof Perl6SubCallImpl ||
-            element instanceof Perl6MethodCallImpl ||
-            element instanceof Perl6ParenthesizedExprImpl ||
-            element instanceof Perl6LoopStatementImpl ||
-            element instanceof Perl6VariableDeclImpl ||
-            element instanceof Perl6SignatureImpl ||
-            element instanceof Perl6CallImpl) {
-            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
-            ASTNode[] opener = check.getNode().getChildren(T_PAREN_OPEN);
-            ASTNode[] closer = check.getNode().getChildren(T_PAREN_CLOSE);
+        if (!(element instanceof ASTDelegatePsiElement)) return;
+
+        if (element instanceof Perl6SubCall ||
+            element instanceof Perl6MethodCall ||
+            element instanceof Perl6ParenthesizedExpr ||
+            element instanceof Perl6LoopStatement ||
+            element instanceof Perl6VariableDecl ||
+            element instanceof Perl6Signature ||
+            element instanceof Perl6Call) {
+            ASTNode[] opener = element.getNode().getChildren(T_PAREN_OPEN);
+            ASTNode[] closer = element.getNode().getChildren(T_PAREN_CLOSE);
             if (opener.length > 0 && closer.length == 0)
                 holder.newAnnotation(HighlightSeverity.ERROR, "Missing closing )").range(opener[0]).create();
         }
-        else if (element instanceof Perl6ArrayComposerImpl) {
-            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
-            ASTNode[] opener = check.getNode().getChildren(T_ARRAY_COMP_OPEN);
-            ASTNode[] closer = check.getNode().getChildren(T_ARRAY_COMP_CLOSE);
+        else if (element instanceof Perl6ArrayComposer) {
+            ASTNode[] opener = element.getNode().getChildren(T_ARRAY_COMP_OPEN);
+            ASTNode[] closer = element.getNode().getChildren(T_ARRAY_COMP_CLOSE);
             if (opener.length > 0 && closer.length == 0)
                 holder.newAnnotation(HighlightSeverity.ERROR, "Missing closing ]").range(opener[0]).create();
         }
-        else if (element instanceof Perl6ArrayIndexImpl) {
-            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
-            ASTNode[] opener = check.getNode().getChildren(T_ARRAY_INDEX_OPEN);
-            ASTNode[] closer = check.getNode().getChildren(T_ARRAY_INDEX_CLOSE);
+        else if (element instanceof Perl6ArrayIndex) {
+            ASTNode[] opener = element.getNode().getChildren(T_ARRAY_INDEX_OPEN);
+            ASTNode[] closer = element.getNode().getChildren(T_ARRAY_INDEX_CLOSE);
             if (opener.length > 0 && closer.length == 0)
                 holder.newAnnotation(HighlightSeverity.ERROR, "Missing closing ]").range(opener[0]).create();
         }
-        else if (element instanceof Perl6BlockoidImpl) {
-            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
-            ASTNode[] opener = check.getNode().getChildren(T_BLOCK_OPEN);
-            ASTNode[] closer = check.getNode().getChildren(T_BLOCK_CLOSE);
+        else if (element instanceof Perl6Blockoid) {
+            ASTNode[] opener = element.getNode().getChildren(T_BLOCK_OPEN);
+            ASTNode[] closer = element.getNode().getChildren(T_BLOCK_CLOSE);
             if (opener.length > 0 && closer.length == 0)
                 holder.newAnnotation(HighlightSeverity.ERROR, "Missing closing }").range(opener[0]).create();
         }
-        else if (element instanceof Perl6RegexGroupImpl) {
-            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
-            ASTNode[] opener = check.getNode().getChildren(T_RX_GROUP_OPEN);
-            ASTNode[] closer = check.getNode().getChildren(T_RX_GROUP_CLOSE);
+        else if (element instanceof Perl6RegexGroup) {
+            ASTNode[] opener = element.getNode().getChildren(T_RX_GROUP_OPEN);
+            ASTNode[] closer = element.getNode().getChildren(T_RX_GROUP_CLOSE);
             if (opener.length > 0 && closer.length == 0)
                 holder.newAnnotation(HighlightSeverity.ERROR, "Missing closing ]").range(opener[0]).create();
         }
-        else if (element instanceof Perl6RegexAssertionImpl) {
-            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
-            ASTNode[] opener = check.getNode().getChildren(T_RX_ASS_OPEN);
-            ASTNode[] closer = check.getNode().getChildren(T_RX_ASS_CLOSE);
+        else if (element instanceof Perl6RegexAssertion) {
+            ASTNode[] opener = element.getNode().getChildren(T_RX_ASS_OPEN);
+            ASTNode[] closer = element.getNode().getChildren(T_RX_ASS_CLOSE);
             if (opener.length > 0 && closer.length == 0)
                 holder.newAnnotation(HighlightSeverity.ERROR, "Missing closing >").range(opener[0]).create();
         }
-        else if (element instanceof Perl6RegexCapturePositionalImpl) {
-            ASTDelegatePsiElement check = (ASTDelegatePsiElement)element;
-            ASTNode[] opener = check.getNode().getChildren(T_RX_CAP_OPEN);
-            ASTNode[] closer = check.getNode().getChildren(T_RX_CAP_CLOSE);
+        else if (element instanceof Perl6RegexCapturePositional) {
+            ASTNode[] opener = element.getNode().getChildren(T_RX_CAP_OPEN);
+            ASTNode[] closer = element.getNode().getChildren(T_RX_CAP_CLOSE);
             if (opener.length > 0 && closer.length == 0)
                 holder.newAnnotation(HighlightSeverity.ERROR, "Missing closing )").range(opener[0]).create();
         }
