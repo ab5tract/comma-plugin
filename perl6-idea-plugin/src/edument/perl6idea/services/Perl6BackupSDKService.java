@@ -61,7 +61,7 @@ public class Perl6BackupSDKService implements PersistentStateComponent<Perl6Back
         }
 
         // The secondary SDK was set, invalidate caches
-        instance.invalidateCaches();
+        instance.invalidateCaches(myProject);
         for (Module module : ModuleManager.getInstance(myProject).getModules()) {
             Perl6MetaDataComponent component = module.getService(Perl6MetaDataComponent.class);
             if (component != null)

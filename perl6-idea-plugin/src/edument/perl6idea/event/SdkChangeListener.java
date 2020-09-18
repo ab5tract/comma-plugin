@@ -22,7 +22,7 @@ public class SdkChangeListener extends ProjectExtension {
     @Override
     public void projectSdkChanged(@Nullable Sdk sdk) {
         if (!ApplicationManager.getApplication().isUnitTestMode()) {
-            Perl6SdkType.getInstance().invalidateCaches();
+            Perl6SdkType.getInstance().invalidateCaches(myProject);
             for (Module module : ModuleManager.getInstance(myProject).getModules()) {
                 Perl6MetaDataComponent component = module.getService(Perl6MetaDataComponent.class);
                 if (component != null)

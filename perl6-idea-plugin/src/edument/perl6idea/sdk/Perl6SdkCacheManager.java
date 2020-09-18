@@ -17,7 +17,7 @@ public class Perl6SdkCacheManager implements ProjectManagerListener {
         Module[] modules = ModuleManager.getInstance(project).getModules();
         for (Module module : modules) {
             if (Objects.equals(module.getModuleTypeName(), Perl6ModuleType.getInstance().getId())) {
-                Perl6SdkType.getInstance().invalidateFileCache();
+                Perl6SdkType.getInstance().invalidateCaches(project);
                 return;
             }
         }
