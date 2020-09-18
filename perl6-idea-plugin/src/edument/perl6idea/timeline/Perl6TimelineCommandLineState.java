@@ -23,10 +23,8 @@ public class Perl6TimelineCommandLineState extends Perl6RunCommandLineState {
     @NotNull
     @Override
     protected ProcessHandler startProcess() throws ExecutionException {
-        try {
-            ServerSocket socket = new ServerSocket(0);
+        try (ServerSocket socket = new ServerSocket(0)) {
             port = socket.getLocalPort();
-            socket.close();
         }
         catch (IOException e) {
             throw new ExecutionException("Could not find a free port for timeline server: " + e.getMessage());

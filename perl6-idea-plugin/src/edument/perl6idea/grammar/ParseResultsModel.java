@@ -2,7 +2,6 @@ package edument.perl6idea.grammar;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONString;
 
 import java.util.ArrayList;
 import java.util.List;

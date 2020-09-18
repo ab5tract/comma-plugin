@@ -3,7 +3,6 @@ package edument.perl6idea.refactoring;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.CommaFixtureTestCase;
-import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6PsiScope;
 
 public class ExtractRegexTest extends CommaFixtureTestCase {

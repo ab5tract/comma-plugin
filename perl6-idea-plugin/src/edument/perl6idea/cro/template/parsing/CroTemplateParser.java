@@ -7,6 +7,7 @@ import edument.perl6idea.parsing.OPP;
 
 public class CroTemplateParser implements PsiParser {
 
+    @Override
     public ASTNode parse(IElementType root, PsiBuilder builder) {
         PsiBuilder.Marker rootMarker;
         rootMarker = builder.mark();

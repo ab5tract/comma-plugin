@@ -59,6 +59,7 @@ public class Perl6IntroduceDialog extends DialogWrapper {
             }
         });
         ((EditorTextField)myNameComboBox.getEditor().getEditorComponent()).addDocumentListener(new DocumentListener() {
+            @Override
             public void documentChanged(DocumentEvent event) {
                 updateControls();
             }

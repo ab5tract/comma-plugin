@@ -2,32 +2,20 @@ package edument.perl6idea.timeline;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
-import com.intellij.execution.configurations.RunConfigurationBase;
-import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.process.ProcessAdapter;
 import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.execution.runners.RunContentBuilder;
-import com.intellij.execution.runners.RunTab;
-import com.intellij.execution.ui.*;
 import com.intellij.execution.ui.layout.PlaceInGrid;
-import com.intellij.icons.AllIcons;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
-import com.intellij.notification.NotificationsManager;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.util.Disposer;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.content.Content;
 import edument.perl6idea.timeline.client.ClientEvent;
 import edument.perl6idea.timeline.client.TimelineClient;
 import edument.perl6idea.timeline.client.TimelineEventListener;
 import edument.perl6idea.ui.CustomConsoleRunTab;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
 
 public class TimelineContentBuilder extends CustomConsoleRunTab {
     private final static String TIMELINE_CONTENT_ID = "TimelineContent";

@@ -1,7 +1,6 @@
 package edument.perl6idea.actions;
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.actions.BasePlatformRefactoringAction;
 import edument.perl6idea.refactoring.Perl6ExtractRegexPartHandler;

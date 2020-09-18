@@ -14,7 +14,6 @@ import edument.perl6idea.psi.Perl6Block;
 import edument.perl6idea.psi.Perl6Do;
 import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6Heredoc;
-import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -102,7 +101,7 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
             PsiElement toReplace = statements[0];
             toReplace = codeStyleManager.reformat(toReplace);
             // Create a do wrapper
-            PsiElement replacement = null;
+            PsiElement replacement;
             if (isControl()) {
                 Perl6Do doWrapper = Perl6ElementFactory.createDoStatement(project);
                 Perl6Block block = PsiTreeUtil.getParentOfType(doWrapper.getBlock(), Perl6Block.class);

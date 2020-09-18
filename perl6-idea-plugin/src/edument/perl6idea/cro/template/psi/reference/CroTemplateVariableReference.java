@@ -2,9 +2,7 @@ package edument.perl6idea.cro.template.psi.reference;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes;
 import edument.perl6idea.cro.template.psi.CroTemplateVariableAccess;
 import org.jetbrains.annotations.NotNull;

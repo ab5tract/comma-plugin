@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes.*;
-import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class CroTemplateCallImpl extends ASTWrapperPsiElement implements CroTemplateCall {
     public CroTemplateCallImpl(@NotNull ASTNode node) {

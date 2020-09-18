@@ -240,7 +240,7 @@ public class RakuGrammarPreviewer extends JPanel {
                     for (int i = 0; i < packages.size(); i++) {
                         Object item = myGrammarComboBox.getItemAt(i);
                         if (!(item instanceof Perl6PackageDecl) ||
-                                !Objects.equals(packages.get(i), ((Perl6PackageDecl)item))) {
+                                !Objects.equals(packages.get(i), item)) {
                             needChange = true;
                             break;
                         }

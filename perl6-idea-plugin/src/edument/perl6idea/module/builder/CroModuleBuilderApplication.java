@@ -188,7 +188,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         return !directoryName.isEmpty();
     }
 
-    public class CroAppTemplateConfig {
+    public static class CroAppTemplateConfig {
         public String moduleName;
         public boolean websocketSupport;
         public boolean templatingSupport;

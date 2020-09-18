@@ -1,13 +1,10 @@
 package edument.perl6idea.cro.template.psi;
 
-import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.cro.template.CroTemplateFileType;
-import edument.perl6idea.filetypes.Perl6ScriptFileType;
-import edument.perl6idea.psi.Perl6File;
 import org.jetbrains.annotations.NotNull;
 
 public class CroTemplateElementFactory {

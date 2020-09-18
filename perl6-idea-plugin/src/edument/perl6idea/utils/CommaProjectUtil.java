@@ -21,7 +21,6 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.platform.PlatformProjectOpenProcessor;
 import com.intellij.util.ui.UIUtil;
 import edument.perl6idea.project.projectWizard.CommaAbstractProjectWizard;
 import edument.perl6idea.project.projectWizard.CommaNewProjectWizard;
@@ -59,7 +58,7 @@ public class CommaProjectUtil {
     private static void doCreate(CommaAbstractProjectWizard wizard, Project projectToClose) throws IOException {
         String projectFilePath = wizard.getNewProjectFilePath();
         for (Project p : ProjectUtil.getOpenProjects()) {
-            if (ProjectUtil.isSameProject(projectFilePath, p)) {
+            if (ProjectUtil.isSameProject(Paths.get(projectFilePath), p)) {
                 ProjectUtil.focusProjectWindow(p, false);
                 return;
             }
@@ -87,10 +86,7 @@ public class CommaProjectUtil {
             if (projectBuilder == null || !projectBuilder.isUpdate()) {
                 String name = wizard.getProjectName();
                 if (projectBuilder == null) {
-                    OpenProjectTask options = new OpenProjectTask();
-                    options.useDefaultProjectAsTemplate = true;
-                    options.isNewProject = true;
-                    newProject = projectManager.newProject(projectFile, name, options);
+                    newProject = projectManager.newProject(projectFile, OpenProjectTask.newProject().withProjectName(name));
                 }
                 else {
                     newProject = projectBuilder.createProject(name, projectFilePath);
@@ -143,8 +139,8 @@ public class CommaProjectUtil {
             }
 
             if (newProject != projectToClose) {
-                ProjectUtil.updateLastProjectLocation(projectFilePath);
-                PlatformProjectOpenProcessor.openExistingProject(projectFile, projectDir, new OpenProjectTask(newProject));
+                ProjectUtil.updateLastProjectLocation(projectFile);
+                ProjectManagerEx.getInstanceEx().openProject(projectDir, OpenProjectTask.withCreatedProject(newProject).withProjectName(projectFile.getFileName().toString()));
             }
 
             if (!ApplicationManager.getApplication().isUnitTestMode()) {

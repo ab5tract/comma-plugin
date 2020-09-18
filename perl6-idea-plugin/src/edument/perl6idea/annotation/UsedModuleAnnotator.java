@@ -15,7 +15,6 @@ import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.psi.Perl6ColonPair;
 import edument.perl6idea.psi.Perl6LongName;
 import edument.perl6idea.psi.Perl6ModuleName;
-import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.utils.Perl6ModuleListFetcher;
 import org.jetbrains.annotations.NotNull;
 

@@ -8,7 +8,6 @@ import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes;
 import edument.perl6idea.cro.template.psi.CroTemplateApply;
 import edument.perl6idea.cro.template.psi.CroTemplateElementFactory;
 import edument.perl6idea.cro.template.psi.CroTemplateMacro;

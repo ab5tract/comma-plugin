@@ -367,9 +367,9 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
 
     private static List<PsiElement> getOccurrences(PsiElement element, PsiElement scope) {
         List<PsiElement> occurrences = new ArrayList<>();
-        Stack<PsiElement> toWalk = new Stack<>();
+        Deque<PsiElement> toWalk = new ArrayDeque<>();
         toWalk.add(scope);
-        while (!toWalk.empty()) {
+        while (!toWalk.isEmpty()) {
             PsiElement el = toWalk.pop();
             if (PsiEquivalenceUtil.areElementsEquivalent(el, element)) {
                 occurrences.add(el);

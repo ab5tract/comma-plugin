@@ -1,10 +1,7 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.project.projectWizard.categories;
 
-import com.intellij.ide.util.frameworkSupport.FrameworkRole;
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
-import com.intellij.openapi.extensions.ExtensionPointName;
-import com.intellij.util.ArrayUtilRt;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

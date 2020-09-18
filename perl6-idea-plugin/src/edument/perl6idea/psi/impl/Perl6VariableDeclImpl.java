@@ -10,7 +10,6 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
@@ -216,7 +215,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (variables.size() == 0) {
             variables = PsiTreeUtil.findChildrenOfType(this, Perl6Variable.class);
         }
-        return variables.toArray(new PsiNamedElement[0]);
+        return variables.toArray(PsiNamedElement.EMPTY_ARRAY);
     }
 
     @Override

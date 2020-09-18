@@ -1,9 +1,6 @@
 package edument.perl6idea.actions;
 
-import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import edument.perl6idea.CommaFixtureTestCase;
-import edument.perl6idea.Perl6LightProjectDescriptor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
 public class Perl6StatementMoveTest extends CommaFixtureTestCase {

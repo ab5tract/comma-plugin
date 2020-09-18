@@ -195,7 +195,7 @@ public class TimelineChart extends JPanel {
                         if (label.contains(point)) {
                             String key = label.getKey();
                             Boolean current = expanded.get(key);
-                            expanded.put(key, current == null ? true : !current);
+                            expanded.put(key, current == null || !current);
                             repaint();
                             fireVisibleLanesChangedHandler();
                             break;

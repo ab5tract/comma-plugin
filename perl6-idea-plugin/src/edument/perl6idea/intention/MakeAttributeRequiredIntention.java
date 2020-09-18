@@ -7,7 +7,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6ElementFactory;
@@ -18,9 +17,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
-
-import static edument.perl6idea.parsing.Perl6TokenTypes.SCOPE_DECLARATOR;
-import static edument.perl6idea.parsing.Perl6TokenTypes.VARIABLE;
 
 public class MakeAttributeRequiredIntention extends PsiElementBaseIntentionAction implements IntentionAction {
     @Override

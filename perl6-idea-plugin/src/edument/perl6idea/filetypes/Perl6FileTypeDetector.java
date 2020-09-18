@@ -16,9 +16,4 @@ public class Perl6FileTypeDetector implements FileTypeRegistry.FileTypeDetector 
             return Perl6ScriptFileType.INSTANCE;
         return null;
     }
-
-    @Override
-    public int getVersion() {
-        return 1;
-    }
 }

@@ -3,14 +3,11 @@ package edument.perl6idea.actions;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.InputValidator;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
-import edument.perl6idea.utils.Patterns;
 
 import java.nio.file.Paths;
 import java.util.Collections;

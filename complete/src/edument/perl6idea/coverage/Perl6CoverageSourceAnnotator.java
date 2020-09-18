@@ -6,7 +6,6 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.DocumentMarkupModel;
 import com.intellij.openapi.editor.markup.*;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ArrayUtil;
@@ -65,16 +64,16 @@ public class Perl6CoverageSourceAnnotator implements Disposable {
         });
     }
 
-    private String formCoverageInfo(List<String> strings) {
+    private static String formCoverageInfo(List<String> strings) {
         if (strings.size() == 0 || strings.get(0).equals("main"))
             return null;
         return String.join("\n", ArrayUtil.toStringArray(strings));
     }
 
     @NotNull
-    private TextAttributes getMarkerStyle() {
+    private static TextAttributes getMarkerStyle() {
         // TODO: make configurable
-        return new TextAttributes(null, Color.decode("#0f6403"), null, null, 0);
+        return new TextAttributes(null, Color.decode("#0f6403"), null, null, Font.PLAIN);
     }
 
     public void hideAnnotations() {

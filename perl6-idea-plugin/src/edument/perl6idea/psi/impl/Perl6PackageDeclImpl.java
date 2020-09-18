@@ -26,9 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
-import static edument.perl6idea.parsing.Perl6TokenTypes.NAME;
-
 public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub>
         implements Perl6PackageDecl, PsiMetaOwner {
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {

@@ -4,15 +4,15 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.runners.DefaultProgramRunner;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import edument.perl6idea.debugger.Perl6DefaultRunner;
 import edument.perl6idea.run.Perl6RunConfiguration;
 import edument.perl6idea.timeline.client.TimelineClient;
 import org.jetbrains.annotations.NotNull;
 
-public class Perl6TimelineRunner extends DefaultProgramRunner {
+public class Perl6TimelineRunner extends Perl6DefaultRunner {
     @NotNull
     @Override
     public String getRunnerId() {

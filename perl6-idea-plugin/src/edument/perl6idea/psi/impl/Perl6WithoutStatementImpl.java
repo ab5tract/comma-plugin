@@ -3,7 +3,6 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.Perl6IfStatement;
 import edument.perl6idea.psi.Perl6PointyBlock;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.Perl6WithoutStatement;

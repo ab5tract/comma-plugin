@@ -10,7 +10,6 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6PostfixApplication;
 import edument.perl6idea.psi.Perl6Statement;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 public class UseExecutableDynamicVariableFix implements IntentionAction {

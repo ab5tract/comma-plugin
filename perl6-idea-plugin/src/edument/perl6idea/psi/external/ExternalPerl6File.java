@@ -23,7 +23,6 @@ import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
-import edument.perl6idea.repl.Perl6ReplState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

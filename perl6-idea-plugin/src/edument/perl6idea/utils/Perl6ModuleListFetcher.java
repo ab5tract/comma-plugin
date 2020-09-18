@@ -1,6 +1,5 @@
 package edument.perl6idea.utils;
 
-import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;

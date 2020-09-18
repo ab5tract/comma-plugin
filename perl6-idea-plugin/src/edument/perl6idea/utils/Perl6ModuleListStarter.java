@@ -7,7 +7,7 @@ import com.intellij.openapi.startup.StartupActivity;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import org.jetbrains.annotations.NotNull;
 
-public class Perl6ModuleListStarter implements StartupActivity {
+public class Perl6ModuleListStarter implements StartupActivity.Background {
     @Override
     public void runActivity(@NotNull Project project) {
         // Create service if not yet

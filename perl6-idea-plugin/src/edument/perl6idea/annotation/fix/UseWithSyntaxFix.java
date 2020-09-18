@@ -12,8 +12,6 @@ import edument.perl6idea.psi.Perl6PostfixApplication;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public class UseWithSyntaxFix implements IntentionAction {
     private final Perl6ConditionalBranch conditional;
 
@@ -59,7 +57,7 @@ public class UseWithSyntaxFix implements IntentionAction {
                 getReplacer(term.getText()));
     }
 
-    private String getReplacer(@NotNull String text) {
+    private static String getReplacer(@NotNull String text) {
         switch(text) {
             case "if": return "with";
             case "elsif": return "orwith";

@@ -5,12 +5,9 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.annotation.fix.GrepFirstFix;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public class GrepFirstAnnotation implements Annotator {
     @Override

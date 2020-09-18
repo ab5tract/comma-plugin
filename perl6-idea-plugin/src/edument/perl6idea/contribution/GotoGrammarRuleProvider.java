@@ -10,11 +10,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6PackageDecl;
-import edument.perl6idea.psi.Perl6Regex;
 import edument.perl6idea.psi.Perl6RegexDecl;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.stub.index.Perl6AllRegexesStubIndex;
-import edument.perl6idea.psi.stub.index.Perl6AllRoutinesStubIndex;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

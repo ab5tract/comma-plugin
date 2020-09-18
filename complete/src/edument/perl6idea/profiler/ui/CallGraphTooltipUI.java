@@ -2,7 +2,6 @@ package edument.perl6idea.profiler.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBColor;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.JBUI;
 import edument.perl6idea.profiler.model.Perl6ProfileCall;

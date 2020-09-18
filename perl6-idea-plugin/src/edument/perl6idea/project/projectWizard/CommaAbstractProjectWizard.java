@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.nio.file.Paths;
 
 public abstract class CommaAbstractProjectWizard extends AbstractWizard<ModuleWizardStep> {
     protected final WizardContext myWizardContext;
@@ -55,7 +56,7 @@ public abstract class CommaAbstractProjectWizard extends AbstractWizard<ModuleWi
     private static WizardContext initContext(@Nullable Project project, @Nullable String defaultPath, Disposable parentDisposable) {
         WizardContext context = new WizardContext(project, parentDisposable);
         if (defaultPath != null) {
-            context.setProjectFileDirectory(defaultPath, true);
+            context.setProjectFileDirectory(Paths.get(defaultPath), true);
             context.setProjectName(defaultPath.substring(FileUtil.toSystemIndependentName(defaultPath).lastIndexOf("/") + 1));
         }
         return context;

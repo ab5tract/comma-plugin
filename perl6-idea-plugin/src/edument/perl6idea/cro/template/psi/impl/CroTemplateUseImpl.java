@@ -4,7 +4,6 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.cro.template.psi.CroTemplateFile;
 import edument.perl6idea.cro.template.psi.CroTemplateStringLiteral;
 import edument.perl6idea.cro.template.psi.CroTemplateUse;

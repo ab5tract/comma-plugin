@@ -5,7 +5,6 @@ import com.intellij.psi.PsiWhiteSpace;
 import edument.perl6idea.psi.Perl6Comment;
 import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6Statement;
-import edument.perl6idea.psi.Perl6UnterminatedStatement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

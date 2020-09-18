@@ -5,12 +5,10 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
 import edument.perl6idea.run.Perl6RunCommandLineState;
-import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 
 public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
     static Logger LOG = Logger.getInstance(Perl6ProfileCommandLineState.class);

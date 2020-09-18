@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private final Project project;
     private static final Pattern indexMatcher = Pattern.compile("^([^\\t]+)\\t(.+)");
-    private static final Pattern lineMatcher = Pattern.compile("^HIT  (.+?)(?: \\(.+\\))?  (\\d+)");
+    private static final Pattern lineMatcher = Pattern.compile("^HIT {2}(.+?)(?: \\(.+\\))? {2}(\\d+)");
     private Set<Perl6CoverageSuite> coverageSuites = new HashSet<>();
     private Perl6CoverageSuite currentSuite;
     private ConcurrentMap<Editor, Perl6CoverageSourceAnnotator> editorAnnotators =
@@ -83,18 +83,21 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         changeToSuite(suite);
     }
 
+    @Override
     public void changeToSuite(Perl6CoverageSuite suite) {
         currentSuite = suite;
         fileCoverageStatsCache.clear();
         triggerPresentationUpdate();
     }
 
+    @Override
     public void hideCoverageData() {
         currentSuite = null;
         fileCoverageStatsCache.clear();
         triggerPresentationUpdate();
     }
 
+    @Override
     public boolean hasCurrentCoverageSuite() {
         return currentSuite != null;
     }
@@ -243,6 +246,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         }
     }
 
+    @Override
     public CoverageStatistics coverageForFile(VirtualFile file) {
         String path = file.getPath();
         CoverageStatistics result = fileCoverageStatsCache.get(path);
@@ -291,6 +295,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         return new CoverageStatistics(coverableLines - uncoveredLines, coverableLines);
     }
 
+    @Override
     public CoverageStatistics coverageForDirectory(VirtualFile dir) {
         /* Gather all .pm6 files in the directory. */
         List<VirtualFile> allSourceFiles = new ArrayList<>();

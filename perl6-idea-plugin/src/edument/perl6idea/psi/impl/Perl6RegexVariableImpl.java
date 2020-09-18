@@ -37,6 +37,7 @@ public class Perl6RegexVariableImpl extends ASTWrapperPsiElement implements Perl
         return super.getUseScope();
     }
 
+    @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         Perl6Variable var = PsiTreeUtil.getChildOfType(this, Perl6Variable.class);
         if (var != null) {

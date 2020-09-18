@@ -1,9 +1,9 @@
 package edument.perl6idea.parsing;
 
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
-public class LiteralInRoleSignatureTest extends LightPlatformCodeInsightFixtureTestCase {
+public class LiteralInRoleSignatureTest extends CommaFixtureTestCase {
     public void testLexerBug1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A does B[<caret>]");
         myFixture.type("1");

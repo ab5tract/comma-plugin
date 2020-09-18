@@ -17,7 +17,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -372,7 +371,7 @@ public class Perl6ProfileCallGraph extends JPanel {
         }
     }
 
-    public class CallItem {
+    public static class CallItem {
         private final Rectangle myArea;
         public final Perl6ProfileCall myCall;
 

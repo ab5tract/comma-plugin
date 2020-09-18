@@ -373,7 +373,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         }
     }
 
-    private boolean isSymbolDeclarator(Perl6Statement stmt) {
+    private static boolean isSymbolDeclarator(Perl6Statement stmt) {
         PsiElement scoped = PsiTreeUtil.getChildOfType(stmt, Perl6ScopedDecl.class);
         Perl6PsiElement declChild = PsiTreeUtil.getChildOfAnyType(scoped != null ? scoped : stmt,
                 Perl6PackageDecl.class, Perl6UseStatement.class, Perl6NeedStatement.class,
@@ -381,7 +381,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         return declChild != null;
     }
 
-    private boolean isUncoverableDeclarator(Perl6Statement stmt) {
+    private static boolean isUncoverableDeclarator(Perl6Statement stmt) {
         Perl6ScopedDecl scopedDecl = PsiTreeUtil.getChildOfType(stmt, Perl6ScopedDecl.class);
         Perl6PsiElement consider = scopedDecl == null ? stmt : scopedDecl;
 

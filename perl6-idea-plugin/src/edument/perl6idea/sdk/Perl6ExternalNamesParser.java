@@ -18,7 +18,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Perl6ExternalNamesParser {
     private JSONArray myJson;

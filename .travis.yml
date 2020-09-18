@@ -1,7 +1,7 @@
 language: generic
 dist: trusty
 before_install:
-- git clone --progress --depth 1 -b comma-201 git@github.com:edumentab/intellij-community.git
+- git clone --progress --depth 1 -b comma-202.6948.78 git@github.com:edumentab/intellij-community.git
 - mkdir intellij-community/comma-build
 - shopt -s extglob
 - mv !(intellij-community) intellij-community/comma-build/

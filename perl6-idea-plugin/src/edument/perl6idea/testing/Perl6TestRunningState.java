@@ -27,7 +27,6 @@ import com.intellij.openapi.roots.SourceFolder;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.sun.javafx.PlatformUtil;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6ScriptRunner;
 import edument.perl6idea.utils.Perl6Utils;
@@ -37,6 +36,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -86,7 +86,7 @@ public class Perl6TestRunningState extends CommandLineState {
     protected GeneralCommandLine createCommandLine() throws ExecutionException {
         GeneralCommandLine cmd;
 
-        if (PlatformUtil.isWindows())
+        if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win"))
             cmd = new Perl6CommandLine(myProject);
         else
             cmd = new Perl6ScriptRunner(myProject);

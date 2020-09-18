@@ -10,18 +10,13 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import edument.perl6idea.cro.template.CroTemplateFileType;
-import edument.perl6idea.filetypes.Perl6TestFileType;
-import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
 import edument.perl6idea.utils.Patterns;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 public class NewCroTemplateAction extends AnAction {
     @Override

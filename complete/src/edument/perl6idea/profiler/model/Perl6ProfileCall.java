@@ -2,7 +2,6 @@ package edument.perl6idea.profiler.model;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

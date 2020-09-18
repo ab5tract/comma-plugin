@@ -15,7 +15,6 @@ import com.intellij.ui.TreeSpeedSearch;
 import com.intellij.ui.navigation.Place;
 import com.intellij.util.IconUtil;
 import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.containers.LinkedMultiMap;
 import com.intellij.util.containers.MultiMap;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +25,7 @@ import javax.swing.tree.TreePath;
 import java.util.*;
 
 public abstract class Perl6StructureConfigurable extends MasterDetailsComponent
-    implements SearchableConfigurable, Disposable, Place.Navigator {
+  implements SearchableConfigurable, Disposable, Place.Navigator {
     protected final Project myProject;
     protected boolean myWasTreeInitialized;
     protected boolean myUiDisposed;
@@ -125,9 +124,8 @@ public abstract class Perl6StructureConfigurable extends MasterDetailsComponent
                         if (!(object instanceof MyNode)) return false;
                         nodes.add((MyNode)object);
                     }
-                    MultiMap<RemoveConfigurableHandler, MyNode> map = groupNodes(nodes);
-                    for (Map.Entry<RemoveConfigurableHandler, Collection<MyNode>> entry : map.entrySet()) {
-                        //noinspection unchecked
+                    MultiMap<RemoveConfigurableHandler<?>, MyNode> map = groupNodes(nodes);
+                    for (Map.Entry<RemoveConfigurableHandler<?>, Collection<MyNode>> entry : map.entrySet()) {
                         if (!entry.getKey().canBeRemoved(getEditableObjects(entry.getValue()))) {
                             return false;
                         }
@@ -151,11 +149,10 @@ public abstract class Perl6StructureConfigurable extends MasterDetailsComponent
                 Object node = path.getLastPathComponent();
                 return node instanceof MyNode ? (MyNode)node : null;
             });
-            MultiMap<RemoveConfigurableHandler, MyNode> grouped = groupNodes(nodes);
+            MultiMap<RemoveConfigurableHandler<?>, MyNode> grouped = groupNodes(nodes);
 
             List<MyNode> removedNodes = new ArrayList<>();
-            for (Map.Entry<RemoveConfigurableHandler, Collection<MyNode>> entry : grouped.entrySet()) {
-                //noinspection unchecked
+            for (Map.Entry<RemoveConfigurableHandler<?>, Collection<MyNode>> entry : grouped.entrySet()) {
                 boolean removed = entry.getKey().remove(getEditableObjects(entry.getValue()));
                 if (removed) {
                     removedNodes.addAll(entry.getValue());
@@ -165,7 +162,7 @@ public abstract class Perl6StructureConfigurable extends MasterDetailsComponent
         }
     }
 
-    private static List<?> getEditableObjects(Collection<? extends MyNode> value) {
+    private static List<?> getEditableObjects(Collection<MyNode> value) {
         List<Object> objects = new ArrayList<>();
         for (MyNode node : value) {
             objects.add(node.getConfigurable().getEditableObject());
@@ -174,13 +171,13 @@ public abstract class Perl6StructureConfigurable extends MasterDetailsComponent
     }
 
     @NotNull
-    private MultiMap<RemoveConfigurableHandler, MyNode> groupNodes(List<? extends MyNode> nodes) {
+    private MultiMap<RemoveConfigurableHandler<?>, MyNode> groupNodes(List<? extends MyNode> nodes) {
         List<? extends RemoveConfigurableHandler<?>> handlers = getRemoveHandlers();
-        MultiMap<RemoveConfigurableHandler, MyNode> grouped = new LinkedMultiMap<>();
+        MultiMap<RemoveConfigurableHandler<?>, MyNode> grouped = MultiMap.createConcurrent();
         for (MyNode node : nodes) {
             final NamedConfigurable<?> configurable = node.getConfigurable();
             if (configurable == null) continue;
-            RemoveConfigurableHandler handler = findHandler(handlers, configurable.getClass());
+            RemoveConfigurableHandler<?> handler = findHandler(handlers, configurable.getClass());
             if (handler == null) continue;
 
             grouped.putValue(handler, node);

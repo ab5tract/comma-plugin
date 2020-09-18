@@ -26,7 +26,7 @@ public class Perl6LineMarkerProvider extends RelatedItemLineMarkerProvider {
         dom -> Collections.singletonList(new GotoRelatedItem(dom, "Raku"));
 
     @Override
-    protected void collectNavigationMarkers(@NotNull PsiElement element, @NotNull Collection<? super RelatedItemLineMarkerInfo> result) {
+    protected void collectNavigationMarkers(@NotNull PsiElement element, @NotNull Collection<? super RelatedItemLineMarkerInfo<?>> result) {
         Perl6PackageDecl decl = isValidNavigationElement(element);
         if (decl == null) return;
 

@@ -22,7 +22,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class Perl6ModuleStructureConfigurable extends Perl6StructureConfigurable implements Place.Navigator {
@@ -196,7 +195,7 @@ public class Perl6ModuleStructureConfigurable extends Perl6StructureConfigurable
         }
 
         @Override
-        public boolean remove(@NotNull Collection<? extends Module> modules) {
+        public boolean remove(List<?> modules) {
             Perl6ModulesConfigurator modulesConfigurator = myContext.myModulesConfigurator;
             List<Module> deleted = modulesConfigurator.deleteModules(modules);
             return !deleted.isEmpty();

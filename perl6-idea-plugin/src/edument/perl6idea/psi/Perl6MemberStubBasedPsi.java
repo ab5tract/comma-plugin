@@ -39,6 +39,7 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
         return getName();
     }
 
+    @Override
     public ItemPresentation getPresentation() {
         return new ItemPresentation() {
             @Nullable
