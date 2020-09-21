@@ -19,7 +19,6 @@ public class SignatureAnnotator implements Annotator {
         if (params.length == 0) return;
 
         boolean isFirst = true;
-        boolean positionalAllowed = true;
 
         for (PsiElement psiElement : params) {
             if (!(psiElement instanceof Perl6Parameter)) continue;
@@ -38,14 +37,10 @@ public class SignatureAnnotator implements Annotator {
                         isNamed(summary) ? SignatureState.NAMED :
                         SignatureState.VARIADIC;
                 isFirst = false;
-                positionalAllowed = state == SignatureState.POSITIONAL;
             }
 
-            // If we passed last POSITIONAL, break the flag
-            if (state == SignatureState.POSITIONAL && !isPositional(summary))
-                positionalAllowed = false;
-
-            if (!positionalAllowed && isPositional(summary)) {
+            // Positionals go first
+            if (state != SignatureState.POSITIONAL && isPositional(summary)) {
                 String message = "";
                 switch (state) {
                     case NAMED: {
@@ -66,7 +61,8 @@ public class SignatureAnnotator implements Annotator {
                 return;
             }
 
-            if (isOptional(summary) && state == SignatureState.VARIADIC) {
+            // Optionals go before variadic
+            if (state == SignatureState.VARIADIC && isOptional(summary)) {
                 holder.newAnnotation(HighlightSeverity.ERROR,
                                      String.format("Cannot put optional parameter %s after a variadic parameter",
                                                    parameter.getVariableName()))
@@ -74,19 +70,40 @@ public class SignatureAnnotator implements Annotator {
                 return;
             }
 
+            // Optionals go before named
             if (isOptional(summary) && state == SignatureState.NAMED) {
-                if (isNamed(summary)) {
-                    holder.newAnnotation(HighlightSeverity.WARNING,
-                                         String.format("Explicit `?` on the named parameter %s is redundant, as all nameds are optional by default",
-                                                       parameter.getVariableName()))
-                        .range(parameter).create();
-                } else {
                     holder.newAnnotation(HighlightSeverity.ERROR,
                                          String.format("Cannot put an optional parameter %s after a named parameter",
                                                        parameter.getVariableName()))
                         .range(parameter).create();
-                }
                 return;
+            }
+
+
+            if (isOptional(summary) && isNamed(summary)) {
+                holder.newAnnotation(HighlightSeverity.WARNING,
+                                     String.format("Explicit `?` on a named parameter %s is redundant, as all nameds are optional by default",
+                                                   parameter.getVariableName()))
+                  .range(parameter).create();
+            }
+            else if (isPositional(summary) && isRequired(summary)) {
+                holder.newAnnotation(HighlightSeverity.WARNING,
+                                     String.format("Explicit `!` on a positional parameter %s is redundant, as all positional parameters are required by default",
+                                                   parameter.getVariableName()))
+                  .range(parameter).create();
+            }
+            // Cheat here a bit, because summary returns ? for a parameter with explicit ? or with an initializer, so we cannot know
+            // what is what, same with required parameter
+            else if (parameter.getText().contains("?") && parameter.getInitializer() != null) {
+                holder.newAnnotation(HighlightSeverity.WARNING,
+                                     String.format("Explicit `?` on a parameter %s with default is redundant, as all parameters with default value are optional by default",
+                                                   parameter.getVariableName()))
+                  .range(parameter).create();
+            }
+            else if (parameter.getText().contains("!") && parameter.getInitializer() != null) {
+                holder.newAnnotation(HighlightSeverity.ERROR,
+                                     String.format("Parameter %s has a default value and so cannot be required", parameter.getVariableName()))
+                  .range(parameter).create();
             }
 
             if (isOptional(summary))
@@ -110,6 +127,10 @@ public class SignatureAnnotator implements Annotator {
 
     private static boolean isOptional(String summary) {
         return summary.endsWith("?");
+    }
+
+    private static boolean isRequired(String summary) {
+        return summary.endsWith("!");
     }
 
     private static boolean isVariadic(String summary) {
