@@ -1,6 +1,4 @@
 role Bar {
-    method a {
-        ...
-    }
+    method a {...}
 }
 class A does Bar {}
