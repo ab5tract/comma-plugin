@@ -18,6 +18,7 @@ public interface Perl6PackageDecl extends Perl6PsiScope, Perl6PsiDeclaration,
                                           Perl6LexicalSymbolContributor, Perl6MOPSymbolContributor {
     String getPackageKind();
     String getPackageName();
+    boolean isStubbed();
     @Nullable
     PsiElement getPackageKeywordNode();
     void contributeNestedPackagesWithPrefix(Perl6SymbolCollector collector, String prefix);

@@ -1,5 +1,7 @@
 package edument.perl6idea.psi.symbols;
 
+import edument.perl6idea.psi.Perl6PackageDecl;
+
 import java.util.*;
 
 public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollector {
@@ -29,6 +31,9 @@ public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollecto
         if (symbol != null &&
                 Objects.equals(symbol.getKind(), wantedKind) &&
                 Objects.equals(symbol.getName(), wantedName)) {
+            if (wantedKind == Perl6SymbolKind.TypeOrConstant && symbol.getPsi() instanceof Perl6PackageDecl &&
+                ((Perl6PackageDecl)symbol.getPsi()).isStubbed())
+                return;
             // If we've already got results, then they were multi results. We're now seeing an
             // only result, so we'll drop it and be satisfied.
             if (results.isEmpty())

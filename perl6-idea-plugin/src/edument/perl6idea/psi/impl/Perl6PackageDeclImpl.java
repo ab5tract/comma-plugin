@@ -51,6 +51,17 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         return getName();
     }
 
+    @Override
+    public boolean isStubbed() {
+        Perl6StatementList list = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
+        if (list == null) return false;
+        for (PsiElement child : list.getChildren()) {
+            if (child.getFirstChild() instanceof Perl6StubCode)
+                return true;
+        }
+        return false;
+    }
+
     @Nullable
     @Override
     public PsiElement getPackageKeywordNode() {

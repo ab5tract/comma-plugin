@@ -63,6 +63,11 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
         return getName();
     }
 
+    @Override
+    public boolean isStubbed() {
+        return false;
+    }
+
     @NotNull
     @Override
     public String getName() {
