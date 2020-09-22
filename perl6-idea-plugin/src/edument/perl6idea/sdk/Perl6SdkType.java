@@ -260,8 +260,18 @@ public class Perl6SdkType extends SdkType {
         ProjectSymbolCache cache = perProjectSymbolCache.computeIfAbsent(project, (key) -> new ProjectSymbolCache());
         if (cache.setting != null)
             return cache.setting;
-        if (cache.settingJson != null)
+        // XXX Since this is a single instaoce of this particular Raku,
+        // check if other projects have loaded settings JSON before,
+        // so that we can re-use it to produce PSI symbols suiting for this project
+        for (ProjectSymbolCache otherProjectCache : perProjectSymbolCache.values()) {
+            if (otherProjectCache.settingJson != null) {
+                cache.settingJson = otherProjectCache.settingJson;
+                break;
+            }
+        }
+        if (cache.settingJson != null) {
             return cache.setting = makeSettingSymbols(project, cache.settingJson);
+        }
 
         File coreSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-core-symbols.p6");
         File coreDocs = Perl6Utils.getResourceAsFile("docs/core.json");
@@ -425,6 +435,12 @@ public class Perl6SdkType extends SdkType {
         if (perProjectSymbolCache.containsKey(project)) {
             perProjectSymbolCache.get(project).invalidateCaches();
             perProjectSymbolCache.remove(project);
+        }
+    }
+
+    public void invalidateFileCaches(Project project) {
+        if (perProjectSymbolCache.containsKey(project)) {
+            perProjectSymbolCache.get(project).invalidateFileCache();
         }
     }
 
