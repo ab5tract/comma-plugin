@@ -153,9 +153,10 @@ public class Perl6SdkListConfigurable extends Perl6StructureConfigurable {
         }
 
         @Override
-        public boolean remove(@NotNull Collection<? extends Sdk> sdks) {
-            for (Sdk sdk : sdks) {
-                myJdksTreeModel.removeSdk(sdk);
+        public boolean remove(@NotNull List<?> sdks) {
+            for (Object sdk : sdks) {
+                if (sdk instanceof Sdk)
+                    myJdksTreeModel.removeSdk((Sdk)sdk);
             }
             return true;
         }
