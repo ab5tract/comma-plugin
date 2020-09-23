@@ -126,6 +126,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "unit class Foo;");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my");
+        myFixture.checkHighlighting();
     }
 
     public void testEmptyNameVariableAnnotator() {
