@@ -60,6 +60,8 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("say *   +   3", "say *+ 3");
         // Non-word prefix operators
         reformatTest("!  42 eq !55", "!42 eq !55");
+        // Stubs
+        reformatTest("sub a {...}; proto b() {*}", "sub a {...};\nproto b() {*}");
         // Lambda
         reformatTest("->$a, $b {}; ->    $a {}", "-> $a, $b {};\n-> $a {}");
         // Regex infix; TODO & and &&

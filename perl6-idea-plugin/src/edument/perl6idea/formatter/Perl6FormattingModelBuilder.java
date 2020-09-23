@@ -272,12 +272,15 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
 
         rules.add((left, right) -> {
             boolean isOpener = left.getNode().getElementType() == BLOCK_CURLY_BRACKET_OPEN;
-            boolean isCloser = right.getNode().getElementType() == Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE;
+            boolean isCloser = right.getNode().getElementType() == BLOCK_CURLY_BRACKET_CLOSE;
             if (!isOpener && !isCloser) return null;
 
             // Do not play with {} in regexes
             if (left.getNode().getElementType() == REGEX_LOOKAROUND)
                 return null;
+
+            if (left.getNode().getElementType() == ONLY_STAR || right.getNode().getElementType() == ONLY_STAR)
+                return Spacing.createSpacing(0, 0, 0, false, 0);
 
             ASTNode blockoid = left.getNode().getTreeParent();
             if (blockoid.getElementType() == Perl6ElementTypes.BLOCKOID) {
@@ -312,6 +315,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                             spaces = 0;
                         return Spacing.createSpacing(spaces, spaces, 0, true, 1);
                     }
+                    if (source instanceof Perl6RoutineDecl && PsiTreeUtil.findChildOfType(source, Perl6StubCode.class) != null)
+                        return Spacing.createSpacing(0, 0, 0, false, 0);
                 }
                 if (statementCount < 2) {
                     return Spacing.createSpacing(0, 0, 1, false, 0);
