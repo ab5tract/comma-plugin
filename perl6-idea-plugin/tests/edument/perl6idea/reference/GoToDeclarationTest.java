@@ -183,6 +183,13 @@ public class GoToDeclarationTest extends CommaFixtureTestCase {
         });
     }
 
+    public void testDeferredType() {
+        doTest("class A {...}; class B { has <caret>A $.x; }; class A { has $.foo; }", 0, Perl6TypeName.class, (pkg) -> {
+            assertNotNull(pkg);
+        });
+
+    }
+
     public void doTest(String text, int offset, Class<? extends Perl6PsiElement> clazz, Consumer<PsiElement> check) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, text);
         PsiElement usage = myFixture.getFile().findElementAt(myFixture.getCaretOffset() - offset);

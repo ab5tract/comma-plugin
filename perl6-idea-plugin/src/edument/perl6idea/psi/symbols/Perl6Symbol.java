@@ -13,4 +13,5 @@ public interface Perl6Symbol {
     boolean isImplicitlyDeclared();     // Like the default $_, $/, and $!; also $?FILE etc.
     void setPriority(double priority);
     double getPriority();
+    boolean wasDeferred();
 }
