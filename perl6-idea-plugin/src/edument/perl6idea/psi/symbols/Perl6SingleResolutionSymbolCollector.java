@@ -1,5 +1,7 @@
 package edument.perl6idea.psi.symbols;
 
+import edument.perl6idea.psi.Perl6PackageDecl;
+
 import java.util.*;
 
 public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollector {
@@ -8,6 +10,7 @@ public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollecto
     private String wantedName;
     private Perl6SymbolKind wantedKind;
     private boolean satisfied = false;
+    private boolean wasDeferred = false;
 
     public Perl6SingleResolutionSymbolCollector(String wantedName, Perl6SymbolKind wantedKind) {
         this.wantedName = wantedName;
@@ -29,8 +32,15 @@ public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollecto
         if (symbol != null &&
                 Objects.equals(symbol.getKind(), wantedKind) &&
                 Objects.equals(symbol.getName(), wantedName)) {
+            if (wantedKind == Perl6SymbolKind.TypeOrConstant && symbol.getPsi() instanceof Perl6PackageDecl &&
+                ((Perl6PackageDecl)symbol.getPsi()).isStubbed()) {
+                wasDeferred = true;
+                return;
+            }
             // If we've already got results, then they were multi results. We're now seeing an
             // only result, so we'll drop it and be satisfied.
+            if (symbol instanceof Perl6ExplicitSymbol)
+                ((Perl6ExplicitSymbol)symbol).setDeferrence(wasDeferred);
             if (results.isEmpty())
                 results.add(symbol);
             satisfied = true;

@@ -27,7 +27,7 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
                 // it is being referenced.
                 if (psi.getContainingFile() != ref.getContainingFile())
                     return psi;
-                if (psi.getTextOffset() < ref.getTextOffset())
+                if (psi.getTextOffset() < ref.getTextOffset() || result.wasDeferred())
                     return psi;
             }
         }

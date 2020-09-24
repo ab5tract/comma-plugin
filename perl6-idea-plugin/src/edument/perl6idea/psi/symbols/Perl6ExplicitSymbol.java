@@ -7,6 +7,7 @@ public class Perl6ExplicitSymbol implements Perl6Symbol {
     private Perl6SymbolKind kind;
     private PsiNamedElement psi;
     protected double myPriority;
+    private boolean myWasDeffered = false;
 
     public Perl6ExplicitSymbol(Perl6SymbolKind kind, PsiNamedElement psi) {
         this.kind = kind;
@@ -51,5 +52,14 @@ public class Perl6ExplicitSymbol implements Perl6Symbol {
     @Override
     public double getPriority() {
         return myPriority;
+    }
+
+    public void setDeferrence(boolean def) {
+        myWasDeffered = def;
+    }
+
+    @Override
+    public boolean wasDeferred() {
+        return myWasDeffered;
     }
 }

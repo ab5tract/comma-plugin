@@ -55,4 +55,9 @@ public class Perl6ImplicitSymbol implements Perl6Symbol {
     public double getPriority() {
         return 1000;
     }
+
+    @Override
+    public boolean wasDeferred() {
+        return false;
+    }
 }

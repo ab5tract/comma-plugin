@@ -614,4 +614,9 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
         doTestContainsAll("CATCH { when X::NYI { .<caret> } }",
                 ".resume", ".feature");
     }
+
+    public void testDeferredDefinition() {
+        doTestContainsAll("class Foo {...}; Foo.m<caret>; class Foo { method mm {}; method mmm {}; method mmmm {} }",
+                          ".mm", ".mmm", ".mmmm");
+    }
 }
