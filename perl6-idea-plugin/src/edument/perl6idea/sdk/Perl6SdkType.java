@@ -56,14 +56,14 @@ public class Perl6SdkType extends SdkType {
     private Map<String, String> moarBuildConfig;
 
     // Project-specific cache with PsiFile instances
-    private Map<String, ProjectSymbolCache> perProjectSymbolCache = new ConcurrentHashMap<>();
+    private final Map<String, ProjectSymbolCache> perProjectSymbolCache = new ConcurrentHashMap<>();
     // Global cache for all projects
-    private Map<String, JSONArray> useNameSymbolCache = new ConcurrentHashMap<>();
-    private Map<String, JSONArray> needNameSymbolCache = new ConcurrentHashMap<>();
+    private final Map<String, JSONArray> useNameSymbolCache = new ConcurrentHashMap<>();
+    private final Map<String, JSONArray> needNameSymbolCache = new ConcurrentHashMap<>();
     private JSONArray settingJson = null;
     private final AtomicBoolean mySettingsStarted = new AtomicBoolean(false);
-    private Set<String> myNeedPackagesStarted = ContainerUtil.newConcurrentSet();
-    private Set<String> myUsePackagesStarted = ContainerUtil.newConcurrentSet();
+    private final Set<String> myNeedPackagesStarted = ContainerUtil.newConcurrentSet();
+    private final Set<String> myUsePackagesStarted = ContainerUtil.newConcurrentSet();
 
     static class ProjectSymbolCache {
         // Symbol caches
@@ -364,7 +364,7 @@ public class Perl6SdkType extends SdkType {
         return perl6File;
     }
 
-    public synchronized Perl6File getPsiFileForModule(Project project, String name, String invocation) {
+    public Perl6File getPsiFileForModule(Project project, String name, String invocation) {
         ProjectSymbolCache cache = perProjectSymbolCache.computeIfAbsent(project.getName(), (key) -> new ProjectSymbolCache());
         Map<String, Perl6File> fileCache = invocation.startsWith("use") ? cache.useNameFileCache : cache.needNameFileCache;
         // If we have anything in file cache, return it
