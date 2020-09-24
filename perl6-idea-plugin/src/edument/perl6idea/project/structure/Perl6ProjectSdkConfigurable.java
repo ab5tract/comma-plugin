@@ -78,8 +78,7 @@ public class Perl6ProjectSdkConfigurable implements UnnamedConfigurable {
                     myJdksModel.setProjectSdk(myCbProjectJdk.getSelectedJdk());
                 }
             });
-            final String text = "<html><b>Project SDK:</b><br>This SDK is default for all project modules.<br>" +
-                                "A module-specific SDK can be configured for each of the modules as required.</html>";
+            final String text = "<html><b>Project SDK:</b><br>This SDK is default for all project modules.</html>";
             myJdkPanel.add(new JLabel(text), "wrap, span 3");
             myJdkPanel.add(myCbProjectJdk);
         }
