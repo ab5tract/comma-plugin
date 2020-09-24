@@ -624,7 +624,8 @@ grammar MAIN {
            <.start-token('END_OF_STATEMENT_STOPPER')> <?> <.end-token('END_OF_STATEMENT_STOPPER')>
            <.unv>*
            <.start-element('UNTERMINATED_STATEMENT')> <?> <.end-element('UNTERMINATED_STATEMENT')>
-        || <.unv>*
+        || <?before <.unv>* <.bogus_statement>>
+           <.unv>*
            <.start-element('UNTERMINATED_STATEMENT')> <?> <.end-element('UNTERMINATED_STATEMENT')>
            <.bogus_statement>
            [
