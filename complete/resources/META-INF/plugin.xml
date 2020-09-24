@@ -32,14 +32,16 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Unify the UI of <code>New Script</code>, <code>New Module</code> and <code>New Test</code> actions, make them recognize the case when the file with the specified name already exists</li>
-<li>Add a <code>model</code> option to <code>New Module</code> action, which creates a stub for a Red ORM model and ensures that Red is specified in the dependencies</li>
-<li>Add a <code>Mark directory as</code> group of actions, which can be used to specify a directory as a source root of a particular type</li>
-<li>Fix possible exception related to the secondary Raku SDK</li>
-<li>Fix an exception for modules with recursive dependencies</li>
-<li>Fix Test Run Configuration execution for Windows</li>
-<li>Fix a hotkey specified in tip text</li>
-<li>Fix the <code>EVALFILE</code> subroutine being detected as undeclared</li>
+<li>Migrate to version 202 of the IntelliJ platform. Now the minimal supported IntelliJ product major version for the Comma plugin is 2020.2. Backward compatibility for 2020.1 is expected, but not guaranteed</li>
+<li>Make method completion correctly handle methods from stubbed packages past the current position in file</li>
+<li>Introduce a new &#39;Raku Compilers&#39; tab in Project Settings, allowing to create new, change and remove IDE SDK (Raku compiler) instances</li>
+<li>Always format code and declaration stubs to take a single line, which is a common code style default</li>
+<li>Warn about technically valid, but unusual parameters quantifier use in signatures: when a positional parameter is marked as required and when a parameter with a default is marked as optional</li>
+<li>Indicate an error if a parameter with a default value is marked as required</li>
+<li>Fix an exception related to obtaining documentation when two or more projects are opened with the same Raku compiler specified</li>
+<li>Fix an exception in the annotator spotting a missing &#39;unit&#39; keyword</li>
+<li>Fix the validation tip in the New Test dialog when a test with a specified name already exists</li>
+<li>Fix a possible exception in the backup Raku compiler service provided by the plugin</li>
 </ul>
   ]]>
   </change-notes>
