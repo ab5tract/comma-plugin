@@ -55,17 +55,28 @@ public class Perl6SdkType extends SdkType {
     private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
     private Map<String, String> moarBuildConfig;
 
-    // Symbol caches
-    private Map<String, JSONArray> useNameSymbolCache = new ConcurrentHashMap<>();
-    private Map<String, Perl6File> useNameFileCache = new ConcurrentHashMap<>();
-
-    private Map<String, JSONArray> needNameSymbolCache = new ConcurrentHashMap<>();
-    private Map<String, Perl6File> needNameFileCache = new ConcurrentHashMap<>();
-
+    // Project-specific cache with PsiFile instances
+    private final Map<String, ProjectSymbolCache> perProjectSymbolCache = new ConcurrentHashMap<>();
+    // Global cache for all projects
+    private final Map<String, JSONArray> useNameSymbolCache = new ConcurrentHashMap<>();
+    private final Map<String, JSONArray> needNameSymbolCache = new ConcurrentHashMap<>();
     private JSONArray settingJson = null;
-    private Perl6File setting;
     private final AtomicBoolean mySettingsStarted = new AtomicBoolean(false);
-    private Set<String> myPackageStarted = ContainerUtil.newConcurrentSet();
+    private final Set<String> myNeedPackagesStarted = ContainerUtil.newConcurrentSet();
+    private final Set<String> myUsePackagesStarted = ContainerUtil.newConcurrentSet();
+
+    static class ProjectSymbolCache {
+        // Symbol caches
+        private Map<String, Perl6File> useNameFileCache = new ConcurrentHashMap<>();
+        private Map<String, Perl6File> needNameFileCache = new ConcurrentHashMap<>();
+        private Perl6File setting;
+
+        public void invalidateFileCache() {
+            useNameFileCache = new ConcurrentHashMap<>();
+            needNameFileCache = new ConcurrentHashMap<>();
+            setting = null;
+        }
+    }
 
     static {
         BINARY_NAMES.add("perl6");
@@ -232,15 +243,17 @@ public class Perl6SdkType extends SdkType {
     }
 
     public Perl6File getCoreSettingFile(Project project) {
-        if (setting != null)
-            return setting;
-        if (settingJson != null)
-            return setting = makeSettingSymbols(project, settingJson);
+        ProjectSymbolCache cache = perProjectSymbolCache.computeIfAbsent(project.getName(), (key) -> new ProjectSymbolCache());
+        if (cache.setting != null) {
+            return cache.setting;
+        }
+        if (settingJson != null) {
+            return cache.setting = makeSettingSymbols(project, settingJson);
+        }
 
         File coreSymbols = Perl6Utils.getResourceAsFile("symbols/perl6-core-symbols.p6");
         File coreDocs = Perl6Utils.getResourceAsFile("docs/core.json");
         String perl6path = getSdkHomeByProject(project);
-
 
         if (perl6path == null || coreSymbols == null || coreDocs == null) {
             String errorMessage = perl6path == null
@@ -267,7 +280,7 @@ public class Perl6SdkType extends SdkType {
                             getFallback(project);
                         }
                         else {
-                            setting = makeSettingSymbols(project, settingLines);
+                            cache.setting = makeSettingSymbols(project, settingLines);
                         }
                         triggerCodeAnalysis(project);
                     } catch (AssertionError e) {
@@ -324,7 +337,8 @@ public class Perl6SdkType extends SdkType {
         }
 
         try {
-            return setting = makeSettingSymbols(project, new String(Files.readAllBytes(fallback.toPath()), StandardCharsets.UTF_8));
+            ProjectSymbolCache cache = perProjectSymbolCache.computeIfAbsent(project.getName(), (key) -> new ProjectSymbolCache());
+            return cache.setting = makeSettingSymbols(project, new String(Files.readAllBytes(fallback.toPath()), StandardCharsets.UTF_8));
         } catch (IOException e) {
             reactToSDKIssue(project);
             return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
@@ -351,21 +365,26 @@ public class Perl6SdkType extends SdkType {
     }
 
     public Perl6File getPsiFileForModule(Project project, String name, String invocation) {
-        Map<String, Perl6File> cache = invocation.startsWith("use") ? useNameFileCache : needNameFileCache;
-        Map<String, JSONArray> symbolCache = invocation.startsWith("use") ? useNameSymbolCache : needNameSymbolCache;
+        ProjectSymbolCache cache = perProjectSymbolCache.computeIfAbsent(project.getName(), (key) -> new ProjectSymbolCache());
+        Map<String, Perl6File> fileCache = invocation.startsWith("use") ? cache.useNameFileCache : cache.needNameFileCache;
         // If we have anything in file cache, return it
-        if (cache.containsKey(name))
-            return cache.get(name);
+        if (fileCache.containsKey(name))
+            return fileCache.get(name);
 
-        if (!myPackageStarted.contains(name)) {
-            myPackageStarted.add(name);
+        // if not, check if we have symbol cache, if yes, parse, save and return it
+        Map<String, JSONArray> symbolCache = invocation.startsWith("use") ? useNameSymbolCache : needNameSymbolCache;
+        Set<String> packagesStarted = invocation.startsWith("use") ? myUsePackagesStarted : myNeedPackagesStarted;
+        if (symbolCache.containsKey(name)) {
+            return fileCache.compute(name, (n, v) -> constructExternalPsiFile(project, n, symbolCache.get(n)));
+        }
+
+
+        if (!packagesStarted.contains(name)) {
+            packagesStarted.add(name);
             ApplicationManager.getApplication().executeOnPooledThread(() -> {
                 try {
-                    // if not, check if we have symbol cache, if yes, parse, save and return it
-                    if (symbolCache.containsKey(name))
-                        cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, symbolCache.get(n)));
                     // if no symbol cache, compute as usual
-                    cache.compute(name, (n, v) -> constructExternalPsiFile(project, n, invocation));
+                    fileCache.compute(name, (n, v) -> constructExternalPsiFile(project, n, invocation, symbolCache));
                     triggerCodeAnalysis(project);
                 }
                 catch (AssertionError e) {
@@ -380,40 +399,38 @@ public class Perl6SdkType extends SdkType {
         LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
         ExternalPerl6File perl6File = new ExternalPerl6File(project, dummy);
         Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(project, perl6File, externalsJSON);
-        perl6File.setSymbols(parser.result());
+        perl6File.setSymbols(parser.parse().result());
         return perl6File;
     }
 
-    private static Perl6File constructExternalPsiFile(Project project, String name, String invocation) {
+    private static Perl6File constructExternalPsiFile(Project project,
+                                                      String name,
+                                                      String invocation,
+                                                      Map<String, JSONArray> symbolCache) {
         LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
         ExternalPerl6File perl6File = new ExternalPerl6File(project, dummy);
-        List<Perl6Symbol> symbols = loadModuleSymbols(project, perl6File, invocation);
+        List<Perl6Symbol> symbols = loadModuleSymbols(project, perl6File, name, invocation, symbolCache);
         perl6File.setSymbols(symbols);
         return perl6File;
     }
 
-    public void invalidateCaches() {
-        moarBuildConfig = null;
-        invalidateFileCache();
-        invalidateSymbolCache();
+    public void invalidateCaches(Project project) {
+        if (perProjectSymbolCache.containsKey(project.getName())) {
+            perProjectSymbolCache.get(project.getName()).invalidateFileCache();
+            perProjectSymbolCache.remove(project.getName());
+        }
     }
 
-    public void invalidateFileCache() {
-        myPackageStarted = ContainerUtil.newConcurrentSet();
-        mySettingsStarted.set(false);
-        useNameFileCache = new ConcurrentHashMap<>();
-        needNameFileCache = new ConcurrentHashMap<>();
-        setting = null;
+    public void invalidateFileCaches(Project project) {
+        if (perProjectSymbolCache.containsKey(project.getName())) {
+            perProjectSymbolCache.get(project.getName()).invalidateFileCache();
+        }
     }
 
-    public synchronized void invalidateSymbolCache() {
-        useNameSymbolCache = new ConcurrentHashMap<>();
-        needNameSymbolCache = new ConcurrentHashMap<>();
-        settingJson = null;
-        sdkIssueNotified = false;
-    }
-
-    private static List<Perl6Symbol> loadModuleSymbols(Project project, Perl6File perl6File, String invocation) {
+    private static List<Perl6Symbol> loadModuleSymbols(Project project,
+                                                       Perl6File perl6File,
+                                                       String name, String invocation,
+                                                       Map<String, JSONArray> symbolCache) {
         if (invocation.equals("use nqp")) {
             return getNQPSymbols(project, perl6File);
         }
@@ -432,7 +449,14 @@ public class Perl6SdkType extends SdkType {
             cmd.setWorkDirectory(project.getBasePath());
             cmd.addParameters(moduleSymbols.getPath(), invocation);
             String text = String.join("\n", cmd.executeAndRead(moduleSymbols));
-            return new Perl6ExternalNamesParser(project, perl6File, text).parse().result();
+            JSONArray symbols;
+            try {
+                symbols = new JSONArray(text);
+            } catch (JSONException ex) {
+                return new ArrayList<>();
+            }
+            symbolCache.put(name, symbols);
+            return new Perl6ExternalNamesParser(project, perl6File, symbols).parse().result();
         } catch (ExecutionException e) {
             return new ArrayList<>();
         }
