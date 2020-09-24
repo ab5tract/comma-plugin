@@ -148,6 +148,10 @@ public class Perl6ModuleStructureConfigurable extends Perl6StructureConfigurable
                : myModuleManager.findModuleByName(moduleName);
     }
 
+    public Perl6StructureConfigurableContext getContext() {
+        return myContext;
+    }
+
     public static Perl6ModuleStructureConfigurable getInstance(Project project) {
         return ServiceManager.getService(project, Perl6ModuleStructureConfigurable.class);
     }
