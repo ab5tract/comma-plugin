@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
@@ -27,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public static final Map<String, String> VARIABLE_SYMBOLS = new HashMap<>();
@@ -87,7 +87,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     @Override
     public boolean isReal() {
-        return getOriginalFile() != null;
+        return true;
     }
 
     @NotNull
@@ -100,20 +100,6 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     @Override
     public PsiElement getNameIdentifier() {
         return getContainingFile();
-    }
-
-    @Override
-    public List<Perl6PsiDeclaration> getExports() {
-        // If possible, get the result from the stub, to avoid having to
-        // build and walk the full PSI tree.
-        Stub stub = getStub();
-        if (stub instanceof Perl6FileStub)
-            return ((Perl6FileStub)stub).getExports();
-
-        // Otherwise, we need to walk the PSI tree.
-        return PsiTreeUtil.findChildrenOfType(this, Perl6PsiDeclaration.class).stream()
-                          .filter(Perl6PsiDeclaration::isExported)
-                          .collect(Collectors.toList());
     }
 
     @Override
@@ -132,6 +118,10 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                 if (current == stub) {
                     addChildren = true;
                 }
+                else if (current instanceof Perl6VariableDeclStub) {
+                    if (((Perl6VariableDeclStub)current).isExported() ||((Perl6VariableDeclStub)current).getScope().equals("our"))
+                        ((Perl6VariableDeclStub)current).getPsi().contributeLexicalSymbols(collector);
+                }
                 else if (current instanceof Perl6PackageDeclStub) {
                     if (((Perl6PackageDeclStub)current).getPackageKind().equals("module"))
                         addChildren = true;
@@ -148,6 +138,18 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                         }
                     }
                 }
+                else if (current instanceof Perl6RoutineDeclStub) {
+                    if (((Perl6RoutineDeclStub)current).isExported() || ((Perl6RoutineDeclStub)current).getScope().equals("our"))
+                        ((Perl6RoutineDeclStub)current).getPsi().contributeLexicalSymbols(collector);
+                }
+                else if (current instanceof Perl6EnumStub) {
+                    if (((Perl6EnumStub)current).isExported() || ((Perl6EnumStub)current).getScope().equals("our"))
+                        ((Perl6EnumStub)current).getPsi().contributeLexicalSymbols(collector);
+                }
+                else if (current instanceof Perl6SubsetStub) {
+                    if (((Perl6SubsetStub)current).isExported() || ((Perl6SubsetStub)current).getScope().equals("our"))
+                        collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, ((Perl6SubsetStub)current).getPsi()));
+                }
                 else if (current instanceof Perl6UseStatementStub) {
                     Perl6UseStatementStub use = (Perl6UseStatementStub)current;
                     contributeTransitive(collector, seen, "use", use.getModuleName());
@@ -156,10 +158,6 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     Perl6NeedStatementStub need = (Perl6NeedStatementStub)current;
                     for (String name : need.getModuleNames())
                         contributeTransitive(collector, seen, "need", name);
-                }
-                else if (current instanceof Perl6RoutineDeclStub) {
-                    if (((Perl6RoutineDeclStub)current).isExported() || ((Perl6RoutineDeclStub)current).getScope().equals("our"))
-                        ((Perl6RoutineDeclStub)current).getPsi().contributeLexicalSymbols(collector);
                 }
                 else {
                     addChildren = true;
@@ -178,6 +176,10 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                 boolean addChildren = false;
                 if (current == this) {
                     addChildren = true;
+                }
+                else if (current instanceof Perl6VariableDecl) {
+                    if (((Perl6VariableDecl)current).isExported() || ((Perl6VariableDecl)current).getScope().equals("our"))
+                        ((Perl6VariableDecl)current).contributeLexicalSymbols(collector);
                 }
                 else if (current instanceof Perl6PackageDecl) {
                     if (((Perl6PackageDecl)current).getPackageKind().equals("module"))
@@ -204,6 +206,10 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     if (scope.equals("our")) {
                         perl6Enum.contributeLexicalSymbols(collector);
                     }
+                }
+                else if (current instanceof Perl6Subset) {
+                    if (((Perl6Subset)current).isExported() || ((Perl6Subset)current).getScope().equals("our"))
+                        collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, (PsiNamedElement)current));
                 }
                 else if (current instanceof Perl6UseStatement) {
                     Perl6UseStatement use = (Perl6UseStatement)current;

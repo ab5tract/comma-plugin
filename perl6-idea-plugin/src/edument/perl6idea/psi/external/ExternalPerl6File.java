@@ -18,7 +18,6 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.Perl6File;
-import edument.perl6idea.psi.Perl6PsiDeclaration;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
@@ -45,12 +44,6 @@ public class ExternalPerl6File implements Perl6File {
     @Override
     public boolean isReal() {
         return false;
-    }
-
-    @Override
-    public List<Perl6PsiDeclaration> getExports() {
-        // For external files, all work is done by `contributeGlobals`
-        return new ArrayList<>();
     }
 
     public void setSymbols(List<Perl6Symbol> symbols) {

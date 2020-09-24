@@ -46,13 +46,7 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                     .get(name, project, GlobalSearchScope.projectScope(project));
             if (found.size() > 0) {
                 Perl6File file = found.iterator().next();
-                for (Perl6PsiDeclaration export : file.getExports()) {
-                    if (export instanceof Perl6LexicalSymbolContributor) {
-                        ((Perl6LexicalSymbolContributor)export).contributeLexicalSymbols(collector);
-                        if (collector.isSatisfied())
-                            return;
-                    }
-                }
+                file.contributeGlobals(collector, new HashSet<>());
                 Set<String> seen = new HashSet<>();
                 seen.add(name);
                 file.contributeGlobals(collector, seen);
