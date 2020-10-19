@@ -3397,7 +3397,8 @@ grammar MAIN {
         [
             <!stopper>
             [
-            || <.start-token('STRING_LITERAL_QUOTE_OPEN')> <.starter> <.end-token('STRING_LITERAL_QUOTE_OPEN')>
+            || <?{ $*STARTER }>
+               <.start-token('STRING_LITERAL_QUOTE_OPEN')> <.starter> <.end-token('STRING_LITERAL_QUOTE_OPEN')>
                <.quote_nibbler>
                [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <.stopper> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
             || <.quote_escape>
