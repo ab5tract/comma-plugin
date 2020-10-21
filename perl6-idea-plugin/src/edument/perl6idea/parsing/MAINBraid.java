@@ -29199,6 +29199,13 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 }
                 this.bsFailMark(13);
                 this.bsMark(9);
+                if (!(this.isValueTruthy(this.findDynamicVariable("$*STARTER")))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
                 this.startToken(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN);
                 this.setArgs();
                 this.state = 2;
