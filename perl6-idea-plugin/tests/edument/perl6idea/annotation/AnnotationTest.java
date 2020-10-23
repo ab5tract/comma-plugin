@@ -35,7 +35,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testUndeclaredVariableAnnotatorPostdeclared() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable $foo is not declared in this scope yet\">$foo</error>; my $foo = 42");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable $foo is not declared in this scope yet\">$foo</error>; my $foo = 42; say $foo");
         myFixture.checkHighlighting();
     }
 
@@ -65,7 +65,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testFalsePositive1() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"my $x = 1, 2; my ($a) = $x;");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"my $x = 1, 2; my ($a) = $x; say $a");
         myFixture.checkHighlighting();
     }
 
@@ -95,12 +95,12 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testInfixBracketedInVariableIsNotConsideredUndeclared() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my &add = &[+];");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my &add = &[+]; say add(1,2)");
         myFixture.checkHighlighting();
     }
 
     public void testDeclaredOperatorNamesInVariables() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @ops = &infix:<+>, &prefix:<!>, &postfix:<++>, &postcircumfix:<[ ]>;");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @ops = &infix:<+>, &prefix:<!>, &postfix:<++>, &postcircumfix:<[ ]>; say @ops");
         myFixture.checkHighlighting();
     }
 
@@ -383,7 +383,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testInfixAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $lc-and-trim := { $_ = .lc.trim };");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $lc-and-trim := { $_ = .lc.trim }; say $lc-and-trim('x')");
         myFixture.checkHighlighting();
     }
 
@@ -398,7 +398,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testEVALCase3() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; EVAL q[$foo];");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "EVAL q[$foo];");
         myFixture.checkHighlighting();
     }
 
@@ -644,12 +644,12 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testMissingClosingParenVarDecl() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my <error descr=\"Missing closing )\">(</error>$x, $y");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my <error descr=\"Missing closing )\">(</error>$, $");
         myFixture.checkHighlighting();
     }
 
     public void testMissingClosingParenSignature() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo<error descr=\"Missing closing )\">(</error>$x, { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo<error descr=\"Missing closing )\">(</error>$, { }");
         myFixture.checkHighlighting();
     }
 
@@ -758,9 +758,9 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, ".grep(*.defined).first(*.bar)");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1..*)<weak_warning descr=\"Can be simplified into a single first method call\">.grep(* > 2).first</weak_warning>;");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1..*)<weak_warning descr=\"Can be simplified into a single first method call\">.grep(* > 2).first</weak_warning>; say @a");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1..*)<weak_warning descr=\"Can be simplified into a single first method call\">.grep({ $_ > 2 }).first</weak_warning>;");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1..*)<weak_warning descr=\"Can be simplified into a single first method call\">.grep({ $_ > 2 }).first</weak_warning>; say @a");
         myFixture.checkHighlighting();
     }
 
@@ -771,19 +771,19 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testEmptyInitializeAnnotation() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <weak_warning descr=\"Initialization of empty Array is redundant\">[]</weak_warning>");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <weak_warning descr=\"Initialization of empty Array is redundant\">[]</weak_warning>; say @a");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <weak_warning descr=\"Initialization of empty Array is redundant\">()</weak_warning>");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = <weak_warning descr=\"Initialization of empty Array is redundant\">()</weak_warning>; say @a");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my %a = <weak_warning descr=\"Initialization of empty Hash is redundant\">()</weak_warning>");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my %a = <weak_warning descr=\"Initialization of empty Hash is redundant\">()</weak_warning>; say %a");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my %a = <weak_warning descr=\"Initialization of empty Hash is redundant\">{}</weak_warning>");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my %a = <weak_warning descr=\"Initialization of empty Hash is redundant\">{}</weak_warning>; say %a");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = [1,2,3]; my %b = (1,2);");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = [1,2,3]; my %b = (1,2); say @a, %b");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1); my %b = {1};");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my @a = (1); my %b = {1}; say @a, %b");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = [];");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a = []; say $a");
         myFixture.checkHighlighting();
     }
 
@@ -794,13 +794,13 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testListAssignmentAnnotation() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my (@a, $x)");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my (@a, $x); say @a, $x");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my (@a, $x) := 4, (1,2,3);");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my (@a, $x) := 4, (1,2,3); say @a, $x");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my ($x, @a) = 4, (1,2,3);");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my ($x, @a) = 4, (1,2,3); say @a, $x");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my (<warning descr=\"Array slurps everything from assignment\">@a</warning>, $x) = (1,2,3), 4;");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my (<warning descr=\"Array slurps everything from assignment\">@a</warning>, $x) = (1,2,3), 4; say @a, $x");
         myFixture.checkHighlighting();
     }
 
