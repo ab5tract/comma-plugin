@@ -38,19 +38,32 @@ public class NamedPairArgumentAnnotator implements Annotator {
         processPair(child, key, pair, annotationHolder);
     }
 
-    private static void processPair(PsiElement element, String key, PsiElement pair, AnnotationHolder holder) {
-        if (!(element instanceof Perl6Variable))
-            return;
-
-        String name = ((Perl6Variable)element).getVariableName();
-        if (name == null)
-            return;
-
-        int prefixLength = Perl6Variable.getTwigil(name) == ' ' ? 1 : 2;
-
-        if (Objects.equals(key, name.substring(prefixLength))) {
-            holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Pair literal can be simplified")
-                .range(pair).withFix(new PairSimplificationFix(pair, (Perl6Variable)element)).create();
+    private static String getSimplifiedText(String key, PsiElement element) {
+        if (element instanceof Perl6TypeName) {
+            String typeName = ((Perl6TypeName)element).getTypeName();
+            if (typeName.equals("True"))
+                return key;
+            if (typeName.equals("False"))
+                return "!" + key;
         }
+        if (element instanceof Perl6Variable) {
+            String name = ((Perl6Variable)element).getVariableName();
+            if (name == null)
+                return null;
+
+            int prefixLength = Perl6Variable.getTwigil(name) == ' ' ? 1 : 2;
+
+            if (Objects.equals(key, name.substring(prefixLength)))
+                return name;
+        }
+        return null;
+    }
+
+    private static void processPair(PsiElement element, String key, PsiElement pair, AnnotationHolder holder) {
+        String simplifiedPair = getSimplifiedText(key, element);
+        if (simplifiedPair == null)
+            return;
+        holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Pair literal can be simplified")
+          .range(pair).withFix(new PairSimplificationFix(pair, simplifiedPair)).create();
     }
 }

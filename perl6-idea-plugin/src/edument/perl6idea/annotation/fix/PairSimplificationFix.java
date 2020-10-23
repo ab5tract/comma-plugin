@@ -9,24 +9,23 @@ import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6ColonPair;
 import edument.perl6idea.psi.Perl6ElementFactory;
-import edument.perl6idea.psi.Perl6Variable;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 public class PairSimplificationFix implements IntentionAction {
     private final PsiElement pair;
-    private final Perl6Variable variable;
+    private final String simplifiedPair;
 
-    public PairSimplificationFix(PsiElement pair, Perl6Variable variable) {
+    public PairSimplificationFix(PsiElement pair, String simplifiedPair) {
         this.pair = pair;
-        this.variable = variable;
+        this.simplifiedPair = simplifiedPair;
     }
 
     @Nls
     @NotNull
     @Override
     public String getText() {
-        return "Convert to :" + variable.getText();
+        return "Convert to :" + simplifiedPair;
     }
 
     @Nls
@@ -43,7 +42,7 @@ public class PairSimplificationFix implements IntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        Perl6ColonPair newPair = Perl6ElementFactory.createColonPair(project, variable.getText());
+        Perl6ColonPair newPair = Perl6ElementFactory.createColonPair(project, simplifiedPair);
         pair.replace(newPair);
         PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
     }
