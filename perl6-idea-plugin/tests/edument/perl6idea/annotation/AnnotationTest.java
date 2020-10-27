@@ -810,4 +810,28 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a(--> Nil) { <error descr=\"A value is returned from subroutine returning Nil\">return 42</error>; }");
         myFixture.checkHighlighting();
     }
+
+    public void testUnusedSimpleLexicalAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "my <weak_warning descr=\"Unused variable\">$x</weak_warning>; say 42;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "sub a() { my <weak_warning descr=\"Unused variable\">$x</weak_warning>; say 42; }; a();");
+        myFixture.checkHighlighting();
+    }
+
+    public void testUnusedCallableLexicalAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "my <weak_warning descr=\"Unused variable\">&unused</weak_warning>; my &used = -> {}; used();");
+        myFixture.checkHighlighting();
+    }
+
+    public void testUnusedLexicalMultipleDeclarationAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "my ($a, <weak_warning descr=\"Unused variable\">$b</weak_warning>); $a = 100; say $a;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "sub a() { my (<weak_warning descr=\"Unused variable\">$a</weak_warning>, $b); $b = 100; say $b; }; a();");
+        myFixture.checkHighlighting();
+    }
 }
