@@ -331,6 +331,22 @@ public class IntentionTest extends CommaFixtureTestCase {
         executeIntention("Split into");
     }
 
+    public void testASCIIToUni() {
+        executeIntention("Convert to Uni");
+    }
+
+    public void testUniToASCII() {
+        executeIntention("Convert to ASCII");
+    }
+
+    public void testASCIICannotBeConvertedIntoASCII() {
+        checkIntentionAbsence("Convert to ASCII");
+    }
+
+    public void testNoUnicodeEditingInStrings() {
+        checkIntentionAbsence("Convert to Uni");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
