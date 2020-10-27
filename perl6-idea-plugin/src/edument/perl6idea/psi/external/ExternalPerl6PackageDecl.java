@@ -151,4 +151,12 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
             }
         }
     }
+
+    public void setRoutines(List<Perl6RoutineDecl> routines) {
+        myRoutines = routines;
+    }
+
+    public void setAttributes(List<Perl6VariableDecl> attributes) {
+        myAttributes = attributes;
+    }
 }

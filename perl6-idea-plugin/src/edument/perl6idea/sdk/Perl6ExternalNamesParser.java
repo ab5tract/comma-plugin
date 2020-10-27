@@ -87,6 +87,14 @@ public class Perl6ExternalNamesParser {
                     }
                     case "c":
                     case "ro": {
+                        List<String> mro = ContainerUtil.map(j.getJSONArray("mro").toList(), item -> Objects.toString(item, null));
+                        ExternalPerl6PackageDecl psi = new ExternalPerl6PackageDecl(
+                            myProject, myFile, j.getString("k"),
+                            j.getString("n"), j.getString("t"), j.getString("b"),
+                            new ArrayList<>(), new ArrayList<>(), mro);
+                        if (j.has("d"))
+                            psi.setDocs(j.getString("d"));
+
                         List<Perl6RoutineDecl> routines = new ArrayList<>();
                         if (j.has("m"))
                             for (Object routine : j.getJSONArray("m"))
@@ -94,7 +102,7 @@ public class Perl6ExternalNamesParser {
                                     int isMulti = ((JSONObject)routine).getInt("m");
                                     JSONObject signature = ((JSONObject)routine).getJSONObject("s");
                                     ExternalPerl6RoutineDecl routineDecl = new ExternalPerl6RoutineDecl(
-                                        myProject, myFile,
+                                        myProject, psi,
                                         ((JSONObject)routine).getString("k"), "has",
                                         ((JSONObject)routine).getString("n"), isMulti == 0 ? "only" : "multi",
                                         signature);
@@ -108,20 +116,15 @@ public class Perl6ExternalNamesParser {
                             for (Object attribute : j.getJSONArray("a"))
                                 if (attribute instanceof JSONObject) {
                                     ExternalPerl6VariableDecl attributeDecl = new ExternalPerl6VariableDecl(
-                                        myProject, myFile, ((JSONObject)attribute).getString("n"),
+                                        myProject, psi, ((JSONObject)attribute).getString("n"),
                                         "has", ((JSONObject)attribute).getString("t"));
                                     if (((JSONObject)attribute).has("d"))
                                         attributeDecl.setDocs(((JSONObject)attribute).getString("d"));
                                     attrs.add(attributeDecl);
                                 }
 
-                        List<String> mro = ContainerUtil.map(j.getJSONArray("mro").toList(), item -> Objects.toString(item, null));
-                        ExternalPerl6PackageDecl psi = new ExternalPerl6PackageDecl(
-                            myProject, myFile, j.getString("k"),
-                            j.getString("n"), j.getString("t"), j.getString("b"),
-                            routines, attrs, mro);
-                        if (j.has("d"))
-                            psi.setDocs(j.getString("d"));
+                        psi.setRoutines(routines);
+                        psi.setAttributes(attrs);
                         externalClasses.put(psi.getName(), psi);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
