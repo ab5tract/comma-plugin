@@ -1,5 +1,6 @@
 package edument.perl6idea.annotation;
 
+import com.intellij.codeInsight.PsiEquivalenceUtil;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -52,7 +53,7 @@ public class UnusedVariableAnnotator implements Annotator {
                 PsiReference reference = usageScope.findReferenceAt(curIndex);
                 if (reference != null) {
                     PsiElement resolution = reference.resolve();
-                    if (resolution == expectedResolution) {
+                    if (resolution != null && PsiEquivalenceUtil.areElementsEquivalent(resolution, expectedResolution)) {
                         found++;
                         if (found == 2) // First finding is the declaration
                             break;
