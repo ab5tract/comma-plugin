@@ -9,12 +9,13 @@ import com.intellij.psi.ResolveResult;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
+import edument.perl6idea.psi.external.Perl6ExternalPsiElement;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlockCall, Perl6RoutineDecl> {
     @Override
@@ -49,7 +50,7 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
         }
 
         if (!(ref instanceof PsiPolyVariantReference)) return;
-        List<Perl6RoutineDecl> decls = new ArrayList<>();
+        Deque<Perl6RoutineDecl> decls = new ArrayDeque<>();
         ResolveResult[] resolvedDecls = ((PsiPolyVariantReference)ref).multiResolve(false);
         for (ResolveResult decl : resolvedDecls) {
             PsiElement declNode = decl.getElement();
@@ -57,9 +58,53 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
                 decls.add((Perl6RoutineDecl)declNode);
             }
         }
+        // If it is .new constructor, check if there is an already present constructor...
+        calculateSyntheticConstructor(element, decls);
         if (decls.size() == 0) return;
         context.setItemsToShow(ArrayUtil.toObjectArray(decls));
         context.showHint(element, element.getTextOffset() + 1, this);
+    }
+
+    private static void calculateSyntheticConstructor(@NotNull P6CodeBlockCall element, Deque<Perl6RoutineDecl> decls) {
+        if (!(element instanceof Perl6MethodCall) || !element.getCallName().equals(".new"))
+            return;
+        PsiElement typeToResolve = element.getWholeCallNode().getFirstChild();
+        if (!(typeToResolve instanceof Perl6TypeName)|| typeToResolve.getReference() == null)
+            return;
+        PsiElement resolvedType = typeToResolve.getReference().resolve();
+        if (!(resolvedType instanceof Perl6PackageDecl))
+            return;
+        // Collect variables and methods.
+        // Methods - maybe we have a written `.new` there, so no synthetic is needed
+        // Public attributes to create a synthetic signature
+        Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(
+            Perl6SymbolKind.Method, Perl6SymbolKind.Variable
+        );
+        ((Perl6PackageDecl)resolvedType).contributeMOPSymbols(
+            collector, new MOPSymbolsAllowed(false, false, false, false));
+        List<String> attributeNames = new ArrayList<>();
+        for (Perl6Symbol symbol : collector.getVariants()) {
+            if (symbol.getKind() == Perl6SymbolKind.Variable)
+                attributeNames.add(convertAttributeIntoNamed(symbol.getName()));
+            else if (symbol.getKind() == Perl6SymbolKind.Method && symbol.getName().equals(".new")) {
+                PsiElement method = symbol.getPsi();
+                if (method instanceof Perl6ExternalPsiElement &&
+                    method.getParent() instanceof ExternalPerl6PackageDecl &&
+                    ((ExternalPerl6PackageDecl)method.getParent()).getName().equals("Mu"))
+                    continue;
+                return;
+            }
+        }
+        Collections.reverse(attributeNames);
+        Perl6RoutineDecl syntheticDeclaration =
+            Perl6ElementFactory.createRoutineDeclaration(element.getProject(), "dummy", attributeNames);
+        decls.clear();
+        decls.addFirst(syntheticDeclaration);
+    }
+
+    private static String convertAttributeIntoNamed(String name) {
+        char sigil = Perl6Variable.getSigil(name);
+        return String.format(":%s%s", sigil, name.substring(2));
     }
 
     @Nullable

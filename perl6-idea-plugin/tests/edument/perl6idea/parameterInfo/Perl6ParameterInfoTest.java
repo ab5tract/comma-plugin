@@ -97,4 +97,16 @@ public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
                context -> assertParameterInfo(context, true, "IO::Handle:D $fh = { ... }, |c is raw", 0, 26),
                context -> assertParameterInfo(context, true, "$path, |c is raw", 0, 5));
     }
+
+    public void testSyntheticConstructor() {
+        // Synthetic constructor is disabled if explicit one
+        doTest("class A { has $.foo; has $.bar; method new($a, $b, :$c) {} }; A.new(<caret>)",
+               context -> assertParameterInfo(context, true, "$a, $b, :$c", 0, 2));
+        // Synthetic constructor is disabled if explicit is in parent
+        doTest("class A { method new($a, $b) {} }; class B is A { has $.foo; has $.bar; }; B.new(<caret>)",
+               context -> assertParameterInfo(context, true, "$a, $b", 0, 2));
+        // Synthetic constructor is enabled
+        doTest("class A { has $.foo; has $.bar; method test($a, $b, :$c) {} }; A.new(<caret>)",
+               context -> assertParameterInfo(context, true, ":$foo, :$bar", 0, 5));
+    }
 }

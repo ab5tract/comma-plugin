@@ -206,6 +206,10 @@ public class Perl6ElementFactory {
         return packageDecl.getPackageKeywordNode();
     }
 
+    public static Perl6RoutineDecl createRoutineDeclaration(Project project, String name, List<String> parameters) {
+        return produceElement(project, String.format("sub %s(%s) {}", name, String.join(", ", parameters)), Perl6RoutineDecl.class);
+    }
+
     public static PsiElement createRoutineDeclarator(Project project, String type) {
         Perl6RoutineDecl routineDecl = produceElement(project, String.format("%s a() {}", type), Perl6RoutineDecl.class);
         return routineDecl.getDeclaratorNode();
