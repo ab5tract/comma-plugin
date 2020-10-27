@@ -1,7 +1,9 @@
 package edument.perl6idea.editor;
 
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
+import edument.perl6idea.formatter.Perl6CodeStyleSettings;
 
 public class UnicodeReplacementHandlerTest extends CommaFixtureTestCase {
     public void testElem() {
@@ -89,9 +91,11 @@ public class UnicodeReplacementHandlerTest extends CommaFixtureTestCase {
     }
 
     protected void doTest(String source, char type, String result) {
+        CodeStyleSettingsManager.getInstance(getProject()).getMainProjectCodeStyle().getCustomSettings(Perl6CodeStyleSettings.class).CONVERT_TO_UNICODE = true;
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, source);
         myFixture.getEditor().getCaretModel().moveToOffset(myFixture.getEditor().getDocument().getTextLength());
         myFixture.type(type);
         myFixture.checkResult(result);
+        CodeStyleSettingsManager.getInstance(getProject()).getMainProjectCodeStyle().getCustomSettings(Perl6CodeStyleSettings.class).CONVERT_TO_UNICODE = false;
     }
 }
