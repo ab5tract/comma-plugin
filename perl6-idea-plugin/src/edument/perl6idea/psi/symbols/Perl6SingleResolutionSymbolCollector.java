@@ -1,5 +1,6 @@
 package edument.perl6idea.psi.symbols;
 
+import com.intellij.codeInsight.PsiEquivalenceUtil;
 import edument.perl6idea.psi.Perl6PackageDecl;
 
 import java.util.*;
@@ -66,6 +67,9 @@ public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollecto
         if (symbol != null &&
             Objects.equals(symbol.getKind(), wantedKind) &&
             Objects.equals(symbol.getName(), wantedName)) {
+            if (symbol.getPsi() != null &&
+                results.stream().anyMatch(r -> PsiEquivalenceUtil.areElementsEquivalent(r.getPsi(), symbol.getPsi())))
+                return;
             results.add(symbol);
         }
     }

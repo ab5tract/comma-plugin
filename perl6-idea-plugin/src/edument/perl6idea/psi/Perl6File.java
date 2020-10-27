@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 public interface Perl6File extends Perl6PsiElement, Perl6PsiScope, PsiNameIdentifierOwner, PsiFile, PsiMetaOwner {
-    List<Perl6PsiDeclaration> getExports();
     void contributeGlobals(Perl6SymbolCollector collector, Set<String> seen);
     Map<Integer, List<Integer>> getStatementLineMap();
     boolean isReal();
