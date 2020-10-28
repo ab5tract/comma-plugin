@@ -60,7 +60,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testUndeclaredVariableAnnotatorRoleParameter() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"role A[$foo, :$foo, @foo] {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"role A[$foo, @foo, :$bar] { method m() { $foo, @foo, $bar } }");
         myFixture.checkHighlighting();
     }
 
@@ -136,7 +136,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testUndeclaredPrivateMethodAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { method !a($one) {} }; class B does A { method b { self<error descr=\"Private method !c is used, but not declared\">!c</error>(1); } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { method !a($one) {$one} }; class B does A { method b { self<error descr=\"Private method !c is used, but not declared\">!c</error>(1); } }");
         myFixture.checkHighlighting();
     }
 
@@ -173,42 +173,42 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testSignatureAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { $a, $b }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put positional parameter $c after a variadic parameter\">$c</error>) { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put positional parameter $c after a variadic parameter\">$c</error>) { $a, @b, $c }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put optional parameter $c after a variadic parameter\">$c?</error>) { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put optional parameter $c after a variadic parameter\">$c?</error>) { $a, @b, $c }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$a, <error descr=\"Cannot put positional parameter $b after a named parameter\">$b</error>) { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$a, <error descr=\"Cannot put positional parameter $b after a named parameter\">$b</error>) { $a, $b }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { $a, $b }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c!) {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c!) { $a, @as, $c }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c) {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c) { $a, @as, $c }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(*%h, :$c) {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(*%h, :$c) { %h, $c }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub web(Str $cfg-filename, Str $model-filename, Str $tech-file?) is export {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub web(Str $cfg-filename, Str $model-filename, Str $tech-file?) is export { $cfg-filename, $model-filename, $tech-file }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "multi sub MAIN('web', ExistingFile $cfg-filename, ExistingFile $model-filename, Str $tech-file?) is export {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "multi sub MAIN('web', ExistingFile $cfg-filename, ExistingFile $model-filename, Str $tech-file?) is export { $cfg-filename, $model-filename, $tech-file }");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub MAIN(Admin, 'web') {}");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, $bar? is copy) {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, $bar? is copy) { $a, $bar }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<warning descr=\"Explicit `?` on a named parameter $bar is redundant, as all nameds are optional by default\">:$bar?</warning>) {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<warning descr=\"Explicit `?` on a named parameter $bar is redundant, as all nameds are optional by default\">:$bar?</warning>) { $bar }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<warning descr=\"Explicit `!` on a positional parameter $foo is redundant, as all positional parameters are required by default\">$foo!</warning>, $bar) {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<warning descr=\"Explicit `!` on a positional parameter $foo is redundant, as all positional parameters are required by default\">$foo!</warning>, $bar) { $foo, $bar }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<warning descr=\"Explicit `?` on a parameter $foo with default is redundant, as all parameters with default value are optional by default\">$foo? = 42</warning>) {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<warning descr=\"Explicit `?` on a parameter $foo with default is redundant, as all parameters with default value are optional by default\">$foo? = 42</warning>) { $foo }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<error descr=\"Parameter $foo has a default value and so cannot be required\">$foo! = 42</error>) {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<error descr=\"Parameter $foo has a default value and so cannot be required\">$foo! = 42</error>) { $foo }");
         myFixture.checkHighlighting();
     }
 
     public void testOptionalParameterAfterDefaultWithReturnType() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a($a = 5, $b? ) {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a($a = 5, $b? ) { $a, $b }");
         myFixture.checkHighlighting();
     }
 
@@ -429,7 +429,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testMissingStubbedMethodsIncludeMulti() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { multi method foo($a) {...}; method bar($a) {...} }; class C does R { multi method foo($a) {}; multi method foo(@b) {}; method bar($a) {...} }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R { multi method foo($a) {...}; method bar($a) {...} }; class C does R { multi method foo($a) { $a }; multi method foo(@b) { @b }; method bar($a) {...} }");
         myFixture.checkHighlighting();
     }
 
