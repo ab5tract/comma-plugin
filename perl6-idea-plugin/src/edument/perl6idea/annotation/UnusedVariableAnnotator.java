@@ -1,15 +1,19 @@
 package edument.perl6idea.annotation;
 
-import com.intellij.codeInsight.PsiEquivalenceUtil;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.Query;
 import edument.perl6idea.highlighter.Perl6Highlighter;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class UnusedVariableAnnotator implements Annotator {
     @Override
@@ -28,46 +32,24 @@ public class UnusedVariableAnnotator implements Annotator {
         Perl6PsiScope usageScope = PsiTreeUtil.getParentOfType(element, Perl6PsiScope.class);
         if (usageScope == null)
             return;
-        String usageScopeSource = usageScope.getText();
 
-        // Go over the declared variables.
+        // Go over the declared variables and look for usages of them.
+        LocalSearchScope searchScope = new LocalSearchScope(usageScope);
         for (Perl6Variable variable : ((Perl6VariableDecl)element).getVariables()) {
-            // For anything without & sigil, we search for the variable name itself,
-            // and then make sure we find at least one reference that resolves to the
-            // variable declaration (that is not the declaration itself). For the &
-            // sigil, we could have `my &foo = ...; foo()` and so we need to look for
-            // the function name.
-            String name = variable.getVariableName();
-            if (name == null || name.length() < 2)
-                continue;
-            if (Perl6Variable.getTwigil(name) != ' ')
-                continue;
-            char sigil = Perl6Variable.getSigil(name);
-            String search = sigil == '&' ? name.substring(1) : name;
+            // We need two references, since the declaration resolves to itself.
             PsiElement expectedResolution = variable.getParent() instanceof Perl6ParameterVariable
-                ? variable.getParent()
-                : element;
-            int curIndex = usageScopeSource.indexOf(search);
-            int found = 0;
-            while (curIndex > 0) {
-                PsiReference reference = usageScope.findReferenceAt(curIndex);
-                if (reference != null) {
-                    PsiElement resolution = reference.resolve();
-                    if (resolution != null && PsiEquivalenceUtil.areElementsEquivalent(resolution, expectedResolution)) {
-                        found++;
-                        if (found == 2) // First finding is the declaration
-                            break;
-                    }
-                }
-                curIndex = usageScopeSource.indexOf(search, curIndex + 1);
-            }
+                                            ? variable.getParent()
+                                            : element;
+            Query<PsiReference> results = ReferencesSearch.search(expectedResolution, searchScope);
+            AtomicInteger count = new AtomicInteger();
+            results.forEach(found -> count.incrementAndGet() < 2);
 
             // Annotate if not found.
-            if (found != 2) {
+            if (count.get() < 2) {
                 holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Unused variable")
-                    .range(variable)
-                    .textAttributes(Perl6Highlighter.UNUSED)
-                    .create();
+                  .range(variable)
+                  .textAttributes(Perl6Highlighter.UNUSED)
+                  .create();
             }
         }
     }
