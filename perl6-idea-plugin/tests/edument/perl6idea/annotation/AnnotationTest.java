@@ -162,7 +162,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testUndeclaredMultiAttributeAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A { has ($!a, $!asdrf) }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A { has ($!a, $!asdrf); method m() { $!a, $!asdrf } }");
         myFixture.checkHighlighting();
     }
 
@@ -424,7 +424,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testStubbedMethodFromRoleImplementedAsAccessor() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "role R { method baz {...}; method bar {...}; method foo {...} }; class <error descr=\"Composed roles require to implement methods: bar, baz\">C does R </error>{ my $.baz; has $.foo; has $!bar;}");
+                                  "role R { method baz {...}; method bar {...}; method foo {...} }; class <error descr=\"Composed roles require to implement methods: bar, baz\">C does R </error>{ my $.baz; has $.foo; has $!bar; method m() { $!bar } }");
         myFixture.checkHighlighting();
     }
 
@@ -850,6 +850,17 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
               "my &foo = -> &a, <weak_warning descr=\"Unused parameter\">&b</weak_warning> { a() }; say foo({ 1 }, { 2 });");
+        myFixture.checkHighlighting();
+    }
+
+    public void testUnusedAttribute() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "class MyAttrsClass {\n" +
+              "    has $!used;\n" +
+              "    has <weak_warning descr=\"Unused attribute\">$!unused</weak_warning>;\n" +
+              "    has ($!used-g, <weak_warning descr=\"Unused attribute\">$!unused-g</weak_warning>);\n" +
+              "    method m() { $!used, $!used-g }\n" +
+              "}");
         myFixture.checkHighlighting();
     }
 }

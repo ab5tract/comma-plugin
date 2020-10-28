@@ -50,6 +50,23 @@ public class UnusedVariableAnnotator implements Annotator {
                     error = "Unused variable";
                 }
             }
+
+            // If it's has-scoped and has a ! twigil and we're not in a role, we
+            // can check it.
+            else if (scope.equals("has")) {
+                Perl6PackageDecl containingPackage = PsiTreeUtil.getParentOfType(element, Perl6PackageDecl.class);
+                if (containingPackage != null && !containingPackage.getPackageKind().equals("role")) {
+                    searchScope = new LocalSearchScope(containingPackage);
+                    toCheck = new ArrayList<>();
+                    for (Perl6Variable variable : ((Perl6VariableDecl)element).getVariables()) {
+                        String name = variable.getVariableName();
+                        if (name == null || name.length() < 3 || Perl6Variable.getTwigil(name) != '!')
+                            continue;
+                        toCheck.add(variable);
+                    }
+                    error = "Unused attribute";
+                }
+            }
         }
         else if (element instanceof Perl6ParameterVariable) {
             // Make sure the parameter is not really part of a signature in a
