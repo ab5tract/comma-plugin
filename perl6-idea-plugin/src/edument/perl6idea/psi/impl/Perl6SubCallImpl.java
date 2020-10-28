@@ -55,6 +55,7 @@ public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> 
         return name == null ? "" : name.getCallName();
     }
 
+    @NotNull
     @Override
     public PsiElement getWholeCallNode() {
         return this;

@@ -14,6 +14,7 @@ public interface P6CodeBlockCall extends PsiNamedElement {
     // For calls that have mandatory prefix parts, for example, method calls have a caller,
     // method returns a whole element to work with when we want to change the whole expression,
     // not only call's part.
+    @NotNull
     PsiElement getWholeCallNode();
 
     default PsiElement[] getCallArguments() {

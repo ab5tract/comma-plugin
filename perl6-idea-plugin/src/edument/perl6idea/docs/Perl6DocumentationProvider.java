@@ -5,6 +5,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.external.ExternalPerl6File;
+import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
 import edument.perl6idea.psi.external.Perl6ExternalPsiElement;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,6 +74,8 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
         if (element instanceof Perl6ExternalPsiElement) {
             String name = ((Perl6ExternalPsiElement)element).getName();
             PsiElement parent = element.getParent();
+            if (parent instanceof ExternalPerl6PackageDecl)
+                parent = parent.getParent();
             if (parent instanceof ExternalPerl6File &&
                 Objects.equals(((ExternalPerl6File)parent).getName(), "SETTINGS.pm6")) {
                 if (element instanceof Perl6PackageDecl)

@@ -11,6 +11,8 @@ import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.METHOD_CALL_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.METHOD_CALL_OPERATOR;
@@ -40,9 +42,10 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
         return findChildByType(METHOD_CALL_NAME);
     }
 
+    @NotNull
     @Override
     public PsiElement getWholeCallNode() {
-        return PsiTreeUtil.getParentOfType(this, Perl6PostfixApplication.class);
+        return Objects.requireNonNull(PsiTreeUtil.getParentOfType(this, Perl6PostfixApplication.class));
     }
 
     @NotNull
