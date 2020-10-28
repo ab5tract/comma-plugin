@@ -834,4 +834,13 @@ public class AnnotationTest extends CommaFixtureTestCase {
               "sub a() { my (<weak_warning descr=\"Unused variable\">$a</weak_warning>, $b); $b = 100; say $b; }; a();");
         myFixture.checkHighlighting();
     }
+
+    public void testUnusedParameter() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "sub foo($a, <weak_warning descr=\"Unused parameter\">$b</weak_warning>) { return $a; }; say foo(1, 2);");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                  "sub foo(&a, <weak_warning descr=\"Unused parameter\">&b</weak_warning>) { a() }; say foo({ 1 }, { 2 });");
+        myFixture.checkHighlighting();
+    }
 }
