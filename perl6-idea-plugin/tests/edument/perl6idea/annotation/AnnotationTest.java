@@ -30,7 +30,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testUndeclaredVariableAnnotatorUndeclaredSubCaught() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable &a is not declared\">&a</error>.arity; sub ab { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say <error descr=\"Variable &a is not declared\">&a</error>.arity; sub ab { }; ab();");
         myFixture.checkHighlighting();
     }
 
@@ -173,42 +173,42 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testSignatureAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a?, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { $a, $b }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo($a?, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { $a, $b }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put positional parameter $c after a variadic parameter\">$c</error>) { $a, @b, $c }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo($a, *@b, <error descr=\"Cannot put positional parameter $c after a variadic parameter\">$c</error>) { $a, @b, $c }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@b, <error descr=\"Cannot put optional parameter $c after a variadic parameter\">$c?</error>) { $a, @b, $c }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo($a, *@b, <error descr=\"Cannot put optional parameter $c after a variadic parameter\">$c?</error>) { $a, @b, $c }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(:$a, <error descr=\"Cannot put positional parameter $b after a named parameter\">$b</error>) { $a, $b }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo(:$a, <error descr=\"Cannot put positional parameter $b after a named parameter\">$b</error>) { $a, $b }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { $a, $b }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo($a = 42, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { $a, $b }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c!) { $a, @as, $c }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo($a, *@as, :$c!) { $a, @as, $c }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, *@as, :$c) { $a, @as, $c }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo($a, *@as, :$c) { $a, @as, $c }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(*%h, :$c) { %h, $c }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo(*%h, :$c) { %h, $c }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub web(Str $cfg-filename, Str $model-filename, Str $tech-file?) is export { $cfg-filename, $model-filename, $tech-file }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub web(Str $cfg-filename, Str $model-filename, Str $tech-file?) is export { $cfg-filename, $model-filename, $tech-file }");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "multi sub MAIN('web', ExistingFile $cfg-filename, ExistingFile $model-filename, Str $tech-file?) is export { $cfg-filename, $model-filename, $tech-file }");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub MAIN(Admin, 'web') {}");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a = 42, $bar? is copy) { $a, $bar }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo($a = 42, $bar? is copy) { $a, $bar }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<warning descr=\"Explicit `?` on a named parameter $bar is redundant, as all nameds are optional by default\">:$bar?</warning>) { $bar }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo(<warning descr=\"Explicit `?` on a named parameter $bar is redundant, as all nameds are optional by default\">:$bar?</warning>) { $bar }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<warning descr=\"Explicit `!` on a positional parameter $foo is redundant, as all positional parameters are required by default\">$foo!</warning>, $bar) { $foo, $bar }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo(<warning descr=\"Explicit `!` on a positional parameter $foo is redundant, as all positional parameters are required by default\">$foo!</warning>, $bar) { $foo, $bar }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<warning descr=\"Explicit `?` on a parameter $foo with default is redundant, as all parameters with default value are optional by default\">$foo? = 42</warning>) { $foo }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo(<warning descr=\"Explicit `?` on a parameter $foo with default is redundant, as all parameters with default value are optional by default\">$foo? = 42</warning>) { $foo }");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo(<error descr=\"Parameter $foo has a default value and so cannot be required\">$foo! = 42</error>) { $foo }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo(<error descr=\"Parameter $foo has a default value and so cannot be required\">$foo! = 42</error>) { $foo }");
         myFixture.checkHighlighting();
     }
 
     public void testOptionalParameterAfterDefaultWithReturnType() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a($a = 5, $b? ) { $a, $b }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub a($a = 5, $b? ) { $a, $b }");
         myFixture.checkHighlighting();
     }
 
@@ -368,7 +368,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testUndeclaredAnnotatorRegexVarsCorrectComparisonIsUsed() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($sub-key) { if $sub-key ~~ m:s/^ '{' (<[\\w-]>+)+ % ';' '}' $/ { $0 } elsif $sub-key ~~ /^ <[\\w-]>+ $/ {} }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($sub-key) { if $sub-key ~~ m:s/^ '{' (<[\\w-]>+)+ % ';' '}' $/ { $0 } elsif $sub-key ~~ /^ <[\\w-]>+ $/ {} }; foo('bar')");
         myFixture.checkHighlighting();
     }
 
@@ -589,7 +589,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testCompletelyFineReturn() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo() { return 42 }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo() { return 42 }; foo();");
         myFixture.checkHighlighting();
     }
 
@@ -649,7 +649,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testMissingClosingParenSignature() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo<error descr=\"Missing closing )\">(</error>$, { }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo<error descr=\"Missing closing )\">(</error>$, { }; foo()");
         myFixture.checkHighlighting();
     }
 
@@ -669,7 +669,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testMissingClosingBlockoid() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo <error descr=\"Missing closing }\">{</error> say 42;");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo <error descr=\"Missing closing }\">{</error> say 42;");
         myFixture.checkHighlighting();
     }
 
@@ -766,7 +766,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testSubmethodBUILDAnnotation() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "class A { <warning descr=\"BUILD should be declared as a submethod\">method</warning> BUILD {}; submethod BUILD {} }; class B { <warning descr=\"TWEAK should be declared as a submethod\">method</warning> TWEAK {}; submethod TWEAK {} }; sub BUILD {}; sub TWEAK {};");
+                                  "class A { <warning descr=\"BUILD should be declared as a submethod\">method</warning> BUILD {}; submethod BUILD {} }; class B { <warning descr=\"TWEAK should be declared as a submethod\">method</warning> TWEAK {}; submethod TWEAK {} }; sub <weak_warning descr=\"Unused subroutine\">BUILD</weak_warning> {}; sub <weak_warning descr=\"Unused subroutine\">TWEAK</weak_warning> {};");
         myFixture.checkHighlighting();
     }
 
@@ -805,9 +805,9 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testReturnFromNilSubroutineAnnotation() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a(--> Nil) { if True { return; } }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a(--> Nil) { if True { return; } }; a();");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a(--> Nil) { <error descr=\"A value is returned from subroutine returning Nil\">return 42</error>; }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub a(--> Nil) { <error descr=\"A value is returned from subroutine returning Nil\">return 42</error>; }; a();");
         myFixture.checkHighlighting();
     }
 
@@ -871,6 +871,19 @@ public class AnnotationTest extends CommaFixtureTestCase {
               "    method !used() {}\n" +
               "    method <weak_warning descr=\"Unused private method\">!unused</weak_warning>() {}\n" +
               "}");
+        myFixture.checkHighlighting();
+    }
+
+    public void testUnusedLexicalRoutine() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "sub used(&x) { x() }\n" +
+              "sub <weak_warning descr=\"Unused subroutine\">unused</weak_warning>() {}\n" +
+              "used(sub used-as-argument() {});");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "my sub used(&x) { x() }\n" +
+              "my sub <weak_warning descr=\"Unused subroutine\">unused</weak_warning>() {}\n" +
+              "used(my sub used-as-argument() {});");
         myFixture.checkHighlighting();
     }
 }
