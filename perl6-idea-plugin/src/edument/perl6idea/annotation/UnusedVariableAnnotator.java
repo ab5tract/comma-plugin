@@ -37,7 +37,8 @@ public class UnusedVariableAnnotator implements Annotator {
             // declaring lexical scope.
             if (scope.equals("my") || scope.equals("state")) {
                 String name = ((Perl6VariableDecl)element).getName();
-                if (namedWithoutTwigil(name)) return;
+                if (namedWithoutTwigil(name))
+                    return;
                 Perl6PsiScope usageScope = PsiTreeUtil.getParentOfType(element, Perl6PsiScope.class);
                 if (usageScope != null) {
                     searchScope = new LocalSearchScope(usageScope);
@@ -52,16 +53,23 @@ public class UnusedVariableAnnotator implements Annotator {
         }
         else if (element instanceof Perl6ParameterVariable) {
             // Make sure the parameter is not really part of a signature in a
-            // variable declaration; those are checked separately.
+            // variable declaration; those are checked separately. Also ensure
+            // it's not anonymous nor carrying a twigil, and not on a stubbed
+            // method (where they can be just for documentation).
             String name = ((Perl6ParameterVariable)element).getName();
-            if (namedWithoutTwigil(name)) return;
+            if (namedWithoutTwigil(name))
+                return;
             Perl6Signature signature = PsiTreeUtil.getParentOfType(element, Perl6Signature.class);
-            if (signature != null && !(signature.getParent() instanceof Perl6VariableDecl)) {
-                Perl6PsiScope usageScope = PsiTreeUtil.getParentOfType(element, Perl6PsiScope.class);
-                if (usageScope != null) {
-                    searchScope = new LocalSearchScope(usageScope);
-                    toCheck = Collections.singletonList(element);
-                    error = "Unused parameter";
+            if (signature != null) {
+                PsiElement signatureOwner = signature.getParent();
+                if (!(signatureOwner instanceof Perl6VariableDecl) &&
+                        !(signatureOwner instanceof Perl6RoutineDecl && ((Perl6RoutineDecl)signatureOwner).isStubbed())) {
+                    Perl6PsiScope usageScope = PsiTreeUtil.getParentOfType(element, Perl6PsiScope.class);
+                    if (usageScope != null) {
+                        searchScope = new LocalSearchScope(usageScope);
+                        toCheck = Collections.singletonList(element);
+                        error = "Unused parameter";
+                    }
                 }
             }
         }
