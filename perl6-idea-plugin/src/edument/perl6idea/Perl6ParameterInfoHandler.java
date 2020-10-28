@@ -82,10 +82,14 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
         );
         ((Perl6PackageDecl)resolvedType).contributeMOPSymbols(
             collector, new MOPSymbolsAllowed(false, false, false, false));
-        List<String> attributeNames = new ArrayList<>();
+        List<String> attributes = new ArrayList<>();
         for (Perl6Symbol symbol : collector.getVariants()) {
-            if (symbol.getKind() == Perl6SymbolKind.Variable)
-                attributeNames.add(convertAttributeIntoNamed(symbol.getName()));
+            if (symbol.getKind() == Perl6SymbolKind.Variable) {
+                if (symbol.getPsi() instanceof Perl6VariableDecl) {
+                    String type = ((Perl6VariableDecl) symbol.getPsi()).inferType();
+                    attributes.add(type + " " + convertAttributeIntoNamed(symbol.getName()));
+                }
+            }
             else if (symbol.getKind() == Perl6SymbolKind.Method && symbol.getName().equals(".new")) {
                 PsiElement method = symbol.getPsi();
                 if (method instanceof Perl6ExternalPsiElement &&
@@ -95,9 +99,9 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
                 return;
             }
         }
-        Collections.reverse(attributeNames);
+        Collections.reverse(attributes);
         Perl6RoutineDecl syntheticDeclaration =
-            Perl6ElementFactory.createRoutineDeclaration(element.getProject(), "dummy", attributeNames);
+            Perl6ElementFactory.createRoutineDeclaration(element.getProject(), "dummy", attributes);
         decls.clear();
         decls.addFirst(syntheticDeclaration);
     }
