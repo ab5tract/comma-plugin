@@ -36,17 +36,17 @@ public class UnusedVariableAnnotator implements Annotator {
             // If it's lexical or state, then we want to check for usages in the
             // declaring lexical scope.
             if (scope.equals("my") || scope.equals("state")) {
-                String name = ((Perl6VariableDecl)element).getName();
-                if (namedWithoutTwigil(name))
-                    return;
                 Perl6PsiScope usageScope = PsiTreeUtil.getParentOfType(element, Perl6PsiScope.class);
                 if (usageScope != null) {
                     searchScope = new LocalSearchScope(usageScope);
                     toCheck = new ArrayList<>();
-                    for (Perl6Variable variable : ((Perl6VariableDecl)element).getVariables())
+                    for (Perl6Variable variable : ((Perl6VariableDecl)element).getVariables()) {
+                        if (namedWithoutTwigil(variable.getName()))
+                            continue;
                         toCheck.add(variable.getParent() instanceof Perl6ParameterVariable
-                            ? variable.getParent()
-                            : element);
+                                    ? variable.getParent()
+                                    : element);
+                    }
                     error = "Unused variable";
                 }
             }
