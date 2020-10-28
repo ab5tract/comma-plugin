@@ -24,4 +24,5 @@ public interface Perl6PackageDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     void contributeNestedPackagesWithPrefix(Perl6SymbolCollector collector, String prefix);
     List<Perl6PackageDecl> collectChildren();
     List<Perl6PackageDecl> collectParents();
+    boolean trustsOthers();
 }

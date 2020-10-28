@@ -863,4 +863,14 @@ public class AnnotationTest extends CommaFixtureTestCase {
               "}");
         myFixture.checkHighlighting();
     }
+
+    public void testUnusedPrivateMethod() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "class MyPrivateMethClass {\n" +
+              "    method pub() { self!used }\n" +
+              "    method !used() {}\n" +
+              "    method <weak_warning descr=\"Unused private method\">!unused</weak_warning>() {}\n" +
+              "}");
+        myFixture.checkHighlighting();
+    }
 }

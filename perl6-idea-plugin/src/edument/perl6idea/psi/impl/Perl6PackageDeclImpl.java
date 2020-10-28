@@ -28,6 +28,8 @@ import java.util.*;
 
 public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDeclStub>
         implements Perl6PackageDecl, PsiMetaOwner {
+    private Boolean cachedTrustsOthers;
+
     public Perl6PackageDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -125,6 +127,18 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             }
         }
         return trusts;
+    }
+
+    @Override
+    public boolean trustsOthers() {
+        if (cachedTrustsOthers == null)
+            cachedTrustsOthers = !getTrusts().isEmpty();
+        return cachedTrustsOthers;
+    }
+
+    @Override
+    public void subtreeChanged() {
+        cachedTrustsOthers = null;
     }
 
     private void contributeInternals(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
