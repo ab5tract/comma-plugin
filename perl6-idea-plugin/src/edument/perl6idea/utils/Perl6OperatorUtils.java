@@ -34,6 +34,7 @@ public class Perl6OperatorUtils {
         unicodeOperators.add('⊅'); asciiOperators.add("!(>)");
         unicodeOperators.add('⊈'); asciiOperators.add("!(<=)");
         unicodeOperators.add('⊉'); asciiOperators.add("!(>=)");
+        unicodeOperators.add('≅'); asciiOperators.add("=~=");
     }
 
     public static boolean isUnicodeConversionEnabled(@NotNull Editor editor) {
