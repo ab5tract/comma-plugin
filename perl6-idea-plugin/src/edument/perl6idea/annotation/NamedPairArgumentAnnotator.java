@@ -48,7 +48,7 @@ public class NamedPairArgumentAnnotator implements Annotator {
         }
         if (element instanceof Perl6Variable) {
             String name = ((Perl6Variable)element).getVariableName();
-            if (name == null)
+            if (name == null || name.length() < 2)
                 return null;
 
             int prefixLength = Perl6Variable.getTwigil(name) == ' ' ? 1 : 2;
