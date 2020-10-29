@@ -3,8 +3,10 @@ package edument.perl6idea.editor;
 import com.intellij.codeInsight.editorActions.BackspaceHandlerDelegate;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.utils.Perl6OperatorUtils;
 import org.jetbrains.annotations.NotNull;
@@ -17,26 +19,9 @@ public class BackspaceUnicodeHandler extends BackspaceHandlerDelegate {
     private static final Map<Character, String> replacements = new HashMap<>();
 
     static {
-        replacements.put('∈', "(elem)");
-        replacements.put('∋', "(cont)");
-        replacements.put('∖', "(-)");
-        replacements.put('∘', "o");
-        replacements.put('∩', "(&)");
-        replacements.put('∪', "(|)");
-        replacements.put('≅', "=~=");
-        replacements.put('⊂', "(<)");
-        replacements.put('⊃', "(>)");
-        replacements.put('⊆', "(<=)");
-        replacements.put('⊇', "(>=)");
-        replacements.put('⊍', "(.)");
-        replacements.put('⊎', "(+)");
-        replacements.put('⊖', "(^)");
-        replacements.put('∉', "!(elem)");
-        replacements.put('∌', "!(cont)");
-        replacements.put('⊄', "!(<)");
-        replacements.put('⊅', "!(>)");
-        replacements.put('⊈', "!(<=)");
-        replacements.put('⊉', "!(>=)");
+        for (Pair<Character, String> op : ContainerUtil.zip(Perl6OperatorUtils.unicodeOperators, Perl6OperatorUtils.asciiOperators)) {
+            replacements.put(op.getFirst(), op.getSecond());
+        }
     }
 
     @Override
