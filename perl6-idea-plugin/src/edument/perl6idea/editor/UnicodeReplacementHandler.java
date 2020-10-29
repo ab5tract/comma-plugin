@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.highlighter.HighlighterIterator;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
@@ -19,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 public class UnicodeReplacementHandler extends TypedHandlerDelegate {
+    public static final Key<Integer> UNICODE_REPLACEMENT_POS = Key.create("perl6.unicodeReplacementPos");
+
     private static class Mapping {
         public String ascii;
         public char unicode;
@@ -84,11 +87,13 @@ public class UnicodeReplacementHandler extends TypedHandlerDelegate {
                                 m.unicode +
                                 text.substring(offset)
                         );
+                        editor.putUserData(UNICODE_REPLACEMENT_POS, start + 1);
                         return Result.STOP;
                     }
                 }
             }
         }
+        editor.putUserData(UNICODE_REPLACEMENT_POS, null);
         return Result.CONTINUE;
     }
 }

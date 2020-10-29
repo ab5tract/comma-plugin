@@ -41,8 +41,15 @@ public class BackspaceUnicodeHandler extends BackspaceHandlerDelegate {
 
     @Override
     public void beforeCharDeleted(char c, @NotNull PsiFile file, @NotNull Editor editor) {
-        IElementType curToken = ((EditorEx)editor).getHighlighter().createIterator(editor.getCaretModel().getOffset() - 1).getTokenType();
-        shouldRemove = curToken == Perl6TokenTypes.INFIX || curToken == Perl6TokenTypes.METAOP;
+        Integer lastReplacementPos = editor.getUserData(UnicodeReplacementHandler.UNICODE_REPLACEMENT_POS);
+        if (lastReplacementPos != null && editor.getCaretModel().getOffset() == lastReplacementPos) {
+            IElementType curToken = ((EditorEx)editor).getHighlighter()
+                .createIterator(editor.getCaretModel().getOffset() - 1).getTokenType();
+            shouldRemove = curToken == Perl6TokenTypes.INFIX || curToken == Perl6TokenTypes.METAOP;
+        }
+        else {
+            shouldRemove = false;
+        }
     }
 
     @Override
