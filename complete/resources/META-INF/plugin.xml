@@ -40,6 +40,8 @@
 <li>Pair simplification intention now handles simplification of <code>foo =&gt; True</code> and <code>foo =&gt; False</code> into <code>:foo</code> and <code>:!foo</code> correspondingly. Also forms like <code>:foo(True)</code> and <code>:foo(False)</code> are handled</li>
 <li>Fix a bug where some multi sub signatures were duplicated in parameter info</li>
 <li>Fix a hang when typing two heredoc openers like <code>Q:to/IN/, Q:to</code></li>
+<li>Fix false positive in signature correctness annotator</li>
+<li>Fix possible exception related to variables implicitly declared via regex smartmatching</li>
 <li>Fix an exception on typing <code>my $\(42)</code></li>
 </ul>
   ]]>
