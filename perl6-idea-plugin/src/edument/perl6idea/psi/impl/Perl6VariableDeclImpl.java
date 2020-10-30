@@ -295,14 +295,15 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (!getScope().equals("has"))
             return;
 
-        String[] attributes = getVariableNames();
+        Perl6Variable[] attributes = getVariables();
 
-        for (String name : attributes) {
+        for (Perl6Variable variable : attributes) {
+            String name = variable.getVariableName();
             if (name == null || name.length() <= 2)
                 continue;
 
             if (Perl6Variable.getTwigil(name) == '!' && symbolsAllowed.privateAttributesVisible) {
-                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, name));
+                collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, variable, name));
             }
             else if (Perl6Variable.getTwigil(name) == '.') {
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable, this, name));

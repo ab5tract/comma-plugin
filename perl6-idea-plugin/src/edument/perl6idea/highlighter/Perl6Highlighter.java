@@ -2,6 +2,7 @@ package edument.perl6idea.highlighter;
 
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.HighlighterColors;
+import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 
 /* We want to both try and respect people's existing settings for language
@@ -578,5 +579,16 @@ public final class Perl6Highlighter {
     static final String POD_TEXT_UNDERLINE_ID = "PERL6_TEXT_UNDERLINE";
     public static final TextAttributesKey POD_TEXT_UNDERLINE = TextAttributesKey.createTextAttributesKey(
         POD_TEXT_UNDERLINE_ID
+    );
+
+    /* Unused
+     * ******
+     * Map to the default styling for unused elements.
+     */
+
+    private static final String UNUSED_ID = "PERL6_UNUSED";
+    public static final TextAttributesKey UNUSED = TextAttributesKey.createTextAttributesKey(
+        UNUSED_ID,
+        CodeInsightColors.NOT_USED_ELEMENT_ATTRIBUTES
     );
 }

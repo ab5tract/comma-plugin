@@ -96,6 +96,11 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     }
 
     @Override
+    public boolean trustsOthers() {
+        return false;
+    }
+
+    @Override
     public IStubElementType getElementType() {
         return null;
     }
