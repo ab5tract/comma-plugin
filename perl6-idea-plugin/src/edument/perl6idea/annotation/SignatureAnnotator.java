@@ -6,6 +6,7 @@ import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6Signature;
+import edument.perl6idea.psi.Perl6Variable;
 import org.jetbrains.annotations.NotNull;
 
 public class SignatureAnnotator implements Annotator {
@@ -100,7 +101,8 @@ public class SignatureAnnotator implements Annotator {
                                                    parameter.getVariableName()))
                   .range(parameter).create();
             }
-            else if (parameter.getText().contains("!") && parameter.getInitializer() != null) {
+            else if (parameter.getText().contains("!") && parameter.getInitializer() != null
+                    && Perl6Variable.getTwigil(parameter.getVariableName()) != '!') {
                 holder.newAnnotation(HighlightSeverity.ERROR,
                                      String.format("Parameter %s has a default value and so cannot be required", parameter.getVariableName()))
                   .range(parameter).create();

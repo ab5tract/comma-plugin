@@ -174,6 +174,9 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testSignatureAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class A { has $!a; submethod BUILD(:$!a = 42, :$b!) { say $b; say $!a; }; }");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                 "my (:%file, :%methods (:%over-documented, :%under-documented, :%introspection, *%)); %file; %methods; %over-documented; %under-documented; %introspection;");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo($a?, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { $a, $b }");
