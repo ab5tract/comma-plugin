@@ -62,6 +62,9 @@ public class Perl6CodeStyleSettings extends CustomCodeStyleSettings {
     public boolean ARRAY_ELEMENTS_ALIGNMENT = true;
     public boolean INFIX_APPLICATION_ALIGNMENT = false;
 
+    // Customs
+    public boolean CONVERT_TO_UNICODE = false;
+
     public Perl6CodeStyleSettings(CodeStyleSettings container) {
         super(Perl6Language.INSTANCE.getID(), container);
     }

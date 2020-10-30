@@ -99,7 +99,7 @@ public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsPro
         return new CodeStyleAbstractConfigurable(baseSettings, modelSettings, "Raku Code Style Settings") {
             @Override
             protected CodeStyleAbstractPanel createPanel(CodeStyleSettings settings) {
-                return new CodeStylePerl6Panel(settings, modelSettings);
+                return new Perl6CodeStylePanel(settings, modelSettings);
             }
         };
     }
