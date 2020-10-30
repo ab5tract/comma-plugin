@@ -173,6 +173,9 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testSignatureAnnotator() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "my (:%file, :%methods (:%over-documented, :%under-documented, :%introspection, *%)); %file; %methods; %over-documented; %under-documented; %introspection;");
+        myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo($a?, <error descr=\"Cannot put positional parameter $b after an optional parameter\">$b</error>) { $a, $b }");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo($a, *@b, <error descr=\"Cannot put positional parameter $c after a variadic parameter\">$c</error>) { $a, @b, $c }");
@@ -884,6 +887,17 @@ public class AnnotationTest extends CommaFixtureTestCase {
               "my sub used(&x) { x() }\n" +
               "my sub <weak_warning descr=\"Unused subroutine\">unused</weak_warning>() {}\n" +
               "used(my sub used-as-argument() {});");
+        myFixture.checkHighlighting();
+    }
+
+    public void testDoesNotRecurse() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "(with <error descr=\"Variable $exclude is not declared\">$exclude</error> { 1 ~~ $_ }), (with <error descr=\"Variable $only-dir is not declared\">$only-dir</error> { 3 ~~ $_ })"
+        );
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "(with <error descr=\"Variable $a is not declared\">$a</error> { 42 !~~ $_}), (with <error descr=\"Variable $b is not declared\">$b</error> { 42 ~~ $_});"
+        );
         myFixture.checkHighlighting();
     }
 }

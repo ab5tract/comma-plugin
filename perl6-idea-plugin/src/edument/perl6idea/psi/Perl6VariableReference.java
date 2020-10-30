@@ -204,6 +204,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             PsiElementProcessor.CollectElements<PsiElement> processor = new PsiElementProcessor.CollectElements<PsiElement>() {
                 @Override
                 public boolean execute(@NotNull PsiElement each) {
+                    if (each.getTextOffset() > starter.getTextOffset())
+                        return false;
                     if (each instanceof Perl6InfixApplication)
                         return searchForRegexApplication((Perl6InfixApplication)each);
                     else if (each instanceof Perl6WhenStatement || each instanceof Perl6IfStatement || each instanceof Perl6UnlessStatement)

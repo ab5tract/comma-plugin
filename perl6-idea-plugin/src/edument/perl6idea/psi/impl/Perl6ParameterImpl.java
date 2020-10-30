@@ -64,6 +64,8 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     private String yieldSignature() {
         Perl6SignatureImpl maybeSig = findChildByClass(Perl6SignatureImpl.class);
         if (maybeSig != null) {
+            if (getFirstChild() instanceof Perl6NamedParameter)
+                return ":$";
             if (maybeSig.getText().charAt(0) == '(')
                 return "$";
             if  (maybeSig.getText().charAt(0) == '[')
