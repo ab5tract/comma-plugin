@@ -1690,6 +1690,7 @@ grammar MAIN {
            <.start-token('VARIABLE')>
            '&['
            <.end-token('VARIABLE')>
+           <.start-token('INFIX_NOUN_VARIABLE')> <?> <.end-token('INFIX_NOUN_VARIABLE')>
            [
                <.infixish('[]')>
                [
@@ -3717,6 +3718,7 @@ grammar MAIN {
         [
             <!{ $*QSIGIL }>
             <?before [[<.unsp> || '\\'] [['»' || '>>'] || <.postfixish_nometa>]]>
+            <.start-token('UNSPACED_POSTFIX')> <?> <.end-token('UNSPACED_POSTFIX')>
             [
             || <.unsp>
             || <.start-token('WHITE_SPACE')> '\\' <.end-token('WHITE_SPACE')>

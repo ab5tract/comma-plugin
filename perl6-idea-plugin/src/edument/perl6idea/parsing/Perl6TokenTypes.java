@@ -57,6 +57,7 @@ public interface Perl6TokenTypes {
     IElementType INCOMPLETE_TYPE_NAME = new Perl6ElementType("INCOMPLETE_TYPE_NAME");
     IElementType INFIX = new Perl6ElementType("INFIX");
     IElementType INFIX_FUNCTION = new Perl6ElementType("INFIX_FUNCTION");
+    IElementType INFIX_NOUN_VARIABLE = new Perl6ElementType("INFIX_NOUN_VARIABLE");
     IElementType INITIALIZER_MISSING = new Perl6ElementType("INITIALIZER_MISSING");
     IElementType INTEGER_LITERAL = new Perl6ElementType("INTEGER_LITERAL");
     IElementType INVOCANT_MARKER = new Perl6ElementType("INVOCANT_MARKER");
@@ -183,6 +184,7 @@ public interface Perl6TokenTypes {
     IElementType TYPE_CONST = new Perl6ElementType("TYPE_CONST");
     IElementType TYPE_DECLARATOR = new Perl6ElementType("TYPE_DECLARATOR");
     IElementType TYPE_PARAMETER_BRACKET = new Perl6ElementType("TYPE_PARAMETER_BRACKET");
+    IElementType UNSPACED_POSTFIX = new Perl6ElementType("UNSPACED_POSTFIX");
     IElementType UNSP_WHITE_SPACE = new Perl6ElementType("UNSP_WHITE_SPACE");
     IElementType UNV_WHITE_SPACE = new Perl6ElementType("UNV_WHITE_SPACE");
     IElementType VARIABLE = new Perl6ElementType("VARIABLE");
