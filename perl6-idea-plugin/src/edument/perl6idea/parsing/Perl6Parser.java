@@ -10166,6 +10166,11 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean postfixish_115_quant_3(PsiBuilder builder, OPP opp) {
+        if ((builder.getTokenType()) == Perl6TokenTypes.UNSPACED_POSTFIX) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
         PsiBuilder.Marker altMarker2;
         altMarker2 = builder.mark();
         if (this.postfixish_115_alt_2(builder, opp)) {
@@ -22076,6 +22081,11 @@ public class Perl6Parser implements PsiParser {
         String tt4;
         tt4 = builder.getTokenText();
         if (((builder.getTokenType()) == Perl6TokenTypes.VARIABLE) && (tt4.equals("&["))) {
+            builder.advanceLexer();
+        } else {
+            return false;
+        }
+        if ((builder.getTokenType()) == Perl6TokenTypes.INFIX_NOUN_VARIABLE) {
             builder.advanceLexer();
         } else {
             return false;
