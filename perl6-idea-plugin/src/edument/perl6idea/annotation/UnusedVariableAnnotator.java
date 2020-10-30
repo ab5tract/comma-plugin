@@ -27,14 +27,9 @@ public class UnusedVariableAnnotator implements Annotator {
         LocalSearchScope searchScope = null;
         String error = null;
         if (element instanceof Perl6VariableDecl) {
-            // Variable declaration. Look for its scope.
-            PsiElement maybeScopedDecl = element.getParent();
-            if (!(maybeScopedDecl instanceof Perl6ScopedDecl))
-                return;
-            String scope = ((Perl6ScopedDecl)maybeScopedDecl).getScope();
-
             // If it's lexical or state, then we want to check for usages in the
             // declaring lexical scope.
+            String scope = ((Perl6VariableDecl)element).getScope();
             if (scope.equals("my") || scope.equals("state")) {
                 Perl6PsiScope usageScope = PsiTreeUtil.getParentOfType(element, Perl6PsiScope.class);
                 if (usageScope != null) {
