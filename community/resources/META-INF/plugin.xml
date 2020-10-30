@@ -53,6 +53,7 @@
 <li>Add a `Mark directory as` group of actions, which can be used to specify a directory as a source root of a particular type</li>
 <li>Fix false positive in signature correctness annotator</li>
 <li>Fix possible exception related to variables implicitly declared via regex smartmatching</li>
+<li>Fix incorrect annotation of named parameters initializing class attributes</li>
 <li>Fix a bug where some multi sub signatures were duplicated in parameter info</li>
 <li>Fix a hang when typing two heredoc openers like <code>Q:to/IN/, Q:to</code></li>
 <li>Fix an exception on typing <code>my $\(42)</code></li>
