@@ -32,16 +32,15 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Migrate to version 202 of the IntelliJ platform. Now the minimal supported IntelliJ product major version for the Comma plugin is 2020.2. Backward compatibility for 2020.1 is expected, but not guaranteed</li>
-<li>Make method completion correctly handle methods from stubbed packages past the current position in file</li>
-<li>Introduce a new &#39;Raku Compilers&#39; tab in Project Settings, allowing to create new, change and remove IDE SDK (Raku compiler) instances</li>
-<li>Always format code and declaration stubs to take a single line, which is a common code style default</li>
-<li>Warn about technically valid, but unusual parameters quantifier use in signatures: when a positional parameter is marked as required and when a parameter with a default is marked as optional</li>
-<li>Indicate an error if a parameter with a default value is marked as required</li>
-<li>Fix an exception related to obtaining documentation when two or more projects are opened with the same Raku compiler specified</li>
-<li>Fix an exception in the annotator spotting a missing &#39;unit&#39; keyword</li>
-<li>Fix the validation tip in the New Test dialog when a test with a specified name already exists</li>
-<li>Fix a possible exception in the backup Raku compiler service provided by the plugin</li>
+<li>Add automatic conversion for ASCII operators to Unicode equivalents, disabled by default (enabled in &#39;File -&gt; Settings -&gt; Code Style -&gt; Raku -&gt; Editor Behavior&#39;). If conversion is enabled, on typing ASCII operators are converted into Unicode equivalents. If backspace is pressed the conversion is reverted</li>
+<li>Highlight unused lexical variables, parameters, attributes, lexical subroutines and private methods</li>
+<li>Intention to manually convert infix operators between ASCII and Unicode forms</li>
+<li>Parameter info for <code>new</code> method call now shows a signature comprised of public attributes if no explicit <code>new</code> implementation is present</li>
+<li>Make auto-completion faster and more correct in some cases</li>
+<li>Pair simplification intention now handles simplification of <code>foo =&gt; True</code> and <code>foo =&gt; False</code> into <code>:foo</code> and <code>:!foo</code> correspondingly. Also forms like <code>:foo(True)</code> and <code>:foo(False)</code> are handled</li>
+<li>Fix a bug where some multi sub signatures were duplicated in parameter info</li>
+<li>Fix a hang when typing two heredoc openers like <code>Q:to/IN/, Q:to</code></li>
+<li>Fix an exception on typing <code>my $\(42)</code></li>
 </ul>
   ]]>
   </change-notes>
