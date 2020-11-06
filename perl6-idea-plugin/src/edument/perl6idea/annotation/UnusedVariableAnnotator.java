@@ -97,8 +97,11 @@ public class UnusedVariableAnnotator implements Annotator {
 
             // Annotate if not found.
             if (count.get() < 2) {
+                PsiElement toAnnotate = expectedUsed instanceof Perl6VariableDecl
+                    ? ((Perl6VariableDecl)expectedUsed).getVariables()[0]
+                    : expectedUsed;
                 holder.newAnnotation(HighlightSeverity.WEAK_WARNING, error)
-                  .range(expectedUsed)
+                  .range(toAnnotate)
                   .textAttributes(Perl6Highlighter.UNUSED)
                   .create();
             }
