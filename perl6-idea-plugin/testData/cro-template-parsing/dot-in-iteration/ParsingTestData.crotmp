@@ -1,0 +1,5 @@
+<select name="country">
+  <@.countries : $c>
+    <option value="<$c.alpha2>"><$c.name></option>
+  </@>
+</select>

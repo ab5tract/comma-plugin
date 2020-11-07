@@ -181,6 +181,7 @@ grammar MAIN {
         <.iter-sigil>
         [
             [
+            || <.dot> <.deref>?
             || <.deref>
             || <.variable> [<.dot> <.deref>?]?
             ]

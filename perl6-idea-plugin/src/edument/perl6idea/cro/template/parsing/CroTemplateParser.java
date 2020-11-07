@@ -2420,32 +2420,53 @@ public class CroTemplateParser implements PsiParser {
     }
 
     private boolean sigiltagiteration_53_quant_5(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_24(builder))) {
+        if (!(this.deref_13(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean sigiltagiteration_53_quant_6(PsiBuilder builder, OPP opp) {
-        if (!(this.hws_24(builder))) {
+    private boolean sigiltagiteration_53_alt_6(PsiBuilder builder, OPP opp) {
+        if (!(this.dot_21(builder))) {
             return false;
+        }
+        PsiBuilder.Marker quantMarker6;
+        quantMarker6 = builder.mark();
+        if (this.sigiltagiteration_53_quant_5(builder, opp)) {
+            quantMarker6.drop();
+        } else {
+            quantMarker6.rollbackTo();
         }
         return true;
     }
 
     private boolean sigiltagiteration_53_quant_7(PsiBuilder builder, OPP opp) {
-        PsiBuilder.Marker marker8;
-        marker8 = builder.mark();
+        if (!(this.hws_24(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean sigiltagiteration_53_quant_8(PsiBuilder builder, OPP opp) {
+        if (!(this.hws_24(builder))) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean sigiltagiteration_53_quant_9(PsiBuilder builder, OPP opp) {
+        PsiBuilder.Marker marker10;
+        marker10 = builder.mark();
         if ((builder.getTokenType()) == CroTemplateTokenTypes.VARIABLE_NAME) {
             builder.advanceLexer();
         } else {
             return false;
         }
-        marker8.done(CroTemplateElementTypes.PARAMETER);
+        marker10.done(CroTemplateElementTypes.PARAMETER);
         return true;
     }
 
-    private boolean sigiltagiteration_53_quant_8(PsiBuilder builder, OPP opp) {
+    private boolean sigiltagiteration_53_quant_10(PsiBuilder builder, OPP opp) {
         String tt1;
         tt1 = builder.getTokenText();
         if (((builder.getTokenType()) == CroTemplateTokenTypes.COLON) && (tt1.equals(":"))) {
@@ -2453,39 +2474,12 @@ public class CroTemplateParser implements PsiParser {
         } else {
             return false;
         }
-        PsiBuilder.Marker quantMarker7;
-        quantMarker7 = builder.mark();
-        if (this.sigiltagiteration_53_quant_6(builder, opp)) {
-            quantMarker7.drop();
-        } else {
-            quantMarker7.rollbackTo();
-        }
         PsiBuilder.Marker quantMarker9;
         quantMarker9 = builder.mark();
-        if (this.sigiltagiteration_53_quant_7(builder, opp)) {
+        if (this.sigiltagiteration_53_quant_8(builder, opp)) {
             quantMarker9.drop();
         } else {
             quantMarker9.rollbackTo();
-        }
-        return true;
-    }
-
-    private boolean sigiltagiteration_53_quant_9(PsiBuilder builder, OPP opp) {
-        if (!(this.tgt_63(builder))) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean sigiltagiteration_53_quant_10(PsiBuilder builder, OPP opp) {
-        if (!(this.tlt_64(builder))) {
-            return false;
-        }
-        if (!(this.tclose_61(builder))) {
-            return false;
-        }
-        if (!(this.itersigil_30(builder))) {
-            return false;
         }
         PsiBuilder.Marker quantMarker11;
         quantMarker11 = builder.mark();
@@ -2501,8 +2495,75 @@ public class CroTemplateParser implements PsiParser {
         if (!(this.tgt_63(builder))) {
             return false;
         }
+        return true;
+    }
+
+    private boolean sigiltagiteration_53_quant_12(PsiBuilder builder, OPP opp) {
+        if (!(this.tlt_64(builder))) {
+            return false;
+        }
+        if (!(this.tclose_61(builder))) {
+            return false;
+        }
+        if (!(this.itersigil_30(builder))) {
+            return false;
+        }
+        PsiBuilder.Marker quantMarker13;
+        quantMarker13 = builder.mark();
+        if (this.sigiltagiteration_53_quant_11(builder, opp)) {
+            quantMarker13.drop();
+        } else {
+            quantMarker13.rollbackTo();
+        }
+        return true;
+    }
+
+    private boolean sigiltagiteration_53_quant_13(PsiBuilder builder, OPP opp) {
+        if (!(this.tgt_63(builder))) {
+            return false;
+        }
         if (!(this.sequenceelementgroup_43(builder))) {
             return false;
+        }
+        PsiBuilder.Marker quantMarker14;
+        quantMarker14 = builder.mark();
+        if (this.sigiltagiteration_53_quant_12(builder, opp)) {
+            quantMarker14.drop();
+        } else {
+            quantMarker14.rollbackTo();
+        }
+        return true;
+    }
+
+    private boolean sigiltagiteration_53_quant_14(PsiBuilder builder, OPP opp) {
+        PsiBuilder.Marker altMarker7;
+        altMarker7 = builder.mark();
+        if (this.sigiltagiteration_53_alt_6(builder, opp)) {
+            altMarker7.drop();
+        } else {
+            altMarker7.rollbackTo();
+            PsiBuilder.Marker altMarker5;;
+            altMarker5 = builder.mark();
+            if (this.sigiltagiteration_53_alt_4(builder, opp)) {
+                altMarker5.drop();
+            } else {
+                altMarker5.rollbackTo();
+                PsiBuilder.Marker altMarker4;;
+                altMarker4 = builder.mark();
+                if (this.sigiltagiteration_53_alt_3(builder, opp)) {
+                    altMarker4.drop();
+                } else {
+                    altMarker4.rollbackTo();
+                    return false;
+                }
+            }
+        }
+        PsiBuilder.Marker quantMarker8;
+        quantMarker8 = builder.mark();
+        if (this.sigiltagiteration_53_quant_7(builder, opp)) {
+            quantMarker8.drop();
+        } else {
+            quantMarker8.rollbackTo();
         }
         PsiBuilder.Marker quantMarker12;
         quantMarker12 = builder.mark();
@@ -2511,45 +2572,12 @@ public class CroTemplateParser implements PsiParser {
         } else {
             quantMarker12.rollbackTo();
         }
-        return true;
-    }
-
-    private boolean sigiltagiteration_53_quant_12(PsiBuilder builder, OPP opp) {
-        PsiBuilder.Marker altMarker5;
-        altMarker5 = builder.mark();
-        if (this.sigiltagiteration_53_alt_4(builder, opp)) {
-            altMarker5.drop();
+        PsiBuilder.Marker quantMarker15;
+        quantMarker15 = builder.mark();
+        if (this.sigiltagiteration_53_quant_13(builder, opp)) {
+            quantMarker15.drop();
         } else {
-            altMarker5.rollbackTo();
-            PsiBuilder.Marker altMarker4;;
-            altMarker4 = builder.mark();
-            if (this.sigiltagiteration_53_alt_3(builder, opp)) {
-                altMarker4.drop();
-            } else {
-                altMarker4.rollbackTo();
-                return false;
-            }
-        }
-        PsiBuilder.Marker quantMarker6;
-        quantMarker6 = builder.mark();
-        if (this.sigiltagiteration_53_quant_5(builder, opp)) {
-            quantMarker6.drop();
-        } else {
-            quantMarker6.rollbackTo();
-        }
-        PsiBuilder.Marker quantMarker10;
-        quantMarker10 = builder.mark();
-        if (this.sigiltagiteration_53_quant_8(builder, opp)) {
-            quantMarker10.drop();
-        } else {
-            quantMarker10.rollbackTo();
-        }
-        PsiBuilder.Marker quantMarker13;
-        quantMarker13 = builder.mark();
-        if (this.sigiltagiteration_53_quant_11(builder, opp)) {
-            quantMarker13.drop();
-        } else {
-            quantMarker13.rollbackTo();
+            quantMarker15.rollbackTo();
         }
         return true;
     }
@@ -2565,12 +2593,12 @@ public class CroTemplateParser implements PsiParser {
         if (!(this.itersigil_30(builder))) {
             return false;
         }
-        PsiBuilder.Marker quantMarker14;
-        quantMarker14 = builder.mark();
-        if (this.sigiltagiteration_53_quant_12(builder, opp)) {
-            quantMarker14.drop();
+        PsiBuilder.Marker quantMarker16;
+        quantMarker16 = builder.mark();
+        if (this.sigiltagiteration_53_quant_14(builder, opp)) {
+            quantMarker16.drop();
         } else {
-            quantMarker14.rollbackTo();
+            quantMarker16.rollbackTo();
         }
         marker1.done(CroTemplateElementTypes.ITERATION);
         return true;
