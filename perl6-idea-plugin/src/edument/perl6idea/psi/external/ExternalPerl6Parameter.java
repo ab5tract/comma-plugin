@@ -63,6 +63,16 @@ public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements P
     }
 
     @Override
+    public boolean isCopy() {
+        return false;
+    }
+
+    @Override
+    public boolean isRW() {
+        return false;
+    }
+
+    @Override
     public String getScope() {
         return "my";
     }

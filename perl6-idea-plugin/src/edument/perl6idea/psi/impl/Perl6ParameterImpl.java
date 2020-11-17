@@ -152,6 +152,37 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     }
 
     @Override
+    public boolean isCopy() {
+        return hasTrait("copy");
+    }
+
+    @Override
+    public boolean isRW() {
+        // Trivially RW if we have the trait.
+        if (hasTrait("rw"))
+            return true;
+
+        // However, we can also be in a <-> pointy block.
+        Perl6Signature signature = PsiTreeUtil.getParentOfType(this, Perl6Signature.class);
+        if (signature != null) {
+            PsiElement signatured = signature.getParent();
+            return signatured instanceof Perl6PointyBlock &&
+                   ((Perl6PointyBlock)signatured).getLambda().equals("<->");
+        }
+        return false;
+    }
+
+    private boolean hasTrait(String traitName) {
+        Perl6Trait[] traits = PsiTreeUtil.getChildrenOfType(this, Perl6Trait.class);
+        if (traits != null)
+            for (Perl6Trait trait : traits) {
+                if (trait.getTraitModifier().equals("is") && trait.getTraitName().equals(traitName))
+                    return true;
+            }
+        return false;
+    }
+
+    @Override
     public void contributeLexicalSymbols(Perl6SymbolCollector collector) {
         Perl6TermDefinition defterm = findChildByClass(Perl6TermDefinition.class);
         if (defterm != null) {

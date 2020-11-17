@@ -29,7 +29,7 @@ public class UnwrapPromiseAllOfIntention extends PsiElementBaseIntentionAction i
         Perl6PostfixApplication app = getAwaitPostfix(element);
         if (app == null)
             return false;
-        PsiElement caller = app.getCaller();
+        PsiElement caller = app.getOperand();
         PsiElement postfix = app.getPostfix();
         return (caller instanceof Perl6TypeName &&
                 postfix instanceof Perl6MethodCall &&
