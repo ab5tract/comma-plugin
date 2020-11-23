@@ -39,7 +39,6 @@ public class UseDirectAttributeAccessFix implements IntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException { ;
         replacee.replace(Perl6ElementFactory.createVariable(project, attributeName));
-        PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
     }
 
     @Override
