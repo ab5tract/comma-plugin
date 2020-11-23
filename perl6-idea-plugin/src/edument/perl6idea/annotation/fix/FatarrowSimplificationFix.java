@@ -34,7 +34,7 @@ public class FatarrowSimplificationFix implements IntentionAction {
     @NotNull
     @Override
     public String getText() {
-        return "Convert to " + (mySimplifiedPair == null ? "colonpair" : mySimplifiedPair);
+        return "Convert to " + (mySimplifiedPair == null ? "colonpair" : ":" + mySimplifiedPair);
     }
 
     @Nls
