@@ -829,6 +829,15 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testUnusedLexicalAnnotationOnlyCoversVariableName() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "my <weak_warning descr=\"Unused variable\">$x</weak_warning> = 99; say 42;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "sub a() { my <weak_warning descr=\"Unused variable\">$x</weak_warning> = 100; say 42; }; a();");
+        myFixture.checkHighlighting();
+    }
+
     public void testUnusedCallableLexicalAnnotation() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
               "my <weak_warning descr=\"Unused variable\">&unused</weak_warning>; my &used = -> {}; used();");
