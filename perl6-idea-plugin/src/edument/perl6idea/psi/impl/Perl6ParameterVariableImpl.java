@@ -98,7 +98,10 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
 
     @Override
     public String summary() {
-        String sigil = String.valueOf(this.getName().charAt(0));
+        String name = getName();
+        if (name.length() == 0)
+            return "$";
+        String sigil = String.valueOf(name.charAt(0));
         PsiElement defaultValue = PsiTreeUtil.getNextSiblingOfType(this, Perl6ParameterDefault.class);
         if (defaultValue != null) sigil += '?';
         return sigil;
