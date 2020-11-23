@@ -8,4 +8,5 @@ public interface Perl6MethodCall extends Perl6PsiElement, P6CodeBlockCall {
     String getCallOperator();
     PsiElement getCallOperatorNode();
     PsiElement getSimpleName();
+    boolean isTopicCall();
 }
