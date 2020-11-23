@@ -1,10 +1,12 @@
 package edument.perl6idea.annotation;
 
+import com.intellij.lang.annotation.AnnotationBuilder;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.annotation.fix.UseDirectAttributeAccessFix;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,9 +35,22 @@ public class SelfAvailabilityAnnotation implements Annotator {
                         .create();
                 }
                 else if (availability == Availability.PARTIAL) {
-                    holder.newAnnotation(HighlightSeverity.ERROR,
-                     "Virtual method calls are not allowed on partially constructed objects")
-                        .create();
+                    AnnotationBuilder builder = holder.newAnnotation(HighlightSeverity.ERROR,
+                     "Virtual method calls are not allowed on partially constructed objects");
+
+                    // It's probably of the form $.foo, so offer an intention to turn it
+                    // into $!foo.
+                    PsiElement postfix = ((Perl6PostfixApplication)element).getPostfix();
+                    if (postfix instanceof Perl6MethodCall && ((Perl6MethodCall)postfix).getCallArguments().length == 0) {
+                        PsiElement name = ((Perl6MethodCall)postfix).getSimpleName();
+                        if (name != null) {
+                            String newAttributeName = caller.getText() + "!" + name.getText();
+                            builder = builder.newFix(new UseDirectAttributeAccessFix((Perl6PostfixApplication)element, newAttributeName))
+                                    .registerFix();
+                        }
+                    }
+
+                    builder.create();
                 }
             }
         }
