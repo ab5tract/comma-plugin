@@ -134,6 +134,11 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         return null;
     }
 
+    @Override
+    public boolean isCaptureVariable() {
+        return getNode().findChildByType(Perl6TokenTypes.REGEX_CAPTURE_NAME) != null;
+    }
+
     @Nullable
     @Override
     public PsiElement getNameIdentifier() {

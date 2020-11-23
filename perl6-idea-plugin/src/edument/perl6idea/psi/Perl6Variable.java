@@ -46,4 +46,6 @@ public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, 
             default:  return ' ';
         }
     }
+
+    boolean isCaptureVariable();
 }

@@ -882,6 +882,40 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testImplicitUsesOfMatchVariable() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "class Actions {\n" +
+                "    method a1(<weak_warning descr=\"Unused parameter\">$/</weak_warning>) {}\n" +
+                "    method a2($/) { make $0.ast; }\n" +
+                "    method a3($/) { make $<foo>.ast; }\n" +
+                "    method a4($/) { make ~$/; }\n" +
+                "}");
+        myFixture.checkHighlighting();
+    }
+
+    public void testImplicitUsesOfTopicVariable() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                "sub topic-unused(<weak_warning descr=\"Unused parameter\">$_</weak_warning>, $x) {\n" +
+                "    given $x { when 1 { return 99 } }\n" +
+                "    42 + $x.abs\n" +
+                "}\n" +
+                "sub topic-user-a($_) {\n" +
+                "    when 42 { return \"answer\"; }\n" +
+                "}\n" +
+                "sub topic-user-b(Int $_) {\n" +
+                "    .abs\n" +
+                "}\n" +
+                "sub topic-user-c(Int $_) {\n" +
+                "    .abs.sin\n" +
+                "}\n" +
+                "sub topic-user-d(Int $_ is rw) {\n" +
+                "    .=abs\n" +
+                "}\n" +
+                "topic-unused(1, -2), topic-user-a(2), topic-user-b(3),\n" +
+                "        topic-user-c(4), topic-user-d($ = 5)");
+        myFixture.checkHighlighting();
+    }
+
     public void testUnusedPrivateMethod() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
               "class MyPrivateMethClass {\n" +

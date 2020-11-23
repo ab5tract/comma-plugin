@@ -42,6 +42,18 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
         return findChildByType(METHOD_CALL_NAME);
     }
 
+    @Override
+    public boolean isTopicCall() {
+        // If the parent is not a postfix application then it's a term-level method
+        // call, and so on `$_`.
+        PsiElement parent = getParent();
+        if (!(parent instanceof Perl6PostfixApplication))
+            return true;
+        // The other case that can happen is in `my $x = .bar.baz` then we are the
+        // `.bar` part, and thus this is a topic call too.
+        return ((Perl6PostfixApplication)parent).getPostfix() != this;
+    }
+
     @NotNull
     @Override
     public PsiElement getWholeCallNode() {

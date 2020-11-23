@@ -96,7 +96,7 @@ public class UnusedVariableAnnotator implements Annotator {
             results.forEach(found -> count.incrementAndGet() < 2);
 
             // Annotate if not found.
-            if (count.get() < 2) {
+            if (count.get() < 2 && !implicitlyUsed(expectedUsed)) {
                 PsiElement toAnnotate = expectedUsed instanceof Perl6VariableDecl
                     ? ((Perl6VariableDecl)expectedUsed).getVariables()[0]
                     : expectedUsed;
@@ -114,6 +114,55 @@ public class UnusedVariableAnnotator implements Annotator {
         char twigil = Perl6Variable.getTwigil(name);
         if (twigil != ' ')
             return true;
+        return false;
+    }
+
+    private boolean implicitlyUsed(PsiElement used) {
+        String name = null;
+        if (used instanceof Perl6Variable)
+            name = ((Perl6Variable)used).getVariableName();
+        else if (used instanceof Perl6ParameterVariable)
+            name = ((Perl6ParameterVariable)used).getName();
+        if (name == null)
+            return false;
+        if (name.equals("$_"))
+            return implicitlyUsedTopic(PsiTreeUtil.getParentOfType(used, Perl6PsiScope.class));
+        if (name.equals("$/"))
+            return implicitlyUsedMatch(PsiTreeUtil.getParentOfType(used, Perl6PsiScope.class));
+        return false;
+    }
+
+    private static boolean implicitlyUsedTopic(Perl6PsiElement current) {
+        for (PsiElement child : current.getChildren()) {
+            // If this construct topicalizes, then it won't have implicit uses of the
+            // current topic.
+            if (child instanceof P6Topicalizer && ((P6Topicalizer)child).isTopicalizing())
+                continue;
+            // If it's a `when` statement, it tests against the topic.
+            if (child instanceof Perl6WhenStatement)
+                return true;
+            // If it's a call on the topic (`.foo`), it uses the topic.
+            if (child instanceof Perl6MethodCall && ((Perl6MethodCall)child).isTopicCall())
+                return true;
+            // Otherwise, recurse.
+            if (child instanceof Perl6PsiElement && implicitlyUsedTopic((Perl6PsiElement)child))
+                return true;
+        }
+        return false;
+    }
+
+    private static boolean implicitlyUsedMatch(Perl6PsiElement current) {
+        for (PsiElement child : current.getChildren()) {
+            // Use of $0 and $<foo> is the implicit use we're looking for.
+            if (child instanceof Perl6Variable && ((Perl6Variable)child).isCaptureVariable())
+                return true;
+            // If it's a routine, then it will declare a fresh $/.
+            if (child instanceof Perl6RoutineDecl)
+                continue;
+            // Otherwise, recurse.
+            if (child instanceof Perl6PsiElement && implicitlyUsedMatch((Perl6PsiElement)child))
+                return true;
+        }
         return false;
     }
 }
