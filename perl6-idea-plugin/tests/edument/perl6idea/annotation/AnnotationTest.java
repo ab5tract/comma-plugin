@@ -929,4 +929,19 @@ public class AnnotationTest extends CommaFixtureTestCase {
               "}");
         myFixture.checkHighlighting();
     }
+
+    public void testUselessMethodDeclarationAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "method <warning descr=\"Useless declaration of a method outside of any package\">outside-of-class</warning>() {}\n" +
+              "submethod <warning descr=\"Useless declaration of a method outside of any package\">outside-of-class-s</warning>() {}\n" +
+              "package p {\n" +
+              "    method <warning descr=\"Useless declaration of a method in a package\">in-a-package</warning>() {}\n" +
+              "    submethod <warning descr=\"Useless declaration of a method in a package\">in-a-package-s</warning>() {}\n" +
+              "}\n" +
+              "module m {\n" +
+              "    method <warning descr=\"Useless declaration of a method in a module\">in-a-module</warning>() {}\n" +
+              "    submethod <warning descr=\"Useless declaration of a method in a module\">in-a-module-s</warning>() {}\n" +
+              "}");
+        myFixture.checkHighlighting();
+    }
 }
