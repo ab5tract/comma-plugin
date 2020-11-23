@@ -906,4 +906,27 @@ public class AnnotationTest extends CommaFixtureTestCase {
         );
         myFixture.checkHighlighting();
     }
+
+    public void testSelfAvailabilityAnnotation() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "say <error descr=\"No invocant is available here\">self</error>;\n" +
+              "say <error descr=\"No invocant is available here\">$.a</error>;\n" +
+              "class C {\n" +
+              "    say <error descr=\"No invocant is available here\">self</error>;\n" +
+              "    say <error descr=\"No invocant is available here\">$.a</error>;\n" +
+              "    has $.a;\n" +
+              "    has $.b = <error descr=\"Virtual method calls are not allowed on partially constructed objects\">$.a</error>;\n" +
+              "    has $.c = self.a;\n" +
+              "    method ok() {\n" +
+              "        $.a, self, sub { $.a, self }\n" +
+              "    }\n" +
+              "    submethod partly-ok() {\n" +
+              "        <error descr=\"Virtual method calls are not allowed on partially constructed objects\">$.a</error>, self, sub { <error descr=\"Virtual method calls are not allowed on partially constructed objects\">$.a</error>, self }\n" +
+              "    }\n" +
+              "    sub not-ok() {\n" +
+              "        <error descr=\"No invocant is available here\">$.a</error>, <error descr=\"No invocant is available here\">self</error>\n" +
+              "    }\n" +
+              "}");
+        myFixture.checkHighlighting();
+    }
 }
