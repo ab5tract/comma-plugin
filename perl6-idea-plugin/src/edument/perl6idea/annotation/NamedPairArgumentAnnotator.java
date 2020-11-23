@@ -5,7 +5,7 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.annotation.fix.PairSimplificationFix;
+import edument.perl6idea.annotation.fix.FatarrowSimplificationFix;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ public class NamedPairArgumentAnnotator implements Annotator {
     private static void checkColonPair(Perl6ColonPair pair, AnnotationHolder annotationHolder) {
         String key = pair.getKey();
         if (key == null) return;
-        Perl6Statement value = pair.getStatement();
+        PsiElement value = pair.getStatement();
         if (value == null) return;
         PsiElement child = value.getFirstChild();
         // Check if it is `()` form we can work with
@@ -38,7 +38,7 @@ public class NamedPairArgumentAnnotator implements Annotator {
         processPair(child, key, pair, annotationHolder);
     }
 
-    private static String getSimplifiedText(String key, PsiElement element) {
+    public static String getSimplifiedText(String key, PsiElement element) {
         if (element instanceof Perl6TypeName) {
             String typeName = ((Perl6TypeName)element).getTypeName();
             if (typeName.equals("True"))
@@ -64,6 +64,6 @@ public class NamedPairArgumentAnnotator implements Annotator {
         if (simplifiedPair == null)
             return;
         holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Pair literal can be simplified")
-          .range(pair).withFix(new PairSimplificationFix(pair, simplifiedPair)).create();
+          .range(pair).withFix(new FatarrowSimplificationFix(pair, simplifiedPair)).create();
     }
 }

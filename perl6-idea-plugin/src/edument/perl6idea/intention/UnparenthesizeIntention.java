@@ -8,6 +8,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.psi.Perl6ColonPair;
 import edument.perl6idea.psi.Perl6ParenthesizedExpr;
 import edument.perl6idea.psi.Perl6Statement;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +34,7 @@ public class UnparenthesizeIntention extends PsiElementBaseIntentionAction imple
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
         Perl6ParenthesizedExpr parenthesizedExpr = PsiTreeUtil.getParentOfType(element, Perl6ParenthesizedExpr.class);
-        if (parenthesizedExpr == null)
+        if (parenthesizedExpr == null || parenthesizedExpr.getParent() instanceof Perl6ColonPair)
             return false;
         return parenthesizedExpr.getElements().length == 1;
     }

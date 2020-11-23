@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6ColonPair;
 import edument.perl6idea.psi.Perl6Statement;
+import edument.perl6idea.psi.Perl6StrLiteral;
 import edument.perl6idea.psi.Perl6Variable;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +38,7 @@ public class Perl6ColonPairImpl extends ASTWrapperPsiElement implements Perl6Col
     }
 
     @Override
-    public Perl6Statement getStatement() {
-        return PsiTreeUtil.findChildOfType(this, Perl6Statement.class);
+    public PsiElement getStatement() {
+        return PsiTreeUtil.findChildOfAnyType(this, Perl6Statement.class, Perl6StrLiteral.class);
     }
 }
