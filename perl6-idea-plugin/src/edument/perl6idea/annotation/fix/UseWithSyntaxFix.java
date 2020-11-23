@@ -23,7 +23,7 @@ public class UseWithSyntaxFix implements IntentionAction {
     @NotNull
     @Override
     public String getText() {
-        String keyword = conditional instanceof Perl6IfStatement ? "with" : "without";
+        String keyword = conditional.term.getText().equals("unless") ? "without" : "with";
         return String.format("Use '%s' syntax construction", keyword);
     }
 
