@@ -27,7 +27,7 @@ public class SelfAvailabilityAnnotation implements Annotator {
             }
         }
         else if (element instanceof Perl6PostfixApplication) {
-            PsiElement caller = ((Perl6PostfixApplication)element).getCaller();
+            PsiElement caller = ((Perl6PostfixApplication)element).getOperand();
             if (caller instanceof Perl6Self && caller.getTextLength() == 1) {
                 Availability availability = getAvailability(element);
                 if (availability == Availability.NONE) {
