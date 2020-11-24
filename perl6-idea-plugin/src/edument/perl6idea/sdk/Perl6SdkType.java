@@ -274,7 +274,10 @@ public class Perl6SdkType extends SdkType {
                 ApplicationManager.getApplication().executeOnPooledThread(() -> {
                     try {
                         String settingLines = String.join("\n", cmd.executeAndRead(coreSymbols));
-                        coreDocs.delete();
+                        try {
+                            coreSymbols.delete();
+                            coreDocs.delete();
+                        } catch (Exception ignored) {}
                         if (settingLines.isEmpty()) {
                             reactToSDKIssue(project, "getCoreSettingFile got no symbols from Raku, using fallback");
                             getFallback(project);
@@ -287,6 +290,11 @@ public class Perl6SdkType extends SdkType {
                         // If the project was already disposed, do not die in a background thread
                     }
                 });
+            } else {
+                try {
+                    coreSymbols.delete();
+                    coreDocs.delete();
+                } catch (Exception ignored) {}
             }
             return new ExternalPerl6File(project, new LightVirtualFile("DUMMY"));
         } catch (ExecutionException e) {
