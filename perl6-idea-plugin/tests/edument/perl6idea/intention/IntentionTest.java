@@ -347,6 +347,10 @@ public class IntentionTest extends CommaFixtureTestCase {
         checkIntentionAbsence("Convert to Uni");
     }
 
+    public void testUseDirectAttributeAccess() {
+        executeIntention("Replace with direct access");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
