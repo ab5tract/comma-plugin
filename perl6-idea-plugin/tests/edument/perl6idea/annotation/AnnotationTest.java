@@ -985,6 +985,47 @@ public class AnnotationTest extends CommaFixtureTestCase {
               "    method <warning descr=\"Useless declaration of a method in a module\">in-a-module</warning>() {}\n" +
               "    submethod <warning descr=\"Useless declaration of a method in a module\">in-a-module-s</warning>() {}\n" +
               "}");
+    }
+
+    public void testReadOnlyScalarParameterAssignmentInSub() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "sub foo($a, $b is copy, $c is rw) {\n" +
+              "    <error descr=\"Cannot assign to a readonly parameter\">$a = 100</error>;\n" +
+              "    $b = 200;\n" +
+              "    $c = 300;\n" +
+              "\n" +
+              "    <error descr=\"Cannot assign to a readonly parameter\">$a += $b</error>;\n" +
+              "    $b += $c;\n" +
+              "    $c += $a;\n" +
+              "\n" +
+              "    <error descr=\"Cannot assign to a readonly parameter\">$a++</error>;\n" +
+              "    $b++;\n" +
+              "    $c++;\n" +
+              "\n" +
+              "    <error descr=\"Cannot assign to a readonly parameter\">++$a</error>;\n" +
+              "    ++$b;\n" +
+              "    ++$c;\n" +
+              "\n" +
+              "    <error descr=\"Cannot assign to a readonly parameter\">$a.=sin</error>;\n" +
+              "    $b.=sin;\n" +
+              "    $c.=sin;\n" +
+              "\n" +
+              "    <error descr=\"Cannot assign to a readonly parameter\">$a .= sin</error>;\n" +
+              "    $b .= sin;\n" +
+              "    $c .= sin;\n" +
+              "}\n" +
+              "foo($, $, $);");
+        myFixture.checkHighlighting();
+    }
+
+    public void testReadOnlyScalarParameterAssignmentWithPointyBlocks() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "for [1..10] -> $x {\n" +
+              "    <error descr=\"Cannot assign to a readonly parameter\">$x++</error>;\n" +
+              "}\n" +
+              "for [1..10] <-> $x {\n" +
+              "    $x++;\n" +
+              "}");
         myFixture.checkHighlighting();
     }
 }

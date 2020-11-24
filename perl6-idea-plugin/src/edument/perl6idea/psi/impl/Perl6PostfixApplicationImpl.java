@@ -30,7 +30,7 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
 
     @Nullable
     @Override
-    public PsiElement getCaller() {
+    public PsiElement getOperand() {
         return getFirstChild();
     }
 
@@ -38,6 +38,20 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
     @Override
     public PsiElement getPostfix() {
         return getLastChild();
+    }
+
+    @Override
+    public boolean isAssignish() {
+        PsiElement postfix = getPostfix();
+        if (postfix instanceof Perl6Postfix) {
+            String operator = postfix.getText();
+            return operator.equals("++") || operator.equals("--") ||
+                operator.equals("⚛++") || operator.equals("⚛--");
+        }
+        else if (postfix instanceof Perl6MethodCall) {
+            return ((Perl6MethodCall)postfix).getCallOperator().equals(".=");
+        }
+        return false;
     }
 
     @NotNull

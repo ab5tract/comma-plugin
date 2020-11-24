@@ -3,6 +3,7 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6PointyBlock;
 import edument.perl6idea.psi.Perl6Signature;
@@ -33,5 +34,11 @@ public class Perl6PointyBlockImpl extends ASTWrapperPsiElement implements Perl6P
     @Override
     public PsiElement getTopic() {
         return findChildByClass(Perl6Signature.class);
+    }
+
+    @Override
+    public String getLambda() {
+        ASTNode lambda = getNode().findChildByType(Perl6TokenTypes.LAMBDA);
+        return lambda == null ? "->" : lambda.getText();
     }
 }
