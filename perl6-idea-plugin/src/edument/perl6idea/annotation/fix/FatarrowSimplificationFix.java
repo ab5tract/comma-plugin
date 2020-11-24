@@ -49,7 +49,7 @@ public class FatarrowSimplificationFix implements IntentionAction {
         if (isQuickfix)
             return true;
         Perl6FatArrow arrow = PsiTreeUtil.getParentOfType(file.findElementAt(editor.getCaretModel().getOffset()), Perl6FatArrow.class);
-        return arrow != null && NamedPairArgumentAnnotator.getSimplifiedText(arrow.getKey(), arrow.getValue()) == null;
+        return arrow != null && NamedPairArgumentAnnotator.getSimplifiedText(arrow, arrow.getKey(), arrow.getValue()) == null;
     }
 
     @Override

@@ -4,10 +4,7 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
-import edument.perl6idea.psi.Perl6ColonPair;
-import edument.perl6idea.psi.Perl6Statement;
-import edument.perl6idea.psi.Perl6StrLiteral;
-import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.COLON_PAIR;
@@ -39,6 +36,14 @@ public class Perl6ColonPairImpl extends ASTWrapperPsiElement implements Perl6Col
 
     @Override
     public PsiElement getStatement() {
-        return PsiTreeUtil.findChildOfAnyType(this, Perl6Statement.class, Perl6StrLiteral.class);
+        PsiElement explicitStatement = PsiTreeUtil.findChildOfAnyType(this, Perl6Statement.class, Perl6StrLiteral.class, Perl6Variable.class);
+        if (explicitStatement == null) {
+            if (getFirstChild().getText().equals(":")) {
+                return Perl6ElementFactory.createStatementFromText(getProject(), "True;");
+            } else {
+                return Perl6ElementFactory.createStatementFromText(getProject(), "False;");
+            }
+        }
+        return explicitStatement;
     }
 }

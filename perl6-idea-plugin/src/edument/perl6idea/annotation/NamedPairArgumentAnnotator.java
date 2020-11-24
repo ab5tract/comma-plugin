@@ -38,8 +38,10 @@ public class NamedPairArgumentAnnotator implements Annotator {
         processPair(child, key, pair, annotationHolder);
     }
 
-    public static String getSimplifiedText(String key, PsiElement element) {
+    public static String getSimplifiedText(PsiElement pair, String key, PsiElement element) {
         if (element instanceof Perl6TypeName) {
+            if (!pair.getText().contains("True") && !pair.getText().contains("False"))
+                return null;
             String typeName = ((Perl6TypeName)element).getTypeName();
             if (typeName.equals("True"))
                 return key;
@@ -47,6 +49,9 @@ public class NamedPairArgumentAnnotator implements Annotator {
                 return "!" + key;
         }
         if (element instanceof Perl6Variable) {
+            if (!pair.getText().contains("=>") && !pair.getText().contains("(")) {
+                return null;
+            }
             String name = ((Perl6Variable)element).getVariableName();
             if (name == null || name.length() < 2)
                 return null;
@@ -60,7 +65,7 @@ public class NamedPairArgumentAnnotator implements Annotator {
     }
 
     private static void processPair(PsiElement element, String key, PsiElement pair, AnnotationHolder holder) {
-        String simplifiedPair = getSimplifiedText(key, element);
+        String simplifiedPair = getSimplifiedText(pair, key, element);
         if (simplifiedPair == null)
             return;
         holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Pair literal can be simplified")

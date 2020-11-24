@@ -27,8 +27,8 @@ public class ColonpairToFatarrowIntention implements IntentionAction {
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
         Perl6ColonPair pair = PsiTreeUtil.getParentOfType(file.findElementAt(editor.getCaretModel().getOffset()), Perl6ColonPair.class);
-        return pair != null && pair.getStatement() != null &&
-                NamedPairArgumentAnnotator.getSimplifiedText(pair.getKey(), pair.getStatement().getFirstChild()) == null;
+        return pair != null &&
+                NamedPairArgumentAnnotator.getSimplifiedText(pair, pair.getKey(), pair.getStatement().getFirstChild()) == null;
     }
 
     @Override

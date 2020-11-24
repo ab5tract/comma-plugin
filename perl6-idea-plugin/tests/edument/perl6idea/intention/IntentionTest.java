@@ -367,6 +367,10 @@ public class IntentionTest extends CommaFixtureTestCase {
         executeIntention("Convert to");
     }
 
+    public void testColonpairForms1() { executeIntention("Convert to "); }
+    public void testColonpairForms2() { executeIntention("Convert to "); }
+    public void testColonpairForms3() { executeIntention("Convert to "); }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
