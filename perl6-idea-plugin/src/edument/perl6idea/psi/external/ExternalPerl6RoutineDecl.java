@@ -83,6 +83,11 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     }
 
     @Override
+    public @NotNull PsiElement[] getChildren() {
+        return new Perl6Signature[]{mySignature};
+    }
+
+    @Override
     public String getMultiness() {
         return myIsMulti;
     }

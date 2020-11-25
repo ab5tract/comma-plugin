@@ -1028,4 +1028,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
               "}");
         myFixture.checkHighlighting();
     }
+    public void testCallArityMismatchAnnotating() {
+        myFixture.configureByFile("CallArity.pm6");
+        myFixture.checkHighlighting();
+    }
 }

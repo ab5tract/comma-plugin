@@ -17,7 +17,7 @@ public class Perl6SignatureComparatorTest extends CommaFixtureTestCase {
         Perl6Signature signature = PsiTreeUtil.findChildOfType(Perl6ElementFactory.createStatementFromText(getProject(), String.format("sub (%s) {}", sig)), Perl6Signature.class);
         assertNotNull(signature);
         Perl6SubCall call = PsiTreeUtil.findChildOfType(Perl6ElementFactory.createStatementFromText(getProject(), String.format("a(%s);", args)), Perl6SubCall.class);
-        Perl6Signature.SignatureCompareResult result = signature.acceptsArguments(call.getCallArguments(), isCompleteCall);
+        Perl6Signature.SignatureCompareResult result = signature.acceptsArguments(call.getCallArguments(), isCompleteCall, false);
         asserts.accept(result);
     }
 
