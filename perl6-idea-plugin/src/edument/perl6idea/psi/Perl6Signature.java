@@ -14,6 +14,10 @@ public interface Perl6Signature extends Perl6PsiElement {
         List<PsiElement> arguments = Arrays.asList(argsArray);
         List<Perl6Parameter> parameters = Arrays.asList(getParameters());
 
+        // Signature (|) or (|c) accepts everything
+        if (parameters.size() == 1 && parameters.get(0).getText().startsWith("|"))
+            return new SignatureCompareResult(true);
+
         if (parameters.size() == 0 && arguments.size() == 0)
             return new SignatureCompareResult(true);
 

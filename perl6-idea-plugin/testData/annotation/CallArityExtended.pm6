@@ -1,3 +1,9 @@
+sub slurpy($a, +@as) { $a, @as }
+slurpy(1, 2, 3);
+
+sub slurpy2(|c) {}
+slurpy2(42, "anything", 42, "test", :test, :!testy);
+
 class C {
     method no-args(C: ) {}
     method one-arg(C: $a) { $a }
