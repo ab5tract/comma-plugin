@@ -57,7 +57,7 @@ public class CallArityIssuesAnnotator implements Annotator {
                             : new TextRange(args[0].getTextRange().getStartOffset(), args[args.length - 1].getTextRange().getEndOffset());
                     switch (reason) {
                         case TOO_MANY_ARGS: {
-                            annotations.add(new AnnotationBuilderWrap(argToHighlight, "No such positional parameter in signature"));
+                            annotations.add(new AnnotationBuilderWrap(argToHighlight, "Too many positional arguments"));
                             continue MULTI_LOOP;
                         }
                         case SURPLUS_NAMED: {
@@ -65,11 +65,11 @@ public class CallArityIssuesAnnotator implements Annotator {
                             continue MULTI_LOOP;
                         }
                         case NOT_ENOUGH_ARGS: {
-                            annotations.add(new AnnotationBuilderWrap(argToHighlight, "This call misses required argument"));
+                            annotations.add(new AnnotationBuilderWrap(argToHighlight, "Not enough positional arguments"));
                             continue MULTI_LOOP;
                         }
                         case MISSING_REQUIRED_NAMED: {
-                            annotations.add(new AnnotationBuilderWrap(argToHighlight, "This call misses a required named argument"));
+                            annotations.add(new AnnotationBuilderWrap(argToHighlight, "This call misses a required named argument: " + reason.name));
                             continue MULTI_LOOP;
                         }
                         default: {

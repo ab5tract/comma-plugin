@@ -74,7 +74,9 @@ public interface Perl6Signature extends Perl6PsiElement {
                 }
                 else {
                     if (!parameter.isOptional() && isCompleteCall) {
-                        failMatch(result, new Pair<>(posArgIndex, MatchFailureReason.MISSING_REQUIRED_NAMED));
+                        MatchFailureReason failReason = MatchFailureReason.MISSING_REQUIRED_NAMED;
+                        failReason.name = parameter.getVariableName();
+                        failMatch(result, new Pair<>(posArgIndex, failReason));
                     }
                 }
             }
@@ -139,7 +141,11 @@ public interface Perl6Signature extends Perl6PsiElement {
         SURPLUS_NAMED,
         TYPE_MISMATCH,
         CONSTRAINT_MISMATCH,
-        MISSING_REQUIRED_NAMED
+        MISSING_REQUIRED_NAMED;
+
+        // Additional data
+        @Nullable
+        public String name;
     }
 
     class SignatureCompareResult {
