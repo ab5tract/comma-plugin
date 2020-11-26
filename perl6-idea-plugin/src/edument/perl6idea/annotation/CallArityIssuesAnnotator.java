@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CallArityIssuesAnnotator implements Annotator {
     @Override
@@ -44,8 +45,7 @@ public class CallArityIssuesAnnotator implements Annotator {
                     annotations.set(0, null);
                 }
                 return;
-            }
-            else {
+            } else {
                 for (int i = 0; i <= args.length; i++) {
                     Perl6Signature.MatchFailureReason reason = result.getArgumentFailureReason(i);
                     if (reason == null)
@@ -57,19 +57,19 @@ public class CallArityIssuesAnnotator implements Annotator {
                             : new TextRange(args[0].getTextRange().getStartOffset(), args[args.length - 1].getTextRange().getEndOffset());
                     switch (reason) {
                         case TOO_MANY_ARGS: {
-                            annotations.add(new AnnotationBuilderWrap(argToHighlight, "Too many positional arguments"));
+                            annotations.add(new AnnotationBuilderWrap(signature, argToHighlight, "Too many positional arguments"));
                             continue MULTI_LOOP;
                         }
                         case SURPLUS_NAMED: {
-                            annotations.add(new AnnotationBuilderWrap(argToHighlight, "No such named parameter in signature"));
+                            annotations.add(new AnnotationBuilderWrap(signature, argToHighlight, "No such named parameter in signature"));
                             continue MULTI_LOOP;
                         }
                         case NOT_ENOUGH_ARGS: {
-                            annotations.add(new AnnotationBuilderWrap(argToHighlight, "Not enough positional arguments"));
+                            annotations.add(new AnnotationBuilderWrap(signature, argToHighlight, "Not enough positional arguments"));
                             continue MULTI_LOOP;
                         }
                         case MISSING_REQUIRED_NAMED: {
-                            annotations.add(new AnnotationBuilderWrap(argToHighlight, "This call misses a required named argument: " + reason.name));
+                            annotations.add(new AnnotationBuilderWrap(signature, argToHighlight, "This call misses a required named argument: " + reason.name));
                             continue MULTI_LOOP;
                         }
                         default: {
@@ -80,8 +80,17 @@ public class CallArityIssuesAnnotator implements Annotator {
             }
         }
 
-        for (AnnotationBuilderWrap wrapper : annotations) {
-            holder.newAnnotation(HighlightSeverity.ERROR, wrapper.text).range(wrapper.range).create();
+        if (defs.length == 1) {
+            for (AnnotationBuilderWrap wrapper : annotations) {
+                holder.newAnnotation(HighlightSeverity.ERROR, wrapper.text).range(wrapper.range).create();
+            }
+        } else {
+            // Multi...
+            String message = String.format("No multi candidates match (%s)",
+                    annotations.stream().map(an -> String.format("%s: %s", an.signature.summary(null), an.text)).collect(Collectors.joining(", ")));
+            holder.newAnnotation(HighlightSeverity.ERROR, message)
+                    .range(refElement)
+                    .create();
         }
     }
 
@@ -92,10 +101,12 @@ public class CallArityIssuesAnnotator implements Annotator {
     // an exception about AnnotationBuilder can bite us.
     // Use a wrapper to avoid this...
     private static class AnnotationBuilderWrap {
+        private final Perl6Signature signature;
         public TextRange range;
         public String text;
 
-        private AnnotationBuilderWrap(TextRange range, String text) {
+        private AnnotationBuilderWrap(Perl6Signature signature, TextRange range, String text) {
+            this.signature = signature;
             this.range = range;
             this.text = text;
         }

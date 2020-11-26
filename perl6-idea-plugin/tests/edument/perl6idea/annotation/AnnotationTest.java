@@ -1030,8 +1030,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testCallArityMismatchAnnotating() {
-//        myFixture.configureByFile("CallArity.pm6");
-//        myFixture.checkHighlighting();
+        myFixture.configureByFile("CallArity.pm6");
+        myFixture.checkHighlighting();
         myFixture.configureByFile("CallArityExtended.pm6");
         myFixture.checkHighlighting();
     }
