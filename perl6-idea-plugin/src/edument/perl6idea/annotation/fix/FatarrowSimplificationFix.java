@@ -20,7 +20,7 @@ public class FatarrowSimplificationFix implements IntentionAction {
     private String mySimplifiedPair;
     private boolean isQuickfix = false;
 
-    // When called as an annotation
+    // When called as an intention
     public FatarrowSimplificationFix() {}
 
     // When called as a fix
