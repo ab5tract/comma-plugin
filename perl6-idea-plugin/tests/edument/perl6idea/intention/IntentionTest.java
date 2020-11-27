@@ -351,6 +351,14 @@ public class IntentionTest extends CommaFixtureTestCase {
         checkIntentionAbsence("Convert to Uni");
     }
 
+    public void testASCIITermToUni() {
+        executeIntention("Convert term to Unicode");
+    }
+
+    public void testUniTermToASCII() {
+        executeIntention("Convert term to ASCII");
+    }
+
     public void testUseDirectAttributeAccess() {
         executeIntention("Replace with direct access");
     }
