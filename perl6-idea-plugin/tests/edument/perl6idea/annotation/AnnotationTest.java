@@ -1034,5 +1034,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByFile("CallArityExtended.pm6");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "42.perl;");
+        myFixture.checkHighlighting();
     }
 }

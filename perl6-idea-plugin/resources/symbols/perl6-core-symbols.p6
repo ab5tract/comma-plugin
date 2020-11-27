@@ -599,8 +599,12 @@ sub pack-code($code, Int $multiness, Str $name?, :$docs, :$is-method) {
     my $s = $code.signature;
     my @params = $s.params;
     @params .= skip(1) if $is-method;
-    my @parameters = @params.grep(not *.invocant).map({
-        %( t => .type.^name, n => "{.prefix ?? .prefix !! .named ?? ':' !! ''}{.name ?? .name !! .sigil}{ .default ?? '?' !! '' }{.suffix}" )
+    my @parameters = @params.map({
+        %( t => .type.^name,
+           n => "{.prefix ?? .prefix !! .named ?? ':' !! ''}" ~
+                   "{ .sigil eq '|' ?? .sigil ~ .name !! (.name ?? .name !! .sigil) }" ~
+                   "{ .default ?? '?' !! '' }{.suffix}"
+        )
     }).List;
     my %signature = r => $s.returns.^name, p => @parameters;
     my $kind = $code.^name.comb.head.lc;
