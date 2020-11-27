@@ -683,7 +683,7 @@ public abstract class Cursor<TCursor extends Cursor> {
         "buf", "buf8", "buf16", "buf32", "buf64",
         "utf8", "utf16", "utf32",
         "str", "array",
-        "pi", "tau"
+        "pi", "tau", "π", "τ"
     ));
 
     public boolean isName() {
