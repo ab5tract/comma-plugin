@@ -14,10 +14,6 @@ public interface Perl6Signature extends Perl6PsiElement {
         List<PsiElement> arguments = Arrays.asList(argsArray);
         List<Perl6Parameter> parameters = Arrays.asList(getParameters());
 
-        // Signature (|) or (|c) accepts everything
-        if (parameters.size() == 1 && parameters.get(0).getText().startsWith("|"))
-            return new SignatureCompareResult(true);
-
         if (parameters.size() == 0 && arguments.size() == 0)
             return new SignatureCompareResult(true);
 
@@ -38,6 +34,10 @@ public interface Perl6Signature extends Perl6PsiElement {
         // For every parameters from left to right
         for (int parameterIndex = 0; parameterIndex < parameters.size(); parameterIndex++) {
             Perl6Parameter parameter = parameters.get(parameterIndex);
+
+            // Signature (|) or (|c) accepts everything
+            if (parameter.getText().startsWith("|"))
+                return result;
 
             if (parameter.isPositional()) {
                 // If it is a positional slurpy, eat rest of positionals and move on to see if we have a named slurpy ahead
