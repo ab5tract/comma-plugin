@@ -278,6 +278,10 @@ public class IntentionTest extends CommaFixtureTestCase {
         checkIntentionAbsence("Remove parentheses");
     }
 
+    public void testUnparenOnColonpairNotAllowed() {
+        checkIntentionAbsence("Remove parentheses");
+    }
+
     public void testBindingDestructuringFix() {
         executeIntention("Use binding");
     }
@@ -350,6 +354,22 @@ public class IntentionTest extends CommaFixtureTestCase {
     public void testUseDirectAttributeAccess() {
         executeIntention("Replace with direct access");
     }
+
+    public void testFatarrowToColonpair() {
+        executeIntention("Convert to");
+    }
+
+    public void testColonpairToFatarrow() {
+        executeIntention("Convert to");
+    }
+
+    public void testColonpairToFatarrowParen() {
+        executeIntention("Convert to");
+    }
+
+    public void testColonpairForms1() { executeIntention("Convert to "); }
+    public void testColonpairForms2() { executeIntention("Convert to "); }
+    public void testColonpairForms3() { executeIntention("Convert to "); }
 
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));

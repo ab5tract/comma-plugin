@@ -1,0 +1,1 @@
+say(:fo<caret>o<42>);
