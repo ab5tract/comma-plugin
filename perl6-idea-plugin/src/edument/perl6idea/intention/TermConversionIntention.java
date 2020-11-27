@@ -42,6 +42,14 @@ public abstract class TermConversionIntention implements IntentionAction {
                 return Operation.TO_UNICODE_PI;
             if (nameHolder.textMatches("tau"))
                 return Operation.TO_UNICODE_TAU;
+            if (nameHolder.textMatches("π"))
+                return Operation.TO_ASCII_PI;
+            if (nameHolder.textMatches("τ"))
+                return Operation.TO_ASCII_TAU;
+        }
+        else if (elementType == Perl6TokenTypes.TERM) {
+            if (elementUnderCaret.textMatches("∅"))
+                return Operation.TO_ASCII_SET;
         }
         return Operation.NONE;
     }
