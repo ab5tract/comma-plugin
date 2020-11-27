@@ -40,7 +40,7 @@ public class NamedPairArgumentAnnotator implements Annotator {
 
     public static String getSimplifiedText(PsiElement pair, String key, PsiElement element) {
         if (element instanceof Perl6TypeName) {
-            if (!pair.getText().contains("True") && !pair.getText().contains("False"))
+            if (!PsiTreeUtil.isAncestor(pair, element, false))
                 return null;
             String typeName = ((Perl6TypeName)element).getTypeName();
             if (typeName.equals("True"))
@@ -49,9 +49,8 @@ public class NamedPairArgumentAnnotator implements Annotator {
                 return "!" + key;
         }
         if (element instanceof Perl6Variable) {
-            if (!pair.getText().contains("=>") && !pair.getText().contains("(")) {
+            if (!PsiTreeUtil.isAncestor(pair, element, false))
                 return null;
-            }
             String name = ((Perl6Variable)element).getVariableName();
             if (name == null || name.length() < 2)
                 return null;
