@@ -69,7 +69,7 @@ public class Perl6SignatureComparatorTest extends CommaFixtureTestCase {
         doTest(":$abc!", ":nonono", (res) -> {
             assertFalse(res.isAccepted());
             assertEquals(0, res.getNextParameterIndex());
-            assertArgument(res, 0, -1, Perl6Signature.MatchFailureReason.MISSING_REQUIRED_NAMED);
+            assertArgument(res, 0, -1, Perl6Signature.MatchFailureReason.SURPLUS_NAMED);
         });
     }
 
@@ -124,7 +124,7 @@ public class Perl6SignatureComparatorTest extends CommaFixtureTestCase {
     public void testIncompleteCalls() {
         doTest("$a, *@foo", "", false, (res) -> {
             assertTrue(res.isAccepted());
-            assertEquals(0, res.getNextParameterIndex());
+            assertEquals(1, res.getNextParameterIndex());
         });
         doTest("$a?", "", true, (res) -> assertTrue(res.isAccepted()));
         doTest("$a", "", false, (res) -> assertTrue(res.isAccepted()));

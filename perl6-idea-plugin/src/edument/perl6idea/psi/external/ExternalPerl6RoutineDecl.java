@@ -1,5 +1,6 @@
 package edument.perl6idea.psi.external;
 
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
@@ -156,7 +157,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
             return;
 
         Perl6ExplicitAliasedSymbol sym = new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this,
-                                                                        myName.startsWith("!") ? myName : "." + myName);
+                myName.startsWith("!") ? myName : "." + myName);
         if (myIsMulti.equals("only"))
             collector.offerSymbol(sym);
         else

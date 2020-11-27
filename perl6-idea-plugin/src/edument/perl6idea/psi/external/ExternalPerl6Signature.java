@@ -17,18 +17,21 @@ public class ExternalPerl6Signature extends Perl6ExternalPsiElement implements P
     public ExternalPerl6Signature(Project project, PsiElement parent, JSONObject signature) {
         myProject = project;
         myParent = parent;
-        JSONArray params = signature.getJSONArray("p");
-        List<String> paramLines = new ArrayList<>();
-        for (Object param : params) {
-            if (param instanceof String)
-                paramLines.add((String)param);
+        JSONArray paramsJSON = signature.getJSONArray("p");
+        List<ExternalPerl6Parameter> params = new ArrayList<>();
+        for (Object param : paramsJSON) {
+            if (param instanceof JSONObject) {
+                params.add(new ExternalPerl6Parameter(project, parent,
+                        ((JSONObject) param).getString("n"),
+                        ((JSONObject) param).getString("t")));
+            }
         }
-        myParameters = paramLines.stream().map(n -> new ExternalPerl6Parameter(project, parent, n)).toArray(ExternalPerl6Parameter[]::new);
+        myParameters = params.toArray(new ExternalPerl6Parameter[0]);
     }
 
     @Override
     public String summary(String retType) {
-        return String.join(", ", Arrays.stream(myParameters).map(p -> p.summary()).toArray(String[]::new)) + "--> " + retType;
+        return String.join(", ", Arrays.stream(myParameters).map(p -> p.summary()).toArray(String[]::new)) + " --> " + retType;
     }
 
     @Override

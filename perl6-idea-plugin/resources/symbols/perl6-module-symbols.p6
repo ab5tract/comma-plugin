@@ -253,7 +253,9 @@ sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
     my $s = $code.signature;
     my @params = $s.params;
     @params .= skip(1) if $is-method;
-    my @parameters = @params.map(*.gist).List;
+    my @parameters = @params.grep(not *.invocant).map({
+        %( t => .type.^name, n => "{.prefix ?? .prefix !! .named ?? ':' !! ''}{.name ?? .name !! .sigil}{ .default ?? '?' !! '' }{.suffix}" )
+    }).List;
     my %signature = r => $s.returns.^name, p => @parameters;
     my $kind = $code.^name.comb.head.lc;
     my %code = k => $kind, n => $name // $code.name, s => %signature, m => $multiness;

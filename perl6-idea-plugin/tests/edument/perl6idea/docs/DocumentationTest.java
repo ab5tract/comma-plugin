@@ -126,13 +126,13 @@ public class DocumentationTest extends CommaFixtureTestCase {
     }
 
     public void testMethodExternalFromCORE() {
-        testQuickDoc("method Capture(*%_--&gt; Mu)");
+        testQuickDoc("method Capture(Mu *%_ --&gt; Mu)");
         testGeneratedDoc("<p>Defined as:</p><p><pre><code>method Capture()</code></pre></p><p>Throws X::Cannot::Capture.</p>");
         testURL("https://docs.perl6.org/routine/Capture");
     }
 
     public void testMethodExternalFromCORERole() {
-        testQuickDoc("method roots(Cool $n, *%_--&gt; Mu)");
+        testQuickDoc("method roots(Cool $n, Mu *%_ --&gt; Mu)");
         testGeneratedDoc("<p><pre><code>multi method roots(Numeric:D: Int:D $n --&gt; Positional)</code></pre></p><p>Returns a list of the $n complex roots, which evaluate to the original number when raised to the $nth power.</p>");
         testURL("https://docs.perl6.org/routine/roots");
     }
@@ -144,7 +144,7 @@ public class DocumentationTest extends CommaFixtureTestCase {
         PsiPolyVariantReference resolved = (PsiPolyVariantReference)element.getReference();
         ResolveResult[] decls = resolved.multiResolve(false);
         assertTrue(decls.length > 0);
-        assertEquals("method end(*%_--&gt; Int)", provider.getQuickNavigateInfo(decls[0].getElement(), null));
+        assertEquals("method end(Mu *%_ --&gt; Int)", provider.getQuickNavigateInfo(decls[0].getElement(), null));
         assertEquals("<p><pre><code>multi method end(Any:U: --&gt; 0)<br>multi method end(Any:D:)</code></pre></p><p>Interprets the invocant as a list, and returns the last index of that list.</p><p><pre><code>say 6.end;                      # OUTPUT: «0␤»<br>say &lt;a b c&gt;.end;                # OUTPUT: «2␤»</code></pre></p>",  provider.generateDoc(decls[0].getElement(), element));
         assertContainsElements(provider.getUrlFor(decls[0].getElement(), element), "https://docs.perl6.org/routine/end");
     }

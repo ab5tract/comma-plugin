@@ -658,7 +658,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testMissingClosingParenSignature() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo<error descr=\"Missing closing )\">(</error>$, { }; foo()");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo<error descr=\"Missing closing )\">(</error>$, { }; foo(4)");
         myFixture.checkHighlighting();
     }
 
@@ -698,17 +698,17 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testColonPairSimplification() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; sub a {}; a(<weak_warning descr=\"Pair literal can be simplified\">:foo($foo)</weak_warning>)");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; sub a(:$foo) { $foo }; a(<weak_warning descr=\"Pair literal can be simplified\">:foo($foo)</weak_warning>)");
         myFixture.checkHighlighting();
     }
 
     public void testFatArrowSimplification() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; sub a {}; a(<weak_warning descr=\"Pair literal can be simplified\">foo => $foo</weak_warning>)");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; <weak_warning descr=\"Pair literal can be simplified\">foo => $foo</weak_warning>");
         myFixture.checkHighlighting();
     }
 
     public void testColonPairWithBlockExpression() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; sub a {}; a(:foo{$foo})");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo = 5; :foo{$foo}");
         myFixture.checkHighlighting();
     }
 
