@@ -216,6 +216,7 @@ my sub to-json(
 # In the worst case the EVAL below crashes, just return an empty list
 CATCH {
     default {
+        note $_;
     say '[]';
     exit 0;
     }
@@ -223,8 +224,6 @@ CATCH {
 
 EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
     my @EXTERNAL_COMMA_ELEMS;
-
-    my $new-param-API = so Parameter.^can('suffix');
 
     for MY::.kv -> $_, \object {
         # Ignore a few things.
@@ -251,6 +250,8 @@ sub pack-variable($name, \object, :$is-attribute = False) {
     try %var<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
     %var;
 }
+
+my $new-param-API = so Parameter.^can('suffix');
 
 sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
     my $s = $code.signature;
