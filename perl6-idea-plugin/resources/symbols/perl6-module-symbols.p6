@@ -223,6 +223,9 @@ CATCH {
 
 EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
     my @EXTERNAL_COMMA_ELEMS;
+
+    my $new-param-API = so Parameter.^can('suffix');
+
     for MY::.kv -> $_, \object {
         # Ignore a few things.
         when '$_' | '$/' | '$!' | '&MONKEY-SEE-NO-EVAL' | '@EXTERNAL_COMMA_ELEMS' { }
@@ -254,11 +257,13 @@ sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
     my @params = $s.params;
     @params .= skip(1) if $is-method;
     my @parameters = @params.map({
-        %( t => .type.^name,
+        $new-param-API
+        ?? %( t => .type.^name,
            n => "{.prefix ?? .prefix !! .named ?? ':' !! ''}" ~
                    "{ .sigil eq '|' ?? .sigil ~ .name !! (.name ?? .name !! .sigil) }" ~
                    "{ .default ?? '?' !! '' }{.suffix}"
         )
+        !! %( t => .type.^name, n => .gist )
     }).List;
     my %signature = r => $s.returns.^name, p => @parameters;
     my $kind = $code.^name.comb.head.lc;
