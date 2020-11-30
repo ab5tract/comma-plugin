@@ -138,7 +138,7 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
         PsiElement[] arguments = owner.getCallArguments();
 
         // Compare
-        Perl6Signature.SignatureCompareResult compare = signatureNode.acceptsArguments(arguments, false);
+        Perl6Signature.SignatureCompareResult compare = signatureNode.acceptsArguments(arguments, false, owner instanceof Perl6MethodCall);
 
         StringJoiner signatureTextBuilder = new StringJoiner(", ");
         int startOffset = 0;

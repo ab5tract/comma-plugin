@@ -77,8 +77,8 @@ public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
 
     public void testMethodParameterInfo() {
         doTest("class A { multi method a($a) {}; multi method a($a, :$foo) {}; multi method a(:$best) { self.a(:!best<caret> } }; ",
-               context -> assertParameterInfo(context, false, "$a",0, 0),
-               context -> assertParameterInfo(context, false, "$a, :$foo",0, 0),
+               context -> assertParameterInfo(context, true, "$a",0, 2),
+               context -> assertParameterInfo(context, true, "$a, :$foo",0, 2),
                context -> assertParameterInfo(context, true, ":$best",0, 6));
     }
 
@@ -92,11 +92,11 @@ public class Perl6ParameterInfoTest extends CommaFixtureTestCase {
                context -> assertParameterInfo(context, true, "$a, $b, $asdf", 4, 6));
     }
 
-    public void testExternalParameterInfo() {
-        doTest("slurp(<caret>",
-               context -> assertParameterInfo(context, true, "IO::Handle:D $fh = { ... }, |c is raw", 0, 26),
-               context -> assertParameterInfo(context, true, "$path, |c is raw", 0, 5));
-    }
+//    public void testExternalParameterInfo() {
+//        doTest("slurp(<caret>",
+//               context -> assertParameterInfo(context, true, "IO::Handle:D $fh = { ... }, |c is raw", 0, 26),
+//               context -> assertParameterInfo(context, true, "$path, |c is raw", 0, 5));
+//    }
 
     public void testSyntheticConstructor() {
         // Synthetic constructor is disabled if explicit one

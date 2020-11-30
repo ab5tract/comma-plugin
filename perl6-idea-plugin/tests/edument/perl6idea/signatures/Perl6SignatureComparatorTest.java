@@ -17,7 +17,7 @@ public class Perl6SignatureComparatorTest extends CommaFixtureTestCase {
         Perl6Signature signature = PsiTreeUtil.findChildOfType(Perl6ElementFactory.createStatementFromText(getProject(), String.format("sub (%s) {}", sig)), Perl6Signature.class);
         assertNotNull(signature);
         Perl6SubCall call = PsiTreeUtil.findChildOfType(Perl6ElementFactory.createStatementFromText(getProject(), String.format("a(%s);", args)), Perl6SubCall.class);
-        Perl6Signature.SignatureCompareResult result = signature.acceptsArguments(call.getCallArguments(), isCompleteCall);
+        Perl6Signature.SignatureCompareResult result = signature.acceptsArguments(call.getCallArguments(), isCompleteCall, false);
         asserts.accept(result);
     }
 
@@ -69,7 +69,7 @@ public class Perl6SignatureComparatorTest extends CommaFixtureTestCase {
         doTest(":$abc!", ":nonono", (res) -> {
             assertFalse(res.isAccepted());
             assertEquals(0, res.getNextParameterIndex());
-            assertArgument(res, 0, -1, Perl6Signature.MatchFailureReason.MISSING_REQUIRED_NAMED);
+            assertArgument(res, 0, -1, Perl6Signature.MatchFailureReason.SURPLUS_NAMED);
         });
     }
 
@@ -124,7 +124,7 @@ public class Perl6SignatureComparatorTest extends CommaFixtureTestCase {
     public void testIncompleteCalls() {
         doTest("$a, *@foo", "", false, (res) -> {
             assertTrue(res.isAccepted());
-            assertEquals(0, res.getNextParameterIndex());
+            assertEquals(1, res.getNextParameterIndex());
         });
         doTest("$a?", "", true, (res) -> assertTrue(res.isAccepted()));
         doTest("$a", "", false, (res) -> assertTrue(res.isAccepted()));

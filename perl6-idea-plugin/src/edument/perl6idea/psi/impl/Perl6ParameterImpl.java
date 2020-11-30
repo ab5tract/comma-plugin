@@ -129,7 +129,8 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     public boolean isSlurpy() {
         PsiElement quant = findChildByType(PARAMETER_QUANTIFIER);
         return quant != null &&
-               (quant.getText().equals("*") || quant.getText().equals("**"));
+               (quant.getText().equals("*") || quant.getText().equals("**")
+                       || quant.getText().equals("+"));
     }
 
     @Override

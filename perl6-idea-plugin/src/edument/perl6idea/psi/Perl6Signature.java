@@ -10,7 +10,7 @@ public interface Perl6Signature extends Perl6PsiElement {
     String summary(String type);
     Perl6Parameter[] getParameters();
 
-    default SignatureCompareResult acceptsArguments(PsiElement[] argsArray, boolean isCompleteCall) {
+    default SignatureCompareResult acceptsArguments(PsiElement[] argsArray, boolean isCompleteCall, boolean isMethodCall) {
         List<PsiElement> arguments = Arrays.asList(argsArray);
         List<Perl6Parameter> parameters = Arrays.asList(getParameters());
 
@@ -24,7 +24,7 @@ public interface Perl6Signature extends Perl6PsiElement {
         List<PsiElement> positionalArgs = new ArrayList<>();
         Map<String, PsiElement> namedArgs = new HashMap<>();
 
-        categorizeAttributes(arguments, positionalArgs, namedArgs);
+        categorizeArguments(arguments, positionalArgs, namedArgs);
 
         // We need to keep index of currently available positional
         int posArgIndex = 0;
@@ -34,6 +34,10 @@ public interface Perl6Signature extends Perl6PsiElement {
         // For every parameters from left to right
         for (int parameterIndex = 0; parameterIndex < parameters.size(); parameterIndex++) {
             Perl6Parameter parameter = parameters.get(parameterIndex);
+
+            // Signature (|) or (|c) accepts everything
+            if (parameter.getText().startsWith("|"))
+                return result;
 
             if (parameter.isPositional()) {
                 // If it is a positional slurpy, eat rest of positionals and move on to see if we have a named slurpy ahead
@@ -54,7 +58,6 @@ public interface Perl6Signature extends Perl6PsiElement {
                     if (!parameter.isOptional() && isCompleteCall) {
                         failMatch(result, new Pair<>(posArgIndex, MatchFailureReason.NOT_ENOUGH_ARGS));
                     }
-                    break;
                 }
             }
             else if (parameter.isNamed()) {
@@ -75,8 +78,9 @@ public interface Perl6Signature extends Perl6PsiElement {
                 }
                 else {
                     if (!parameter.isOptional() && isCompleteCall) {
-                        failMatch(result, new Pair<>(posArgIndex, MatchFailureReason.MISSING_REQUIRED_NAMED));
-                        break;
+                        MatchFailureReason failReason = MatchFailureReason.MISSING_REQUIRED_NAMED;
+                        failReason.name = parameter.getVariableName();
+                        failMatch(result, new Pair<>(posArgIndex, failReason));
                     }
                 }
             }
@@ -84,17 +88,17 @@ public interface Perl6Signature extends Perl6PsiElement {
 
         // If we iterated over all parameters, but there are still arguments left,
         // disallow matching and mark them as errors
-        if (result.isAccepted()) {
-            // Check surplus named arguments
+        // Check surplus named arguments, but methods allow them
+        if (!isMethodCall) {
             seen.forEach(key -> namedArgs.remove(key));
             if (!namedArgs.isEmpty())
                 failMatch(result, namedArgs.keySet().stream().map(n -> new Pair<>(arguments.indexOf(namedArgs.get(n)), MatchFailureReason.SURPLUS_NAMED)).toArray(Pair[]::new));
-
-            // Check surplus positional arguments
-            List<PsiElement> positionalLeftovers = positionalArgs.subList(posArgIndex, positionalArgs.size());
-            if (positionalLeftovers.size() != 0)
-                failMatch(result, positionalLeftovers.stream().map(n -> new Pair<>(arguments.indexOf(n), MatchFailureReason.TOO_MANY_ARGS)).toArray(Pair[]::new));
         }
+
+        // Check surplus positional arguments
+        List<PsiElement> positionalLeftovers = positionalArgs.subList(posArgIndex, positionalArgs.size());
+        if (positionalLeftovers.size() != 0)
+            failMatch(result, positionalLeftovers.stream().map(n -> new Pair<>(arguments.indexOf(n), MatchFailureReason.TOO_MANY_ARGS)).toArray(Pair[]::new));
 
         return result;
     }
@@ -125,7 +129,7 @@ public interface Perl6Signature extends Perl6PsiElement {
             result.setFailureForArg(failure.getFirst(), failure.getSecond());
     }
 
-    default void categorizeAttributes(List<PsiElement> arguments, List<PsiElement> positionalArgs, Map<String, PsiElement> namedArgs) {
+    default void categorizeArguments(List<PsiElement> arguments, List<PsiElement> positionalArgs, Map<String, PsiElement> namedArgs) {
         for (PsiElement arg : arguments)
             if (arg instanceof Perl6ColonPair)
                 namedArgs.put(((Perl6ColonPair)arg).getKey(), arg);
@@ -141,7 +145,11 @@ public interface Perl6Signature extends Perl6PsiElement {
         SURPLUS_NAMED,
         TYPE_MISMATCH,
         CONSTRAINT_MISMATCH,
-        MISSING_REQUIRED_NAMED
+        MISSING_REQUIRED_NAMED;
+
+        // Additional data
+        @Nullable
+        public String name;
     }
 
     class SignatureCompareResult {

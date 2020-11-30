@@ -572,6 +572,8 @@ my %CORE-DOCS = from-json @*ARGS[0].IO.slurp;
 
 my @EXTERNAL_COMMA_ELEMS;
 
+my $new-param-API = so Parameter.^can('suffix');
+
 for CORE::.keys -> $_ {
     # Ignore a few things.
     when 'EXPORTHOW' | 'Rakudo' { }
@@ -599,7 +601,15 @@ sub pack-code($code, Int $multiness, Str $name?, :$docs, :$is-method) {
     my $s = $code.signature;
     my @params = $s.params;
     @params .= skip(1) if $is-method;
-    my @parameters = @params.map(*.gist).List;
+    my @parameters = @params.map({
+        $new-param-API
+        ?? %( t => .type.^name,
+           n => "{.prefix ?? .prefix !! .named ?? ':' !! ''}" ~
+                   "{ .sigil eq '|' ?? .sigil ~ .name !! (.name ?? .name !! .sigil) }" ~
+                   "{ .default ?? '?' !! '' }{.suffix}"
+        )
+        !! %( t => .type.^name, n => .gist )
+    }).List;
     my %signature = r => $s.returns.^name, p => @parameters;
     my $kind = $code.^name.comb.head.lc;
     %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness, |(:d($_) with $docs) );

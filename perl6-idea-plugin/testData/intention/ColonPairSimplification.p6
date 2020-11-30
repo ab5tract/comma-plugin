@@ -1,3 +1,3 @@
 my $foo = 5;
-sub a {};
+sub a(:$foo) {};
 a(:$foo);

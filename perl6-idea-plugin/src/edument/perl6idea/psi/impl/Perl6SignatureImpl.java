@@ -8,6 +8,7 @@ import edument.perl6idea.psi.Perl6Signature;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Signature {
@@ -31,6 +32,9 @@ public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Sig
     @Override
     @NotNull
     public Perl6Parameter[] getParameters() {
-        return findChildrenByClass(Perl6Parameter.class);
+        Perl6Parameter[] params = findChildrenByClass(Perl6Parameter.class);
+        if (params.length != 0 && params[0].getNextSibling() != null && params[0].getNextSibling().getText().equals(":"))
+            return Arrays.copyOfRange(params, 1, params.length);
+        return params;
     }
 }
