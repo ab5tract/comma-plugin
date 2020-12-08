@@ -8,6 +8,10 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+
 public class Perl6RegexCapturePositionalImpl extends ASTWrapperPsiElement implements Perl6RegexCapturePositional {
     public Perl6RegexCapturePositionalImpl(@NotNull ASTNode node) {
         super(node);
@@ -23,11 +27,17 @@ public class Perl6RegexCapturePositionalImpl extends ASTWrapperPsiElement implem
         if (regex == null) return "";
 
         int captureCounter = 0;
-        for (PsiElement s : regex.getChildren()) {
-            if (s.getFirstChild() instanceof Perl6RegexCapturePositional) {
-                if (s.getFirstChild().equals(this))
+        Deque<PsiElement> toWalk = new ArrayDeque<>(Arrays.asList(regex.getChildren()));
+        while (!toWalk.isEmpty()) {
+            PsiElement atom = toWalk.removeFirst();
+            PsiElement firstChild = atom.getFirstChild();
+            if (firstChild instanceof Perl6RegexCapturePositional) {
+                if (firstChild.equals(this))
                     return "$" + captureCounter;
-                captureCounter++;
+                else
+                    captureCounter++;
+            } else if (firstChild instanceof Perl6RegexGroup) {
+                toWalk.addAll(Arrays.asList(firstChild.getChildren()));
             }
         }
         return "";

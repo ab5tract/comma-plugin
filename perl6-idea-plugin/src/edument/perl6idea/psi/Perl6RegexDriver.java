@@ -4,9 +4,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public interface Perl6RegexDriver extends PsiElement {
     default Collection<PsiNamedElement> collectRegexVariables() {
@@ -16,10 +14,14 @@ public interface Perl6RegexDriver extends PsiElement {
         if (regex == null) return new ArrayList<>();
         List<PsiNamedElement> symbols = new ArrayList<>();
         // Positionals
-        for (PsiElement atom : regex.getChildren()) {
+        Deque<PsiElement> toWalk = new ArrayDeque<>(Arrays.asList(regex.getChildren()));
+        while (!toWalk.isEmpty()) {
+            PsiElement atom = toWalk.removeFirst();
             PsiElement firstChild = atom.getFirstChild();
             if (firstChild instanceof Perl6RegexCapturePositional) {
                 symbols.add(((Perl6RegexCapturePositional)firstChild));
+            } else if (firstChild instanceof Perl6RegexGroup) {
+                toWalk.addAll(Arrays.asList(firstChild.getChildren()));
             }
         }
         // Nameds

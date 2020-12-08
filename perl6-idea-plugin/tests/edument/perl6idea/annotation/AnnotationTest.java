@@ -374,6 +374,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "if True { m{ ^ ( '#' .+? ) \\s*? $ }; $0; }");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "/[ ('a') (\\d+) <?{ 1920 <= $1.tail <= 2020 }> ]/;");
+        myFixture.checkHighlighting();
     }
 
     public void testUndeclaredAnnotatorRegexVarsCorrectComparisonIsUsed() {
