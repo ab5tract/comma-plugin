@@ -1045,4 +1045,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "run 'curl', 'foo', out => 42, :err(42);");
         myFixture.checkHighlighting();
     }
+
+    public void testUnknownRegexModifier() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "my $x = /<error descr=\"Unrecognized regex modifier\">:foo</error> 1234 /;\n" +
+              "my $y = / <error descr=\"Unrecognized regex modifier\">:!bar</error> /;");
+        myFixture.checkHighlighting();
+    }
 }

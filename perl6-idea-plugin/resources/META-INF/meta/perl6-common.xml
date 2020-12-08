@@ -82,6 +82,7 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UselessMethodDeclarationAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.AssignmentToImmutableAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.CallArityIssuesAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UnknownRegexModAnnotator"/>
     <stubElementTypeHolder class="edument.perl6idea.parsing.Perl6ElementTypes"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.ProjectModulesStubIndex"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex"/>

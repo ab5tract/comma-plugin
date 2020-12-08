@@ -135,6 +135,7 @@ public interface Perl6TokenTypes {
     IElementType REGEX_MISSING_TERM = new Perl6ElementType("REGEX_MISSING_TERM");
     IElementType REGEX_MOD_INTERNAL = new Perl6ElementType("REGEX_MOD_INTERNAL");
     IElementType REGEX_MOD_INTERNAL_NUMERIC = new Perl6ElementType("REGEX_MOD_INTERNAL_NUMERIC");
+    IElementType REGEX_MOD_UNKNOWN = new Perl6ElementType("REGEX_MOD_UNKNOWN");
     IElementType REGEX_QUANTIFIER = new Perl6ElementType("REGEX_QUANTIFIER");
     IElementType REGEX_QUANTIFIER_MISSING = new Perl6ElementType("REGEX_QUANTIFIER_MISSING");
     IElementType REGEX_SIGSPACE = new Perl6ElementType("REGEX_SIGSPACE");

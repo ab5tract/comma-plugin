@@ -4868,7 +4868,7 @@ grammar MAIN {
     }
 
     token mod_internal {
-        <?before [':' ['!'||\d+]? <.mod_ident> ]>
+        <?before [':' ['!'||\d+]? <.identifier> >> ]>
         [
         || <?before [':s' 'igspace'? >>]> { $*RX_S = 1 }
         || <?before [':!s' 'igspace'? >>]> { $*RX_S = 0 }
@@ -4881,9 +4881,7 @@ grammar MAIN {
         || <.start-token('REGEX_MOD_INTERNAL')>
            '!'
            <.end-token('REGEX_MOD_INTERNAL')>
-           <.start-token('REGEX_MOD_INTERNAL')>
            <.mod_ident>
-           <.end-token('REGEX_MOD_INTERNAL')>
         || <?before \d+>
            <.start-token('REGEX_MOD_INTERNAL_NUMERIC')>
            <?>
@@ -4891,12 +4889,8 @@ grammar MAIN {
            <.start-token('REGEX_MOD_INTERNAL')>
            \d+
            <.end-token('REGEX_MOD_INTERNAL')>
-           <.start-token('REGEX_MOD_INTERNAL')>
            <.mod_ident>
-           <.end-token('REGEX_MOD_INTERNAL')>
-        || <.start-token('REGEX_MOD_INTERNAL')>
-           <.mod_ident>
-           <.end-token('REGEX_MOD_INTERNAL')>
+        || <.mod_ident>
            [
                <.start-token('REGEX_MOD_INTERNAL')>
                '('
@@ -4915,11 +4909,18 @@ grammar MAIN {
     }
 
     token mod_ident {
-        || 'i' 'gnorecase'? >>
-        || 'm' >>
-        || 'ignoremark' >>
-        || 'r' 'atchet'? >>
-        || 's' 'igspace'? >>
-        || 'dba' >>
+        || <.start-token('REGEX_MOD_INTERNAL')>
+           [
+           || 'i' 'gnorecase'? >>
+           || 'm' >>
+           || 'ignoremark' >>
+           || 'r' 'atchet'? >>
+           || 's' 'igspace'? >>
+           || 'dba' >>
+           ]
+           <.end-token('REGEX_MOD_INTERNAL')>
+       || <.start-token('REGEX_MOD_UNKNOWN')>
+          <.identifier> >>
+          <.end-token('REGEX_MOD_UNKNOWN')>
     }
 }
