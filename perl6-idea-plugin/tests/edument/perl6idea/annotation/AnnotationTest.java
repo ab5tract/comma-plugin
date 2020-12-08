@@ -1041,4 +1041,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "open 'foo';");
         myFixture.checkHighlighting();
     }
+
+    public void testUnknownRegexModifier() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "my $x = /<error descr=\"Unrecognized regex modifier\">:foo</error> 1234 /;\n" +
+              "my $y = / <error descr=\"Unrecognized regex modifier\">:!bar</error> /;");
+        myFixture.checkHighlighting();
+    }
 }

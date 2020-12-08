@@ -112,6 +112,7 @@ public class Perl6SyntaxHighlighter extends SyntaxHighlighterBase {
         ATTRIBUTES.put(Perl6TokenTypes.REGEX_LOOKAROUND, Perl6Highlighter.REGEX_LOOKAROUND);
         ATTRIBUTES.put(Perl6TokenTypes.REGEX_CCLASS_SYNTAX, Perl6Highlighter.REGEX_CCLASS_SYNTAX);
         ATTRIBUTES.put(Perl6TokenTypes.REGEX_MOD_INTERNAL, Perl6Highlighter.REGEX_MOD);
+        ATTRIBUTES.put(Perl6TokenTypes.REGEX_MOD_UNKNOWN, Perl6Highlighter.REGEX_MOD);
         ATTRIBUTES.put(Perl6TokenTypes.TRANS_CHAR, Perl6Highlighter.TRANS_CHAR);
         ATTRIBUTES.put(Perl6TokenTypes.TRANS_RANGE, Perl6Highlighter.TRANS_RANGE);
         ATTRIBUTES.put(Perl6TokenTypes.TRANS_ESCAPE, Perl6Highlighter.TRANS_ESCAPE);
