@@ -15,8 +15,7 @@ subtest {
     # Roles
     my $native = $data.first({ $_<n> eq "NativeCall::Native" });
     ok $native, 'Native role is exported';
-    ok $native<a>.first({ $_<n> eq '$!setup' && $_<t> eq "int" }), 'Native private attributes are exported';
-    ok $native<m>.first({ $_<n> eq 'CALL-ME' && $_<k> eq 'm' && $_<m> == 0 && $_<s><r> eq 'Mu' }), 'Native role methods are exported';
+    ok $native<a>.first({ $_<n> eq '$!rettype' && $_<t> eq "Mu" }), 'Native private attributes are exported';
     ok $native<m>.first({ $_<n> eq '!setup' && $_<k> eq 'm' && $_<m> == 0 && $_<s><r> eq 'Mu' }), 'Native role methods are exported';
     # Classes
     $native = $data.first({ $_<n> eq 'CArray' });

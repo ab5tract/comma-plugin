@@ -2,6 +2,7 @@ package edument.perl6idea.psi;
 
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -67,7 +68,7 @@ public interface Perl6Signature extends Perl6PsiElement {
                     continue;
                 }
 
-                String namedParameterName = parameter.getVariableName().substring(1); // cut off sigil
+                String namedParameterName = prepareParamName(parameter.getVariableName());
                 PsiElement namedArgumentForParameter = namedArgs.get(namedParameterName);
                 // If we found an argument for named parameter, process it, otherwise break
                 if (namedArgumentForParameter != null) {
@@ -102,6 +103,10 @@ public interface Perl6Signature extends Perl6PsiElement {
 
         return result;
     }
+
+    default String prepareParamName(String variableName) {
+        return StringUtils.stripEnd(StringUtils.stripStart(variableName, ":$@%&"), "?!");
+    };
 
     default int eatPositionalSlurpy(List<PsiElement> arguments,
                                            SignatureCompareResult result,

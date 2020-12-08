@@ -251,9 +251,8 @@ sub pack-variable($name, \object, :$is-attribute = False) {
     %var;
 }
 
-my $new-param-API = so Parameter.^can('suffix');
-
 sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
+    my $new-param-API = so Parameter.^can('suffix');
     my $s = $code.signature;
     my @params = $s.params;
     @params .= skip(1) if $is-method;
