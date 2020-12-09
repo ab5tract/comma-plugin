@@ -6,6 +6,7 @@ import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.ResolveResult;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.annotation.fix.ConstKeywordFix;
+import edument.perl6idea.annotation.fix.StubMissingSubroutineFix;
 import edument.perl6idea.highlighter.Perl6Highlighter;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -25,7 +26,7 @@ public class UndeclaredRoutineAnnotator implements Annotator {
         // Resolve the reference.
         final Perl6SubCallName call = (Perl6SubCallName)element;
         String subName = call.getCallName();
-        PsiReferenceBase.Poly reference = (PsiReferenceBase.Poly)call.getReference();
+        PsiReferenceBase.Poly<?> reference = (PsiReferenceBase.Poly<?>)call.getReference();
         if (reference == null)
             return;
         ResolveResult[] results = reference.multiResolve(false);
@@ -34,7 +35,8 @@ public class UndeclaredRoutineAnnotator implements Annotator {
         if (results.length == 0) {
             AnnotationBuilder annBuilder = holder.newAnnotation(HighlightSeverity.ERROR,
                                                                 String.format("Subroutine %s is not declared", subName))
-                .range(element);
+                    .withFix(new StubMissingSubroutineFix())
+                    .range(element);
             if (subName.equals("const") &&
                 (PsiTreeUtil.skipWhitespacesForward(call) instanceof Perl6Variable ||
                  PsiTreeUtil.skipWhitespacesForward(call) instanceof Perl6InfixApplication)) {

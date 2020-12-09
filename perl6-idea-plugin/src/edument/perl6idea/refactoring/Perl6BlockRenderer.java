@@ -22,7 +22,7 @@ public class Perl6BlockRenderer {
                                  ((Perl6PackageDecl)scope).getPackageKind(),
                                  name == null ? "<anon>" : name);
         } else {
-            return t.getText();
+            return t.getText().trim();
         }
     }
 }
