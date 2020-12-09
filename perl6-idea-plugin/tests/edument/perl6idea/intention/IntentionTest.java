@@ -2,6 +2,7 @@ package edument.perl6idea.intention;
 
 import com.intellij.codeInsight.intention.IntentionAction;
 import edument.perl6idea.CommaFixtureTestCase;
+import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -378,6 +379,14 @@ public class IntentionTest extends CommaFixtureTestCase {
     public void testColonpairForms1() { executeIntention("Convert to "); }
     public void testColonpairForms2() { executeIntention("Convert to "); }
     public void testColonpairForms3() { executeIntention("Convert to "); }
+
+    public void testSubStubbing() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "he<caret>he(42, :two, :$bar);");
+        List<IntentionAction> availableIntentions = myFixture.filterAvailableIntentions("Create");
+        assertSize(1, availableIntentions);
+        myFixture.launchAction(availableIntentions.get(0));
+        myFixture.checkResult("sub hehe($p, :$two, :$bar) {}\nhehe(42, :two, :$bar);");
+    }
 
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
