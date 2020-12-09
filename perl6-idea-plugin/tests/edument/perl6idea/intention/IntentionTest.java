@@ -398,6 +398,14 @@ public class IntentionTest extends CommaFixtureTestCase {
         executeIntention("Safe delete");
     }
 
+    public void testSubroutineExportingQuickfix() {
+        executeIntention("Make");
+    }
+
+    public void testSubroutineExportingQuickfixWithTraits() {
+        executeIntention("Make");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }

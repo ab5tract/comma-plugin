@@ -1,5 +1,6 @@
 package edument.perl6idea.annotation;
 
+import com.intellij.lang.annotation.AnnotationBuilder;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -10,6 +11,7 @@ import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Query;
 import edument.perl6idea.annotation.fix.RemoveUnusedRoutineFix;
+import edument.perl6idea.annotation.fix.MakeSubroutineExportedFix;
 import edument.perl6idea.highlighter.Perl6Highlighter;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -67,11 +69,13 @@ public class UnusedRoutineAnnotation implements Annotator {
         if (results.findFirst() == null) {
             PsiElement identifier = routine.getNameIdentifier();
             if (identifier != null) {
-                holder.newAnnotation(HighlightSeverity.WEAK_WARNING, message)
+                AnnotationBuilder annBuilder = holder.newAnnotation(HighlightSeverity.WEAK_WARNING, message)
                         .range(identifier)
                         .withFix(new RemoveUnusedRoutineFix())
-                        .textAttributes(Perl6Highlighter.UNUSED)
-                        .create();
+                        .textAttributes(Perl6Highlighter.UNUSED);
+                if (!routine.isPrivate())
+                    annBuilder = annBuilder.withFix(new MakeSubroutineExportedFix());
+                annBuilder.create();
             }
         }
     }
