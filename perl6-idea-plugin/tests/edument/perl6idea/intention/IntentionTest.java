@@ -410,6 +410,16 @@ public class IntentionTest extends CommaFixtureTestCase {
         checkIntentionAbsence("Add export");
     }
 
+    public void testRemoveUnusedLocal() {
+        executeIntention("Safe");
+    }
+    public void testRemoveUnusedMultiLocal() {
+        executeIntention("Safe");
+    }
+    public void testRemoveUnusedAttribute() {
+        executeIntention("Safe");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
