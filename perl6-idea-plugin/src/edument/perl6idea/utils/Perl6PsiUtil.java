@@ -19,8 +19,16 @@ public class Perl6PsiUtil {
      */
     @Nullable
     public static PsiElement skipSpaces(PsiElement node, boolean toRight) {
+        return skipSpaces(node, toRight, true);
+    }
+
+    @Nullable
+    public static PsiElement skipSpaces(PsiElement node, boolean toRight, boolean skipComments) {
         PsiElement temp = node;
-        while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE) || temp instanceof Perl6Comment))
+        while (temp != null &&
+                (temp instanceof PsiWhiteSpace
+                        || temp.getNode().getElementType().equals(UNV_WHITE_SPACE)
+                        || (skipComments && temp instanceof Perl6Comment)))
             temp = toRight ? temp.getNextSibling() : temp.getPrevSibling();
         return temp;
     }

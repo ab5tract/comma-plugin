@@ -394,6 +394,9 @@ public class IntentionTest extends CommaFixtureTestCase {
     public void testMethodDeletion() {
         executeIntention("Safe delete");
     }
+    public void testSubDeletionRemovesDocs() {
+        executeIntention("Safe delete");
+    }
 
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
