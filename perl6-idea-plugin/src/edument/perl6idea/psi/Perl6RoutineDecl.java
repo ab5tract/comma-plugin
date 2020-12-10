@@ -29,4 +29,7 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     default String getReturnType() {
         return Perl6SignatureHolder.super.getReturnType();
     }
+
+    boolean isMethod();
+    boolean isSub();
 }

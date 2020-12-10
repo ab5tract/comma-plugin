@@ -14,12 +14,11 @@ import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6Trait;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 
 public class MakeSubroutineExportedFix implements IntentionAction {
     @Override
     public @IntentionName @NotNull String getText() {
-        return "Make exported";
+        return "Add export trait";
     }
 
     @Override

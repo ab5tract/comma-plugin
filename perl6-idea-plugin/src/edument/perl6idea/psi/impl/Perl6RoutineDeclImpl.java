@@ -81,6 +81,17 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
+    public boolean isMethod() {
+        String kind = getRoutineKind();
+        return kind.equals("method") || kind.equals("submethod");
+    }
+
+    @Override
+    public boolean isSub() {
+        return getRoutineKind().equals("sub");
+    }
+
+    @Override
     @Nullable
     public String getReturnsTrait() {
         Perl6RoutineDeclStub stub = getStub();

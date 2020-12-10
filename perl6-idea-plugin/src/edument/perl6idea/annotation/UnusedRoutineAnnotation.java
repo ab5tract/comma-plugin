@@ -37,7 +37,7 @@ public class UnusedRoutineAnnotation implements Annotator {
                 annotateIfUnused(holder, routine, searchScope, "Unused private method");
             }
         }
-        else if (routine.getRoutineKind().equals("sub")) {
+        else if (routine.isSub()) {
             // Lexical subroutine declarations not exported or used as a value can be
             // marked as unused too. MAIN is called implicitly.
             String routineName = routine.getRoutineName();
@@ -73,7 +73,7 @@ public class UnusedRoutineAnnotation implements Annotator {
                         .range(identifier)
                         .withFix(new RemoveUnusedRoutineFix())
                         .textAttributes(Perl6Highlighter.UNUSED);
-                if (!routine.isPrivate())
+                if (routine.isSub())
                     annBuilder = annBuilder.withFix(new MakeSubroutineExportedFix());
                 annBuilder.create();
             }

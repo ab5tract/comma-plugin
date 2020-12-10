@@ -399,11 +399,15 @@ public class IntentionTest extends CommaFixtureTestCase {
     }
 
     public void testSubroutineExportingQuickfix() {
-        executeIntention("Make");
+        executeIntention("Add export");
     }
 
     public void testSubroutineExportingQuickfixWithTraits() {
-        executeIntention("Make");
+        executeIntention("Add export");
+    }
+
+    public void testSubroutineExportingDoesNotWorkOnMethods() {
+        checkIntentionAbsence("Add export");
     }
 
     private void checkIntentionAbsence(String hint) {
