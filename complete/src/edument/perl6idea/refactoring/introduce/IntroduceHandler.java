@@ -23,6 +23,7 @@ import com.intellij.refactoring.listeners.RefactoringEventData;
 import com.intellij.refactoring.listeners.RefactoringEventListener;
 import com.intellij.refactoring.util.CommonRefactoringUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.refactoring.Perl6BlockRenderer;
 import edument.perl6idea.refactoring.helpers.Perl6IntroduceDialog;
 import edument.perl6idea.refactoring.Perl6NameSuggester;
 import org.jetbrains.annotations.NotNull;
@@ -170,19 +171,51 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         if (editor.getSettings().isVariableInplaceRenameEnabled()) {
             ensureName(operation);
             if (operation.isReplaceAll() != null) {
-                performInplaceIntroduce(operation);
+                performScopeSelectionAndIntroduce(operation);
             } else {
                 OccurrencesChooser.simpleChooser(editor).showChooser(operation.getElement(), operation.getOccurrences(), new Pass<OccurrencesChooser.ReplaceChoice>() {
                     @Override
                     public void pass(OccurrencesChooser.ReplaceChoice replaceChoice) {
                         operation.setReplaceAll(replaceChoice == OccurrencesChooser.ReplaceChoice.ALL);
-                        performInplaceIntroduce(operation);
+                        performScopeSelectionAndIntroduce(operation);
                     }
                 });
             }
         } else {
             performIntroduceWithDialog(operation);
         }
+    }
+
+    protected List<PsiElement> calculateAnchors(IntroduceOperation operation,
+                                              PsiElement element, List<PsiElement> occurrences) {
+        // Calculate innermost scope for all occurrences to extract
+        Perl6StatementList commonBase = PsiTreeUtil.getNonStrictParentOfType(
+                PsiTreeUtil.findCommonParent(
+                        operation.isReplaceAll()
+                                ? occurrences
+                                : Collections.singletonList(element)),
+                Perl6StatementList.class);
+        if (commonBase == null) {
+            showCannotPerformError(operation.getProject(), operation.getEditor());
+            return null;
+        }
+        // Iterate all scopes above the innermost one,
+        // calculating "insert before this" anchor using
+        // the fact that it will always be an ancestor of
+        // the first occurrence we have to extract
+        List<PsiElement> anchors = new LinkedList<>();
+        occurrences.sort(Comparator.comparingInt(PsiElement::getTextOffset));
+        PsiElement earliestOccurrence = occurrences.get(0);
+        while (commonBase != null) {
+            for (PsiElement statement : commonBase.getChildren()) {
+                if (PsiTreeUtil.isAncestor(statement, earliestOccurrence, false)) {
+                    anchors.add(statement);
+                    break;
+                }
+            }
+            commonBase = PsiTreeUtil.getParentOfType(commonBase, Perl6StatementList.class);
+        }
+        return anchors;
     }
 
     protected static void ensureName(IntroduceOperation operation) {
@@ -216,6 +249,22 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
     }
 
     protected abstract String getHelpId();
+
+    private void performScopeSelectionAndIntroduce(IntroduceOperation operation) {
+        List<PsiElement> anchors = calculateAnchors(operation, operation.getElement(), operation.getOccurrences());
+        if (anchors == null) {
+            showCannotPerformError(operation.getProject(), operation.getEditor());
+            return;
+        }
+        IntroduceTargetChooser.showChooser(operation.getEditor(),
+                anchors, new Pass<PsiElement>() {
+                    @Override
+                    public void pass(PsiElement anchor) {
+                        operation.setAnchor(anchor);
+                        performInplaceIntroduce(operation);
+                    }
+                }, Perl6BlockRenderer::renderBlock);
+    }
 
     private void performInplaceIntroduce(IntroduceOperation operation) {
         PsiElement element = performRefactoring(operation);
@@ -276,9 +325,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         PsiElement expression = operation.getInitializer();
         Project project = operation.getProject();
         return WriteCommandAction.writeCommandAction(project).compute(() -> {
-            PsiElement anchor = operation.isReplaceAll()
-                                ? findAnchor(operation.getOccurrences())
-                                : findTopmostStatementOfExpression(expression);
+            PsiElement anchor = operation.getAnchor();
             try {
                 RefactoringEventData afterData = new RefactoringEventData();
                 afterData.addElement(declaration);
@@ -388,13 +435,6 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             return false;
         }
         return true;
-    }
-
-    protected static PsiElement findAnchor(List<PsiElement> occurrences) {
-        occurrences.sort(Comparator.comparingInt(PsiElement::getTextOffset));
-        PsiElement element = occurrences.get(0);
-        if (element == null) return null;
-        return findTopmostStatementOfExpression(element);
     }
 
     private static PsiElement isValidIntroduceContext(PsiElement element) {

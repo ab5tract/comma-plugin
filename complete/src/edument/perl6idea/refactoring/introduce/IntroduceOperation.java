@@ -24,6 +24,7 @@ public class IntroduceOperation {
     private List<PsiElement> myOccurrences = Collections.emptyList();
     private Collection<String> mySuggestedNames;
     private boolean occurrencesReplaceable = true;
+    private PsiElement myAnchor;
 
     public IntroduceOperation(Project project, Editor editor,
                               PsiFile file, String name) {
@@ -99,5 +100,13 @@ public class IntroduceOperation {
 
     public void setOccurrencesReplaceable(boolean occurrencesReplaceable) {
         this.occurrencesReplaceable = occurrencesReplaceable;
+    }
+
+    public PsiElement getAnchor() {
+        return myAnchor;
+    }
+
+    public void setAnchor(PsiElement anchor) {
+        myAnchor = anchor;
     }
 }
