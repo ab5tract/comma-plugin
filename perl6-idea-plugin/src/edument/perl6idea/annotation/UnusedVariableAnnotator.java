@@ -1,5 +1,6 @@
 package edument.perl6idea.annotation;
 
+import com.intellij.lang.annotation.AnnotationBuilder;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -101,11 +102,12 @@ public class UnusedVariableAnnotator implements Annotator {
                 PsiElement toAnnotate = expectedUsed instanceof Perl6VariableDecl
                     ? ((Perl6VariableDecl)expectedUsed).getVariables()[0]
                     : expectedUsed;
-                holder.newAnnotation(HighlightSeverity.WEAK_WARNING, error)
+                AnnotationBuilder annBuilder = holder.newAnnotation(HighlightSeverity.WEAK_WARNING, error)
                         .range(toAnnotate)
-                        .textAttributes(Perl6Highlighter.UNUSED)
-                        .withFix(new DeleteUnusedVariable())
-                        .create();
+                        .textAttributes(Perl6Highlighter.UNUSED);
+                if (!(toAnnotate instanceof Perl6ParameterVariable && PsiTreeUtil.getParentOfType(toAnnotate, Perl6VariableDecl.class, Perl6RoutineDecl.class) instanceof Perl6RoutineDecl))
+                    annBuilder = annBuilder.withFix(new DeleteUnusedVariable());
+                annBuilder.create();
             }
         }
     }
