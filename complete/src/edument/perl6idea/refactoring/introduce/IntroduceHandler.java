@@ -11,6 +11,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
@@ -29,6 +30,7 @@ import edument.perl6idea.refactoring.Perl6NameSuggester;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
@@ -256,14 +258,25 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             showCannotPerformError(operation.getProject(), operation.getEditor());
             return;
         }
+
+        // Selection goes on psi scopes, but we collected suitable anchors
+        // Ultimately, we want to know selected scope index to set corresponding anchor
+        Map<Perl6PsiScope, PsiElement> anchorByScope = new HashMap<>();
+        List<Perl6PsiScope> scopes = new LinkedList<>();
+        anchors.forEach(anchor -> {
+            Perl6PsiScope scope = PsiTreeUtil.getParentOfType(anchor, Perl6PsiScope.class);
+            scopes.add(scope);
+            anchorByScope.put(scope, anchor);
+        });
+
         IntroduceTargetChooser.showChooser(operation.getEditor(),
-                anchors, new Pass<PsiElement>() {
+                scopes, new Pass<Perl6PsiScope>() {
                     @Override
-                    public void pass(PsiElement anchor) {
-                        operation.setAnchor(anchor);
+                    public void pass(Perl6PsiScope scope) {
+                        operation.setAnchor(anchorByScope.get(scope));
                         performInplaceIntroduce(operation);
                     }
-                }, Perl6BlockRenderer::renderBlock);
+                }, Perl6BlockRenderer::renderBlock, "Scope");
     }
 
     private void performInplaceIntroduce(IntroduceOperation operation) {
