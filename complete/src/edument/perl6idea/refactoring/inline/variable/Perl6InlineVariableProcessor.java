@@ -148,7 +148,7 @@ public class Perl6InlineVariableProcessor extends Perl6InlineProcessor {
     private void deleteDeclaration() {
         if (myDeclaration instanceof Perl6VariableDecl) {
             Perl6Statement statement = PsiTreeUtil.getParentOfType(myDeclaration, Perl6Statement.class);
-            statement.delete();
+            if (statement != null) statement.delete();
         }
         if (myDeclaration instanceof Perl6ParameterVariable) {
             Perl6VariableDecl decl = PsiTreeUtil.getParentOfType(myDeclaration, Perl6VariableDecl.class);

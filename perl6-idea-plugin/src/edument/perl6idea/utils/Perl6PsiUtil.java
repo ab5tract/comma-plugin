@@ -50,23 +50,28 @@ public class Perl6PsiUtil {
         element.replace(statement);
     }
 
-    public static void deleteElementDocComments(PsiElement decl) {
-        List<PsiElement> toRemove = new LinkedList<>();
+    public static void deleteElementDocComments(@Nullable PsiElement decl) {
+        if (decl == null)
+            return;
+        PsiElement removeStart = null;
+        PsiElement removeEnd = null;
 
-        PsiElement prevSibling = decl.getParent().getPrevSibling();
+        PsiElement prevSibling = decl.getPrevSibling();
         PsiElement preComment = skipSpaces(prevSibling, false, false);
         while (preComment instanceof PodPreComment) {
-            toRemove.add(preComment);
+            removeStart = preComment;
             preComment = skipSpaces(preComment.getPrevSibling(), false, false);
         }
 
-        PsiElement nextSibling = decl.getParent().getNextSibling();
+        PsiElement nextSibling = decl.getNextSibling();
         PsiElement postComment = skipSpaces(nextSibling, true, false);
         while (postComment instanceof PodPostComment) {
-            toRemove.add(postComment);
+            removeEnd = postComment;
             postComment = skipSpaces(postComment.getNextSibling(), true, false);
         }
-        for (PsiElement docs : toRemove)
-            docs.delete();
+        if (removeStart != null)
+            decl.getParent().deleteChildRange(removeStart, decl.getPrevSibling());
+        if (removeEnd != null)
+            decl.getParent().deleteChildRange(decl.getNextSibling(), removeEnd);
     }
 }

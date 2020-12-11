@@ -7,18 +7,18 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6Statement;
+import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 
-public class RemoveUnusedRoutineFix implements IntentionAction {
+public class DeleteUnusedVariable implements IntentionAction {
     @Override
     public @IntentionName @NotNull String getText() {
-        return "Safe delete routine";
+        return "Safe delete unused variable";
     }
 
     @Override
@@ -33,17 +33,14 @@ public class RemoveUnusedRoutineFix implements IntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        PsiElement el = file.findElementAt(editor.getCaretModel().getOffset());
-        if (el == null)
+        PsiElement caretEl = file.findElementAt(editor.getCaretModel().getOffset());
+        if (caretEl == null)
             return;
-        PsiElement decl = PsiTreeUtil.getParentOfType(el, Perl6RoutineDecl.class);
-        if (decl == null)
-            return;
+        Perl6Variable variable = PsiTreeUtil.getNonStrictParentOfType(caretEl, Perl6Variable.class);
+        Perl6VariableDecl decl = PsiTreeUtil.getParentOfType(caretEl, Perl6VariableDecl.class);
+        assert decl != null;
         Perl6PsiUtil.deleteElementDocComments(PsiTreeUtil.getParentOfType(decl, Perl6Statement.class));
-        PsiElement maybeWS = decl.getParent().getNextSibling();
-        if (maybeWS instanceof PsiWhiteSpace)
-            maybeWS.delete();
-        decl.getParent().delete();
+        decl.removeVariable(variable);
     }
 
     @Override

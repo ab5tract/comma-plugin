@@ -1,5 +1,6 @@
 package edument.perl6idea.annotation;
 
+import com.intellij.lang.annotation.AnnotationBuilder;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -9,6 +10,7 @@ import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Query;
+import edument.perl6idea.annotation.fix.DeleteUnusedVariable;
 import edument.perl6idea.highlighter.Perl6Highlighter;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -100,10 +102,12 @@ public class UnusedVariableAnnotator implements Annotator {
                 PsiElement toAnnotate = expectedUsed instanceof Perl6VariableDecl
                     ? ((Perl6VariableDecl)expectedUsed).getVariables()[0]
                     : expectedUsed;
-                holder.newAnnotation(HighlightSeverity.WEAK_WARNING, error)
-                  .range(toAnnotate)
-                  .textAttributes(Perl6Highlighter.UNUSED)
-                  .create();
+                AnnotationBuilder annBuilder = holder.newAnnotation(HighlightSeverity.WEAK_WARNING, error)
+                        .range(toAnnotate)
+                        .textAttributes(Perl6Highlighter.UNUSED);
+                if (element instanceof Perl6VariableDecl && ((Perl6VariableDecl) element).getVariableNames().length == 1)
+                    annBuilder = annBuilder.withFix(new DeleteUnusedVariable());
+                annBuilder.create();
             }
         }
     }
@@ -117,7 +121,7 @@ public class UnusedVariableAnnotator implements Annotator {
         return false;
     }
 
-    private boolean implicitlyUsed(PsiElement used) {
+    private static boolean implicitlyUsed(PsiElement used) {
         String name = null;
         if (used instanceof Perl6Variable)
             name = ((Perl6Variable)used).getVariableName();

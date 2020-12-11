@@ -3,6 +3,7 @@ package edument.perl6idea.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
 import com.intellij.psi.search.LocalSearchScope;
@@ -167,7 +168,12 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public void removeVariable(Perl6Variable variable) {
         PsiNamedElement[] variables = getDeclaredVariables();
         if (variables.length == 1) {
-            delete();
+            Perl6Statement statement = PsiTreeUtil.getParentOfType(this, Perl6Statement.class);
+            assert statement != null;
+            PsiElement maybeWS = statement.getNextSibling();
+            if (maybeWS instanceof PsiWhiteSpace)
+                maybeWS.delete();
+            statement.delete();
         } else {
             // Should we enclose resulting variable list with parentheses or no
             boolean shouldEnclose = variables.length - 1 != 1;
