@@ -105,7 +105,7 @@ public class UnusedVariableAnnotator implements Annotator {
                 AnnotationBuilder annBuilder = holder.newAnnotation(HighlightSeverity.WEAK_WARNING, error)
                         .range(toAnnotate)
                         .textAttributes(Perl6Highlighter.UNUSED);
-                if (!(toAnnotate instanceof Perl6ParameterVariable && PsiTreeUtil.getParentOfType(toAnnotate, Perl6VariableDecl.class, Perl6RoutineDecl.class) instanceof Perl6RoutineDecl))
+                if (!(toAnnotate instanceof Perl6ParameterVariable))
                     annBuilder = annBuilder.withFix(new DeleteUnusedVariable());
                 annBuilder.create();
             }
