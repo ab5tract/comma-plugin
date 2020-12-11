@@ -2,8 +2,11 @@ package edument.perl6idea.refactoring;
 
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -94,6 +97,24 @@ public class Perl6NameSuggester {
     if (element instanceof P6CodeBlockCall && element instanceof Perl6PsiElement) {
       return getNamePieces(((P6CodeBlockCall)element).getCallName(), ((Perl6PsiElement)element).inferType());
     }
-    return new ArrayList<>(Collections.singletonList("$x"));
+    // Try out `$xN` until we find the available one
+    String base = "$x", name = base;
+
+    Perl6PsiElement el = PsiTreeUtil.getNonStrictParentOfType(element, Perl6PsiElement.class);
+    // If we are not on a Raku element, something is very wrong, so just return what we have
+    // and hope for the best
+    if (el == null)
+      return new ArrayList<>(Collections.singletonList(name));
+    int counter = 1;
+    // Try to look up if $x1, $x2, $x3... are present lexically until we find
+    // a name not yet taken, then suggest that.
+    while (true) {
+      Perl6Symbol symbol = el.resolveLexicalSymbol(Perl6SymbolKind.Variable, name);
+      if (symbol == null)
+        return new ArrayList<>(Collections.singletonList(name));
+      else
+        name = base + counter;
+      counter++;
+    }
   }
 }
