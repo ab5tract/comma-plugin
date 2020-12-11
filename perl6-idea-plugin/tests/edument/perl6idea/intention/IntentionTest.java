@@ -422,6 +422,9 @@ public class IntentionTest extends CommaFixtureTestCase {
     public void testRemoveUnusedIsNotForParameters() {
         checkIntentionAbsence("Safe");
     }
+    public void testRemoveUnusedIsNotForMultiAttributes() {
+        checkIntentionAbsence("Safe");
+    }
 
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
