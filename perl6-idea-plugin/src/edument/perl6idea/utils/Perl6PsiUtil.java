@@ -2,11 +2,12 @@ package edument.perl6idea.utils;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
-import edument.perl6idea.psi.Perl6Comment;
-import edument.perl6idea.psi.Perl6ElementFactory;
-import edument.perl6idea.psi.Perl6Statement;
+import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
@@ -19,8 +20,16 @@ public class Perl6PsiUtil {
      */
     @Nullable
     public static PsiElement skipSpaces(PsiElement node, boolean toRight) {
+        return skipSpaces(node, toRight, true);
+    }
+
+    @Nullable
+    public static PsiElement skipSpaces(PsiElement node, boolean toRight, boolean skipComments) {
         PsiElement temp = node;
-        while (temp != null && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType().equals(UNV_WHITE_SPACE) || temp instanceof Perl6Comment))
+        while (temp != null &&
+                (temp instanceof PsiWhiteSpace
+                        || temp.getNode().getElementType().equals(UNV_WHITE_SPACE)
+                        || (skipComments && temp instanceof Perl6Comment)))
             temp = toRight ? temp.getNextSibling() : temp.getPrevSibling();
         return temp;
     }
@@ -39,5 +48,25 @@ public class Perl6PsiUtil {
 
         Perl6Statement statement = Perl6ElementFactory.createStatementFromText(element.getProject(), element.getText() + ";");
         element.replace(statement);
+    }
+
+    public static void deleteElementDocComments(PsiElement decl) {
+        List<PsiElement> toRemove = new LinkedList<>();
+
+        PsiElement prevSibling = decl.getParent().getPrevSibling();
+        PsiElement preComment = skipSpaces(prevSibling, false, false);
+        while (preComment instanceof PodPreComment) {
+            toRemove.add(preComment);
+            preComment = skipSpaces(preComment.getPrevSibling(), false, false);
+        }
+
+        PsiElement nextSibling = decl.getParent().getNextSibling();
+        PsiElement postComment = skipSpaces(nextSibling, true, false);
+        while (postComment instanceof PodPostComment) {
+            toRemove.add(postComment);
+            postComment = skipSpaces(postComment.getNextSibling(), true, false);
+        }
+        for (PsiElement docs : toRemove)
+            docs.delete();
     }
 }

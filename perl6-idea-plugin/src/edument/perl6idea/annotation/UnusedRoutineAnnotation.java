@@ -9,6 +9,7 @@ import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Query;
+import edument.perl6idea.annotation.fix.RemoveUnusedRoutineFix;
 import edument.perl6idea.highlighter.Perl6Highlighter;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
@@ -67,9 +68,10 @@ public class UnusedRoutineAnnotation implements Annotator {
             PsiElement identifier = routine.getNameIdentifier();
             if (identifier != null) {
                 holder.newAnnotation(HighlightSeverity.WEAK_WARNING, message)
-                    .range(identifier)
-                    .textAttributes(Perl6Highlighter.UNUSED)
-                    .create();
+                        .range(identifier)
+                        .withFix(new RemoveUnusedRoutineFix())
+                        .textAttributes(Perl6Highlighter.UNUSED)
+                        .create();
             }
         }
     }

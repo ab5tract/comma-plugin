@@ -388,6 +388,16 @@ public class IntentionTest extends CommaFixtureTestCase {
         myFixture.checkResult("sub hehe($p, :$two, :$bar) {}\nhehe(42, :two, :$bar);");
     }
 
+    public void testSubroutineDeletion() {
+        executeIntention("Safe delete");
+    }
+    public void testMethodDeletion() {
+        executeIntention("Safe delete");
+    }
+    public void testSubDeletionRemovesDocs() {
+        executeIntention("Safe delete");
+    }
+
     private void checkIntentionAbsence(String hint) {
         assertNull(prepareIntention(hint));
     }
