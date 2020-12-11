@@ -52,6 +52,16 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     }
 
     @Override
+    public boolean isMethod() {
+        return !isSub();
+    }
+
+    @Override
+    public boolean isSub() {
+        return !(myKind.equals("m") || myKind.equals("sm"));
+    }
+
+    @Override
     public String getRoutineName() {
         return getName();
     }
