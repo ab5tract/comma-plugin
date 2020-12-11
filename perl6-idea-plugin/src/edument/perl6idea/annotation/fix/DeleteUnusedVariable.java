@@ -9,8 +9,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6Variable;
 import edument.perl6idea.psi.Perl6VariableDecl;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class DeleteUnusedVariable implements IntentionAction {
@@ -37,6 +39,7 @@ public class DeleteUnusedVariable implements IntentionAction {
         Perl6Variable variable = PsiTreeUtil.getNonStrictParentOfType(caretEl, Perl6Variable.class);
         Perl6VariableDecl decl = PsiTreeUtil.getParentOfType(caretEl, Perl6VariableDecl.class);
         assert decl != null;
+        Perl6PsiUtil.deleteElementDocComments(PsiTreeUtil.getParentOfType(decl, Perl6Statement.class));
         decl.removeVariable(variable);
     }
 

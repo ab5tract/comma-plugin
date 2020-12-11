@@ -413,10 +413,10 @@ public class IntentionTest extends CommaFixtureTestCase {
     public void testRemoveUnusedLocal() {
         executeIntention("Safe");
     }
-    public void testRemoveUnusedMultiLocal() {
+    public void testRemoveUnusedAttribute() {
         executeIntention("Safe");
     }
-    public void testRemoveUnusedAttribute() {
+    public void testRemoveUnusedAttributeRemovesDocs() {
         executeIntention("Safe");
     }
     public void testRemoveUnusedIsNotForParameters() {

@@ -11,6 +11,7 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6RoutineDecl;
+import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,7 +39,7 @@ public class RemoveUnusedRoutineFix implements IntentionAction {
         PsiElement decl = PsiTreeUtil.getParentOfType(el, Perl6RoutineDecl.class);
         if (decl == null)
             return;
-        Perl6PsiUtil.deleteElementDocComments(decl);
+        Perl6PsiUtil.deleteElementDocComments(PsiTreeUtil.getParentOfType(decl, Perl6Statement.class));
         PsiElement maybeWS = decl.getParent().getNextSibling();
         if (maybeWS instanceof PsiWhiteSpace)
             maybeWS.delete();
