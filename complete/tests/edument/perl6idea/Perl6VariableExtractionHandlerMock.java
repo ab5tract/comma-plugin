@@ -6,6 +6,8 @@ import edument.perl6idea.refactoring.introduce.IntroduceOperation;
 import edument.perl6idea.refactoring.introduce.IntroduceValidator;
 import edument.perl6idea.refactoring.introduce.variable.Perl6IntroduceVariableHandler;
 
+import java.util.List;
+
 public class Perl6VariableExtractionHandlerMock extends Perl6IntroduceVariableHandler {
     private final String myName;
     public boolean replaceAll = true;
@@ -19,6 +21,8 @@ public class Perl6VariableExtractionHandlerMock extends Perl6IntroduceVariableHa
     protected void performActionOnElementOccurrences(IntroduceOperation operation) {
         operation.setName(myName);
         operation.setReplaceAll(replaceAll);
+        List<PsiElement> anchors = calculateAnchors(operation, operation.getElement(), operation.getOccurrences());
+        operation.setAnchor(anchors.get(0));
         PsiElement declaration = performRefactoring(operation);
         removeLeftoverStatement(operation);
         Editor editor = operation.getEditor();

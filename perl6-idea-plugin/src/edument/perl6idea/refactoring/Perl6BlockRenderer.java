@@ -17,10 +17,12 @@ public class Perl6BlockRenderer {
                                  ((Perl6RoutineDecl)scope).getRoutineKind(),
                                  name == null ? "<anon>" : name);
         } else if (scope instanceof Perl6PackageDecl) {
-            String name = ((Perl6PackageDecl)scope).getPackageName();
+            String name = ((Perl6PackageDecl) scope).getPackageName();
             return String.format("%s %s",
-                                 ((Perl6PackageDecl)scope).getPackageKind(),
-                                 name == null ? "<anon>" : name);
+                    ((Perl6PackageDecl) scope).getPackageKind(),
+                    name == null ? "<anon>" : name);
+        } else if (scope instanceof Perl6Block) {
+            return scope.getParent().getText().trim();
         } else {
             return t.getText().trim();
         }
