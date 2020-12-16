@@ -114,6 +114,40 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
+    public boolean isDeprecated() {
+        Perl6RoutineDeclStub stub = getStub();
+        if (stub != null)
+            for (StubElement s : stub.getChildrenStubs()) {
+                if (!(s instanceof Perl6TraitStub)) continue;
+                Perl6TraitStub traitStub = (Perl6TraitStub)s;
+                String modifier = traitStub.getTraitModifier();
+                if (modifier.equals("is") && "DEPRECATED".equals(((Perl6TraitStub)s).getTraitName()))
+                    return true;
+            }
+        Collection<Perl6Trait> traits = PsiTreeUtil.findChildrenOfType(this, Perl6Trait.class);
+        for (Perl6Trait trait : traits) {
+            String modifier = trait.getTraitModifier();
+            if (modifier.equals("is") && "DEPRECATED".equals(trait.getTraitName()))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public @Nullable String getDeprecationMessage() {
+        Collection<Perl6Trait> traits = PsiTreeUtil.findChildrenOfType(this, Perl6Trait.class);
+        for (Perl6Trait trait : traits) {
+            String modifier = trait.getTraitModifier();
+            if (modifier.equals("is") && "DEPRECATED".equals(trait.getTraitName())) {
+                Perl6StrLiteral reason = PsiTreeUtil.findChildOfType(trait, Perl6StrLiteral.class);
+                if (reason != null)
+                    return reason.getStringText();
+            }
+        }
+        return null;
+    }
+
+    @Override
     public boolean isStubbed() {
         Perl6Blockoid blockoid = (Perl6Blockoid)findChildByFilter(TokenSet.create(BLOCKOID));
         if (blockoid == null) return false;

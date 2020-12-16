@@ -1,6 +1,5 @@
 package edument.perl6idea.psi.external;
 
-import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
@@ -22,16 +21,20 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     private final String myName;
     private final String myIsMulti;
     private String myReturnType;
-    private Perl6Signature mySignature;
+    private final Perl6Signature mySignature;
+    private final String myDeprecationMessage;
 
     public ExternalPerl6RoutineDecl(Project project, PsiElement parent,
-                                    String kind, String scope, String name, String isMulti, JSONObject signature) {
+                                    String kind, String scope, String name,
+                                    String isMulti, String deprecationMessage,
+                                    JSONObject signature) {
         myProject = project;
         myParent = parent;
         myKind = kind;
         myScope = scope;
         myName = name;
         myIsMulti = isMulti;
+        myDeprecationMessage = deprecationMessage;
         mySignature = new ExternalPerl6Signature(project, parent, signature);
         myReturnType = (String)signature.get("r");
         if (myReturnType.endsWith(":D") || myReturnType.endsWith(":U")) {
@@ -172,5 +175,15 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
             collector.offerSymbol(sym);
         else
             collector.offerMultiSymbol(sym, false);
+    }
+
+    @Override
+    public boolean isDeprecated() {
+        return myDeprecationMessage != null;
+    }
+
+    @Override
+    public String getDeprecationMessage() {
+        return myDeprecationMessage;
     }
 }

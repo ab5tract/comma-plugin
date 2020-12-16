@@ -269,6 +269,7 @@ sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
     my $kind = $code.^name.comb.head.lc;
     my %code = k => $kind, n => $name // $code.name, s => %signature, m => $multiness;
     try %code<d> = $code.WHY.gist if $code.WHY ~~ Pod::Block::Declarator;
+    try { %code<x> = ~$_ with $code.DEPRECATED; }
     %code;
 }
 

@@ -13,7 +13,7 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
                                           StubBasedPsiElement<Perl6RoutineDeclStub>,
                                           Perl6SignatureHolder, PsiNamedElement,
                                           P6Extractable, Perl6LexicalSymbolContributor,
-                                          Perl6MOPSymbolContributor {
+                                          Perl6MOPSymbolContributor, Perl6Deprecatable {
     String getRoutineKind();
     String getRoutineName();
     boolean isPrivate();
