@@ -366,6 +366,10 @@ public class IntentionTest extends CommaFixtureTestCase {
     public void testHyperOpsIncomplete() {
         checkIntentionAbsence("Convert to Unicode");
     }
+    public void testHyperOpsOnMap() {
+        executeIntention("Convert to ASCII");
+    }
+
     public void testUseDirectAttributeAccess() {
         executeIntention("Replace with direct access");
     }
