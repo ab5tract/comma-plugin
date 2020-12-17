@@ -10,12 +10,14 @@ import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.utils.Perl6OperatorUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class BackspaceUnicodeHandler extends BackspaceHandlerDelegate {
-    private boolean shouldRemove = false;
+    @Nullable
+    private String stringToInsert = null;
     private static final Map<Character, String> replacements = new HashMap<>();
 
     static {
@@ -26,14 +28,17 @@ public class BackspaceUnicodeHandler extends BackspaceHandlerDelegate {
 
     @Override
     public void beforeCharDeleted(char c, @NotNull PsiFile file, @NotNull Editor editor) {
-        Integer lastReplacementPos = editor.getUserData(UnicodeReplacementHandler.UNICODE_REPLACEMENT_POS);
-        if (lastReplacementPos != null && editor.getCaretModel().getOffset() == lastReplacementPos) {
+        Pair<Pair<Integer, Integer>, String> lastReplacement = editor.getUserData(UnicodeReplacementHandler.UNICODE_REPLACEMENT_POS);
+        if (lastReplacement != null && editor.getCaretModel().getOffset() - 1 == lastReplacement.first.first) {
             IElementType curToken = ((EditorEx)editor).getHighlighter()
                 .createIterator(editor.getCaretModel().getOffset() - 1).getTokenType();
-            shouldRemove = curToken == Perl6TokenTypes.INFIX || curToken == Perl6TokenTypes.METAOP;
+            if (curToken == Perl6TokenTypes.INFIX || curToken == Perl6TokenTypes.METAOP)
+                stringToInsert = lastReplacement.second;
+            else
+                stringToInsert = null;
         }
         else {
-            shouldRemove = false;
+            stringToInsert = null;
         }
     }
 
@@ -41,10 +46,14 @@ public class BackspaceUnicodeHandler extends BackspaceHandlerDelegate {
     public boolean charDeleted(char c, @NotNull PsiFile file, @NotNull Editor editor) {
         if (!Perl6OperatorUtils.isUnicodeConversionEnabled(editor))
             return false;
-        if (replacements.containsKey(c) && shouldRemove) {
-            String replacer = replacements.get(c);
-            editor.getDocument().insertString(editor.getCaretModel().getOffset(), replacer);
-            editor.getCaretModel().moveToOffset(editor.getCaretModel().getOffset() + replacer.length());
+        Pair<Pair<Integer, Integer>, String> lastReplacement = editor.getUserData(UnicodeReplacementHandler.UNICODE_REPLACEMENT_POS);
+        if (replacements.containsKey(c) && stringToInsert != null && lastReplacement != null) {
+            if (lastReplacement.first.second != 0) {
+                editor.getDocument().replaceString(lastReplacement.first.second, editor.getCaretModel().getOffset(), stringToInsert);
+            } else {
+                editor.getDocument().insertString(editor.getCaretModel().getOffset(), lastReplacement.second);
+            }
+            editor.getCaretModel().moveToOffset(editor.getCaretModel().getOffset() + stringToInsert.length());
         }
         return false;
     }

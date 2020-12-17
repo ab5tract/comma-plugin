@@ -7,10 +7,15 @@ import com.intellij.openapi.editor.highlighter.HighlighterIterator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.Pair;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
+import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
+import edument.perl6idea.psi.Perl6HyperMetaOp;
+import edument.perl6idea.psi.Perl6Infix;
 import edument.perl6idea.utils.Perl6OperatorUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 public class UnicodeReplacementHandler extends TypedHandlerDelegate {
-    public static final Key<Integer> UNICODE_REPLACEMENT_POS = Key.create("perl6.unicodeReplacementPos");
+    public static final Key<Pair<Pair<Integer, Integer>, String>> UNICODE_REPLACEMENT_POS = Key.create("perl6.unicodeReplacementPos");
 
     private static class Mapping {
         public String ascii;
@@ -80,14 +85,36 @@ public class UnicodeReplacementHandler extends TypedHandlerDelegate {
                     // Text matches, but what about token type?
                     HighlighterIterator iterator = ((EditorEx)editor).getHighlighter().createIterator(start);
                     IElementType curToken = iterator.getTokenType();
-                    if (curToken == Perl6TokenTypes.METAOP || curToken == Perl6TokenTypes.INFIX) {
+                    if (curToken == Perl6TokenTypes.INFIX) {
+                        if (m.ascii.equals(">>") || m.ascii.equals("<<"))
+                            return Result.CONTINUE;
                         // It's a match! Replace.
-                        editor.getDocument().setText(
-                                text.substring(0, start) +
-                                m.unicode +
-                                text.substring(offset)
-                        );
-                        editor.putUserData(UNICODE_REPLACEMENT_POS, start + 1);
+                        editor.getDocument().setText(text.substring(0, start) + m.unicode + text.substring(offset));
+                        editor.putUserData(UNICODE_REPLACEMENT_POS, Pair.create(Pair.create(offset - m.ascii.length(), 0), m.ascii));
+                        return Result.STOP;
+                    } else if (curToken == Perl6TokenTypes.METAOP) {
+                        PsiElement el = file.findElementAt(start - 1);
+                        Perl6HyperMetaOp hyperMeta = PsiTreeUtil.getParentOfType(el, Perl6HyperMetaOp.class);
+                        // For cases like `@a>>`, but `@a >>` is a hyper meta start...
+                        if (hyperMeta == null && m.ascii.equals(">>")) {
+                            editor.getDocument().setText(text.substring(0, start) + m.unicode + text.substring(offset));
+                            editor.putUserData(UNICODE_REPLACEMENT_POS, Pair.create(Pair.create(offset - m.ascii.length(), 0), m.ascii));
+                            return Result.STOP;
+                        } else if (hyperMeta != null) {
+                            String op = text.substring(start, offset);
+                            processHyperPart(editor, offset, text, start, op);
+                            text = editor.getDocument().getText();
+                            PsiElement hyperStarter = hyperMeta.getFirstChild();
+                            processHyperPart(editor, hyperStarter.getTextOffset() + 2, text, hyperStarter.getTextOffset(), hyperStarter.getText());
+                            String originalHyperText = hyperMeta.getText();
+                            if (originalHyperText.endsWith(String.valueOf(c))) {
+                                originalHyperText += c;
+                            } else {
+                                originalHyperText = originalHyperText + c + c;
+                            }
+                            editor.putUserData(UNICODE_REPLACEMENT_POS, Pair.create(Pair.create(offset - m.ascii.length() - 1, hyperMeta.getTextOffset()), originalHyperText));
+                            return Result.STOP;
+                        }
                         return Result.STOP;
                     }
                 }
@@ -95,5 +122,12 @@ public class UnicodeReplacementHandler extends TypedHandlerDelegate {
         }
         editor.putUserData(UNICODE_REPLACEMENT_POS, null);
         return Result.CONTINUE;
+    }
+
+    protected void processHyperPart(@NotNull Editor editor, int offset, String text, int start, String op) {
+        if (op.equals(">>"))
+            editor.getDocument().setText(text.substring(0, start) + "»" + text.substring(offset));
+        else if (op.equals("<<"))
+            editor.getDocument().setText(text.substring(0, start) + "«" + text.substring(offset));
     }
 }
