@@ -2,13 +2,14 @@ package edument.perl6idea.psi;
 
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
+import edument.perl6idea.psi.type.Perl6Type;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public interface Perl6Signature extends Perl6PsiElement {
-    String summary(String type);
+    String summary(Perl6Type type);
     Perl6Parameter[] getParameters();
 
     default SignatureCompareResult acceptsArguments(PsiElement[] argsArray, boolean isCompleteCall, boolean isMethodCall) {

@@ -11,6 +11,8 @@ import edument.perl6idea.psi.symbols.MOPSymbolsAllowed;
 import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6UnresolvedType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
@@ -134,7 +136,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
 
     @Override
     public String getSignature() {
-        return mySignature.summary(myReturnType);
+        return mySignature.summary(new Perl6UnresolvedType(myReturnType));
     }
 
     @Nullable
@@ -149,10 +151,9 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
         return null;
     }
 
-    @Nullable
     @Override
-    public String getReturnType() {
-        return myReturnType;
+    public @NotNull Perl6Type getReturnType() {
+        return new Perl6UnresolvedType(myReturnType);
     }
 
     @Override

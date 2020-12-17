@@ -3,6 +3,7 @@ package edument.perl6idea.psi;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import edument.perl6idea.psi.symbols.Perl6LexicalSymbolContributor;
+import edument.perl6idea.psi.type.Perl6Type;
 import org.jetbrains.annotations.Nullable;
 
 public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, P6Extractable, Perl6LexicalSymbolContributor {
@@ -17,8 +18,7 @@ public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, 
      * on its sigil and its declaration element (if any).
      * E.g. `@foo, null` -> `Array`, `%hash, Perl6ParameterVariable` -> `Map`
      */
-    @Nullable
-    String getTypeBySigil(String text, @Nullable  PsiElement declaration);
+    @Nullable Perl6Type getTypeBySigil(String text, @Nullable  PsiElement declaration);
 
     static char getSigil(String text) {
         if (text.length() < 1)

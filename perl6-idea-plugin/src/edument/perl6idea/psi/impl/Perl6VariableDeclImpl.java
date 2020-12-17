@@ -15,6 +15,9 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6Untyped;
+import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -225,22 +228,20 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Override
-    public @NotNull String inferType() {
-        Perl6VariableDeclStub stub = getStub();
-        if (stub != null) {
-            String variableType = stub.getVariableType();
-            if (variableType != null)
-                return variableType;
-        }
-        PsiElement type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
-        if (type != null) return getCutName(type.getText());
-        String assignBasedType = resolveAssign();
-        if (assignBasedType != null) return assignBasedType;
-        String typeBySigil = inferBySigil();
-        return typeBySigil == null ? "Any" : typeBySigil;
+    public @NotNull Perl6Type inferType() {
+        Perl6TypeName type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
+        if (type != null)
+            return type.inferType();
+        Perl6Type assignBasedType = resolveAssign();
+        if (assignBasedType != null)
+            return assignBasedType;
+        Perl6Type typeBySigil = inferBySigil();
+        if (typeBySigil != null)
+            return typeBySigil;
+        return Perl6Untyped.INSTANCE;
     }
 
-    private String inferBySigil() {
+    private Perl6Type inferBySigil() {
         Perl6Variable variable = PsiTreeUtil.getChildOfType(this, Perl6Variable.class);
         if (variable != null) {
             return variable.getTypeBySigil(variable.getText(), this);
@@ -248,7 +249,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         return null;
     }
 
-    private String resolveAssign() {
+    private Perl6Type resolveAssign() {
         PsiElement infix = PsiTreeUtil.getChildOfType(this, Perl6InfixImpl.class);
         if (infix == null || !infix.getText().equals("=")) return null;
         PsiElement value = Perl6PsiUtil.skipSpaces(infix.getNextSibling(), true);

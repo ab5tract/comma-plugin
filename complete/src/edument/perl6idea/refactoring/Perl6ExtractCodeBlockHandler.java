@@ -410,7 +410,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             }
             else {
                 if (checkIfAttributeCaptured(parentToCreateAt, elements)) {
-                    String type = usedVariable.getVariableName().startsWith("$") ? usedVariable.inferType() : "";
+                    String type = usedVariable.getVariableName().startsWith("$") ? usedVariable.inferType().nominalType().getName() : "";
                     capturedVariables.add(new Perl6VariableData(usedVariable.getVariableName(), usedVariable.getVariableName().replace("!", ""),
                                                                 type, false, true));
                 }
@@ -513,7 +513,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
         // We are checking whether a variable will be available from outer scope in scope where new block is created
         boolean isAvailableLexically = parentToCreateAt.resolveLexicalSymbol(Perl6SymbolKind.Variable, usedVariable.getVariableName()) != null;
-        String type = usedVariable.getVariableName().startsWith("$") ? usedVariable.inferType() : "";
+        String type = usedVariable.getVariableName().startsWith("$") ? usedVariable.inferType().nominalType().getName() : "";
         return new Perl6VariableData(usedVariable.getVariableName(), type, isAvailableLexically, !isAvailableLexically);
     }
 

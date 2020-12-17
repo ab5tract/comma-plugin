@@ -15,6 +15,7 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
 import edument.perl6idea.psi.stub.Perl6TraitStub;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.type.Perl6Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,12 +72,8 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         return getRoutineName().startsWith("!");
     }
 
-    @Nullable
     @Override
-    public String getReturnType() {
-        Perl6RoutineDeclStub stub = getStub();
-        if (stub != null)
-            return stub.getReturnType();
+    public @NotNull Perl6Type getReturnType() {
         return Perl6RoutineDecl.super.getReturnType();
     }
 

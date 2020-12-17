@@ -1,8 +1,9 @@
 package edument.perl6idea.psi;
 
-import org.jetbrains.annotations.Nullable;
+import edument.perl6idea.psi.type.Perl6Type;
+import org.jetbrains.annotations.NotNull;
 
 public interface Perl6ReturnConstraint extends Perl6PsiElement {
-    @Nullable
-    String getReturnType();
+    @NotNull
+    Perl6Type getReturnType();
 }

@@ -17,6 +17,8 @@ import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -108,10 +110,11 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     }
 
     @Override
-    public @NotNull String inferType() {
+    public @NotNull Perl6Type inferType() {
         PsiElement type = PsiTreeUtil.findSiblingBackward(this, TYPE_NAME, null);
-        if (type == null) return "Any";
-        return getCutName(type.getText());
+        return type instanceof Perl6TypeName
+                ? ((Perl6TypeName)type).inferType()
+               : Perl6Untyped.INSTANCE;
     }
 
     @Override

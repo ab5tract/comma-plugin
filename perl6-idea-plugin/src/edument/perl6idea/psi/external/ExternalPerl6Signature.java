@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6Signature;
+import edument.perl6idea.psi.type.Perl6Type;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,8 +31,8 @@ public class ExternalPerl6Signature extends Perl6ExternalPsiElement implements P
     }
 
     @Override
-    public String summary(String retType) {
-        return String.join(", ", Arrays.stream(myParameters).map(p -> p.summary()).toArray(String[]::new)) + " --> " + retType;
+    public String summary(Perl6Type retType) {
+        return String.join(", ", Arrays.stream(myParameters).map(p -> p.summary()).toArray(String[]::new)) + " --> " + retType.getName();
     }
 
     @Override

@@ -5,12 +5,12 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.Perl6ElementFactory;
-import edument.perl6idea.psi.Perl6LongName;
-import edument.perl6idea.psi.Perl6TypeName;
-import edument.perl6idea.psi.Perl6TypeNameReference;
+import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6TypeNameStub;
 import edument.perl6idea.psi.stub.Perl6TypeNameStubElementType;
+import edument.perl6idea.psi.type.Perl6ResolvedType;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6UnresolvedType;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub> implements Perl6TypeName {
@@ -40,8 +40,11 @@ public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub
     }
 
     @Override
-    public @NotNull String inferType() {
-        return getTypeName();
+    public @NotNull Perl6Type inferType() {
+        PsiElement resolution = getReference().resolve();
+        return resolution instanceof Perl6PsiElement
+                ? new Perl6ResolvedType(getTypeName(), (Perl6PsiElement)resolution)
+               : new Perl6UnresolvedType(getTypeName());
     }
 
     @Override

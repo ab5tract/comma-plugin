@@ -5,6 +5,9 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6StrLiteral;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.sdk.Perl6SettingTypeId;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6StrLiteralImpl extends ASTWrapperPsiElement implements Perl6StrLiteral {
@@ -13,8 +16,8 @@ public class Perl6StrLiteralImpl extends ASTWrapperPsiElement implements Perl6St
     }
 
     @Override
-    public @NotNull String inferType() {
-        return "Str";
+    public @NotNull Perl6Type inferType() {
+        return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Str);
     }
 
     @Override

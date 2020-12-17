@@ -12,6 +12,8 @@ import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6SubCallStub;
 import edument.perl6idea.psi.stub.Perl6SubCallStubElementType;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,17 +64,18 @@ public class Perl6SubCallImpl extends StubBasedPsiElementBase<Perl6SubCallStub> 
     }
 
     @Override
-    public @NotNull String inferType() {
+    public @NotNull Perl6Type inferType() {
         PsiElement name = getFirstChild();
-        if (!(name instanceof Perl6SubCallName)) return "Mu";
+        if (!(name instanceof Perl6SubCallName))
+            return Perl6Untyped.INSTANCE;
         PsiReference ref = name.getReference();
-        if (ref == null) return "Mu";
+        if (ref == null)
+            return Perl6Untyped.INSTANCE;
         PsiElement resolved = ref.resolve();
         if (resolved instanceof Perl6RoutineDecl) {
-            String returnType = ((Perl6RoutineDecl)resolved).getReturnType();
-            return returnType == null ? "Mu" : returnType;
+            return ((Perl6RoutineDecl)resolved).getReturnType();
         }
-        return "Mu";
+        return Perl6Untyped.INSTANCE;
     }
 
     @Override
