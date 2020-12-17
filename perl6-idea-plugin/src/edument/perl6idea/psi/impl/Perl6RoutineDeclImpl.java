@@ -124,25 +124,16 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
                 if (modifier.equals("is") && "DEPRECATED".equals(((Perl6TraitStub)s).getTraitName()))
                     return true;
             }
-        Collection<Perl6Trait> traits = PsiTreeUtil.findChildrenOfType(this, Perl6Trait.class);
-        for (Perl6Trait trait : traits) {
-            String modifier = trait.getTraitModifier();
-            if (modifier.equals("is") && "DEPRECATED".equals(trait.getTraitName()))
-                return true;
-        }
-        return false;
+        return findTrait("is", "DEPRECATED") != null;
     }
 
     @Override
     public @Nullable String getDeprecationMessage() {
-        Collection<Perl6Trait> traits = PsiTreeUtil.findChildrenOfType(this, Perl6Trait.class);
-        for (Perl6Trait trait : traits) {
-            String modifier = trait.getTraitModifier();
-            if (modifier.equals("is") && "DEPRECATED".equals(trait.getTraitName())) {
-                Perl6StrLiteral reason = PsiTreeUtil.findChildOfType(trait, Perl6StrLiteral.class);
-                if (reason != null)
-                    return reason.getStringText();
-            }
+        Perl6Trait trait = findTrait("is", "DEPRECATED");
+        if (trait != null) {
+            Perl6StrLiteral reason = PsiTreeUtil.findChildOfType(trait, Perl6StrLiteral.class);
+            if (reason != null)
+                return reason.getStringText();
         }
         return null;
     }
