@@ -96,7 +96,7 @@ public class UnicodeReplacementHandler extends TypedHandlerDelegate {
                         PsiElement el = file.findElementAt(start - 1);
                         Perl6HyperMetaOp hyperMeta = PsiTreeUtil.getParentOfType(el, Perl6HyperMetaOp.class);
                         // For cases like `@a>>`, but `@a >>` is a hyper meta start...
-                        if (hyperMeta == null && m.ascii.equals(">>")) {
+                        if (hyperMeta == null) {
                             editor.getDocument().setText(text.substring(0, start) + m.unicode + text.substring(offset));
                             editor.putUserData(UNICODE_REPLACEMENT_POS, Pair.create(Pair.create(offset - m.ascii.length(), 0), m.ascii));
                             return Result.STOP;
