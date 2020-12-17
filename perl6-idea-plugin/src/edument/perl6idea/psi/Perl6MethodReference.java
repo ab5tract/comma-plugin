@@ -166,7 +166,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             Perl6SingleResolutionSymbolCollector collector =
                 new Perl6SingleResolutionSymbolCollector(callinfo.getMethodName(), Perl6SymbolKind.Method);
             enclosingPackage.contributeMOPSymbols(collector, symbolsAllowed);
-            return ContainerUtil.map(collector.getResults(), s -> LookupElementBuilder.create(s.getPsi()));
+            return ContainerUtil.map(collector.getResults(), s -> strikeoutDeprecated(LookupElementBuilder.create(s.getPsi()), s.getPsi()));
         }
         else {
             Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
@@ -239,6 +239,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             LookupElementBuilder item = LookupElementBuilder.create(s.getPsi(), s.getName());
             if (s.getPsi() instanceof Perl6RoutineDecl) {
                 item = item.withTypeText(((Perl6RoutineDecl)s.getPsi()).summarySignature());
+                item = strikeoutDeprecated(item, s.getPsi());
             } else if (s.getPsi() instanceof Perl6VariableDecl) {
                 Perl6VariableDecl variableDecl = (Perl6VariableDecl)s.getPsi();
                 String type = variableDecl.inferType();
@@ -246,6 +247,12 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             }
             return PrioritizedLookupElement.withPriority(item, s.getPriority());
         });
+    }
+
+    private static LookupElementBuilder strikeoutDeprecated(LookupElementBuilder item, PsiElement psi) {
+        return psi instanceof Perl6Deprecatable && ((Perl6Deprecatable)psi).isDeprecated()
+                ? item.strikeout()
+               : item;
     }
 
     @Override

@@ -54,10 +54,16 @@ public class Perl6SubCallReference extends PsiReferenceBase.Poly<Perl6SubCallNam
             .map(sym -> {
                 PsiElement psi = sym.getPsi();
                 if (psi instanceof Perl6RoutineDecl)
-                    return LookupElementBuilder.create(psi, sym.getName()).withTypeText(((Perl6RoutineDecl)psi).summarySignature());
+                    return strikeoutDeprecated(LookupElementBuilder.create(psi, sym.getName()).withTypeText(((Perl6RoutineDecl)psi).summarySignature()), psi);
                 else
                     return sym.getName();
             }).toArray();
+    }
+
+    private static LookupElementBuilder strikeoutDeprecated(LookupElementBuilder item, PsiElement psi) {
+        return psi instanceof Perl6Deprecatable && ((Perl6Deprecatable)psi).isDeprecated()
+               ? item.strikeout()
+               : item;
     }
 
     @Override

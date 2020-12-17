@@ -1054,4 +1054,28 @@ public class AnnotationTest extends CommaFixtureTestCase {
               "my $y = / <error descr=\"Unrecognized regex modifier\">:!bar</error> /;");
         myFixture.checkHighlighting();
     }
+
+    public void testDeprecatedSub() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "sub foo-a() is DEPRECATED {}\n" +
+              "sub foo-b() is DEPRECATED('bar') {}\n" +
+              "sub foo-c() {}\n" +
+              "<warning descr=\"foo-a is deprecated\">foo-a</warning>();\n" +
+              "<warning descr=\"foo-b is deprecated; use bar\">foo-b</warning>();\n" +
+              "foo-c();");
+        myFixture.checkHighlighting();
+    }
+
+    public void testDeprecatedMethod() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "class Testing {\n" +
+            "    method foo-a() is DEPRECATED {}\n" +
+            "    method foo-b() is DEPRECATED('bar') {}\n" +
+            "    method foo-c() {}\n" +
+            "}\n" +
+            "Testing.<warning descr=\"foo-a is deprecated\">foo-a</warning>();\n" +
+            "Testing.<warning descr=\"foo-b is deprecated; use bar\">foo-b</warning>();\n" +
+            "Testing.foo-c();");
+        myFixture.checkHighlighting();
+    }
 }

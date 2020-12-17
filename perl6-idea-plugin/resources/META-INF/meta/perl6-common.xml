@@ -44,7 +44,7 @@
     <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaCroTemplate.xml"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NullRegexAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredVariableAnnotator"/>
-    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredRoutineAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredOrDeprecatedRoutineAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredPrivateMethodAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredAttributeAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.editor.SigSpaceAnnotator"/>
@@ -83,6 +83,7 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.AssignmentToImmutableAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.CallArityIssuesAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UnknownRegexModAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.DeprecatedMethodAnnotator"/>
     <stubElementTypeHolder class="edument.perl6idea.parsing.Perl6ElementTypes"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.ProjectModulesStubIndex"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex"/>

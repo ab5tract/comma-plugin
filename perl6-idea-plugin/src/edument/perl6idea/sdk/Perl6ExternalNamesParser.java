@@ -69,9 +69,11 @@ public class Perl6ExternalNamesParser {
                     case "s":
                     case "r": {
                         int isMulti = j.getInt("m");
+                        String deprecationMessage = j.has("x") ? j.getString("x") : null;
                         ExternalPerl6RoutineDecl psi = new ExternalPerl6RoutineDecl(
                             myProject, myFile, j.getString("k"), j.getString("k").equals("m") ? "has" : "our",
-                            j.getString("n"), isMulti == 0 ? "only" : "multi", j.getJSONObject("s"));
+                            j.getString("n"), isMulti == 0 ? "only" : "multi",
+                            deprecationMessage, j.getJSONObject("s"));
                         if (j.has("d"))
                             psi.setDocs(j.getString("d"));
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, psi));
@@ -99,15 +101,17 @@ public class Perl6ExternalNamesParser {
                         if (j.has("m"))
                             for (Object routine : j.getJSONArray("m"))
                                 if (routine instanceof JSONObject) {
-                                    int isMulti = ((JSONObject)routine).getInt("m");
-                                    JSONObject signature = ((JSONObject)routine).getJSONObject("s");
+                                    JSONObject routineJson = (JSONObject)routine;
+                                    int isMulti = routineJson.getInt("m");
+                                    String deprecationMessage = routineJson.has("x") ? routineJson.getString("x") : null;
+                                    JSONObject signature = routineJson.getJSONObject("s");
                                     ExternalPerl6RoutineDecl routineDecl = new ExternalPerl6RoutineDecl(
                                         myProject, psi,
-                                        ((JSONObject)routine).getString("k"), "has",
-                                        ((JSONObject)routine).getString("n"), isMulti == 0 ? "only" : "multi",
-                                        signature);
-                                    if (((JSONObject)routine).has("d"))
-                                        routineDecl.setDocs(((JSONObject)routine).getString("d"));
+                                        routineJson.getString("k"), "has",
+                                        routineJson.getString("n"), isMulti == 0 ? "only" : "multi",
+                                        deprecationMessage, signature);
+                                    if (routineJson.has("d"))
+                                        routineDecl.setDocs(routineJson.getString("d"));
                                     routines.add(routineDecl);
                                 }
 

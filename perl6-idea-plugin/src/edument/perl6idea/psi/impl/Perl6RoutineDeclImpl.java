@@ -114,6 +114,31 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     }
 
     @Override
+    public boolean isDeprecated() {
+        Perl6RoutineDeclStub stub = getStub();
+        if (stub != null)
+            for (StubElement s : stub.getChildrenStubs()) {
+                if (!(s instanceof Perl6TraitStub)) continue;
+                Perl6TraitStub traitStub = (Perl6TraitStub)s;
+                String modifier = traitStub.getTraitModifier();
+                if (modifier.equals("is") && "DEPRECATED".equals(((Perl6TraitStub)s).getTraitName()))
+                    return true;
+            }
+        return findTrait("is", "DEPRECATED") != null;
+    }
+
+    @Override
+    public @Nullable String getDeprecationMessage() {
+        Perl6Trait trait = findTrait("is", "DEPRECATED");
+        if (trait != null) {
+            Perl6StrLiteral reason = PsiTreeUtil.findChildOfType(trait, Perl6StrLiteral.class);
+            if (reason != null)
+                return reason.getStringText();
+        }
+        return null;
+    }
+
+    @Override
     public boolean isStubbed() {
         Perl6Blockoid blockoid = (Perl6Blockoid)findChildByFilter(TokenSet.create(BLOCKOID));
         if (blockoid == null) return false;

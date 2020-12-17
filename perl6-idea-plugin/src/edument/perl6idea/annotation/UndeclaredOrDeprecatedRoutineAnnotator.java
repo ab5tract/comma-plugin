@@ -1,6 +1,7 @@
 package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.*;
+import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.ResolveResult;
@@ -12,7 +13,7 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 
-public class UndeclaredRoutineAnnotator implements Annotator {
+public class UndeclaredOrDeprecatedRoutineAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof Perl6SubCallName))
@@ -45,11 +46,23 @@ public class UndeclaredRoutineAnnotator implements Annotator {
             annBuilder.create();
         }
 
-        // If it resolves to a type, highlight it as one.
-        else if (results.length == 1 && results[0].getElement() instanceof Perl6PackageDecl) {
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+        else if (results.length == 1) {
+            // If it resolves to a type, highlight it as one.
+            PsiElement resolvedElement = results[0].getElement();
+            if (resolvedElement instanceof Perl6PackageDecl) {
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
                     .textAttributes(Perl6Highlighter.TYPE_NAME)
                     .create();
+            }
+
+            // If it resolves to a deprecated routine, highlight it as one.
+            else if (resolvedElement instanceof Perl6Deprecatable && ((Perl6Deprecatable)resolvedElement).isDeprecated()) {
+                String deprecationMessage = ((Perl6Deprecatable)resolvedElement).getDeprecationMessage();
+                String message = subName + " is deprecated" + (deprecationMessage != null ? "; use " + deprecationMessage : "");
+                holder.newAnnotation(HighlightSeverity.WARNING, message)
+                    .textAttributes(CodeInsightColors.DEPRECATED_ATTRIBUTES)
+                    .create();
+            }
         }
     }
 }

@@ -612,7 +612,9 @@ sub pack-code($code, Int $multiness, Str $name?, :$docs, :$is-method) {
     }).List;
     my %signature = r => $s.returns.^name, p => @parameters;
     my $kind = $code.^name.comb.head.lc;
-    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness, |(:d($_) with $docs) );
+    my $deprecation = try { ~$code.DEPRECATED };
+    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness,
+       |(:d($_) with $docs), |(:x($_) with $deprecation) );
 }
 
 sub pack-package(@elems, $name, Mu \object) {
