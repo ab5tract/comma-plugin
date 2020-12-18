@@ -30,8 +30,7 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
             LOG.warn(e);
             throw new ExecutionException(e.getMessage());
         }
-        command.add("--profile");
-        command.add(String.format("--profile-filename=%s", canonicalPath));
+        command.add(String.format("--profile=%s", canonicalPath));
         setInterpreterParameters();
     }
 
