@@ -140,25 +140,25 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     }
 
     private void setupCheckboxHandlers() {
-        myHideExternalsCheckBox.addChangeListener(new ChangeListener() {
+        myHideExternalsCheckBox.addItemListener(new ItemListener() {
             @Override
-            public void stateChanged(ChangeEvent e) {
+            public void itemStateChanged(ItemEvent e) {
                 updateRowFilter();
             }
         });
-        myShowRealNamesCheckBox.addChangeListener(new ChangeListener() {
+        myShowRealNamesCheckBox.addItemListener(new ItemListener() {
             @Override
-            public void stateChanged(ChangeEvent e) {
-                toggleRealFilenamesVisibility(callsNavigation);
-                toggleRealFilenamesVisibility(calleeTable);
-                toggleRealFilenamesVisibility(callerTable);
+            public void itemStateChanged(ItemEvent e) {
+                toggleRealFilenamesVisibility(callsNavigation, myShowRealNamesCheckBox.isSelected());
+                toggleRealFilenamesVisibility(calleeTable, myShowRealNamesCheckBox.isSelected());
+                toggleRealFilenamesVisibility(callerTable, myShowRealNamesCheckBox.isSelected());
             }
         });
     }
 
-    private static void toggleRealFilenamesVisibility(JBTable table) {
+    private static void toggleRealFilenamesVisibility(JBTable table, boolean value) {
         Perl6ProfileModel model = (Perl6ProfileModel)table.getModel();
-        model.setShowRealFileNames(!model.getShowRealFileNames());
+        model.setShowRealFileNames(value);
         table.updateUI();
     }
 
