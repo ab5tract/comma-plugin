@@ -1,6 +1,5 @@
 package edument.perl6idea.profiler.ui;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ui.JBUI;
@@ -14,17 +13,15 @@ import java.awt.*;
 import java.util.List;
 
 public class CallGraphTooltipUI extends JPanel {
-    private final String myBasePath;
     // Fonts
-    private Font labelFont = JBUI.Fonts.label();
-    private Font callNameFont = labelFont.deriveFont((float)labelFont.getSize() + 4).deriveFont(Font.BOLD);
-    private Font callTableLabelFont = labelFont.deriveFont((float)labelFont.getSize() + 2).deriveFont(Font.BOLD);
+    private final Font labelFont = JBUI.Fonts.label();
+    private final Font callNameFont = labelFont.deriveFont((float)labelFont.getSize() + 4).deriveFont(Font.BOLD);
+    private final Font callTableLabelFont = labelFont.deriveFont((float)labelFont.getSize() + 2).deriveFont(Font.BOLD);
 
     private final Perl6ProfileCall myCall;
     private JPanel myMainPanel;
 
-    public CallGraphTooltipUI(Project project, Perl6ProfileCallGraph.CallItem call) {
-        myBasePath = project.getBasePath();
+    public CallGraphTooltipUI(Perl6ProfileCallGraph.CallItem call) {
         myCall = call.myCall;
         setupUI();
     }
@@ -50,7 +47,7 @@ public class CallGraphTooltipUI extends JPanel {
             addToPanel(moduleNameLabel, 1, 0, 1, JBUI.insets(10));
         }
 
-        JLabel pathLabel = new JLabel(myCall.getFilename(myBasePath));
+        JLabel pathLabel = new JLabel(myCall.getOriginalFile());
         addToPanel(pathLabel, 0, 1, 2, JBUI.insets(10, 5));
 
         // Set number data

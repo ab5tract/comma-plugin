@@ -1,6 +1,7 @@
 package edument.perl6idea.profiler.model;
 
 import com.intellij.openapi.project.Project;
+import edument.perl6idea.profiler.ui.Perl6ProfilerFrameResultFilter;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
@@ -80,13 +81,16 @@ public class Perl6ProfileModel extends AbstractTableModel {
         return COLUMN_NAMES.get(column);
     }
 
-    public boolean isCellInternal(int row, List<String> paths) {
+    public boolean isCellInternal(int row, List<String> paths, Perl6ProfilerFrameResultFilter filter) {
+        // If Everything is shown, nothing is internal
+        if (filter == Perl6ProfilerFrameResultFilter.Everything)
+            return false;
         String file = nodes.get(row).getOriginalFile();
-        for (String path : paths) {
-            if (file.startsWith(path) || file.startsWith("site#sources")) {
+        if (file.startsWith("site#") && filter == Perl6ProfilerFrameResultFilter.NoCore)
+            return false;
+        for (String path : paths)
+            if (file.startsWith(path))
                 return false;
-            }
-        }
         return true;
     }
 
@@ -108,10 +112,6 @@ public class Perl6ProfileModel extends AbstractTableModel {
 
     public void setShowRealFileNames(boolean showRealFileNames) {
         this.showRealFileNames = showRealFileNames;
-    }
-
-    public boolean getShowRealFileNames() {
-        return showRealFileNames;
     }
 
     public int getNavigationIndexByCallId(int id) {

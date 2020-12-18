@@ -9,6 +9,7 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -44,7 +45,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     protected Perl6ProfileData myProfileData;
     protected List<String> myModuleBasePaths;
     private JPanel myPanel1;
-    private JCheckBox myHideExternalsCheckBox;
+    private ComboBox<Perl6ProfilerFrameResultFilter> myHideExternalsComboBox;
     private JBTable callsNavigation;
     private JBTable callerTable;
     private JBTable calleeTable;
@@ -64,8 +65,11 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
                 return entries.length == 1 ? entries[0].getFile() : null;
             }).map(f -> f == null ? null : f.getPath()).filter(p -> p != null).collect(Collectors.toList());
         // Default renderer
-        myProfileNodeRenderer = new Perl6ProfileNodeRenderer(myModuleBasePaths);
-        myHideExternalsCheckBox.setSelected(false);
+        myProfileNodeRenderer = new Perl6ProfileNodeRenderer(myModuleBasePaths, myHideExternalsComboBox);
+        myHideExternalsComboBox.addItem(Perl6ProfilerFrameResultFilter.Everything);
+        myHideExternalsComboBox.addItem(Perl6ProfilerFrameResultFilter.NoExternals);
+        myHideExternalsComboBox.addItem(Perl6ProfilerFrameResultFilter.NoCore);
+        myHideExternalsComboBox.setItem(Perl6ProfilerFrameResultFilter.NoCore);
         myShowRealNamesCheckBox.setSelected(false);
         setupCheckboxHandlers();
         setupNavigation();
@@ -140,7 +144,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     }
 
     private void setupCheckboxHandlers() {
-        myHideExternalsCheckBox.addItemListener(new ItemListener() {
+        myHideExternalsComboBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 updateRowFilter();
@@ -268,7 +272,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
 
     private void goToCallAtRow(int row) {
         Perl6ProfileModel model = (Perl6ProfileModel)callsNavigation.getModel();
-        if (!model.isCellInternal(row, myModuleBasePaths)) {
+        if (!model.isCellInternal(row, myModuleBasePaths, myHideExternalsComboBox.getItem())) {
             String sourceFilePath = model.getNodeSourceFile(row);
             VirtualFile file = null;
             if (sourceFilePath.startsWith("site#")) {
@@ -315,8 +319,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     private Function<Integer, Boolean> generateVisibleCallsCondition() {
         return rowIndex -> {
             Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
-            boolean isExternalCheck = !myHideExternalsCheckBox.isSelected() ||
-                                      !navigationModel.isCellInternal(rowIndex, myModuleBasePaths);
+            boolean isExternalCheck = !navigationModel.isCellInternal(rowIndex, myModuleBasePaths, myHideExternalsComboBox.getItem());
             boolean patternCheck = true;
 
             if (!namePattern.isEmpty()) {

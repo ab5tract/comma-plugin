@@ -32,7 +32,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     private Rectangle graphSizes;
     private Queue<CallItem> callItems = new ConcurrentLinkedQueue<>();
     private int maxHeight = 0;
-    private JScrollPane myScroll;
+    private final JScrollPane myScroll;
     private int myRootHeight;
 
     public Perl6ProfileCallGraph(Project project,
@@ -92,7 +92,7 @@ public class Perl6ProfileCallGraph extends JPanel {
                 currentTooltipCall = item;
                 JBPopup popup = JBPopupFactory.getInstance()
                     .createComponentPopupBuilder(
-                        new CallGraphTooltipUI(myProject, currentTooltipCall).getPanel(), null)
+                        new CallGraphTooltipUI(currentTooltipCall).getPanel(), null)
                     .setFocusOwners(new Component[] { Perl6ProfileCallGraph.this })
                     .createPopup();
                 currentPopup = popup;
