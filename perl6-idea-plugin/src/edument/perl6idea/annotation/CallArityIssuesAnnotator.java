@@ -27,8 +27,11 @@ public class CallArityIssuesAnnotator implements Annotator {
 
         // If there is a `|` in a call, we are not smart enough to show anything worthy for this case
         for (PsiElement arg : args) {
-            if (arg instanceof Perl6PrefixApplication && arg.getText().startsWith("|"))
-                return;
+            if (arg instanceof Perl6PrefixApplication) {
+                PsiElement prefix = ((Perl6PrefixApplication) arg).getPrefix();
+                if (prefix != null && prefix.getText().startsWith("|"))
+                    return;
+            }
         }
 
         PsiReference ref = refElement.getReference();
