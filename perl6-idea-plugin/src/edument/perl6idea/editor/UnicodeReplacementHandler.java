@@ -99,8 +99,7 @@ public class UnicodeReplacementHandler extends TypedHandlerDelegate {
                         if (hyperMeta == null) {
                             editor.getDocument().setText(text.substring(0, start) + m.unicode + text.substring(offset));
                             editor.putUserData(UNICODE_REPLACEMENT_POS, Pair.create(Pair.create(offset - m.ascii.length(), 0), m.ascii));
-                            return Result.STOP;
-                        } else if (hyperMeta != null) {
+                        } else {
                             String op = text.substring(start, offset);
                             processHyperPart(editor, offset, text, start, op);
                             text = editor.getDocument().getText();
@@ -113,7 +112,6 @@ public class UnicodeReplacementHandler extends TypedHandlerDelegate {
                                 originalHyperText = originalHyperText + c + c;
                             }
                             editor.putUserData(UNICODE_REPLACEMENT_POS, Pair.create(Pair.create(offset - m.ascii.length() - 1, hyperMeta.getTextOffset()), originalHyperText));
-                            return Result.STOP;
                         }
                         return Result.STOP;
                     }

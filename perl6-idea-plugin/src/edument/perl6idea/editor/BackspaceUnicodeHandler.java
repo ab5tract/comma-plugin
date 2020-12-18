@@ -52,8 +52,8 @@ public class BackspaceUnicodeHandler extends BackspaceHandlerDelegate {
                 editor.getDocument().replaceString(lastReplacement.first.second, editor.getCaretModel().getOffset(), stringToInsert);
             } else {
                 editor.getDocument().insertString(editor.getCaretModel().getOffset(), lastReplacement.second);
+                editor.getCaretModel().moveToOffset(editor.getCaretModel().getOffset() + stringToInsert.length());
             }
-            editor.getCaretModel().moveToOffset(editor.getCaretModel().getOffset() + stringToInsert.length());
         }
         return false;
     }
