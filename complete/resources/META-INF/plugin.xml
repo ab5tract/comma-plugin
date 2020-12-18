@@ -32,17 +32,19 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Annotate illegal uses of <code>self</code> or <code>$.foo</code></li>
-<li>Annotate calls where too few or too many positional arguments are passed, unaccepted named arguments are passed, or required named arguments are missing</li>
-<li>Annotate attempts to assign a value to a readonly parameter, respecting traits like <code>is copy</code> or <code>is rw</code></li>
-<li>Add an intention offering to replace <code>$.foo</code> with <code>$!foo</code> when <code>self</code> is only partially available (such as attributes declaration or <code>BUILD</code> submethod implementation)</li>
-<li>Add an intention to cover Raku terms (<code>pi</code>, <code>tau</code>, and <code>set</code>) to their Unicode equivalents and vice versa</li>
-<li>Add an intention to switch between fatarrow pairs and colonpairs</li>
-<li>Improve detection of <code>$/</code> and <code>$_</code> implicit usages to not mark such parameters as unused</li>
-<li>Only names of unused variables are now highlighted as such, instead of highlighting the initializing expression too</li>
-<li>Parse <code>&lt;@.foo&gt;</code> in Cro template language files</li>
-<li>Fix an unwanted behavior when Comma instance created excessive files in temporary directories</li>
-<li>Fix a rare exception related to the signature correctness annotation</li>
+<ul>
+<li>Highlight calls to in-project and external deprecated subroutines and methods; also strike them out in the autocomplete suggestions</li>
+<li>Allow selection of the target scope when performing Extract Variable refactoring</li>
+<li>Extend Unicode operator conversion (both live and intention-based) to handle hyper operators (e.g. &#39;&gt;&gt;+&lt;&lt;&#39;)</li>
+<li>Add a quickfix to delete unused lexical variables and unused private attributes</li>
+<li>Add quickfixes to either add the &#39;is export&#39; trait or to remove unused lexical subroutines</li>
+<li>Add an intention to stub a new subroutine when a call to an unknown subroutine is present</li>
+<li>Fix a bug in the Extract Variable refactoring where other variables with the default name are present in the scope already</li>
+<li>Fix issues in detection of calls with the provided arguments not matching the signature</li>
+<li>Do not annotate positional capture variables inside of non-capturing groups as unknown</li>
+<li>Fix bogus &#39;Empty regex not allowed&#39; annotation when encountering an unrecognized internal regex modifier, give a proper error message instead</li>
+<li>Fix a long standing bug of the auto completion popup appearing on typing certain infix operators</li>
+</ul>
 </ul>
   ]]>
   </change-notes>
