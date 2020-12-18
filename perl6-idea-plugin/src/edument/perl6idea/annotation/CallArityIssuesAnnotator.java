@@ -23,6 +23,13 @@ public class CallArityIssuesAnnotator implements Annotator {
             return;
 
         PsiElement refElement = element instanceof Perl6SubCall ? element.getFirstChild() : element;
+        PsiElement[] args = ((P6CodeBlockCall) element).getCallArguments();
+
+        // If there is a `|` in a call, we are not smart enough to show anything worthy for this case
+        for (PsiElement arg : args) {
+            if (arg instanceof Perl6PrefixApplication && arg.getText().startsWith("|"))
+                return;
+        }
 
         PsiReference ref = refElement.getReference();
         if (!(ref instanceof PsiPolyVariantReference))
@@ -40,7 +47,6 @@ public class CallArityIssuesAnnotator implements Annotator {
             Perl6Signature signature = PsiTreeUtil.findChildOfType(def.getElement(), Perl6Signature.class);
             if (signature == null)
                 signature = Perl6ElementFactory.createRoutineSignature(element.getProject(), new ArrayList<>());
-            PsiElement[] args = ((P6CodeBlockCall) element).getCallArguments();
             Perl6Signature.SignatureCompareResult result = signature.acceptsArguments(args, true, element instanceof Perl6MethodCall);
             if (result.isAccepted()) {
                 for (int i = 0; i < annotations.size(); i++) {
