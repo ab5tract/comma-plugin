@@ -10,6 +10,7 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.ResolveResult;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -98,7 +99,7 @@ public class CallArityIssuesAnnotator implements Annotator {
         } else {
             // Multi...
             String message = String.format("No multi candidates match (%s)",
-                    annotations.stream().map(an -> String.format("%s: %s", an.signature.summary(null), an.text)).collect(Collectors.joining(", ")));
+                    annotations.stream().map(an -> String.format("%s: %s", an.signature.summary(Perl6Untyped.INSTANCE), an.text)).collect(Collectors.joining(", ")));
             holder.newAnnotation(HighlightSeverity.ERROR, message)
                     .range(refElement)
                     .create();
