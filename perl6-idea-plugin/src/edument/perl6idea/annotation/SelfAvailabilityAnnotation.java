@@ -60,7 +60,8 @@ public class SelfAvailabilityAnnotation implements Annotator {
         while (true) {
             // self can be provided by being in a method or the initializer of a variable
             // declaration of scope `has`.
-            Perl6PsiDeclaration possibleSelfProvider = PsiTreeUtil.getParentOfType(from, Perl6RoutineDecl.class, Perl6VariableDecl.class);
+            Perl6PsiDeclaration possibleSelfProvider = PsiTreeUtil.getParentOfType(from, Perl6RoutineDecl.class,
+                    Perl6RegexDecl.class, Perl6VariableDecl.class);
             if (possibleSelfProvider instanceof Perl6RoutineDecl) {
                 String kind = ((Perl6RoutineDecl)possibleSelfProvider).getRoutineKind();
                 if ("method".equals(kind))
@@ -69,6 +70,9 @@ public class SelfAvailabilityAnnotation implements Annotator {
                     return Availability.PARTIAL;
                 // Could be a sub within a context that provides a self, so keep going.
                 from = possibleSelfProvider;
+            }
+            else if (possibleSelfProvider instanceof Perl6RegexDecl) {
+                return Availability.FULL;
             }
             else if (possibleSelfProvider instanceof Perl6VariableDecl) {
                 String scope = possibleSelfProvider.getScope();
