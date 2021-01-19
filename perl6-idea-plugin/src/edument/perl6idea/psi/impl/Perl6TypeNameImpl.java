@@ -32,7 +32,9 @@ public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub
         Perl6TypeNameStub stub = getStub();
         if (stub != null)
             return stub.getTypeName();
-        return getText();
+        Perl6LongName longName = findChildByClass(Perl6LongName.class);
+        assert longName != null; // We always parse one at the start of a type name
+        return longName.getNameWithoutColonPairs();
     }
 
     public String toString() {
@@ -43,7 +45,7 @@ public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub
     public @NotNull Perl6Type inferType() {
         PsiElement resolution = getReference().resolve();
         return resolution instanceof Perl6PsiElement
-                ? new Perl6ResolvedType(getTypeName(), (Perl6PsiElement)resolution)
+               ? new Perl6ResolvedType(getTypeName(), (Perl6PsiElement)resolution)
                : new Perl6UnresolvedType(getTypeName());
     }
 
