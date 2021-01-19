@@ -541,7 +541,7 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
     }
 
     public void testReturnTypeBasedExternal() {
-        doTestContainsAll("Setty.elems.<caret>", ".polymod", ".chr");
+        doTestContainsAll("42.abs.<caret>", ".polymod", ".chr");
     }
 
     public void testCompletionIsInOrder() {
