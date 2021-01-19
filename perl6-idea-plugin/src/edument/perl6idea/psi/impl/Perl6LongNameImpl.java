@@ -18,4 +18,10 @@ public class Perl6LongNameImpl extends ASTWrapperPsiElement implements Perl6Long
                ? getText()
                : getText().substring(0, firstColonPair.getStartOffsetInParent());
     }
+
+    @Override
+    @NotNull
+    public Perl6ColonPair[] getColonPairs() {
+        return findChildrenByClass(Perl6ColonPair.class);
+    }
 }

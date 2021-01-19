@@ -8,6 +8,7 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6TypeNameStub;
 import edument.perl6idea.psi.stub.Perl6TypeNameStubElementType;
+import edument.perl6idea.psi.type.Perl6DefinednessType;
 import edument.perl6idea.psi.type.Perl6ResolvedType;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6UnresolvedType;
@@ -44,9 +45,26 @@ public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub
     @Override
     public @NotNull Perl6Type inferType() {
         PsiElement resolution = getReference().resolve();
-        return resolution instanceof Perl6PsiElement
+        return tweakType(resolution instanceof Perl6PsiElement
                ? new Perl6ResolvedType(getTypeName(), (Perl6PsiElement)resolution)
-               : new Perl6UnresolvedType(getTypeName());
+               : new Perl6UnresolvedType(getTypeName()));
+    }
+
+    private Perl6Type tweakType(Perl6Type type) {
+        // Handle definedness type
+        Perl6LongName longName = findChildByClass(Perl6LongName.class);
+        for (Perl6ColonPair pair : longName.getColonPairs()) {
+            if (pair.getKey().equals("D")) {
+                type = new Perl6DefinednessType(type, true);
+                break;
+            }
+            if (pair.getKey().equals("U")) {
+                type = new Perl6DefinednessType(type, false);
+                break;
+            }
+        }
+
+        return type;
     }
 
     @Override
