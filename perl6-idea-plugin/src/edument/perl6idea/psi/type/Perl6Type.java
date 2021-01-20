@@ -9,4 +9,10 @@ public interface Perl6Type {
     default Perl6Type nominalType() {
         return this;
     }
+
+    /* Get the type to use for method dispatch for this type. */
+    default Perl6Type dispatchType() {
+        Perl6Type nominal = nominalType();
+        return nominal == this ? nominal : nominal.dispatchType();
+    }
 }

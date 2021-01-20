@@ -5,14 +5,16 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6TypeNameStub;
 import edument.perl6idea.psi.stub.Perl6TypeNameStubElementType;
-import edument.perl6idea.psi.type.Perl6DefinednessType;
-import edument.perl6idea.psi.type.Perl6ResolvedType;
-import edument.perl6idea.psi.type.Perl6Type;
-import edument.perl6idea.psi.type.Perl6UnresolvedType;
+import edument.perl6idea.psi.type.*;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub> implements Perl6TypeName {
     public Perl6TypeNameImpl(@NotNull ASTNode node) {
@@ -61,6 +63,36 @@ public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub
             if (pair.getKey().equals("U")) {
                 type = new Perl6DefinednessType(type, false);
                 break;
+            }
+        }
+
+        // Coercion or parametric type.
+        if (getNode().findChildByType(Perl6TokenTypes.TYPE_COERCION_PARENTHESES_CLOSE) != null) {
+            // Coercion is another embedded type name.
+            Perl6TypeName from = findChildByClass(Perl6TypeName.class);
+            if (from != null)
+                type = new Perl6CoercionType(type, from.inferType());
+        }
+        else  {
+            ASTNode curToken = getNode().findChildByType(Perl6TokenTypes.TYPE_PARAMETER_BRACKET);
+            if (curToken != null) {
+                List<Perl6Type> typeArgs = new ArrayList<>();
+                PsiElement arg = Perl6PsiUtil.skipSpaces(curToken.getPsi().getNextSibling(), true);
+                if (arg instanceof Perl6InfixApplication && ((Perl6InfixApplication)arg).isCommaOperator()) {
+                    // List of parameters (for now, we assume all are types).
+                    PsiElement[] operands = ((Perl6InfixApplication)arg).getOperands();
+                    for (PsiElement operand : operands) {
+                        if (operand instanceof Perl6PsiElement)
+                            typeArgs.add(((Perl6PsiElement)operand).inferType());
+                    }
+                }
+                else {
+                    // One parameter (for now, we assume it's a type).
+                    if (arg instanceof Perl6PsiElement)
+                        typeArgs.add(((Perl6PsiElement)arg).inferType());
+                }
+                if (!typeArgs.isEmpty())
+                    type = new Perl6ParametricType(type, typeArgs.toArray(new Perl6Type[0]));
             }
         }
 

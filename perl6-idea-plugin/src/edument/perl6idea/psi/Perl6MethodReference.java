@@ -40,7 +40,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
         private boolean trustNeeded = false;
 
         CallInfo(@NotNull Perl6Type targetType, String methodName) {
-            this.targetType = targetType.nominalType();
+            this.targetType = targetType.dispatchType();
             this.methodName = methodName;
         }
 

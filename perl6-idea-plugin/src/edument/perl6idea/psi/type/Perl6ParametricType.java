@@ -52,4 +52,9 @@ public class Perl6ParametricType implements Perl6Type {
                 return false;
         return true;
     }
+
+    @Override
+    public Perl6Type dispatchType() {
+        return genericType.dispatchType();
+    }
 }
