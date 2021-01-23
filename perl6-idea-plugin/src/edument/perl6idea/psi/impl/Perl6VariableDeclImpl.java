@@ -15,6 +15,7 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.type.Perl6ParametricType;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -229,16 +230,19 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
     @Override
     public @NotNull Perl6Type inferType() {
+        Perl6Type sigilType = inferBySigil();
         Perl6TypeName type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
-        if (type != null)
-            return type.inferType();
-        Perl6Type assignBasedType = resolveAssign();
-        if (assignBasedType != null)
-            return assignBasedType;
-        Perl6Type typeBySigil = inferBySigil();
-        if (typeBySigil != null)
-            return typeBySigil;
-        return Perl6Untyped.INSTANCE;
+        if (type != null) {
+            return sigilType == null
+                    ? type.inferType()
+                    : new Perl6ParametricType(sigilType, new Perl6Type[] { type.inferType() });
+        }
+        if (sigilType == null) {
+            Perl6Type assignBasedType = resolveAssign();
+            if (assignBasedType != null)
+                return assignBasedType;
+        }
+        return sigilType != null ? sigilType : Perl6Untyped.INSTANCE;
     }
 
     private Perl6Type inferBySigil() {

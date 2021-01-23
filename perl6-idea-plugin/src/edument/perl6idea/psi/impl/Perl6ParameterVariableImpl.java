@@ -17,8 +17,11 @@ import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.type.Perl6ParametricType;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
+import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.sdk.Perl6SettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -100,21 +103,40 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
 
     @Override
     public String summary() {
-        String name = getName();
-        if (name.length() == 0)
-            return "$";
-        String sigil = String.valueOf(name.charAt(0));
+        String sigil = getSigil();
         PsiElement defaultValue = PsiTreeUtil.getNextSiblingOfType(this, Perl6ParameterDefault.class);
-        if (defaultValue != null) sigil += '?';
+        if (defaultValue != null)
+            sigil += '?';
         return sigil;
+    }
+
+    @NotNull
+    public String getSigil() {
+        String name = getName();
+        return name.length() == 0 ? "$" : String.valueOf(name.charAt(0));
     }
 
     @Override
     public @NotNull Perl6Type inferType() {
-        PsiElement type = PsiTreeUtil.findSiblingBackward(this, TYPE_NAME, null);
-        return type instanceof Perl6TypeName
-                ? ((Perl6TypeName)type).inferType()
-               : Perl6Untyped.INSTANCE;
+        Perl6Type sigilType = inferBySigil();
+        PsiElement type = PsiTreeUtil .findSiblingBackward(this, TYPE_NAME, null);
+        if (type instanceof Perl6TypeName) {
+            return sigilType == null
+                   ? ((Perl6TypeName) type).inferType()
+                   : new Perl6ParametricType(sigilType, new Perl6Type[] { ((Perl6TypeName) type).inferType() });
+        }
+        return sigilType != null ? sigilType : Perl6Untyped.INSTANCE;
+    }
+
+    private @Nullable Perl6Type inferBySigil() {
+        String sigil = getSigil();
+        if (sigil.equals("@"))
+            return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.List);
+        else if (sigil.equals("%"))
+            return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Map);
+        else if (sigil.equals("&"))
+            return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Callable);
+        return null;
     }
 
     @Override
