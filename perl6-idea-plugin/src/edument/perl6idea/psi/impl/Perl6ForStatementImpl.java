@@ -32,6 +32,12 @@ public class Perl6ForStatementImpl extends ASTWrapperPsiElement implements Perl6
     }
 
     @Override
+    public Perl6Type inferLoopParameterType(int index) {
+        // For now we only do array types, so this shall do.
+        return inferTopicType();
+    }
+
+    @Override
     public Perl6Type inferTopicType() {
         Perl6PsiElement source = getSource();
         if (source == null)

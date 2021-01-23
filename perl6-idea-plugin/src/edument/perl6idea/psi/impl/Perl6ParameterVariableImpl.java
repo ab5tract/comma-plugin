@@ -118,13 +118,31 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
 
     @Override
     public @NotNull Perl6Type inferType() {
+        // If there's a direct type placed on the element, go by that.
         Perl6Type sigilType = inferBySigil();
-        PsiElement type = PsiTreeUtil .findSiblingBackward(this, TYPE_NAME, null);
+        PsiElement type = PsiTreeUtil.findSiblingBackward(this, TYPE_NAME, null);
         if (type instanceof Perl6TypeName) {
             return sigilType == null
                    ? ((Perl6TypeName) type).inferType()
                    : new Perl6ParametricType(sigilType, new Perl6Type[] { ((Perl6TypeName) type).inferType() });
         }
+
+        // Otherwise, sometimes we have a context that can indicate a parameter type.
+        Perl6Parameter parameter = PsiTreeUtil.getParentOfType(this, Perl6Parameter.class);
+        Perl6Signature signature = PsiTreeUtil.getParentOfType(parameter, Perl6Signature.class);
+        if (signature != null) {
+            PsiElement signatureOwner = signature.getParent();
+            if (signatureOwner instanceof Perl6PointyBlock) {
+                PsiElement binder = signatureOwner.getParent();
+                if (binder instanceof Perl6ForStatement) {
+                    int parameterIndex = ArrayUtil.indexOf(signature.getParameters(), parameter);
+                    Perl6Type parameterType = ((Perl6ForStatement)binder).inferLoopParameterType(parameterIndex);
+                    if (parameterType != Perl6Untyped.INSTANCE)
+                        return parameterType;
+                }
+            }
+        }
+
         return sigilType != null ? sigilType : Perl6Untyped.INSTANCE;
     }
 

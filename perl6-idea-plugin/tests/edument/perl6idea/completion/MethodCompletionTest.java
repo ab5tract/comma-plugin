@@ -678,4 +678,63 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
             "}",
             ".brewery", ".ibu");
     }
+
+    public void testTypedArrayForLoopParameterVariable() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "my Pivo @piva;\n" +
+            "for @piva -> $pivo {\n" +
+            "    $pivo.<caret>\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
+
+    public void testTypedArrayForLoopParameterParameter() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "sub param(Pivo @piva) {\n" +
+            "    for @piva -> $pivo {\n" +
+            "        $pivo.<caret>\n" +
+            "    }\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
+
+    public void testTypedArrayForLoopParameterAttribute() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "class Store {\n" +
+            "    has Pivo @.piva;\n" +
+            "    method m() {\n" +
+            "        for @!piva -> $pivo {\n" +
+            "            $pivo.<caret>\n" +
+            "        }\n" +
+            "    }\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
+
+    public void testTypedArrayForLoopParameterAccessor() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "class Store {\n" +
+            "    has Pivo @.piva;\n" +
+            "}\n" +
+            "for Store.new.piva -> $pivo {\n" +
+            "    $pivo.<caret>\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
 }
