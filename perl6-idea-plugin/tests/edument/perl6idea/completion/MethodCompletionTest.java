@@ -737,4 +737,18 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
             "}",
             ".brewery", ".ibu");
     }
+
+    public void testResolutionDoesNotDependOnTypeBeingInScope() {
+        doTestContainsAll(
+            "class Owner {\n" +
+            "    my class Inner {\n" +
+            "        has $.some-attr;\n" +
+            "    }\n" +
+            "    method m(--> Inner) {\n" +
+            "        Inner.new\n" +
+            "    }\n" +
+            "}\n" +
+            "Owner.m.<caret>",
+            ".some-attr");
+    }
 }

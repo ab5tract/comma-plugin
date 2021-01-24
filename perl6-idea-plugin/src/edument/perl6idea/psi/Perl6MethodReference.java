@@ -11,10 +11,7 @@ import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.impl.Perl6MethodCallImpl;
 import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.symbols.*;
-import edument.perl6idea.psi.type.Perl6SelfType;
-import edument.perl6idea.psi.type.Perl6Type;
-import edument.perl6idea.psi.type.Perl6UnresolvedType;
-import edument.perl6idea.psi.type.Perl6Untyped;
+import edument.perl6idea.psi.type.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,6 +63,15 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
 
         public boolean isTrustNeeded() {
             return trustNeeded;
+        }
+
+        public @Nullable Perl6PackageDecl getResolvedPackage() {
+            if (targetType instanceof Perl6ResolvedType) {
+                Perl6PsiElement resolution = ((Perl6ResolvedType)targetType).getResolution();
+                if (resolution instanceof Perl6PackageDecl)
+                    return (Perl6PackageDecl)resolution;
+            }
+            return null;
         }
     }
 
@@ -150,7 +156,10 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             return Collections.emptyList();
         }
         else {
-            return getMethodsByTypeName(call, callInfo, isSingle);
+            Perl6PackageDecl packageDecl = callInfo.getResolvedPackage();
+            return packageDecl != null
+                ? getMethodsFromPsiType(callInfo, isSingle, packageDecl, false)
+                : getMethodsByTypeName(call, callInfo, isSingle);
         }
     }
 
