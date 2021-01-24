@@ -43,7 +43,7 @@ public class Perl6ForStatementImpl extends ASTWrapperPsiElement implements Perl6
         if (source == null)
             return Perl6Untyped.INSTANCE;
 
-        Perl6Type sourceType = source.inferType();
+        Perl6Type sourceType = source.inferType().nominalType();
         if (sourceType instanceof Perl6ParametricType) {
             Perl6Type baseType = ((Perl6ParametricType)sourceType).getGenericType();
             if (isArrayType(baseType)) {
@@ -52,17 +52,36 @@ public class Perl6ForStatementImpl extends ASTWrapperPsiElement implements Perl6
                     return args[0];
             }
         }
+        else if (isHashType(sourceType)) {
+            return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Pair);
+        }
+
         return Perl6Untyped.INSTANCE;
     }
 
     private boolean isArrayType(Perl6Type type) {
-        Perl6Type array = Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Array);
+        Perl6SdkType sdkType = Perl6SdkType.getInstance();
+        Perl6Type array = sdkType.getCoreSettingType(getProject(), Perl6SettingTypeId.Array);
         if (type.equals(array))
             return true;
-        Perl6Type list = Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.List);
+        Perl6Type list = sdkType.getCoreSettingType(getProject(), Perl6SettingTypeId.List);
         if (type.equals(list))
             return true;
-        Perl6Type positional = Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Positional);
+        Perl6Type positional = sdkType.getCoreSettingType(getProject(), Perl6SettingTypeId.Positional);
+        if (type.equals(positional))
+            return true;
+        return false;
+    }
+
+    private boolean isHashType(Perl6Type type) {
+        Perl6SdkType sdkType = Perl6SdkType.getInstance();
+        Perl6Type array = sdkType.getCoreSettingType(getProject(), Perl6SettingTypeId.Hash);
+        if (type.equals(array))
+            return true;
+        Perl6Type list = sdkType.getCoreSettingType(getProject(), Perl6SettingTypeId.Map);
+        if (type.equals(list))
+            return true;
+        Perl6Type positional = sdkType.getCoreSettingType(getProject(), Perl6SettingTypeId.Associative);
         if (type.equals(positional))
             return true;
         return false;

@@ -738,6 +738,15 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
             ".brewery", ".ibu");
     }
 
+    public void testUntypedHashIterationGivePairs() {
+        doTestContainsAll(
+            "my %h;\n" +
+            "for %h {\n" +
+            "    .<caret>\n" +
+            "}",
+            ".key", ".value");
+    }
+
     public void testResolutionDoesNotDependOnTypeBeingInScope() {
         doTestContainsAll(
             "class Owner {\n" +
