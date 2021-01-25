@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 /** Renders the timeline chart, with axes and currently visible data. */
 public class TimelineChart extends JPanel {
     // The timeline we're rendering.
-    private Timeline timeline;
+    private final Timeline timeline;
 
     // Fonts and font metrics.
     private Font font = JBUI.Fonts.label();
@@ -60,8 +60,8 @@ public class TimelineChart extends JPanel {
     private double startTime = 0.0;
 
     // Colors we've assigned, plus a color generator.
-    private ColorGenerator colorGen = new ColorGenerator();
-    private Map<String, Color> assignedColors = new HashMap<>();
+    private final ColorGenerator colorGen = new ColorGenerator();
+    private final Map<String, Color> assignedColors = new HashMap<>();
 
     // The current area of the graph.
     private Rectangle graphArea = new Rectangle();
@@ -99,7 +99,7 @@ public class TimelineChart extends JPanel {
             return logged;
         }
     }
-    private List<VisibleLogged> visibleLoggeds = new ArrayList<>();
+    private final List<VisibleLogged> visibleLoggeds = new ArrayList<>();
 
     // Information about a label, so we can detect clicks on those.
     private static class VisibleLabel {
@@ -119,10 +119,10 @@ public class TimelineChart extends JPanel {
             return key;
         }
     }
-    private List<VisibleLabel> visibleLabels = new ArrayList<>();
+    private final List<VisibleLabel> visibleLabels = new ArrayList<>();
 
     // Expansion status of each item, keyed on the path to the item.
-    private Map<String, Boolean> expanded = new HashMap<>();
+    private final Map<String, Boolean> expanded = new HashMap<>();
 
     public TimelineChart(Timeline timeline) {
         this.timeline = timeline;
