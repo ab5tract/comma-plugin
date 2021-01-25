@@ -541,7 +541,7 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
     }
 
     public void testReturnTypeBasedExternal() {
-        doTestContainsAll("Setty.elems.<caret>", ".polymod", ".chr");
+        doTestContainsAll("42.abs.<caret>", ".polymod", ".chr");
     }
 
     public void testCompletionIsInOrder() {
@@ -618,5 +618,146 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
     public void testDeferredDefinition() {
         doTestContainsAll("class Foo {...}; Foo.m<caret>; class Foo { method mm {}; method mmm {}; method mmmm {} }",
                           ".mm", ".mmm", ".mmmm");
+    }
+
+    public void testTypedArrayForLoopTopicVariable() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "my Pivo @piva;\n" +
+            "for @piva {\n" +
+            "    .<caret>\n" +
+            "}",
+  ".brewery", ".ibu");
+    }
+
+    public void testTypedArrayForLoopTopicParameter() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "sub param(Pivo @piva) {\n" +
+            "    for @piva {\n" +
+            "        .<caret>\n" +
+            "    }\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
+
+    public void testTypedArrayForLoopTopicAttribute() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "class Store {\n" +
+            "    has Pivo @.piva;\n" +
+            "    method m() {\n" +
+            "        for @!piva {\n" +
+            "            .<caret>\n" +
+            "        }\n" +
+            "    }\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
+
+    public void testTypedArrayForLoopTopicAccessor() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "class Store {\n" +
+            "    has Pivo @.piva;\n" +
+            "}\n" +
+            "for Store.new.piva {\n" +
+            "    .<caret>\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
+
+    public void testTypedArrayForLoopParameterVariable() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "my Pivo @piva;\n" +
+            "for @piva -> $pivo {\n" +
+            "    $pivo.<caret>\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
+
+    public void testTypedArrayForLoopParameterParameter() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "sub param(Pivo @piva) {\n" +
+            "    for @piva -> $pivo {\n" +
+            "        $pivo.<caret>\n" +
+            "    }\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
+
+    public void testTypedArrayForLoopParameterAttribute() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "class Store {\n" +
+            "    has Pivo @.piva;\n" +
+            "    method m() {\n" +
+            "        for @!piva -> $pivo {\n" +
+            "            $pivo.<caret>\n" +
+            "        }\n" +
+            "    }\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
+
+    public void testTypedArrayForLoopParameterAccessor() {
+        doTestContainsAll(
+            "class Pivo {\n" +
+            "    has Str $.brewery;\n" +
+            "    has Int $.ibu;\n" +
+            "}\n" +
+            "class Store {\n" +
+            "    has Pivo @.piva;\n" +
+            "}\n" +
+            "for Store.new.piva -> $pivo {\n" +
+            "    $pivo.<caret>\n" +
+            "}",
+            ".brewery", ".ibu");
+    }
+
+    public void testUntypedHashIterationGivePairs() {
+        doTestContainsAll(
+            "my %h;\n" +
+            "for %h {\n" +
+            "    .<caret>\n" +
+            "}",
+            ".key", ".value");
+    }
+
+    public void testResolutionDoesNotDependOnTypeBeingInScope() {
+        doTestContainsAll(
+            "class Owner {\n" +
+            "    my class Inner {\n" +
+            "        has $.some-attr;\n" +
+            "    }\n" +
+            "    method m(--> Inner) {\n" +
+            "        Inner.new\n" +
+            "    }\n" +
+            "}\n" +
+            "Owner.m.<caret>",
+            ".some-attr");
     }
 }

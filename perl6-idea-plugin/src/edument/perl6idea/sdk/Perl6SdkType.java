@@ -13,6 +13,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightVirtualFile;
@@ -21,8 +22,12 @@ import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.actions.ShowPerl6ProjectStructureAction;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PackageDecl;
+import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.external.ExternalPerl6File;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.type.Perl6ResolvedType;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6UnresolvedType;
 import edument.perl6idea.services.Perl6BackupSDKService;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6Utils;
@@ -70,11 +75,13 @@ public class Perl6SdkType extends SdkType {
         private Map<String, Perl6File> useNameFileCache = new ConcurrentHashMap<>();
         private Map<String, Perl6File> needNameFileCache = new ConcurrentHashMap<>();
         private Perl6File setting;
+        private Map<Perl6SettingTypeId, Perl6Type> settingTypeCache;
 
         public void invalidateFileCache() {
             useNameFileCache = new ConcurrentHashMap<>();
             needNameFileCache = new ConcurrentHashMap<>();
             setting = null;
+            settingTypeCache = null;
         }
     }
 
@@ -301,6 +308,42 @@ public class Perl6SdkType extends SdkType {
             reactToSDKIssue(project);
             return getFallback(project);
         }
+    }
+
+    public Perl6Type getCoreSettingType(Project project, Perl6SettingTypeId type) {
+        // Ensure we have the setting type cache.
+        ProjectSymbolCache cache = perProjectSymbolCache.computeIfAbsent(project.getName(), (key) -> new ProjectSymbolCache());
+        if (cache.settingTypeCache == null) {
+            Perl6File setting = cache.setting;
+            if (setting != null) {
+                Map<Perl6SettingTypeId, Perl6Type> typeCache = new HashMap<>();
+                for (Perl6SettingTypeId typeId : Perl6SettingTypeId.values()) {
+                    String typeName = unmangleTypeId(typeId.name());
+                    Perl6Symbol symbol = setting.resolveLexicalSymbol(Perl6SymbolKind.TypeOrConstant, typeName);
+                    if (symbol != null) {
+                        PsiElement resolution = symbol.getPsi();
+                        if (resolution instanceof Perl6PsiElement)
+                            typeCache.put(typeId, new Perl6ResolvedType(typeName, (Perl6PsiElement)resolution));
+                    }
+                }
+                cache.settingTypeCache = typeCache;
+            }
+        }
+
+        // Try to resolve.
+        Map<Perl6SettingTypeId, Perl6Type> typeCache = cache.settingTypeCache;
+        if (typeCache != null) {
+            Perl6Type result = typeCache.get(type);
+            if (result != null)
+                return result;
+        }
+
+        // Return an unresolved type if all else fails.
+        return new Perl6UnresolvedType(unmangleTypeId(type.name()));
+    }
+
+    private static String unmangleTypeId(String id) {
+        return id.replace("__", "::");
     }
 
     private synchronized void reactToSDKIssue(@Nullable Project project) {

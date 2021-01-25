@@ -12,6 +12,7 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.external.ExternalPerl6PackageDecl;
 import edument.perl6idea.psi.external.Perl6ExternalPsiElement;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.type.Perl6Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -86,8 +87,8 @@ public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlo
         for (Perl6Symbol symbol : collector.getVariants()) {
             if (symbol.getKind() == Perl6SymbolKind.Variable) {
                 if (symbol.getPsi() instanceof Perl6VariableDecl) {
-                    String type = ((Perl6VariableDecl) symbol.getPsi()).inferType();
-                    attributes.add(type + " " + convertAttributeIntoNamed(symbol.getName()));
+                    Perl6Type type = ((Perl6VariableDecl) symbol.getPsi()).inferType();
+                    attributes.add(type.getName() + " " + convertAttributeIntoNamed(symbol.getName()));
                 }
             }
             else if (symbol.getKind() == Perl6SymbolKind.Method && symbol.getName().equals(".new")) {

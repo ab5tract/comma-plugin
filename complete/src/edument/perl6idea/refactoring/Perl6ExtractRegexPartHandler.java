@@ -181,7 +181,7 @@ public class Perl6ExtractRegexPartHandler implements RefactoringActionHandler {
 
         // We are checking whether a variable will be available from outer scope in scope where new block is created
         boolean isAvailableLexically = parentToCreateAt.resolveLexicalSymbol(Perl6SymbolKind.Variable, usedVariable.getVariableName()) != null;
-        String type = usedVariable.getVariableName().startsWith("$") ? usedVariable.inferType() : "";
+        String type = usedVariable.getVariableName().startsWith("$") ? usedVariable.inferType().nominalType().getName() : "";
         return new Perl6VariableData(usedVariable.getVariableName(), type, isAvailableLexically, !isAvailableLexically);
     }
 

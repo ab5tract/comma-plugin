@@ -6,4 +6,7 @@ public interface Perl6InfixApplication extends Perl6PsiElement, P6Extractable {
     PsiElement[] getOperands();
     String getOperator();
     boolean isAssignish();
+    default boolean isCommaOperator() {
+        return ",".equals(getOperator());
+    }
 }

@@ -18,7 +18,9 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
     @Override
     public PsiElement resolve() {
         Perl6PsiElement ref = getElement();
-        String typeName = ref.getText();
+        String typeName = ref instanceof Perl6TypeName
+                ? ((Perl6TypeName)ref).getTypeName()
+                : ref.getText();
         Perl6Symbol result = ref.resolveLexicalSymbol(Perl6SymbolKind.TypeOrConstant, typeName);
         if (result != null) {
             PsiElement psi = result.getPsi();

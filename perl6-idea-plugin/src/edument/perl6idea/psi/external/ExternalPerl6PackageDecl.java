@@ -6,6 +6,8 @@ import com.intellij.psi.stubs.IStubElementType;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.type.Perl6ResolvedType;
+import edument.perl6idea.psi.type.Perl6Type;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -127,8 +129,8 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     }
 
     @Override
-    public @NotNull String inferType() {
-        return myType;
+    public @NotNull Perl6Type inferType() {
+        return new Perl6ResolvedType(myType, this);
     }
 
     @Override

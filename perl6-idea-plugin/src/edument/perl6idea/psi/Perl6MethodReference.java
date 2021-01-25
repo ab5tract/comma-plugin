@@ -11,6 +11,7 @@ import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.impl.Perl6MethodCallImpl;
 import edument.perl6idea.psi.impl.Perl6PackageDeclImpl;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.type.*;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,29 +32,26 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
 
     static class CallInfo {
         @NotNull
-        private final String targetTypeName;
-        @Nullable
-        private final PsiElement targetTypeElement;
+        private final Perl6Type targetType;
         private final String methodName;
         private boolean trustNeeded = false;
 
-        CallInfo(@NotNull String targetTypeName, @Nullable PsiElement targetTypeElement, String methodName) {
-            this.targetTypeName = targetTypeName;
-            this.targetTypeElement = targetTypeElement;
+        CallInfo(@NotNull Perl6Type targetType, String methodName) {
+            this.targetType = targetType.dispatchType();
             this.methodName = methodName;
         }
 
-        CallInfo(String targetTypeName, @Nullable PsiElement targetTypeElement, String methodName, boolean trustNeeded) {
-            this(targetTypeName, targetTypeElement, methodName);
+        CallInfo(Perl6Type targetType, String methodName, boolean trustNeeded) {
+            this(targetType, methodName);
             this.trustNeeded = trustNeeded;
         }
 
         boolean isSelf() {
-            return targetTypeName.equals("self") || (methodName.startsWith("!") && !trustNeeded);
+            return targetType instanceof Perl6SelfType || (methodName.startsWith("!") && !trustNeeded);
         }
 
         public String getTargetTypeName() {
-            return targetTypeElement instanceof Perl6TypeName ? ((Perl6TypeName)targetTypeElement).getTypeName() : targetTypeName;
+            return targetType.getName();
         }
 
         /**
@@ -65,6 +63,15 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
 
         public boolean isTrustNeeded() {
             return trustNeeded;
+        }
+
+        public @Nullable Perl6PackageDecl getResolvedPackage() {
+            if (targetType instanceof Perl6ResolvedType) {
+                Perl6PsiElement resolution = ((Perl6ResolvedType)targetType).getResolution();
+                if (resolution instanceof Perl6PackageDecl)
+                    return (Perl6PackageDecl)resolution;
+            }
+            return null;
         }
     }
 
@@ -104,39 +111,36 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             if (lastSep >= 0) {
                 String typeName = name.substring(1, lastSep);
                 String shortName = name.substring(0, 1) + name.substring(lastSep + 2);
-                return new CallInfo(typeName, null, shortName, isPrivate);
+                return new CallInfo(new Perl6UnresolvedType(typeName), shortName, isPrivate);
             }
         }
 
         PsiElement firstElement = call.findElementAt(0);
-        if (firstElement != null && firstElement.getNode().getElementType() == SELF)
-            return new CallInfo("self", null, name);
+        if (firstElement != null && firstElement.getNode().getElementType() == SELF) {
+            return new CallInfo(((Perl6PsiElement )firstElement).inferType(), name);
+        }
 
         // Based on previous targetTypeElement decide what type methods we want
         PsiElement prev = call.getPrevSibling();
-
-        if (prev instanceof PsiWhiteSpace)
-            return new CallInfo("self", null, name);
 
         if (prev == null) { // .foo
             Perl6Symbol symbol = call.resolveLexicalSymbol(Perl6SymbolKind.Variable, "$_");
             if (symbol != null) {
                 PsiElement psi = symbol.getPsi();
                 if (psi instanceof P6Topicalizer) {
-                    return new CallInfo(((P6Topicalizer)psi).calculateTopicType(call), psi, name);
+                    return new CallInfo(((P6Topicalizer)psi).calculateTopicType(call), name);
                 }
                 else if (psi instanceof Perl6PsiElement) {
-                    return new CallInfo(((Perl6PsiElement)psi).inferType(), psi, name);
+                    return new CallInfo(((Perl6PsiElement)psi).inferType(), name);
                 }
             }
-            return new CallInfo("Any", null, name);
+            return new CallInfo(Perl6Untyped.INSTANCE, name);
         }
 
         if (prev instanceof Perl6PsiElement) {
             Perl6PsiElement element = (Perl6PsiElement) prev;
-            String type = element.inferType();
-            type = type == null ? "Mu" : type;
-            return new CallInfo(type, prev, name);
+            Perl6Type type = element.inferType();
+            return new CallInfo(type, name);
         }
         else
             return null;
@@ -152,7 +156,10 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             return Collections.emptyList();
         }
         else {
-            return getMethodsByTypeName(call, callInfo, isSingle);
+            Perl6PackageDecl packageDecl = callInfo.getResolvedPackage();
+            return packageDecl != null
+                ? getMethodsFromPsiType(callInfo, isSingle, packageDecl, false)
+                : getMethodsByTypeName(call, callInfo, isSingle);
         }
     }
 
@@ -242,8 +249,8 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
                 item = strikeoutDeprecated(item, s.getPsi());
             } else if (s.getPsi() instanceof Perl6VariableDecl) {
                 Perl6VariableDecl variableDecl = (Perl6VariableDecl)s.getPsi();
-                String type = variableDecl.inferType();
-                item = item.withTypeText("(attribute) " + (type == null ? "Any" : type));
+                Perl6Type type = variableDecl.inferType();
+                item = item.withTypeText("(attribute) " + type.getName());
             }
             return PrioritizedLookupElement.withPriority(item, s.getPriority());
         });

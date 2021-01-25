@@ -24,61 +24,63 @@ import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.repl.Perl6ReplState;
 import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.sdk.Perl6SettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
-    public static final Map<String, String> VARIABLE_SYMBOLS = new HashMap<>();
+    public static final Map<String, Perl6SettingTypeId> VARIABLE_SYMBOLS = new HashMap<>();
 
     static {
         // compile time variables
-        VARIABLE_SYMBOLS.put("$?FILE", "Str");
-        VARIABLE_SYMBOLS.put("$?LINE", "Int");
+        VARIABLE_SYMBOLS.put("$?FILE", Perl6SettingTypeId.Str);
+        VARIABLE_SYMBOLS.put("$?LINE", Perl6SettingTypeId.Int);
         VARIABLE_SYMBOLS.put("$?LANG", null);
         VARIABLE_SYMBOLS.put("%?RESOURCES", null);
         VARIABLE_SYMBOLS.put("$?PACKAGE", null);
         // pod vars
-        VARIABLE_SYMBOLS.put("$=pod", "Array");
+        VARIABLE_SYMBOLS.put("$=pod", Perl6SettingTypeId.Array);
         // special variables
         VARIABLE_SYMBOLS.put("$_", null);
-        VARIABLE_SYMBOLS.put("$/", "Match");
-        VARIABLE_SYMBOLS.put("$!", "Exception");
+        VARIABLE_SYMBOLS.put("$/", Perl6SettingTypeId.Match);
+        VARIABLE_SYMBOLS.put("$!", Perl6SettingTypeId.Exception);
         // dynamic variables
         VARIABLE_SYMBOLS.put("$*ARGFILES", null);
-        VARIABLE_SYMBOLS.put("@*ARGS", "Array");
-        VARIABLE_SYMBOLS.put("$*IN", "IO::Handle");
-        VARIABLE_SYMBOLS.put("$*OUT", "IO::Handle");
-        VARIABLE_SYMBOLS.put("$*ERR", "IO::Handle");
-        VARIABLE_SYMBOLS.put("%*ENV", "Hash");
+        VARIABLE_SYMBOLS.put("@*ARGS", Perl6SettingTypeId.Array);
+        VARIABLE_SYMBOLS.put("$*IN", Perl6SettingTypeId.IO__Handle);
+        VARIABLE_SYMBOLS.put("$*OUT", Perl6SettingTypeId.IO__Handle);
+        VARIABLE_SYMBOLS.put("$*ERR", Perl6SettingTypeId.IO__Handle);
+        VARIABLE_SYMBOLS.put("%*ENV", Perl6SettingTypeId.Hash);
         VARIABLE_SYMBOLS.put("$*REPO", null);
-        VARIABLE_SYMBOLS.put("$*INIT-DISTANT", "Instant");
-        VARIABLE_SYMBOLS.put("$*TZ", "Int");
-        VARIABLE_SYMBOLS.put("$*CWD", "IO::Path");
-        VARIABLE_SYMBOLS.put("$*KERNEL", "Kernel");
-        VARIABLE_SYMBOLS.put("$*DISTRO", "Distro");
-        VARIABLE_SYMBOLS.put("$*VM", "VM");
-        VARIABLE_SYMBOLS.put("$*PERL", "Perl");
-        VARIABLE_SYMBOLS.put("$*PID", "Int");
-        VARIABLE_SYMBOLS.put("$*PROGRAM-NAME", "Str");
-        VARIABLE_SYMBOLS.put("$*PROGRAM", "IO::Path");
+        VARIABLE_SYMBOLS.put("$*INIT-DISTANT", Perl6SettingTypeId.Instant);
+        VARIABLE_SYMBOLS.put("$*TZ", Perl6SettingTypeId.Int);
+        VARIABLE_SYMBOLS.put("$*CWD", Perl6SettingTypeId.IO__Path);
+        VARIABLE_SYMBOLS.put("$*KERNEL", Perl6SettingTypeId.Kernel);
+        VARIABLE_SYMBOLS.put("$*DISTRO", Perl6SettingTypeId.Distro);
+        VARIABLE_SYMBOLS.put("$*VM", Perl6SettingTypeId.VM);
+        VARIABLE_SYMBOLS.put("$*PERL", Perl6SettingTypeId.Perl);
+        VARIABLE_SYMBOLS.put("$*RAKU", Perl6SettingTypeId.Raku);
+        VARIABLE_SYMBOLS.put("$*PID", Perl6SettingTypeId.Int);
+        VARIABLE_SYMBOLS.put("$*PROGRAM-NAME", Perl6SettingTypeId.Str);
+        VARIABLE_SYMBOLS.put("$*PROGRAM", Perl6SettingTypeId.IO__Path);
         VARIABLE_SYMBOLS.put("&*EXIT", null);
-        VARIABLE_SYMBOLS.put("$*EXECUTABLE", "IO::Path");
-        VARIABLE_SYMBOLS.put("$*EXECUTABLE-NAME", "Str");
-        VARIABLE_SYMBOLS.put("$*USER", "IntStr");
-        VARIABLE_SYMBOLS.put("$*GROUP", "IntStr");
+        VARIABLE_SYMBOLS.put("$*EXECUTABLE", Perl6SettingTypeId.IO__Path);
+        VARIABLE_SYMBOLS.put("$*EXECUTABLE-NAME", Perl6SettingTypeId.Str);
+        VARIABLE_SYMBOLS.put("$*USER", Perl6SettingTypeId.IntStr);
+        VARIABLE_SYMBOLS.put("$*GROUP", Perl6SettingTypeId.IntStr);
         VARIABLE_SYMBOLS.put("$*HOMEDRIVE", null);
         VARIABLE_SYMBOLS.put("$*HOMEPATH", null);
-        VARIABLE_SYMBOLS.put("$*HOME", "IO::Path");
-        VARIABLE_SYMBOLS.put("$*SPEC", "IO::Spec");
-        VARIABLE_SYMBOLS.put("$*TMPDIR", "IO::Path");
-        VARIABLE_SYMBOLS.put("$*THREAD", "Thread");
-        VARIABLE_SYMBOLS.put("$*SCHEDULER", "ThreadPoolScheduler");
+        VARIABLE_SYMBOLS.put("$*HOME", Perl6SettingTypeId.IO__Path);
+        VARIABLE_SYMBOLS.put("$*SPEC", Perl6SettingTypeId.IO__Spec);
+        VARIABLE_SYMBOLS.put("$*TMPDIR", Perl6SettingTypeId.IO__Path);
+        VARIABLE_SYMBOLS.put("$*THREAD", Perl6SettingTypeId.Thread);
+        VARIABLE_SYMBOLS.put("$*SCHEDULER", Perl6SettingTypeId.ThreadPoolScheduler);
         VARIABLE_SYMBOLS.put("$*SAMPLER", null);
-        VARIABLE_SYMBOLS.put("$*COLLATION", "Collation");
-        VARIABLE_SYMBOLS.put("$*TOLERANCE", "Num");
-        VARIABLE_SYMBOLS.put("$*DEFAULT-READ-ELEMS", "Int");
+        VARIABLE_SYMBOLS.put("$*COLLATION", Perl6SettingTypeId.Collation);
+        VARIABLE_SYMBOLS.put("$*TOLERANCE", Perl6SettingTypeId.Num);
+        VARIABLE_SYMBOLS.put("$*DEFAULT-READ-ELEMS", Perl6SettingTypeId.Int);
     }
 
     public Perl6FileImpl(FileViewProvider viewProvider) {

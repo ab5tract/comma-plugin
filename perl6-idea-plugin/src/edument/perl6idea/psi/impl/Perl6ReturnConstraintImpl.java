@@ -4,6 +4,9 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6ReturnConstraint;
+import edument.perl6idea.psi.Perl6TypeName;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,10 +17,12 @@ public class Perl6ReturnConstraintImpl extends ASTWrapperPsiElement implements P
         super(node);
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public String getReturnType() {
+    public Perl6Type getReturnType() {
         PsiElement typeName = findChildByType(TYPE_NAME);
-        return typeName == null ? null : typeName.getText();
+        return typeName instanceof Perl6TypeName
+               ? ((Perl6TypeName)typeName).inferType()
+               : Perl6Untyped.INSTANCE;
     }
 }

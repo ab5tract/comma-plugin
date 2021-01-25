@@ -2884,6 +2884,7 @@ grammar MAIN {
             <.end-token('TYPE_PARAMETER_BRACKET')>
             <.arglist>
             [
+                <.ws>?
                 <.start-token('TYPE_PARAMETER_BRACKET')>
                 ']'
                 <.end-token('TYPE_PARAMETER_BRACKET')>

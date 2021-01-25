@@ -17,6 +17,11 @@ import edument.perl6idea.psi.symbols.Perl6ExplicitAliasedSymbol;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.type.Perl6ParametricType;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6Untyped;
+import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.sdk.Perl6SettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,20 +103,58 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
 
     @Override
     public String summary() {
-        String name = getName();
-        if (name.length() == 0)
-            return "$";
-        String sigil = String.valueOf(name.charAt(0));
+        String sigil = getSigil();
         PsiElement defaultValue = PsiTreeUtil.getNextSiblingOfType(this, Perl6ParameterDefault.class);
-        if (defaultValue != null) sigil += '?';
+        if (defaultValue != null)
+            sigil += '?';
         return sigil;
     }
 
+    @NotNull
+    public String getSigil() {
+        String name = getName();
+        return name.length() == 0 ? "$" : String.valueOf(name.charAt(0));
+    }
+
     @Override
-    public @NotNull String inferType() {
+    public @NotNull Perl6Type inferType() {
+        // If there's a direct type placed on the element, go by that.
+        Perl6Type sigilType = inferBySigil();
         PsiElement type = PsiTreeUtil.findSiblingBackward(this, TYPE_NAME, null);
-        if (type == null) return "Any";
-        return getCutName(type.getText());
+        if (type instanceof Perl6TypeName) {
+            return sigilType == null
+                   ? ((Perl6TypeName) type).inferType()
+                   : new Perl6ParametricType(sigilType, new Perl6Type[] { ((Perl6TypeName) type).inferType() });
+        }
+
+        // Otherwise, sometimes we have a context that can indicate a parameter type.
+        Perl6Parameter parameter = PsiTreeUtil.getParentOfType(this, Perl6Parameter.class);
+        Perl6Signature signature = PsiTreeUtil.getParentOfType(parameter, Perl6Signature.class);
+        if (signature != null) {
+            PsiElement signatureOwner = signature.getParent();
+            if (signatureOwner instanceof Perl6PointyBlock) {
+                PsiElement binder = signatureOwner.getParent();
+                if (binder instanceof Perl6ForStatement) {
+                    int parameterIndex = ArrayUtil.indexOf(signature.getParameters(), parameter);
+                    Perl6Type parameterType = ((Perl6ForStatement)binder).inferLoopParameterType(parameterIndex);
+                    if (parameterType != Perl6Untyped.INSTANCE)
+                        return parameterType;
+                }
+            }
+        }
+
+        return sigilType != null ? sigilType : Perl6Untyped.INSTANCE;
+    }
+
+    private @Nullable Perl6Type inferBySigil() {
+        String sigil = getSigil();
+        if (sigil.equals("@"))
+            return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.List);
+        else if (sigil.equals("%"))
+            return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Map);
+        else if (sigil.equals("&"))
+            return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Callable);
+        return null;
     }
 
     @Override

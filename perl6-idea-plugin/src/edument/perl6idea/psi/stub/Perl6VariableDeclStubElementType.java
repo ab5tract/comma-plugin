@@ -28,7 +28,7 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
     @NotNull
     @Override
     public Perl6VariableDeclStub createStub(@NotNull Perl6VariableDecl psi, StubElement parentStub) {
-        return new Perl6VariableDeclStubImpl(parentStub, psi.getVariableNames(), psi.inferType(), psi.isExported());
+        return new Perl6VariableDeclStubImpl(parentStub, psi.getVariableNames(), psi.inferType().getName(), psi.isExported());
     }
 
     @NotNull

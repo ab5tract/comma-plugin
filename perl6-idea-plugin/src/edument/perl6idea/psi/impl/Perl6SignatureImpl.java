@@ -5,6 +5,8 @@ import com.intellij.lang.ASTNode;
 import com.intellij.util.ArrayUtil;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6Signature;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -17,16 +19,16 @@ public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Sig
     }
 
     @Override
-    public String summary(String type) {
+    public String summary(Perl6Type type) {
         Perl6Parameter[] params = getParameters();
         List<String> sums = new ArrayList<>();
         for (Perl6Parameter param : params)
             sums.add(param.summary());
         String paramsSummary = String.join(", ", ArrayUtil.toStringArray(sums));
-        if (type == null)
+        if (type instanceof Perl6Untyped)
             return String.format("(%s)", paramsSummary);
         else
-            return String.format("(%s%s--> %s)", paramsSummary, paramsSummary.isEmpty() ? "" : " ", type);
+            return String.format("(%s%s--> %s)", paramsSummary, paramsSummary.isEmpty() ? "" : " ", type.getName());
     }
 
     @Override

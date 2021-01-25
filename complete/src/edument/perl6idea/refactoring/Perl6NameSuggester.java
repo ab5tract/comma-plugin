@@ -92,10 +92,10 @@ public class Perl6NameSuggester {
       return suggest(((Perl6PostfixApplication)element).getPostfix());
     }
     if (element instanceof Perl6MethodCall) {
-      return getNamePieces(((Perl6MethodCall)element).getSimpleName().getText(), ((Perl6MethodCall)element).inferType());
+      return getNamePieces(((Perl6MethodCall)element).getSimpleName().getText(), ((Perl6MethodCall)element).inferType().nominalType().getName());
     }
     if (element instanceof P6CodeBlockCall && element instanceof Perl6PsiElement) {
-      return getNamePieces(((P6CodeBlockCall)element).getCallName(), ((Perl6PsiElement)element).inferType());
+      return getNamePieces(((P6CodeBlockCall)element).getCallName(), ((Perl6PsiElement)element).inferType().nominalType().getName());
     }
     // Try out `$xN` until we find the available one
     String base = "$x", name = base;

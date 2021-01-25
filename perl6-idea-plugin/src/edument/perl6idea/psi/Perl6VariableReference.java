@@ -12,6 +12,9 @@ import com.intellij.psi.search.PsiElementProcessor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.sdk.Perl6SettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -140,7 +143,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 if (call instanceof Perl6MethodCall && ((Perl6MethodCall)call).getCallName().equals(".subst")) {
                     PsiElement[] args = ((Perl6MethodCall)call).getCallArguments();
                     if (args.length >= 2) {
-                        if (((Perl6PsiElement)args[0]).inferType().equals("Regex") &&
+                        Perl6Type regexType = Perl6SdkType.getInstance().getCoreSettingType(starter.getProject(), Perl6SettingTypeId.Regex);
+                        if (((Perl6PsiElement)args[0]).inferType().equals(regexType) &&
                             PsiTreeUtil.isAncestor(args[1], starter, true)) {
                             List<PsiNamedElement> elemsToReturn = new ArrayList<>();
                             if (derefAndCollectRegexVars(args[0], elemsToReturn)) {
@@ -231,7 +235,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                     if (app.getOperator().equals("~~")) {
                         PsiElement[] ops = app.getOperands();
                         if (ops.length == 2) {
-                            if (ops[1] instanceof Perl6PsiElement && ((Perl6PsiElement)ops[1]).inferType().equals("Regex"))
+                            Perl6Type regexType = Perl6SdkType.getInstance().getCoreSettingType(starter.getProject(), Perl6SettingTypeId.Regex);
+                            if (ops[1] instanceof Perl6PsiElement && ((Perl6PsiElement)ops[1]).inferType().equals(regexType))
                                 return super.execute(ops[1]);
                         }
                     }

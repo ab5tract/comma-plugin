@@ -6,6 +6,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6PointyBlock;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.Perl6WithoutStatement;
+import edument.perl6idea.psi.type.Perl6Type;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6WithoutStatementImpl extends ASTWrapperPsiElement implements Perl6WithoutStatement {
@@ -19,7 +20,7 @@ public class Perl6WithoutStatementImpl extends ASTWrapperPsiElement implements P
     }
 
     @Override
-    public String inferTopicType() {
+    public Perl6Type inferTopicType() {
         // Condition is first non-token thing.
         Perl6PsiElement condition = PsiTreeUtil.getChildOfType(this, Perl6PsiElement.class);
         return condition == null ? Perl6WithoutStatement.super.inferTopicType() : condition.inferType();

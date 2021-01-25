@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6RoutineDecl;
 import edument.perl6idea.psi.Perl6SubCall;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.sdk.Perl6SettingTypeId;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -28,8 +31,9 @@ public class NonNillReturnAnnotator implements Annotator {
         if (routineDecl == null)
             return;
 
-        String retType = routineDecl.getReturnType();
-        if (!Objects.equals("Nil", retType))
+        Perl6Type retType = routineDecl.getReturnType();
+        Perl6Type nilType = Perl6SdkType.getInstance().getCoreSettingType(routineDecl.getProject(), Perl6SettingTypeId.Nil);
+        if (!Objects.equals(nilType, retType))
             return;
 
         holder.newAnnotation(HighlightSeverity.ERROR, "A value is returned from subroutine returning Nil")

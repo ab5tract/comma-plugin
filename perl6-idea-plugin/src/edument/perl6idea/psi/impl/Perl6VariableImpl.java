@@ -10,6 +10,10 @@ import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6Untyped;
+import edument.perl6idea.sdk.Perl6SdkType;
+import edument.perl6idea.sdk.Perl6SettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,57 +83,60 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
     }
 
     @Override
-    public @NotNull String inferType() {
+    public @NotNull Perl6Type inferType() {
         String text = getText();
         // Special cases, regex
-        if (text.substring(1).chars().allMatch(Character::isDigit)) return "Match";
-        if (text.startsWith("$<") && text.endsWith(">")) return "Match";
+        if (text.substring(1).chars().allMatch(Character::isDigit)
+                || text.startsWith("$<") && text.endsWith(">"))
+            return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Match);
 
         // Check if known by definition
-        String typeByDefinition = Perl6FileImpl.VARIABLE_SYMBOLS.get(text);
+        Perl6SettingTypeId typeByDefinition = Perl6FileImpl.VARIABLE_SYMBOLS.get(text);
         if (typeByDefinition != null)
-            return typeByDefinition;
+            return Perl6SdkType.getInstance().getCoreSettingType(getProject(), typeByDefinition);
 
         // Check if typed
         // Firstly get definition
         PsiReference ref = getReference();
-        if (ref == null) return "Any";
+        if (ref == null)
+            return Perl6Untyped.INSTANCE;
         PsiElement resolved = ref.resolve();
         if (text.equals("$_") && resolved instanceof P6Topicalizer) {
-            String type = ((P6Topicalizer)resolved).calculateTopicType(this);
-            if (type != null) return type;
+            Perl6Type type = ((P6Topicalizer)resolved).calculateTopicType(this);
+            if (type != null)
+                return type;
         }
         else if (resolved instanceof Perl6VariableDecl) {
-            String type = ((Perl6VariableDecl) resolved).inferType();
-            if (!type.equals("Any")) return type;
+            Perl6Type type = ((Perl6VariableDecl) resolved).inferType();
+            if (!(type instanceof Perl6Untyped))
+                return type;
         }
         else if (resolved instanceof Perl6ParameterVariable) {
-            String type = ((Perl6ParameterVariable) resolved).inferType();
-            if (!type.equals("Any"))
+            Perl6Type type = ((Perl6ParameterVariable) resolved).inferType();
+            if (!(type instanceof Perl6Untyped))
                 return type;
         }
         // Handle $ case
-        String type = getTypeBySigil(text, resolved);
-        return type == null ? "Any" : type;
+        Perl6Type type = getTypeBySigil(text, resolved);
+        return type == null ? Perl6Untyped.INSTANCE : type;
     }
 
     @Override
-    @Nullable
-    public String getTypeBySigil(String text, PsiElement resolved) {
+    public @Nullable Perl6Type getTypeBySigil(String text, PsiElement resolved) {
         if (resolved == null || resolved instanceof Perl6VariableDecl) {
             if (text.startsWith("@"))
-                return "Array";
+                return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Array);
             else if (text.startsWith("%"))
-                return "Hash";
+                return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Hash);
             else if (text.startsWith("&"))
-                return "Callable";
+                return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Callable);
         } else if (resolved instanceof Perl6ParameterVariable) {
             if (text.startsWith("@"))
-                return "List";
+                return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.List);
             else if (text.startsWith("%"))
-                return "Map";
+                return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Map);
             else if (text.startsWith("&"))
-                return "Callable";
+                return Perl6SdkType.getInstance().getCoreSettingType(getProject(), Perl6SettingTypeId.Callable);
         }
         return null;
     }
