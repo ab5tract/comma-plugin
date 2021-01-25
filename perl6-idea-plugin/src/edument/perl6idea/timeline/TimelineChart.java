@@ -139,12 +139,12 @@ public class TimelineChart extends JPanel {
         addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                // Only care if we're in the graph area.
-                if (!graphArea.contains(e.getPoint()))
-                    return;
-
                 // If Ctrl is held down, then we're zooming.
                 if (e.isControlDown()) {
+                    // Only care if we're in the graph area.
+                    if (!graphArea.contains(e.getPoint()))
+                        return;
+
                     // Calculate new tick interval.
                     double factor = e.getWheelRotation() < 0 ? 0.5 : 2.0;
                     int notches = Math.abs(e.getWheelRotation());
