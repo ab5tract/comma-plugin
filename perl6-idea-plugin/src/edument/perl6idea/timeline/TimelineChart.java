@@ -347,6 +347,7 @@ public class TimelineChart extends JPanel {
 
     public void setFirstLaneInView(int firstLaneInView) {
         firstLane = firstLaneInView;
+        repaint();
     }
 
     private void fireVisibleLanesChangedHandler() {
