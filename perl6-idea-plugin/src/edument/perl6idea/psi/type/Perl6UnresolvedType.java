@@ -10,7 +10,9 @@ public class Perl6UnresolvedType implements Perl6Type {
     @Override
     public String getName() {
         return typename;
-    }public boolean equals(Object other) {
+    }
+
+    public boolean equals(Object other) {
         if (other instanceof Perl6Type)
             return ((Perl6Type)other).getName().equals(getName());
         return false;
