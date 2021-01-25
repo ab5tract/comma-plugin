@@ -148,11 +148,22 @@ public class TimelineChart extends JPanel {
                     if (!graphArea.contains(e.getPoint()))
                         return;
 
+                    // Work out which tick we're near in the graph, and which
+                    // time point goes with it.
+                    double xPositionInGraph = e.getPoint().getX() - graphArea.getX();
+                    int tick = (int)(xPositionInGraph / tickSpacing);
+                    double centerTime = startTime + tick * tickInterval;
+
                     // Calculate new tick interval.
                     double factor = e.getWheelRotation() < 0 ? 0.5 : 2.0;
                     int notches = Math.abs(e.getWheelRotation());
                     for (int i = 0; i < notches; i++)
                         tickInterval *= factor;
+
+                    // Work out a start time such that the tick we zoomed nearest to
+                    // has the same time.
+                    double newStartTime = centerTime - (tick * tickInterval);
+                    startTime = Math.max(newStartTime, 0);
                 }
 
                 // Otherwise, we're scrolling up/down. */
