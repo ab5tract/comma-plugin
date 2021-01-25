@@ -1,5 +1,6 @@
 package edument.perl6idea.timeline;
 
+import com.intellij.ui.ContextHelpLabel;
 import com.intellij.ui.components.JBScrollBar;
 import edument.perl6idea.timeline.client.ClientEvent;
 import edument.perl6idea.timeline.model.Timeline;
@@ -12,14 +13,21 @@ public class TimelineView extends JPanel {
     private Timeline timeline;
     private TimelineChart chart;
     private JBScrollBar scrollbar;
+    private ContextHelpLabel help;
 
     public TimelineView() {
-        super(new BorderLayout());
+        super();
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.timeline = new Timeline();
         this.chart = new TimelineChart(timeline);
-        this.add(chart, BorderLayout.CENTER);
+        this.add(chart);
+        this.help = ContextHelpLabel.create(
+            "<b>Zoom</b><br>Ctrl <em>+</em> Mouse Wheel / + / -<br>" +
+            "<b>Move in time</b><br>Click and drag, left/right arrow keys<br>" +
+            "<b>Scroll lanes</b><br>Mouse wheel, up/down arrow keys");
+        this.add(this.help);
         this.scrollbar = new JBScrollBar(Adjustable.VERTICAL, 0, 3, 0, 3);
-        this.add(this.scrollbar, BorderLayout.EAST);
+        this.add(this.scrollbar);
         setupScrollHandling();
     }
 
