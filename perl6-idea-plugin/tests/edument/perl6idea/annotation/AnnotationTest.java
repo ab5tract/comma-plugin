@@ -975,6 +975,19 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testSelfAvailabilityInRegexDecl() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "grammar G {\n" +
+              "    method m() {\n" +
+              "        self\n" +
+              "    }\n" +
+              "    token t {\n" +
+              "        x { self.m }\n" +
+              "    }\n" +
+              "}");
+        myFixture.checkHighlighting();
+    }
+
     public void testUselessMethodDeclarationAnnotation() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
               "method <warning descr=\"Useless declaration of a method outside of any package\">outside-of-class</warning>() {}\n" +
