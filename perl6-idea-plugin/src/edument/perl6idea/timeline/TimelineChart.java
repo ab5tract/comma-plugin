@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 /** Renders the timeline chart, with axes and currently visible data. */
 public class TimelineChart extends JPanel {
     // The timeline we're rendering.
-    private Timeline timeline;
+    private final Timeline timeline;
 
     // Fonts and font metrics.
     private Font font = JBUI.Fonts.label();
@@ -60,8 +60,8 @@ public class TimelineChart extends JPanel {
     private double startTime = 0.0;
 
     // Colors we've assigned, plus a color generator.
-    private ColorGenerator colorGen = new ColorGenerator();
-    private Map<String, Color> assignedColors = new HashMap<>();
+    private final ColorGenerator colorGen = new ColorGenerator();
+    private final Map<String, Color> assignedColors = new HashMap<>();
 
     // The current area of the graph.
     private Rectangle graphArea = new Rectangle();
@@ -99,7 +99,7 @@ public class TimelineChart extends JPanel {
             return logged;
         }
     }
-    private List<VisibleLogged> visibleLoggeds = new ArrayList<>();
+    private final List<VisibleLogged> visibleLoggeds = new ArrayList<>();
 
     // Information about a label, so we can detect clicks on those.
     private static class VisibleLabel {
@@ -119,48 +119,56 @@ public class TimelineChart extends JPanel {
             return key;
         }
     }
-    private List<VisibleLabel> visibleLabels = new ArrayList<>();
+    private final List<VisibleLabel> visibleLabels = new ArrayList<>();
 
     // Expansion status of each item, keyed on the path to the item.
-    private Map<String, Boolean> expanded = new HashMap<>();
+    private final Map<String, Boolean> expanded = new HashMap<>();
 
     public TimelineChart(Timeline timeline) {
         this.timeline = timeline;
         addMouseEventHandlers();
+        addKeyboardEventHandlers();
         addResizeHandler();
         executor.scheduleAtFixedRate(
                 () -> ApplicationManager.getApplication().invokeLater(() -> {
                     timeline.tick();
                     repaint();
                 }), 100, 100, TimeUnit.MILLISECONDS);
+        setFocusable(true);
+        setRequestFocusEnabled(true);
     }
 
     private void addMouseEventHandlers() {
         addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                // Only care if we're in the graph area.
-                if (!graphArea.contains(e.getPoint()))
-                    return;
-
                 // If Ctrl is held down, then we're zooming.
                 if (e.isControlDown()) {
+                    // Only care if we're in the graph area.
+                    if (!graphArea.contains(e.getPoint()))
+                        return;
+
+                    // Work out which tick we're near in the graph, and which
+                    // time point goes with it.
+                    double xPositionInGraph = e.getPoint().getX() - graphArea.getX();
+                    int tick = (int)(xPositionInGraph / tickSpacing);
+                    double centerTime = startTime + tick * tickInterval;
+
                     // Calculate new tick interval.
                     double factor = e.getWheelRotation() < 0 ? 0.5 : 2.0;
                     int notches = Math.abs(e.getWheelRotation());
                     for (int i = 0; i < notches; i++)
                         tickInterval *= factor;
+
+                    // Work out a start time such that the tick we zoomed nearest to
+                    // has the same time.
+                    double newStartTime = centerTime - (tick * tickInterval);
+                    startTime = Math.max(newStartTime, 0);
                 }
 
                 // Otherwise, we're scrolling up/down. */
                 else {
-                    firstLane += e.getWheelRotation();
-                    if (firstLane < 0)
-                        firstLane = 0;
-                    else if (firstLane > totalLanes - lanesInView)
-                        firstLane = totalLanes - lanesInView;
-                    fireVisibleLanesChangedHandler();
-                    repaint();
+                    scrollLanes(e.getWheelRotation());
                 }
 
                 // Repaint the graph at this size.
@@ -189,6 +197,7 @@ public class TimelineChart extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
+                requestFocusInWindow();
                 Point point = e.getPoint();
                 if (e.getButton() == MouseEvent.BUTTON1 && !graphArea.contains(point)) {
                     for (VisibleLabel label : visibleLabels) {
@@ -214,17 +223,12 @@ public class TimelineChart extends JPanel {
                         int xDiff = (int)lastPoint.getX() - (int)newPoint.getX();
                         lastPoint = newPoint;
 
-                        // Work out how many ticks we moved and update the start time
-                        // accordingly; hang on to the amount we didn't yet use.
+                        // Work out how many ticks we moved; hang on to the amount we
+                        // didn't yet use. Then update.
                         int wholeTicks = xDiff / tickSpacing;
                         int leftoverPixels = xDiff - wholeTicks * tickSpacing;
                         lastPoint.translate(leftoverPixels, 0);
-                        startTime += wholeTicks * tickInterval;
-                        if (startTime < 0.0)
-                            startTime = 0.0;
-
-                        // Repaint in new position.
-                        repaint();
+                        scrollTimeline(wholeTicks);
                     }
                     else {
                         moving = false;
@@ -277,6 +281,63 @@ public class TimelineChart extends JPanel {
         addMouseMotionListener(dragAndMoveHandler);
     }
 
+    private void addKeyboardEventHandlers() {
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (!e.isControlDown())
+                    return;
+                switch (e.getKeyChar()) {
+                    case KeyEvent.VK_PLUS:
+                    case KeyEvent.VK_EQUALS:
+                        tickInterval /= 2;
+                        repaint();
+                        break;
+                    case KeyEvent.VK_MINUS:
+                    case KeyEvent.VK_UNDERSCORE:
+                        tickInterval *= 2;
+                        repaint();
+                        break;
+                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_DOWN:
+                        scrollLanes(1);
+                        break;
+                    case KeyEvent.VK_UP:
+                        scrollLanes(-1);
+                        break;
+                    case KeyEvent.VK_LEFT:
+                        scrollTimeline(-1);
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                        scrollTimeline(1);
+                        break;
+                }
+            }
+        });
+    }
+
+    public void scrollLanes(int rotation) {
+        firstLane += rotation;
+        if (firstLane < 0)
+            firstLane = 0;
+        else if (firstLane > totalLanes - lanesInView)
+            firstLane = totalLanes - lanesInView;
+        fireVisibleLanesChangedHandler();
+        repaint();
+    }
+
+    public void scrollTimeline(int wholeTicks) {
+        startTime += wholeTicks * tickInterval;
+        if (startTime < 0.0)
+            startTime = 0.0;
+        repaint();
+    }
+
     private void addResizeHandler() {
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -297,6 +358,7 @@ public class TimelineChart extends JPanel {
 
     public void setFirstLaneInView(int firstLaneInView) {
         firstLane = firstLaneInView;
+        repaint();
     }
 
     private void fireVisibleLanesChangedHandler() {
