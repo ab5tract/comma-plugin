@@ -1,6 +1,5 @@
 package edument.perl6idea.profiler.model;
 
-import edument.perl6idea.profiler.ui.Perl6ProfilerFrameResultFilter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Perl6ProfileCall {
-    Pattern CALL_MODULE_PATTERN = Pattern.compile("\\((.+)\\)$");
+    public static Pattern CALL_MODULE_PATTERN = Pattern.compile("\\((.+)\\)$");
 
     private final int id;
     private final int routineID;

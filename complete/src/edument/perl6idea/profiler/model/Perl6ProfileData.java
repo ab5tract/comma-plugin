@@ -1,6 +1,7 @@
 package edument.perl6idea.profiler.model;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.Pair;
 import com.intellij.util.Function;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
 public class Perl6ProfileData {
@@ -105,6 +107,37 @@ public class Perl6ProfileData {
         }
 
         return profileCallMap.get(callId);
+    }
+
+    public Map<String, Pair<Integer, Integer>> getModuleNodes() throws SQLException {
+        Map<String, Pair<Integer, Integer>> nodes = new HashMap<>();
+        try (Statement statement = connection.createStatement()) {
+            ResultSet calls = statement
+                .executeQuery("SELECT r.file, " +
+                              "total(exclusive_time) as exclusive_time, " +
+                              "max(inclusive_time) as inclusive_time " +
+                              "FROM calls c INNER JOIN routines r ON c.routine_id == r.id " +
+                              "GROUP BY r.file ORDER BY c.exclusive_time DESC");
+            while (calls.next()) {
+                String moduleName;
+                Matcher matcher = Perl6ProfileCall.CALL_MODULE_PATTERN.matcher(calls.getString("file"));
+                if (matcher.find())
+                    moduleName = matcher.group(1);
+                else
+                    continue;
+                nodes.compute(moduleName, (k, v) -> {
+                    try {
+                        if (v == null)
+                            return Pair.create(calls.getInt("inclusive_time"), calls.getInt("exclusive_time"));
+                        else
+                            return Pair.create(v.first, v.second + calls.getInt("exclusive_time"));
+                    } catch (SQLException ex) {
+                        return v;
+                    }
+                });
+            }
+        }
+        return nodes;
     }
 
     public List<Perl6ProfileCall> getNavigationNodes() throws SQLException {

@@ -19,7 +19,12 @@ public class Perl6ProfileResultsPanel extends JPanel {
         JBTabbedPane tabbedPaneWrapper = new JBTabbedPane();
         tabbedPaneWrapper.addTab("Routines", getRoutinesTab());
         tabbedPaneWrapper.addTab("Call Graph", getCallGraphTab());
+        tabbedPaneWrapper.addTab("Modules", getModulesTab());
         add(tabbedPaneWrapper, BorderLayout.CENTER);
+    }
+
+    private Component getModulesTab() {
+        return new Perl6ProfileModulesPanel(myProject, myProfileData);
     }
 
     private Component getCallGraphTab() {
