@@ -76,10 +76,17 @@ public class Perl6ProfileCallGraph extends JPanel {
             public void mouseMoved(MouseEvent e) {
                 Point point = e.getPoint();
                 if (currentPopup != null) {
-                    if (currentPopup.getContent().getVisibleRect().contains(point)) {
+                    try {
+                        if (currentPopup.getContent().getVisibleRect().contains(point)) {
+                            return;
+                        }
+                        else {
+                            closeActiveTooltip();
+                        }
+                    }
+                    catch (Exception ex) {
+                        ex.printStackTrace();
                         return;
-                    } else {
-                        closeActiveTooltip();
                     }
                 }
                 timer.cancel();
