@@ -60,6 +60,11 @@ public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements P
     }
 
     @Override
+    public boolean isRequired() {
+        return myName.endsWith("!");
+    }
+
+    @Override
     public boolean isOptional() {
         return myName.endsWith("?") || !isPositional();
     }

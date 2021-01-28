@@ -13,6 +13,7 @@ public interface Perl6Parameter extends Perl6PsiElement, Perl6PsiDeclaration, Pe
     boolean isNamed();
     Perl6PsiElement getValueConstraint();
     boolean isSlurpy();
+    boolean isRequired();
     boolean isOptional();
     boolean isCopy();
     boolean isRW();
