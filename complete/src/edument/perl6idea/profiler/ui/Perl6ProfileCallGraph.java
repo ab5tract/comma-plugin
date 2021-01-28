@@ -85,7 +85,6 @@ public class Perl6ProfileCallGraph extends JPanel {
                         }
                     }
                     catch (Exception ex) {
-                        ex.printStackTrace();
                         return;
                     }
                 }

@@ -24,7 +24,7 @@ public class Perl6ProfileResultsPanel extends JPanel {
     }
 
     private Component getModulesTab() {
-        return new Perl6ProfileModulesPanel(myProject, myProfileData);
+        return new Perl6ProfileModulesPanel(myProfileData);
     }
 
     private Component getCallGraphTab() {

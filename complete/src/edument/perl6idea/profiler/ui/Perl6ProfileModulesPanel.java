@@ -2,24 +2,41 @@ package edument.perl6idea.profiler.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
+import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.table.JBTable;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
+import edument.perl6idea.profiler.model.Perl6ProfileModel;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 
 public class Perl6ProfileModulesPanel extends JPanel {
-    private final Project myProject;
     private final JBTable myModulesTable;
+    private final TableCellRenderer myProfileNodeRenderer = new ColoredTableCellRenderer() {
+        private final DecimalFormat myFormatter = new DecimalFormat("#,###");
 
-    public Perl6ProfileModulesPanel(Project project, Perl6ProfileData data) {
+        @Override
+        protected void customizeCellRenderer(JTable table,
+                                             @Nullable Object value,
+                                             boolean selected,
+                                             boolean hasFocus,
+                                             int row,
+                                             int column) {
+            if (value != null)
+                append(String.format("%s μs", myFormatter.format(value)));
+        }
+    };
+
+    public Perl6ProfileModulesPanel(Perl6ProfileData data) {
         setLayout(new BorderLayout());
-        myProject = project;
         myModulesTable = new JBTable();
         myModulesTable.setAutoCreateRowSorter(true);
         Map<String, Pair<Integer, Integer>> modulesData = calculateModulesData(data);
@@ -27,6 +44,7 @@ public class Perl6ProfileModulesPanel extends JPanel {
         List<RowSorter.SortKey> sortKeys = new ArrayList<>();
         sortKeys.add(new RowSorter.SortKey(2, SortOrder.DESCENDING));
         myModulesTable.getRowSorter().setSortKeys(sortKeys);
+        myModulesTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
         add(new JScrollPane(myModulesTable), BorderLayout.CENTER);
     }
 
