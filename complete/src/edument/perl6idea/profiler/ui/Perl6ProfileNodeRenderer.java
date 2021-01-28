@@ -15,10 +15,12 @@ public class Perl6ProfileNodeRenderer extends ColoredTableCellRenderer {
     private static final SimpleTextAttributes DEFAULT_ATTRIBUTES = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, null);
     private static final SimpleTextAttributes SPECIAL_NODE_ATTRIBUTES = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, new JBColor(
         JBColor.LIGHT_GRAY, Gray._130));
+    private final List<String> myModuleNames;
     private final List<String> myModuleBasePaths;
     private final ComboBox<Perl6ProfilerFrameResultFilter> myHideExternalsCombo;
 
-    public Perl6ProfileNodeRenderer(List<String> moduleBasePaths, ComboBox<Perl6ProfilerFrameResultFilter> hideExternalsComboBox) {
+    public Perl6ProfileNodeRenderer(List<String> moduleBasePaths, List<String> moduleNames, ComboBox<Perl6ProfilerFrameResultFilter> hideExternalsComboBox) {
+        myModuleNames = moduleNames;
         myModuleBasePaths = moduleBasePaths;
         myHideExternalsCombo = hideExternalsComboBox;
     }
@@ -38,8 +40,8 @@ public class Perl6ProfileNodeRenderer extends ColoredTableCellRenderer {
         Perl6ProfileModel model = (Perl6ProfileModel)table.getModel();
 
         SimpleTextAttributes style;
-        if (myModuleBasePaths == null || model.isCellInternal(table.convertRowIndexToModel(row), myModuleBasePaths,
-                myHideExternalsCombo.getItem())) {
+        if (myModuleNames == null || model.isCellInternal(table.convertRowIndexToModel(row), myModuleNames, myModuleBasePaths,
+                                                          myHideExternalsCombo.getItem())) {
             style = SPECIAL_NODE_ATTRIBUTES;
         } else {
             style = DEFAULT_ATTRIBUTES;

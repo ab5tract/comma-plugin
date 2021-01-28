@@ -81,16 +81,27 @@ public class Perl6ProfileModel extends AbstractTableModel {
         return COLUMN_NAMES.get(column);
     }
 
-    public boolean isCellInternal(int row, List<String> paths, Perl6ProfilerFrameResultFilter filter) {
+    public boolean isCellInternal(int row,
+                                  List<String> projectModuleNames,
+                                  List<String> moduleBasePaths,
+                                  Perl6ProfilerFrameResultFilter filter) {
         // If Everything is shown, nothing is internal
         if (filter == Perl6ProfilerFrameResultFilter.Everything)
             return false;
         String file = nodes.get(row).getOriginalFile();
         if (file.startsWith("site#") && filter == Perl6ProfilerFrameResultFilter.NoCore)
             return false;
-        for (String path : paths)
-            if (file.startsWith(path))
-                return false;
+        String moduleName = nodes.get(row).getModuleName();
+        if (moduleName != null) {
+            for (String projectModuleName : projectModuleNames) {
+                if (moduleName.equals(projectModuleName))
+                    return false;
+            }
+        } else if (!file.contains(".precomp")) {
+            for (String path : moduleBasePaths)
+                if (file.startsWith(path))
+                    return false;
+        }
         return true;
     }
 

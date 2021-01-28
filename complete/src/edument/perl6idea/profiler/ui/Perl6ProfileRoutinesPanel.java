@@ -5,6 +5,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ContentEntry;
@@ -20,6 +21,8 @@ import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.Function;
 import com.intellij.util.PlatformIcons;
+import edument.perl6idea.metadata.Perl6MetaDataComponent;
+import edument.perl6idea.module.Perl6ModuleType;
 import edument.perl6idea.profiler.model.*;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
@@ -33,6 +36,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -43,6 +47,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     public static final Logger LOG = Logger.getInstance(Perl6ProfileRoutinesPanel.class);
     protected Project myProject;
     protected Perl6ProfileData myProfileData;
+    protected List<String> myModuleNames;
     protected List<String> myModuleBasePaths;
     private JPanel myPanel1;
     private ComboBox<Perl6ProfilerFrameResultFilter> myHideExternalsComboBox;
@@ -59,13 +64,9 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     public Perl6ProfileRoutinesPanel(Project project, Perl6ProfileData profileData) {
         myProject = project;
         myProfileData = profileData;
-        myModuleBasePaths = Arrays.stream(ModuleManager.getInstance(project).getModules())
-            .map(m -> {
-                ContentEntry[] entries = ModuleRootManager.getInstance(m).getContentEntries();
-                return entries.length == 1 ? entries[0].getFile() : null;
-            }).map(f -> f == null ? null : f.getPath()).filter(p -> p != null).collect(Collectors.toList());
         // Default renderer
-        myProfileNodeRenderer = new Perl6ProfileNodeRenderer(myModuleBasePaths, myHideExternalsComboBox);
+        fillModuleData(myProject);
+        myProfileNodeRenderer = new Perl6ProfileNodeRenderer(myModuleBasePaths, myModuleNames, myHideExternalsComboBox);
         myHideExternalsComboBox.addItem(Perl6ProfilerFrameResultFilter.Everything);
         myHideExternalsComboBox.addItem(Perl6ProfilerFrameResultFilter.NoExternals);
         myHideExternalsComboBox.addItem(Perl6ProfilerFrameResultFilter.NoCore);
@@ -79,6 +80,26 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
         setupNavigationSelectorListener(callerTable);
         setupContextMenuActions();
         setupSeparators();
+    }
+
+    private void fillModuleData(Project project) {
+        myModuleNames = new ArrayList<>();
+        myModuleBasePaths = new ArrayList<>();
+        Module[] modules = ModuleManager.getInstance(project).getModules();
+        for (Module module : modules) {
+            ContentEntry[] entries = ModuleRootManager.getInstance(module).getContentEntries();
+            myModuleBasePaths.addAll(Arrays.stream(entries).map(
+                e -> e.getFile() != null ? e.getFile().getPath() : null
+            ).filter(s -> s != null).collect(Collectors.toList()));
+
+            String name = module.getModuleTypeName();
+            if (name == null || !name.equals(Perl6ModuleType.getInstance().getId()))
+                continue;
+            Perl6MetaDataComponent metaDataComponent = module.getService(Perl6MetaDataComponent.class);
+            if (metaDataComponent == null)
+                continue;
+            myModuleNames.addAll(metaDataComponent.getProvidedNames());
+        }
     }
 
     private void setupSeparators() {
@@ -265,14 +286,14 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
         updateRowFilter();
 
         // Select first row
-        if (callsNavigation.getModel().getRowCount() > 0) {
+        if (callsNavigation.getVisibleRowCount() > 0) {
             callsNavigation.setRowSelectionInterval(0, 0);
         }
     }
 
     private void goToCallAtRow(int row) {
         Perl6ProfileModel model = (Perl6ProfileModel)callsNavigation.getModel();
-        if (!model.isCellInternal(row, myModuleBasePaths, myHideExternalsComboBox.getItem())) {
+        if (!model.isCellInternal(row, myModuleNames, myModuleBasePaths, myHideExternalsComboBox.getItem())) {
             String sourceFilePath = model.getNodeSourceFile(row);
             VirtualFile file = null;
             if (sourceFilePath.startsWith("site#")) {
@@ -319,7 +340,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     private Function<Integer, Boolean> generateVisibleCallsCondition() {
         return rowIndex -> {
             Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
-            boolean isExternalCheck = !navigationModel.isCellInternal(rowIndex, myModuleBasePaths, myHideExternalsComboBox.getItem());
+            boolean isExternalCheck = !navigationModel.isCellInternal(rowIndex, myModuleNames, myModuleBasePaths, myHideExternalsComboBox.getItem());
             boolean patternCheck = true;
 
             if (!namePattern.isEmpty()) {
