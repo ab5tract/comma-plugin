@@ -84,9 +84,7 @@ public class Perl6ProfileCallGraph extends JPanel {
                             closeActiveTooltip();
                         }
                     }
-                    catch (Exception ex) {
-                        return;
-                    }
+                    catch (Exception ex) {}
                 }
                 timer.cancel();
                 timer = new Timer("tooltip-show");
