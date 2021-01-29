@@ -70,7 +70,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
         myHideExternalsComboBox.addItem(Perl6ProfilerFrameResultFilter.Everything);
         myHideExternalsComboBox.addItem(Perl6ProfilerFrameResultFilter.NoExternals);
         myHideExternalsComboBox.addItem(Perl6ProfilerFrameResultFilter.NoCore);
-        myHideExternalsComboBox.setItem(Perl6ProfilerFrameResultFilter.NoCore);
+        myHideExternalsComboBox.setSelectedItem(Perl6ProfilerFrameResultFilter.NoCore);
         myShowRealNamesCheckBox.setSelected(false);
         setupCheckboxHandlers();
         setupNavigation();
@@ -293,7 +293,8 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
 
     private void goToCallAtRow(int row) {
         Perl6ProfileModel model = (Perl6ProfileModel)callsNavigation.getModel();
-        if (!model.isCellInternal(row, myModuleNames, myModuleBasePaths, myHideExternalsComboBox.getItem())) {
+        if (!model.isCellInternal(row, myModuleNames, myModuleBasePaths,
+                                  (Perl6ProfilerFrameResultFilter)myHideExternalsComboBox.getSelectedItem())) {
             String sourceFilePath = model.getNodeSourceFile(row);
             VirtualFile file = null;
             if (sourceFilePath.startsWith("site#")) {
@@ -340,7 +341,8 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     private Function<Integer, Boolean> generateVisibleCallsCondition() {
         return rowIndex -> {
             Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
-            boolean isExternalCheck = !navigationModel.isCellInternal(rowIndex, myModuleNames, myModuleBasePaths, myHideExternalsComboBox.getItem());
+            boolean isExternalCheck = !navigationModel.isCellInternal(rowIndex, myModuleNames, myModuleBasePaths,
+                                                                      (Perl6ProfilerFrameResultFilter)myHideExternalsComboBox.getSelectedItem());
             boolean patternCheck = true;
 
             if (!namePattern.isEmpty()) {

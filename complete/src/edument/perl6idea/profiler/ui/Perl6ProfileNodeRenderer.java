@@ -41,7 +41,7 @@ public class Perl6ProfileNodeRenderer extends ColoredTableCellRenderer {
 
         SimpleTextAttributes style;
         if (myModuleNames == null || model.isCellInternal(table.convertRowIndexToModel(row), myModuleNames, myModuleBasePaths,
-                                                          myHideExternalsCombo.getItem())) {
+                                                          (Perl6ProfilerFrameResultFilter)myHideExternalsCombo.getSelectedItem())) {
             style = SPECIAL_NODE_ATTRIBUTES;
         } else {
             style = DEFAULT_ATTRIBUTES;
