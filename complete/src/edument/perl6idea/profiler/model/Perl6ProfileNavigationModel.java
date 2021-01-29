@@ -25,7 +25,7 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
 
     protected String calculateExclusiveValue(int time) {
         String percents = DECIMAL_FORMAT.format(((double)time / inclusiveSum) * 100);
-        return String.format("%s%% (%s μs)", percents, time);
+        return String.format("%s%% (%s μs)", percents, myFormatter.format(time));
     }
 
     @Override

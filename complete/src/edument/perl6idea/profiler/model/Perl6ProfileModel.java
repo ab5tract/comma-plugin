@@ -1,6 +1,7 @@
 package edument.perl6idea.profiler.model;
 
 import com.intellij.openapi.project.Project;
+import edument.perl6idea.profiler.ui.Perl6ProfilerFrameResultFilter;
 
 import javax.swing.table.AbstractTableModel;
 import java.text.DecimalFormat;
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Perl6ProfileModel extends AbstractTableModel {
+    protected final DecimalFormat myFormatter = new DecimalFormat("#,###");
     protected static final ArrayList<String> COLUMN_NAMES = new ArrayList<>(
         Arrays.asList("Name", "File", "Inclusive (μs)", "Entries")
     );
@@ -16,7 +18,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
     protected int inclusiveSum;
     protected List<Perl6ProfileCall> nodes;
     protected boolean showRealFileNames = false;
-    protected static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
     @Override
     public int getRowCount() {
@@ -59,7 +61,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
 
     protected String calculateInclusiveValue(int timeInMills) {
         String percents = DECIMAL_FORMAT.format(((double)timeInMills / inclusiveSum) * 100);
-        return String.format("%s%% (%s μs)", percents, timeInMills);
+        return String.format("%s%% (%s μs)", percents,  myFormatter.format(timeInMills));
     }
 
     @Override
@@ -80,12 +82,26 @@ public class Perl6ProfileModel extends AbstractTableModel {
         return COLUMN_NAMES.get(column);
     }
 
-    public boolean isCellInternal(int row, List<String> paths) {
+    public boolean isCellInternal(int row,
+                                  List<String> projectModuleNames,
+                                  List<String> moduleBasePaths,
+                                  Perl6ProfilerFrameResultFilter filter) {
+        // If Everything is shown, nothing is internal
+        if (filter == Perl6ProfilerFrameResultFilter.Everything)
+            return false;
         String file = nodes.get(row).getOriginalFile();
-        for (String path : paths) {
-            if (file.startsWith(path) || file.startsWith("site#sources")) {
-                return false;
+        if (file.startsWith("site#") && filter == Perl6ProfilerFrameResultFilter.NoCore)
+            return false;
+        String moduleName = nodes.get(row).getModuleName();
+        if (moduleName != null) {
+            for (String projectModuleName : projectModuleNames) {
+                if (moduleName.equals(projectModuleName))
+                    return false;
             }
+        } else if (!file.contains(".precomp")) {
+            for (String path : moduleBasePaths)
+                if (file.startsWith(path))
+                    return false;
         }
         return true;
     }
@@ -108,10 +124,6 @@ public class Perl6ProfileModel extends AbstractTableModel {
 
     public void setShowRealFileNames(boolean showRealFileNames) {
         this.showRealFileNames = showRealFileNames;
-    }
-
-    public boolean getShowRealFileNames() {
-        return showRealFileNames;
     }
 
     public int getNavigationIndexByCallId(int id) {

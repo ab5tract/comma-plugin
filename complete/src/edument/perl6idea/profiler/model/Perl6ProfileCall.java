@@ -9,22 +9,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Perl6ProfileCall {
-    Pattern CALL_MODULE_PATTERN = Pattern.compile("\\((.+)\\)$");
+    public static Pattern CALL_MODULE_PATTERN = Pattern.compile("\\((.+)\\)$");
 
-    private int id;
-    private int routineID;
+    private final int id;
+    private final int routineID;
     @Nullable
     private Perl6ProfileCall parent;
-    private List<Perl6ProfileCall> callees = new LinkedList<>();
+    private final List<Perl6ProfileCall> callees = new LinkedList<>();
     // Data to navigate
-    private String name;
-    private String filename;
-    private int line;
-    private int inclusiveTime;
-    private int exclusiveTime;
-    private int entries;
-    private int inlinedEntries;
-    private int speshEntries;
+    private final String name;
+    private final String filename;
+    private final int line;
+    private final int inclusiveTime;
+    private final int exclusiveTime;
+    private final int entries;
+    private final int inlinedEntries;
+    private final int speshEntries;
 
     public Perl6ProfileCall(int id, int routineID,
                             int inclusiveTime, int exclusiveTime,
@@ -130,8 +130,6 @@ public class Perl6ProfileCall {
 
     public List<String> calleesPercentageInfo() {
         List<String> lines = new ArrayList<>();
-        if (callees == null)
-            return null;
         for (Perl6ProfileCall callee : callees) {
             float percent = 100 * (float)callee.inclusiveTime / (float)inclusiveTime;
             String name = callee.name.isEmpty() ? "<anon>" : callee.name;

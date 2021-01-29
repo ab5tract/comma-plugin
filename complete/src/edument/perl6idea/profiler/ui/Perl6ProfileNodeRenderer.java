@@ -1,5 +1,6 @@
 package edument.perl6idea.profiler.ui;
 
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
@@ -14,10 +15,14 @@ public class Perl6ProfileNodeRenderer extends ColoredTableCellRenderer {
     private static final SimpleTextAttributes DEFAULT_ATTRIBUTES = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, null);
     private static final SimpleTextAttributes SPECIAL_NODE_ATTRIBUTES = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, new JBColor(
         JBColor.LIGHT_GRAY, Gray._130));
+    private final List<String> myModuleNames;
     private final List<String> myModuleBasePaths;
+    private final ComboBox<Perl6ProfilerFrameResultFilter> myHideExternalsCombo;
 
-    public Perl6ProfileNodeRenderer(List<String> moduleBasePaths) {
+    public Perl6ProfileNodeRenderer(List<String> moduleBasePaths, List<String> moduleNames, ComboBox<Perl6ProfilerFrameResultFilter> hideExternalsComboBox) {
+        myModuleNames = moduleNames;
         myModuleBasePaths = moduleBasePaths;
+        myHideExternalsCombo = hideExternalsComboBox;
     }
 
     @Override
@@ -35,7 +40,8 @@ public class Perl6ProfileNodeRenderer extends ColoredTableCellRenderer {
         Perl6ProfileModel model = (Perl6ProfileModel)table.getModel();
 
         SimpleTextAttributes style;
-        if (myModuleBasePaths == null || model.isCellInternal(table.convertRowIndexToModel(row), myModuleBasePaths)) {
+        if (myModuleNames == null || model.isCellInternal(table.convertRowIndexToModel(row), myModuleNames, myModuleBasePaths,
+                                                          myHideExternalsCombo.getItem())) {
             style = SPECIAL_NODE_ATTRIBUTES;
         } else {
             style = DEFAULT_ATTRIBUTES;

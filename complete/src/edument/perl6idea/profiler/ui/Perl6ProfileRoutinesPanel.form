@@ -31,10 +31,15 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="e6170" class="javax.swing.JCheckBox" binding="myHideExternalsCheckBox">
+                  <component id="905f0" class="javax.swing.JLabel">
                     <constraints/>
                     <properties>
-                      <text value="Hide externals"/>
+                      <text value="Show routines from"/>
+                    </properties>
+                  </component>
+                  <component id="e6170" class="com.intellij.openapi.ui.ComboBox" binding="myHideExternalsComboBox">
+                    <constraints/>
+                    <properties>
                       <toolTipText value="Hide calls of routines outside of the project"/>
                     </properties>
                   </component>
@@ -44,11 +49,16 @@
                       <orientation value="1"/>
                     </properties>
                   </component>
-                  <component id="3158" class="javax.swing.JCheckBox" binding="myShowRealNamesCheckBox" default-binding="true">
+                  <component id="8c770" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Show real filenames"/>
+                    </properties>
+                  </component>
+                  <component id="3158" class="javax.swing.JCheckBox" binding="myShowRealNamesCheckBox">
                     <constraints/>
                     <properties>
                       <enabled value="true"/>
-                      <text value="Show full filenames"/>
                       <toolTipText value="Use real file names instead of short ones"/>
                     </properties>
                   </component>

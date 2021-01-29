@@ -19,6 +19,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Perl6ProfileCallGraph extends JPanel {
@@ -32,8 +34,9 @@ public class Perl6ProfileCallGraph extends JPanel {
     private Rectangle graphSizes;
     private Queue<CallItem> callItems = new ConcurrentLinkedQueue<>();
     private int maxHeight = 0;
-    private JScrollPane myScroll;
+    private final JScrollPane myScroll;
     private int myRootHeight;
+    private Timer timer = new Timer("tooltip-show");
 
     public Perl6ProfileCallGraph(Project project,
                                  Perl6ProfileData profileData,
@@ -55,7 +58,10 @@ public class Perl6ProfileCallGraph extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Point point = e.getPoint();
-                if (e.getButton() == MouseEvent.BUTTON1 && graphSizes.contains(point)) {
+                if (!SwingUtilities.isLeftMouseButton(e) || !graphSizes.contains(point))
+                    return;
+
+                if (e.getClickCount() == 1) {
                     for (CallItem item : callItems) {
                         if (item.contains(point)) {
                             myRoot = myProfileData.getProfileCallById(item.myCall.getId(), 15, item.myCall.getParent());
@@ -68,43 +74,62 @@ public class Perl6ProfileCallGraph extends JPanel {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                if (e.getButton() != 0)
-                    return;
-                maybeShowTooltip(e.getPoint());
+                Point point = e.getPoint();
+                if (currentPopup != null) {
+                    try {
+                        if (currentPopup.getContent().getVisibleRect().contains(point)) {
+                            return;
+                        }
+                        else {
+                            closeActiveTooltip();
+                        }
+                    }
+                    catch (Exception ex) {}
+                }
+                timer.cancel();
+                timer = new Timer("tooltip-show");
+                if (graphSizes.contains(point)) {
+                    timer.schedule(
+                            new TimerTask() {
+                                @Override
+                                public void run() {
+                                    SwingUtilities.invokeLater(() -> maybeShowTooltip(e.getPoint()));
+                                }
+                            },
+                            300
+                    );
+                }
             }
 
             private void maybeShowTooltip(Point point) {
-                if (graphSizes.contains(point)) {
-                    for (CallItem item : callItems) {
-                        if (item.contains(point)) {
-                            if (item != currentTooltipCall) {
-                                closeActiveTooltip();
-                                showTooltip(point, item);
-                            }
-                            return;
+                for (CallItem item : callItems) {
+                    if (item.contains(point)) {
+                        if (item != currentTooltipCall) {
+                            closeActiveTooltip();
+                            showTooltip(point, item);
                         }
+                        return;
                     }
                 }
-                closeActiveTooltip();
             }
 
             private void showTooltip(Point point, CallItem item) {
                 currentTooltipCall = item;
-                JBPopup popup = JBPopupFactory.getInstance()
-                    .createComponentPopupBuilder(
-                        new CallGraphTooltipUI(myProject, currentTooltipCall).getPanel(), null)
-                    .setFocusOwners(new Component[] { Perl6ProfileCallGraph.this })
-                    .createPopup();
-                currentPopup = popup;
-                popup.show(new RelativePoint(Perl6ProfileCallGraph.this, point));
+                currentPopup = JBPopupFactory.getInstance()
+                        .createComponentPopupBuilder(
+                                new CallGraphTooltipUI(currentTooltipCall).getPanel(), null)
+                        .setFocusOwners(new Component[] { Perl6ProfileCallGraph.this })
+                        .createPopup();
+                currentPopup.show(new RelativePoint(Perl6ProfileCallGraph.this, point));
             }
 
             private void closeActiveTooltip() {
-                if (currentTooltipCall != null) {
+                if (currentPopup != null) {
                     currentPopup.cancel();
                     Disposer.dispose(currentPopup);
                     currentPopup = null;
-                    currentTooltipCall = null;
+                    if (currentTooltipCall != null)
+                        currentTooltipCall = null;
                 }
             }
         };
@@ -197,7 +222,7 @@ public class Perl6ProfileCallGraph extends JPanel {
         String callName = root.getName();
 
         // Draw a filled rectangle
-        if (root.isExternal(myProject.getBasePath())) {
+        if (isRootExternal(root)) {
             Color newColor = convertToGrayscale(g.getColor());
             g.setColor(newColor);
         }
@@ -229,6 +254,10 @@ public class Perl6ProfileCallGraph extends JPanel {
         g.setColor(background);
         // Return if we should draw children of this call
         return callName.length() > 1 && root.getCallees() != null;
+    }
+
+    private boolean isRootExternal(Perl6ProfileCall root) {
+        return root.getOriginalFile().contains(".precomp") || root.isExternal(myProject.getBasePath());
     }
 
     private static Color getComplimentaryColor(Color color) {

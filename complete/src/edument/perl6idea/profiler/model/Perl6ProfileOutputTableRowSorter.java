@@ -3,10 +3,12 @@ package edument.perl6idea.profiler.model;
 import javax.swing.*;
 import javax.swing.table.TableRowSorter;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Perl6ProfileOutputTableRowSorter extends TableRowSorter<Perl6ProfileNavigationModel> {
     public Perl6ProfileOutputTableRowSorter(Perl6ProfileNavigationModel model) {
         super(model);
+        setSortKeys(Collections.singletonList(new SortKey(2, SortOrder.DESCENDING)));
     }
 
     @Override
