@@ -19,7 +19,7 @@ public class ProfilerView extends JPanel {
         super();
         myProject = project;
         setLayout(new BorderLayout());
-        myView = new JLabel("Waiting for program to terminate to collect results...");
+        myView = new JLabel("Waiting for the program to terminate to collect results...");
         add(myView, BorderLayout.CENTER);
     }
 
@@ -27,6 +27,8 @@ public class ProfilerView extends JPanel {
         if (file == null) {
             setView(new JLabel("Error during results connecting: SQL file was absent"));
             return;
+        } else {
+            setView(new JLabel("The program has terminated, calculating results to present..."));
         }
         Task.Backgroundable task = new Perl6ProfileTask(myProject, "Processing Profiling Data", true, file, this);
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
