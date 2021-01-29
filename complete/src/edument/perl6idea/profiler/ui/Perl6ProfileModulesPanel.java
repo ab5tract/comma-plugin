@@ -1,11 +1,9 @@
 package edument.perl6idea.profiler.ui;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.ui.ColoredTableCellRenderer;
 import com.intellij.ui.table.JBTable;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
-import edument.perl6idea.profiler.model.Perl6ProfileModel;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -15,8 +13,10 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Perl6ProfileModulesPanel extends JPanel {
     private final JBTable myModulesTable;
@@ -42,7 +42,7 @@ public class Perl6ProfileModulesPanel extends JPanel {
         Map<String, Pair<Integer, Integer>> modulesData = calculateModulesData(data);
         myModulesTable.setModel(new ProfilerModulesTableModel(modulesData));
         List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-        sortKeys.add(new RowSorter.SortKey(2, SortOrder.DESCENDING));
+        sortKeys.add(new RowSorter.SortKey(1, SortOrder.DESCENDING));
         myModulesTable.getRowSorter().setSortKeys(sortKeys);
         myModulesTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
         add(new JScrollPane(myModulesTable), BorderLayout.CENTER);
@@ -86,7 +86,7 @@ public class Perl6ProfileModulesPanel extends JPanel {
 
         @Override
         public int getColumnCount() {
-            return 3;
+            return 2;
         }
 
         @Override
@@ -94,8 +94,6 @@ public class Perl6ProfileModulesPanel extends JPanel {
             switch (columnIndex) {
                 case 0:
                     return "Module";
-                case 1:
-                    return "Inclusive time";
                 default:
                     return "Exclusive time";
             }
@@ -117,7 +115,6 @@ public class Perl6ProfileModulesPanel extends JPanel {
         public Object getValueAt(int rowIndex, int columnIndex) {
             switch (columnIndex) {
                 case 0: return myData.get(rowIndex).name;
-                case 1: return myData.get(rowIndex).inclusive;
                 default: return myData.get(rowIndex).exclusive;
             }
         }
