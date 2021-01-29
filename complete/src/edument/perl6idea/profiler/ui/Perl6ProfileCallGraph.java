@@ -222,7 +222,7 @@ public class Perl6ProfileCallGraph extends JPanel {
         String callName = root.getName();
 
         // Draw a filled rectangle
-        if (root.isExternal(myProject.getBasePath())) {
+        if (isRootExternal(root)) {
             Color newColor = convertToGrayscale(g.getColor());
             g.setColor(newColor);
         }
@@ -254,6 +254,10 @@ public class Perl6ProfileCallGraph extends JPanel {
         g.setColor(background);
         // Return if we should draw children of this call
         return callName.length() > 1 && root.getCallees() != null;
+    }
+
+    private boolean isRootExternal(Perl6ProfileCall root) {
+        return root.getOriginalFile().contains(".precomp") || root.isExternal(myProject.getBasePath());
     }
 
     private static Color getComplimentaryColor(Color color) {
