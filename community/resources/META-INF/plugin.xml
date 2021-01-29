@@ -36,36 +36,33 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Migrate to version 202 of the IntelliJ platform. Now the minimal supported IntelliJ product major version for the Comma plugin is 2020.2. Backward compatibility for 2020.1 is expected, but not guaranteed</li>
-<li>Add automatic conversion for ASCII operators to Unicode equivalents, disabled by default (enabled in &#39;File -&gt; Settings -&gt; Code Style -&gt; Raku -&gt; Editor Behavior&#39;). If conversion is enabled, on typing ASCII operators are converted into Unicode equivalents. If backspace is pressed the conversion is reverted</li>
-<li>Highlight unused lexical variables, parameters, attributes, lexical subroutines and private methods</li>
-<li>Introduce a new 'Raku Compilers' tab in Project Settings, allowing to create new, change and remove IDE SDK (Raku compiler) instances</li>
-<li>Intention to manually convert infix operators between ASCII and Unicode forms</li>
-<li>Parameter info for <code>new</code> method call now shows a signature comprised of public attributes if no explicit <code>new</code> implementation is present</li>
-<li>Make auto-completion faster and more correct in some cases</li>
-<li>Pair simplification intention now handles simplification of <code>foo =&gt; True</code> and <code>foo =&gt; False</code> into <code>:foo</code> and <code>:!foo</code> correspondingly. Also forms like <code>:foo(True)</code> and <code>:foo(False)</code> are handled</li>
-<li>Make method completion correctly handle methods from stubbed packages past the current position in file</li>
-<li>Always format code and declaration stubs to take a single line, which is a common code style default</li>
-<li>Warn about technically valid, but unusual parameters quantifier use in signatures: when a positional parameter is marked as required and when a parameter with a default is marked as optional</li>
-<li>Indicate an error if a parameter with a default value is marked as required</li>
-<li>Unify the UI of `New Script`, `New Module` and `New Test` actions, make them recognize the case when the file with the specified name already exists</li>
-<li>Add a `model` option to `New Module` action, which creates a stub for a Red ORM model and ensures that Red is specified in the dependencies</li>
-<li>Add a `Mark directory as` group of actions, which can be used to specify a directory as a source root of a particular type</li>
-<li>Fix false positive in signature correctness annotator</li>
-<li>Fix possible exception related to variables implicitly declared via regex smartmatching</li>
-<li>Fix incorrect annotation of named parameters initializing class attributes</li>
-<li>Fix a bug where some multi sub signatures were duplicated in parameter info</li>
-<li>Fix a hang when typing two heredoc openers like <code>Q:to/IN/, Q:to</code></li>
-<li>Fix an exception on typing <code>my $\(42)</code></li>
-<li>Fix an exception related to obtaining documentation when two or more projects are opened with the same Raku compiler specified</li>
-<li>Fix an exception in the annotator spotting a missing 'unit' keyword</li>
-<li>Fix the validation tip in the New Test dialog when a test with a specified name already exists</li>
-<li>Fix a possible exception in the backup Raku compiler service provided by the plugin</li>
-<li>Fix possible exception related to the secondary Raku SDK</li>
-<li>Fix an exception for modules with recursive dependencies</li>
-<li>Fix Test Run Configuration execution for Windows</li>
-<li>Fix a hotkey specified in tip text</li>
-<li>Fix the `EVALFILE` subroutine being detected as undeclared</li>
+<li>Improve the UI of the timeline view: make zooming with the mouse feel more natural, provide some keyboard controls for navigating the chart, fix a scrolling issue, and provide a help icon giving usage hints on hover</li>
+<li>Improve method completion for cases when the return type is not in scope of the caller</li>
+<li>Improve completion for more complex kinds of type, such as typed arrays and types with explicit definedness</li>
+<li>Highlight calls to in-project and external deprecated subroutines and methods; also strike them out in the autocomplete suggestions</li>
+<li>Extend Unicode operator conversion (both live and intention-based) to handle hyper operators (e.g. &#39;&gt;&gt;+&lt;&lt;&#39;)</li>
+<li>When there is a <code>for</code> loop over a typed array, infer the type of the topic or loop parameter in order to provide better reference resolution and completion suggestions</li>
+<li>Add a quickfix to delete unused lexical variables and unused private attributes</li>
+<li>Add quickfixes to either add the &#39;is export&#39; trait or to remove unused lexical subroutines</li>
+<li>Add an intention to stub a new subroutine when a call to an unknown subroutine is present</li>
+<li>Annotate illegal uses of <code>self</code> or <code>$.foo</code></li>
+<li>Annotate calls where too few or too many positional arguments are passed, unaccepted named arguments are passed, or required named arguments are missing</li>
+<li>Annotate attempts to assign a value to a readonly parameter, respecting traits like <code>is copy</code> or <code>is rw</code></li>
+<li>Add an intention offering to replace <code>$.foo</code> with <code>$!foo</code> when <code>self</code> is only partially available (such as attributes declaration or <code>BUILD</code> submethod implementation)</li>
+<li>Add an intention to cover Raku terms (<code>pi</code>, <code>tau</code>, and <code>set</code>) to their Unicode equivalents and vice versa</li>
+<li>Add an intention to switch between fatarrow pairs and colonpairs</li>
+<li>Fix a parsing error when encountering whitespace before the closing <code>]</code> in a type argument list</li>
+<li>Do not wrongly annotate <code>self</code> in a regex declaration as being unavailable</li>
+<li>Fix a false positive in the signature annotator related to parameters with default values</li>
+<li>Fix issues in detection of calls with the provided arguments not matching the signature</li>
+<li>Do not annotate positional capture variables inside of non-capturing groups as unknown</li>
+<li>Fix bogus &#39;Empty regex not allowed&#39; annotation when encountering an unrecognized internal regex modifier, give a proper error message instead</li>
+<li>Fix a long standing bug of the auto completion popup appearing on typing certain infix operator</li>
+<li>Improve detection of <code>$/</code> and <code>$_</code> implicit usages to not mark such parameters as unused</li>
+<li>Only names of unused variables are now highlighted as such, instead of highlighting the initializing expression too</li>
+<li>Parse <code>&lt;@.foo&gt;</code> in Cro template language files</li>
+<li>Fix an unwanted behavior when Comma instance created excessive files in temporary directories</li>
+<li>Fix a rare exception related to the signature correctness annotation</li>
 </ul>
   ]]></change-notes>
 

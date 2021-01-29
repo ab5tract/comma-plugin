@@ -32,19 +32,16 @@
 
   <change-notes><![CDATA[
 <ul>
-<ul>
-<li>Highlight calls to in-project and external deprecated subroutines and methods; also strike them out in the autocomplete suggestions</li>
-<li>Allow selection of the target scope when performing Extract Variable refactoring</li>
-<li>Extend Unicode operator conversion (both live and intention-based) to handle hyper operators (e.g. &#39;&gt;&gt;+&lt;&lt;&#39;)</li>
-<li>Add a quickfix to delete unused lexical variables and unused private attributes</li>
-<li>Add quickfixes to either add the &#39;is export&#39; trait or to remove unused lexical subroutines</li>
-<li>Add an intention to stub a new subroutine when a call to an unknown subroutine is present</li>
-<li>Fix a bug in the Extract Variable refactoring where other variables with the default name are present in the scope already</li>
-<li>Fix issues in detection of calls with the provided arguments not matching the signature</li>
-<li>Do not annotate positional capture variables inside of non-capturing groups as unknown</li>
-<li>Fix bogus &#39;Empty regex not allowed&#39; annotation when encountering an unrecognized internal regex modifier, give a proper error message instead</li>
-<li>Fix a long standing bug of the auto completion popup appearing on typing certain infix operators</li>
-</ul>
+<li>Add a new Modules tab in the profiler, which shows the modules that account for the most exclusive time, to give a higher level view of where time is spent</li>
+<li>On the profiler Routines tab, one can now choose to see all routines, all routines except the CORE built-ins, and only routines in the current project</li>
+<li>Improve the profiler UI generally, fixing some presentation issues and adding comma separators in large values</li>
+<li>Improve the UI of the timeline view: make zooming with the mouse feel more natural, provide some keyboard controls for navigating the chart, fix a scrolling issue, and provide a help icon giving usage hints on hover</li>
+<li>Improve method completion for cases when the return type is not in scope of the caller</li>
+<li>Improve completion for more complex kinds of type, such as typed arrays and types with explicit definedness</li>
+<li>When there is a <code>for</code> loop over a typed array, infer the type of the topic or loop parameter in order to provide better reference resolution and completion suggestions</li>
+<li>Fix a parsing error when encountering whitespace before the closing <code>]</code> in a type argument list</li>
+<li>Do not wrongly annotate <code>self</code> in a regex declaration as being unavailable</li>
+<li>Fix a false positive in the signature annotator related to parameters with default values</li>
 </ul>
   ]]>
   </change-notes>
