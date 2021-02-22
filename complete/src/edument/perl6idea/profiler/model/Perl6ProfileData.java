@@ -3,6 +3,7 @@ package edument.perl6idea.profiler.model;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.Function;
+import edument.perl6idea.profiler.ui.Perl6ProfileGCPanel;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -169,9 +170,40 @@ public class Perl6ProfileData {
                 threadList.add(new Perl6ProfileThread(threads.getInt("id"), threads.getInt("rootNodeID")));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn(e);
         }
         return threadList;
+    }
+
+    public List<Perl6ProfileGCPanel.GCData> getGC() {
+        List<Perl6ProfileGCPanel.GCData> gcList = new ArrayList<>();
+        try (Statement statement = connection.createStatement()) {
+            String GC_DATA_QUERY_STATEMENT = "            select\n" +
+                                             "                max(time) as max_time,\n" +
+                                             "                min(start_time) as earliest_start_time,\n" +
+                                             "                total(retained_bytes) as retained_bytes,\n" +
+                                             "                total(cleared_bytes) as cleared_bytes,\n" +
+                                             "                total(promoted_bytes) as promoted_bytes,\n" +
+                                             "                group_concat(thread_id, \",\") as participants,\n" +
+                                             "                sequence_num,\n" +
+                                             "                full\n" +
+                                             "            from gcs\n" +
+                                             "            group by sequence_num\n" +
+                                             "            ;";
+            ResultSet gcs = statement
+                .executeQuery(GC_DATA_QUERY_STATEMENT);
+            while (gcs.next()) {
+                gcList.add(new Perl6ProfileGCPanel.GCData(
+                    gcs.getInt("sequence_num"),  gcs.getLong("max_time"),
+                    gcs.getLong("earliest_start_time") ,gcs.getLong("promoted_bytes"),
+                    gcs.getLong("retained_bytes"), gcs.getLong("cleared_bytes"),
+                    gcs.getString("participants"), gcs.getBoolean("full")
+                ));
+            }
+        } catch (SQLException e) {
+            LOG.warn(e);
+        }
+        return gcList;
     }
 
     private static void convertProfilerNodes(List<Perl6ProfileCall> nodes, ResultSet calls) throws SQLException {

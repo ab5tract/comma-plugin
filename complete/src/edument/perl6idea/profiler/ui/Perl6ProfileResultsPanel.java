@@ -20,18 +20,28 @@ public class Perl6ProfileResultsPanel extends JPanel {
         tabbedPaneWrapper.addTab("Routines", getRoutinesTab());
         tabbedPaneWrapper.addTab("Call Graph", getCallGraphTab());
         tabbedPaneWrapper.addTab("Modules", getModulesTab());
+        tabbedPaneWrapper.addTab("GC", getGCTab());
+        tabbedPaneWrapper.addTab("Allocations", getAllocationsTab());
         add(tabbedPaneWrapper, BorderLayout.CENTER);
     }
 
-    private Component getModulesTab() {
-        return new Perl6ProfileModulesPanel(myProfileData);
+    private Component getRoutinesTab() {
+        return new Perl6ProfileRoutinesPanel(myProject, myProfileData).getPanel();
     }
 
     private Component getCallGraphTab() {
         return new Perl6ProfileCallGraphPanel(myProject, myProfileData);
     }
 
-    private Component getRoutinesTab() {
-        return new Perl6ProfileRoutinesPanel(myProject, myProfileData).getPanel();
+    private Component getModulesTab() {
+        return new Perl6ProfileModulesPanel(myProfileData);
+    }
+
+    private Component getGCTab() {
+        return new Perl6ProfileGCPanel(myProfileData);
+    }
+
+    private Component getAllocationsTab() {
+        return new JLabel();
     }
 }
