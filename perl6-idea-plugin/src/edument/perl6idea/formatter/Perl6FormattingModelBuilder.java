@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.BiFunction;
 
+import static edument.perl6idea.parsing.Perl6ElementTypes.SEMI_LIST;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
 public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
@@ -328,8 +329,9 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
             return Spacing.createSpacing(0, 0, lineFeeds, true, 1);
         });
 
-        rules.add((left, right) -> STATEMENTS.contains(left.getNode().getElementType())
-                                   || STATEMENTS.contains(right.getNode().getElementType())
+        rules.add((left, right) -> (STATEMENTS.contains(left.getNode().getElementType())
+                                   || STATEMENTS.contains(right.getNode().getElementType())) && !(left.getNode().getTreeParent().getElementType() == SEMI_LIST
+                                                                                                  || right.getNode().getTreeParent().getElementType() == SEMI_LIST)
                                    ? SINGLE_LINE_BREAK : null);
     }
 }

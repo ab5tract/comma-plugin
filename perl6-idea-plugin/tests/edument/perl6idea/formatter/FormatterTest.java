@@ -91,6 +91,8 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest(
           "“{$t.our-nick}, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”",
           "“{ $t.our-nick }, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”");
+        reformatTest("my @a[1;2];",
+                     "my @a[1;2];");
     }
 
     public void testAlignment() {
