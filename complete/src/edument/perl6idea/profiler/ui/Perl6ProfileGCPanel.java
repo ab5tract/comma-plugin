@@ -6,15 +6,49 @@ import edument.perl6idea.profiler.model.Perl6ProfileData;
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.Comparator;
 import java.util.List;
 
 public class Perl6ProfileGCPanel extends JPanel {
     public Perl6ProfileGCPanel(Perl6ProfileData data) {
         super(new BorderLayout());
         JTable gcTable = new JBTable();
-        gcTable.setModel(new GCTableModel(data));
+        GCTableModel tableModel = new GCTableModel(data);
+        gcTable.setModel(tableModel);
+        gcTable.getColumnModel().getColumn(0).setMaxWidth(50);
+        gcTable.setRowSorter(new TableRowSorter<GCTableModel>(tableModel) {
+            @Override
+            public Comparator<?> getComparator(int column) {
+                switch (column) {
+                    case 0:
+                        return Comparator.naturalOrder();
+                    case 7:
+                        return null;
+                    default:
+                        return (Comparator<Object>)(o1, o2) -> {
+                            if (column >= 1 && column <= 6) {
+                                if (o1.equals("-"))
+                                    return -1;
+                                if (o2.equals("-"))
+                                    return 1;
+                                try {
+                                    Number o1Value = new DecimalFormat("###,###.###").parse((String)o1);
+                                    Number o2Value = new DecimalFormat("###,###.###").parse((String)o2);
+                                    return Double.compare(o1Value.doubleValue(), o2Value.doubleValue());
+                                }
+                                catch (ParseException e) {
+                                    return -1;
+                                }
+                            }
+                            return 0;
+                        };
+                }
+            }
+        });
         add(new JScrollPane(gcTable), BorderLayout.CENTER);
     }
 
@@ -32,23 +66,27 @@ public class Perl6ProfileGCPanel extends JPanel {
 
         @Override
         public int getColumnCount() {
-            return 6;
+            return 8;
         }
 
         @Override
         public String getColumnName(int columnIndex) {
             switch (columnIndex) {
-                case 0: return "ID and threads";
+                case 0: return "Full";
                 case 1: return "Time spent";
                 case 2: return "Start time";
-                case 3: return "Promoted bytes";
-                case 4: return "Retained bytes";
-                default: return "Cleared bytes";
+                case 3: return "Since previous";
+                case 4: return "Promoted bytes";
+                case 5: return "Retained bytes";
+                case 6: return "Cleared bytes";
+                default: return "Threads";
             }
         }
 
         @Override
         public Class<?> getColumnClass(int columnIndex) {
+            if (columnIndex == 0)
+                return Boolean.class;
             return String.class;
         }
 
@@ -65,52 +103,36 @@ public class Perl6ProfileGCPanel extends JPanel {
             GCData item = gcs.get(rowIndex);
             switch (columnIndex) {
                 case 0:
-                    return formatGCTitle(item);
+                    return item.full;
                 case 1:
-                    return formatGCTime(item.time);
+                    return new DecimalFormat("###.##").format(item.time / 1000f) + "ms";
                 case 2:
-                    return formatStartupTime(item.startTime, prev);
-                case 3:
-                    return formatBytes(item, item.promotedBytes);
+                    return String.format("%sms", new DecimalFormat("###.##").format(item.startTime / 1000f));
+                case 3: {
+                    if (prev != null)
+                        return String.format("%sms", new DecimalFormat("###.##").format((item.startTime - prev.time - prev.startTime) / 1000f));
+                    else
+                        return "-";
+                }
                 case 4:
+                    return formatBytes(item, item.promotedBytes);
+                case 5:
                     return formatBytes(item, item.retainedBytes);
-                default:
+                case 6:
                     return formatBytes(item, item.clearedBytes);
-            }
-        }
-
-        private static String formatGCTitle(GCData item) {
-            return String.format("№ %s, threads: %s", item.id, item.threads);
-        }
-
-        private static String formatGCTime(long time) {
-            String pattern = "###.##";
-            DecimalFormat decimalFormat = new DecimalFormat(pattern);
-            double formattedTime = time / 1000f;
-            return String.format("%sms spent", decimalFormat.format(formattedTime));
-        }
-
-        private static String formatStartupTime(long startTime, GCData prev) {
-            DecimalFormat decimalFormat = new DecimalFormat("###.##");
-
-            if (prev == null) {
-                return String.format("%sms", decimalFormat.format(startTime / 1000f));
-            }
-            else {
-                return String.format("%sms (%sms after previous)", decimalFormat.format(startTime / 1000f),
-                                     decimalFormat.format((startTime - prev.time - prev.startTime) / 1000f));
+                default:
+                    return item.threads;
             }
         }
 
         private static String formatBytes(GCData item, long bytes) {
             long totalBytes = item.promotedBytes + item.retainedBytes + item.clearedBytes;
             if (totalBytes == 0) {
-                return "0%";
+                return "0 (0%)";
             }
-            double percent = (double)bytes / totalBytes;
-            String pattern = "##.###";
-            DecimalFormat decimalFormat = new DecimalFormat(pattern);
-            return decimalFormat.format(percent) + "%";
+            double percent = ((double)bytes / totalBytes) * 100;
+            DecimalFormat decimalFormat = new DecimalFormat("###,###.###");
+            return decimalFormat.format(bytes) + " (" + decimalFormat.format(percent) + "%)";
         }
 
         @Override
@@ -127,7 +149,6 @@ public class Perl6ProfileGCPanel extends JPanel {
     }
 
     public static class GCData {
-        private final int id;
         private final long time;
         private final long startTime;
         private final long promotedBytes;
@@ -136,10 +157,9 @@ public class Perl6ProfileGCPanel extends JPanel {
         private final String threads;
         private final boolean full;
 
-        public GCData(int id, long time, long startTime,
+        public GCData(long time, long startTime,
                       long promotedBytes, long retainedBytes,
                       long clearedBytes, String threads, boolean full) {
-            this.id = id;
             this.time = time;
             this.startTime = startTime;
             this.promotedBytes = promotedBytes;

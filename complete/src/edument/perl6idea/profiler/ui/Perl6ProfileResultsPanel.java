@@ -42,6 +42,6 @@ public class Perl6ProfileResultsPanel extends JPanel {
     }
 
     private Component getAllocationsTab() {
-        return new JLabel();
+        return new Perl6ProfileAllocationsPanel(myProfileData).getPanel();
     }
 }
