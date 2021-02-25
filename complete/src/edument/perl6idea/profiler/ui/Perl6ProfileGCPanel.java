@@ -20,6 +20,11 @@ public class Perl6ProfileGCPanel extends JPanel {
         GCTableModel tableModel = new GCTableModel(data);
         gcTable.setModel(tableModel);
         gcTable.getColumnModel().getColumn(0).setMaxWidth(50);
+        setupSorter(gcTable, tableModel);
+        add(new JScrollPane(gcTable), BorderLayout.CENTER);
+    }
+
+    private static void setupSorter(JTable gcTable, GCTableModel tableModel) {
         gcTable.setRowSorter(new TableRowSorter<GCTableModel>(tableModel) {
             @Override
             public Comparator<?> getComparator(int column) {
@@ -49,7 +54,6 @@ public class Perl6ProfileGCPanel extends JPanel {
                 }
             }
         });
-        add(new JScrollPane(gcTable), BorderLayout.CENTER);
     }
 
     private static class GCTableModel implements TableModel {

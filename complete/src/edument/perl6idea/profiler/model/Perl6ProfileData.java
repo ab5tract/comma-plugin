@@ -242,7 +242,8 @@ public class Perl6ProfileData {
                 "routines.name, routines.file, routines.line,\n" +
                 "COUNT(calls.id) as sitecount, TOTAL(calls.entries) as entries,\n" +
                 "TOTAL(calls.jit_entries) as jit_entries,\n" +
-                "json_extract(types.extra_info, '$.managed_size')\n, total(allocations.count) as allocs\n" +
+                "json_extract(types.extra_info, '$.managed_size')\n, total(allocations.count) as allocs,\n" +
+                "TOTAL(allocations.replaced) AS optimized\n" +
                 "FROM routines INNER JOIN allocations on allocations.call_id == calls.id\n" +
                 "INNER JOIN calls ON calls.routine_id = routines.id\n" +
                 "INNER JOIN types ON types.id == allocations.type_id\n" +
@@ -256,7 +257,8 @@ public class Perl6ProfileData {
                     calls.getString(1), calls.getString(2),
                     calls.getInt(3), calls.getInt(4),
                     calls.getLong(5), calls.getLong(6),
-                    calls.getInt(7), calls.getLong(8)
+                    calls.getInt(7), calls.getLong(8),
+                    calls.getLong(9)
                 ));
             }
         } catch (SQLException e) {

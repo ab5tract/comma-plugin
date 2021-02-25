@@ -1,17 +1,24 @@
 package edument.perl6idea.profiler.ui;
 
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
+import com.intellij.util.ArrayUtil;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
+import org.apache.commons.lang.ArrayUtils;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.Comparator;
 import java.util.List;
 
 public class Perl6ProfileAllocationsPanel extends JPanel {
@@ -20,14 +27,46 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
     private JBTable allocationsTable;
     private JBTable typeDetailsTable;
     private JSplitPane mySplitPane;
+    private JBScrollPane allocationsTablePane;
+    private JBScrollPane typeDetailsTablePane;
 
     public Perl6ProfileAllocationsPanel(Perl6ProfileData data) {
-        mySplitPane.setResizeWeight(0.4);
+        mySplitPane.setResizeWeight(0.35);
         myProfileData = data;
-        setupTables();
+        setup();
+        setupSorter(allocationsTable, 1, 2, 3, 4);
+        setupSorter(typeDetailsTable, 2, 3, 4, 5, 6, 7);
     }
 
-    private void setupTables() {
+    public void setupSorter(JTable table, int... columnsToParse) {
+        table.setRowSorter(new TableRowSorter(table.getModel()) {
+            @Override
+            public Comparator<?> getComparator(int column) {
+                if (ArrayUtils.contains(columnsToParse, column))
+                    return (Comparator<Object>)(o1, o2) -> {
+                        if (ArrayUtils.contains(columnsToParse, column)) {
+                            try {
+                                Number o1Value = new DecimalFormat("###,###.###").parse((String)o1);
+                                Number o2Value = new DecimalFormat("###,###.###").parse((String)o2);
+                                return Double.compare(o1Value.doubleValue(), o2Value.doubleValue());
+                            }
+                            catch (ParseException e) {
+                                return -1;
+                            }
+                        }
+                        return 0;
+                    };
+                return Comparator.naturalOrder();
+            }
+        });
+    }
+
+    private void setup() {
+        allocationsTablePane.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createEtchedBorder (), "Objects of Type Allocated", TitledBorder.LEFT, TitledBorder.TOP));
+        typeDetailsTablePane.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createEtchedBorder (), "Allocation sites of type", TitledBorder.LEFT, TitledBorder.TOP));
+
         List<AllocationData> allocsData = myProfileData.getAllocatedTypes();
         allocationsTable.setModel(new Perl6ProfileAllocationsTableModel(allocsData));
         allocationsTable.addKeyListener(new KeyAdapter() {
@@ -92,9 +131,9 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
         public String getColumnName(int columnIndex) {
             switch (columnIndex) {
                 case 0: return "Name";
-                case 1: return "Type size";
-                case 2: return "Total size";
-                case 3: return "Count";
+                case 1: return "Count";
+                case 2: return "Type size (bytes)";
+                case 3: return "Total size (bytes)";
                 default: return "Optimized Out";
             }
         }
@@ -112,19 +151,20 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             AllocationData alloc = allocsData.get(rowIndex);
-            DecimalFormat format = new DecimalFormat("###,###");
+            DecimalFormat format = new DecimalFormat("###,###.###");
 
             switch (columnIndex) {
                 case 0:
                     return alloc.name;
                 case 1:
-                    return String.format("%s bytes", alloc.managed_size);
-                case 2:
-                    return String.format("%s bytes", format.format(alloc.total));
-                case 3:
                     return format.format(alloc.count);
+                case 2:
+                    return String.format("%s", alloc.managed_size);
+                case 3:
+                    return String.format("%s", format.format(alloc.total));
                 default:
-                    return format.format(alloc.optimized);
+                    return String.format("%s (%s%%)", format.format(alloc.optimized),
+                                         format.format(alloc.optimized / (float)alloc.count * 100f));
             }
         }
 
@@ -189,6 +229,8 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             DecimalFormat format = new DecimalFormat("###,###.###");
+            if (rowIndex >= typeDetailsList.size())
+                return null;
             AllocatedTypeDetails details = typeDetailsList.get(rowIndex);
             switch (columnIndex) {
                 case 0: return details.name.isEmpty() ? "<anon>" : details.name;
@@ -198,9 +240,8 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
                 case 4: return String.format("%s (%s%%)", format.format(details.jit), format.format(details.jit / (float)details.entries * 100f));
                 case 5: return format.format(details.size);
                 case 6: return format.format(details.count);
-                default:
+                default: return String.format("%s (%s%%)", format.format(details.optimized), format.format(details.optimized / (float)details.entries * 100f));
             }
-            return null;
         }
 
         @Override
@@ -243,10 +284,10 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
         private final long jit;
         private final int size;
         private final long count;
-        private final long optimized = -1;
+        private final long optimized;
 
         public AllocatedTypeDetails(String name, String path, int line, int sites, long entries,
-                                    long jit, int size, long count) {
+                                    long jit, int size, long count, long optimized) {
             this.name = name;
             this.path = path;
             this.line = line;
@@ -255,7 +296,7 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
             this.jit = jit;
             this.size = size;
             this.count = count;
-            //this.optimized = optimized;
+            this.optimized = optimized;
         }
     }
 }

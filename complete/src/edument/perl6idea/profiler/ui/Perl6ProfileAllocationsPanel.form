@@ -17,27 +17,27 @@
         <properties/>
         <border type="none"/>
         <children>
-          <scrollpane id="bc670" class="com.intellij.ui.components.JBScrollPane">
+          <scrollpane id="60edc" class="com.intellij.ui.components.JBScrollPane" binding="allocationsTablePane">
             <constraints>
               <splitpane position="left"/>
             </constraints>
             <properties/>
             <border type="none"/>
             <children>
-              <component id="d0097" class="com.intellij.ui.table.JBTable" binding="allocationsTable">
+              <component id="98a94" class="com.intellij.ui.table.JBTable" binding="allocationsTable">
                 <constraints/>
                 <properties/>
               </component>
             </children>
           </scrollpane>
-          <scrollpane id="ae803" class="com.intellij.ui.components.JBScrollPane">
+          <scrollpane id="9f2b3" class="com.intellij.ui.components.JBScrollPane" binding="typeDetailsTablePane">
             <constraints>
               <splitpane position="right"/>
             </constraints>
             <properties/>
             <border type="none"/>
             <children>
-              <component id="195ff" class="com.intellij.ui.table.JBTable" binding="typeDetailsTable">
+              <component id="a073e" class="com.intellij.ui.table.JBTable" binding="typeDetailsTable">
                 <constraints/>
                 <properties/>
               </component>
