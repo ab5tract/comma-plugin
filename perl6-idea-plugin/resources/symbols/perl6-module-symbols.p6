@@ -217,8 +217,8 @@ my sub to-json(
 CATCH {
     default {
         note $_;
-    say '[]';
-    exit 0;
+        say '[]';
+        exit 0;
     }
 }
 
@@ -242,7 +242,7 @@ EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
             pack-package(@EXTERNAL_COMMA_ELEMS, $_, object);
         }
     }
-    put to-json(@EXTERNAL_COMMA_ELEMS);
+    $*OUT.put: to-json(@EXTERNAL_COMMA_ELEMS);
 }
 
 sub pack-variable($name, \object, :$is-attribute = False) {
