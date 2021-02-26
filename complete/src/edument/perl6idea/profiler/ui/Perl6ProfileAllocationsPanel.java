@@ -2,20 +2,17 @@ package edument.perl6idea.profiler.ui;
 
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
-import com.intellij.util.ArrayUtil;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
 import org.apache.commons.lang.ArrayUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Comparator;
@@ -69,28 +66,13 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
 
         List<AllocationData> allocsData = myProfileData.getAllocatedTypes();
         allocationsTable.setModel(new Perl6ProfileAllocationsTableModel(allocsData));
-        allocationsTable.addKeyListener(new KeyAdapter() {
+
+        allocationsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
-            public void keyReleased(KeyEvent e) {
-                super.keyTyped(e);
-                if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN)
-                    updateAllocationData();
+            public void valueChanged(ListSelectionEvent event) {
+                updateAllocationData();
             }
         });
-        allocationsTable.addMouseListener(
-            new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getButton() != MouseEvent.BUTTON1)
-                        return;
-                    int index = allocationsTable.rowAtPoint(e.getPoint());
-                    if (index < 0)
-                        return;
-                    int row = allocationsTable.convertRowIndexToModel(index);
-                    // goToCallAtRow(row);
-                    updateAllocationData();
-                }
-            });
         updateAllocationData();
     }
     private void updateAllocationData() {
