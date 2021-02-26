@@ -32,16 +32,23 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Add a new Modules tab in the profiler, which shows the modules that account for the most exclusive time, to give a higher level view of where time is spent</li>
-<li>On the profiler Routines tab, one can now choose to see all routines, all routines except the CORE built-ins, and only routines in the current project</li>
-<li>Improve the profiler UI generally, fixing some presentation issues and adding comma separators in large values</li>
-<li>Improve the UI of the timeline view: make zooming with the mouse feel more natural, provide some keyboard controls for navigating the chart, fix a scrolling issue, and provide a help icon giving usage hints on hover</li>
-<li>Improve method completion for cases when the return type is not in scope of the caller</li>
-<li>Improve completion for more complex kinds of type, such as typed arrays and types with explicit definedness</li>
-<li>When there is a <code>for</code> loop over a typed array, infer the type of the topic or loop parameter in order to provide better reference resolution and completion suggestions</li>
-<li>Fix a parsing error when encountering whitespace before the closing <code>]</code> in a type argument list</li>
-<li>Do not wrongly annotate <code>self</code> in a regex declaration as being unavailable</li>
-<li>Fix a false positive in the signature annotator related to parameters with default values</li>
+<li>Add a new UI tab displaying profiling results related to garbage collection
+It allows one to see when garbage collection has occurred during program
+execution, how long it took, how much memory was reclaimed, and how much
+moved to the second generation</li>
+<li>Add a new UI tab displaying profiling results related to allocation
+It allows to see what types of objects were allocated during program
+execution, how much memory those allocations take, and which routines
+performed the allocations</li>
+<li>In the <code>Routines</code> tab of the profiler UI, clicking on a routine available
+in the current project opens an editor at the routine declaration location</li>
+<li>Reduce memory consumption resulting from caching information about modules
+(the caching is done in order to more rapidly open additional or different
+projects in the same Comma session)</li>
+<li>Fix <code>Create Desktop Entry</code> action in <code>Tools</code> menu</li>
+<li>Fix false negatives for an annotation warning about some modules not being
+found in the ecosystem</li>
+<li>Fix a bug where symbols of the <code>Cro::HTTP::Test</code> module were not resolved properly</li>
 </ul>
   ]]>
   </change-notes>
