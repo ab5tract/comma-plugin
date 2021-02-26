@@ -115,7 +115,14 @@ public class Perl6ProfileModel extends AbstractTableModel {
     }
 
     public String getNodeSourceFile(int row) {
-        return nodes.get(row).getOriginalFile();
+        String baseFilename = nodes.get(row).getOriginalFile();
+        // it can contain module name, so strip it off
+        String moduleName = nodes.get(row).getModuleName();
+
+        if (moduleName != null && baseFilename.contains(moduleName)) {
+            return baseFilename.substring(0, baseFilename.lastIndexOf(moduleName) - 1).trim();
+        }
+        return baseFilename;
     }
 
     public int getNodeSourceLine(int row) {
