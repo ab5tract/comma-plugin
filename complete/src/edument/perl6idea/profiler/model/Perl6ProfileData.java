@@ -3,6 +3,8 @@ package edument.perl6idea.profiler.model;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.Function;
+import edument.perl6idea.profiler.ui.Perl6ProfileAllocationsPanel;
+import edument.perl6idea.profiler.ui.Perl6ProfileGCPanel;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -164,14 +166,105 @@ public class Perl6ProfileData {
         List<Perl6ProfileThread> threadList = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
             ResultSet threads = statement
-                .executeQuery("SELECT thread_id AS id, root_node AS rootNodeID FROM profile WHERE rootNodeID IS NOT NULL ORDER BY id ASC;");
+                .executeQuery("SELECT thread_id AS id, root_node AS rootNodeID\n" +
+                              "FROM profile WHERE rootNodeID IS NOT NULL ORDER BY id ASC;");
             while (threads.next()) {
-                threadList.add(new Perl6ProfileThread(threads.getInt("id"), threads.getInt("rootNodeID")));
+                threadList.add(new Perl6ProfileThread(threads.getInt("id"),
+                                                      threads.getInt("rootNodeID")));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.warn(e);
         }
         return threadList;
+    }
+
+    public List<Perl6ProfileGCPanel.GCData> getGC() {
+        List<Perl6ProfileGCPanel.GCData> gcList = new ArrayList<>();
+        try (Statement statement = connection.createStatement()) {
+            String GC_DATA_QUERY_STATEMENT = "SELECT\n" +
+                                             "    MAX(time) AS max_time,\n" +
+                                             "    MIN(start_time) AS earliest_start_time,\n" +
+                                             "    TOTAL(retained_bytes) AS retained_bytes,\n" +
+                                             "    TOTAL(cleared_bytes) AS cleared_bytes,\n" +
+                                             "    TOTAL(promoted_bytes) AS promoted_bytes,\n" +
+                                             "    group_concat(thread_id, \",\") AS participants,\n" +
+                                             "    full\n" +
+                                             "FROM gcs\n" +
+                                             "GROUP BY sequence_num\n" +
+                                             ";";
+            ResultSet gcs = statement
+                .executeQuery(GC_DATA_QUERY_STATEMENT);
+            while (gcs.next()) {
+                gcList.add(new Perl6ProfileGCPanel.GCData(
+                    gcs.getLong("max_time"),
+                    gcs.getLong("earliest_start_time") ,gcs.getLong("promoted_bytes"),
+                    gcs.getLong("retained_bytes"), gcs.getLong("cleared_bytes"),
+                    gcs.getString("participants"), gcs.getBoolean("full")
+                ));
+            }
+        } catch (SQLException e) {
+            LOG.warn(e);
+        }
+        return gcList;
+    }
+
+    public List<Perl6ProfileAllocationsPanel.AllocationData> getAllocatedTypes() {
+        List<Perl6ProfileAllocationsPanel.AllocationData> data = new ArrayList<>();
+        try (Statement statement = connection.createStatement()) {
+            String allocatedTypesQuery = "SELECT\n" +
+                                             "t.id, t.name, json_extract(t.extra_info, '$.managed_size') AS managed_size," +
+                                             "json_extract(t.extra_info, '$.managed_size') * TOTAL(a.count) AS total_bytes," +
+                                             "TOTAL(a.count) AS count, TOTAL(a.replaced) AS optimized\n" +
+                                             "FROM allocations a INNER JOIN types t ON a.type_id == t.id\n" +
+                                             "GROUP BY t.id\n" +
+                                             "ORDER BY json_extract(t.extra_info, '$.managed_size') * total(a.count) DESC\n" +
+                                             ";";
+            ResultSet allocs = statement.executeQuery(allocatedTypesQuery);
+            while (allocs.next()) {
+                data.add(new Perl6ProfileAllocationsPanel.AllocationData(
+                    allocs.getInt(1), allocs.getString(2),
+                    allocs.getLong(3), allocs.getLong(4),
+                    allocs.getLong(5), allocs.getLong(6)
+                ));
+            }
+        } catch (SQLException e) {
+            LOG.warn(e);
+        }
+
+        return data;
+    }
+
+    public List<Perl6ProfileAllocationsPanel.AllocatedTypeDetails> getAllocatedTypeData(int type_id) {
+        List<Perl6ProfileAllocationsPanel.AllocatedTypeDetails> data = new ArrayList<>();
+        try (Statement statement = connection.createStatement()) {
+            String GC_DATA_QUERY_STATEMENT = String.format(
+                "SELECT\n" +
+                "routines.name, routines.file, routines.line,\n" +
+                "COUNT(calls.id) as sitecount, TOTAL(calls.entries) as entries,\n" +
+                "TOTAL(calls.jit_entries) as jit_entries,\n" +
+                "json_extract(types.extra_info, '$.managed_size')\n, total(allocations.count) as allocs,\n" +
+                "TOTAL(allocations.replaced) AS optimized\n" +
+                "FROM routines INNER JOIN allocations on allocations.call_id == calls.id\n" +
+                "INNER JOIN calls ON calls.routine_id = routines.id\n" +
+                "INNER JOIN types ON types.id == allocations.type_id\n" +
+                "WHERE allocations.type_id = %s\n" +
+                "GROUP BY routines.id, allocations.type_id\n" +
+                "ORDER BY allocs DESC\n" +
+                ";", type_id);
+            ResultSet calls = statement.executeQuery(GC_DATA_QUERY_STATEMENT);
+            while (calls.next()) {
+                data.add(new Perl6ProfileAllocationsPanel.AllocatedTypeDetails(
+                    calls.getString(1), calls.getString(2),
+                    calls.getInt(3), calls.getInt(4),
+                    calls.getLong(5), calls.getLong(6),
+                    calls.getInt(7), calls.getLong(8),
+                    calls.getLong(9)
+                ));
+            }
+        } catch (SQLException e) {
+            LOG.warn(e);
+        }
+        return data;
     }
 
     private static void convertProfilerNodes(List<Perl6ProfileCall> nodes, ResultSet calls) throws SQLException {

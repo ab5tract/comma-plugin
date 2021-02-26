@@ -93,7 +93,7 @@ public class Perl6ProfileCall {
             Matcher match = CALL_MODULE_PATTERN.matcher(shortFileName);
 
             if (match.find())
-                shortFileName = shortFileName.substring(0, match.start() - 1);
+                shortFileName = shortFileName.substring(match.start() + 1, shortFileName.length() - 1);
 
             if (shortFileName.startsWith(basePath)) {
                 return shortFileName.substring(basePath.length());
