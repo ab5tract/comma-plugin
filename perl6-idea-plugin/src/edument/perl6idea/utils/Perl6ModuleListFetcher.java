@@ -26,9 +26,8 @@ import java.util.concurrent.*;
 
 @Service
 public class Perl6ModuleListFetcher {
-    public static final String GITHUB_MIRROR1 = "http://ecosystem-api.p6c.org/projects.json";
-    public static final String GITHUB_MIRROR2 = "http://ecosystem-api.p6c.org/projects1.json";
-    public static final String CPAN_MIRROR1 = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan.json";
+    public static final String GITHUB_MIRROR1 = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/p6c1.json";
+    public static final String CPAN_MIRROR1 = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan1.json";
     public static final List<String> PREINSTALLED_MODULES =
         ContainerUtil.immutableList("CompUnit::Repository::Staging",
                                     "CompUnit::Repository::FileSystem",
@@ -154,9 +153,6 @@ public class Perl6ModuleListFetcher {
         // Try first mirror
         String githubOutput = doRequest(GITHUB_MIRROR1);
         // Try second mirror
-        if (githubOutput == null)
-            githubOutput = doRequest(GITHUB_MIRROR2);
-
         String cpanOutput = doRequest(CPAN_MIRROR1);
 
         JSONArray jsonArray = new JSONArray();
