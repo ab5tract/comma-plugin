@@ -277,8 +277,9 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
                     if (index < 0)
                         return;
                     int row = callsNavigation.convertRowIndexToModel(index);
-                    goToCallAtRow(row);
                     updateCallData();
+                    if (e.getClickCount() == 2)
+                        goToCallAtRow(row);
                 }
             });
 
