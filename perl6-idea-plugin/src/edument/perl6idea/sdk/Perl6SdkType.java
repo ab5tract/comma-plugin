@@ -63,9 +63,9 @@ public class Perl6SdkType extends SdkType {
     // Project-specific cache with PsiFile instances
     private final Map<String, ProjectSymbolCache> perProjectSymbolCache = new ConcurrentHashMap<>();
     // Global cache for all projects
-    private final Map<String, JSONArray> useNameSymbolCache = new ConcurrentHashMap<>();
-    private final Map<String, JSONArray> needNameSymbolCache = new ConcurrentHashMap<>();
-    private JSONArray settingJson = null;
+    private final Map<String, String> useNameSymbolCache = new ConcurrentHashMap<>();
+    private final Map<String, String> needNameSymbolCache = new ConcurrentHashMap<>();
+    private String settingJson = null;
     private final AtomicBoolean mySettingsStarted = new AtomicBoolean(false);
     private final Set<String> myNeedPackagesStarted = ContainerUtil.newConcurrentSet();
     private final Set<String> myUsePackagesStarted = ContainerUtil.newConcurrentSet();
@@ -398,8 +398,8 @@ public class Perl6SdkType extends SdkType {
 
     private Perl6File makeSettingSymbols(Project project, String json) {
         try {
-            settingJson = new JSONArray(json);
-            return makeSettingSymbols(project, settingJson);
+            settingJson = json;
+            return makeSettingSymbols(project, new JSONArray(json));
         } catch (JSONException e) {
             reactToSDKIssue(project);
         }
@@ -423,10 +423,10 @@ public class Perl6SdkType extends SdkType {
             return fileCache.get(name);
 
         // if not, check if we have symbol cache, if yes, parse, save and return it
-        Map<String, JSONArray> symbolCache = invocation.startsWith("use") ? useNameSymbolCache : needNameSymbolCache;
+        Map<String, String> symbolCache = invocation.startsWith("use") ? useNameSymbolCache : needNameSymbolCache;
         Set<String> packagesStarted = invocation.startsWith("use") ? myUsePackagesStarted : myNeedPackagesStarted;
         if (symbolCache.containsKey(name)) {
-            return fileCache.compute(name, (n, v) -> constructExternalPsiFile(project, n, symbolCache.get(n)));
+            return fileCache.compute(name, (n, v) -> constructExternalPsiFile(project, n, new JSONArray(symbolCache.get(n))));
         }
 
 
@@ -457,7 +457,7 @@ public class Perl6SdkType extends SdkType {
     private static Perl6File constructExternalPsiFile(Project project,
                                                       String name,
                                                       String invocation,
-                                                      Map<String, JSONArray> symbolCache) {
+                                                      Map<String, String> symbolCache) {
         LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
         ExternalPerl6File perl6File = new ExternalPerl6File(project, dummy);
         List<Perl6Symbol> symbols = loadModuleSymbols(project, perl6File, name, invocation, symbolCache);
@@ -481,7 +481,7 @@ public class Perl6SdkType extends SdkType {
     private static List<Perl6Symbol> loadModuleSymbols(Project project,
                                                        Perl6File perl6File,
                                                        String name, String invocation,
-                                                       Map<String, JSONArray> symbolCache) {
+                                                       Map<String, String> symbolCache) {
         if (invocation.equals("use nqp")) {
             return getNQPSymbols(project, perl6File);
         }
@@ -503,10 +503,10 @@ public class Perl6SdkType extends SdkType {
             JSONArray symbols;
             try {
                 symbols = new JSONArray(text);
+                symbolCache.put(name, text);
             } catch (JSONException ex) {
                 return new ArrayList<>();
             }
-            symbolCache.put(name, symbols);
             return new Perl6ExternalNamesParser(project, perl6File, symbols).parse().result();
         } catch (ExecutionException e) {
             return new ArrayList<>();
