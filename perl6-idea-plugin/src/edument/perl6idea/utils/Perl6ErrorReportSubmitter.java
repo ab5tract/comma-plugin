@@ -43,14 +43,14 @@ public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
     @NotNull
     @Override
     public String getReportActionText() {
-        return "Report to Edument team";
+        return "Report to Edument Team";
     }
 
     @Override
-    public boolean submit(@NotNull IdeaLoggingEvent[] events,
+    public boolean submit(IdeaLoggingEvent @NotNull [] events,
                           @Nullable String additionalInfo,
                           @NotNull Component parentComponent,
-                          @NotNull Consumer<SubmittedReportInfo> consumer) {
+                          @NotNull Consumer<? super SubmittedReportInfo> consumer) {
         try {
             postError(new Gson().toJson(createErrorBean(events[0], additionalInfo)));
             return true;
