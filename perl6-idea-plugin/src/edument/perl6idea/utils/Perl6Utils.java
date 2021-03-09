@@ -45,14 +45,9 @@ public class Perl6Utils {
 
         try (
             InputStream in = Perl6Utils.class.getClassLoader().getResourceAsStream(resourcePath);
-            FileOutputStream out = new FileOutputStream(tempFile);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
+            FileOutputStream out = new FileOutputStream(tempFile)
         ) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                out.write(line.getBytes(StandardCharsets.UTF_8));
-                out.write("\n".getBytes(StandardCharsets.UTF_8));
-            }
+            in.transferTo(out);
         } catch (IOException e) {
             LOG.error(e);
         }
