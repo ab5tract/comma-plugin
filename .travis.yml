@@ -1,25 +1,26 @@
 language: generic
 dist: xenial
 before_install:
-- git clone --progress --depth 1 -b comma-202.6948.78 git@github.com:edumentab/intellij-community.git
+- git clone --progress --depth 1 -b comma-203.7148 git@github.com:edumentab/intellij-community.git
 - mkdir intellij-community/comma-build
 - shopt -s extglob
 - mv !(intellij-community) intellij-community/comma-build/
 # JetBrains custom SDK
-- (mkdir jdk && cd jdk && wget https://jetbrains.bintray.com/intellij-jbr/jbrsdk-8u202-linux-x64-b1483.58.tar.gz && tar -xzf jbrsdk-8u202-linux-x64-b1483.58.tar.gz)
+- (mkdir jdk && cd jdk && wget https://corretto.aws/downloads/latest/amazon-corretto-11-x64-linux-jdk.tar.gz && tar --strip-components=1 -xzf amazon-corretto-11-x64-linux-jdk.tar.gz)
 env:
   global:
-  - export PATH="/opt/rakudo-pkg/bin:/opt/rakudo-pkg/share/perl6/site/bin:$PATH"
+  - export PATH="/opt/rakudo-pkg/bin:/opt/rakudo-pkg/share/perl6/site/bin:~/.raku/bin:$PATH"
   - export JAVA_HOME="$(pwd)/jdk"
 addons:
   apt:
     sources:
-    - sourceline: deb https://dl.bintray.com/nxadm/rakudo-pkg-debs $(lsb_release -cs)
+    - sourceline: deb https://dl.cloudsmith.io/public/nxadm-pkgs/rakudo-pkg/deb/ubuntu xenial
         main
-      key_url: http://keyserver.ubuntu.com/pks/lookup?search=0x379CE192D401AB61&op=get
+      key_url: https://dl.cloudsmith.io/public/nxadm-pkgs/rakudo-pkg/gpg.0DD4CA7EB1C6CC6B.key
     packages:
     - rakudo-pkg
 script:
+- /opt/rakudo-pkg/bin/install-zef
 - zef install OO::Monitors JSON::Fast
 - (cd intellij-community/comma-build/perl6-idea-plugin/tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
 - (cd intellij-community/comma-build/perl6-idea-plugin/tools/symbol-script-module && zef install .)
