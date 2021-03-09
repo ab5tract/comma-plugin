@@ -342,10 +342,14 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             else {
                 addChildren = true;
             }
-            if (addChildren)
-                for (PsiElement e : current.getChildren())
+            if (addChildren) {
+                PsiElement e = current.getFirstChild();
+                while (e != null) {
                     if (e instanceof Perl6PsiElement)
                         visit.add((Perl6PsiElement)e);
+                    e = e.getNextSibling();
+                }
+            }
         }
     }
 
