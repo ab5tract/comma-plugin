@@ -5,4 +5,5 @@
   <xi:include href="/META-INF/SpellCheckerPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/CommaCorePluginCommon.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/RemoteServers.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>
