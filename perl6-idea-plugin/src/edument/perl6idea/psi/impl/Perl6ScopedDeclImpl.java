@@ -3,6 +3,7 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.stubs.IStubElementType;
+import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 import org.jetbrains.annotations.NotNull;
@@ -22,14 +23,8 @@ public class Perl6ScopedDeclImpl extends StubBasedPsiElementBase<Perl6ScopedDecl
         if (stub != null)
             return stub.getScope();
 
-        String text = getText();
-        if (text.startsWith("my")) return "my";
-        if (text.startsWith("has")) return "has";
-        if (text.startsWith("our")) return "our";
-        if (text.startsWith("augment")) return "augment";
-        if (text.startsWith("unit")) return "unit";
-        if (text.startsWith("state")) return "state";
-        return "";
+        ASTNode declarator = getNode().findChildByType(Perl6TokenTypes.SCOPE_DECLARATOR);
+        return declarator != null ? declarator.getText() : "";
     }
 
     public String toString() {
