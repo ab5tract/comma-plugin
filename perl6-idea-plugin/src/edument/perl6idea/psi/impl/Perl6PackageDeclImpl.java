@@ -319,7 +319,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     }
 
     private void contributeNestedPackagesWithPrefixNonStub(Perl6SymbolCollector collector, String prefix) {
-        Queue<Perl6PsiElement> visit = new LinkedList<>();
+        Queue<Perl6PsiElement> visit = new ArrayDeque<>();
         visit.add(this);
         while (!visit.isEmpty()) {
             Perl6PsiElement current = visit.remove();
