@@ -74,5 +74,9 @@
     <orderEntry type="module" module-name="intellij.platform.execution.impl" />
     <orderEntry type="module" module-name="intellij.platform.statistics" />
     <orderEntry type="module" module-name="intellij.relaxng" />
+    <orderEntry type="module" module-name="intellij.platform.core.ui" />
+    <orderEntry type="library" name="Trove4j" level="project" />
+    <orderEntry type="library" name="Trove4j" level="project" />
+    <orderEntry type="module" module-name="intellij.java.remoteServers.impl" />
   </component>
 </module>

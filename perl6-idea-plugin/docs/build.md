@@ -2,8 +2,8 @@
 
 #### Preparation
 
-Currently, Comma is based upon 201 Intellij revision/branch.
-Raku Comma plugin supports versions starting revision 201 (2020.01).
+Currently, Comma is based upon 203 Intellij revision/branch.
+Raku Comma plugin supports versions starting revision 203 (2020.03).
 
 To develop Comma, version of IDEA you use **must** correspond to version
 of the platform used (see above for the current version).
@@ -11,11 +11,11 @@ of the platform used (see above for the current version).
 Do the following steps inside a work-related directory, for example, `comma`.
 * `git clone https://github.com/edumentab/intellij-community.git`
 * `cd intellij-community`
-* `git checkout comma-201`
+* `git checkout comma-203.7148`
 * Do steps from `intellij-community` repo [README](https://github.com/JetBrains/intellij-community/#opening-the-intellij-source-code-for-build): creating `IDEA jdk` JDK and setting it to the project, running `getPlugins.sh` script.
 * `git clone https://github.com/edumentab/perl6-idea-plugin.git comma-build` (so the structure is `intellij-community/comma-build`)
-* Make sure revisions of android-related repos are the same as the IDEA checkout, `201.7223`.
-  * `cd android; git checkout idea/201.7223.18`
+* Make sure revisions of android-related repos are fresh enough for the IDEA checkout:
+  * `cd android; git checkout idea/203.7148.57`
   * `cd tools-base; git checkout idea/201.7223.18`
   * `cd ../..`
 * Start IDEA instance, open existing project from `intellij-community` directory. Make sure you are using correct IDEA version.
@@ -31,13 +31,7 @@ we encountered various errors.
 
 If you have Oracle JDK, e.g. 1.8.0_191 or above, it will work fine.
 
-Otherwise, you need to download JetBrains patched JDK:
-
-For GNU/Linux:
-
-* `mkdir jdk && cd jdk && wget https://jetbrains.bintray.com/intellij-jbr/jbrsdk-8u202-linux-x64-b1483.58.tar.gz && tar -xzf jbrsdk-8u202-linux-x64-b1483.58.tar.gz`
-
-For other systems, choose appropriate JBR SDK image, revision 8u202 is recommended.
+Otherwise, you can use Amazon-based JDK named Corretto, see repo's readme for instructions.
 
 Then set `JAVA_HOME` to point to either oracle JDK or the downloaded one.
 
