@@ -319,7 +319,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     }
 
     private void contributeNestedPackagesWithPrefixNonStub(Perl6SymbolCollector collector, String prefix) {
-        Queue<Perl6PsiElement> visit = new LinkedList<>();
+        Queue<Perl6PsiElement> visit = new ArrayDeque<>();
         visit.add(this);
         while (!visit.isEmpty()) {
             Perl6PsiElement current = visit.remove();
@@ -342,10 +342,14 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             else {
                 addChildren = true;
             }
-            if (addChildren)
-                for (PsiElement e : current.getChildren())
+            if (addChildren) {
+                PsiElement e = current.getFirstChild();
+                while (e != null) {
                     if (e instanceof Perl6PsiElement)
                         visit.add((Perl6PsiElement)e);
+                    e = e.getNextSibling();
+                }
+            }
         }
     }
 
