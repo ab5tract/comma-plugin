@@ -3805,7 +3805,7 @@ grammar MAIN {
     token privop {
         <.start-element('METHOD_CALL')>
         <.start-token('METHOD_CALL_OPERATOR')>
-        '!'
+        '!' <![!]>
         <.end-token('METHOD_CALL_OPERATOR')>
         <.methodop>?
         <.end-element('METHOD_CALL')>
