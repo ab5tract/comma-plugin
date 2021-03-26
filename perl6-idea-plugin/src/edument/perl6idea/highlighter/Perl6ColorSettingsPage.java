@@ -67,6 +67,7 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Quote Pair (on string and regex literals)", Perl6Highlighter.QUOTE_PAIR),
             new AttributesDescriptor("Quote Modifier", Perl6Highlighter.QUOTE_MOD),
             new AttributesDescriptor("Array Composer ([...])", Perl6Highlighter.ARRAY_COMPOSER),
+            new AttributesDescriptor("Hash Composer ({...})", Perl6Highlighter.ARRAY_COMPOSER),
             new AttributesDescriptor("Pair (Colon Pair or Key Before =>)", Perl6Highlighter.PAIR_KEY),
             new AttributesDescriptor("Trait Keyword", Perl6Highlighter.TRAIT),
             new AttributesDescriptor("Type Parameter Brackets", Perl6Highlighter.TYPE_PARAMETER_BRACKET),

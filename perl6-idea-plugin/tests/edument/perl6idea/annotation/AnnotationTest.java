@@ -1095,4 +1095,27 @@ public class AnnotationTest extends CommaFixtureTestCase {
             "Testing.foo-c();");
         myFixture.checkHighlighting();
     }
+
+    public void testDubiousNonHashes() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "given 42 {\n" +
+            "    my $x = 99;\n" +
+            "    my $y = 101;\n" +
+            "    say {};\n" +
+            "    say { ; };\n" +
+            "    say { \"I'm a closure\" };\n" +
+            "    say { :a };\n" +
+            "    say { a => 66 };\n" +
+            "    say { :$x };\n" +
+            "    say { :a, :b };\n" +
+            "    say { a => 66, b => 666 };\n" +
+            "    say { :$x, :$y };\n" +
+            "    say { .foo };\n" +
+            "    say { $_ };\n" +
+            "    say <weak_warning desrc=\"This will be taken as a block, not as a hash as may have been intended\">{ :$^a }</weak_warning>;\n" +
+            "    say <weak_warning desrc=\"This will be taken as a block, not as a hash as may have been intended\">{ :a, :b($_) }</weak_warning>;\n" +
+            "    say <weak_warning desrc=\"This will be taken as a block, not as a hash as may have been intended\">{ a => 1, b => $_ }</weak_warning>;\n" +
+            "}");
+        myFixture.checkHighlighting();
+    }
 }

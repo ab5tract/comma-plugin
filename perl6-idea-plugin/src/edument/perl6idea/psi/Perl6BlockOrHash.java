@@ -9,4 +9,11 @@ public interface Perl6BlockOrHash extends Perl6PsiElement, Perl6PsiScope, P6Extr
         Perl6Statement[] statements = PsiTreeUtil.getChildrenOfType(list, Perl6Statement.class);
         return statements == null ? new Perl6Statement[0] : statements;
     }
+
+    /* Would the block be interpreted as a hash? */
+    boolean isHash();
+
+    /* Does the block look like something that might have been intended as a hash,
+     * but will actually be treated as a block? */
+    boolean isHashish();
 }
