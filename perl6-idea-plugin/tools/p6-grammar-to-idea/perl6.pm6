@@ -4051,6 +4051,7 @@ grammar MAIN {
            || '(>=)' { $*PREC = 'm=' } { $*ASSOC = 'left' }
            || '(<+)' { $*PREC = 'm=' } { $*ASSOC = 'left' }
            || '(>+)' { $*PREC = 'm=' } { $*ASSOC = 'left' }
+           || '(==)' { $*PREC = 'm=' } { $*ASSOC = 'left' }
            || 'min' { $*PREC = 'k=' } { $*ASSOC = 'list' }
            || 'max' { $*PREC = 'k=' } { $*ASSOC = 'list' }
            || '::=' { $*PREC = 'i=' } { $*ASSOC = 'right' }
@@ -4159,6 +4160,8 @@ grammar MAIN {
            || '⊉' { $*PREC = 'm=' } { $*ASSOC = 'left' }
            || '≼' { $*PREC = 'm=' } { $*ASSOC = 'left' }
            || '≽' { $*PREC = 'm=' } { $*ASSOC = 'left' }
+           || '≡' { $*PREC = 'm=' } { $*ASSOC = 'left' }
+           || '≢' { $*PREC = 'm=' } { $*ASSOC = 'left' }
            || ',' { $*PREC = 'g=' } { $*ASSOC = 'list' } { $*NEXT_TERM = 'nulltermish' }
            || 'Z' { $*PREC = 'f=' } { $*ASSOC = 'list' }
            || 'X' { $*PREC = 'f=' } { $*ASSOC = 'list' }
