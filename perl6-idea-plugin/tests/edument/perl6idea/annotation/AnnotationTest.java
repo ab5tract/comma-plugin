@@ -1102,6 +1102,94 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testDuplicatedBranch() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "sub ib0($x, $y) is export {\n" +
+            "    if $x {\n" +
+            "        1\n" +
+            "    }\n" +
+            "    elsif $y {\n" +
+            "        2\n" +
+            "    }\n" +
+            "    elsif <warning descr=\"An identical condition appears in a previous branch\">$x</warning> {\n" +
+            "        3\n" +
+            "    }\n" +
+            "    else {\n" +
+            "        0\n" +
+            "    }\n" +
+            "}");
+        myFixture.checkHighlighting();
+
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "sub ib1($x, $y) is export {\n" +
+            "    if $x == $y {\n" +
+            "        1\n" +
+            "    }\n" +
+            "    elsif <warning descr=\"An identical condition appears in a previous branch\">$x  == $y</warning> {\n" +
+            "        2\n" +
+            "    }\n" +
+            "    else {\n" +
+            "        0\n" +
+            "    }\n" +
+            "}");
+        myFixture.checkHighlighting();
+
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "sub ib2($x) is export {\n" +
+            "    if $x {\n" +
+            "        2\n" +
+            "    }\n" +
+            "    orwith $x {\n" +
+            "        1\n" +
+            "    }\n" +
+            "    else {\n" +
+            "        0\n" +
+            "    }\n" +
+            "}");
+        myFixture.checkHighlighting();
+
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "sub ib3($x, $y) is export {\n" +
+            "    if $x == $y {\n" +
+            "        1\n" +
+            "    }\n" +
+            "    elsif <warning descr=\"An identical condition appears in a previous branch\">$y == $x</warning> {\n" +
+            "        2\n" +
+            "    }\n" +
+            "    else {\n" +
+            "        0\n" +
+            "    }\n" +
+            "}");
+
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "sub ib4($x, $y) is export {\n" +
+            "    if $x < $y {\n" +
+            "        1\n" +
+            "    }\n" +
+            "    elsif <warning descr=\"An identical condition appears in a previous branch\">$x > $y</warning> {\n" +
+            "        2\n" +
+            "    }\n" +
+            "    else {\n" +
+            "        0\n" +
+            "    }\n" +
+            "}");
+        myFixture.checkHighlighting();
+
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "sub ib5($x, $y) is export {\n" +
+            "    if $x ≅ $y {\n" +
+            "        1\n" +
+            "    }\n" +
+            "    elsif <warning descr=\"An identical condition appears in a previous branch\">$x =~= $y</warning> {\n" +
+            "        2\n" +
+            "    }\n" +
+            "    else {\n" +
+            "        0\n" +
+            "    }\n" +
+            "}");
+        myFixture.checkHighlighting();
+    }
+
     public void testDeprecatedSub() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
               "sub foo-a() is DEPRECATED {}\n" +
