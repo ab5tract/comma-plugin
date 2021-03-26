@@ -39,9 +39,14 @@ public interface P6CodeBlockCall extends PsiNamedElement {
                 hasSeenName = true;
                 node = node.getNextSibling();
                 continue;
-            } else if (node instanceof Perl6InfixApplication) {
+            }
+            else if (node instanceof Perl6InfixApplication) {
                 if (((Perl6InfixApplication)node).getOperator().equals(","))
                     return ((Perl6InfixApplication)node).getOperands();
+            }
+            else if (node instanceof Perl6Call) { // Happens in $.foo($arg)
+                node = node.getFirstChild();
+                continue;
             }
             return new PsiElement[]{node};
         }
