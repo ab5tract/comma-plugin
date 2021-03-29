@@ -1070,6 +1070,31 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testCallArityMismatchAnnotatingOnAccessorCall() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "class C {\n" +
+            "    my enum Context <Definition>;\n" +
+            "    method completion(Int $in-level, Str $key, %params, Bool :$defn = False --> Str) {\n" +
+            "        %params && $defn ?? ~$in-level !! $key\n" +
+            "    }\n" +
+            "    method another(Context $context, $in-level) {\n" +
+            "        $.completion($in-level, ‘zero’, %( ), :defn($context == Definition))\n" +
+            "    }\n" +
+            "}");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+            "class C {\n" +
+            "    my enum Context <Definition>;\n" +
+            "    method completion(Int $in-level, Str $key, %params, Bool :$defn = False --> Str) {\n" +
+            "        %params && $defn ?? ~$in-level !! $key\n" +
+            "    }\n" +
+            "    method another($in-level) {\n" +
+            "        $.completion(<error descr=\"Not enough positional arguments\">$in-level, ‘zero’</error>)\n" +
+            "    }\n" +
+            "}");
+        myFixture.checkHighlighting();
+    }
+
     public void testUnknownRegexModifier() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
               "my $x = /<error descr=\"Unrecognized regex modifier\">:foo</error> 1234 /;\n" +
