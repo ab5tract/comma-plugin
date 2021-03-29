@@ -27,6 +27,8 @@ public class UndeclaredOrDeprecatedRoutineAnnotator implements Annotator {
         // Resolve the reference.
         final Perl6SubCallName call = (Perl6SubCallName)element;
         String subName = call.getCallName();
+        if (subName.equals("::"))
+            return;
         PsiReferenceBase.Poly<?> reference = (PsiReferenceBase.Poly<?>)call.getReference();
         if (reference == null)
             return;

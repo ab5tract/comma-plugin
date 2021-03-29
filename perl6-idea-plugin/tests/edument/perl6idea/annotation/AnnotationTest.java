@@ -94,6 +94,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testNoBogusSubAnnotationOnInterpolatedName() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "say ::(\"Rakudo::Internals\").?LL-EXCEPTION;");
+        myFixture.checkHighlighting();
+    }
+
     public void testInfixBracketedInVariableIsNotConsideredUndeclared() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my &add = &[+]; say add(1,2)");
         myFixture.checkHighlighting();
