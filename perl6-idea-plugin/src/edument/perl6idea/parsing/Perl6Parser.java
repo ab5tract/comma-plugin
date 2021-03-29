@@ -10580,9 +10580,7 @@ public class Perl6Parser implements PsiParser {
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        String tt1;
-        tt1 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.METHOD_CALL_OPERATOR) && (tt1.equals("!"))) {
+        if ((builder.getTokenType()) == Perl6TokenTypes.METHOD_CALL_OPERATOR) {
             builder.advanceLexer();
         } else {
             return false;

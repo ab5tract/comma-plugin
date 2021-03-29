@@ -1,0 +1,2 @@
+say "- Installed: {$latest-installed-candi??$latest-installed-candi.dist.identity eq $dist.identity??qq|Yes|!!qq|Yes, as $latest-installed-candi.dist.identity()|!!'No'}";
+my $line-prefix = ((.dist??.dist.meta<name>!!Nil) // .as) with $m.<candi>;
