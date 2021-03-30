@@ -28,12 +28,6 @@ public final class Perl6Highlighter {
      * there.
      */
 
-    static final String ARRAY_COMPOSER_ID = "PERL6_ARRAY_COMPOSER";
-    public static final TextAttributesKey ARRAY_COMPOSER = TextAttributesKey.createTextAttributesKey(
-            ARRAY_COMPOSER_ID,
-            DefaultLanguageHighlighterColors.BRACKETS
-    );
-
     static final String ARRAY_INDEXER_ID = "PERL6_ARRAY_INDEXER";
     public static final TextAttributesKey ARRAY_INDEXER = TextAttributesKey.createTextAttributesKey(
             ARRAY_INDEXER_ID,
@@ -153,13 +147,27 @@ public final class Perl6Highlighter {
      * In Raku, operators are significant, and the term/infix parser
      * interlocking is an important part of the syntax model, allowing the
      * use of characters to unambiguously be operators and terms. Thus we
-     * will map these to a color in the default schemes.
+     * will map these to a color in the default schemes. We also treat
+     * array/hash composers and contextualizers as operator colored
+     * things.
      */
 
     static final String CONTEXTUALIZER_ID = "PERL6_CONTEXTUALIZER";
     public static final TextAttributesKey CONTEXTUALIZER = TextAttributesKey.createTextAttributesKey(
             CONTEXTUALIZER_ID,
             DefaultLanguageHighlighterColors.OPERATION_SIGN
+    );
+
+    static final String ARRAY_COMPOSER_ID = "PERL6_ARRAY_COMPOSER";
+    public static final TextAttributesKey ARRAY_COMPOSER = TextAttributesKey.createTextAttributesKey(
+            ARRAY_COMPOSER_ID,
+            DefaultLanguageHighlighterColors.BRACKETS
+    );
+
+    static final String HASH_COMPOSER_ID = "PERL6_HASH_COMPOSER";
+    public static final TextAttributesKey HASH_COMPOSER = TextAttributesKey.createTextAttributesKey(
+            HASH_COMPOSER_ID,
+            DefaultLanguageHighlighterColors.BRACKETS
     );
 
     static final String INFIX_ID = "PERL6_INFIX";

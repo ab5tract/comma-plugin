@@ -4,6 +4,16 @@
       <option name="FOREGROUND" value="8b0000" />
     </value>
   </option>
+  <option name="PERL6_ARRAY_COMPOSER">
+    <value>
+      <option name="FOREGROUND" value="8b0000" />
+    </value>
+  </option>
+  <option name="PERL6_HASH_COMPOSER">
+    <value>
+      <option name="FOREGROUND" value="8b0000" />
+    </value>
+  </option>
   <option name="PERL6_INFIX">
     <value>
       <option name="FOREGROUND" value="8b0000" />
