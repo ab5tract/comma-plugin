@@ -68,7 +68,7 @@ public class Perl6BlockOrHashImpl extends ASTWrapperPsiElement implements Perl6B
                     !(check.getParent() instanceof Perl6PostfixApplication)) // .foo
                 return false;
             for (PsiElement child : check.getChildren())
-                if (child instanceof Perl6PsiElement)
+                if (child instanceof Perl6PsiElement && !(child instanceof Perl6PsiScope))
                     toVisit.add((Perl6PsiElement)child);
         }
 
