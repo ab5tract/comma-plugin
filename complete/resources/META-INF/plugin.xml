@@ -1,6 +1,6 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <id>edument.perl6-idea-plugin</id>
-  <version>2021.02.0</version>
+  <version>2021.03.0</version>
   <name>Comma Complete Edition (Raku Language Support)</name>
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
@@ -32,23 +32,15 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Add a new UI tab displaying profiling results related to garbage collection
-It allows one to see when garbage collection has occurred during program
-execution, how long it took, how much memory was reclaimed, and how much
-moved to the second generation</li>
-<li>Add a new UI tab displaying profiling results related to allocation
-It allows to see what types of objects were allocated during program
-execution, how much memory those allocations take, and which routines
-performed the allocations</li>
-<li>In the <code>Routines</code> tab of the profiler UI, clicking on a routine available
-in the current project opens an editor at the routine declaration location</li>
-<li>Reduce memory consumption resulting from caching information about modules
-(the caching is done in order to more rapidly open additional or different
-projects in the same Comma session)</li>
-<li>Fix <code>Create Desktop Entry</code> action in <code>Tools</code> menu</li>
-<li>Fix false negatives for an annotation warning about some modules not being
-found in the ecosystem</li>
-<li>Fix a bug where symbols of the <code>Cro::HTTP::Test</code> module were not resolved properly</li>
+<li>Migrate to the 2020.03 version of the platform</li>
+<li>Speed up indexing of external modules</li>
+<li>Add detection of duplicated conditional branches; Unicode/ASCII operator equivalents and commuting operators are accounted for</li>
+<li>Highlight hashes created with the <code>{}</code> syntax differently from code blocks (this can be configured in the color scheme, but is on by default)</li>
+<li>Add a weak warning where it seems likely that the user intended to form a hash using the <code>{}</code> syntax, but will end up with a code block instead</li>
+<li>Fix a bug where calls made by the accessor syntax (<code>$.foo($arg)</code>) were mistakenly annotated as having a signature mismatch</li>
+<li>Do not wrongly annotate indirect references (e.g. <code>::(&#39;Foo&#39;)</code>) as undeclared subs</li>
+<li>Fix parsing of ternary operators without spaces</li>
+<li>Parse the set equivalence operator in both ASCII and Unicode forms, and make it possible to convert between them</li>
 </ul>
   ]]>
   </change-notes>
