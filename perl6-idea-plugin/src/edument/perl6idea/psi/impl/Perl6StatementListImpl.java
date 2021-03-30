@@ -12,9 +12,4 @@ public class Perl6StatementListImpl extends ASTWrapperPsiElement implements Perl
     public Perl6StatementListImpl(@NotNull ASTNode node) {
         super(node);
     }
-
-    @Override
-    public List<Perl6Statement> getStatements() {
-        return null;
-    }
 }
