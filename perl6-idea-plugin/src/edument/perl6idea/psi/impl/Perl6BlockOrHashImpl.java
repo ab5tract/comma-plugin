@@ -35,18 +35,21 @@ public class Perl6BlockOrHashImpl extends ASTWrapperPsiElement implements Perl6B
     @Override
     public boolean isHash() {
         // If it doesn't even match the basis syntactic look of something that
-        // could be a hash literal, then it's not one.
+        // could be a hash literal, then it's not one (empty or one statement,
+        // starts with a pair or hash variable).
         if (!isHashish())
             return false;
+
+        // Empty block is always a hash.
+        Perl6Statement[] statements = getElements();
+        if (statements.length == 0)
+            return true;
 
         // Otherwise, we should check for:
         // 1. Declarations
         // 2. Use of $_
         // 3. Use of placeholder parameters
         // Without walking into inner blocks.
-        Perl6Statement[] statements = getElements();
-        if (statements.length != 1)
-            return true;
         Deque<Perl6PsiElement> toVisit = new ArrayDeque<>();
         toVisit.addLast(statements[0]);
         while (!toVisit.isEmpty()) {
