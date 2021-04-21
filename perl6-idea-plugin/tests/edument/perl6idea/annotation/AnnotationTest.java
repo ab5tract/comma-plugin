@@ -1052,6 +1052,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testCallArityMismatchAnnotating() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub ssss(:$named, :$shamed = 'not set') { $named; $shamed; }; ssss(:5named); ssss(:5named, :5shamed);");
+        myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo($a, $b, $c) { say $a + $b + $c }; my @a = 1, 2; foo(0, |@a);");
         myFixture.checkHighlighting();
         myFixture.configureByFile("CallArity.pm6");

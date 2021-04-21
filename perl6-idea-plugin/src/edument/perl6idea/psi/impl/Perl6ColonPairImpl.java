@@ -33,6 +33,9 @@ public class Perl6ColonPairImpl extends ASTWrapperPsiElement implements Perl6Col
                 int sigilIndex = Perl6Variable.getTwigil(nameWithSigils) == ' ' ? 1 : 2;
                 return nameWithSigils.substring(sigilIndex);
             }
+        } else {
+            if (getLastChild().getNode().getElementType() == COLON_PAIR)
+                return getLastChild().getText();
         }
         return null;
     }
