@@ -25,23 +25,16 @@ public class SignatureAnnotator implements Annotator {
             if (!(psiElement instanceof Perl6Parameter)) continue;
             Perl6Parameter parameter = (Perl6Parameter)psiElement;
 
-            String summary = parameter.summary();
-
-            // Chop off type to match e.g. `$` instead of `Str $`
-            int spaceIndex = summary.indexOf(' ');
-            if (spaceIndex != -1)
-                summary = summary.substring(spaceIndex + 1);
-
             if (isFirst) {
-                state = isPositional(summary) ? SignatureState.POSITIONAL :
-                        isOptional(summary) ? SignatureState.OPTIONAL :
-                        isNamed(summary) ? SignatureState.NAMED :
+                state = parameter.isPositional() ? SignatureState.POSITIONAL :
+                        parameter.isNamed() ? SignatureState.NAMED :
+                        parameter.isOptional() ? SignatureState.OPTIONAL :
                         SignatureState.VARIADIC;
                 isFirst = false;
             }
 
             // Positionals go first
-            if (state != SignatureState.POSITIONAL && isPositional(summary)) {
+            if (state != SignatureState.POSITIONAL && parameter.isPositional() && !parameter.isExplicitlyOptional()) {
                 String message = "";
                 switch (state) {
                     case NAMED: {
@@ -62,8 +55,8 @@ public class SignatureAnnotator implements Annotator {
                 return;
             }
 
-            // Optionals go before variadic
-            if (state == SignatureState.VARIADIC && isOptional(summary)) {
+            // Optionals go before variadic, but not named ones
+            if (state == SignatureState.VARIADIC && parameter.isOptional() && !parameter.isNamed()) {
                 holder.newAnnotation(HighlightSeverity.ERROR,
                                      String.format("Cannot put optional parameter %s after a variadic parameter",
                                                    parameter.getVariableName()))
@@ -72,7 +65,7 @@ public class SignatureAnnotator implements Annotator {
             }
 
             // Optionals go before named
-            if (isOptional(summary) && !isNamed(summary) && state == SignatureState.NAMED) {
+            if (parameter.isOptional() && !parameter.isNamed() && state == SignatureState.NAMED) {
                     holder.newAnnotation(HighlightSeverity.ERROR,
                                          String.format("Cannot put an optional parameter %s after a named parameter",
                                                        parameter.getVariableName()))
@@ -81,63 +74,38 @@ public class SignatureAnnotator implements Annotator {
             }
 
 
-            if (isOptional(summary) && isNamed(summary)) {
+            if (parameter.isExplicitlyOptional() && parameter.isNamed()) {
                 holder.newAnnotation(HighlightSeverity.WARNING,
                                      String.format("Explicit `?` on a named parameter %s is redundant, as all nameds are optional by default",
                                                    parameter.getVariableName()))
                   .range(parameter).create();
             }
-            else if (isPositional(summary) && isRequired(summary)) {
+            else if (parameter.isRequired() && parameter.getInitializer() != null
+                     && Perl6Variable.getTwigil(parameter.getVariableName()) != '!') {
+                holder.newAnnotation(HighlightSeverity.ERROR,
+                                     String.format("Parameter %s has a default value and so cannot be required", parameter.getVariableName()))
+                  .range(parameter).create();
+            }
+            else if (parameter.isPositional() && parameter.isRequired()) {
                 holder.newAnnotation(HighlightSeverity.WARNING,
                                      String.format("Explicit `!` on a positional parameter %s is redundant, as all positional parameters are required by default",
                                                    parameter.getVariableName()))
                   .range(parameter).create();
             }
-            // Cheat here a bit, because summary returns ? for a parameter with explicit ? or with an initializer, so we cannot know
-            // what is what, same with required parameter
-            else if (parameter.getText().contains("?") && parameter.getInitializer() != null) {
+            else if (parameter.isExplicitlyOptional() && parameter.getInitializer() != null) {
                 holder.newAnnotation(HighlightSeverity.WARNING,
                                      String.format("Explicit `?` on a parameter %s with default is redundant, as all parameters with default value are optional by default",
                                                    parameter.getVariableName()))
                   .range(parameter).create();
             }
-            else if (parameter.isRequired() && parameter.getInitializer() != null
-                    && Perl6Variable.getTwigil(parameter.getVariableName()) != '!') {
-                holder.newAnnotation(HighlightSeverity.ERROR,
-                                     String.format("Parameter %s has a default value and so cannot be required", parameter.getVariableName()))
-                  .range(parameter).create();
-            }
 
-            if (isOptional(summary))
-                state = SignatureState.OPTIONAL;
-            else if (isNamed(summary))
+            if (parameter.isNamed())
                 state = SignatureState.NAMED;
-            else if (isVariadic(summary))
+            else if (parameter.isOptional())
+                state = SignatureState.OPTIONAL;
+            else if (parameter.isSlurpy())
                 state = SignatureState.VARIADIC;
         }
-    }
-
-    private static boolean isPositional(String summary) {
-        return summary.equals("$") || summary.equals("@") ||
-               summary.equals("%") || summary.equals("&") ||
-               (!isNamed(summary) && !isOptional(summary) && !isVariadic(summary)); // It may be plain type name
-    }
-
-    private static boolean isNamed(String summary) {
-        return summary.startsWith(":");
-    }
-
-    private static boolean isOptional(String summary) {
-        return summary.endsWith("?");
-    }
-
-    private static boolean isRequired(String summary) {
-        return summary.endsWith("!");
-    }
-
-    private static boolean isVariadic(String summary) {
-        return summary.startsWith("*") || summary.startsWith("|") ||
-               summary.startsWith("+");
     }
 
     enum SignatureState {

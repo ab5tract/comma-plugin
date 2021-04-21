@@ -160,8 +160,8 @@ public interface Perl6Signature extends Perl6PsiElement {
 
     class SignatureCompareResult {
         private boolean isAccepted;
-        private Map<Integer, Integer> argToParam = new HashMap<>();
-        private Map<Integer, MatchFailureReason> failures = new HashMap<>();
+        private final Map<Integer, Integer> argToParam = new HashMap<>();
+        private final Map<Integer, MatchFailureReason> failures = new HashMap<>();
         private int nextParameterIndex;
 
         public SignatureCompareResult(boolean isAccepted) {
