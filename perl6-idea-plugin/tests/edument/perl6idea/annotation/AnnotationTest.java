@@ -179,6 +179,9 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testSignatureAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "multi sub MAIN('nuke', Bool :<weak_warning descr=\"Unused parameter\">$confirm</weak_warning>, *<weak_warning descr=\"Unused parameter\">@names</weak_warning> ($, *@)) {}");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                 "sub a(Str :$foo, <warning descr=\"Explicit `?` on a named parameter $bar is redundant, as all nameds are optional by default\">Str :$bar?</warning>) { say $foo; say $bar; }; a;");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
