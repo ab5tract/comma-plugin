@@ -1,4 +1,4 @@
 package edument.perl6idea.psi;
 
-public interface PodBlockParagraph extends Perl6PsiElement {
+public interface PodBlockParagraph extends Perl6PsiElement, PodBlock {
 }

@@ -92,6 +92,17 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         return true;
     }
 
+    @Override
+    public String renderPod() {
+        Perl6StatementList stmts = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
+        StringBuilder builder = new StringBuilder();
+        PodBlock[] blocks = PsiTreeUtil.getChildrenOfType(stmts, PodBlock.class);
+        if (blocks != null)
+            for (PodBlock pod : blocks)
+                    builder.append(pod.renderPod());
+        return builder.toString();
+    }
+
     @NotNull
     @Override
     public FileType getFileType() {

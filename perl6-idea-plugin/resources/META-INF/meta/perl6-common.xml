@@ -243,6 +243,7 @@
     <moduleService serviceImplementation="edument.perl6idea.metadata.Perl6MetaDataComponent"/>
     <moduleService serviceImplementation="edument.perl6idea.event.ModuleMetaChangeListener"/>
     <projectService serviceImplementation="edument.perl6idea.metadata.Perl6ProjectModelSync"/>
+    <fileEditorProvider implementation="edument.perl6idea.editor.podPreview.PodPreviewEditorProvider"/>
   </extensions>
 
   <actions>
