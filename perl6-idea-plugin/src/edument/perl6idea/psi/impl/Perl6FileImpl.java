@@ -15,7 +15,9 @@ import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.ui.JBColor;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.ui.JBFont;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.*;
@@ -28,7 +30,9 @@ import edument.perl6idea.sdk.Perl6SettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public static final Map<String, Perl6SettingTypeId> VARIABLE_SYMBOLS = new HashMap<>();
@@ -94,13 +98,65 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     @Override
     public String renderPod() {
+        // Render all of the blocks, collecting any semantic blocks.
         Perl6StatementList stmts = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
-        StringBuilder builder = new StringBuilder();
+        PodRenderingContext context = new PodRenderingContext();
         PodBlock[] blocks = PsiTreeUtil.getChildrenOfType(stmts, PodBlock.class);
+        List<String> renderedBlocks = new ArrayList<>();
         if (blocks != null)
             for (PodBlock pod : blocks)
-                    builder.append(pod.renderPod());
+                    renderedBlocks.add(pod.renderPod(context));
+
+        // Prepare HTML header with style sheet.
+        StringBuilder builder = new StringBuilder();
+        builder.append("<html>\n<head>\n<style>\n");
+        builder.append("body { background-color: rgb(");
+        builder.append(htmlColor(JBColor.background()));
+        builder.append("); color: rgb(");
+        builder.append(htmlColor(JBColor.foreground()));
+        builder.append("); font-family: \"");
+        builder.append(JBFont.label().getFamily());
+        builder.append("\", sans-serif; }\n"); // Fallback if font not available in browser
+        builder.append("h1, h2, h3, h4, h5, h6 {\n");
+        builder.append("  border-bottom: 1px solid rgb(");
+        builder.append(htmlColor(JBColor.foreground().darker()));
+        builder.append(");}\n");
+        builder.append("header > h1, h3 {\n");
+        builder.append("  color: rgb(");
+        builder.append(htmlColor(JBColor.foreground()));
+        builder.append(");\n  border-bottom: none; margin-top: 0; margin-bottom: 0; \n}\n");
+        builder.append("header {\n  padding-bottom: 5px; margin-bottom: 10px;\n  border-bottom: 1px solid rgb(");
+        builder.append(htmlColor(JBColor.foreground().darker()));
+        builder.append(");\n}\n");
+        builder.append("</style>\n</head>\n<body>\n");
+
+        // If there is a title or subtitle, use it has a header.
+        Map<String, String> semanticBlocks = context.getSemanticBlocks();
+        if (semanticBlocks.containsKey("TITLE")) {
+            String title = semanticBlocks.get("TITLE");
+            builder.append("<header>\n<h1>");
+            builder.append(title);
+            builder.append("</h1>\n");
+            if (semanticBlocks.containsKey("SUBTITLE")) {
+                String subtitle = semanticBlocks.get("SUBTITLE");
+                builder.append("<h3>");
+                builder.append(subtitle);
+                builder.append("</h3>\n");
+            }
+            builder.append("</header>\n");
+        }
+
+        // Append rendered non-semantic blocks.
+        for (String rendered : renderedBlocks)
+            builder.append(rendered);
+
+        // Finish and return HTML.
+        builder.append("</body>\n</html>");
         return builder.toString();
+    }
+
+    private static String htmlColor(Color color) {
+        return String.format("%s, %s, %s", color.getRed(), color.getGreen(), color.getBlue());
     }
 
     @NotNull

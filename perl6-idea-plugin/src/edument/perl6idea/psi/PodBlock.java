@@ -9,6 +9,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
+
 public interface PodBlock extends PodElement {
     TokenSet POD_CONTENT = TokenSet.create(
             Perl6ElementTypes.POD_BLOCK_ABBREVIATED,
@@ -28,10 +30,11 @@ public interface PodBlock extends PodElement {
         return getNode().getChildren(POD_CONTENT);
     }
 
-    default String renderPod() {
+    default String renderPod(PodRenderingContext context) {
         String typename = getTypename();
         String opener = "";
         String closer = "";
+        boolean isSemantic = false;
         switch (typename == null ? "para" : typename) {
             case "head1": opener = "<h1>"; closer = "</h1>"; break;
             case "head2": opener = "<h2>"; closer = "</h2>"; break;
@@ -40,6 +43,9 @@ public interface PodBlock extends PodElement {
             case "head5": opener = "<h5>"; closer = "</h5>"; break;
             case "head6": opener = "<h6>"; closer = "</h6>"; break;
             case "para": opener = "<p>"; closer = "</p>"; break;
+            case "comment": return "";
+            default:
+                isSemantic = typename.toUpperCase(Locale.ROOT).equals(typename);
         }
         StringBuilder builder = new StringBuilder();
         builder.append(opener);
@@ -61,13 +67,19 @@ public interface PodBlock extends PodElement {
             }
             PsiElement psi = node.getPsi();
             if (psi instanceof PodBlock)
-                builder.append(((PodBlock)psi).renderPod());
+                builder.append(((PodBlock)psi).renderPod(context));
             else if (psi instanceof PodFormatted)
                 builder.append(((PodFormatted)psi).renderPod());
             else
                 builder.append(StringEscapeUtils.escapeHtml(psi.getText()));
         }
         builder.append(closer);
-        return builder.toString();
+        if (isSemantic) {
+            context.addSemanticBlock(typename, builder.toString());
+            return "";
+        }
+        else {
+            return builder.toString();
+        }
     }
 }
