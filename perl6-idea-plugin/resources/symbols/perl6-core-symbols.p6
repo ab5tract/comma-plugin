@@ -576,7 +576,11 @@ my $new-param-API = so Parameter.^can('suffix');
 
 for CORE::.keys -> $_ {
     # Ignore a few things.
-    when 'EXPORTHOW' | 'Rakudo' { }
+    when 'Rakudo' { }
+    # Collect archetypes
+    when 'EXPORTHOW' {
+        pack-package(@EXTERNAL_COMMA_ELEMS, $_, CORE::{$_});
+    }
     # Collect all top-level subs and EVAL.
     when /^"&"<:Ll>/ | '&EVAL' | '&EVALFILE' {
         @EXTERNAL_COMMA_ELEMS.push: pack-variable($_, CORE::{$_}, |%( :d($_) with %CORE-DOCS<ops>{$_} ) );
@@ -597,10 +601,10 @@ sub pack-variable($name, \object, :$is-attribute = False, :$d) {
     %( k => "v", n => $name, t => $is-attribute ?? object.type.^name !! object.^name, %( :$d if $d ) );
 }
 
-sub pack-code($code, Int $multiness, Str $name?, :$docs, :$is-method) {
+sub pack-code(Mu $code, Int $multiness, Str $name?, :$docs, :$is-method) {
     my $s = $code.signature;
-    my @params = $s.params;
-    @params .= skip(1) if $is-method;
+    my @params = $s ~~ Any ?? $s.params !! ();
+    @params .= skip(1) if $is-method && @params.elems > 0;
     my @parameters = @params.map({
         $new-param-API
         ?? %( t => .type.^name,
@@ -610,7 +614,7 @@ sub pack-code($code, Int $multiness, Str $name?, :$docs, :$is-method) {
         )
         !! %( t => .type.^name, n => .gist )
     }).List;
-    my %signature = r => $s.returns.^name, p => @parameters;
+    my %signature = r => $s ~~ Any ?? $s.returns.^name !! 'Mu', p => @parameters;
     my $kind = $code.^name.comb.head.lc;
     my $deprecation = try { ~$code.DEPRECATED };
     %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness,
@@ -640,6 +644,11 @@ sub describer(@elems, $name, Mu \object) {
         @elems.push: %( k => "e", n => $name, t => object.^name );
     } elsif object.HOW.WHAT ~~ Metamodel::SubsetHOW {
         @elems.push: %( k => "ss", n => $name, t => object.^refinee.^name );
+    } elsif object.HOW.WHAT ~~ Metamodel::ModuleHOW {
+    } elsif $name.starts-with('EXPORTHOW') {
+       my @dummy;
+       my $description = describe-OOP(@dummy, $name, 'mm', object)[0];
+       @elems.push: %( k => "mm", n => object.^name, t => object.^name, key => $name.subst('EXPORTHOW::', ''), b => 'Mu', m => $description<m> );
     }
 }
 
@@ -657,12 +666,16 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     if $kind eq "ro" {
         @privates = object.^candidates[0].^private_method_table.values;
     } else {
-        @privates = object.^private_method_table.values;
+        try @privates = object.^private_method_table.values;
     }
     try for object.^methods(:local) -> $method {
-        for $method.candidates {
-            next if $kind ~~ 'c' && .?package !=:= object;
-            try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, |(:docs($_) with %methods{$method.name} ), :is-method);
+        if $kind eq 'mm' {
+            %class<m>.push: pack-code($method, 0, '^'~ $method.name, :is-method);
+        } elsif $method !~~ ForeignCode {
+            for $method.candidates {
+                next if $kind ~~ 'c' && .?package !=:= object;
+                try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, |(:docs($_) with %methods{$method.name} ), :is-method);
+            }
         }
     }
     try for @privates -> $method {

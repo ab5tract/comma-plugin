@@ -13,6 +13,7 @@ import edument.perl6idea.psi.external.ExternalPerl6VariableDecl;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +26,8 @@ public class Perl6ExternalNamesParser {
     private final Perl6File myFile;
     private List<Perl6Symbol> result = new ArrayList<>();
     private Map<String, Perl6PackageDecl> externalClasses = new HashMap<>();
+    static public Map<String, Perl6PackageDecl> metamodelCache = new HashMap<>();
+    private Map<String, List<Perl6PackageDecl>> deferredMetaclassUsers = new HashMap<>();
 
     public Perl6ExternalNamesParser(Project project, Perl6File file, JSONArray json) {
         myProject = project;
@@ -87,48 +90,41 @@ public class Perl6ExternalNamesParser {
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
                     }
+                    case "mm": {
+                        ExternalPerl6PackageDecl psi = parsePackageDeclaration(j, new ArrayList<>());
+                        // Add to a metamodel cache to apply to users
+                        metamodelCache.put(j.getString("key"), psi);
+                        // If we have packages that want this metamodel to be set, do it and consider it cached from now on
+                        List<Perl6PackageDecl> deferredUsers = deferredMetaclassUsers.get(psi.getPackageKind());
+                        if (deferredUsers != null) {
+                            for (Perl6PackageDecl deferredUser : deferredUsers) {
+                                deferredUser.setMetaClass(psi);
+                            }
+                            deferredMetaclassUsers.remove(psi.getPackageKind());
+                        }
+                        externalClasses.put(psi.getName(), psi);
+                        result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
+                        break;
+                    }
                     case "c":
                     case "ro": {
                         List<String> mro = ContainerUtil.map(j.getJSONArray("mro").toList(), item -> Objects.toString(item, null));
-                        ExternalPerl6PackageDecl psi = new ExternalPerl6PackageDecl(
-                            myProject, myFile, j.getString("k"),
-                            j.getString("n"), j.getString("t"), j.getString("b"),
-                            new ArrayList<>(), new ArrayList<>(), mro);
-                        if (j.has("d"))
-                            psi.setDocs(j.getString("d"));
-
-                        List<Perl6RoutineDecl> routines = new ArrayList<>();
-                        if (j.has("m"))
-                            for (Object routine : j.getJSONArray("m"))
-                                if (routine instanceof JSONObject) {
-                                    JSONObject routineJson = (JSONObject)routine;
-                                    int isMulti = routineJson.getInt("m");
-                                    String deprecationMessage = routineJson.has("x") ? routineJson.getString("x") : null;
-                                    JSONObject signature = routineJson.getJSONObject("s");
-                                    ExternalPerl6RoutineDecl routineDecl = new ExternalPerl6RoutineDecl(
-                                        myProject, psi,
-                                        routineJson.getString("k"), "has",
-                                        routineJson.getString("n"), isMulti == 0 ? "only" : "multi",
-                                        deprecationMessage, signature);
-                                    if (routineJson.has("d"))
-                                        routineDecl.setDocs(routineJson.getString("d"));
-                                    routines.add(routineDecl);
+                        ExternalPerl6PackageDecl psi = parsePackageDeclaration(j, mro);
+                        Perl6PackageDecl metamodel = metamodelCache.getOrDefault(psi.getPackageKind(), null);
+                        if (metamodel != null) {
+                            psi.setMetaClass(metamodel);
+                        } else {
+                            // It is possible we parse class definitions before we get to the metaclass to assign,
+                            // so save them to a list of deferred ones to receive the definition once we got to it
+                            deferredMetaclassUsers.compute(psi.getPackageKind(), (k, v) -> {
+                                if (v == null) {
+                                    return new ArrayList<>();
+                                } else {
+                                    v.add(psi);
+                                    return v;
                                 }
-
-                        List<Perl6VariableDecl> attrs = new ArrayList<>();
-                        if (j.has("a"))
-                            for (Object attribute : j.getJSONArray("a"))
-                                if (attribute instanceof JSONObject) {
-                                    ExternalPerl6VariableDecl attributeDecl = new ExternalPerl6VariableDecl(
-                                        myProject, psi, ((JSONObject)attribute).getString("n"),
-                                        "has", ((JSONObject)attribute).getString("t"));
-                                    if (((JSONObject)attribute).has("d"))
-                                        attributeDecl.setDocs(((JSONObject)attribute).getString("d"));
-                                    attrs.add(attributeDecl);
-                                }
-
-                        psi.setRoutines(routines);
-                        psi.setAttributes(attrs);
+                            });
+                        }
                         externalClasses.put(psi.getName(), psi);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
@@ -139,6 +135,50 @@ public class Perl6ExternalNamesParser {
             Logger.getInstance(Perl6ExternalNamesParser.class).warn(ex);
         }
         return this;
+    }
+
+    @NotNull
+    private ExternalPerl6PackageDecl parsePackageDeclaration(JSONObject j, List<String> mro) {
+        ExternalPerl6PackageDecl psi = new ExternalPerl6PackageDecl(
+          myProject, myFile, j.getString("k"),
+          j.getString("n"), j.getString("t"), j.getString("b"),
+          new ArrayList<>(), new ArrayList<>(), mro, null);
+        if (j.has("d"))
+            psi.setDocs(j.getString("d"));
+
+        List<Perl6RoutineDecl> routines = new ArrayList<>();
+        if (j.has("m"))
+            for (Object routine : j.getJSONArray("m"))
+                if (routine instanceof JSONObject) {
+                    JSONObject routineJson = (JSONObject)routine;
+                    int isMulti = routineJson.getInt("m");
+                    String deprecationMessage = routineJson.has("x") ? routineJson.getString("x") : null;
+                    JSONObject signature = routineJson.getJSONObject("s");
+                    ExternalPerl6RoutineDecl routineDecl = new ExternalPerl6RoutineDecl(
+                        myProject, psi,
+                        routineJson.getString("k"), "has",
+                        routineJson.getString("n"), isMulti == 0 ? "only" : "multi",
+                        deprecationMessage, signature);
+                    if (routineJson.has("d"))
+                        routineDecl.setDocs(routineJson.getString("d"));
+                    routines.add(routineDecl);
+                }
+
+        List<Perl6VariableDecl> attrs = new ArrayList<>();
+        if (j.has("a"))
+            for (Object attribute : j.getJSONArray("a"))
+                if (attribute instanceof JSONObject) {
+                    ExternalPerl6VariableDecl attributeDecl = new ExternalPerl6VariableDecl(
+                        myProject, psi, ((JSONObject)attribute).getString("n"),
+                        "has", ((JSONObject)attribute).getString("t"));
+                    if (((JSONObject)attribute).has("d"))
+                        attributeDecl.setDocs(((JSONObject)attribute).getString("d"));
+                    attrs.add(attributeDecl);
+                }
+
+        psi.setRoutines(routines);
+        psi.setAttributes(attrs);
+        return psi;
     }
 
     public List<Perl6Symbol> result() {

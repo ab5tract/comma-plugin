@@ -24,10 +24,13 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     private String myPackageKind;
     private String myName;
     private Set<String> myGettersPool = new HashSet<>();
+    private Perl6PackageDecl myMetaClass;
 
     public ExternalPerl6PackageDecl(Project project, Perl6File file, String kind, String name, String type, String base,
-                                    List<Perl6RoutineDecl> routines, List<Perl6VariableDecl> attrs, List<String> mro) {
+                                    List<Perl6RoutineDecl> routines, List<Perl6VariableDecl> attrs, List<String> mro,
+                                    Perl6PackageDecl metaClass) {
         this(project, file, kind, name, type, base);
+        myMetaClass = metaClass;
         myMRO = mro;
         myRoutines = routines;
         myAttributes = attrs;
@@ -53,6 +56,16 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
         }
         myName = name;
         myType = type;
+    }
+
+    @Override
+    public void setMetaClass(Perl6PackageDecl metaClass) {
+        myMetaClass = metaClass;
+    }
+
+    @Override
+    public @Nullable Perl6PackageDecl getMetaClass() {
+        return myMetaClass;
     }
 
     @Override
@@ -157,6 +170,11 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
                 decl.contributeMOPSymbols(collector, symbolsAllowed);
             }
         }
+        Perl6PackageDecl metaClass = getMetaClass();
+        if (metaClass == null)
+            return;
+
+        metaClass.contributeMOPSymbols(collector, symbolsAllowed);
     }
 
     public void setRoutines(List<Perl6RoutineDecl> routines) {
