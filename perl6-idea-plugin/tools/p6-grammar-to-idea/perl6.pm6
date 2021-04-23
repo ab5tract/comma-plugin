@@ -461,7 +461,9 @@ grammar MAIN {
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
         :my $*DELIM = '';
+        :my $*SEPARATED = 0;
         <?before <[A..Z]> <[<«]>>
+        [ <?[LX]> { $*SEPARATED = 1 } ]?
         <.start-element('POD_FORMATTED')>
         <.start-token('FORMAT_CODE')> <[A..Z]> <.end-token('FORMAT_CODE')>
         <.peek-delimiters>
@@ -482,8 +484,16 @@ grammar MAIN {
         [
         || <.pod_formatting_code>
         || <.start-token('POD_TEXT')>
-           [ \d+ || \h+ || <[a..z]>+ || <!before $*STOPPER || <[A..Z]> <[<«]>> \N ]+
+           [
+           || \d+ || \h+ || <[a..z]>+
+           || '|' <!{ $*SEPARATED }>
+           || <!before '|' || $*STOPPER || <[A..Z]> <[<«]>> \N
+           ]+
            <.end-token('POD_TEXT')>
+        || <.start-token('POD_FORMAT_SEPARATOR')>
+           '|'
+           <.end-token('POD_FORMAT_SEPARATOR')>
+           { $*SEPARATED = 0 }
         || <.pod_newline>
         ]*
         <.end-element('POD_TEXT')>

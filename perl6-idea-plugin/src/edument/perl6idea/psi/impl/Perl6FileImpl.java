@@ -117,6 +117,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         builder.append("); font-family: \"");
         builder.append(JBFont.label().getFamily());
         builder.append("\", sans-serif; }\n"); // Fallback if font not available in browser
+        builder.append("a { color: rgb(");
+        builder.append(htmlColor(JBColor.BLUE));
+        builder.append("); }\n");
         builder.append("h1, h2, h3, h4, h5, h6 {\n");
         builder.append("  border-bottom: 1px solid rgb(");
         builder.append(htmlColor(JBColor.foreground().darker()));

@@ -4,6 +4,7 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
@@ -35,6 +36,7 @@ public class PodFormattedImpl extends ASTWrapperPsiElement implements PodFormatt
         String opener = "";
         String closer = "";
         boolean format = true;
+        boolean linky = false;
         switch (getFormatCode()) {
             case "B": opener = "<strong>"; closer = "</strong>"; break;
             case "C": opener = "<code>"; closer = "</code>"; break;
@@ -44,6 +46,8 @@ public class PodFormattedImpl extends ASTWrapperPsiElement implements PodFormatt
             case "T": opener = "<samp>"; closer = "</samp>"; break;
             case "U": opener = "<u>"; closer = "</u>"; break;
             case "V": format = false; break;
+            case "L": return renderLinky("L");
+            case "X": return renderLinky("X");
             case "Z": return ""; // It's a comment
         }
         StringBuilder builder = new StringBuilder();
@@ -57,5 +61,30 @@ public class PodFormattedImpl extends ASTWrapperPsiElement implements PodFormatt
                     builder.append(StringEscapeUtils.escapeHtml(child.getText()));
         builder.append(closer);
         return builder.toString();
+    }
+
+    private String renderLinky(String formatCode) {
+        StringBuilder title = new StringBuilder();
+        StringBuilder link = new StringBuilder();
+        boolean inLink = false;
+        PsiElement content = findChildByType(Perl6ElementTypes.POD_TEXT);
+        if (content != null) {
+            for (ASTNode child : content.getNode().getChildren(TokenSet.ANY)) {
+                StringBuilder builder = inLink ? link : title;
+                IElementType elementType = child.getElementType();
+                if (elementType == Perl6TokenTypes.POD_FORMAT_SEPARATOR)
+                    inLink = true;
+                else if (elementType == Perl6ElementTypes.POD_FORMATTED)
+                    builder.append(((PodFormatted)child.getPsi()).renderPod());
+                else
+                    builder.append(StringEscapeUtils.escapeHtml(child.getText()));
+            }
+        }
+        String theTitle = title.toString();
+        String theLink = link.length() > 0 ? link.toString() : theTitle;
+        return formatCode.equals("L")
+               ? "<a href=\"" + theLink + "\">" + theTitle + "</a>"
+               : theTitle;
+
     }
 }

@@ -124,6 +124,7 @@ public class Perl6SyntaxHighlighter extends SyntaxHighlighterBase {
         ATTRIBUTES.put(Perl6TokenTypes.FORMAT_CODE, Perl6Highlighter.POD_FORMAT_CODE);
         ATTRIBUTES.put(Perl6TokenTypes.POD_FORMAT_STARTER, Perl6Highlighter.POD_FORMAT_QUOTES);
         ATTRIBUTES.put(Perl6TokenTypes.POD_FORMAT_STOPPER, Perl6Highlighter.POD_FORMAT_QUOTES);
+        ATTRIBUTES.put(Perl6TokenTypes.POD_FORMAT_SEPARATOR, Perl6Highlighter.POD_FORMAT_QUOTES);
         ATTRIBUTES.put(Perl6TokenTypes.QUASI, Perl6Highlighter.QUASI);
     }
 

@@ -98,6 +98,7 @@ public interface Perl6TokenTypes {
     IElementType POD_CONFIGURATION = new Perl6ElementType("POD_CONFIGURATION");
     IElementType POD_DIRECTIVE = new Perl6ElementType("POD_DIRECTIVE");
     IElementType POD_FINISH_TEXT = new Perl6ElementType("POD_FINISH_TEXT");
+    IElementType POD_FORMAT_SEPARATOR = new Perl6ElementType("POD_FORMAT_SEPARATOR");
     IElementType POD_FORMAT_STARTER = new Perl6ElementType("POD_FORMAT_STARTER");
     IElementType POD_FORMAT_STOPPER = new Perl6ElementType("POD_FORMAT_STOPPER");
     IElementType POD_HAVE_CONTENT = new Perl6ElementType("POD_HAVE_CONTENT");
