@@ -75,9 +75,8 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
         }
     }
 
-    @NotNull
     @Override
-    public ResolveResult[] multiResolve(boolean incompleteCode) {
+    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         Perl6MethodCall call = getElement();
         Collection<LookupElement> method = getMethodsForType(call, getCallInfo(call), true);
         return method.stream()
@@ -87,9 +86,8 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
                 .toArray(ResolveResult[]::new);
     }
 
-    @NotNull
     @Override
-    public Object[] getVariants() {
+    public Object @NotNull [] getVariants() {
         Perl6MethodCall call = getElement();
         Collection<LookupElement> methods = getMethodsForType(call, getCallInfo(call), false);
         if (call.getCallOperator().equals("!")) {
@@ -110,7 +108,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             int lastSep = name.lastIndexOf("::");
             if (lastSep >= 0) {
                 String typeName = name.substring(1, lastSep);
-                String shortName = name.substring(0, 1) + name.substring(lastSep + 2);
+                String shortName = name.charAt(0) + name.substring(lastSep + 2);
                 return new CallInfo(new Perl6UnresolvedType(typeName), shortName, isPrivate);
             }
         }
