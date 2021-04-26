@@ -403,11 +403,15 @@ grammar MAIN {
             || <.pod_block>
             || <.pod_removed_whitespace>
                [
-               || <.start-token('POD_TEXT')>
-                  [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
-                  <.end-token('POD_TEXT')>
-               || <.pod_formatting_code>
-               ]+
+               || <?[\h]>
+                  <.start-token('POD_CODE')> \N+ <.end-token('POD_CODE')>
+               || [
+                  || <.start-token('POD_TEXT')>
+                     [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
+                     <.end-token('POD_TEXT')>
+                  || <.pod_formatting_code>
+                  ]+
+               ]
                <.pod_newline>?
             || <.pod_newline>
             ]
@@ -444,11 +448,15 @@ grammar MAIN {
             <!before ^^ \h* ['=' || \n || $]>
             <.pod_removed_whitespace>
             [
-            || <.start-token('POD_TEXT')>
-               [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
-               <.end-token('POD_TEXT')>
-            || <.pod_formatting_code>
-            ]+
+            || <?[\h]>
+               <.start-token('POD_CODE')> \N+ <.end-token('POD_CODE')>
+            || [
+               || <.start-token('POD_TEXT')>
+                  [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
+                  <.end-token('POD_TEXT')>
+               || <.pod_formatting_code>
+               ]+
+            ]
             <.pod_newline>?
         ]*
     }

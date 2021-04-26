@@ -131,6 +131,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         builder.append("header {\n  padding-bottom: 5px; margin-bottom: 10px;\n  border-bottom: 1px solid rgb(");
         builder.append(htmlColor(JBColor.foreground().darker()));
         builder.append(");\n}\n");
+        builder.append("h1 > p { margin: 0; }\n");
+        builder.append("h3 > p { margin: 0; }\n");
         builder.append("</style>\n</head>\n<body>\n");
 
         // If there is a title or subtitle, use it has a header.

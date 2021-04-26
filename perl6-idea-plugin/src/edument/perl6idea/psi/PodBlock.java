@@ -18,6 +18,7 @@ public interface PodBlock extends PodElement {
             Perl6ElementTypes.POD_BLOCK_PARAGRAPH,
             Perl6ElementTypes.POD_FORMATTED,
             Perl6TokenTypes.POD_TEXT,
+            Perl6TokenTypes.POD_CODE,
             Perl6TokenTypes.POD_NEWLINE);
 
     @Nullable
@@ -31,11 +32,12 @@ public interface PodBlock extends PodElement {
     }
 
     default String renderPod(PodRenderingContext context) {
+        // Classify by type, and set opener/closer for those that have one.
         String typename = getTypename();
-        String opener = "";
-        String closer = "";
+        String opener = null;
+        String closer = null;
         boolean isSemantic = false;
-        switch (typename == null ? "para" : typename) {
+        switch (typename != null ? typename : "") {
             case "head1": opener = "<h1>"; closer = "</h1>"; break;
             case "head2": opener = "<h2>"; closer = "</h2>"; break;
             case "head3": opener = "<h3>"; closer = "</h3>"; break;
@@ -45,35 +47,74 @@ public interface PodBlock extends PodElement {
             case "para": opener = "<p>"; closer = "</p>"; break;
             case "comment": return "";
             default:
-                isSemantic = typename.toUpperCase(Locale.ROOT).equals(typename);
+                isSemantic = typename != null && typename.toUpperCase(Locale.ROOT).equals(typename);
         }
+
+        // Work through the content.
         StringBuilder builder = new StringBuilder();
-        builder.append(opener);
+        boolean needOpener = true;
         int outstandingNewlines = 0;
+        int codeWhitespaceToStrip = 0;
         for (ASTNode node : getContent()) {
+            // Never emit removed whitespace at the start of lines.
+            if (node.getElementType() == Perl6TokenTypes.POD_REMOVED_WHITESPACE)
+                continue;
+
+            // Handle newlines, multiple of which may separate code blocks or
+            // paragraphs.
             if (node.getElementType() == Perl6TokenTypes.POD_NEWLINE) {
                 outstandingNewlines++;
+                continue;
             }
             else {
                 if (outstandingNewlines == 1) {
                     builder.append('\n');
                 }
-                else if (outstandingNewlines > 1) {
-                    builder.append(closer);
-                    builder.append("<p>");
-                    closer = "</p>";
+                else if (outstandingNewlines > 1 && !needOpener) {
+                    if (closer != null)
+                        builder.append(closer);
+                    needOpener = true;
+                    opener = null;
                 }
                 outstandingNewlines = 0;
             }
+
+            // Render nested blocks.
             PsiElement psi = node.getPsi();
-            if (psi instanceof PodBlock)
+            if (psi instanceof PodBlock) {
                 builder.append(((PodBlock)psi).renderPod(context));
-            else if (psi instanceof PodFormatted)
-                builder.append(((PodFormatted)psi).renderPod());
-            else if (node.getElementType() != Perl6TokenTypes.POD_REMOVED_WHITESPACE)
-                builder.append(StringEscapeUtils.escapeHtml(psi.getText()));
+            }
+
+            // If it's not a nested block, then we have raw content, and may need
+            // an opener/closer too (for paragraph splits, code. etc.)
+            else {
+                if (needOpener) {
+                    if (opener == null) {
+                        if (node.getElementType() == Perl6TokenTypes.POD_CODE) {
+                            opener = "<pre><code>";
+                            closer = "</code></pre>";
+                            codeWhitespaceToStrip = countLeadingWhitespace(node.getText());
+                        }
+                        else {
+                            opener = "<p>";
+                            closer = "</p>";
+                        }
+                    }
+                    builder.append(opener);
+                }
+                needOpener = false;
+                if (psi instanceof PodFormatted)
+                    builder.append(((PodFormatted)psi).renderPod());
+                else if (node.getElementType() == Perl6TokenTypes.POD_CODE)
+                    builder.append(StringEscapeUtils.escapeHtml(stripCodeWhitespace(psi.getText(), codeWhitespaceToStrip)));
+                else
+                    builder.append(StringEscapeUtils.escapeHtml(psi.getText()));
+            }
         }
-        builder.append(closer);
+        if (!needOpener && closer != null)
+            builder.append(closer);
+
+        // Semantic blocks are stored for later, semantic ones are retained.
         if (isSemantic) {
             context.addSemanticBlock(typename, builder.toString());
             return "";
@@ -81,5 +122,19 @@ public interface PodBlock extends PodElement {
         else {
             return builder.toString();
         }
+    }
+
+    private static int countLeadingWhitespace(String text) {
+        int i = 0;
+        while (i < text.length() && Character.isWhitespace(text.charAt(i)))
+            i++;
+        return i;
+    }
+
+    private static String stripCodeWhitespace(String text, int stripLimit) {
+        int i = 0;
+        while (i < stripLimit && i < text.length() && Character.isWhitespace(text.charAt(i)))
+            i++;
+        return text.substring(i);
     }
 }
