@@ -45,10 +45,15 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     @Override
     public @Nullable Perl6PackageDecl getMetaClass() {
-        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(getPackageKind(), Perl6SymbolKind.TypeOrConstant);
-        applyLexicalSymbolCollector(collector);
-        if (collector.isSatisfied() && collector.getResult().getPsi() instanceof Perl6PackageDecl) {
-            return (Perl6PackageDecl)collector.getResult().getPsi();
+        try {
+            Perl6SingleResolutionSymbolCollector collector =
+              new Perl6SingleResolutionSymbolCollector(getPackageKind(), Perl6SymbolKind.TypeOrConstant);
+            applyLexicalSymbolCollector(collector);
+            if (collector.isSatisfied() && collector.getResult().getPsi() instanceof Perl6PackageDecl) {
+                return (Perl6PackageDecl)collector.getResult().getPsi();
+            }
+        } catch (AssertionError ignored) {
+            // If resolution goes out of a stub, we cannot do a lot without breaking stub rules
         }
         return null;
     }
