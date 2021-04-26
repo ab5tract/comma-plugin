@@ -83,6 +83,12 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
         return false;
     }
 
+    @Override
+    public PsiElement setName(@NotNull String name) {
+        myName = name;
+        return null;
+    }
+
     @NotNull
     @Override
     public String getName() {

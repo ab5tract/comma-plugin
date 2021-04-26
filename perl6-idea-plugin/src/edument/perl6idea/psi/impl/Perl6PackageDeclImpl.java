@@ -45,7 +45,12 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     @Override
     public @Nullable Perl6PackageDecl getMetaClass() {
-        return Perl6ExternalNamesParser.metamodelCache.get(getPackageKind());
+        Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(getPackageKind(), Perl6SymbolKind.TypeOrConstant);
+        applyLexicalSymbolCollector(collector);
+        if (collector.isSatisfied() && collector.getResult().getPsi() instanceof Perl6PackageDecl) {
+            return (Perl6PackageDecl)collector.getResult().getPsi();
+        }
+        return null;
     }
 
     @Override

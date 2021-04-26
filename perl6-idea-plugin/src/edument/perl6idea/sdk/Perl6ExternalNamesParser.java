@@ -26,7 +26,7 @@ public class Perl6ExternalNamesParser {
     private final Perl6File myFile;
     private List<Perl6Symbol> result = new ArrayList<>();
     private Map<String, Perl6PackageDecl> externalClasses = new HashMap<>();
-    static public Map<String, Perl6PackageDecl> metamodelCache = new HashMap<>();
+    private Map<String, Perl6PackageDecl> metamodelCache = new HashMap<>();
 
     public Perl6ExternalNamesParser(Project project, Perl6File file, JSONArray json) {
         myProject = project;
@@ -93,6 +93,7 @@ public class Perl6ExternalNamesParser {
                         ExternalPerl6PackageDecl psi = parsePackageDeclaration(j, new ArrayList<>());
                         // Add to a metamodel cache to apply to users
                         metamodelCache.put(j.getString("key"), psi);
+                        psi.setName(j.getString("key"));
                         externalClasses.put(psi.getName(), psi);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
