@@ -227,9 +227,11 @@ EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
     my $unit = CompUnit::RepositoryRegistry.head.need(CompUnit::DependencySpecification.new(:short-name(@*ARGS[0].words[1])));
 
     my $*METAMODEL = True;
-    for $unit.handle.export-how-package {
-        for .<DECLARE>.WHO.kv -> $name, $value {
-            pack-package(@EXTERNAL_COMMA_ELEMS, $name, $value);
+    given $unit.handle.export-how-package -> $pkg {
+        for $pkg.keys -> $key {
+            for $pkg{$key}.WHO.kv -> $name, $value {
+                pack-package(@EXTERNAL_COMMA_ELEMS, $name, $value);
+            }
         }
     }
     $*METAMODEL = False;

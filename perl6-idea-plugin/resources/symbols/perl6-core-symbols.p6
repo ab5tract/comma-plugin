@@ -574,13 +574,12 @@ my @EXTERNAL_COMMA_ELEMS;
 
 my $new-param-API = so Parameter.^can('suffix');
 
+# Collect archetypes first
+pack-package(@EXTERNAL_COMMA_ELEMS, 'EXPORTHOW', CORE::EXPORTHOW);
+
 for CORE::.keys -> $_ {
     # Ignore a few things.
-    when 'Rakudo' { }
-    # Collect archetypes
-    when 'EXPORTHOW' {
-        pack-package(@EXTERNAL_COMMA_ELEMS, $_, CORE::{$_});
-    }
+    when 'EXPORTHOW'|'Rakudo' { }
     # Collect all top-level subs and EVAL.
     when /^"&"<:Ll>/ | '&EVAL' | '&EVALFILE' {
         @EXTERNAL_COMMA_ELEMS.push: pack-variable($_, CORE::{$_}, |%( :d($_) with %CORE-DOCS<ops>{$_} ) );
