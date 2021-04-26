@@ -26,6 +26,10 @@ public class CursorStack {
     /* Arguments being passed between rules. */
     public Object[] args;
 
+    // The start of Pod whitespace, used for handling stripping of the leading
+    // whitespace and identifying indented code blocks.
+    int podWhitespaceStart;
+
     /* Set of markers. */
     private Map<String, Integer> markers = new HashMap<>();
 

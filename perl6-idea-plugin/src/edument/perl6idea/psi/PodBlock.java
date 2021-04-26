@@ -70,7 +70,7 @@ public interface PodBlock extends PodElement {
                 builder.append(((PodBlock)psi).renderPod(context));
             else if (psi instanceof PodFormatted)
                 builder.append(((PodFormatted)psi).renderPod());
-            else
+            else if (node.getElementType() != Perl6TokenTypes.POD_REMOVED_WHITESPACE)
                 builder.append(StringEscapeUtils.escapeHtml(psi.getText()));
         }
         builder.append(closer);

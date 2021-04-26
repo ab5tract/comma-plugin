@@ -103,6 +103,7 @@ public interface Perl6TokenTypes {
     IElementType POD_FORMAT_STOPPER = new Perl6ElementType("POD_FORMAT_STOPPER");
     IElementType POD_HAVE_CONTENT = new Perl6ElementType("POD_HAVE_CONTENT");
     IElementType POD_NEWLINE = new Perl6ElementType("POD_NEWLINE");
+    IElementType POD_REMOVED_WHITESPACE = new Perl6ElementType("POD_REMOVED_WHITESPACE");
     IElementType POD_TEXT = new Perl6ElementType("POD_TEXT");
     IElementType POD_TYPENAME = new Perl6ElementType("POD_TYPENAME");
     IElementType POD_WHITESPACE = new Perl6ElementType("POD_WHITESPACE");

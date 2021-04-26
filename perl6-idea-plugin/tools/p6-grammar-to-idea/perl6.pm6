@@ -361,8 +361,13 @@ grammar MAIN {
     token pod_block_delimited {
         ^^
         <?before [\h* '=begin']>
+        :my $*POD_WS_PREFIX = 0;
         <.start-element('POD_BLOCK_DELIMITED')>
-        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_REMOVED_WHITESPACE')>
+        <.pod-ws-start>
+        \h*
+        <.pod-ws-commit>
+        <.end-token('POD_REMOVED_WHITESPACE')>
         <.start-token('POD_DIRECTIVE')> '=begin' <.end-token('POD_DIRECTIVE')>
         [
             <?before [\h+ <.ident>]>
@@ -396,7 +401,8 @@ grammar MAIN {
             <.start-token('POD_HAVE_CONTENT')> <?> <.end-token('POD_HAVE_CONTENT')>
             [
             || <.pod_block>
-            || [
+            || <.pod_removed_whitespace>
+               [
                || <.start-token('POD_TEXT')>
                   [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
                   <.end-token('POD_TEXT')>
@@ -411,8 +417,13 @@ grammar MAIN {
     token pod_block_paragraph {
         ^^
         <?before [\h* '=for']>
+        :my $*POD_WS_PREFIX = 0;
         <.start-element('POD_BLOCK_PARAGRAPH')>
-        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_REMOVED_WHITESPACE')>
+        <.pod-ws-start>
+        \h*
+        <.pod-ws-commit>
+        <.end-token('POD_REMOVED_WHITESPACE')>
         <.start-token('POD_DIRECTIVE')> '=for' <.end-token('POD_DIRECTIVE')>
         [
             <?before [\h+ <.ident>]>
@@ -431,6 +442,7 @@ grammar MAIN {
     token pod_para_content {
         [
             <!before ^^ \h* ['=' || \n || $]>
+            <.pod_removed_whitespace>
             [
             || <.start-token('POD_TEXT')>
                [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
@@ -444,8 +456,13 @@ grammar MAIN {
     token pod_block_abbreviated {
         ^^
         <?before [\h* '=' <.ident>]>
+        :my $*POD_WS_PREFIX = 0;
         <.start-element('POD_BLOCK_ABBREVIATED')>
-        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_REMOVED_WHITESPACE')>
+        <.pod-ws-start>
+        \h*
+        <.pod-ws-commit>
+        <.end-token('POD_REMOVED_WHITESPACE')>
         <.start-token('POD_DIRECTIVE')> '=' <.end-token('POD_DIRECTIVE')>
         <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
         [
@@ -501,6 +518,15 @@ grammar MAIN {
 
     token pod_newline {
         <.start-token('POD_NEWLINE')> \h* \n <.end-token('POD_NEWLINE')>
+    }
+
+    token pod_removed_whitespace {
+        [
+        <?[\h]>
+        <.start-token('POD_REMOVED_WHITESPACE')>
+        <.pod-eat-removed-ws>
+        <.end-token('POD_REMOVED_WHITESPACE')>
+        ]?
     }
 
     # XXX Total cheat, no multi-line configuration parsing yet
