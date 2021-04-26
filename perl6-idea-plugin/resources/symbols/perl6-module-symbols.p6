@@ -327,7 +327,7 @@ sub describer(@elems, $name, Mu \object) {
 sub describe-OOP(@elems, $name, $kind, Mu \object) {
     use nqp;
     my $b = nqp::istype(object, Cool) ?? 'C' !! nqp::istype(object, Any) ?? 'A' !! 'M';
-    my %class = k => $kind, n => object.^name, t => object.^name, :$b;
+    my %class = k => $kind, n => $name, t => object.^name, :$b;
     %class<mro> = (try flat object.^roles.map(*.^name), object.^parents(:local).map(*.^name)) // ();
     try %class<mro> = object.^mro.skip(1).map(*.^name) unless %class<mro>;
     %class<key> = $name if $kind eq 'mm';
