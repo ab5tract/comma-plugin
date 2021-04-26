@@ -562,6 +562,12 @@ public final class Perl6Highlighter {
             DefaultLanguageHighlighterColors.DOC_COMMENT
     );
 
+    static final String POD_CODE_ID = "PERL6_CODE";
+    public static final TextAttributesKey POD_CODE = TextAttributesKey.createTextAttributesKey(
+            POD_CODE_ID,
+            DefaultLanguageHighlighterColors.DOC_COMMENT_MARKUP
+    );
+
     static final String POD_FORMAT_CODE_ID = "PERL6_FORMAT_CODE";
     public static final TextAttributesKey POD_FORMAT_CODE = TextAttributesKey.createTextAttributesKey(
         POD_FORMAT_CODE_ID,

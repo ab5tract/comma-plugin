@@ -95,6 +95,7 @@ public class Perl6ColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Pod Text (Bold)", Perl6Highlighter.POD_TEXT_BOLD),
             new AttributesDescriptor("Pod Text (Italic)", Perl6Highlighter.POD_TEXT_ITALIC),
             new AttributesDescriptor("Pod Text (Underlined)", Perl6Highlighter.POD_TEXT_UNDERLINE),
+            new AttributesDescriptor("Pod Code Block", Perl6Highlighter.POD_CODE),
             new AttributesDescriptor("Pod Format Code", Perl6Highlighter.POD_FORMAT_CODE),
             new AttributesDescriptor("Pod Format Delimiters", Perl6Highlighter.POD_FORMAT_QUOTES),
             new AttributesDescriptor("Quasi Quote", Perl6Highlighter.QUASI),
