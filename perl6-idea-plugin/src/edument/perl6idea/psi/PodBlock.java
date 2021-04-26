@@ -37,6 +37,7 @@ public interface PodBlock extends PodElement {
         String opener = null;
         String closer = null;
         boolean isSemantic = false;
+        boolean forceCode = false;
         switch (typename != null ? typename : "") {
             case "head1": opener = "<h1>"; closer = "</h1>"; break;
             case "head2": opener = "<h2>"; closer = "</h2>"; break;
@@ -45,6 +46,7 @@ public interface PodBlock extends PodElement {
             case "head5": opener = "<h5>"; closer = "</h5>"; break;
             case "head6": opener = "<h6>"; closer = "</h6>"; break;
             case "para": opener = "<p>"; closer = "</p>"; break;
+            case "code": case "input": case "output": forceCode = true; break;
             case "comment": return "";
             default:
                 isSemantic = typename != null && typename.toUpperCase(Locale.ROOT).equals(typename);
@@ -90,7 +92,7 @@ public interface PodBlock extends PodElement {
             else {
                 if (needOpener) {
                     if (opener == null) {
-                        if (node.getElementType() == Perl6TokenTypes.POD_CODE) {
+                        if (forceCode || node.getElementType() == Perl6TokenTypes.POD_CODE) {
                             opener = "<pre><code>";
                             closer = "</code></pre>";
                             codeWhitespaceToStrip = countLeadingWhitespace(node.getText());
@@ -103,7 +105,9 @@ public interface PodBlock extends PodElement {
                     builder.append(opener);
                 }
                 needOpener = false;
-                if (psi instanceof PodFormatted)
+                if (forceCode)
+                    builder.append(StringEscapeUtils.escapeHtml(psi.getText()));
+                else if (psi instanceof PodFormatted)
                     builder.append(((PodFormatted)psi).renderPod());
                 else if (node.getElementType() == Perl6TokenTypes.POD_CODE)
                     builder.append(StringEscapeUtils.escapeHtml(stripCodeWhitespace(psi.getText(), codeWhitespaceToStrip)));
