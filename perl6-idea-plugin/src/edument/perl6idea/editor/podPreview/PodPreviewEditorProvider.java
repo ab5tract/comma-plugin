@@ -37,7 +37,7 @@ public class PodPreviewEditorProvider implements FileEditorProvider, DumbAware {
     public @NotNull FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {
         TextEditor editor = (TextEditor)TextEditorProvider.getInstance().createEditor(project, file);
         if (JBCefApp.isSupported()) {
-            PodPreviewEditor viewer = new PodPreviewEditor();
+            PodPreviewEditor viewer = new PodPreviewEditor(project, file);
             Alarm myAlarm = new Alarm(Alarm.ThreadToUse.POOLED_THREAD, editor);
             PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
             editor.getEditor().getDocument().addDocumentListener(new DocumentListener() {
