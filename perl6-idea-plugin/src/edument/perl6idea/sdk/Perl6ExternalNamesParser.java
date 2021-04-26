@@ -27,7 +27,6 @@ public class Perl6ExternalNamesParser {
     private List<Perl6Symbol> result = new ArrayList<>();
     private Map<String, Perl6PackageDecl> externalClasses = new HashMap<>();
     static public Map<String, Perl6PackageDecl> metamodelCache = new HashMap<>();
-    private Map<String, List<Perl6PackageDecl>> deferredMetaclassUsers = new HashMap<>();
 
     public Perl6ExternalNamesParser(Project project, Perl6File file, JSONArray json) {
         myProject = project;
@@ -94,14 +93,6 @@ public class Perl6ExternalNamesParser {
                         ExternalPerl6PackageDecl psi = parsePackageDeclaration(j, new ArrayList<>());
                         // Add to a metamodel cache to apply to users
                         metamodelCache.put(j.getString("key"), psi);
-                        // If we have packages that want this metamodel to be set, do it and consider it cached from now on
-                        List<Perl6PackageDecl> deferredUsers = deferredMetaclassUsers.get(psi.getPackageKind());
-                        if (deferredUsers != null) {
-                            for (Perl6PackageDecl deferredUser : deferredUsers) {
-                                deferredUser.setMetaClass(psi);
-                            }
-                            deferredMetaclassUsers.remove(psi.getPackageKind());
-                        }
                         externalClasses.put(psi.getName(), psi);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
@@ -111,20 +102,8 @@ public class Perl6ExternalNamesParser {
                         List<String> mro = ContainerUtil.map(j.getJSONArray("mro").toList(), item -> Objects.toString(item, null));
                         ExternalPerl6PackageDecl psi = parsePackageDeclaration(j, mro);
                         Perl6PackageDecl metamodel = metamodelCache.getOrDefault(psi.getPackageKind(), null);
-                        if (metamodel != null) {
+                        if (metamodel != null)
                             psi.setMetaClass(metamodel);
-                        } else {
-                            // It is possible we parse class definitions before we get to the metaclass to assign,
-                            // so save them to a list of deferred ones to receive the definition once we got to it
-                            deferredMetaclassUsers.compute(psi.getPackageKind(), (k, v) -> {
-                                if (v == null) {
-                                    return new ArrayList<>();
-                                } else {
-                                    v.add(psi);
-                                    return v;
-                                }
-                            });
-                        }
                         externalClasses.put(psi.getName(), psi);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
                         break;
