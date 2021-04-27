@@ -362,6 +362,7 @@ grammar MAIN {
         ^^
         <?before [\h* '=begin']>
         :my $*POD_WS_PREFIX = 0;
+        :my $*POD_CODE_BLOCK = 0;
         <.start-element('POD_BLOCK_DELIMITED')>
         <.start-token('POD_REMOVED_WHITESPACE')>
         <.pod-ws-start>
@@ -372,6 +373,7 @@ grammar MAIN {
         [
             <?before [\h+ <.ident>]>
             <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+            <.pod_code_check>
             <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
             <.pod_configuration>?
             [
@@ -403,7 +405,7 @@ grammar MAIN {
             || <.pod_block>
             || <.pod_removed_whitespace>
                [
-               || <?[\h]>
+               || [<?[\h]> || <?{$*POD_CODE_BLOCK}>]
                   <.start-token('POD_CODE')> \N+ <.end-token('POD_CODE')>
                || [
                   || <.start-token('POD_TEXT')>
@@ -422,6 +424,7 @@ grammar MAIN {
         ^^
         <?before [\h* '=for']>
         :my $*POD_WS_PREFIX = 0;
+        :my $*POD_CODE_BLOCK = 0;
         <.start-element('POD_BLOCK_PARAGRAPH')>
         <.start-token('POD_REMOVED_WHITESPACE')>
         <.pod-ws-start>
@@ -432,6 +435,7 @@ grammar MAIN {
         [
             <?before [\h+ <.ident>]>
             <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+            <.pod_code_check>
             <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
             <.pod_configuration>?
             [
@@ -448,7 +452,7 @@ grammar MAIN {
             <!before ^^ \h* ['=' || \n || $]>
             <.pod_removed_whitespace>
             [
-            || <?[\h]>
+            || [<?[\h]> || <?{$*POD_CODE_BLOCK}>]
                <.start-token('POD_CODE')> \N+ <.end-token('POD_CODE')>
             || [
                || <.start-token('POD_TEXT')>
@@ -465,6 +469,7 @@ grammar MAIN {
         ^^
         <?before [\h* '=' <.ident>]>
         :my $*POD_WS_PREFIX = 0;
+        :my $*POD_CODE_BLOCK = 0;
         <.start-element('POD_BLOCK_ABBREVIATED')>
         <.start-token('POD_REMOVED_WHITESPACE')>
         <.pod-ws-start>
@@ -472,6 +477,7 @@ grammar MAIN {
         <.pod-ws-commit>
         <.end-token('POD_REMOVED_WHITESPACE')>
         <.start-token('POD_DIRECTIVE')> '=' <.end-token('POD_DIRECTIVE')>
+        <.pod_code_check>
         <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
         [
             <.start-token('POD_WHITESPACE')> [\h*\n || \h+] <.end-token('POD_WHITESPACE')>
@@ -535,6 +541,11 @@ grammar MAIN {
         <.pod-eat-removed-ws>
         <.end-token('POD_REMOVED_WHITESPACE')>
         ]?
+    }
+
+    token pod_code_check {
+        || <?before ['code' || 'input' || 'output']> { $*POD_CODE_BLOCK = 1 }
+        || <?>
     }
 
     # XXX Total cheat, no multi-line configuration parsing yet
