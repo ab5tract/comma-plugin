@@ -52802,6 +52802,13 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 1:
                 this.bsMark(2);
+                if (!(this.isValueTruthy(this.findDynamicVariable("$*QSIGIL")))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
                 if (!(this.spaceChar())) {
                     if (this.backtrack()) {
                         continue;
