@@ -1,5 +1,6 @@
 package edument.perl6idea.editor.podPreview;
 
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.project.Project;
@@ -42,36 +43,42 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
                                                                        boolean isDownload,
                                                                        String requestInitiator,
                                                                        BoolRef disableDefaultHandling) {
-                // For file:// URLs
                 String url = request.getURL();
-                if (url != null && url.startsWith(FILE_SCHEME) && !url.endsWith("about:blank")) {
-                    // If it's the file we're previewing, then hand back the rendered content.
-                    if (url.equals(previewOf.getUrl())) {
-                        return new CefResourceRequestHandlerAdapter() {
-                            @Override
-                            public CefResourceHandler getResourceHandler(CefBrowser browser, CefFrame frame, CefRequest request) {
-                                return new HtmlStringResourceHandler(latestContent);
-                            }
-                        };
+                if (url != null) {
+                    // For file:// URLs, try to resolve them in the project.
+                    boolean isFile = url.startsWith(FILE_SCHEME);
+                    if (isFile && !url.endsWith("about:blank")) {
+                        // If it's the file we're previewing, then hand back the rendered content.
+                        if (url.equals(previewOf.getUrl())) {
+                            return new CefResourceRequestHandlerAdapter() {
+                                @Override
+                                public CefResourceHandler getResourceHandler(CefBrowser browser, CefFrame frame, CefRequest request) {
+                                    return new HtmlStringResourceHandler(latestContent);
+                                }
+                            };
+                        }
+
+                        // Otherwise, see if it resolves to a virtual file within the project, and
+                        // set us up to open an editor to it if so.
+                        VirtualFile found = resolveFile(url);
+                        if (found != null) {
+                            ApplicationManager.getApplication().invokeLater(() -> FileEditorManager.getInstance(project)
+                                    .openEditor(new OpenFileDescriptor(project, found, 0), true));
+                        }
                     }
 
-                    // Otherwise, see if it resolves to a virtual file within the project, and
-                    // set us up to open an editor to it if so.
-                    VirtualFile found = resolveFile(url);
-                    if (found != null)
-                        ApplicationManager.getApplication().invokeLater(() -> FileEditorManager.getInstance(project)
-                                .openEditor(new OpenFileDescriptor(project, found, 0), true));
-
-                    // Return a 204 so we don't go anywhere.
-                    return new CefResourceRequestHandlerAdapter() {
-                        @Override
-                        public CefResourceHandler getResourceHandler(CefBrowser browser, CefFrame frame, CefRequest request) {
-                            return new NoContentResourceHandler();
-                        }
-                    };
+                    // For non-file://, try to open it in the browser.
+                    else if (!isFile)
+                        BrowserUtil.browse(url);
                 }
-                return super.getResourceRequestHandler(browser, frame, request, isNavigation, isDownload, requestInitiator,
-                                                       disableDefaultHandling);
+
+                // Return a 204 so we don't go anywhere.
+                return new CefResourceRequestHandlerAdapter() {
+                    @Override
+                    public CefResourceHandler getResourceHandler(CefBrowser browser, CefFrame frame, CefRequest request) {
+                        return new NoContentResourceHandler();
+                    }
+                };
             }
         }, htmlPanel.getCefBrowser());
     }
