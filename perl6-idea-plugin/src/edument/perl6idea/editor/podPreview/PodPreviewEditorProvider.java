@@ -3,8 +3,12 @@ package edument.perl6idea.editor.podPreview;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.LogicalPosition;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
+import com.intellij.openapi.editor.event.VisibleAreaEvent;
+import com.intellij.openapi.editor.event.VisibleAreaListener;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
 import com.intellij.openapi.project.DumbAware;
@@ -19,6 +23,8 @@ import edument.perl6idea.filetypes.Perl6PodFileType;
 import edument.perl6idea.psi.Perl6File;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+
+import java.awt.*;
 
 public class PodPreviewEditorProvider implements FileEditorProvider, DumbAware {
     @NonNls private static final String EDITOR_TYPE_ID = "pod6";
@@ -47,6 +53,17 @@ public class PodPreviewEditorProvider implements FileEditorProvider, DumbAware {
                     myAlarm.addRequest(() -> renderPreview(event.getDocument(), documentManager, viewer), 500);
                 }
             }, editor);
+            editor.getEditor().getScrollingModel().addVisibleAreaListener(new VisibleAreaListener() {
+                @Override
+                public void visibleAreaChanged(@NotNull VisibleAreaEvent e) {
+                    Editor editor = e.getEditor();
+                    Rectangle nowInView = e.getNewRectangle();
+                    LogicalPosition position = editor.xyToLogicalPosition(nowInView.getLocation());
+                    int line = position.line;
+                    int offset = editor.getDocument().getLineStartOffset(line);
+                    viewer.scrollTo(offset);
+                }
+            });
             myAlarm.addRequest(() -> renderPreview(editor.getEditor().getDocument(), documentManager, viewer), 0);
             return new TextEditorWithPreview(editor, viewer, "Pod6Editor");
         }

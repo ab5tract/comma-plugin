@@ -105,6 +105,7 @@ public interface PodBlock extends PodElement {
                     builder.append(opener);
                 }
                 needOpener = false;
+                builder.append("<span id=\"scroll-pos-").append(node.getStartOffset()).append("\"></span>");
                 if (forceCode)
                     builder.append(StringEscapeUtils.escapeHtml(psi.getText()));
                 else if (psi instanceof PodFormatted)

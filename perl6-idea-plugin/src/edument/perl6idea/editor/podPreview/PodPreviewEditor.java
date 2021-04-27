@@ -8,7 +8,6 @@ import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.openapi.vfs.VirtualFileSystem;
 import com.intellij.ui.jcef.JCEFHtmlPanel;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
@@ -26,14 +25,17 @@ import java.util.Locale;
 public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
     private static final String FILE_SCHEME = "file://";
 
-    private final JCEFHtmlPanel htmlPanel = new JCEFHtmlPanel(null);
+    private final JCEFHtmlPanel htmlPanel;
     private final Project project;
     private final VirtualFile previewOf;
     private String latestContent = "";
+    private int curOffset = 0;
 
     public PodPreviewEditor(Project project, VirtualFile previewOf) {
         this.project = project;
         this.previewOf = previewOf;
+        String previewUrl = previewOf.getUrl();
+        htmlPanel = new JCEFHtmlPanel(previewUrl);
         htmlPanel.getJBCefClient().addRequestHandler(new CefRequestHandlerAdapter() {
             @Override
             public CefResourceRequestHandler getResourceRequestHandler(CefBrowser browser,
@@ -49,7 +51,7 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
                     boolean isFile = url.startsWith(FILE_SCHEME);
                     if (isFile && !url.endsWith("about:blank")) {
                         // If it's the file we're previewing, then hand back the rendered content.
-                        if (url.equals(previewOf.getUrl())) {
+                        if (url.equals(previewUrl)) {
                             return new CefResourceRequestHandlerAdapter() {
                                 @Override
                                 public CefResourceHandler getResourceHandler(CefBrowser browser, CefFrame frame, CefRequest request) {
@@ -193,5 +195,23 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
             latestContent = html;
             htmlPanel.loadURL(previewOf.getUrl());
         });
+    }
+
+    public void scrollTo(int offset) {
+        if (offset == curOffset)
+            return;
+        CefBrowser browser = htmlPanel.getCefBrowser();
+        // We may not have an exact position due to leading removed whitespace, so try
+        // positions beyond the chosen one.
+        browser.executeJavaScript(
+                "for (var i = " + offset + "; i < " + (offset + 32) + "; i++) {\n" +
+                "    var el = document.getElementById(\"scroll-pos-" + offset + "\");\n" +
+                "    if (el != null) {\n" +
+                "        el.scrollIntoView();\n" +
+                "        break;\n" +
+                "    }\n" +
+                "}",
+                browser.getURL(), 0);
+        curOffset = offset;
     }
 }
