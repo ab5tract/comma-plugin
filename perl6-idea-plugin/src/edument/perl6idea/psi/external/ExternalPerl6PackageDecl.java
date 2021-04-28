@@ -180,6 +180,7 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
         if (metaClass == null)
             return;
 
+        collector.decreasePriority();
         metaClass.contributeMOPSymbols(collector, symbolsAllowed);
     }
 

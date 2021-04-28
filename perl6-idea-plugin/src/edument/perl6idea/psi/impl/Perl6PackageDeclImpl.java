@@ -131,6 +131,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
         Perl6PackageDecl metaClass = getMetaClass();
         if (metaClass != null) {
+            collector.decreasePriority();
             metaClass.contributeMOPSymbols(collector, symbolsAllowed);
         }
     }
