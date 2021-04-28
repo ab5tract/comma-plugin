@@ -669,7 +669,7 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     }
     try for object.^methods(:local) -> $method {
         if $kind eq 'mm' {
-            %class<m>.push: pack-code($method, 0, '^'~ $method.name, :is-method);
+            %class<m>.push: pack-code($method, 0, '^'~ $method.name, :is-method) unless $method.name.starts-with('!');
         } elsif $method !~~ ForeignCode {
             for $method.candidates {
                 next if $kind ~~ 'c' && .?package !=:= object;
