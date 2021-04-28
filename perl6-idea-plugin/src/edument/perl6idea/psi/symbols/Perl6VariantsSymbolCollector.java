@@ -1,18 +1,20 @@
 package edument.perl6idea.psi.symbols;
 
+import com.intellij.util.containers.ContainerUtil;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Perl6VariantsSymbolCollector implements Perl6SymbolCollector {
-    private Set<String> traversedNames = new HashSet<>();
-    private Set<Perl6SymbolKind> wantedKinds;
-    private Map<String, Perl6Symbol> seen = new HashMap<>();
-    private List<Perl6Symbol> multi = new LinkedList<>();
+    private final Set<String> traversedNames = new HashSet<>();
+    private final Set<Perl6SymbolKind> wantedKinds;
+    private final Map<String, Perl6Symbol> seen = new HashMap<>();
+    private final List<Perl6Symbol> multi = new LinkedList<>();
     private double myPriority = 1000;
 
     public Perl6VariantsSymbolCollector(Perl6SymbolKind... wantedKinds) {
-        this.wantedKinds = new HashSet<>(Arrays.asList(wantedKinds));
+        this.wantedKinds = ContainerUtil.set(wantedKinds);
     }
 
     @Override
