@@ -163,8 +163,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     }
 
     private void applyInformationToEditor(FileEditor[] editors, final VirtualFile file) {
-        PsiFile psiFile = ApplicationManager.getApplication().runReadAction((Computable<PsiFile>)
-            () -> PsiManager.getInstance(project).findFile(file));
+        PsiFile psiFile = ReadAction.compute(() -> PsiManager.getInstance(project).findFile(file));
         if (psiFile != null && psiFile.isPhysical()) {
             String path = psiFile.getVirtualFile().getPath();
             for (FileEditor editor : editors) {
@@ -300,7 +299,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     public CoverageStatistics coverageForDirectory(VirtualFile dir) {
         /* Gather all modules files in the directory. */
         List<VirtualFile> allSourceFiles = new ArrayList<>();
-        VfsUtilCore.visitChildrenRecursively(dir, new VirtualFileVisitor<Object>() {
+        VfsUtilCore.visitChildrenRecursively(dir, new VirtualFileVisitor<>() {
             @Override
             public boolean visitFile(@NotNull VirtualFile file) {
                 if (!file.isDirectory() && file.getFileType() instanceof Perl6ModuleFileType) {
