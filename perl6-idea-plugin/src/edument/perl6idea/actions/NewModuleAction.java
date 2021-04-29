@@ -37,8 +37,7 @@ public class NewModuleAction extends AnAction {
         final DataContext dataContext = e.getDataContext();
         final Presentation presentation = e.getPresentation();
         final boolean enabled = isAvailable(dataContext);
-        presentation.setVisible(enabled);
-        presentation.setEnabled(enabled);
+        presentation.setEnabledAndVisible(enabled);
     }
 
     private static boolean isAvailable(DataContext dataContext) {
