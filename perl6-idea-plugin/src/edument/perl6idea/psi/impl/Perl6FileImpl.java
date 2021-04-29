@@ -27,6 +27,7 @@ import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.repl.Perl6ReplState;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.sdk.Perl6SettingTypeId;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +37,7 @@ import java.util.List;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public static final Map<String, Perl6SettingTypeId> VARIABLE_SYMBOLS = new HashMap<>();
+    private static final String POD_HTML_TEMPLATE = Perl6Utils.getResourceAsString("podPreview/template.html");
 
     static {
         // compile time variables
@@ -107,35 +109,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             for (PodBlock pod : blocks)
                     renderedBlocks.add(pod.renderPod(context));
 
-        // Prepare HTML header with style sheet.
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html>\n<head>\n<style>\n");
-        builder.append("body { background-color: rgb(");
-        builder.append(htmlColor(JBColor.background()));
-        builder.append("); color: rgb(");
-        builder.append(htmlColor(JBColor.foreground()));
-        builder.append("); font-family: \"");
-        builder.append(JBFont.label().getFamily());
-        builder.append("\", sans-serif; }\n"); // Fallback if font not available in browser
-        builder.append("a { color: rgb(");
-        builder.append(htmlColor(JBColor.BLUE));
-        builder.append("); }\n");
-        builder.append("h1, h2, h3, h4, h5, h6 {\n");
-        builder.append("  border-bottom: 1px solid rgb(");
-        builder.append(htmlColor(JBColor.foreground().darker()));
-        builder.append(");}\n");
-        builder.append("header > h1, h3 {\n");
-        builder.append("  color: rgb(");
-        builder.append(htmlColor(JBColor.foreground()));
-        builder.append(");\n  border-bottom: none; margin-top: 0; margin-bottom: 0; \n}\n");
-        builder.append("header {\n  padding-bottom: 5px; margin-bottom: 10px;\n  border-bottom: 1px solid rgb(");
-        builder.append(htmlColor(JBColor.foreground().darker()));
-        builder.append(");\n}\n");
-        builder.append("h1 > p { margin: 0; }\n");
-        builder.append("h3 > p { margin: 0; }\n");
-        builder.append("</style>\n</head>\n<body>\n");
-
         // If there is a title or subtitle, use it has a header.
+        StringBuilder builder = new StringBuilder();
         Map<String, String> semanticBlocks = context.getSemanticBlocks();
         if (semanticBlocks.containsKey("TITLE")) {
             String title = semanticBlocks.get("TITLE");
@@ -155,9 +130,18 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         for (String rendered : renderedBlocks)
             builder.append(rendered);
 
-        // Finish and return HTML.
-        builder.append("</body>\n</html>");
-        return builder.toString();
+        // Substitute HTML into template.
+        Map<String, String> substitute = new HashMap<>();
+        substitute.put("BODY", builder.toString());
+        substitute.put("BACKGROUND", htmlColor(JBColor.background()));
+        substitute.put("FOREGROUND", htmlColor(JBColor.foreground()));
+        substitute.put("FONT", JBFont.label().getFamily());
+        substitute.put("LINK", htmlColor(JBColor.BLUE));
+        substitute.put("HEADING-BORDER", htmlColor(JBColor.foreground().darker()));
+        String rendered = POD_HTML_TEMPLATE;
+        for (Map.Entry<String, String> entry : substitute.entrySet())
+            rendered = rendered.replace("[[" + entry.getKey() + "]]", entry.getValue());
+        return rendered;
     }
 
     private static String htmlColor(Color color) {

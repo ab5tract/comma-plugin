@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      background-color: rgb([[BACKGROUND]]);
+      color: rgb([[FOREGROUND]]);
+      font-family: "[[FONT]]", sans-serif;
+    }
+    a {
+      color: rgb([[LINK]]);
+    }
+    h1, h2, h3, h4, h5, h6 {
+      border-bottom: 1px solid rgb([[HEADING-BORDER]]);
+    }
+    header > h1, h3 {
+      color: rgb([[FOREGROUND]]);
+      border-bottom: none;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    header {
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgb([[HEADING-BORDER]]);
+    }
+    h1 > p { margin: 0; }
+    h3 > p { margin: 0; }
+  </style>
+</head>
+<body>
+[[BODY]]
+</body>
+</html>

@@ -36,7 +36,6 @@ public class PodFormattedImpl extends ASTWrapperPsiElement implements PodFormatt
         String opener = "";
         String closer = "";
         boolean format = true;
-        boolean linky = false;
         switch (getFormatCode()) {
             case "B": opener = "<strong>"; closer = "</strong>"; break;
             case "C": opener = "<code>"; closer = "</code>"; break;
