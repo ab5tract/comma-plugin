@@ -25,4 +25,7 @@ public interface Perl6PackageDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     List<Perl6PackageDecl> collectChildren();
     List<Perl6PackageDecl> collectParents();
     boolean trustsOthers();
+    @Nullable
+    Perl6PackageDecl getMetaClass();
+    void setMetaClass(Perl6PackageDecl metaClass);
 }

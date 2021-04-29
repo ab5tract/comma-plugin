@@ -5,6 +5,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.StubBuilder;
 import com.intellij.psi.impl.DebugUtil;
 import com.intellij.psi.stubs.StubElement;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.Perl6PackageDecl;
@@ -225,8 +226,8 @@ public class Perl6StubTest extends CommaFixtureTestCase {
         StubElement stub = (StubElement) e.getChildrenStubs().get(1);
         Perl6PackageDecl decl = (Perl6PackageDecl) stub.getPsi();
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-        decl.contributeMOPSymbols(collector, new MOPSymbolsAllowed(false, false, false , false));
-        List<String> names = collector.getVariants().stream().map(Perl6Symbol::getName).collect(Collectors.toList());
+        decl.contributeMOPSymbols(collector, new MOPSymbolsAllowed(false, false, false, false));
+        List<String> names = ContainerUtil.map(collector.getVariants(), Perl6Symbol::getName);
         assertTrue(names.containsAll(Arrays.asList(".ddd", ".mmm", ".bbb")));
     }
 

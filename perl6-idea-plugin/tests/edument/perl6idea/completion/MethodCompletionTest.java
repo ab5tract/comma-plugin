@@ -760,4 +760,13 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
             "Owner.m.<caret>",
             ".some-attr");
     }
+
+    public void testMetaMethodCompletion() throws InterruptedException {
+        ensureModuleIsLoaded("OO::Monitors");
+        doTestContainsAll("Int.^me<caret>", ".^methods");
+        doTestContainsAll("use OO::Monitors; monitor Foo {}; Foo.^met<caret>", ".^methods");
+        doTestContainsAll("use OO::Monitors; monitor Foo { method add {}; }; Foo.^ad<caret>", ".^add_condition", ".^add_method", ".^add_conc_to_cache");
+        doTestNotContainsAll("{ use OO::Monitors; monitor Foo { method add {}; }; }; { monitor Foo {}; Foo.^ad<caret> }", ".^add_condition");
+        doTestContainsAll("{ use OO::Monitors; monitor Foo { method add {}; }; }; { monitor Foo {}; Foo.^ad<caret> }", ".^add_method");
+    }
 }

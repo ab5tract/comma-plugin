@@ -36,8 +36,11 @@ public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub
         if (stub != null)
             return stub.getTypeName();
         Perl6LongName longName = findChildByClass(Perl6LongName.class);
-        assert longName != null; // We always parse one at the start of a type name
-        return longName.getNameWithoutColonPairs();
+        if (longName == null) { // For cases like "::?CLASS" not parsed as a long name
+            return getFirstChild().getText();
+        } else {
+            return longName.getNameWithoutColonPairs();
+        }
     }
 
     public String toString() {
@@ -55,14 +58,16 @@ public class Perl6TypeNameImpl extends StubBasedPsiElementBase<Perl6TypeNameStub
     private Perl6Type tweakType(Perl6Type type) {
         // Handle definedness type
         Perl6LongName longName = findChildByClass(Perl6LongName.class);
-        for (Perl6ColonPair pair : longName.getColonPairs()) {
-            if (pair.getKey().equals("D")) {
-                type = new Perl6DefinednessType(type, true);
-                break;
-            }
-            if (pair.getKey().equals("U")) {
-                type = new Perl6DefinednessType(type, false);
-                break;
+        if (longName != null) {
+            for (Perl6ColonPair pair : longName.getColonPairs()) {
+                if (pair.getKey().equals("D")) {
+                    type = new Perl6DefinednessType(type, true);
+                    break;
+                }
+                if (pair.getKey().equals("U")) {
+                    type = new Perl6DefinednessType(type, false);
+                    break;
+                }
             }
         }
 

@@ -50,14 +50,26 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
             return Result.STOP;
         }
         else if (sigilsAndTwigils.contains(charTyped) || sigils.contains(charTyped) || Character.isLetter(charTyped)) {
-            int start = editor.getCaretModel().getOffset() - 1;
-            HighlighterIterator iterator = ((EditorEx)editor).getHighlighter().createIterator(start);
-            IElementType curToken = iterator.getTokenType();
+            IElementType curToken = getCurrentToken(editor);
             if (curToken == Perl6TokenTypes.VARIABLE || sigils.contains(charTyped)) {
                 AutoPopupController.getInstance(project).scheduleAutoPopup(editor);
                 return Result.STOP;
             }
         }
+        else if (charTyped == '^') {
+            IElementType curToken = getCurrentToken(editor);
+            if (curToken == Perl6TokenTypes.METHOD_CALL_OPERATOR) {
+                AutoPopupController.getInstance(project).scheduleAutoPopup(editor);
+                return Result.STOP;
+            }
+        }
         return Result.CONTINUE;
+    }
+
+    private IElementType getCurrentToken(@NotNull Editor editor) {
+        int start = editor.getCaretModel().getOffset() - 1;
+        HighlighterIterator iterator = ((EditorEx)editor).getHighlighter().createIterator(start);
+        IElementType curToken = iterator.getTokenType();
+        return curToken;
     }
 }

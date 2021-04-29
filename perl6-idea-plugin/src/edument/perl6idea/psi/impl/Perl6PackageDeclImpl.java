@@ -20,6 +20,7 @@ import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6IndexableType;
 import edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.sdk.Perl6ExternalNamesParser;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,25 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
     public Perl6PackageDeclImpl(final Perl6PackageDeclStub stub, final IStubElementType nodeType) {
         super(stub, nodeType);
+    }
+
+    @Override
+    public void setMetaClass(Perl6PackageDecl metaClass) {
+    }
+
+    @Override
+    public @Nullable Perl6PackageDecl getMetaClass() {
+        try {
+            Perl6SingleResolutionSymbolCollector collector =
+              new Perl6SingleResolutionSymbolCollector(getPackageKind(), Perl6SymbolKind.TypeOrConstant);
+            applyLexicalSymbolCollector(collector);
+            if (collector.isSatisfied() && collector.getResult().getPsi() instanceof Perl6PackageDecl) {
+                return (Perl6PackageDecl)collector.getResult().getPsi();
+            }
+        } catch (AssertionError ignored) {
+            // If resolution goes out of a stub, we cannot do a lot without breaking stub rules
+        }
+        return null;
     }
 
     @Override
@@ -108,6 +128,12 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (packageName != null && !collector.shouldTraverse(packageName))
             return;
         contributeFromElders(collector, symbolsAllowed);
+
+        Perl6PackageDecl metaClass = getMetaClass();
+        if (metaClass != null) {
+            collector.decreasePriority();
+            metaClass.contributeMOPSymbols(collector, symbolsAllowed);
+        }
     }
 
     // TODO Re-instate trusts support somehow

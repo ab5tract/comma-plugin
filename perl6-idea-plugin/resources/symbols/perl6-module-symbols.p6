@@ -224,6 +224,17 @@ CATCH {
 
 EVAL "\{\n    @*ARGS[0];\n" ~ Q:to/END/;
     my @EXTERNAL_COMMA_ELEMS;
+    my $unit = CompUnit::RepositoryRegistry.head.need(CompUnit::DependencySpecification.new(:short-name(@*ARGS[0].words[1])));
+
+    my $*METAMODEL = True;
+    given $unit.handle.export-how-package -> $pkg {
+        for $pkg.keys -> $key {
+            for $pkg{$key}.WHO.kv -> $name, $value {
+                pack-package(@EXTERNAL_COMMA_ELEMS, $name, $value);
+            }
+        }
+    }
+    $*METAMODEL = False;
 
     for MY::.kv -> $_, \object {
         # Ignore a few things.
@@ -299,7 +310,7 @@ sub describer(@elems, $name, Mu \object) {
     if object.HOW.WHAT ~~ Metamodel::NativeHOW {
         @elems.push: %( k => "n", n => $name, t => object.^name );
     } elsif object.HOW.WHAT ~~ Metamodel::ClassHOW {
-        describe-OOP(@elems, $name, "c", object);
+        describe-OOP(@elems, $name, $*METAMODEL ?? "mm" !! "c", object);
     } elsif object.HOW.WHAT ~~ Metamodel::ParametricRoleGroupHOW {
         describe-OOP(@elems, $name, "ro", object);
     } elsif object.HOW.WHAT ~~ Metamodel::EnumHOW {
@@ -318,17 +329,23 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     my $b = nqp::istype(object, Cool) ?? 'C' !! nqp::istype(object, Any) ?? 'A' !! 'M';
     my %class = k => $kind, n => $name, t => object.^name, :$b;
     %class<mro> = (try flat object.^roles.map(*.^name), object.^parents(:local).map(*.^name)) // ();
+    try %class<mro> = object.^mro.skip(1).map(*.^name) unless %class<mro>;
+    %class<key> = $name if $kind eq 'mm';
     try %class<d> = object.WHY.gist if object.WHY ~~ Pod::Block::Declarator;
     my @privates;
     if $kind eq "ro" {
         @privates = object.^candidates[0].^private_method_table.values;
     } else {
-        @privates = object.^private_method_table.values;
+        try @privates = object.^private_method_table.values;
     }
     try for object.^methods(:local) -> $method {
-        for $method.candidates {
-            next if $kind ~~ 'c' && .?package !=:= object;
-            try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, :is-method);
+        if $kind eq 'mm' {
+            %class<m>.push: pack-code($method, 0, '^'~ $method.name, :is-method);
+        } elsif $method !~~ ForeignCode {
+            for $method.candidates {
+                next if $kind ~~ 'c' && .?package !=:= object;
+                try %class<m>.push: pack-code($_, $_.multi ?? 1 !! 0, :is-method);
+            }
         }
     }
     try for @privates -> $method {
