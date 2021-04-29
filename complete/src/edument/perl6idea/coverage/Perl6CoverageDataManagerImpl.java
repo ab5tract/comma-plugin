@@ -26,6 +26,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.stubs.*;
 import com.intellij.util.Alarm;
+import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.stub.Perl6FileStub;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -297,13 +298,14 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
 
     @Override
     public CoverageStatistics coverageForDirectory(VirtualFile dir) {
-        /* Gather all .pm6 files in the directory. */
+        /* Gather all modules files in the directory. */
         List<VirtualFile> allSourceFiles = new ArrayList<>();
         VfsUtilCore.visitChildrenRecursively(dir, new VirtualFileVisitor<Object>() {
             @Override
             public boolean visitFile(@NotNull VirtualFile file) {
-                if (!file.isDirectory() && file.getName().endsWith(".pm6"))
+                if (!file.isDirectory() && file.getFileType() instanceof Perl6ModuleFileType) {
                     allSourceFiles.add(file);
+                }
                 return true;
             }
         });
