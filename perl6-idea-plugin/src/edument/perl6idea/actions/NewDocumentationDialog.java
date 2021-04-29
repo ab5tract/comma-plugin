@@ -19,7 +19,7 @@ public class NewDocumentationDialog extends DialogWrapper {
         super(project, false);
         myParentPath = parentPath;
         init();
-        setTitle("New Raku Documentation (Pod6)");
+        setTitle("New Raku Documentation (Pod)");
     }
 
     @Nullable
@@ -34,7 +34,7 @@ public class NewDocumentationDialog extends DialogWrapper {
         String newFileName = fileNameField.getText();
         boolean isCorrectFileName = newFileName.matches(Patterns.SCRIPT_PATTERN);
         if (!isCorrectFileName)
-            return new ValidationInfo("Incorrect script name (examples: `doc`, `doc.rakudoc`, `doc.pod6`)", fileNameField);
+            return new ValidationInfo("Incorrect file name (examples: `doc`, `doc.rakudoc`, `doc.pod6`)", fileNameField);
         if (Paths.get(myParentPath, newFileName).toFile().exists())
             return new ValidationInfo("File " + newFileName + " already exists", fileNameField);
         return null;
