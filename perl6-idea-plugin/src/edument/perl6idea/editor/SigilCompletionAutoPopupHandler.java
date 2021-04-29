@@ -13,6 +13,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -66,10 +67,12 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
         return Result.CONTINUE;
     }
 
+    @Nullable
     private IElementType getCurrentToken(@NotNull Editor editor) {
         int start = editor.getCaretModel().getOffset() - 1;
+        if (start < 0)
+            return null;
         HighlighterIterator iterator = ((EditorEx)editor).getHighlighter().createIterator(start);
-        IElementType curToken = iterator.getTokenType();
-        return curToken;
+        return iterator.getTokenType();
     }
 }
