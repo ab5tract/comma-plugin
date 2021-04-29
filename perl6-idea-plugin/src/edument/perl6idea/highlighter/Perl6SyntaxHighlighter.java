@@ -121,9 +121,11 @@ public class Perl6SyntaxHighlighter extends SyntaxHighlighterBase {
         ATTRIBUTES.put(Perl6TokenTypes.POD_TYPENAME, Perl6Highlighter.POD_TYPENAME);
         ATTRIBUTES.put(Perl6TokenTypes.POD_CONFIGURATION, Perl6Highlighter.POD_CONFIGURATION);
         ATTRIBUTES.put(Perl6TokenTypes.POD_TEXT, Perl6Highlighter.POD_TEXT);
+        ATTRIBUTES.put(Perl6TokenTypes.POD_CODE, Perl6Highlighter.POD_CODE);
         ATTRIBUTES.put(Perl6TokenTypes.FORMAT_CODE, Perl6Highlighter.POD_FORMAT_CODE);
         ATTRIBUTES.put(Perl6TokenTypes.POD_FORMAT_STARTER, Perl6Highlighter.POD_FORMAT_QUOTES);
         ATTRIBUTES.put(Perl6TokenTypes.POD_FORMAT_STOPPER, Perl6Highlighter.POD_FORMAT_QUOTES);
+        ATTRIBUTES.put(Perl6TokenTypes.POD_FORMAT_SEPARATOR, Perl6Highlighter.POD_FORMAT_QUOTES);
         ATTRIBUTES.put(Perl6TokenTypes.QUASI, Perl6Highlighter.QUASI);
     }
 

@@ -361,12 +361,19 @@ grammar MAIN {
     token pod_block_delimited {
         ^^
         <?before [\h* '=begin']>
+        :my $*POD_WS_PREFIX = 0;
+        :my $*POD_CODE_BLOCK = 0;
         <.start-element('POD_BLOCK_DELIMITED')>
-        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_REMOVED_WHITESPACE')>
+        <.pod-ws-start>
+        \h*
+        <.pod-ws-commit>
+        <.end-token('POD_REMOVED_WHITESPACE')>
         <.start-token('POD_DIRECTIVE')> '=begin' <.end-token('POD_DIRECTIVE')>
         [
             <?before [\h+ <.ident>]>
             <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+            <.pod_code_check>
             <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
             <.pod_configuration>?
             [
@@ -396,12 +403,17 @@ grammar MAIN {
             <.start-token('POD_HAVE_CONTENT')> <?> <.end-token('POD_HAVE_CONTENT')>
             [
             || <.pod_block>
-            || [
-               || <.start-token('POD_TEXT')>
-                  [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
-                  <.end-token('POD_TEXT')>
-               || <.pod_formatting_code>
-               ]+
+            || <.pod_removed_whitespace>
+               [
+               || [<?[\h]> || <?{$*POD_CODE_BLOCK}>]
+                  <.start-token('POD_CODE')> \N+ <.end-token('POD_CODE')>
+               || [
+                  || <.start-token('POD_TEXT')>
+                     [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
+                     <.end-token('POD_TEXT')>
+                  || <.pod_formatting_code>
+                  ]+
+               ]
                <.pod_newline>?
             || <.pod_newline>
             ]
@@ -411,12 +423,19 @@ grammar MAIN {
     token pod_block_paragraph {
         ^^
         <?before [\h* '=for']>
+        :my $*POD_WS_PREFIX = 0;
+        :my $*POD_CODE_BLOCK = 0;
         <.start-element('POD_BLOCK_PARAGRAPH')>
-        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_REMOVED_WHITESPACE')>
+        <.pod-ws-start>
+        \h*
+        <.pod-ws-commit>
+        <.end-token('POD_REMOVED_WHITESPACE')>
         <.start-token('POD_DIRECTIVE')> '=for' <.end-token('POD_DIRECTIVE')>
         [
             <?before [\h+ <.ident>]>
             <.start-token('POD_WHITESPACE')> \h+ <.end-token('POD_WHITESPACE')>
+            <.pod_code_check>
             <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
             <.pod_configuration>?
             [
@@ -431,12 +450,17 @@ grammar MAIN {
     token pod_para_content {
         [
             <!before ^^ \h* ['=' || \n || $]>
+            <.pod_removed_whitespace>
             [
-            || <.start-token('POD_TEXT')>
-               [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
-               <.end-token('POD_TEXT')>
-            || <.pod_formatting_code>
-            ]+
+            || [<?[\h]> || <?{$*POD_CODE_BLOCK}>]
+               <.start-token('POD_CODE')> \N+ <.end-token('POD_CODE')>
+            || [
+               || <.start-token('POD_TEXT')>
+                  [\h+ || \d+ || <[a..z]>+ || <!before <[A..Z]> <[<«]>> \N]+
+                  <.end-token('POD_TEXT')>
+               || <.pod_formatting_code>
+               ]+
+            ]
             <.pod_newline>?
         ]*
     }
@@ -444,9 +468,16 @@ grammar MAIN {
     token pod_block_abbreviated {
         ^^
         <?before [\h* '=' <.ident>]>
+        :my $*POD_WS_PREFIX = 0;
+        :my $*POD_CODE_BLOCK = 0;
         <.start-element('POD_BLOCK_ABBREVIATED')>
-        <.start-token('POD_WHITESPACE')> \h* <.end-token('POD_WHITESPACE')>
+        <.start-token('POD_REMOVED_WHITESPACE')>
+        <.pod-ws-start>
+        \h*
+        <.pod-ws-commit>
+        <.end-token('POD_REMOVED_WHITESPACE')>
         <.start-token('POD_DIRECTIVE')> '=' <.end-token('POD_DIRECTIVE')>
+        <.pod_code_check>
         <.start-token('POD_TYPENAME')> <.ident> <.end-token('POD_TYPENAME')>
         [
             <.start-token('POD_WHITESPACE')> [\h*\n || \h+] <.end-token('POD_WHITESPACE')>
@@ -461,7 +492,9 @@ grammar MAIN {
         :my $*STOPPER = '';
         :my $*ALT_STOPPER = '';
         :my $*DELIM = '';
+        :my $*SEPARATED = 0;
         <?before <[A..Z]> <[<«]>>
+        [ <?[LX]> { $*SEPARATED = 1 } ]?
         <.start-element('POD_FORMATTED')>
         <.start-token('FORMAT_CODE')> <[A..Z]> <.end-token('FORMAT_CODE')>
         <.peek-delimiters>
@@ -482,8 +515,16 @@ grammar MAIN {
         [
         || <.pod_formatting_code>
         || <.start-token('POD_TEXT')>
-           [ \d+ || \h+ || <[a..z]>+ || <!before $*STOPPER || <[A..Z]> <[<«]>> \N ]+
+           [
+           || \d+ || \h+ || <[a..z]>+
+           || '|' <!{ $*SEPARATED }>
+           || <!before '|' || $*STOPPER || <[A..Z]> <[<«]>> \N
+           ]+
            <.end-token('POD_TEXT')>
+        || <.start-token('POD_FORMAT_SEPARATOR')>
+           '|'
+           <.end-token('POD_FORMAT_SEPARATOR')>
+           { $*SEPARATED = 0 }
         || <.pod_newline>
         ]*
         <.end-element('POD_TEXT')>
@@ -491,6 +532,20 @@ grammar MAIN {
 
     token pod_newline {
         <.start-token('POD_NEWLINE')> \h* \n <.end-token('POD_NEWLINE')>
+    }
+
+    token pod_removed_whitespace {
+        [
+        <?[\h]>
+        <.start-token('POD_REMOVED_WHITESPACE')>
+        <.pod-eat-removed-ws>
+        <.end-token('POD_REMOVED_WHITESPACE')>
+        ]?
+    }
+
+    token pod_code_check {
+        || <?before ['code' || 'input' || 'output']> { $*POD_CODE_BLOCK = 1 }
+        || <?>
     }
 
     # XXX Total cheat, no multi-line configuration parsing yet

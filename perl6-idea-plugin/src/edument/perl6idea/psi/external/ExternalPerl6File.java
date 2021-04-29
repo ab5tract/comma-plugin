@@ -46,6 +46,12 @@ public class ExternalPerl6File implements Perl6File {
         return false;
     }
 
+    @Override
+    public String renderPod() {
+        // No Pod from external files
+        return "";
+    }
+
     public void setSymbols(List<Perl6Symbol> symbols) {
         mySymbols = symbols;
     }

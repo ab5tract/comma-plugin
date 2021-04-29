@@ -15,7 +15,9 @@ import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.ui.JBColor;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.ui.JBFont;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.*;
@@ -25,13 +27,17 @@ import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.repl.Perl6ReplState;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.sdk.Perl6SettingTypeId;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public static final Map<String, Perl6SettingTypeId> VARIABLE_SYMBOLS = new HashMap<>();
+    private static final String POD_HTML_TEMPLATE = Perl6Utils.getResourceAsString("podPreview/template.html");
 
     static {
         // compile time variables
@@ -90,6 +96,56 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     @Override
     public boolean isReal() {
         return true;
+    }
+
+    @Override
+    public String renderPod() {
+        // Render all of the blocks, collecting any semantic blocks.
+        Perl6StatementList stmts = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
+        PodRenderingContext context = new PodRenderingContext();
+        PodBlock[] blocks = PsiTreeUtil.getChildrenOfType(stmts, PodBlock.class);
+        List<String> renderedBlocks = new ArrayList<>();
+        if (blocks != null)
+            for (PodBlock pod : blocks)
+                    renderedBlocks.add(pod.renderPod(context));
+
+        // If there is a title or subtitle, use it has a header.
+        StringBuilder builder = new StringBuilder();
+        Map<String, String> semanticBlocks = context.getSemanticBlocks();
+        if (semanticBlocks.containsKey("TITLE")) {
+            String title = semanticBlocks.get("TITLE");
+            builder.append("<header>\n<h1>");
+            builder.append(title);
+            builder.append("</h1>\n");
+            if (semanticBlocks.containsKey("SUBTITLE")) {
+                String subtitle = semanticBlocks.get("SUBTITLE");
+                builder.append("<h3>");
+                builder.append(subtitle);
+                builder.append("</h3>\n");
+            }
+            builder.append("</header>\n");
+        }
+
+        // Append rendered non-semantic blocks.
+        for (String rendered : renderedBlocks)
+            builder.append(rendered);
+
+        // Substitute HTML into template.
+        Map<String, String> substitute = new HashMap<>();
+        substitute.put("BODY", builder.toString());
+        substitute.put("BACKGROUND", htmlColor(JBColor.background()));
+        substitute.put("FOREGROUND", htmlColor(JBColor.foreground()));
+        substitute.put("FONT", JBFont.label().getFamily());
+        substitute.put("LINK", htmlColor(JBColor.BLUE));
+        substitute.put("HEADING-BORDER", htmlColor(JBColor.foreground().darker()));
+        String rendered = POD_HTML_TEMPLATE;
+        for (Map.Entry<String, String> entry : substitute.entrySet())
+            rendered = rendered.replace("[[" + entry.getKey() + "]]", entry.getValue());
+        return rendered;
+    }
+
+    private static String htmlColor(Color color) {
+        return String.format("%s, %s, %s", color.getRed(), color.getGreen(), color.getBlue());
     }
 
     @NotNull

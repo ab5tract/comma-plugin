@@ -69,6 +69,10 @@ public class Perl6Utils {
         return lines;
     }
 
+    public static String getResourceAsString(String filepath) {
+        return String.join("\n", getResourceAsLines(filepath));
+    }
+
     public static String formatDelimiters(int originalText, String delimiter, int each) {
         String text = new StringBuilder(String.valueOf(originalText)).reverse().toString();
         StringBuilder builder = new StringBuilder(text.length() + text.length() / each + 1);

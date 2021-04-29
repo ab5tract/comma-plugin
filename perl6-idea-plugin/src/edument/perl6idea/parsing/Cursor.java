@@ -650,6 +650,36 @@ public abstract class Cursor<TCursor extends Cursor> {
                 isValueTruthy(getDynamicVariable("$*FAKE")));
     }
 
+    public void startPodWhitespacePrefix() {
+        stack.podWhitespaceStart = pos;
+    }
+
+    public void commitPodWhitespacePrefix() {
+        assignDynamicVariable("$*POD_WS_PREFIX", pos - stack.podWhitespaceStart);
+    }
+
+    public void eatPodWhitespacePrefix() {
+        Object prefixLengthObject = findDynamicVariable("$*POD_WS_PREFIX");
+        if (!(prefixLengthObject instanceof Integer))
+            return;
+        int toEat = (int)prefixLengthObject;
+        CharSequence target = stack.target;
+        while (toEat-- > 0) {
+            int pos = this.pos;
+            if (pos >= target.length())
+                break;
+            switch (target.charAt(pos)) {
+                case 0x9: case 0x20: case 0xa0: case 0x1680: case 0x180e: case 0x2000:
+                case 0x2001: case 0x2002: case 0x2003: case 0x2004: case 0x2005:
+                case 0x2006: case 0x2007: case 0x2008: case 0x2009: case 0x200a:
+                case 0x202f: case 0x205f: case 0x3000:
+                    this.pos++;
+                default:
+                    break;
+            }
+        }
+    }
+
     public void scopePush() {
         stack.symbols.add(new HashMap<>());
     }

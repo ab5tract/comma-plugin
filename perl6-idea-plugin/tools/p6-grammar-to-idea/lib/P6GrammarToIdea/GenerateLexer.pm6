@@ -269,6 +269,15 @@ my class GrammarCompiler {
             when 'is-name' {
                 $append-to.push: unless(this-call('isName'), [backtrack()]);
             }
+            when 'pod-ws-start' {
+                $append-to.push: this-call 'startPodWhitespacePrefix';
+            }
+            when 'pod-ws-commit' {
+                $append-to.push: this-call 'commitPodWhitespacePrefix';
+            }
+            when 'pod-eat-removed-ws' {
+                $append-to.push: this-call 'eatPodWhitespacePrefix';
+            }
             when 'alpha' {
                 $append-to.push: unless(this-call('alphaChar'), [backtrack()]);
             }
