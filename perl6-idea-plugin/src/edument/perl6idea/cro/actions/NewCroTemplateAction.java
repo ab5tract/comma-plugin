@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class NewCroTemplateAction extends AnAction {
@@ -89,9 +90,9 @@ public class NewCroTemplateAction extends AnAction {
     public static String stubTemplate(Path testDirectoryPath, String fileName) {
         Path testPath = testDirectoryPath.resolve(fileName);
         // If no extension, add default `.crotmp`
-        if (!testPath.toString().contains("."))
+        if (!fileName.contains("."))
             testPath = Paths.get(testDirectoryPath.toString(), fileName + "." + CroTemplateFileType.INSTANCE.getDefaultExtension());
-        Perl6Utils.writeCodeToPath(testPath, new LinkedList<>());
+        Perl6Utils.writeCodeToPath(testPath, new ArrayList<>());
         return testPath.toString();
     }
 }
