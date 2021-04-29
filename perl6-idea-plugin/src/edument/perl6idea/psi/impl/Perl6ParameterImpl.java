@@ -140,6 +140,12 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     }
 
     @Override
+    public boolean isExplicitlyOptional() {
+        PsiElement quant = findChildByType(PARAMETER_QUANTIFIER);
+        return quant != null && quant.getText().equals("?");
+    }
+
+    @Override
     public boolean isOptional() {
         // Certainly optional if it has a default.
         if (findChildByClass(Perl6ParameterDefault.class) != null)

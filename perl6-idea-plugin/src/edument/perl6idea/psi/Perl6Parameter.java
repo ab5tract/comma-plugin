@@ -15,6 +15,7 @@ public interface Perl6Parameter extends Perl6PsiElement, Perl6PsiDeclaration, Pe
     boolean isSlurpy();
     boolean isRequired();
     boolean isOptional();
+    boolean isExplicitlyOptional();
     boolean isCopy();
     boolean isRW();
 }
