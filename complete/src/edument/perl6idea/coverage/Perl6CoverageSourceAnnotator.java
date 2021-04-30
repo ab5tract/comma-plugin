@@ -36,7 +36,7 @@ public class Perl6CoverageSourceAnnotator implements Disposable {
 
     public void showAnnotations() {
         ApplicationManager.getApplication().invokeLater(() -> {
-            if (editor.getUserData(PERL6_COVERAGE_HIGHLIGHTERS) != null)
+            if (editor == null || editor.isDisposed() || editor.getUserData(PERL6_COVERAGE_HIGHLIGHTERS) != null)
                 return;
             TextAttributes markerStyle = getMarkerStyle();
             Document document = editor.getDocument();
@@ -79,7 +79,7 @@ public class Perl6CoverageSourceAnnotator implements Disposable {
     public void hideAnnotations() {
         Editor editor = this.editor;
         PsiFile file = this.file;
-        if (editor.isDisposed() || file == null)
+        if (editor == null || editor.isDisposed() || file == null)
             return;
         final List<RangeHighlighter> highlighters = editor.getUserData(PERL6_COVERAGE_HIGHLIGHTERS);
         if (highlighters != null) {

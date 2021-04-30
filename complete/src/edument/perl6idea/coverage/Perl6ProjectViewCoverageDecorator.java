@@ -8,6 +8,7 @@ import com.intellij.packageDependencies.ui.PackageDependenciesNode;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
+import edument.perl6idea.filetypes.Perl6ModuleFileType;
 
 public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorator {
     @Override
@@ -27,7 +28,7 @@ public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorat
                     addCoverageStatistics(data, stats);
             }
         }
-        else if (file.getPath().endsWith(".pm6")) {
+        else if (file.getFileType() instanceof Perl6ModuleFileType) {
             data.clearText();
             data.addText(file.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
             if (coverageDataManager.hasCurrentCoverageSuite()) {
