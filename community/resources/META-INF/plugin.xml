@@ -36,34 +36,31 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Improve the UI of the timeline view: make zooming with the mouse feel more natural, provide some keyboard controls for navigating the chart, fix a scrolling issue, and provide a help icon giving usage hints on hover</li>
-<li>Improve method completion for cases when the return type is not in scope of the caller</li>
-<li>Improve completion for more complex kinds of type, such as typed arrays and types with explicit definedness</li>
-<li>Highlight calls to in-project and external deprecated subroutines and methods; also strike them out in the autocomplete suggestions</li>
-<li>Extend Unicode operator conversion (both live and intention-based) to handle hyper operators (e.g. &#39;&gt;&gt;+&lt;&lt;&#39;)</li>
-<li>When there is a <code>for</code> loop over a typed array, infer the type of the topic or loop parameter in order to provide better reference resolution and completion suggestions</li>
-<li>Add a quickfix to delete unused lexical variables and unused private attributes</li>
-<li>Add quickfixes to either add the &#39;is export&#39; trait or to remove unused lexical subroutines</li>
-<li>Add an intention to stub a new subroutine when a call to an unknown subroutine is present</li>
-<li>Annotate illegal uses of <code>self</code> or <code>$.foo</code></li>
-<li>Annotate calls where too few or too many positional arguments are passed, unaccepted named arguments are passed, or required named arguments are missing</li>
-<li>Annotate attempts to assign a value to a readonly parameter, respecting traits like <code>is copy</code> or <code>is rw</code></li>
-<li>Add an intention offering to replace <code>$.foo</code> with <code>$!foo</code> when <code>self</code> is only partially available (such as attributes declaration or <code>BUILD</code> submethod implementation)</li>
-<li>Add an intention to cover Raku terms (<code>pi</code>, <code>tau</code>, and <code>set</code>) to their Unicode equivalents and vice versa</li>
-<li>Add an intention to switch between fatarrow pairs and colonpairs</li>
-<li>Fix a parsing error when encountering whitespace before the closing <code>]</code> in a type argument list</li>
-<li>Do not wrongly annotate <code>self</code> in a regex declaration as being unavailable</li>
-<li>Fix a false positive in the signature annotator related to parameters with default values</li>
-<li>Fix issues in detection of calls with the provided arguments not matching the signature</li>
-<li>Do not annotate positional capture variables inside of non-capturing groups as unknown</li>
-<li>Fix bogus &#39;Empty regex not allowed&#39; annotation when encountering an unrecognized internal regex modifier, give a proper error message instead</li>
-<li>Fix a long standing bug of the auto completion popup appearing on typing certain infix operator</li>
-<li>Improve detection of <code>$/</code> and <code>$_</code> implicit usages to not mark such parameters as unused</li>
-<li>Only names of unused variables are now highlighted as such, instead of highlighting the initializing expression too</li>
-<li>Parse <code>&lt;@.foo&gt;</code> in Cro template language files</li>
-<li>Fix an unwanted behavior when Comma instance created excessive files in temporary directories</li>
-<li>Fix a rare exception related to the signature correctness annotation</li>
-</ul>
+<li>Migrate to the 2020.03 version of the platform</li>
+<li>Provide a Pod live preview in the editor window when editing <code>pod6</code> or <code>rakudoc</code> files. It supports many formatting codes and block types, although not yet all of them. Links to other files in the project using the <code>L&lt;&gt;</code> format code will open an editor for that file (and some further heuristics try to guess destinations of other links)</li>
+<li>Reduce memory consumption resulting from caching information about modules (the caching is done in order to more rapidly open additional or different projects in the same Comma session)</li>
+<li>Speed up indexing of external modules</li>
+<li>Detect and highlight Pod code blocks, including inline code blocks (the style used is configurable)</li>
+<li>Highlight the <code>|</code> separator in Pod <code>L&lt;&gt;</code> and <code>X&lt;&gt;</code> format constructs, so it&#39;s easier to see the text and link part</li>
+<li>Add a <code>New Document (Pod)</code> action, creating a new empty Pod document file; the <code>.rakudoc</code> extension is added unless otherwise specified</li>
+<li>Provide completion for meta-class methods, allowing completion of e.g. <code>model Foo {}; Foo.^columns</code> for the <code>Red</code> ORM. It works for CORE types as well</li>
+<li>Add detection of duplicated conditional branches; Unicode/ASCII operator equivalents and commuting operators are accounted for</li>
+<li>Highlight hashes created with the <code>{}</code> syntax differently from code blocks (this can be configured in the color scheme, but is on by default)</li>
+<li>Add a weak warning where it seems likely that the user intended to form a hash using the <code>{}</code> syntax, but will end up with a code block instead</li>
+<li>Fix a rare exception when the module metadata editor was used with coverage results displayed</li>
+<li>Fix displaying coverage for files with the <code>.rakumod</code> extension</li>
+<li>Fix a bug where the colonpair syntax to specify a named call argument with a numeric value was not recognized, leading to a false positive annotation</li>
+<li>Fix a bug where a sub-signature was not correctly recognized, leading to a false positive annotating</li>
+<li>Fix a bug where the <code>New Test</code> action created a file without an extension if the parent path contained the <code>.</code> character, but the file name specified had no extension itself</li>
+<li>Fix parsing of package definitions with indirect package references like <code>::?CLASS</code></li>
+<li>Fix a bug where calls made by the accessor syntax (<code>$.foo($arg)</code>) were mistakenly annotated as having a signature mismatch</li>
+<li>Do not wrongly annotate indirect references (e.g. <code>::(&#39;Foo&#39;)</code>) as undeclared subs</li>
+<li>Fix parsing of ternary operators without spaces</li>
+<li>Parse the set equivalence operator in both ASCII and Unicode forms, and make it possible to convert between them</li>
+<li>Fix <code>Create Desktop Entry</code> action in <code>Tools</code> menu</li>
+<li>Fix false negatives for an annotation warning about some modules not being found in the ecosystem</li>
+<li>Fix a bug where symbols of the <code>Cro::HTTP::Test</code> module were not resolved properly</li>
+<ul>
   ]]></change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->

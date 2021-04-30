@@ -32,15 +32,17 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Migrate to the 2020.03 version of the platform</li>
-<li>Speed up indexing of external modules</li>
-<li>Add detection of duplicated conditional branches; Unicode/ASCII operator equivalents and commuting operators are accounted for</li>
-<li>Highlight hashes created with the <code>{}</code> syntax differently from code blocks (this can be configured in the color scheme, but is on by default)</li>
-<li>Add a weak warning where it seems likely that the user intended to form a hash using the <code>{}</code> syntax, but will end up with a code block instead</li>
-<li>Fix a bug where calls made by the accessor syntax (<code>$.foo($arg)</code>) were mistakenly annotated as having a signature mismatch</li>
-<li>Do not wrongly annotate indirect references (e.g. <code>::(&#39;Foo&#39;)</code>) as undeclared subs</li>
-<li>Fix parsing of ternary operators without spaces</li>
-<li>Parse the set equivalence operator in both ASCII and Unicode forms, and make it possible to convert between them</li>
+<li>Provide a Pod live preview in the editor window when editing <code>pod6</code> or <code>rakudoc</code> files. It supports many formatting codes and block types, although not yet all of them. Links to other files in the project using the <code>L&lt;&gt;</code> format code will open an editor for that file (and some further heuristics try to guess destinations of other links)</li>
+<li>Detect and highlight Pod code blocks, including inline code blocks (the style used is configurable)</li>
+<li>Highlight the <code>|</code> separator in Pod <code>L&lt;&gt;</code> and <code>X&lt;&gt;</code> format constructs, so it&#39;s easier to see the text and link part</li>
+<li>Add a <code>New Document (Pod)</code> action, creating a new empty Pod document file; the <code>.rakudoc</code> extension is added unless otherwise specified</li>
+<li>Provide completion for meta-class methods, allowing completion of e.g. <code>model Foo {}; Foo.^columns</code> for the <code>Red</code> ORM. It works for CORE types as well</li>
+<li>Fix a rare exception when the module metadata editor was used with coverage results displayed</li>
+<li>Fix displaying coverage for files with the <code>.rakumod</code> extension</li>
+<li>Fix a bug where the colonpair syntax to specify a named call argument with a numeric value was not recognized, leading to a false positive annotation</li>
+<li>Fix a bug where a sub-signature was not correctly recognized, leading to a false positive annotating</li>
+<li>Fix a bug where the <code>New Test</code> action created a file without an extension if the parent path contained the <code>.</code> character, but the file name specified had no extension itself</li>
+<li>Fix parsing of package definitions with indirect package references like <code>::?CLASS</code></li>
 </ul>
   ]]>
   </change-notes>
