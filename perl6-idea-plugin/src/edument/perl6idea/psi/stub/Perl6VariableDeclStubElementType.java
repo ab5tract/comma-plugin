@@ -5,6 +5,7 @@ import com.intellij.psi.stubs.*;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
+import edument.perl6idea.psi.Perl6Variable;
 import edument.perl6idea.psi.Perl6VariableDecl;
 import edument.perl6idea.psi.impl.Perl6VariableDeclImpl;
 import edument.perl6idea.psi.stub.impl.Perl6VariableDeclStubImpl;
@@ -64,13 +65,23 @@ public class Perl6VariableDeclStubElementType extends IStubElementType<Perl6Vari
     @Override
     public void indexStub(@NotNull Perl6VariableDeclStub stub, @NotNull IndexSink sink) {
         for (String name : stub.getVariableNames()) {
-            sink.occurrence(Perl6StubIndexKeys.ALL_ATTRIBUTES, name);
+            if (Perl6Variable.getTwigil(name) == '*') {
+                sink.occurrence(Perl6StubIndexKeys.DYNAMIC_VARIABLES, name);
+            } else {
+                sink.occurrence(Perl6StubIndexKeys.ALL_ATTRIBUTES, name);
+            }
         }
     }
 
     @Override
     public boolean shouldCreateStub(ASTNode node) {
         Perl6VariableDecl variableDecl = (Perl6VariableDecl) node.getPsi();
+        // Maybe it is dynamic, then we need to stub it
+        for (String name : variableDecl.getVariableNames()) {
+            if (Perl6Variable.getTwigil(name) == '*')
+                return true;
+        }
+        // Attributes are stubbed as well
         String scope = variableDecl.getScope();
         return scope.equals("has") ||
                 scope.equals("our") && variableDecl.isExported();

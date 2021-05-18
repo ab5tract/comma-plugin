@@ -187,7 +187,13 @@ public class GoToDeclarationTest extends CommaFixtureTestCase {
         doTest("class A {...}; class B { has <caret>A $.x; }; class A { has $.foo; }", 0, Perl6TypeName.class, (pkg) -> {
             assertNotNull(pkg);
         });
+    }
 
+    public void testDynamicVariable() {
+        doTest("{ say $*DYNAM<caret>IC; }; { my $*DYNAMIC }", 0, Perl6Variable.class, (decl) -> {
+            assertNotNull(decl);
+            assertEquals(25, decl.getTextOffset());
+        });
     }
 
     public void doTest(String text, int offset, Class<? extends Perl6PsiElement> clazz, Consumer<PsiElement> check) {
