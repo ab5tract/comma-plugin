@@ -10,6 +10,9 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6UnresolvedType;
+import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -222,6 +225,16 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     @Override
     public PsiElement getNameIdentifier() {
         return findChildByClass(Perl6TermDefinition.class);
+    }
+
+    @Override
+    public @NotNull Perl6Type inferType() {
+        @Nullable Perl6TypeName type = findChildByClass(Perl6TypeName.class);
+        if (type != null) {
+            return new Perl6UnresolvedType(type.getTypeName());
+        } else {
+            return Perl6Untyped.INSTANCE;
+        }
     }
 
     @Override
