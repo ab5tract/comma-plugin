@@ -27,7 +27,7 @@ public class TraitCompletionTest extends CommaFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertContainsElements(vars, "export");
-        assertEquals(6, vars.size());
+        assertEquals(11, vars.size());
     }
 
     public void testCompletionForMultipleTraits() {
@@ -36,7 +36,7 @@ public class TraitCompletionTest extends CommaFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertContainsElements(vars, "export");
-        assertEquals(6, vars.size());
+        assertEquals(11, vars.size());
     }
 
     public void testCompletionForPackage() {
