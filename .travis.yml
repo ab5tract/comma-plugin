@@ -21,7 +21,7 @@ addons:
     - rakudo-pkg
 script:
 - /opt/rakudo-pkg/bin/install-zef
-- zef install OO::Monitors JSON::Fast Cro::WebApp
+- zef install --/test OO::Monitors JSON::Fast Cro::WebApp
 - (cd intellij-community/comma-build/perl6-idea-plugin/tools/p6-grammar-to-idea/ && prove --jobs=1 -e "perl6-m -Ilib")
 - (cd intellij-community/comma-build/perl6-idea-plugin/tools/symbol-script-module && zef install .)
 - (cd intellij-community/comma-build/perl6-idea-plugin/tools/symbol-script-module && perl6 symbol-script-test.p6)
