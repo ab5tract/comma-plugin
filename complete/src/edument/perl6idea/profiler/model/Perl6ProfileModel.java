@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Perl6ProfileModel extends AbstractTableModel {
     protected final DecimalFormat myFormatter = new DecimalFormat("#,###");
-    protected static final ArrayList<String> COLUMN_NAMES = new ArrayList<>(
+    protected ArrayList<String> COLUMN_NAMES = new ArrayList<>(
         Arrays.asList("Name", "File", "Inclusive (μs)", "Entries")
     );
     protected final String myBaseProjectPath;
@@ -33,12 +33,7 @@ public class Perl6ProfileModel extends AbstractTableModel {
     public Perl6ProfileModel(Project project, List<Perl6ProfileCall> routines) {
         myBaseProjectPath = project.getBasePath();
         nodes = routines;
-        calculatePercentage();
-    }
-
-    protected void calculatePercentage() {
         // Calculate inclusive time as sum of all inclusive times of calls in the table
-        // It is correct for related call tables and is overridden in navigation table
         inclusiveSum = nodes.stream().mapToInt(p -> p.getInclusiveTime()).sum();
     }
 
@@ -142,14 +137,10 @@ public class Perl6ProfileModel extends AbstractTableModel {
         return -1;
     }
 
-    public boolean needsSpecialRendering(int column) {
-        return column == 2;
-    }
-
-    public String renderNode(int column, Object value) {
+    public double getRatio(int value, int row, int column) {
         if (column == 2) {
-            return calculateInclusiveValue((Integer)value);
+            return value / (double)inclusiveSum;
         }
-        return "";
+        return value;
     }
 }

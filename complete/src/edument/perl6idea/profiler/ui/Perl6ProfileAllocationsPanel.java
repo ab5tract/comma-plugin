@@ -36,7 +36,7 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
     }
 
     public void setupSorter(JTable table, int... columnsToParse) {
-        table.setRowSorter(new TableRowSorter(table.getModel()) {
+        table.setRowSorter(new TableRowSorter<>(table.getModel()) {
             @Override
             public Comparator<?> getComparator(int column) {
                 if (ArrayUtils.contains(columnsToParse, column))

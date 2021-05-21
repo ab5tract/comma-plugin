@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -200,13 +201,21 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     private void updateCalleeTable(int callId) {
         List<Perl6ProfileCall> calleeList = myProfileData.getCalleeListByCallId(callId);
         calleeTable.setModel(new Perl6ProfileModel(myProject, calleeList));
-        calleeTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
+        TableColumnModel columnModel = calleeTable.getColumnModel();
+        columnModel.getColumn(0).setCellRenderer(myProfileNodeRenderer);
+        columnModel.getColumn(1).setCellRenderer(myProfileNodeRenderer);
+        columnModel.getColumn(2).setCellRenderer(new PercentageTableCellRenderer());
+        columnModel.getColumn(3).setCellRenderer(myProfileNodeRenderer);
     }
 
     private void updateCallerTable(int callId) {
         List<Perl6ProfileCall> callerList = myProfileData.getCallerListByCallId(callId);
         callerTable.setModel(new Perl6ProfileModel(myProject, callerList));
-        callerTable.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
+        TableColumnModel columnModel = callerTable.getColumnModel();
+        columnModel.getColumn(0).setCellRenderer(myProfileNodeRenderer);
+        columnModel.getColumn(1).setCellRenderer(myProfileNodeRenderer);
+        columnModel.getColumn(2).setCellRenderer(new PercentageTableCellRenderer());
+        columnModel.getColumn(3).setCellRenderer(myProfileNodeRenderer);
     }
 
     private void setupNavigationSelectorListener(JBTable table) {
@@ -257,7 +266,12 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
         // Single selection + default sort for all columns
         callsNavigation.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         callsNavigation.setRowSorter(new Perl6ProfileOutputTableRowSorter(model));
-        callsNavigation.setDefaultRenderer(Integer.class, myProfileNodeRenderer);
+        TableColumnModel tableColumnModel = callsNavigation.getColumnModel();
+        tableColumnModel.getColumn(0).setCellRenderer(myProfileNodeRenderer);
+        tableColumnModel.getColumn(1).setCellRenderer(myProfileNodeRenderer);
+        tableColumnModel.getColumn(2).setCellRenderer(new PercentageTableCellRenderer());
+        tableColumnModel.getColumn(3).setCellRenderer(new PercentageTableCellRenderer());
+        tableColumnModel.getColumn(4).setCellRenderer(myProfileNodeRenderer);
         callsNavigation.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {

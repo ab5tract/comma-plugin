@@ -7,25 +7,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
-    protected ArrayList<String> COLUMN_NAMES = new ArrayList<>(
-        Arrays.asList("Name", "File", "Inclusive (μs)", "Exclusive (μs)", "Entries")
-    );
+    protected int exclusiveSum;
 
     public Perl6ProfileNavigationModel(Project project, List<Perl6ProfileCall> calls) {
         super(project, calls);
-    }
-
-    @Override
-    protected void calculatePercentage() {
-        // Calculate inclusive time
+        COLUMN_NAMES = new ArrayList<>(Arrays.asList("Name", "File", "Inclusive (μs)", "Exclusive (μs)", "Entries"));
+        // Calculate exclusive time
         if (nodes.size() > 0) {
-            inclusiveSum = nodes.get(0).getInclusiveTime();
+            exclusiveSum = nodes.get(0).getInclusiveTime();
         }
-    }
-
-    protected String calculateExclusiveValue(int time) {
-        String percents = DECIMAL_FORMAT.format(((double)time / inclusiveSum) * 100);
-        return String.format("%s%% (%s μs)", percents, myFormatter.format(time));
     }
 
     @Override
@@ -53,22 +43,13 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
     }
 
     @Override
-    public String getColumnName(int column) {
-        return COLUMN_NAMES.get(column);
-    }
-
-    @Override
-    public boolean needsSpecialRendering(int column) {
-        return column == 2 || column == 3;
-    }
-
-    @Override
-    public String renderNode(int column, Object value) {
-        if (column == 2) {
-            return calculateInclusiveValue((Integer)value);
-        } else if (column == 3) {
-            return calculateExclusiveValue((Integer)value);
+    public double getRatio(int value, int row, int column) {
+        switch (column) {
+            case 2:
+            case 3:
+                return value / (double)exclusiveSum;
+            default:
+                return value;
         }
-        return "";
     }
 }

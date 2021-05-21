@@ -6,6 +6,7 @@ import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 import edument.perl6idea.profiler.model.Perl6ProfileModel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ public class Perl6ProfileNodeRenderer extends ColoredTableCellRenderer {
     }
 
     @Override
-    protected void customizeCellRenderer(JTable table,
+    protected void customizeCellRenderer(@NotNull JTable table,
                                          @Nullable Object value,
                                          boolean selected,
                                          boolean hasFocus,
@@ -46,12 +47,6 @@ public class Perl6ProfileNodeRenderer extends ColoredTableCellRenderer {
         } else {
             style = DEFAULT_ATTRIBUTES;
         }
-
-        int modelColumn = table.convertColumnIndexToModel(column);
-        if (model.needsSpecialRendering(modelColumn)) {
-            append(model.renderNode(modelColumn, value), style);
-        } else {
-            append(value.toString(), style);
-        }
+        append(value.toString(), style);
     }
 }
