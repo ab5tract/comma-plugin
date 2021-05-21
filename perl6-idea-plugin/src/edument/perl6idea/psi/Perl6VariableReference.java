@@ -4,15 +4,13 @@ import com.intellij.codeInsight.PsiEquivalenceUtil;
 import com.intellij.codeInsight.navigation.NavigationUtil;
 import com.intellij.navigation.GotoRelatedItem;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiElementProcessor;
 import com.intellij.psi.stubs.StubIndex;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.psi.type.Perl6Type;
@@ -25,20 +23,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
+public class Perl6VariableReference extends PsiReferenceBase.Poly<Perl6Variable> {
     public Perl6VariableReference(Perl6Variable var) {
-        super(var, new TextRange(0, var.getTextLength()));
+        super(var, new TextRange(0, var.getTextLength()), false);
     }
 
-    @Nullable
     @Override
-    public PsiElement resolve() {
+    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         Perl6Variable var = getElement();
         String name = var.getVariableName();
         if (name == null)
-            return null;
+            return ResolveResult.EMPTY_ARRAY;
         char twigil = Perl6Variable.getTwigil(name);
         if (twigil == '!' || twigil == '.') {
             // Attribute; resolve through MOP.
@@ -49,7 +47,7 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                     true, true, true, enclosingPackage.getPackageKind().equals("role")));
                 Perl6Symbol symbol = collector.getResult();
                 if (symbol != null)
-                    return symbol.getPsi();
+                    return new ResolveResult[]{new PsiElementResolveResult(symbol.getPsi())};
             }
         }
         else if (twigil == '*') {
@@ -57,8 +55,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 StubIndex.getElements(Perl6StubIndexKeys.DYNAMIC_VARIABLES, name, myElement.getProject(), GlobalSearchScope.allScope(
                     myElement.getProject()), Perl6VariableDecl.class);
             if (decls.isEmpty())
-                return null;
-            return decls.iterator().next();
+                return ResolveResult.EMPTY_ARRAY;
+            return ContainerUtil.map(decls, d -> new PsiElementResolveResult(d)).toArray(ResolveResult.EMPTY_ARRAY);
         }
         else {
             // Lexical; resolve through lexpad.
@@ -67,9 +65,9 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 PsiElement psi = symbol.getPsi();
                 if (psi != null) {
                     if (psi.getContainingFile() != var.getContainingFile())
-                        return psi;
+                        return new ResolveResult[]{new PsiElementResolveResult(psi)};
                     if (psi.getTextOffset() <= var.getTextOffset() || Perl6Variable.getSigil(name) == '&')
-                        return psi;
+                        return new ResolveResult[]{new PsiElementResolveResult(psi)};
                 }
             }
             else {
@@ -82,18 +80,18 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 if (infix != null && infix.getOperator().equals("~~") &&
                     (PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var) ||
                      PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var.getParent())))
-                    return null;
+                    return ResolveResult.EMPTY_ARRAY;
 
                 Collection<PsiNamedElement> regexDrivenVars = obtainRegexDrivenVars(var);
                 if (regexDrivenVars == null)
-                    return null;
+                    return ResolveResult.EMPTY_ARRAY;
                 for (PsiNamedElement regexVar : regexDrivenVars) {
                     if (Objects.equals(regexVar.getName(), name))
-                        return regexVar;
+                        return new ResolveResult[]{new PsiElementResolveResult(regexVar)};
                 }
             }
         }
-        return null;
+        return ResolveResult.EMPTY_ARRAY;
     }
 
     @Override
