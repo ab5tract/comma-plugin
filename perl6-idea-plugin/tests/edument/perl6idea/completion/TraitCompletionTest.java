@@ -27,7 +27,7 @@ public class TraitCompletionTest extends CommaFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertContainsElements(vars, "export");
-        assertEquals(6, vars.size());
+        assertEquals(11, vars.size());
     }
 
     public void testCompletionForMultipleTraits() {
@@ -36,7 +36,7 @@ public class TraitCompletionTest extends CommaFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertContainsElements(vars, "export");
-        assertEquals(6, vars.size());
+        assertEquals(11, vars.size());
     }
 
     public void testCompletionForPackage() {
@@ -59,5 +59,23 @@ public class TraitCompletionTest extends CommaFixtureTestCase {
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
         assertNull(vars);
+    }
+
+    public void testAttributeTrait() throws InterruptedException {
+        ensureModuleIsLoaded("Cro::WebApp::Form");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "use Cro::WebApp::Form; multi sub trait_mod:<is>(Attribute $attr, :$panpakapan) {}; multi sub trait_mod:<is>(Attribute $attr, :$pan) {}; class A { has $foo is pa<caret> }");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertContainsElements(vars, "password", "package", "panpakapan", "pan");
+    }
+
+    public void testRoutineTraits() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "multi sub trait_mod:<is>(Routine $attr, :$panpakapan) {}; multi sub trait_mod:<is>(Routine $attr, :$pan) {}; multi sub trait_mod:<is>(Attribute $attr, :$pattern) {}; sub test(:$foo!) is pa<caret>");
+        myFixture.complete(CompletionType.BASIC, 1);
+        List<String> vars = myFixture.getLookupElementStrings();
+        assertContainsElements(vars, "panpakapan", "pan");
+        assertDoesntContain(vars, "pattern");
     }
 }

@@ -46,7 +46,7 @@ public class SubCompletionTest extends CommaFixtureTestCase {
         List<String> vars = myFixture.getLookupElementStrings();
         assertNotNull(vars);
         assertContainsElements(vars, Arrays.asList("sec", "sech", "set"));
-        assertEquals(18, new ArrayList<>(new HashSet<>(vars)).size());
+        assertEquals(19, new ArrayList<>(new HashSet<>(vars)).size());
     }
 
     public void testCompletionFromImport() throws InterruptedException {

@@ -5,11 +5,18 @@ import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6UnresolvedType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements Perl6Parameter {
     private final String myName;
     private final String myType;
+    static private final Pattern NAME_PATTERN = Pattern.compile("([|$@%&]\\w+)");
 
     public ExternalPerl6Parameter(Project project, PsiElement parent, String name, String type) {
         myProject = project;
@@ -25,7 +32,12 @@ public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements P
 
     @Override
     public String getVariableName() {
-        return myName;
+        Matcher matcher = NAME_PATTERN.matcher(myName);
+        if (matcher.find()) {
+            return matcher.group(0);
+        } else {
+            return myName;
+        }
     }
 
     @Override
@@ -93,6 +105,17 @@ public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements P
     @Override
     public PsiElement getNameIdentifier() {
         return null;
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return myName;
+    }
+
+    @Override
+    public @NotNull Perl6Type inferType() {
+        return new Perl6UnresolvedType(myType);
     }
 
     @Override

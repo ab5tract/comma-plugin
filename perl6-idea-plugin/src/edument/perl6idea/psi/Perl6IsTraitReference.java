@@ -6,8 +6,12 @@ import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
+import edument.perl6idea.psi.type.Perl6Type;
+import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,17 +21,17 @@ import java.util.List;
 
 public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
     static String[] ROUTINE_DEFAULT_TRAITS = new String[]{
-      "assoc", "tighter", "looser", "equiv", "default",
-      "export", "rw", "raw", "nodal", "pure"
+        "assoc", "tighter", "looser", "equiv", "default",
+        "export", "rw", "raw", "nodal", "pure"
     };
     static String[] VARIABLE_DEFAULT_TRAITS = new String[]{
-      "default", "required", "DEPRECATED", "rw"
+        "default", "required", "DEPRECATED", "rw"
     };
     static String[] PARAMETER_DEFAULT_TRAITS = new String[]{
-      "copy", "raw", "rw", "readonly", "required"
+        "copy", "raw", "rw", "readonly", "required"
     };
     static String[] REGEX_DEFAULT_TRAITS = new String[]{
-      "DEPRECATED", "export"
+        "DEPRECATED", "export"
     };
 
     public Perl6IsTraitReference(Perl6PsiElement element) {
@@ -54,9 +58,8 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
         return null;
     }
 
-    @NotNull
     @Override
-    public Object[] getVariants() {
+    public Object @NotNull [] getVariants() {
         Perl6Trait trait = PsiTreeUtil.getParentOfType(getElement(), Perl6Trait.class);
         if (trait == null) return ArrayUtil.EMPTY_OBJECT_ARRAY;
         PsiElement owner = trait.getParent();
@@ -64,29 +67,57 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
 
         if (owner instanceof Perl6Parameter) {
             return PARAMETER_DEFAULT_TRAITS;
-        } else if (owner instanceof Perl6VariableDecl) {
+        }
+        else if (owner instanceof Perl6VariableDecl) {
             List<Object> types = new ArrayList<>(Arrays.asList(new Perl6TypeNameReference(myElement).getVariants()));
             types.addAll(Arrays.asList(VARIABLE_DEFAULT_TRAITS));
             if (!((Perl6VariableDecl)owner).getScope().equals("my"))
                 types.add("export");
+            if (((Perl6VariableDecl)owner).getScope().equals("has"))
+                gatherExternalTraits(types, "Attribute");
             return types.toArray();
-        } else if (owner instanceof Perl6RoutineDecl) {
-            return ROUTINE_DEFAULT_TRAITS;
-        } else if (owner instanceof Perl6RegexDecl) {
+        }
+        else if (owner instanceof Perl6RoutineDecl) {
+            List<Object> options = new ArrayList<>();
+            gatherExternalTraits(options, "Routine");
+            return ArrayUtils.addAll(options.toArray(), ROUTINE_DEFAULT_TRAITS);
+        }
+        else if (owner instanceof Perl6RegexDecl) {
             List<Object> traits = new ArrayList<>(Arrays.asList(REGEX_DEFAULT_TRAITS));
             traits.addAll(Arrays.asList(ROUTINE_DEFAULT_TRAITS));
             return traits.toArray();
-        } else if (owner instanceof Perl6PackageDecl) {
+        }
+        else if (owner instanceof Perl6PackageDecl) {
             List<Object> types = new ArrayList<>(Arrays.asList(new Perl6TypeNameReference(myElement).getVariants()));
             types.add("export");
             return types.toArray();
-        } else {
+        }
+        else {
             return ArrayUtil.EMPTY_OBJECT_ARRAY;
         }
     }
 
+    private void gatherExternalTraits(List<Object> types, String traitType) {
+        Perl6SingleResolutionSymbolCollector subsCollector = new Perl6SingleResolutionSymbolCollector("trait_mod:<is>", Perl6SymbolKind.Routine);
+        myElement.applyLexicalSymbolCollector(subsCollector);
+        for (Perl6Symbol symbol : subsCollector.getResults()) {
+            Perl6RoutineDecl decl = (Perl6RoutineDecl)symbol.getPsi();
+            Perl6Parameter[] params = decl.getParams();
+            if (params.length != 2)
+                continue;
+            Perl6Type caller = params[0].inferType();
+            if (caller.getName().equals(traitType)) {
+                String traitName = params[1].getVariableName();
+                if (traitName.length() > 1) {
+                    // Remove sigil
+                    types.add(traitName.substring(1));
+                }
+            }
+        }
+    }
+
     @Override
-    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         Perl6IsTraitName isTraitName = (Perl6IsTraitName)getElement();
         return isTraitName.setName(newElementName);
     }
