@@ -769,4 +769,8 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
         doTestNotContainsAll("{ use OO::Monitors; monitor Foo { method add {}; }; }; { monitor Foo {}; Foo.^ad<caret> }", ".^add_condition");
         doTestContainsAll("{ use OO::Monitors; monitor Foo { method add {}; }; }; { monitor Foo {}; Foo.^ad<caret> }", ".^add_method");
     }
+
+    public void testCompletionUsingIsTypeNameOnVariableDeclaration() {
+        doTestContainsAll("my %h is SetHash; %h.g<caret>", ".grab", ".grabpairs");
+    }
 }
