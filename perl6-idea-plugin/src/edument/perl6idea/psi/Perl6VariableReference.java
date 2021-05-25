@@ -4,13 +4,14 @@ import com.intellij.codeInsight.PsiEquivalenceUtil;
 import com.intellij.codeInsight.navigation.NavigationUtil;
 import com.intellij.navigation.GotoRelatedItem;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.*;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiElementProcessor;
+import com.intellij.psi.stubs.StubIndex;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.containers.ContainerUtil;
+import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -22,20 +23,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
+public class Perl6VariableReference extends PsiReferenceBase.Poly<Perl6Variable> {
     public Perl6VariableReference(Perl6Variable var) {
-        super(var, new TextRange(0, var.getTextLength()));
+        super(var, new TextRange(0, var.getTextLength()), false);
     }
 
-    @Nullable
     @Override
-    public PsiElement resolve() {
+    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         Perl6Variable var = getElement();
         String name = var.getVariableName();
         if (name == null)
-            return null;
+            return ResolveResult.EMPTY_ARRAY;
         char twigil = Perl6Variable.getTwigil(name);
         if (twigil == '!' || twigil == '.') {
             // Attribute; resolve through MOP.
@@ -43,11 +44,19 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             if (enclosingPackage != null) {
                 Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, Perl6SymbolKind.Variable);
                 enclosingPackage.contributeMOPSymbols(collector, new MOPSymbolsAllowed(
-                        true, true, true, enclosingPackage.getPackageKind().equals("role")));
+                    true, true, true, enclosingPackage.getPackageKind().equals("role")));
                 Perl6Symbol symbol = collector.getResult();
                 if (symbol != null)
-                    return symbol.getPsi();
+                    return new ResolveResult[]{new PsiElementResolveResult(symbol.getPsi())};
             }
+        }
+        else if (twigil == '*') {
+            Collection<Perl6VariableDecl> decls =
+                StubIndex.getElements(Perl6StubIndexKeys.DYNAMIC_VARIABLES, name, myElement.getProject(), GlobalSearchScope.allScope(
+                    myElement.getProject()), Perl6VariableDecl.class);
+            if (decls.isEmpty())
+                return ResolveResult.EMPTY_ARRAY;
+            return ContainerUtil.map(decls, d -> new PsiElementResolveResult(d)).toArray(ResolveResult.EMPTY_ARRAY);
         }
         else {
             // Lexical; resolve through lexpad.
@@ -56,11 +65,12 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 PsiElement psi = symbol.getPsi();
                 if (psi != null) {
                     if (psi.getContainingFile() != var.getContainingFile())
-                        return psi;
+                        return new ResolveResult[]{new PsiElementResolveResult(psi)};
                     if (psi.getTextOffset() <= var.getTextOffset() || Perl6Variable.getSigil(name) == '&')
-                        return psi;
+                        return new ResolveResult[]{new PsiElementResolveResult(psi)};
                 }
-            } else {
+            }
+            else {
                 // Trying to resolve `(42 ~~ $foo)` is dangerous. If $foo is undeclared,
                 // we search for nearest regex (which is the application we are in) to obtain $0, $1 etc to maybe resolve there,
                 // so we get the var on the right of the smartmatch, this $foo, try to resolve its type, to do so we search
@@ -70,36 +80,39 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 if (infix != null && infix.getOperator().equals("~~") &&
                     (PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var) ||
                      PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var.getParent())))
-                    return null;
+                    return ResolveResult.EMPTY_ARRAY;
 
                 Collection<PsiNamedElement> regexDrivenVars = obtainRegexDrivenVars(var);
                 if (regexDrivenVars == null)
-                    return null;
+                    return ResolveResult.EMPTY_ARRAY;
                 for (PsiNamedElement regexVar : regexDrivenVars) {
                     if (Objects.equals(regexVar.getName(), name))
-                        return regexVar;
+                        return new ResolveResult[]{new PsiElementResolveResult(regexVar)};
                 }
             }
         }
-        return null;
+        return ResolveResult.EMPTY_ARRAY;
     }
 
-    @NotNull
     @Override
-    public Object[] getVariants() {
+    public Object @NotNull [] getVariants() {
         List<Perl6Symbol> syms = new ArrayList<>(getElement().getLexicalSymbolVariants(Perl6SymbolKind.Variable));
         Perl6PackageDecl enclosingPackage = getElement().getSelfType();
         if (enclosingPackage != null) {
             Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Variable);
             enclosingPackage.contributeMOPSymbols(collector, new MOPSymbolsAllowed(
-                    true, true, true, enclosingPackage.getPackageKind().equals("role")));
+                true, true, true, enclosingPackage.getPackageKind().equals("role")));
             syms.addAll(collector.getVariants());
         }
         Collection<PsiNamedElement> regexDrivenVars = obtainRegexDrivenVars(getElement());
         Collection<PsiNamedElement> elements = regexDrivenVars == null ? new ArrayList<>() : regexDrivenVars;
-        return Stream
-            .concat(syms.stream().filter(this::isDeclaredAfterCurrentPosition).map(sym -> sym.getName()),
-                    elements.stream())
+        Collection<String> dynamicVariables =
+            StubIndex.getInstance().getAllKeys(Perl6StubIndexKeys.DYNAMIC_VARIABLES, myElement.getProject());
+        return Stream.concat(
+            Stream
+                .concat(syms.stream().filter(this::isDeclaredAfterCurrentPosition).map(sym -> sym.getName()),
+                        elements.stream()),
+            dynamicVariables.stream())
             .toArray();
     }
 
@@ -138,7 +151,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
             Perl6RegexDriver regex = PsiTreeUtil.getParentOfType(anchor, Perl6QuoteRegex.class, Perl6Regex.class);
             if (regex != null) {
                 return regex.collectRegexVariables();
-            } else {
+            }
+            else {
                 PsiElement call = PsiTreeUtil.getParentOfType(anchor, Perl6MethodCall.class, Perl6File.class);
                 if (call instanceof Perl6MethodCall && ((Perl6MethodCall)call).getCallName().equals(".subst")) {
                     PsiElement[] args = ((Perl6MethodCall)call).getCallArguments();
@@ -167,11 +181,13 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                             }
                         }
                     }
-                } else {
+                }
+                else {
                     return deduceRegexValuesFromStatement(anchor, starter);
                 }
             }
-        } else if (anchor instanceof Perl6RegexDriver) {
+        }
+        else if (anchor instanceof Perl6RegexDriver) {
             return ((Perl6RegexDriver)anchor).collectRegexVariables();
         }
         return null;
@@ -190,7 +206,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                 }
                 return true;
             }
-        } else if (arg instanceof Perl6RegexDriver) {
+        }
+        else if (arg instanceof Perl6RegexDriver) {
             elemsToReturn.addAll(((Perl6RegexDriver)arg).collectRegexVariables());
             return true;
         }
@@ -235,7 +252,8 @@ public class Perl6VariableReference extends PsiReferenceBase<Perl6Variable> {
                     if (app.getOperator().equals("~~")) {
                         PsiElement[] ops = app.getOperands();
                         if (ops.length == 2) {
-                            Perl6Type regexType = Perl6SdkType.getInstance().getCoreSettingType(starter.getProject(), Perl6SettingTypeId.Regex);
+                            Perl6Type regexType =
+                                Perl6SdkType.getInstance().getCoreSettingType(starter.getProject(), Perl6SettingTypeId.Regex);
                             if (ops[1] instanceof Perl6PsiElement && ((Perl6PsiElement)ops[1]).inferType().equals(regexType))
                                 return super.execute(ops[1]);
                         }

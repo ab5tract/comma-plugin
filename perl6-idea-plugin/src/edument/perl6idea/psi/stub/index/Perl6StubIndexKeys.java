@@ -18,4 +18,6 @@ public class Perl6StubIndexKeys {
         = StubIndexKey.createIndexKey("perl6.allRoutines");
     public static final StubIndexKey<String, Perl6RegexDecl> ALL_REGEXES
         = StubIndexKey.createIndexKey("perl6.allRegexes");
+    public static final StubIndexKey<String, Perl6VariableDecl> DYNAMIC_VARIABLES
+        = StubIndexKey.createIndexKey("perl6.dynamivVariables");
 }
