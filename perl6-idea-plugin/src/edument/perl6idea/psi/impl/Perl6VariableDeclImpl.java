@@ -233,12 +233,15 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     @Override
     public @NotNull Perl6Type inferType() {
         Perl6Type baseType = calculateBaseType();
-        Perl6TypeName type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
+
+        Perl6TypeName typeName = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
+        Perl6Type type = typeName != null ? typeName.inferType() : getOfType();
         if (type != null) {
             return baseType == null
-                    ? type.inferType()
-                    : new Perl6ParametricType(baseType, new Perl6Type[] { type.inferType() });
+                    ? type
+                    : new Perl6ParametricType(baseType, new Perl6Type[] { type });
         }
+
         if (baseType == null) {
             Perl6Type assignBasedType = resolveAssign();
             if (assignBasedType != null)
@@ -274,6 +277,26 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
         // Otherwise, fall back on sigil type.
         return variable.getTypeBySigil(variable.getText(), this);
+    }
+
+    @Nullable
+    private Perl6Type getOfType() {
+        // Visit of traits in reverse order, since `my @foo of Array of Array of Int' wants the
+        // Int deepest in the structure.
+        Perl6Type result = null;
+        List<Perl6Trait> traits = getTraits();
+        for (int i = traits.size() - 1; i >= 0; i--) {
+            Perl6Trait trait = traits.get(i);
+            if (!trait.getTraitModifier().equals("of"))
+                continue;
+            Perl6TypeName typeName = trait.getCompositionTypeName();
+            if (typeName == null)
+                continue;
+            result = result == null
+                    ? typeName.inferType()
+                    : new Perl6ParametricType(result, new Perl6Type[] { typeName.inferType() });
+        }
+        return result;
     }
 
     private Perl6Type resolveAssign() {

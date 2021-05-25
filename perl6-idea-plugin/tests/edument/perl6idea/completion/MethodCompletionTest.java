@@ -773,4 +773,8 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
     public void testCompletionUsingIsTypeNameOnVariableDeclaration() {
         doTestContainsAll("my %h is SetHash; %h.g<caret>", ".grab", ".grabpairs");
     }
+
+    public void testCompletionUsingOfTypeToSupplyArrayElementType() {
+        doTestContainsAll("my @a of Int; for @a { .m<caret> }", ".msb");
+    }
 }
