@@ -3,6 +3,8 @@ package edument.perl6idea.psi;
 import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.openapi.util.NlsSafe;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.stubs.IStubElementType;
 import com.intellij.psi.stubs.StubElement;
@@ -83,8 +85,10 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
 
             private String enclosingPackage() {
                 Perl6PackageDecl pkg = getStubOrPsiParentOfType(Perl6PackageDecl.class);
-                if (pkg == null)
-                    return getEnclosingPerl6ModuleName();
+                if (pkg == null) {
+                    String moduleName = getEnclosingPerl6ModuleName();
+                    return moduleName == null ? getContainingFile().getVirtualFile().getName() : moduleName;
+                }
                 Perl6PackageDeclStub stub = pkg.getStub();
                 String globalName = stub != null ? stub.getGlobalName() : pkg.getGlobalName();
                 return globalName == null ? pkg.getName() : globalName;
