@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Perl6ProfileModel extends AbstractTableModel {
+public class Perl6ProfileModel extends AbstractTableModel implements Perl6ProfileModelWithRatio {
     protected final DecimalFormat myFormatter = new DecimalFormat("#,###");
     protected ArrayList<String> COLUMN_NAMES = new ArrayList<>(
         Arrays.asList("Name", "File", "Inclusive (μs)", "Entries")
@@ -137,7 +137,8 @@ public class Perl6ProfileModel extends AbstractTableModel {
         return -1;
     }
 
-    public double getRatio(int value, int row, int column) {
+    @Override
+    public double getRatio(long value, int row, int column) {
         if (column == 2) {
             return value / (double)inclusiveSum;
         }

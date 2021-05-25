@@ -43,7 +43,7 @@ public class Perl6ProfileNavigationModel extends Perl6ProfileModel {
     }
 
     @Override
-    public double getRatio(int value, int row, int column) {
+    public double getRatio(long value, int row, int column) {
         switch (column) {
             case 2:
             case 3:

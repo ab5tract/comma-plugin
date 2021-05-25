@@ -3,6 +3,7 @@ package edument.perl6idea.profiler.ui;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
+import edument.perl6idea.profiler.model.Perl6ProfileModelWithRatio;
 import org.apache.commons.lang.ArrayUtils;
 
 import javax.swing.*;
@@ -66,6 +67,7 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
 
         List<AllocationData> allocsData = myProfileData.getAllocatedTypes();
         allocationsTable.setModel(new Perl6ProfileAllocationsTableModel(allocsData));
+        allocationsTable.getColumnModel().getColumn(4).setCellRenderer(new PercentageTableCellRenderer());
 
         allocationsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -85,6 +87,8 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
             int typeId = model.getAllocationId(typeRow);
             List<AllocatedTypeDetails> list = myProfileData.getAllocatedTypeData(typeId);
             typeDetailsTable.setModel(new Perl6ProfileTypeDetailsTableModel(list));
+            typeDetailsTable.getColumnModel().getColumn(4).setCellRenderer(new PercentageTableCellRenderer());
+            typeDetailsTable.getColumnModel().getColumn(7).setCellRenderer(new PercentageTableCellRenderer());
         }
     }
 
@@ -92,7 +96,7 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
         return myPanel;
     }
 
-    private static class Perl6ProfileAllocationsTableModel implements TableModel {
+    private static class Perl6ProfileAllocationsTableModel implements TableModel, Perl6ProfileModelWithRatio {
         List<AllocationData> allocsData;
 
         Perl6ProfileAllocationsTableModel(List<AllocationData> allocsData) {
@@ -145,9 +149,13 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
                 case 3:
                     return String.format("%s", format.format(alloc.total));
                 default:
-                    return String.format("%s (%s%%)", format.format(alloc.optimized),
-                                         format.format(alloc.optimized / (float)alloc.count * 100f));
+                    return alloc.optimized;
             }
+        }
+
+        @Override
+        public double getRatio(long value, int row, int column) {
+            return (double)value / allocsData.get(row).count;
         }
 
         public int getAllocationId(int row) {
@@ -167,7 +175,7 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
         }
     }
 
-    private static class Perl6ProfileTypeDetailsTableModel implements TableModel {
+    private static class Perl6ProfileTypeDetailsTableModel implements TableModel, Perl6ProfileModelWithRatio {
         List<AllocatedTypeDetails> typeDetailsList;
 
         Perl6ProfileTypeDetailsTableModel(List<AllocatedTypeDetails> list) {
@@ -219,11 +227,17 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
                 case 1: return details.path + ":" + details.line;
                 case 2: return format.format(details.sites);
                 case 3: return format.format(details.entries);
-                case 4: return String.format("%s (%s%%)", format.format(details.jit), format.format(details.jit / (float)details.entries * 100f));
+                case 4: return details.jit;
                 case 5: return format.format(details.size);
                 case 6: return format.format(details.count);
-                default: return String.format("%s (%s%%)", format.format(details.optimized), format.format(details.optimized / (float)details.entries * 100f));
+                default: return details.optimized;
             }
+        }
+
+        @Override
+        public double getRatio(long value, int row, int column) {
+            AllocatedTypeDetails details = typeDetailsList.get(row);
+            return value / (double)details.entries;
         }
 
         @Override

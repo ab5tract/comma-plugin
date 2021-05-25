@@ -344,7 +344,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
 
     private void updateRowFilter() {
         Function<Integer, Boolean> isShown = generateVisibleCallsCondition();
-        RowFilter<Perl6ProfileModel, Integer> filter = new RowFilter<Perl6ProfileModel, Integer>() {
+        RowFilter<Perl6ProfileModel, Integer> filter = new RowFilter<>() {
             @Override
             public boolean include(Entry<? extends Perl6ProfileModel, ? extends Integer> entry) {
                 return isShown.fun(entry.getIdentifier());

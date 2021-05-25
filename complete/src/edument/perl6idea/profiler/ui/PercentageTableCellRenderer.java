@@ -3,7 +3,7 @@ package edument.perl6idea.profiler.ui;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.JBEmptyBorder;
 import com.intellij.util.ui.UIUtil;
-import edument.perl6idea.profiler.model.Perl6ProfileModel;
+import edument.perl6idea.profiler.model.Perl6ProfileModelWithRatio;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -19,10 +19,10 @@ public class PercentageTableCellRenderer implements TableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         TableModel model = table.getModel();
-        int unboxedValue = (int)value;
+        long unboxedValue = value instanceof Integer ?(long)(int)value : (long)value;
         double ratio;
-        if (model instanceof Perl6ProfileModel) {
-            ratio = ((Perl6ProfileModel)model).getRatio(unboxedValue, row, column);
+        if (model instanceof Perl6ProfileModelWithRatio) {
+            ratio = ((Perl6ProfileModelWithRatio)model).getRatio(unboxedValue, row, column);
         } else {
             return new JLabel("");
         }
@@ -40,9 +40,9 @@ public class PercentageTableCellRenderer implements TableCellRenderer {
         private final double ratio;
         private final int barHeight;
         private final int width;
-        private final int value;
+        private final long value;
 
-        MiniGraph(int unboxedValue, double ratio, int width, int rowHeight) {
+        MiniGraph(long unboxedValue, double ratio, int width, int rowHeight) {
             this.value = unboxedValue;
             this.width = width;
             this.ratio = ratio >= 0
@@ -73,6 +73,8 @@ public class PercentageTableCellRenderer implements TableCellRenderer {
             int textHeight = g.getFontMetrics().getHeight();
             int x = width / 2 - textWidth / 2;
             int y = barHeight / 2 + textHeight / 2;
+            if (g instanceof Graphics2D)
+                ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g.drawString(stringToPrint, x, y);
         }
 
