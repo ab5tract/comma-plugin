@@ -3,6 +3,7 @@ package edument.perl6idea.psi;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierOwner, Perl6Documented {
     String getScope();
 
+    @NotNull
     default List<Perl6Trait> getTraits() {
         List<Perl6Trait> traits = PsiTreeUtil.getChildrenOfTypeAsList(this, Perl6Trait.class);
         Perl6StatementList list = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);

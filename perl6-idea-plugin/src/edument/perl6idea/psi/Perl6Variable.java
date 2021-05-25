@@ -13,6 +13,10 @@ public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, 
     @Nullable
     String getVariableName();
 
+    default char getSigil() {
+        return getSigil(getVariableName());
+    }
+
     /* This method is used to factor out code of deciding
      * what most generic type variable can have based purely
      * on its sigil and its declaration element (if any).

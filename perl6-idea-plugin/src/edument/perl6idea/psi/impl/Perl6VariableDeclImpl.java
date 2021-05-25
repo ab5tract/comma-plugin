@@ -3,6 +3,7 @@ package edument.perl6idea.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
@@ -16,6 +17,7 @@ import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.psi.type.Perl6ParametricType;
+import edument.perl6idea.psi.type.Perl6ResolvedType;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -230,27 +232,71 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
     @Override
     public @NotNull Perl6Type inferType() {
-        Perl6Type sigilType = inferBySigil();
-        Perl6TypeName type = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
+        Perl6Type baseType = calculateBaseType();
+
+        Perl6TypeName typeName = PsiTreeUtil.getPrevSiblingOfType(this, Perl6TypeName.class);
+        Perl6Type type = typeName != null ? typeName.inferType() : getOfType();
         if (type != null) {
-            return sigilType == null
-                    ? type.inferType()
-                    : new Perl6ParametricType(sigilType, new Perl6Type[] { type.inferType() });
+            return baseType == null
+                    ? type
+                    : new Perl6ParametricType(baseType, new Perl6Type[] { type });
         }
-        if (sigilType == null) {
+
+        if (baseType == null) {
             Perl6Type assignBasedType = resolveAssign();
             if (assignBasedType != null)
                 return assignBasedType;
         }
-        return sigilType != null ? sigilType : Perl6Untyped.INSTANCE;
+        return baseType != null ? baseType : Perl6Untyped.INSTANCE;
     }
 
-    private Perl6Type inferBySigil() {
+    @Nullable
+    private Perl6Type calculateBaseType() {
+        // Find the variable, since we need to go on sigil.
         Perl6Variable variable = PsiTreeUtil.getChildOfType(this, Perl6Variable.class);
-        if (variable != null) {
-            return variable.getTypeBySigil(variable.getText(), this);
+        if (variable == null)
+            return null;
+
+        // If we have an `is` trait with a type, and a % or @ sigil, that is the base type.
+        char sigil = variable.getSigil();
+        if (sigil == '@' || sigil == '%') {
+            for (Perl6Trait trait : getTraits()) {
+                if (!trait.getTraitModifier().equals("is"))
+                    continue;
+                Perl6IsTraitName traitName = PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
+                if (traitName == null)
+                    continue;
+                PsiReference reference = traitName.getReference();
+                if (reference == null)
+                    continue;
+                PsiElement resolution = reference.resolve();
+                if (resolution instanceof Perl6PackageDecl)
+                    return new Perl6ResolvedType(((Perl6PackageDecl)resolution).getPackageName(), (Perl6PsiElement)resolution);
+            }
         }
-        return null;
+
+        // Otherwise, fall back on sigil type.
+        return variable.getTypeBySigil(variable.getText(), this);
+    }
+
+    @Nullable
+    private Perl6Type getOfType() {
+        // Visit of traits in reverse order, since `my @foo of Array of Array of Int' wants the
+        // Int deepest in the structure.
+        Perl6Type result = null;
+        List<Perl6Trait> traits = getTraits();
+        for (int i = traits.size() - 1; i >= 0; i--) {
+            Perl6Trait trait = traits.get(i);
+            if (!trait.getTraitModifier().equals("of"))
+                continue;
+            Perl6TypeName typeName = trait.getCompositionTypeName();
+            if (typeName == null)
+                continue;
+            result = result == null
+                    ? typeName.inferType()
+                    : new Perl6ParametricType(result, new Perl6Type[] { typeName.inferType() });
+        }
+        return result;
     }
 
     private Perl6Type resolveAssign() {
