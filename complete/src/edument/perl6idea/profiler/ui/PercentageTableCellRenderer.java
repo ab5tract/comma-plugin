@@ -68,7 +68,7 @@ public class PercentageTableCellRenderer implements TableCellRenderer {
             }
             g.setColor(Color.BLACK);
             String percents = PERCENT_FORMAT.format(ratio * 100);
-            String stringToPrint = String.format("%s%% (%s μs)", percents, MS_FORMAT.format(value));
+            String stringToPrint = String.format("%s%% (%s)", percents, MS_FORMAT.format(value));
             int textWidth = g.getFontMetrics().stringWidth(String.valueOf(stringToPrint));
             int textHeight = g.getFontMetrics().getHeight();
             int x = width / 2 - textWidth / 2;
