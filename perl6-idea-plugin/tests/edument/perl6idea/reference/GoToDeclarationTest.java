@@ -1,12 +1,17 @@
 package edument.perl6idea.reference;
 
+import com.intellij.ide.actions.GotoRelatedSymbolAction;
+import com.intellij.navigation.GotoRelatedItem;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.ResolveResult;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.CommaFixtureTestCase;
+import edument.perl6idea.cro.template.psi.CroTemplateFile;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.*;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class GoToDeclarationTest extends CommaFixtureTestCase {
@@ -194,6 +199,40 @@ public class GoToDeclarationTest extends CommaFixtureTestCase {
             assertNotNull(decl);
             assertEquals(25, decl.getTextOffset());
         });
+    }
+
+    public void testJumpToTemplateFile() throws InterruptedException {
+        ensureModuleIsLoaded("Cro::WebApp::Template");
+        myFixture.configureByFiles("IdeaFoo/TemplateUser.pm6",
+                                   "IdeaFoo/content.crotmp",
+                                   "IdeaFoo/templates/inner-content.crotmp",
+                                   "IdeaFoo/templates2/inner-content2.crotmp");
+        myFixture.getEditor().getCaretModel().moveToOffset(96);
+        List<GotoRelatedItem> items = GotoRelatedSymbolAction.getItems(myFixture.getFile(), myFixture.getEditor(), null);
+        assertEquals(1, items.size());
+    }
+
+    public void testJumpToTemplateFileInDirectory() throws InterruptedException {
+        ensureModuleIsLoaded("Cro::WebApp::Template");
+        myFixture.configureByFiles("IdeaFoo/TemplateUser.pm6",
+                                   "IdeaFoo/content.crotmp",
+                                   "IdeaFoo/templates/inner-content.crotmp",
+                                   "IdeaFoo/templates2/inner-content2.crotmp");
+        myFixture.getEditor().getCaretModel().moveToOffset(207);
+        List<GotoRelatedItem> items = GotoRelatedSymbolAction.getItems(myFixture.getFile(), myFixture.getEditor(), null);
+        assertEquals(1, items.size());
+    }
+
+    public void testJumpToTemplateFileInDirectoryAbsolute() throws InterruptedException {
+        ensureModuleIsLoaded("Cro::WebApp::Template");
+        myFixture.configureByFiles("IdeaFoo/TemplateUser.pm6",
+                                   "IdeaFoo/content.crotmp",
+                                   "IdeaFoo/templates/inner-content.crotmp",
+                                   "IdeaFoo/templates/inner-content2.crotmp",
+                                   "IdeaFoo/templates2/inner-content2.crotmp");
+        myFixture.getEditor().getCaretModel().moveToOffset(405);
+        List<GotoRelatedItem> items = GotoRelatedSymbolAction.getItems(myFixture.getFile(), myFixture.getEditor(), null);
+        assertEquals(1, items.size());
     }
 
     public void doTest(String text, int offset, Class<? extends Perl6PsiElement> clazz, Consumer<PsiElement> check) {
