@@ -5,7 +5,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
-import org.apache.commons.lang.StringEscapeUtils;
+import edument.perl6idea.pod.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,102 +31,122 @@ public interface PodBlock extends PodElement {
         return getNode().getChildren(POD_CONTENT);
     }
 
-    default String renderPod(PodRenderingContext context) {
-        // Classify by type, and set opener/closer for those that have one.
+    default PodDomNode buildPodDom(PodRenderingContext context) {
+        // We produce a top-level node list here, since we might produce multiple
+        // paragraphs.
+        PodDomNodeList result = new PodDomNodeList(getTextOffset());
+
+        // Select node type and create it.
         String typename = getTypename();
-        String opener = null;
-        String closer = null;
         boolean isSemantic = false;
         boolean forceCode = false;
+        PodDomInnerNode node;
         switch (typename != null ? typename : "") {
-            case "head1": opener = "<h1>"; closer = "</h1>"; break;
-            case "head2": opener = "<h2>"; closer = "</h2>"; break;
-            case "head3": opener = "<h3>"; closer = "</h3>"; break;
-            case "head4": opener = "<h4>"; closer = "</h4>"; break;
-            case "head5": opener = "<h5>"; closer = "</h5>"; break;
-            case "head6": opener = "<h6>"; closer = "</h6>"; break;
-            case "para": opener = "<p>"; closer = "</p>"; break;
-            case "code": case "input": case "output": forceCode = true; break;
-            case "comment": return "";
+            case "comment": return null;
+            case "head1": node = new PodDomHead(getTextOffset(), 1); break;
+            case "head2": node = new PodDomHead(getTextOffset(), 2); break;
+            case "head3": node = new PodDomHead(getTextOffset(), 3); break;
+            case "head4": node = new PodDomHead(getTextOffset(), 4); break;
+            case "head5": node = new PodDomHead(getTextOffset(), 5); break;
+            case "head6": node = new PodDomHead(getTextOffset(), 6); break;
+            case "para": node = new PodDomPara(getTextOffset()); break;
+            case "code": case "input": case "output":
+                node = new PodDomCode(getTextOffset());
+                forceCode = true;
+                break;
             default:
+                node = new PodDomPara(getTextOffset());
                 isSemantic = typename != null && typename.toUpperCase(Locale.ROOT).equals(typename);
         }
 
-        // Work through the content.
-        StringBuilder builder = new StringBuilder();
-        boolean needOpener = true;
+        // Add this initial node into the node list.
+        result.addChild(node);
+
+        // Go through the child nodes and process those.
         int outstandingNewlines = 0;
         int codeWhitespaceToStrip = 0;
-        for (ASTNode node : getContent()) {
-            // Never emit removed whitespace at the start of lines.
-            if (node.getElementType() == Perl6TokenTypes.POD_REMOVED_WHITESPACE)
+        for (ASTNode child : getContent()) {
+            // Discard removed whitespace at the start of lines.
+            if (child.getElementType() == Perl6TokenTypes.POD_REMOVED_WHITESPACE)
                 continue;
 
-            // Handle newlines, multiple of which may separate code blocks or
-            // paragraphs.
-            if (node.getElementType() == Perl6TokenTypes.POD_NEWLINE) {
-                outstandingNewlines++;
+            // If it's a nested block, form the DOM. Also clear any current node
+            // we're placing content into, as we'll need to start a new one.
+            PsiElement psi = child.getPsi();
+            if (psi instanceof PodBlock) {
+                result.addChild(((PodBlock)psi).buildPodDom(context));
+                node = null;
+                outstandingNewlines = 0;
                 continue;
             }
-            else {
+
+            // Handle newlines, which may need inserting into the output or may
+            // indicate paragraph/code breaks.
+            if (child.getElementType() == Perl6TokenTypes.POD_NEWLINE) {
+                // Emit the newline if we're in an all-code block.
+                if (forceCode)
+                    node.addChild(new PodDomText(child.getStartOffset(), "\n"));
+
+                // Otherwise, just count them up.
+                else
+                    outstandingNewlines++;
+
+                // And then we're done.
+                continue;
+            }
+            else if (node != null) {
+                // How many newlines did we see?
                 if (outstandingNewlines == 1) {
-                    builder.append('\n');
+                    // Just one. Always emit it as a literal newline (it should be one
+                    // in code, it gets ths spacing right in text).
+                    node.addChild(new PodDomText(child.getStartOffset(), "\n"));
                 }
-                else if (outstandingNewlines > 1 && !needOpener) {
-                    if (closer != null)
-                        builder.append(closer);
-                    needOpener = true;
-                    opener = null;
+                else if (outstandingNewlines > 1) {
+                    // Need to start a new node unless we were in code and we're going
+                    // to continue with it after emitting he appropirate number of
+                    // newlines.
+                    if (node instanceof PodDomCode && child.getElementType() == Perl6TokenTypes.POD_CODE) {
+                        node.addChild(new PodDomText(child.getStartOffset(), "\n".repeat(outstandingNewlines)));
+                    }
+                    else {
+                        node = null;
+                    }
                 }
                 outstandingNewlines = 0;
             }
 
-            // Render nested blocks.
-            PsiElement psi = node.getPsi();
-            if (psi instanceof PodBlock) {
-                builder.append(((PodBlock)psi).renderPod(context));
-            }
-
-            // If it's not a nested block, then we have raw content, and may need
-            // an opener/closer too (for paragraph splits, code. etc.)
-            else {
-                if (needOpener) {
-                    if (opener == null) {
-                        if (forceCode || node.getElementType() == Perl6TokenTypes.POD_CODE) {
-                            opener = "<pre><code>";
-                            closer = "</code></pre>";
-                            codeWhitespaceToStrip = countLeadingWhitespace(node.getText());
-                        }
-                        else {
-                            opener = "<p>";
-                            closer = "</p>";
-                        }
-                    }
-                    builder.append(opener);
+            // Some kind of content. See if we need to make a new holding node.
+            if (node == null) {
+                if (child.getElementType() == Perl6TokenTypes.POD_CODE) {
+                    node = new PodDomCode(child.getStartOffset());
+                    codeWhitespaceToStrip = countLeadingWhitespace(child.getText());
                 }
-                needOpener = false;
-                builder.append("<span id=\"scroll-pos-").append(node.getStartOffset()).append("\"></span>");
-                if (forceCode)
-                    builder.append(StringEscapeUtils.escapeHtml(psi.getText()));
-                else if (psi instanceof PodFormatted)
-                    builder.append(((PodFormatted)psi).renderPod());
-                else if (node.getElementType() == Perl6TokenTypes.POD_CODE)
-                    builder.append(StringEscapeUtils.escapeHtml(stripCodeWhitespace(psi.getText(), codeWhitespaceToStrip)));
-                else
-                    builder.append(StringEscapeUtils.escapeHtml(psi.getText()));
+                else {
+                    node = new PodDomPara(child.getStartOffset());
+                }
+                result.addChild(node);
+                outstandingNewlines = 0;
             }
-        }
-        if (!needOpener && closer != null)
-            builder.append(closer);
 
-        // Semantic blocks are stored for later, semantic ones are retained.
+            // Now go by type of element.
+            if (forceCode)
+                node.addChild(new PodDomText(psi.getTextOffset(), psi.getText()));
+            else if (psi instanceof PodFormatted)
+                node.addChild(((PodFormatted)psi).buildPodDom());
+            else if (child.getElementType() == Perl6TokenTypes.POD_CODE)
+                node.addChild(new PodDomText(psi.getTextOffset(), stripCodeWhitespace(psi.getText(), codeWhitespaceToStrip)));
+            else
+                node.addChild(new PodDomText(psi.getTextOffset(), psi.getText()));
+        }
+
+        // If it's a semantic block, we need to store it away in the context and return
+        // an empty list.
         if (isSemantic) {
-            context.addSemanticBlock(typename, builder.toString());
-            return "";
+            context.addSemanticBlock(typename, result);
+            result = new PodDomNodeList(getTextOffset());
         }
-        else {
-            return builder.toString();
-        }
+
+        return result;
     }
 
     private static int countLeadingWhitespace(String text) {

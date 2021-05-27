@@ -1,0 +1,21 @@
+package edument.perl6idea.pod;
+
+public class PodDomHead extends PodDomBlock {
+    private final int level;
+
+    public PodDomHead(int offset, int level) {
+        super(offset);
+        this.level = level;
+    }
+
+    @Override
+    public void renderInto(StringBuilder builder) {
+        builder.append("<h");
+        builder.append(level);
+        builder.append('>');
+        renderChlidrenInto(builder);
+        builder.append("</h");
+        builder.append(level);
+        builder.append('>');
+    }
+}
