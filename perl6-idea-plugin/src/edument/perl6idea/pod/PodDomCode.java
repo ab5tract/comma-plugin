@@ -13,7 +13,9 @@ public class PodDomCode extends PodDomBlock {
         List<PodDomNode> children = getChildren();
         int last = children.size() - 1;
         for (int i = 0; i <= last; i++) {
-            // Don't emit leading/trailing whitespace nodes.
+            // We typically end up with a Pod newline before the code and another
+            // one after it placed into this node. This results in too many newlines
+            // in the HTML, so we drop them here.
             PodDomNode child = children.get(i);
             if (i == 0 || i == last)
                 if (child instanceof PodDomText && ((PodDomText)child).getText().equals("\n"))
