@@ -8,8 +8,10 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
+import edument.perl6idea.pod.PodDomFormatted;
+import edument.perl6idea.pod.PodDomNode;
+import edument.perl6idea.pod.PodDomText;
 import edument.perl6idea.psi.PodFormatted;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class PodFormattedImpl extends ASTWrapperPsiElement implements PodFormatted {
@@ -32,58 +34,58 @@ public class PodFormattedImpl extends ASTWrapperPsiElement implements PodFormatt
     }
 
     @Override
-    public String renderPod() {
-        String opener = "";
-        String closer = "";
+    public PodDomNode buildPodDom() {
+        // Some codes are handled specially.
+        String maybeCode = getFormatCode();
+        char code = maybeCode.isEmpty() ? '\0' : maybeCode.charAt(0);
         boolean format = true;
-        switch (getFormatCode()) {
-            case "B": opener = "<strong>"; closer = "</strong>"; break;
-            case "C": opener = "<code>"; closer = "</code>"; break;
-            case "I": opener = "<em>"; closer = "</em>"; break;
-            case "K": opener = "<kbd>"; closer = "</kbd>"; break;
-            case "R": opener = "<var>"; closer = "</var>"; break;
-            case "T": opener = "<samp>"; closer = "</samp>"; break;
-            case "U": opener = "<u>"; closer = "</u>"; break;
-            case "V": format = false; break;
-            case "L": return renderLinky("L");
-            case "X": return renderLinky("X");
-            case "Z": return ""; // It's a comment
+        switch (code) {
+            case 'L': case 'X': return buildLinkyPodDom(code);
+            case 'V': format = false; break;
         }
-        StringBuilder builder = new StringBuilder();
-        builder.append(opener);
+
+        // Otherwise, we build a formatted node and add children.
+        PodDomFormatted node = new PodDomFormatted(getTextOffset(), code);
         PsiElement content = findChildByType(Perl6ElementTypes.POD_TEXT);
         if (content != null)
             for (ASTNode child : content.getNode().getChildren(TokenSet.ANY))
                 if (format && child.getElementType() == Perl6ElementTypes.POD_FORMATTED)
-                    builder.append(((PodFormatted)child.getPsi()).renderPod());
+                    node.addChild(((PodFormatted)child.getPsi()).buildPodDom());
                 else
-                    builder.append(StringEscapeUtils.escapeHtml(child.getText()));
-        builder.append(closer);
-        return builder.toString();
+                    node.addChild(new PodDomText(child.getStartOffset(), child.getText()));
+        return node;
     }
 
-    private String renderLinky(String formatCode) {
-        StringBuilder title = new StringBuilder();
+    private PodDomNode buildLinkyPodDom(char code) {
+        // We don't know if there'll be a separator or not, so we start out collecting
+        // the text of the first part, and use it as the link.
+        PodDomFormatted node = new PodDomFormatted(getTextOffset(), code);
         StringBuilder link = new StringBuilder();
         boolean inLink = false;
         PsiElement content = findChildByType(Perl6ElementTypes.POD_TEXT);
         if (content != null) {
             for (ASTNode child : content.getNode().getChildren(TokenSet.ANY)) {
-                StringBuilder builder = inLink ? link : title;
-                IElementType elementType = child.getElementType();
-                if (elementType == Perl6TokenTypes.POD_FORMAT_SEPARATOR)
-                    inLink = true;
-                else if (elementType == Perl6ElementTypes.POD_FORMATTED)
-                    builder.append(((PodFormatted)child.getPsi()).renderPod());
-                else
-                    builder.append(StringEscapeUtils.escapeHtml(child.getText()));
+                if (inLink) {
+                    link.append(child.getText());
+                }
+                else {
+                    IElementType elementType = child.getElementType();
+                    if (elementType == Perl6TokenTypes.POD_FORMAT_SEPARATOR) {
+                        link.delete(0, link.length());
+                        inLink = true;
+                    }
+                    else {
+                        String text = child.getText();
+                        link.append(text);
+                        if (elementType == Perl6ElementTypes.POD_FORMATTED)
+                            node.addChild(((PodFormatted)child.getPsi()).buildPodDom());
+                        else
+                            node.addChild(new PodDomText(child.getStartOffset(), text));
+                    }
+                }
             }
         }
-        String theTitle = title.toString();
-        String theLink = link.length() > 0 ? link.toString() : theTitle;
-        return formatCode.equals("L")
-               ? "<a href=\"" + theLink + "\">" + theTitle + "</a>"
-               : theTitle;
-
+        node.setLink(link.toString());
+        return node;
     }
 }

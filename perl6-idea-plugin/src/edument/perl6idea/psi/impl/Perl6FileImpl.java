@@ -20,6 +20,7 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.ui.JBFont;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.pod.PodDomNode;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
@@ -100,35 +101,33 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     @Override
     public String renderPod() {
-        // Render all of the blocks, collecting any semantic blocks.
+        // Translate all of the blocks into PodDom for rendering.
         Perl6StatementList stmts = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
         PodRenderingContext context = new PodRenderingContext();
         PodBlock[] blocks = PsiTreeUtil.getChildrenOfType(stmts, PodBlock.class);
-        List<String> renderedBlocks = new ArrayList<>();
+        List<PodDomNode> podDoms = new ArrayList<>();
         if (blocks != null)
             for (PodBlock pod : blocks)
-                    renderedBlocks.add(pod.renderPod(context));
+                    podDoms.add(pod.buildPodDom(context));
 
         // If there is a title or subtitle, use it has a header.
         StringBuilder builder = new StringBuilder();
-        Map<String, String> semanticBlocks = context.getSemanticBlocks();
+        Map<String, PodDomNode> semanticBlocks = context.getSemanticBlocks();
         if (semanticBlocks.containsKey("TITLE")) {
-            String title = semanticBlocks.get("TITLE");
             builder.append("<header>\n<h1>");
-            builder.append(title);
+            semanticBlocks.get("TITLE").renderInto(builder);
             builder.append("</h1>\n");
             if (semanticBlocks.containsKey("SUBTITLE")) {
-                String subtitle = semanticBlocks.get("SUBTITLE");
                 builder.append("<h3>");
-                builder.append(subtitle);
+                semanticBlocks.get("SUBTITLE").renderInto(builder);
                 builder.append("</h3>\n");
             }
             builder.append("</header>\n");
         }
 
-        // Append rendered non-semantic blocks.
-        for (String rendered : renderedBlocks)
-            builder.append(rendered);
+        // Render all of the non-semantic blocks.
+        for (PodDomNode dom : podDoms)
+            dom.renderInto(builder);
 
         // Substitute HTML into template.
         Map<String, String> substitute = new HashMap<>();
