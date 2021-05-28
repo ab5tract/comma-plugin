@@ -1,0 +1,11 @@
+<templateSet group="Raku - Cro::WebApp">
+  <template name="cro-webapp-form"
+            value="class $NAME$ does Cro::WebApp::Form {&#10;}"
+            description="Insert a Cro WebApp Form"
+            toReformat="true">
+    <variable name="NAME" alwaysStopAt="true"/>
+    <context>
+      <option name="RAKU" value="true"/>
+    </context>
+  </template>
+</templateSet>
