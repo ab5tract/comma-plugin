@@ -5,7 +5,7 @@ public abstract class PodDomNode {
 
     public PodDomNode(int offset) {this.offset = offset;}
 
-    public abstract void renderInto(StringBuilder builder);
+    public abstract void renderInto(StringBuilder builder, PodRenderingContext context);
 
     protected void emitPositionInfo(StringBuilder builder) {
         builder.append("<span id=\"scroll-pos-").append(offset).append("\"></span>");

@@ -15,7 +15,7 @@ public class PodDomText extends PodDomNode {
     }
 
     @Override
-    public void renderInto(StringBuilder builder) {
+    public void renderInto(StringBuilder builder, PodRenderingContext context) {
         builder.append(StringEscapeUtils.escapeHtml(text));
     }
 }

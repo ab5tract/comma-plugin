@@ -1,6 +1,5 @@
 package edument.perl6idea.pod;
 
-import com.intellij.openapi.util.text.StringUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 
 public class PodDomFormatted extends PodDomInnerNode {
@@ -17,38 +16,38 @@ public class PodDomFormatted extends PodDomInnerNode {
     }
 
     @Override
-    public void renderInto(StringBuilder builder) {
+    public void renderInto(StringBuilder builder, PodRenderingContext context) {
         switch (code) {
-            case 'B': renderTrival(builder, "strong"); break;
-            case 'C': renderTrival(builder, "code"); break;
-            case 'I': renderTrival(builder, "em"); break;
-            case 'K': renderTrival(builder, "kbd"); break;
-            case 'L': renderLink(builder); break;
-            case 'R': renderTrival(builder, "var"); break;
-            case 'T': renderTrival(builder, "samp"); break;
-            case 'U': renderTrival(builder, "u"); break;
+            case 'B': renderTrival(builder, context, "strong"); break;
+            case 'C': renderTrival(builder, context, "code"); break;
+            case 'I': renderTrival(builder, context, "em"); break;
+            case 'K': renderTrival(builder, context, "kbd"); break;
+            case 'L': renderLink(builder, context); break;
+            case 'R': renderTrival(builder, context, "var"); break;
+            case 'T': renderTrival(builder, context, "samp"); break;
+            case 'U': renderTrival(builder, context, "u"); break;
             case 'Z': break;
             default:
-                renderChlidrenInto(builder);
+                renderChlidrenInto(builder, context);
         }
     }
 
-    private void renderTrival(StringBuilder builder, String tag) {
+    private void renderTrival(StringBuilder builder, PodRenderingContext context, String tag) {
         builder.append('<');
         builder.append(tag);
         builder.append('>');
-        renderChlidrenInto(builder);
+        renderChlidrenInto(builder, context);
         builder.append("</");
         builder.append(tag);
         builder.append('>');
     }
 
-    private void renderLink(StringBuilder builder) {
+    private void renderLink(StringBuilder builder, PodRenderingContext context) {
         builder.append("<a href=\"");
         if (link != null)
             builder.append(StringEscapeUtils.escapeHtml(link));
         builder.append("\">");
-        renderChlidrenInto(builder);
+        renderChlidrenInto(builder, context);
         builder.append("</a>");
     }
 }

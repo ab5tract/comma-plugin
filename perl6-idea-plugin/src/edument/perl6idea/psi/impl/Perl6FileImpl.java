@@ -22,6 +22,7 @@ import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.pod.PodDomNode;
+import edument.perl6idea.pod.PodRenderingContext;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
@@ -116,11 +117,11 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         Map<String, PodDomNode> semanticBlocks = context.getSemanticBlocks();
         if (semanticBlocks.containsKey("TITLE")) {
             builder.append("<header>\n<h1>");
-            semanticBlocks.get("TITLE").renderInto(builder);
+            semanticBlocks.get("TITLE").renderInto(builder, new PodRenderingContext());
             builder.append("</h1>\n");
             if (semanticBlocks.containsKey("SUBTITLE")) {
                 builder.append("<h3>");
-                semanticBlocks.get("SUBTITLE").renderInto(builder);
+                semanticBlocks.get("SUBTITLE").renderInto(builder, new PodRenderingContext());
                 builder.append("</h3>\n");
             }
             builder.append("</header>\n");
@@ -128,7 +129,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
         // Render all of the non-semantic blocks.
         for (PodDomNode dom : podDoms)
-            dom.renderInto(builder);
+            dom.renderInto(builder, new PodRenderingContext());
 
         // Substitute HTML into template.
         Map<String, String> substitute = new HashMap<>();

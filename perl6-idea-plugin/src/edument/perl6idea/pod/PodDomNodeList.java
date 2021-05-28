@@ -6,7 +6,7 @@ public class PodDomNodeList extends PodDomInnerNode {
     }
 
     @Override
-    public void renderInto(StringBuilder builder) {
-        renderChlidrenInto(builder);
+    public void renderInto(StringBuilder builder, PodRenderingContext context) {
+        renderChlidrenInto(builder, context);
     }
 }

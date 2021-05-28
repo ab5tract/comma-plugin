@@ -13,20 +13,47 @@ public abstract class PodDomInnerNode extends PodDomNode {
     }
 
     public void addChild(@NotNull PodDomNode node) {
-        if (node instanceof PodDomNodeList)
-            children.addAll(((PodDomNodeList)node).getChildren());
-        else
-            children.add(node);
+        children.add(node);
     }
 
     public List<PodDomNode> getChildren() {
         return children;
     }
 
-    protected void renderChlidrenInto(StringBuilder builder) {
+    protected void renderChlidrenInto(StringBuilder builder, PodRenderingContext context) {
+        int listLevelsOpened = 0;
         for (PodDomNode child : children) {
             child.emitPositionInfo(builder);
-            child.renderInto(builder);
+            if (child instanceof PodDomItem) {
+                int desiredLevel = ((PodDomItem)child).getLevel();
+                listLevelsOpened = emitListOpenings(builder, context, listLevelsOpened, desiredLevel);
+                listLevelsOpened = emitListClosings(builder, context, listLevelsOpened, desiredLevel);
+            }
+            else if (listLevelsOpened > 0) {
+                listLevelsOpened = emitListClosings(builder, context, listLevelsOpened,
+                context.listDepth - listLevelsOpened);
+            }
+            child.renderInto(builder, context);
         }
+        emitListClosings(builder, context, listLevelsOpened,
+                context.listDepth - listLevelsOpened);
+    }
+
+    private int emitListOpenings(StringBuilder builder, PodRenderingContext context, int listLevelsOpened, int desiredLevel) {
+        while (desiredLevel > context.listDepth) {
+            builder.append("<ul>");
+            context.listDepth++;
+            listLevelsOpened++;
+        }
+        return listLevelsOpened;
+    }
+
+    private int emitListClosings(StringBuilder builder, PodRenderingContext context, int listLevelsOpened, int desiredLevel) {
+        while (desiredLevel < context.listDepth) {
+            builder.append("</ul>");
+            context.listDepth--;
+            listLevelsOpened--;
+        }
+        return listLevelsOpened;
     }
 }
