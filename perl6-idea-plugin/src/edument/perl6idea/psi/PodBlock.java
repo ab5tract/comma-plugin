@@ -32,7 +32,7 @@ public interface PodBlock extends PodElement {
     }
 
     @NotNull
-    default PodDomNode buildPodDom(PodRenderingContext context) {
+    default PodDomNode buildPodDom(PodDomBuildingContext context) {
         // We produce a top-level node list here, since we might produce multiple
         // paragraphs.
         PodDomNodeList result = new PodDomNodeList(getTextOffset());

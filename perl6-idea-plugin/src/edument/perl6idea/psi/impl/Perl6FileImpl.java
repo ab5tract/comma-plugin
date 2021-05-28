@@ -20,6 +20,7 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.ui.JBFont;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.pod.PodDomNode;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
@@ -103,7 +104,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public String renderPod() {
         // Translate all of the blocks into PodDom for rendering.
         Perl6StatementList stmts = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
-        PodRenderingContext context = new PodRenderingContext();
+        PodDomBuildingContext context = new PodDomBuildingContext();
         PodBlock[] blocks = PsiTreeUtil.getChildrenOfType(stmts, PodBlock.class);
         List<PodDomNode> podDoms = new ArrayList<>();
         if (blocks != null)
