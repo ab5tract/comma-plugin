@@ -31,6 +31,7 @@ public interface PodBlock extends PodElement {
         return getNode().getChildren(POD_CONTENT);
     }
 
+    @NotNull
     default PodDomNode buildPodDom(PodRenderingContext context) {
         // We produce a top-level node list here, since we might produce multiple
         // paragraphs.
@@ -42,7 +43,7 @@ public interface PodBlock extends PodElement {
         boolean forceCode = false;
         PodDomInnerNode node;
         switch (typename != null ? typename : "") {
-            case "comment": return null;
+            case "comment": return new PodDomNodeList(getTextOffset());
             case "head1": node = new PodDomHead(getTextOffset(), 1); break;
             case "head2": node = new PodDomHead(getTextOffset(), 2); break;
             case "head3": node = new PodDomHead(getTextOffset(), 3); break;
@@ -84,12 +85,15 @@ public interface PodBlock extends PodElement {
             // indicate paragraph/code breaks.
             if (child.getElementType() == Perl6TokenTypes.POD_NEWLINE) {
                 // Emit the newline if we're in an all-code block.
-                if (forceCode)
-                    node.addChild(new PodDomText(child.getStartOffset(), "\n"));
+                if (forceCode) {
+                    if (node != null)
+                        node.addChild(new PodDomText(child.getStartOffset(), "\n"));
+                }
 
                 // Otherwise, just count them up.
-                else
+                else {
                     outstandingNewlines++;
+                }
 
                 // And then we're done.
                 continue;
