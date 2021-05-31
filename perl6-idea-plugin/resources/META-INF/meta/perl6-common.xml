@@ -250,6 +250,7 @@
     <liveTemplateContext implementation="edument.perl6idea.liveTemplates.RakuContext"/>
     <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.CroClientVar"/>
     <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.RakuSuggestVariableName"/>
+    <liveTemplateOptionalProcessor implementation="edument.perl6idea.liveTemplates.AddUseProcessor"/>
   </extensions>
 
   <actions>

@@ -11,18 +11,6 @@
       <option name="RAKU" value="true"/>
     </context>
   </template>
-  <template name="cro-http-post"
-            value="my $RESP$ = await $CLIENT$.post($URL$); my $BODY$ = await $RESP$.body;"
-            description="Insert a Cro HTTP POST request"
-            toReformat="true">
-    <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
-    <variable name="CLIENT" expression="croClientVar()" alwaysStopAt="false"/>
-    <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
-    <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
-    <context>
-      <option name="RAKU" value="true"/>
-    </context>
-  </template>
   <template name="cro-http-head"
             value="my $RESP$ = await $CLIENT$.head($URL$); my $BODY$ = await $RESP$.body;"
             description="Insert a Cro HTTP POST request"
@@ -37,9 +25,7 @@
   </template>
 
   <template name="cro-http-post"
-            value="my $RESP$ = await $CLIENT$.post: $URL$,
-            content-type => $CT$,
-             body => $DATA$; my $BODY$ = await $RESP$.body;"
+            value="my $RESP$ = await $CLIENT$.post: $URL$,&#10;content-type => $CT$,&#10;body => $DATA$;&#10;my $BODY$ = await $RESP$.body;"
             description="Insert a Cro HTTP POST request"
             toReformat="true">
     <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
@@ -53,9 +39,7 @@
     </context>
   </template>
   <template name="cro-http-put"
-            value="my $RESP$ = await $CLIENT$.put: $URL$,
-            content-type => $CT$,
-             body => $DATA$; my $BODY$ = await $RESP$.body;"
+            value="my $RESP$ = await $CLIENT$.put: $URL$,&#10;content-type => $CT$,&#10;body => $DATA$;&#10;my $BODY$ = await $RESP$.body;"
             description="Insert a Cro HTTP PUT request"
             toReformat="true">
     <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
@@ -69,9 +53,7 @@
     </context>
   </template>
   <template name="cro-http-patch"
-            value="my $RESP$ = await $CLIENT$.patch: $URL$,
-            content-type => $CT$,
-             body => $DATA$; my $BODY$ = await $RESP$.body;"
+            value="my $RESP$ = await $CLIENT$.patch: $URL$,&#10;content-type => $CT$,&#10;body => $DATA$;&#10;my $BODY$ = await $RESP$.body;"
             description="Insert a Cro HTTP PATCH request"
             toReformat="true">
     <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
@@ -86,15 +68,12 @@
   </template>
 
   <template name="cro-http-post-www-form-urlencoded"
-            value="my $RESP$ = await $CLIENT$.post: $URL$,
-            content-type => $CT$,
-             body => $DATA$; my $BODY$ = await $RESP$.body;"
+            value="my $RESP$ = await $CLIENT$.post: $URL$,&#10;content-type => 'www-form-urlencoded',&#10;body => $DATA$; my $BODY$ = await $RESP$.body;"
             description="Insert a Cro HTTP POST request with a www-form-urlencoded content-type"
             toReformat="true">
     <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
     <variable name="CLIENT" expression="croClientVar()" alwaysStopAt="false"/>
     <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
-    <variable name="CT" defaultValue="&quot;'www-form-urlencoded'&quot;" alwaysStopAt="true"/>
     <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
     <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
     <context>
@@ -102,13 +81,12 @@
     </context>
   </template>
   <template name="cro-http-post-multipart"
-            value="my $RESP$ = await $CLIENT$.post: $URL$,&#10;content-type => $CT$,&#10;body => $DATA$; my $BODY$ = await $RESP$.body;"
+            value="my $RESP$ = await $CLIENT$.post: $URL$,&#10;content-type => 'multipart/form-data',&#10;body => $DATA$; my $BODY$ = await $RESP$.body;"
             description="Insert a Cro HTTP POST request with a multipart content-type"
             toReformat="true">
     <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
     <variable name="CLIENT" expression="croClientVar()" alwaysStopAt="false"/>
     <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
-    <variable name="CT" defaultValue="&quot;'multipart/form-data'&quot;" alwaysStopAt="true"/>
     <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
     <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
     <context>
