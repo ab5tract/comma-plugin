@@ -3,10 +3,10 @@
             value="model $NAME$ is rw {&#10;has Int $$.$ID$ is serial;&#10;$END$&#10;}"
             description="Insert a Red model"
             toReformat="true">
-    <variable name="NAME" alwaysStopAt="true"/>
+    <variable name="NAME" defaultValue="&quot;::&quot;" alwaysStopAt="true"/>
     <variable name="ID" defaultValue="&quot;id&quot;" alwaysStopAt="true"/>
     <context>
-      <option name="RAKU" value="true"/>
+      <option name="RAKUSTMT" value="true"/>
     </context>
   </template>
 </templateSet>

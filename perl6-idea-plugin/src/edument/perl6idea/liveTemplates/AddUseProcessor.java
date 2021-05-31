@@ -41,7 +41,7 @@ public class AddUseProcessor implements TemplateOptionalProcessor {
         ));
         USES.add(new UseData(
             Collections.singletonList("cro-webapp-form"),
-            Collections.singletonList("Cro::WebApp"),
+            Collections.singletonList("Cro::WebApp::Form"),
             "Cro::WebApp"
         ));
         USES.add(new UseData(

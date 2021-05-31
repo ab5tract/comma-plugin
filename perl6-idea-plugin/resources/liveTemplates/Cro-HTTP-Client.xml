@@ -8,7 +8,7 @@
     <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
     <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
     <context>
-      <option name="RAKU" value="true"/>
+      <option name="RAKUSTMT" value="true"/>
     </context>
   </template>
   <template name="cro-http-head"
@@ -20,7 +20,7 @@
     <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
     <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
     <context>
-      <option name="RAKU" value="true"/>
+      <option name="RAKUSTMT" value="true"/>
     </context>
   </template>
 
@@ -35,7 +35,7 @@
     <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
     <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
     <context>
-      <option name="RAKU" value="true"/>
+      <option name="RAKUSTMT" value="true"/>
     </context>
   </template>
   <template name="cro-http-put"
@@ -49,7 +49,7 @@
     <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
     <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
     <context>
-      <option name="RAKU" value="true"/>
+      <option name="RAKUSTMT" value="true"/>
     </context>
   </template>
   <template name="cro-http-patch"
@@ -63,7 +63,7 @@
     <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
     <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
     <context>
-      <option name="RAKU" value="true"/>
+      <option name="RAKUSTMT" value="true"/>
     </context>
   </template>
 
@@ -77,7 +77,7 @@
     <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
     <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
     <context>
-      <option name="RAKU" value="true"/>
+      <option name="RAKUSTMT" value="true"/>
     </context>
   </template>
   <template name="cro-http-post-multipart"
@@ -90,7 +90,7 @@
     <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
     <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
     <context>
-      <option name="RAKU" value="true"/>
+      <option name="RAKUSTMT" value="true"/>
     </context>
   </template>
 
@@ -99,7 +99,7 @@
             description="Insert a Cro multipart part"
             toReformat="true">
     <context>
-      <option name="RAKU" value="true"/>
+      <option name="RAKUSTMT" value="true"/>
     </context>
     <variable name="CT" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
     <variable name="NAME" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
