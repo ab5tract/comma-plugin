@@ -1,0 +1,109 @@
+<templateSet group="Raku - Cro::HTTP::Client">
+  <template name="cro-http-get"
+            value="my $RESP$ = await $CLIENT$.get($URL$); my $BODY$ = await $RESP$.body;"
+            description="Insert a Cro HTTP GET request"
+            toReformat="true">
+    <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
+    <variable name="CLIENT" expression="croClientVar()" alwaysStopAt="false"/>
+    <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
+    <context>
+      <option name="RAKUSTMT" value="true"/>
+    </context>
+  </template>
+  <template name="cro-http-head"
+            value="my $RESP$ = await $CLIENT$.head($URL$); my $BODY$ = await $RESP$.body;"
+            description="Insert a Cro HTTP POST request"
+            toReformat="true">
+    <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
+    <variable name="CLIENT" expression="croClientVar()" alwaysStopAt="false"/>
+    <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
+    <context>
+      <option name="RAKUSTMT" value="true"/>
+    </context>
+  </template>
+
+  <template name="cro-http-post"
+            value="my $RESP$ = await $CLIENT$.post: $URL$,&#10;content-type => $CT$,&#10;body => $DATA$;&#10;my $BODY$ = await $RESP$.body;"
+            description="Insert a Cro HTTP POST request"
+            toReformat="true">
+    <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
+    <variable name="CLIENT" expression="croClientVar()" alwaysStopAt="false"/>
+    <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <variable name="CT" defaultValue="&quot;'application/json'&quot;" alwaysStopAt="true"/>
+    <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
+    <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
+    <context>
+      <option name="RAKUSTMT" value="true"/>
+    </context>
+  </template>
+  <template name="cro-http-put"
+            value="my $RESP$ = await $CLIENT$.put: $URL$,&#10;content-type => $CT$,&#10;body => $DATA$;&#10;my $BODY$ = await $RESP$.body;"
+            description="Insert a Cro HTTP PUT request"
+            toReformat="true">
+    <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
+    <variable name="CLIENT" expression="croClientVar()" alwaysStopAt="false"/>
+    <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <variable name="CT" defaultValue="&quot;'application/json'&quot;" alwaysStopAt="true"/>
+    <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
+    <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
+    <context>
+      <option name="RAKUSTMT" value="true"/>
+    </context>
+  </template>
+  <template name="cro-http-patch"
+            value="my $RESP$ = await $CLIENT$.patch: $URL$,&#10;content-type => $CT$,&#10;body => $DATA$;&#10;my $BODY$ = await $RESP$.body;"
+            description="Insert a Cro HTTP PATCH request"
+            toReformat="true">
+    <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
+    <variable name="CLIENT" expression="croClientVar()" alwaysStopAt="false"/>
+    <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <variable name="CT" defaultValue="&quot;'application/json'&quot;" alwaysStopAt="true"/>
+    <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
+    <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
+    <context>
+      <option name="RAKUSTMT" value="true"/>
+    </context>
+  </template>
+
+  <template name="cro-http-post-www-form-urlencoded"
+            value="my $RESP$ = await $CLIENT$.post: $URL$,&#10;content-type => 'www-form-urlencoded',&#10;body => $DATA$; my $BODY$ = await $RESP$.body;"
+            description="Insert a Cro HTTP POST request with a www-form-urlencoded content-type"
+            toReformat="true">
+    <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
+    <variable name="CLIENT" expression="croClientVar()" alwaysStopAt="false"/>
+    <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
+    <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
+    <context>
+      <option name="RAKUSTMT" value="true"/>
+    </context>
+  </template>
+  <template name="cro-http-post-multipart"
+            value="my $RESP$ = await $CLIENT$.post: $URL$,&#10;content-type => 'multipart/form-data',&#10;body => $DATA$; my $BODY$ = await $RESP$.body;"
+            description="Insert a Cro HTTP POST request with a multipart content-type"
+            toReformat="true">
+    <variable name="RESP" expression="rakuSuggestVariableName(&quot;$resp&quot;)" alwaysStopAt="true"/>
+    <variable name="CLIENT" expression="croClientVar()" alwaysStopAt="false"/>
+    <variable name="URL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <variable name="DATA" defaultValue="&quot;{}&quot;" alwaysStopAt="true"/>
+    <variable name="BODY" expression="rakuSuggestVariableName(&quot;$body&quot;)" alwaysStopAt="true"/>
+    <context>
+      <option name="RAKUSTMT" value="true"/>
+    </context>
+  </template>
+
+  <template name="cro-multipart-part"
+            value="Cro::HTTP::Body::MultipPartFormData::Part.new(&#10;headers => [Cro::HTTP::Header.new(&#10;name => 'Content-type',&#10;'value' => $CT$&#10;)],&#10;name => $NAME$,&#10;filename => $FILENAME$,&#10;body-blob => $BODY$&#10;);"
+            description="Insert a Cro multipart part"
+            toReformat="true">
+    <context>
+      <option name="RAKUSTMT" value="true"/>
+    </context>
+    <variable name="CT" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <variable name="NAME" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <variable name="FILENAME" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <variable name="BODY" defaultValue="" alwaysStopAt="true"/>
+  </template>
+</templateSet>

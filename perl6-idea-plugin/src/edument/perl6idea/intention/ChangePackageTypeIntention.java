@@ -16,7 +16,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.containers.ContainerUtil;
-import edument.perl6idea.annotation.fix.AddMonitorModuleFix;
+import edument.perl6idea.annotation.fix.AddUseModuleFix;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6PackageDecl;
@@ -89,7 +89,7 @@ public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction im
                 PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
 
                 if (shouldAddMonitorUsage) {
-                    new AddMonitorModuleFix().invoke(project, editor, containingFile);
+                    new AddUseModuleFix("OO::Monitors").invoke(project, editor, containingFile);
                     PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
                 }
 
