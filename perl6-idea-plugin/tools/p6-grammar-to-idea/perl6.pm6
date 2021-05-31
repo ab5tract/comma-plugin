@@ -362,7 +362,7 @@ grammar MAIN {
         ^^
         <?before [\h* '=begin']>
         :my $*POD_WS_PREFIX = 0;
-        :my $*POD_CODE_BLOCK = 0;
+        :my $*POD_CODE_BLOCK = '';
         <.start-element('POD_BLOCK_DELIMITED')>
         <.start-token('POD_REMOVED_WHITESPACE')>
         <.pod-ws-start>
@@ -399,10 +399,24 @@ grammar MAIN {
 
     token pod_block_content {
         [
-            <!before \h* '=end' [\s || $] || $>
+            # For code, we are very strict about the whitespace prior to the =end
+            # and also what is being closed. We're a bit sloppier with the rest, to
+            # allow for better recovery during editing.
+            [
+            || <!{$*POD_CODE_BLOCK}> <!before \h* '=end' [\s || $] || $>
+            || <?{$*POD_CODE_BLOCK}> <!before [
+                 <.pod_removed_whitespace> '=end' \h+
+                 [
+                 || <?{$*POD_CODE_BLOCK eq 'code'}> 'code'
+                 || <?{$*POD_CODE_BLOCK eq 'input'}> 'input'
+                 || <?{$*POD_CODE_BLOCK eq 'output'}> 'output'
+                 ]
+                 >>
+               ]>
+            ]
             <.start-token('POD_HAVE_CONTENT')> <?> <.end-token('POD_HAVE_CONTENT')>
             [
-            || <.pod_block>
+            || <!{$*POD_CODE_BLOCK}> <.pod_block>
             || <.pod_removed_whitespace>
                [
                || [<?[\h]> || <?{$*POD_CODE_BLOCK}>]
@@ -424,7 +438,7 @@ grammar MAIN {
         ^^
         <?before [\h* '=for']>
         :my $*POD_WS_PREFIX = 0;
-        :my $*POD_CODE_BLOCK = 0;
+        :my $*POD_CODE_BLOCK = '';
         <.start-element('POD_BLOCK_PARAGRAPH')>
         <.start-token('POD_REMOVED_WHITESPACE')>
         <.pod-ws-start>
@@ -469,7 +483,7 @@ grammar MAIN {
         ^^
         <?before [\h* '=' <.ident>]>
         :my $*POD_WS_PREFIX = 0;
-        :my $*POD_CODE_BLOCK = 0;
+        :my $*POD_CODE_BLOCK = '';
         <.start-element('POD_BLOCK_ABBREVIATED')>
         <.start-token('POD_REMOVED_WHITESPACE')>
         <.pod-ws-start>
@@ -544,7 +558,9 @@ grammar MAIN {
     }
 
     token pod_code_check {
-        || <?before ['code' || 'input' || 'output']> { $*POD_CODE_BLOCK = 1 }
+        || <?before 'code'> { $*POD_CODE_BLOCK = 'code' }
+        || <?before 'input'> { $*POD_CODE_BLOCK = 'input' }
+        || <?before 'output'> { $*POD_CODE_BLOCK = 'output' }
         || <?>
     }
 

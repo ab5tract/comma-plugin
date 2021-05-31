@@ -1,11 +1,11 @@
-package edument.perl6idea.psi;
+package edument.perl6idea.pod;
 
 import edument.perl6idea.pod.PodDomNode;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class PodRenderingContext {
+public class PodDomBuildingContext {
     private final Map<String, PodDomNode> semanticBlocks = new HashMap<>();
 
     public void addSemanticBlock(String typename, PodDomNode domNode) {

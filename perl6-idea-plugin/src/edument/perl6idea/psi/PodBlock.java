@@ -32,35 +32,90 @@ public interface PodBlock extends PodElement {
     }
 
     @NotNull
-    default PodDomNode buildPodDom(PodRenderingContext context) {
-        // We produce a top-level node list here, since we might produce multiple
-        // paragraphs.
-        PodDomNodeList result = new PodDomNodeList(getTextOffset());
+    default PodDomNode buildPodDom(PodDomBuildingContext context) {
+        // The result is the top-level thing we produce. For certain kinds of blocks
+        // it is the direct holder of everything below. However, when it's a paragraph
+        // block or similar, we want to produce multiple paragraphs at the same level,
+        // and so we'll set this to an item list.
+        PodDomInnerNode result;
+
+        // By contrast, node is the thing we will place all leaves into. In many cases,
+        // that will be a raw item list, since we don't want any extra wrapping of
+        // paragraph tags inside a head tag when rendering.
+        PodDomInnerNode node;
 
         // Select node type and create it.
         String typename = getTypename();
         boolean isSemantic = false;
         boolean forceCode = false;
-        PodDomInnerNode node;
+        int startOffset = getTextOffset();
         switch (typename != null ? typename : "") {
-            case "comment": return new PodDomNodeList(getTextOffset());
-            case "head1": node = new PodDomHead(getTextOffset(), 1); break;
-            case "head2": node = new PodDomHead(getTextOffset(), 2); break;
-            case "head3": node = new PodDomHead(getTextOffset(), 3); break;
-            case "head4": node = new PodDomHead(getTextOffset(), 4); break;
-            case "head5": node = new PodDomHead(getTextOffset(), 5); break;
-            case "head6": node = new PodDomHead(getTextOffset(), 6); break;
-            case "para": node = new PodDomPara(getTextOffset()); break;
+            case "comment": return new PodDomNodeList(startOffset);
+            case "head1":
+                result = new PodDomHead(startOffset, 1);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "head2":
+                result = new PodDomHead(startOffset, 2);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "head3":
+                result = new PodDomHead(startOffset, 3);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "head4":
+                result = new PodDomHead(startOffset, 4);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "head5":
+                result = new PodDomHead(startOffset, 5);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "head6":
+                result = new PodDomHead(startOffset, 6);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "para":
+                result = new PodDomNodeList(startOffset);
+                node = new PodDomPara(startOffset);
+                break;
+            case "item":
+            case "item1":
+                result = new PodDomItem(startOffset, 1);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "item2":
+                result = new PodDomItem(startOffset, 2);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "item3":
+                result = new PodDomItem(startOffset, 3);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "item4":
+                result = new PodDomItem(startOffset, 4);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "item5":
+                result = new PodDomItem(startOffset, 5);
+                node = new PodDomNodeList(startOffset);
+                break;
+            case "item6":
+                result = new PodDomItem(startOffset, 6);
+                node = new PodDomNodeList(startOffset);
+                break;
             case "code": case "input": case "output":
-                node = new PodDomCode(getTextOffset());
+                result = new PodDomCode(startOffset);
+                node = new PodDomNodeList(startOffset);
                 forceCode = true;
                 break;
             default:
-                node = new PodDomPara(getTextOffset());
+                result = new PodDomNodeList(startOffset);
+                node = new PodDomPara(startOffset);
                 isSemantic = typename != null && typename.toUpperCase(Locale.ROOT).equals(typename);
         }
 
-        // Add this initial node into the node list.
+        // Add the initial node into the result list.
         result.addChild(node);
 
         // Go through the child nodes and process those.
@@ -147,7 +202,7 @@ public interface PodBlock extends PodElement {
         // an empty list.
         if (isSemantic) {
             context.addSemanticBlock(typename, result);
-            result = new PodDomNodeList(getTextOffset());
+            result = new PodDomNodeList(startOffset);
         }
 
         return result;

@@ -9,11 +9,11 @@ public class PodDomHead extends PodDomBlock {
     }
 
     @Override
-    public void renderInto(StringBuilder builder) {
+    public void renderInto(StringBuilder builder, PodRenderingContext context) {
         builder.append("<h");
         builder.append(level);
         builder.append('>');
-        renderChlidrenInto(builder);
+        renderChlidrenInto(builder, context);
         builder.append("</h");
         builder.append(level);
         builder.append('>');

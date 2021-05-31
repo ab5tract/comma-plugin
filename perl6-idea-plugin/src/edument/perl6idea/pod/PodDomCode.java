@@ -8,7 +8,7 @@ public class PodDomCode extends PodDomBlock {
     }
 
     @Override
-    public void renderInto(StringBuilder builder) {
+    public void renderInto(StringBuilder builder, PodRenderingContext context) {
         builder.append("<pre><code>");
         List<PodDomNode> children = getChildren();
         int last = children.size() - 1;
@@ -23,7 +23,7 @@ public class PodDomCode extends PodDomBlock {
 
             // Otherwise, emit it.
             child.emitPositionInfo(builder);
-            child.renderInto(builder);
+            child.renderInto(builder, context);
         }
         builder.append("</code></pre>");
     }

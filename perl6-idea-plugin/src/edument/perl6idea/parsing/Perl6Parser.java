@@ -8830,20 +8830,28 @@ public class Perl6Parser implements PsiParser {
     }
 
     private boolean pod_block_content_100_alt_1(PsiBuilder builder, OPP opp) {
+        return true;
+    }
+
+    private boolean pod_block_content_100_alt_2(PsiBuilder builder, OPP opp) {
+        return true;
+    }
+
+    private boolean pod_block_content_100_alt_3(PsiBuilder builder, OPP opp) {
         if (!(this.pod_newline_109(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean pod_block_content_100_alt_2(PsiBuilder builder, OPP opp) {
+    private boolean pod_block_content_100_alt_4(PsiBuilder builder, OPP opp) {
         if (!(this.pod_formatting_code_108(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean pod_block_content_100_alt_3(PsiBuilder builder, OPP opp) {
+    private boolean pod_block_content_100_alt_5(PsiBuilder builder, OPP opp) {
         if ((builder.getTokenType()) == Perl6TokenTypes.POD_TEXT) {
             builder.advanceLexer();
         } else {
@@ -8852,68 +8860,68 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean pod_block_content_100_quant_4(PsiBuilder builder, OPP opp) {
-        PsiBuilder.Marker altMarker3;
-        altMarker3 = builder.mark();
-        if (this.pod_block_content_100_alt_3(builder, opp)) {
-            altMarker3.drop();
+    private boolean pod_block_content_100_quant_6(PsiBuilder builder, OPP opp) {
+        PsiBuilder.Marker altMarker5;
+        altMarker5 = builder.mark();
+        if (this.pod_block_content_100_alt_5(builder, opp)) {
+            altMarker5.drop();
         } else {
-            altMarker3.rollbackTo();
-            PsiBuilder.Marker altMarker2;;
-            altMarker2 = builder.mark();
-            if (this.pod_block_content_100_alt_2(builder, opp)) {
-                altMarker2.drop();
+            altMarker5.rollbackTo();
+            PsiBuilder.Marker altMarker4;;
+            altMarker4 = builder.mark();
+            if (this.pod_block_content_100_alt_4(builder, opp)) {
+                altMarker4.drop();
             } else {
-                altMarker2.rollbackTo();
+                altMarker4.rollbackTo();
                 return false;
             }
         }
         return true;
     }
 
-    private boolean pod_block_content_100_alt_5(PsiBuilder builder, OPP opp) {
-        PsiBuilder.Marker quantMarker4;
-        quantMarker4 = builder.mark();
-        if (this.pod_block_content_100_quant_4(builder, opp)) {
-            quantMarker4.drop();
+    private boolean pod_block_content_100_alt_7(PsiBuilder builder, OPP opp) {
+        PsiBuilder.Marker quantMarker6;
+        quantMarker6 = builder.mark();
+        if (this.pod_block_content_100_quant_6(builder, opp)) {
+            quantMarker6.drop();
         } else {
-            quantMarker4.rollbackTo();
+            quantMarker6.rollbackTo();
             return false;
         }
         while (true) {
-            PsiBuilder.Marker quantMarker5;;
-            quantMarker5 = builder.mark();
-            if (this.pod_block_content_100_quant_4(builder, opp)) {
-                quantMarker5.drop();
+            PsiBuilder.Marker quantMarker7;;
+            quantMarker7 = builder.mark();
+            if (this.pod_block_content_100_quant_6(builder, opp)) {
+                quantMarker7.drop();
             } else {
-                quantMarker5.rollbackTo();
+                quantMarker7.rollbackTo();
                 break;
             }
         }
         return true;
     }
 
-    private boolean pod_block_content_100_alt_6(PsiBuilder builder, OPP opp) {
-        return true;
-    }
-
-    private boolean pod_block_content_100_alt_7(PsiBuilder builder, OPP opp) {
-        return true;
-    }
-
     private boolean pod_block_content_100_alt_8(PsiBuilder builder, OPP opp) {
-        PsiBuilder.Marker altMarker8;
-        altMarker8 = builder.mark();
-        if (this.pod_block_content_100_alt_7(builder, opp)) {
-            altMarker8.drop();
+        return true;
+    }
+
+    private boolean pod_block_content_100_alt_9(PsiBuilder builder, OPP opp) {
+        return true;
+    }
+
+    private boolean pod_block_content_100_alt_10(PsiBuilder builder, OPP opp) {
+        PsiBuilder.Marker altMarker10;
+        altMarker10 = builder.mark();
+        if (this.pod_block_content_100_alt_9(builder, opp)) {
+            altMarker10.drop();
         } else {
-            altMarker8.rollbackTo();
-            PsiBuilder.Marker altMarker7;;
-            altMarker7 = builder.mark();
-            if (this.pod_block_content_100_alt_6(builder, opp)) {
-                altMarker7.drop();
+            altMarker10.rollbackTo();
+            PsiBuilder.Marker altMarker9;;
+            altMarker9 = builder.mark();
+            if (this.pod_block_content_100_alt_8(builder, opp)) {
+                altMarker9.drop();
             } else {
-                altMarker7.rollbackTo();
+                altMarker9.rollbackTo();
                 return false;
             }
         }
@@ -8925,73 +8933,88 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
-    private boolean pod_block_content_100_quant_9(PsiBuilder builder, OPP opp) {
+    private boolean pod_block_content_100_quant_11(PsiBuilder builder, OPP opp) {
         if (!(this.pod_newline_109(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean pod_block_content_100_alt_10(PsiBuilder builder, OPP opp) {
+    private boolean pod_block_content_100_alt_12(PsiBuilder builder, OPP opp) {
         if (!(this.pod_removed_whitespace_111(builder))) {
             return false;
         }
-        PsiBuilder.Marker altMarker9;
-        altMarker9 = builder.mark();
-        if (this.pod_block_content_100_alt_8(builder, opp)) {
-            altMarker9.drop();
+        PsiBuilder.Marker altMarker11;
+        altMarker11 = builder.mark();
+        if (this.pod_block_content_100_alt_10(builder, opp)) {
+            altMarker11.drop();
         } else {
-            altMarker9.rollbackTo();
-            PsiBuilder.Marker altMarker6;;
-            altMarker6 = builder.mark();
-            if (this.pod_block_content_100_alt_5(builder, opp)) {
-                altMarker6.drop();
+            altMarker11.rollbackTo();
+            PsiBuilder.Marker altMarker8;;
+            altMarker8 = builder.mark();
+            if (this.pod_block_content_100_alt_7(builder, opp)) {
+                altMarker8.drop();
             } else {
-                altMarker6.rollbackTo();
+                altMarker8.rollbackTo();
                 return false;
             }
         }
-        PsiBuilder.Marker quantMarker10;
-        quantMarker10 = builder.mark();
-        if (this.pod_block_content_100_quant_9(builder, opp)) {
-            quantMarker10.drop();
+        PsiBuilder.Marker quantMarker12;
+        quantMarker12 = builder.mark();
+        if (this.pod_block_content_100_quant_11(builder, opp)) {
+            quantMarker12.drop();
         } else {
-            quantMarker10.rollbackTo();
+            quantMarker12.rollbackTo();
         }
         return true;
     }
 
-    private boolean pod_block_content_100_alt_11(PsiBuilder builder, OPP opp) {
+    private boolean pod_block_content_100_alt_13(PsiBuilder builder, OPP opp) {
         if (!(this.pod_block_98(builder))) {
             return false;
         }
         return true;
     }
 
-    private boolean pod_block_content_100_quant_12(PsiBuilder builder, OPP opp) {
+    private boolean pod_block_content_100_quant_14(PsiBuilder builder, OPP opp) {
+        PsiBuilder.Marker altMarker2;
+        altMarker2 = builder.mark();
+        if (this.pod_block_content_100_alt_2(builder, opp)) {
+            altMarker2.drop();
+        } else {
+            altMarker2.rollbackTo();
+            PsiBuilder.Marker altMarker1;;
+            altMarker1 = builder.mark();
+            if (this.pod_block_content_100_alt_1(builder, opp)) {
+                altMarker1.drop();
+            } else {
+                altMarker1.rollbackTo();
+                return false;
+            }
+        }
         if ((builder.getTokenType()) == Perl6TokenTypes.POD_HAVE_CONTENT) {
             builder.advanceLexer();
         } else {
             return false;
         }
-        PsiBuilder.Marker altMarker12;
-        altMarker12 = builder.mark();
-        if (this.pod_block_content_100_alt_11(builder, opp)) {
-            altMarker12.drop();
+        PsiBuilder.Marker altMarker14;
+        altMarker14 = builder.mark();
+        if (this.pod_block_content_100_alt_13(builder, opp)) {
+            altMarker14.drop();
         } else {
-            altMarker12.rollbackTo();
-            PsiBuilder.Marker altMarker11;;
-            altMarker11 = builder.mark();
-            if (this.pod_block_content_100_alt_10(builder, opp)) {
-                altMarker11.drop();
+            altMarker14.rollbackTo();
+            PsiBuilder.Marker altMarker13;;
+            altMarker13 = builder.mark();
+            if (this.pod_block_content_100_alt_12(builder, opp)) {
+                altMarker13.drop();
             } else {
-                altMarker11.rollbackTo();
-                PsiBuilder.Marker altMarker1;;
-                altMarker1 = builder.mark();
-                if (this.pod_block_content_100_alt_1(builder, opp)) {
-                    altMarker1.drop();
+                altMarker13.rollbackTo();
+                PsiBuilder.Marker altMarker3;;
+                altMarker3 = builder.mark();
+                if (this.pod_block_content_100_alt_3(builder, opp)) {
+                    altMarker3.drop();
                 } else {
-                    altMarker1.rollbackTo();
+                    altMarker3.rollbackTo();
                     return false;
                 }
             }
@@ -9003,12 +9026,12 @@ public class Perl6Parser implements PsiParser {
         OPP opp;
         opp = null;
         while (true) {
-            PsiBuilder.Marker quantMarker13;;
-            quantMarker13 = builder.mark();
-            if (this.pod_block_content_100_quant_12(builder, opp)) {
-                quantMarker13.drop();
+            PsiBuilder.Marker quantMarker15;;
+            quantMarker15 = builder.mark();
+            if (this.pod_block_content_100_quant_14(builder, opp)) {
+                quantMarker15.drop();
             } else {
-                quantMarker13.rollbackTo();
+                quantMarker15.rollbackTo();
                 break;
             }
         }
@@ -9370,22 +9393,44 @@ public class Perl6Parser implements PsiParser {
         return true;
     }
 
+    private boolean pod_code_check_104_alt_3(PsiBuilder builder, OPP opp) {
+        return true;
+    }
+
+    private boolean pod_code_check_104_alt_4(PsiBuilder builder, OPP opp) {
+        return true;
+    }
+
     private boolean pod_code_check_104(PsiBuilder builder) {
         OPP opp;
         opp = null;
-        PsiBuilder.Marker altMarker2;
-        altMarker2 = builder.mark();
-        if (this.pod_code_check_104_alt_2(builder, opp)) {
-            altMarker2.drop();
+        PsiBuilder.Marker altMarker4;
+        altMarker4 = builder.mark();
+        if (this.pod_code_check_104_alt_4(builder, opp)) {
+            altMarker4.drop();
         } else {
-            altMarker2.rollbackTo();
-            PsiBuilder.Marker altMarker1;;
-            altMarker1 = builder.mark();
-            if (this.pod_code_check_104_alt_1(builder, opp)) {
-                altMarker1.drop();
+            altMarker4.rollbackTo();
+            PsiBuilder.Marker altMarker3;;
+            altMarker3 = builder.mark();
+            if (this.pod_code_check_104_alt_3(builder, opp)) {
+                altMarker3.drop();
             } else {
-                altMarker1.rollbackTo();
-                return false;
+                altMarker3.rollbackTo();
+                PsiBuilder.Marker altMarker2;;
+                altMarker2 = builder.mark();
+                if (this.pod_code_check_104_alt_2(builder, opp)) {
+                    altMarker2.drop();
+                } else {
+                    altMarker2.rollbackTo();
+                    PsiBuilder.Marker altMarker1;;
+                    altMarker1 = builder.mark();
+                    if (this.pod_code_check_104_alt_1(builder, opp)) {
+                        altMarker1.drop();
+                    } else {
+                        altMarker1.rollbackTo();
+                        return false;
+                    }
+                }
             }
         }
         return true;
