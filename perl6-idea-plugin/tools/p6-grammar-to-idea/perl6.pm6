@@ -400,7 +400,7 @@ grammar MAIN {
     token pod_block_content {
         [
             # For code, we are very strict about the whitespace prior to the =end
-            # and also what is being closed. We're a bit sloppier with the rest, t
+            # and also what is being closed. We're a bit sloppier with the rest, to
             # allow for better recovery during editing.
             [
             || <!{$*POD_CODE_BLOCK}> <!before \h* '=end' [\s || $] || $>

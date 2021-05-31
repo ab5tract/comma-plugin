@@ -31,7 +31,7 @@ public abstract class PodDomInnerNode extends PodDomNode {
             }
             else if (listLevelsOpened > 0) {
                 listLevelsOpened = emitListClosings(builder, context, listLevelsOpened,
-                context.listDepth - listLevelsOpened);
+                        context.listDepth - listLevelsOpened);
             }
             child.renderInto(builder, context);
         }
