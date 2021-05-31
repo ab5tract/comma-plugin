@@ -2,6 +2,7 @@ package edument.perl6idea.profiler.ui;
 
 import com.intellij.ui.table.JBTable;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
+import edument.perl6idea.profiler.model.Perl6ProfileModelWithRatio;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
@@ -20,12 +21,15 @@ public class Perl6ProfileGCPanel extends JPanel {
         GCTableModel tableModel = new GCTableModel(data);
         gcTable.setModel(tableModel);
         gcTable.getColumnModel().getColumn(0).setMaxWidth(50);
+        gcTable.getColumnModel().getColumn(4).setCellRenderer(new PercentageTableCellRenderer());
+        gcTable.getColumnModel().getColumn(5).setCellRenderer(new PercentageTableCellRenderer());
+        gcTable.getColumnModel().getColumn(6).setCellRenderer(new PercentageTableCellRenderer());
         setupSorter(gcTable, tableModel);
         add(new JScrollPane(gcTable), BorderLayout.CENTER);
     }
 
     private static void setupSorter(JTable gcTable, GCTableModel tableModel) {
-        gcTable.setRowSorter(new TableRowSorter<GCTableModel>(tableModel) {
+        gcTable.setRowSorter(new TableRowSorter<>(tableModel) {
             @Override
             public Comparator<?> getComparator(int column) {
                 switch (column) {
@@ -56,7 +60,7 @@ public class Perl6ProfileGCPanel extends JPanel {
         });
     }
 
-    private static class GCTableModel implements TableModel {
+    private static class GCTableModel implements TableModel, Perl6ProfileModelWithRatio {
         List<GCData> gcs;
 
         public GCTableModel(Perl6ProfileData data) {
@@ -119,24 +123,24 @@ public class Perl6ProfileGCPanel extends JPanel {
                         return "-";
                 }
                 case 4:
-                    return formatBytes(item, item.promotedBytes);
+                    return item.promotedBytes;
                 case 5:
-                    return formatBytes(item, item.retainedBytes);
+                    return item.retainedBytes;
                 case 6:
-                    return formatBytes(item, item.clearedBytes);
+                    return item.clearedBytes;
                 default:
                     return item.threads;
             }
         }
 
-        private static String formatBytes(GCData item, long bytes) {
+        @Override
+        public double getRatio(long value, int row, int column) {
+            GCData item = gcs.get(row);
             long totalBytes = item.promotedBytes + item.retainedBytes + item.clearedBytes;
             if (totalBytes == 0) {
-                return "0 (0%)";
+                return 0;
             }
-            double percent = ((double)bytes / totalBytes) * 100;
-            DecimalFormat decimalFormat = new DecimalFormat("###,###.###");
-            return decimalFormat.format(bytes) + " (" + decimalFormat.format(percent) + "%)";
+            return (double)value / totalBytes;
         }
 
         @Override
