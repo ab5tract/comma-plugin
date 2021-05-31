@@ -66,7 +66,7 @@ public class PercentageTableCellRenderer implements TableCellRenderer {
                 g.setColor(UIUtil.isUnderDarcula() ? JBColor.DARK_GRAY : JBColor.LIGHT_GRAY);
                 g.fillRect(PADDING + shaded, PADDING, width - shaded - PADDING, barHeight);
             }
-            g.setColor(Color.BLACK);
+            g.setColor(UIUtil.isUnderDarcula() ? Color.BLACK : JBColor.WHITE);
             String percents = PERCENT_FORMAT.format(ratio * 100);
             String stringToPrint = String.format("%s%% (%s)", percents, MS_FORMAT.format(value));
             int textWidth = g.getFontMetrics().stringWidth(String.valueOf(stringToPrint));
