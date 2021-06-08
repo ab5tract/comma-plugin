@@ -39,6 +39,7 @@ public interface CroTemplateTokenTypes {
     IElementType OPEN_BRACKET = new CroTemplateElementType("OPEN_BRACKET");
     IElementType OPEN_CURLY = new CroTemplateElementType("OPEN_CURLY");
     IElementType OPEN_PAREN = new CroTemplateElementType("OPEN_PAREN");
+    IElementType PART_NAME = new CroTemplateElementType("PART_NAME");
     IElementType RAT_LITERAL = new CroTemplateElementType("RAT_LITERAL");
     IElementType STRING_QUOTE_SINGLE = new CroTemplateElementType("STRING_QUOTE_SINGLE");
     IElementType STRING_TEXT = new CroTemplateElementType("STRING_TEXT");

@@ -1,10 +1,10 @@
 package edument.perl6idea.cro.template.parsing;
-
-import com.intellij.psi.stubs.IStubElementType;
+import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IStubFileElementType;
-import edument.perl6idea.cro.template.psi.stub.CroTemplateMacroStubElementType;
-import edument.perl6idea.cro.template.psi.stub.CroTemplateSubStubElementType;
+import com.intellij.psi.stubs.IStubElementType;
+import edument.perl6idea.psi.stub.*;
+import edument.perl6idea.cro.template.psi.stub.*;
 
 public interface CroTemplateElementTypes {
     IStubFileElementType FILE = new CroTemplateFileElementType();
@@ -33,6 +33,7 @@ public interface CroTemplateElementTypes {
     IElementType PARAMETER = new CroTemplateElementType("PARAMETER");
     IElementType PARAMETER_DEFAULT = new CroTemplateElementType("PARAMETER_DEFAULT");
     IElementType PARENTHESIZED_EXPRESSION = new CroTemplateElementType("PARENTHESIZED_EXPRESSION");
+    IElementType PART = new CroTemplateElementType("PART");
     IElementType RAT_LITERAL = new CroTemplateElementType("RAT_LITERAL");
     IElementType SIGNATURE = new CroTemplateElementType("SIGNATURE");
     IElementType STRING_LITERAL = new CroTemplateElementType("STRING_LITERAL");
