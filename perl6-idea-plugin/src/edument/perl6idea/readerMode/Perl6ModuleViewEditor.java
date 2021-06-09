@@ -31,7 +31,7 @@ public class Perl6ModuleViewEditor extends UserDataHolderBase implements FileEdi
     @Override
     public @NotNull JComponent getComponent() {
         if (myComponent == null) {
-            myComponent = new JPanel(new MigLayout("fill"));
+            myComponent = new JPanel(new MigLayout("fill, insets 0"));
             myComponent.add(myEditor.getComponent(), "hidemode 3, grow, width 50:50");
             myComponent.add(myViewer.getComponent(), "hidemode 3, grow, width 50:50");
             myEditor.getComponent().setVisible(true);
