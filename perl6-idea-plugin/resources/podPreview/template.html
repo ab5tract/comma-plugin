@@ -27,9 +27,30 @@
     }
     h1 > p { margin: 0; }
     h3 > p { margin: 0; }
+    .buttons-wrapper {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+    }
+    .buttons-wrapper .button {
+      background-color: unset;
+      border: none;
+      color: rgb([[FOREGROUND]]);
+      font-size: 14px;
+    }
+    .buttons-wrapper .button:hover {
+      background-color: rgb([[BACKGROUND-HOVER]]);
+      border: none;
+      color: rgb([[FOREGROUND]]);
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
 [[BODY]]
+<div class="buttons-wrapper">
+  <button class="button" onclick="window.JavaPanelBridge.goToCodeMode()">Code</button>
+  [[MODE_BUTTON]]
+</div>
 </body>
 </html>

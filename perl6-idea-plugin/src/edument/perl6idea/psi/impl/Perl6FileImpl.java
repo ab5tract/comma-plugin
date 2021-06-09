@@ -15,6 +15,7 @@ import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.ui.JBFont;
@@ -27,6 +28,8 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.*;
+import edument.perl6idea.readerMode.Perl6ActionProvider;
+import edument.perl6idea.readerMode.Perl6ReaderModeState;
 import edument.perl6idea.repl.Perl6ReplState;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.sdk.Perl6SettingTypeId;
@@ -35,8 +38,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public static final Map<String, Perl6SettingTypeId> VARIABLE_SYMBOLS = new HashMap<>();
@@ -110,7 +114,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         List<PodDomNode> podDoms = new ArrayList<>();
         if (blocks != null)
             for (PodBlock pod : blocks)
-                    podDoms.add(pod.buildPodDom(context));
+                podDoms.add(pod.buildPodDom(context));
 
         // If there is a title or subtitle, use it has a header.
         StringBuilder builder = new StringBuilder();
@@ -136,9 +140,15 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         substitute.put("BODY", builder.toString());
         substitute.put("BACKGROUND", htmlColor(JBColor.background()));
         substitute.put("FOREGROUND", htmlColor(JBColor.foreground()));
+        substitute.put("BACKGROUND-HOVER", htmlColor(new JBColor(Gray._223, new Color(76, 80, 82))));
         substitute.put("FONT", JBFont.label().getFamily());
         substitute.put("LINK", htmlColor(JBColor.BLUE));
         substitute.put("HEADING-BORDER", htmlColor(JBColor.foreground().darker()));
+        substitute.put(
+            "MODE_BUTTON",
+            getUserData(Perl6ActionProvider.RAKU_EDITOR_MODE_STATE) == Perl6ReaderModeState.SPLIT
+            ? "<button class=\"button\" onclick=\"window.JavaPanelBridge.goToDocumentationMode()\">Documentation</button>"
+            : "<button class=\"button\" onclick=\"window.JavaPanelBridge.goToSplitMode()\">Live preview</button>");
         String rendered = POD_HTML_TEMPLATE;
         for (Map.Entry<String, String> entry : substitute.entrySet())
             rendered = rendered.replace("[[" + entry.getKey() + "]]", entry.getValue());
@@ -178,7 +188,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     addChildren = true;
                 }
                 else if (current instanceof Perl6VariableDeclStub) {
-                    if (((Perl6VariableDeclStub)current).isExported() ||((Perl6VariableDeclStub)current).getScope().equals("our"))
+                    if (((Perl6VariableDeclStub)current).isExported() || ((Perl6VariableDeclStub)current).getScope().equals("our"))
                         ((Perl6VariableDeclStub)current).getPsi().contributeLexicalSymbols(collector);
                 }
                 else if (current instanceof Perl6PackageDeclStub) {
@@ -304,14 +314,14 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         }
         else {
             // We only have globals, not exports, transitively available.
-            Perl6File needFile = Perl6SdkType.getInstance().getPsiFileForModule(project, name,directive + " " + name);
+            Perl6File needFile = Perl6SdkType.getInstance().getPsiFileForModule(project, name, directive + " " + name);
             needFile.contributeGlobals(collector, new HashSet<>());
         }
     }
 
     @Override
     public void contributeScopeSymbols(Perl6SymbolCollector collector) {
-       for (String symbol : VARIABLE_SYMBOLS.keySet()) {
+        for (String symbol : VARIABLE_SYMBOLS.keySet()) {
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, symbol));
             if (collector.isSatisfied())
                 return;

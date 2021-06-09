@@ -1,19 +1,30 @@
-package edument.perl6idea.editor.podPreview;
+package edument.perl6idea.readerMode;
 
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.ui.jcef.JBCefBrowser;
+import com.intellij.ui.jcef.JBCefJSQuery;
 import com.intellij.ui.jcef.JCEFHtmlPanel;
+import edument.perl6idea.editor.podPreview.HtmlStringResourceHandler;
+import edument.perl6idea.editor.podPreview.NoContentResourceHandler;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
-import org.cef.handler.*;
+import org.cef.handler.CefRequestHandlerAdapter;
+import org.cef.handler.CefResourceHandler;
+import org.cef.handler.CefResourceRequestHandler;
+import org.cef.handler.CefResourceRequestHandlerAdapter;
 import org.cef.misc.BoolRef;
 import org.cef.network.CefRequest;
+import org.cef.network.CefResponse;
+import org.cef.network.CefURLRequest;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,12 +39,21 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
     private final JCEFHtmlPanel htmlPanel;
     private final Project project;
     private final VirtualFile previewOf;
+    public final EditorImpl editor;
+    private final Perl6ModuleViewEditor moduleViewEditor;
     private String latestContent = "";
     private int curOffset = 0;
+    private JBCefJSQuery myCodeModeQuery;
+    private JBCefJSQuery mySplitModeQuery;
+    private JBCefJSQuery myDocModeQuery;
 
-    public PodPreviewEditor(Project project, VirtualFile previewOf) {
+    public PodPreviewEditor(Project project,
+                            VirtualFile previewOf,
+                            EditorImpl editor, Perl6ModuleViewEditor moduleViewEditor) {
         this.project = project;
         this.previewOf = previewOf;
+        this.editor = editor;
+        this.moduleViewEditor = moduleViewEditor;
         String previewUrl = previewOf.getUrl();
         htmlPanel = new JCEFHtmlPanel(previewUrl);
         htmlPanel.getJBCefClient().addRequestHandler(new CefRequestHandlerAdapter() {
@@ -57,6 +77,16 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
                                 public CefResourceHandler getResourceHandler(CefBrowser browser, CefFrame frame, CefRequest request) {
                                     return new HtmlStringResourceHandler(latestContent);
                                 }
+
+                                @Override
+                                public void onResourceLoadComplete(CefBrowser browser,
+                                                                   CefFrame frame,
+                                                                   CefRequest request,
+                                                                   CefResponse response,
+                                                                   CefURLRequest.Status status,
+                                                                   long receivedContentLength) {
+                                    setupModeChangeHandlers();
+                                }
                             };
                         }
 
@@ -65,7 +95,7 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
                         VirtualFile found = resolveFile(url);
                         if (found != null) {
                             ApplicationManager.getApplication().invokeLater(() -> FileEditorManager.getInstance(project)
-                                    .openEditor(new OpenFileDescriptor(project, found, 0), true));
+                                .openEditor(new OpenFileDescriptor(project, found, 0), true));
                         }
                     }
 
@@ -83,6 +113,48 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
                 };
             }
         }, htmlPanel.getCefBrowser());
+        // Setup mode switch action handlers
+        setupModeChangeHandlers();
+    }
+
+    public void setupModeChangeHandlers() {
+        CefBrowser browser = htmlPanel.getCefBrowser();
+        JBCefBrowser jbBrowser = JBCefBrowser.getJBCefBrowser(browser);
+        if (jbBrowser != null) {
+            if (myCodeModeQuery == null) {
+                myCodeModeQuery = JBCefJSQuery.create(jbBrowser);
+                myCodeModeQuery.addHandler((ignore) -> {
+                    moduleViewEditor.updateState(Perl6ReaderModeState.CODE);
+                    return null;
+                });
+            }
+            if (mySplitModeQuery == null) {
+                mySplitModeQuery = JBCefJSQuery.create(jbBrowser);
+                mySplitModeQuery.addHandler((ignore) -> {
+                    moduleViewEditor.updateState(Perl6ReaderModeState.SPLIT);
+                    return null;
+                });
+            }
+            if (myDocModeQuery == null) {
+                myDocModeQuery = JBCefJSQuery.create(jbBrowser);
+                myDocModeQuery.addHandler((ignore) -> {
+                    moduleViewEditor.updateState(Perl6ReaderModeState.DOCS);
+                    return null;
+                });
+            }
+            browser.executeJavaScript(
+                "window.JavaPanelBridge = {" +
+                "    goToCodeMode : function() {" +
+                myCodeModeQuery.inject(null) +
+                "    }," +
+                "    goToSplitMode : function() {" +
+                mySplitModeQuery.inject(null) +
+                "    }," +
+                "    goToDocumentationMode : function() {" +
+                myDocModeQuery.inject(null) +
+                "    }" +
+                "}", previewOf.getUrl(), 0);
+        }
     }
 
     @Nullable
@@ -188,6 +260,11 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
 
     @Override
     public void dispose() {
+        if (myCodeModeQuery != null && mySplitModeQuery != null) {
+            Disposer.dispose(myCodeModeQuery);
+            Disposer.dispose(myDocModeQuery);
+            Disposer.dispose(mySplitModeQuery);
+        }
     }
 
     public void setPodHtml(String html) {
