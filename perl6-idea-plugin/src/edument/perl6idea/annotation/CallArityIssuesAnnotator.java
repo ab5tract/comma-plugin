@@ -10,6 +10,7 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.ResolveResult;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,6 +26,18 @@ public class CallArityIssuesAnnotator implements Annotator {
 
         PsiElement refElement = element instanceof Perl6SubCall ? element.getFirstChild() : element;
         PsiElement[] args = ((P6CodeBlockCall) element).getCallArguments();
+
+        if (element instanceof Perl6MethodCall) {
+            PsiElement wholeNode = ((Perl6MethodCall)element).getWholeCallNode();
+            if (wholeNode instanceof Perl6PostfixApplication) {
+                PsiElement operand = ((Perl6PostfixApplication)wholeNode).getOperand();
+                if (operand instanceof Perl6PsiElement) {
+                    @NotNull Perl6Type type = ((Perl6PsiElement)operand).inferType();
+                    if (type instanceof Perl6Untyped)
+                        return;
+                }
+            }
+        }
 
         // If there is a `|` in a call, we are not smart enough to show anything worthy for this case
         for (PsiElement arg : args) {

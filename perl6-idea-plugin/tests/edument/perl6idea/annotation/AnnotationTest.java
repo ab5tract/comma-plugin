@@ -1073,6 +1073,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "run 'curl', 'foo', out => 42, :err(42);");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $a; $a.emit(42);");
+        myFixture.checkHighlighting();
     }
 
     public void testCallArityMismatchAnnotatingOnAccessorCall() {
