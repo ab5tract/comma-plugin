@@ -5,13 +5,12 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.roots.SourceFolder;
 import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
-import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
-import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
+import com.intellij.openapi.vfs.newvfs.events.*;
 import com.intellij.openapi.vfs.newvfs.impl.VirtualDirectoryImpl;
 import com.intellij.util.messages.MessageBusConnection;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
@@ -19,8 +18,10 @@ import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -31,22 +32,59 @@ import java.util.regex.Pattern;
 public class ModuleMetaChangeListener implements BulkFileListener {
     private final Perl6MetaDataComponent myMetaData;
     private final Module myModule;
+    private final List<String> modulePaths = new ArrayList<>();
+    private final List<String> resourcePaths = new ArrayList<>();
 
     public ModuleMetaChangeListener(Module module) {
         myModule = module;
+
         MessageBusConnection conn = ApplicationManager.getApplication().getMessageBus().connect();
         conn.subscribe(VirtualFileManager.VFS_CHANGES, this);
         myMetaData = module.getService(Perl6MetaDataComponent.class);
+        // Gather module prefix
+        populateModulePaths();
+        // Gather resources prefix
+        VirtualFile metaVFile = myMetaData.getMetaFile();
+        if (metaVFile != null) {
+            File resourcesFile = Paths.get(metaVFile.getPath()).resolveSibling("resources").toFile();
+            if (resourcesFile.exists())
+                resourcePaths.add(resourcesFile.getAbsolutePath());
+        }
+    }
+
+    private void populateModulePaths() {
+        ContentEntry @NotNull [] entries = ModuleRootManager.getInstance(myModule).getContentEntries();
+        for (ContentEntry entry : entries) {
+            SourceFolder[] folders = entry.getSourceFolders();
+            for (SourceFolder folder : folders) {
+                if (!folder.isTestSource()) {
+                    VirtualFile file = folder.getFile();
+                    if (file != null)
+                        modulePaths.add(Paths.get(file.getPath()).toFile().getAbsolutePath());
+                }
+            }
+        }
     }
 
     @Nullable
-    private static String calculateModuleName(String path) {
-        String regexPattern = String.format(".*?/lib/(.+).%s", Perl6ModuleFileType.INSTANCE.getDefaultExtension());
-        Matcher m = Pattern.compile(regexPattern).matcher(path);
-        if (m.matches()) {
-            return m.group(1)
+    private String calculateModuleName(String path) {
+        for (String modulePath : modulePaths) {
+            Matcher m = Pattern.compile(String.format("%s/(.+).(rakumod|pm6)", modulePath)).matcher(path);
+            if (m.matches()) {
+                return m.group(1)
                     .replaceAll("/", "::")
                     .replaceAll("\\\\", "::");
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    private String calculateResourceName(String path) {
+        for (String resourcePath : resourcePaths) {
+            Matcher m = Pattern.compile(String.format("%s/(.+)", resourcePath)).matcher(path);
+            if (m.matches())
+                return m.group(1);
         }
         return null;
     }
@@ -58,10 +96,18 @@ public class ModuleMetaChangeListener implements BulkFileListener {
     public void after(@NotNull List<? extends VFileEvent> events) {
         for (VFileEvent event : events) {
             VirtualFile file = event.getFile();
-            if (file == null || !(FileTypeManager.getInstance().getFileTypeByFile(file) instanceof Perl6ModuleFileType) && !(file instanceof VirtualDirectoryImpl))
+            boolean isForResources = isInResources(file);
+            if (file == null ||
+                !isForResources &&
+                !(FileTypeManager.getInstance().getFileTypeByFile(file) instanceof Perl6ModuleFileType) &&
+                !(file instanceof VirtualDirectoryImpl))
                 continue;
 
-            if (event instanceof VFileDeleteEvent) {
+            if (event instanceof VFileCreateEvent) {
+                if (!file.isDirectory())
+                    processFileCreate(event);
+            }
+            else if (event instanceof VFileDeleteEvent) {
                 if (file.isDirectory())
                     processDirectoryDelete(event);
                 else
@@ -74,19 +120,28 @@ public class ModuleMetaChangeListener implements BulkFileListener {
                     processDirectoryMoveAndRename(event);
                 else
                     processFileMoveAndRename(event);
-            } else {
+            }
+            else {
                 // If it another type of event, we don't want to update LocalFileSystem
                 continue;
             }
 
             if (!ApplicationManager.getApplication().isUnitTestMode()) {
                 ApplicationManager.getApplication().invokeLater(
-                  () -> {
-                      ProjectView.getInstance(myModule.getProject()).refresh();
-                      LocalFileSystem.getInstance().refresh(false);
-                  });
+                    () -> {
+                        ProjectView.getInstance(myModule.getProject()).refresh();
+                        LocalFileSystem.getInstance().refresh(false);
+                    });
             }
         }
+    }
+
+    private boolean isInResources(VirtualFile file) {
+        for (String resourcePath : resourcePaths) {
+            if (file.getPath().startsWith(resourcePath))
+                return true;
+        }
+        return false;
     }
 
     private void processDirectoryMoveAndRename(VFileEvent event) {
@@ -112,7 +167,7 @@ public class ModuleMetaChangeListener implements BulkFileListener {
         String oldPrefix = calculateModulePrefix(libPath, oldPath);
         for (String name : myMetaData.getProvidedNames()) {
             if (name.startsWith(oldPrefix)) {
-                myMetaData.removeNamespaceToProvides(name);
+                myMetaData.removeNamespaceFromProvides(name);
                 myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()));
             }
         }
@@ -131,7 +186,7 @@ public class ModuleMetaChangeListener implements BulkFileListener {
 
             for (String name : myMetaData.getProvidedNames()) {
                 if (name.startsWith(oldPrefix)) {
-                    myMetaData.removeNamespaceToProvides(name);
+                    myMetaData.removeNamespaceFromProvides(name);
                     myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()));
                 }
             }
@@ -150,7 +205,7 @@ public class ModuleMetaChangeListener implements BulkFileListener {
             String oldPrefix = calculateModulePrefix(libPath, oldPath);
             for (String name : myMetaData.getProvidedNames())
                 if (name.startsWith(oldPrefix))
-                    myMetaData.removeNamespaceToProvides(name);
+                    myMetaData.removeNamespaceFromProvides(name);
         }
     }
 
@@ -162,7 +217,7 @@ public class ModuleMetaChangeListener implements BulkFileListener {
         String prefix = calculateModulePrefix(libPath, path);
         for (String name : myMetaData.getProvidedNames()) {
             if (name.startsWith(prefix)) {
-                myMetaData.removeNamespaceToProvides(name);
+                myMetaData.removeNamespaceFromProvides(name);
             }
         }
     }
@@ -190,22 +245,58 @@ public class ModuleMetaChangeListener implements BulkFileListener {
         String oldPathRaw = event instanceof VFilePropertyChangeEvent ?
                             ((VFilePropertyChangeEvent)event).getOldPath() :
                             ((VFileMoveEvent)event).getOldPath();
-        String oldName = calculateModuleName(oldPathRaw);
-        String newName = calculateModuleName(event.getPath());
-        if (oldName != null)
-            updateMeta(oldName, newName);
+        String oldModuleName = calculateModuleName(oldPathRaw);
+        VirtualFile file = event.getFile();
+        if (file == null)
+            return;
+        if (oldModuleName != null) {
+            String newModuleName = calculateModuleName(file.getCanonicalPath());
+            updateMetaProvides(oldModuleName, newModuleName);
+            return;
+        }
+        String oldResourceName = calculateResourceName(oldPathRaw);
+        if (oldResourceName != null) {
+            String newResourceName = calculateResourceName(file.getCanonicalPath());
+            updateMetaResources(oldResourceName, newResourceName);
+        }
+    }
+
+    private void processFileCreate(VFileEvent event) {
+        VirtualFile file = event.getFile();
+        if (file == null)
+            return;
+        String newResource = calculateResourceName(file.getCanonicalPath());
+        if (newResource != null) {
+            updateMetaResources(null, newResource);
+        }
     }
 
     private void processFileDelete(VFileEvent event) {
-        String oldName = calculateModuleName(event.getPath());
-        if (oldName != null)
-            updateMeta(oldName, null);
+        VirtualFile file = event.getFile();
+        if (file == null)
+            return;
+        String oldModuleName = calculateModuleName(file.getCanonicalPath());
+        if (oldModuleName != null) {
+            updateMetaProvides(oldModuleName, null);
+            return;
+        }
+        String oldResource = calculateResourceName(file.getCanonicalPath());
+        if (oldResource != null)
+            updateMetaResources(oldResource, null);
     }
 
-    private void updateMeta(String oldName, String newName) {
-        myMetaData.removeNamespaceToProvides(oldName);
+    private void updateMetaProvides(String oldName, String newName) {
+        myMetaData.removeNamespaceFromProvides(oldName);
         if (newName != null) {
             myMetaData.addNamespaceToProvides(newName);
+        }
+    }
+
+    private void updateMetaResources(String oldName, String newName) {
+        if (oldName != null)
+            myMetaData.removeResource(oldName);
+        if (newName != null) {
+            myMetaData.addResource(newName);
         }
     }
 }

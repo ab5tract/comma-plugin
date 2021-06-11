@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.components.Service;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -35,9 +34,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Perl6MetaDataComponent {
     public static final String META6_JSON_NAME = "META6.json";
     public static final String META_OBSOLETE_NAME = "META.info";
-    private static final Logger LOG = Logger.getInstance(Perl6MetaDataComponent.class);
+    @Nullable
     public Module module = null;
+    @Nullable
     private VirtualFile myMetaFile = null;
+    @Nullable
     private JSONObject myMeta = null;
 
     public Perl6MetaDataComponent(Module module) {
@@ -48,7 +49,9 @@ public class Perl6MetaDataComponent {
 
         this.module = module;
 
-        this.module.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
+        // VFS events WILL NOT be passed to the module message bus,
+        // so connect to project one instead
+        this.module.getProject().getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             @Override
             public void after(@NotNull List<? extends VFileEvent> events) {
                 for (VFileEvent event : events) {
@@ -56,6 +59,10 @@ public class Perl6MetaDataComponent {
                     String fileName = event.getFile().getName();
                     if (!event.isFromSave() ||
                         !(fileName.equals(META6_JSON_NAME) || fileName.equals(META_OBSOLETE_NAME))) return;
+                    // Above we did a simple check to do a fast filtering of completely unrelated files,
+                    // but as we work with project-level bus, do the heavy check to make extra sure
+                    // it is the meta file of a module we are working with
+                    if (!event.getFile().equals(myMetaFile)) continue;
                     myMeta = checkMetaSanity();
                     saveFile();
                     if (myMeta != null) {
@@ -135,6 +142,33 @@ public class Perl6MetaDataComponent {
             }
         }
         return meta;
+    }
+
+    public void removeResource(String name) {
+        if (myMeta == null)
+            return;
+        JSONArray resources = myMeta.getJSONArray("resources");
+        if (resources != null) {
+            List<Object> resourceList = resources.toList();
+            for (int i = 0, size = resourceList.size(); i < size; i++) {
+                Object resource = resourceList.get(i);
+                if (resource instanceof String && resource.equals(name)) {
+                    resources.remove(i);
+                    myMeta.put("resources", resources);
+                    saveFile();
+                    break;
+                }
+            }
+        }
+    }
+
+    public void addResource(String newName) {
+        if (myMeta == null)
+            return;
+        JSONArray resources = myMeta.getJSONArray("resources");
+        resources.put(newName);
+        myMeta.put("resources", resources);
+        saveFile();
     }
 
     /* Enforces number of rules for meta to check on start and every saving */
@@ -364,7 +398,7 @@ public class Perl6MetaDataComponent {
         saveFile();
     }
 
-    public void removeNamespaceToProvides(String name) {
+    public void removeNamespaceFromProvides(String name) {
         if (!isMetaDataExist()) return;
         JSONObject provides = myMeta.getJSONObject("provides");
         provides.remove(name);
@@ -433,6 +467,11 @@ public class Perl6MetaDataComponent {
 
     public void setAuthors(List<String> authors) {
         myMeta.put("authors", authors); saveFile();
+    }
+
+    @Nullable
+    public VirtualFile getMetaFile() {
+        return myMetaFile;
     }
 
     private void saveFile() {
