@@ -1,0 +1,10 @@
+Before part
+<:part header($user)>
+  <?$user>
+    User <$user> is logged in
+  </?>
+  <!$user>
+    Not logged in
+  </!>
+</:>
+After part
