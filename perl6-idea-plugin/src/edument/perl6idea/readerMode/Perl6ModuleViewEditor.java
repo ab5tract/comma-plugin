@@ -4,9 +4,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.UserDataHolderBase;
+import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
-import net.miginfocom.swing.MigLayout;
+import com.intellij.ui.JBSplitter;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,8 +18,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Objects;
 
 public class Perl6ModuleViewEditor extends UserDataHolderBase implements FileEditor {
-    private final TextEditor myEditor;
     private final String myName;
+    private final TextEditor myEditor;
     private PodPreviewEditor myViewer;
     private JComponent myComponent;
     private Runnable myTriggerPodRenderCode;
@@ -31,35 +33,37 @@ public class Perl6ModuleViewEditor extends UserDataHolderBase implements FileEdi
     @Override
     public @NotNull JComponent getComponent() {
         if (myComponent == null) {
-            myComponent = new JPanel(new MigLayout("fill, insets 0"));
-            myComponent.add(myEditor.getComponent(), "hidemode 3, grow, width 50:50");
-            myComponent.add(myViewer.getComponent(), "hidemode 3, grow, width 50:50");
-            myEditor.getComponent().setVisible(true);
-            myViewer.getComponent().setVisible(false);
+            final JBSplitter splitter = new JBSplitter(false, 0.5f, 0.15f, 0.85f);
+            splitter.setSplitterProportionKey("RakuModuleViewEditor.SplitterProportionKey");
+            splitter.setFirstComponent(myEditor.getComponent());
+            splitter.setSecondComponent(myViewer.getComponent());
+            splitter.setDividerWidth(3);
+
+            myComponent = JBUI.Panels.simplePanel(splitter);
+            updateState(Perl6ReaderModeState.CODE);
         }
         return myComponent;
+    }
+
+    private void invalidateLayout() {
+        myComponent.repaint();
+
+        final JComponent focusComponent = getPreferredFocusedComponent();
+        if (focusComponent != null) {
+            IdeFocusManager.findInstanceByComponent(focusComponent).requestFocus(focusComponent, true);
+        }
     }
 
     public void updateState(Perl6ReaderModeState state) {
         ApplicationManager.getApplication().invokeLater(() -> {
             PsiFile psiFile = PsiDocumentManager.getInstance(Objects.requireNonNull(myEditor.getEditor().getProject()))
                 .getPsiFile(myEditor.getEditor().getDocument());
-            if (psiFile != null) {
+            if (psiFile != null)
                 psiFile.putUserData(Perl6ActionProvider.RAKU_EDITOR_MODE_STATE, state);
-            }
             myTriggerPodRenderCode.run();
-            if (state == Perl6ReaderModeState.DOCS) {
-                myEditor.getComponent().setVisible(false);
-                myViewer.getComponent().setVisible(true);
-            }
-            else if (state == Perl6ReaderModeState.CODE) {
-                myEditor.getComponent().setVisible(true);
-                myViewer.getComponent().setVisible(false);
-            }
-            else if (state == Perl6ReaderModeState.SPLIT) {
-                myEditor.getComponent().setVisible(true);
-                myViewer.getComponent().setVisible(true);
-            }
+            invalidateLayout();
+            myEditor.getComponent().setVisible(state == Perl6ReaderModeState.CODE || state == Perl6ReaderModeState.SPLIT);
+            myViewer.getComponent().setVisible(state == Perl6ReaderModeState.DOCS ||  state == Perl6ReaderModeState.SPLIT);
         });
     }
 

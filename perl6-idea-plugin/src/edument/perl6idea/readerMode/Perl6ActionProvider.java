@@ -56,12 +56,13 @@ public class Perl6ActionProvider implements InspectionWidgetActionProvider {
             if (myEditor.getProject() == null)
                 return;
             Presentation presentation = e.getPresentation();
-            Perl6ReaderModeState currentState =
-                PsiDocumentManager.getInstance(myEditor.getProject())
-                    .getPsiFile(myEditor.getDocument())
-                    .getUserData(RAKU_EDITOR_MODE_STATE);
-            presentation.setEnabledAndVisible(currentState == null && myState != Perl6ReaderModeState.CODE ||
-                                              currentState != null && currentState != myState);
+            PsiFile file = PsiDocumentManager.getInstance(myEditor.getProject()).getPsiFile(myEditor.getDocument());
+            if (file == null)
+                return;
+            Perl6ReaderModeState currentState = file.getUserData(RAKU_EDITOR_MODE_STATE);
+            presentation.setEnabledAndVisible(currentState != Perl6ReaderModeState.SPLIT &&
+                                              (currentState == null && myState != Perl6ReaderModeState.CODE ||
+                                              currentState != null && currentState != myState));
             presentation.setText(myState.toString());
             String descriptionText;
             switch (myState) {
