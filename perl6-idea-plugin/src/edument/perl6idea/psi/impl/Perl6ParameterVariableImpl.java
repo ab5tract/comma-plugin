@@ -25,6 +25,8 @@ import edument.perl6idea.sdk.Perl6SettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
@@ -56,15 +58,23 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
         Perl6Parameter parameter = PsiTreeUtil.getParentOfType(this, Perl6Parameter.class);
         if (parameter == null) return null;
         PsiElement temp = parameter.getPrevSibling();
-        Perl6Documented.gatherInlineComments(temp, false, builder);
-        builder.append("<br>");
+        List<PsiElement> comments = new ArrayList<>();
+        Perl6Documented.gatherInlineComments(temp, false, comments);
+        if (comments.size() != 0)
+            comments.remove(comments.size() - 1);
         temp = parameter.getNextSibling();
         while (temp != null && (temp.getNode().getElementType() == PARAMETER_SEPARATOR ||
                                 temp.getNode().getElementType() == UNV_WHITE_SPACE ||
                                 temp instanceof PsiWhiteSpace))
             temp = temp.getNextSibling();
-        Perl6Documented.gatherInlineComments(temp, true, builder);
-        return builder.toString().trim();
+        Perl6Documented.gatherInlineComments(temp, true, comments);
+        for (PsiElement comment : comments) {
+            if (comment == NEWLINE_COMMENT_ELEMENT)
+                builder.append("\n");
+            else
+                builder.append(comment.getText().trim());
+        }
+        return builder.toString().trim().replace("\n", "<br>");
     }
 
     @NotNull
