@@ -57,7 +57,10 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
     @NotNull
     @Override
     public PsiElement getWholeCallNode() {
-        return Objects.requireNonNull(PsiTreeUtil.getParentOfType(this, Perl6PostfixApplication.class));
+        Perl6PostfixApplication postfixApp = PsiTreeUtil.getParentOfType(this, Perl6PostfixApplication.class);
+        if (postfixApp != null)
+            return postfixApp;
+        return this;
     }
 
     @NotNull
