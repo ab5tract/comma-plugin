@@ -107,10 +107,10 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
                 continue;
             Perl6Type caller = params[0].inferType();
             if (caller.getName().equals(traitType)) {
-                String traitName = params[1].getVariableName();
-                if (traitName.length() > 1) {
-                    // Remove sigil
-                    types.add(traitName.substring(1));
+                List<String> traitNames = params[1].getVariableNames();
+                for (String traitName : traitNames) {
+                    if (traitName.length() > 1)
+                        types.add(traitName.substring(1));
                 }
             }
         }

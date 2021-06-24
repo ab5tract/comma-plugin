@@ -272,7 +272,8 @@ sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
         ?? %( t => .type.^name,
            n => "{.prefix ?? .prefix !! .named ?? ':' !! ''}" ~
                    "{ .sigil eq '|' ?? .sigil ~ .name !! (.name ?? .name !! .sigil) }" ~
-                   "{ .default ?? '?' !! '' }{.suffix}"
+                   "{ .default ?? '?' !! '' }{.suffix}",
+           |( .named ?? nn => .named_names !! () )
         )
         !! %( t => .type.^name, n => .gist )
     }).List;
