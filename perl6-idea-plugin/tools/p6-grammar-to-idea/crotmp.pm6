@@ -147,6 +147,7 @@ grammar MAIN {
         || <.sigil-tag-macro>
         || <.sigil-tag-body>
         || <.sigil-tag-apply>
+        || <.sigil-tag-part>
         || <.sigil-tag-use>
     }
 
@@ -362,6 +363,44 @@ grammar MAIN {
             <.tgt>
         ]?
         <.end-element('BODY')>
+    }
+
+    token sigil-tag-part {
+        <?before '<:part'>
+        <.start-element('PART')>
+        <.tlt>
+        <.decl-sigil>
+        <.start-token('DECL_OPENER')>
+        'part'
+        <.end-token('DECL_OPENER')>
+        [
+            <.hws>
+            [
+                <.start-token('PART_NAME')>
+                <.identifier>
+                <.end-token('PART_NAME')>
+                <.hws>?
+                <.signature>?
+                <.hws>?
+                [
+                    <.tgt>
+                    <.sequence-element-group>
+                    [
+                        <?before '</:'>
+                        <.tlt>
+                        <.tclose>
+                        <.decl-sigil>
+                        [
+                            <.start-token('DECL_OPENER')>
+                            'sub'
+                            <.end-token('DECL_OPENER')>
+                        ]?
+                        <.tgt>?
+                    ]?
+                ]?
+            ]?
+        ]?
+        <.end-element('PART')>
     }
 
     token sigil-tag-use {

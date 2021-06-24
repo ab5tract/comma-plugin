@@ -41,6 +41,7 @@ public class CroTemplateSyntaxHighlighter extends SyntaxHighlighterBase {
         ATTRIBUTES.put(CroTemplateTokenTypes.VARIABLE_NAME, CroTemplateHighlighter.VARIABLE);
         ATTRIBUTES.put(CroTemplateTokenTypes.MACRO_NAME, CroTemplateHighlighter.CALL_NAME);
         ATTRIBUTES.put(CroTemplateTokenTypes.SUB_NAME, CroTemplateHighlighter.CALL_NAME);
+        ATTRIBUTES.put(CroTemplateTokenTypes.PART_NAME, CroTemplateHighlighter.CALL_NAME);
         ATTRIBUTES.put(CroTemplateTokenTypes.MODULE_NAME, CroTemplateHighlighter.MODULE_NAME);
         ATTRIBUTES.put(CroTemplateTokenTypes.IDENTIFER, CroTemplateHighlighter.CALL_NAME);
         ATTRIBUTES.put(CroTemplateTokenTypes.INFIX, CroTemplateHighlighter.INFIX);
