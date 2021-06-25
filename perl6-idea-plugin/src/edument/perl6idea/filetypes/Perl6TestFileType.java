@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class Perl6TestFileType extends LanguageFileType {
+public class Perl6TestFileType extends LanguageFileType implements RakuMultiExtensionFileType {
     public static final Perl6TestFileType INSTANCE = new Perl6TestFileType();
 
     private Perl6TestFileType() {
@@ -49,5 +49,10 @@ public class Perl6TestFileType extends LanguageFileType {
     @Override
     public String getCharset(@NotNull VirtualFile file, @NotNull byte[] content) {
         return "UTF-8";
+    }
+
+    @Override
+    public String[] getExtensions() {
+        return new String[]{"t", "t6", "rakutest"};
     }
 }

@@ -5,6 +5,7 @@ import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.FileViewProvider;
@@ -20,7 +21,7 @@ import com.intellij.ui.JBColor;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.ui.JBFont;
 import edument.perl6idea.Perl6Language;
-import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.filetypes.*;
 import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.pod.PodDomNode;
 import edument.perl6idea.pod.PodRenderingContext;
@@ -96,6 +97,11 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         VARIABLE_SYMBOLS.put("$*DEFAULT-READ-ELEMS", Perl6SettingTypeId.Int);
     }
 
+    private static RakuMultiExtensionFileType[] RAKU_FILE_TYPES = new RakuMultiExtensionFileType[] {
+        Perl6ModuleFileType.INSTANCE, Perl6ScriptFileType.INSTANCE,
+        Perl6TestFileType.INSTANCE, Perl6PodFileType.INSTANCE
+    };
+
     public Perl6FileImpl(FileViewProvider viewProvider) {
         super(viewProvider, Perl6Language.INSTANCE);
     }
@@ -162,6 +168,13 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     @NotNull
     @Override
     public FileType getFileType() {
+        String name = getVirtualFile().getName();
+        for (RakuMultiExtensionFileType type : RAKU_FILE_TYPES) {
+            for (String ext : type.getExtensions()) {
+                if (name.endsWith(ext))
+                    return (FileType)type;
+            }
+        }
         return Perl6ModuleFileType.INSTANCE;
     }
 
