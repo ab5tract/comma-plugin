@@ -168,7 +168,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     @NotNull
     @Override
     public FileType getFileType() {
-        String name = getVirtualFile().getName();
+        String name = getName();
         for (RakuMultiExtensionFileType type : RAKU_FILE_TYPES) {
             for (String ext : type.getExtensions()) {
                 if (name.endsWith(ext))
