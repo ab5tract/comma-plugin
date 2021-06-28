@@ -14,6 +14,8 @@ import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.pod.PodDomBuildingContext;
+import edument.perl6idea.pod.PodDomClassyDeclarator;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
@@ -503,5 +505,32 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (identifier != null)
             identifier.replace(nameElement);
         return this;
+    }
+
+    @Override
+    public void collectPodAndDocumentables(PodDomBuildingContext context) {
+        String kind = getPackageKind();
+        String name = getPackageName();
+        if (name != null && !name.isEmpty()) {
+            String[] parts = name.split("::");
+            String shortName = parts[parts.length - 1];
+            String globalName = context.prependGlobalNameParts(name);
+            context.enterGlobalNamePart(name);
+            if (!(kind.equals("package") || kind.equals("module"))) {
+                PodDomClassyDeclarator type = new PodDomClassyDeclarator(getTextOffset(), shortName, globalName,
+                        getDocBlocks(), kind);
+                context.addType(type);
+                context.enterClassyType(type);
+                super.collectPodAndDocumentables(context);
+                context.exitClassyType();
+            }
+            else {
+                super.collectPodAndDocumentables(context);
+            }
+            context.exitGlobalNamePart();
+        }
+        else {
+            super.collectPodAndDocumentables(context);
+        }
     }
 }

@@ -12,6 +12,9 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.pod.PodDomAttributeDeclarator;
+import edument.perl6idea.pod.PodDomBuildingContext;
+import edument.perl6idea.pod.PodDomClassyDeclarator;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStubElementType;
@@ -426,5 +429,33 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
     private Perl6TermDefinition getTerm() {
         return findChildByClass(Perl6TermDefinition.class);
+    }
+
+    @Override
+    public void collectPodAndDocumentables(PodDomBuildingContext context) {
+        // Only document attributes.
+        String scope = getScope();
+        if (scope == null)
+            return;
+        if (!(scope.equals("has") || scope.equals("HAS")))
+            return;
+
+        // Make sure there's an enclosing class, and add it.
+        PodDomClassyDeclarator enclosingClass = context.currentClassyDeclarator();
+        if (enclosingClass == null)
+            return;
+        for (String name : getVariableNames()) {
+            if (Perl6Variable.getTwigil(name) != '.')
+                continue;
+            String shortName = name.substring(2);
+            boolean rw = findTrait("is", "rw") != null;
+            Perl6Type type = inferType();
+            String typename = null;
+            if (!(type instanceof Perl6Untyped))
+                typename = type.getName();
+            PodDomAttributeDeclarator attribute = new PodDomAttributeDeclarator(getTextOffset(), shortName, null,
+                    getDocBlocks(), rw, typename);
+            enclosingClass.addAttribute(attribute);
+        }
     }
 }

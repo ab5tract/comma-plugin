@@ -31,6 +31,11 @@ public interface PodBlock extends PodElement {
         return getNode().getChildren(POD_CONTENT);
     }
 
+    @Override
+    default void collectPodAndDocumentables(PodDomBuildingContext context) {
+        context.addBlock(buildPodDom(context));
+    }
+
     @NotNull
     default PodDomNode buildPodDom(PodDomBuildingContext context) {
         // The result is the top-level thing we produce. For certain kinds of blocks

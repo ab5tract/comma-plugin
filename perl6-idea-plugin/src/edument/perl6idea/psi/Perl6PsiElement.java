@@ -8,6 +8,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
@@ -159,5 +160,14 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
                 temp.getNode().getElementType() == UNV_WHITE_SPACE))
             temp = temp.getNextSibling();
         return temp;
+    }
+
+    default void collectPodAndDocumentables(PodDomBuildingContext context) {
+        PsiElement child = getFirstChild();
+        while (child != null) {
+            if (child instanceof Perl6PsiElement)
+                ((Perl6PsiElement)child).collectPodAndDocumentables(context);
+            child = child.getNextSibling();
+        }
     }
 }
