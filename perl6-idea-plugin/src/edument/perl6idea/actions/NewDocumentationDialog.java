@@ -32,7 +32,7 @@ public class NewDocumentationDialog extends DialogWrapper {
     @Override
     protected ValidationInfo doValidate() {
         String newFileName = fileNameField.getText();
-        boolean isCorrectFileName = newFileName.matches(Patterns.SCRIPT_PATTERN);
+        boolean isCorrectFileName = newFileName.matches(Patterns.DOC_FILE_PATTERN);
         if (!isCorrectFileName)
             return new ValidationInfo("Incorrect file name (examples: `doc`, `doc.rakudoc`, `doc.pod6`)", fileNameField);
         if (Paths.get(myParentPath, newFileName).toFile().exists())
