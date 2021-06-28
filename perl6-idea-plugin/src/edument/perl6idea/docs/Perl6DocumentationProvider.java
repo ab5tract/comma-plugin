@@ -101,7 +101,7 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
             }
             if (!(ref instanceof PsiReferenceBase.Poly))
                 return null;
-            ResolveResult[] resolves = ((PsiReferenceBase.Poly)ref).multiResolve(false);
+            ResolveResult[] resolves = ((PsiReferenceBase.Poly<?>)ref).multiResolve(false);
             for (ResolveResult result : resolves) {
                 PsiElement declaration = result.getElement();
                 if (declaration instanceof Perl6RoutineDecl) {
