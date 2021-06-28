@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.editor.markup.InspectionWidgetActionProvider;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -15,6 +16,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ui.JBUI;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
+import edument.perl6idea.filetypes.Perl6PodFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,12 +34,16 @@ public class Perl6ActionProvider implements InspectionWidgetActionProvider {
         }
         else {
             PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
-            if (psiFile != null && psiFile.getFileType() instanceof Perl6ModuleFileType)
-                return new DefaultActionGroup(
-                    new CodeModeAction(editor), Separator.create(),
-                    new DocsModeAction(editor), Separator.create(),
-                    new SplitModeAction(editor), Separator.create()
-                );
+            if (psiFile != null) {
+                FileType type = psiFile.getFileType();
+                if (type instanceof Perl6ModuleFileType || type instanceof Perl6PodFileType) {
+                    return new DefaultActionGroup(
+                        new CodeModeAction(editor), Separator.create(),
+                        new DocsModeAction(editor), Separator.create(),
+                        new SplitModeAction(editor), Separator.create()
+                    );
+                }
+            }
         }
         return null;
     }
