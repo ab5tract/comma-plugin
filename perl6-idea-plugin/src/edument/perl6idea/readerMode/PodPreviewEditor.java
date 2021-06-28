@@ -35,6 +35,7 @@ import java.util.Locale;
 
 public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
     private static final String FILE_SCHEME = "file://";
+    private static final String EXTERNAL_SCHEME = "raku://";
 
     private final JCEFHtmlPanel htmlPanel;
     private final Project project;
@@ -68,7 +69,7 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
                 String url = request.getURL();
                 if (url != null) {
                     // For file:// URLs, try to resolve them in the project.
-                    boolean isFile = url.startsWith(FILE_SCHEME);
+                    boolean isFile = url.startsWith(FILE_SCHEME) || url.startsWith(EXTERNAL_SCHEME);
                     if (isFile && !url.endsWith("about:blank")) {
                         // If it's the file we're previewing, then hand back the rendered content.
                         if (url.equals(previewUrl)) {
