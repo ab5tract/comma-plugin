@@ -146,7 +146,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         }
         List<PodDomDeclarator> subs = context.getSubs();
         if (!subs.isEmpty()) {
-            builder.append("<h2>Exported Subroutines</h2>\n");
+            builder.append("<h2>Subroutines</h2>\n");
             for (PodDomDeclarator sub : subs)
                 sub.renderInto(builder, new PodRenderingContext());
         }
