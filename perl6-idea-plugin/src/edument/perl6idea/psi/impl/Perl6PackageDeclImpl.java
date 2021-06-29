@@ -515,7 +515,8 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             String[] parts = name.split("::");
             String shortName = parts[parts.length - 1];
             String globalName = context.prependGlobalNameParts(name);
-            boolean isLexical = !getScope().equals("our");
+            String scope = getScope();
+            boolean isLexical = !(scope.equals("our") || scope.equals("unit"));
             Perl6Trait exportTrait = findTrait("is", "export");
             if (isLexical)
                 context.enterLexicalPackage();
