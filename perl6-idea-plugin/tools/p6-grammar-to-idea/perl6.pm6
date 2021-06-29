@@ -235,7 +235,7 @@ grammar MAIN {
     }
 
     token pre-comment {
-        <?before '#|' \h>
+        <?before '#|' \s>
         <.start-element('POD_PRE_COMMENT')>
         <.start-token('COMMENT_STARTER')>
         '#|'
@@ -247,7 +247,7 @@ grammar MAIN {
     }
 
     token post-comment {
-        <?before '#=' \h>
+        <?before '#=' \s>
         <.start-element('POD_POST_COMMENT')>
         <.start-token('COMMENT_STARTER')>
         '#='
