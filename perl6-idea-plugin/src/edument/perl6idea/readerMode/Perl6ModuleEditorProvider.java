@@ -1,6 +1,5 @@
-package edument.perl6idea.editor.podPreview;
+package edument.perl6idea.readerMode;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -9,16 +8,21 @@ import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.event.VisibleAreaEvent;
 import com.intellij.openapi.editor.event.VisibleAreaListener;
-import com.intellij.openapi.fileEditor.*;
+import com.intellij.openapi.editor.impl.EditorImpl;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorPolicy;
+import com.intellij.openapi.fileEditor.FileEditorProvider;
+import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.jcef.JBCefApp;
 import com.intellij.util.Alarm;
+import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.filetypes.Perl6PodFileType;
 import edument.perl6idea.psi.Perl6File;
 import org.jetbrains.annotations.NonNls;
@@ -26,26 +30,28 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
-public class PodPreviewEditorProvider implements FileEditorProvider, DumbAware {
-    @NonNls private static final String EDITOR_TYPE_ID = "pod6";
-
-    @Override
-    public @NotNull @NonNls String getEditorTypeId() {
-        return EDITOR_TYPE_ID;
-    }
+public class Perl6ModuleEditorProvider implements FileEditorProvider, DumbAware {
+    private static final String EDITOR_TYPE_ID = "perl6-module";
 
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile file) {
-        return file.getFileType() instanceof Perl6PodFileType;
+        return file.getFileType() instanceof Perl6ModuleFileType || file.getFileType() instanceof Perl6PodFileType;
     }
 
     @Override
     public @NotNull FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {
         TextEditor editor = (TextEditor)TextEditorProvider.getInstance().createEditor(project, file);
         if (JBCefApp.isSupported()) {
-            PodPreviewEditor viewer = new PodPreviewEditor(project, file);
-            Alarm myAlarm = new Alarm(Alarm.ThreadToUse.POOLED_THREAD, editor);
+            Perl6ModuleViewEditor moduleViewEditor = new Perl6ModuleViewEditor(editor, null, "Raku Module Editor");
+            PodPreviewEditor viewer = new PodPreviewEditor(project, file, (EditorImpl)editor.getEditor(), moduleViewEditor);
+            Disposer.register(editor, viewer);
+
             PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
+            Alarm myAlarm = new Alarm(Alarm.ThreadToUse.POOLED_THREAD, editor);
+
+            moduleViewEditor.setCallback(
+                () -> myAlarm.addRequest(() -> renderPreview(editor.getEditor().getDocument(), documentManager, viewer), 0));
+
             editor.getEditor().getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void documentChanged(@NotNull DocumentEvent event) {
@@ -65,11 +71,11 @@ public class PodPreviewEditorProvider implements FileEditorProvider, DumbAware {
                 }
             });
             myAlarm.addRequest(() -> renderPreview(editor.getEditor().getDocument(), documentManager, viewer), 0);
-            return new TextEditorWithPreview(editor, viewer, "Pod6Editor");
+
+            moduleViewEditor.setViewer(viewer);
+            return moduleViewEditor;
         }
-        else {
-            return editor;
-        }
+        return editor;
     }
 
     private static void renderPreview(Document document, PsiDocumentManager documentManager, PodPreviewEditor viewer) {
@@ -79,6 +85,11 @@ public class PodPreviewEditorProvider implements FileEditorProvider, DumbAware {
                 return "";
             return ((Perl6File)psi).renderPod();
         }));
+    }
+
+    @Override
+    public @NotNull @NonNls String getEditorTypeId() {
+        return EDITOR_TYPE_ID;
     }
 
     @Override

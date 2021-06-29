@@ -245,7 +245,7 @@
     <moduleService serviceImplementation="edument.perl6idea.metadata.Perl6MetaDataComponent"/>
     <moduleService serviceImplementation="edument.perl6idea.event.ModuleMetaChangeListener"/>
     <projectService serviceImplementation="edument.perl6idea.metadata.Perl6ProjectModelSync"/>
-    <fileEditorProvider implementation="edument.perl6idea.editor.podPreview.PodPreviewEditorProvider"/>
+    <fileEditorProvider implementation="edument.perl6idea.readerMode.Perl6ModuleEditorProvider"/>
     <defaultLiveTemplates file="../../liveTemplates/Cro-HTTP-Client.xml"/>
     <defaultLiveTemplates file="../../liveTemplates/Cro-WebApp.xml"/>
     <defaultLiveTemplates file="../../liveTemplates/Red.xml"/>
@@ -253,6 +253,7 @@
     <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.CroClientVar"/>
     <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.RakuSuggestVariableName"/>
     <liveTemplateOptionalProcessor implementation="edument.perl6idea.liveTemplates.AddUseProcessor"/>
+    <iw.actionProvider implementation="edument.perl6idea.readerMode.Perl6ActionProvider"/>
   </extensions>
 
   <actions>
