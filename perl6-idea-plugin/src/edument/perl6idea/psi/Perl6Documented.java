@@ -24,7 +24,7 @@ public interface Perl6Documented {
         List<PsiElement> result = new ArrayList<>();
 
         Perl6PsiElement nodeToGatherComments =
-            PsiTreeUtil.getParentOfType((PsiElement)this, Perl6Statement.class, Perl6Parameter.class);
+            PsiTreeUtil.getNonStrictParentOfType((PsiElement)this, Perl6Statement.class, Perl6Parameter.class);
         if (nodeToGatherComments == null) return Collections.emptyList();
         PsiElement temp = nodeToGatherComments.getPrevSibling();
         gatherInlineComments(temp, false, result);
