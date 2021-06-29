@@ -4,9 +4,12 @@ import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.symbols.Perl6LexicalSymbolContributor;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public interface Perl6Parameter extends Perl6PsiElement, Perl6PsiDeclaration, Perl6LexicalSymbolContributor {
     String summary();
     String getVariableName();
+    List<String> getVariableNames();
     @Nullable
     PsiElement getInitializer();
     boolean isPositional();

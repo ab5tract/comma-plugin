@@ -2,6 +2,7 @@ package edument.perl6idea.psi.external;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
@@ -10,18 +11,30 @@ import edument.perl6idea.psi.type.Perl6UnresolvedType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements Perl6Parameter {
     private final String myName;
+    private List<String> myNames = Collections.emptyList();
     private final String myType;
     static private final Pattern NAME_PATTERN = Pattern.compile("([|$@%&]\\w+)");
 
-    public ExternalPerl6Parameter(Project project, PsiElement parent, String name, String type) {
+    public ExternalPerl6Parameter(Project project, PsiElement parent, String name, List<Object> names, String type) {
         myProject = project;
         myParent = parent;
         myName = name;
+        if (names != null) {
+            myNames = new ArrayList<>();
+            for (Object obj : names) {
+                if (obj instanceof String)
+                    myNames.add((String)obj);
+            }
+        }
         myType = type;
     }
 
@@ -35,9 +48,17 @@ public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements P
         Matcher matcher = NAME_PATTERN.matcher(myName);
         if (matcher.find()) {
             return matcher.group(0);
-        } else {
+        }
+        else {
             return myName;
         }
+    }
+
+    @Override
+    public List<String> getVariableNames() {
+        return myNames.size() == 0
+               ? Collections.singletonList(getVariableName())
+               : ContainerUtil.map(myNames, s -> "$" + s);
     }
 
     @Override

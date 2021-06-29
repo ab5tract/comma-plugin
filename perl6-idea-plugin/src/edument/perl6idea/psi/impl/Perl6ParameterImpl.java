@@ -16,6 +16,9 @@ import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.List;
+
 import static edument.perl6idea.parsing.Perl6TokenTypes.PARAMETER_QUANTIFIER;
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
@@ -71,7 +74,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
                 return ":$";
             if (maybeSig.getText().charAt(0) == '(')
                 return "$";
-            if  (maybeSig.getText().charAt(0) == '[')
+            if (maybeSig.getText().charAt(0) == '[')
                 return "@";
         }
         return null;
@@ -81,6 +84,11 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     public String getVariableName() {
         Perl6ParameterVariable var = PsiTreeUtil.findChildOfType(this, Perl6ParameterVariable.class);
         return var != null ? var.getText() : "";
+    }
+
+    @Override
+    public List<String> getVariableNames() {
+        return Collections.singletonList(getVariableName());
     }
 
     @Nullable
@@ -133,7 +141,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
         PsiElement quant = findChildByType(PARAMETER_QUANTIFIER);
         return quant != null &&
                (quant.getText().equals("*") || quant.getText().equals("**")
-                       || quant.getText().equals("+"));
+                || quant.getText().equals("+"));
     }
 
     @Override
@@ -232,7 +240,8 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
         @Nullable Perl6TypeName type = findChildByClass(Perl6TypeName.class);
         if (type != null) {
             return new Perl6UnresolvedType(type.getTypeName());
-        } else {
+        }
+        else {
             return Perl6Untyped.INSTANCE;
         }
     }

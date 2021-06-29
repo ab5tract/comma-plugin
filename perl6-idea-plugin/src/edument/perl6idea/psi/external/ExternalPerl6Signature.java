@@ -23,8 +23,9 @@ public class ExternalPerl6Signature extends Perl6ExternalPsiElement implements P
         for (Object param : paramsJSON) {
             if (param instanceof JSONObject) {
                 params.add(new ExternalPerl6Parameter(project, parent,
-                        ((JSONObject) param).getString("n"),
-                        ((JSONObject) param).getString("t")));
+                                                      ((JSONObject) param).getString("n"),
+                                                      ((JSONObject)param).has("nn") ? ((JSONObject) param).getJSONArray("nn").toList() : null,
+                                                      ((JSONObject) param).getString("t")));
             }
         }
         myParameters = params.toArray(new ExternalPerl6Parameter[0]);
