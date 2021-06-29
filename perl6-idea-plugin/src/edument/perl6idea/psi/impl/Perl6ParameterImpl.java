@@ -28,7 +28,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     }
 
     @Override
-    public String summary() {
+    public String summary(boolean includeName) {
         String maybeSignature = yieldSignature();
         if (maybeSignature != null)
             return maybeSignature;
@@ -48,7 +48,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
         if (maybeNamed != null) summary.append(maybeNamed.summary());
 
         Perl6ParameterVariableImpl maybeNormal = findChildByClass(Perl6ParameterVariableImpl.class);
-        if (maybeNormal != null) summary.append(maybeNormal.summary());
+        if (maybeNormal != null) summary.append(maybeNormal.summary(includeName));
 
         Perl6TermDefinitionImpl term = findChildByClass(Perl6TermDefinitionImpl.class);
         if (term != null && term.getPrevSibling().getText().equals("\\"))

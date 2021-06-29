@@ -39,7 +39,7 @@ public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements P
     }
 
     @Override
-    public String summary() {
+    public String summary(boolean includeName) {
         return myType + " " + myName;
     }
 

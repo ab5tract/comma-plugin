@@ -23,7 +23,7 @@ public class Perl6SignatureImpl extends ASTWrapperPsiElement implements Perl6Sig
         Perl6Parameter[] params = getParameters();
         List<String> sums = new ArrayList<>();
         for (Perl6Parameter param : params)
-            sums.add(param.summary());
+            sums.add(param.summary(false));
         String paramsSummary = String.join(", ", ArrayUtil.toStringArray(sums));
         if (type instanceof Perl6Untyped)
             return String.format("(%s)", paramsSummary);

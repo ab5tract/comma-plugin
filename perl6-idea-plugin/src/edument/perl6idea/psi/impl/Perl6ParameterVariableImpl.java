@@ -81,12 +81,12 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     }
 
     @Override
-    public String summary() {
-        String sigil = getSigil();
+    public String summary(boolean includeName) {
+        String base = includeName ? getName() : getSigil();
         PsiElement defaultValue = PsiTreeUtil.getNextSiblingOfType(this, Perl6ParameterDefault.class);
         if (defaultValue != null)
-            sigil += '?';
-        return sigil;
+            base += '?';
+        return base;
     }
 
     @NotNull

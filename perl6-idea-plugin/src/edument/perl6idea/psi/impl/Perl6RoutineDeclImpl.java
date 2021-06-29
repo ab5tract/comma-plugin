@@ -398,7 +398,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         for (int i = 0; i < parameters.length; i++) {
             Perl6Parameter parameter = parameters[i];
             result[i] = new PodDomParameterDeclarator(parameter.getTextOffset(), parameter.getVariableName(),
-                    null, parameter.getDocBlocks(), parameter.getText());
+                    null, parameter.getDocBlocks(), parameter.summary(true));
         }
         return result;
     }
