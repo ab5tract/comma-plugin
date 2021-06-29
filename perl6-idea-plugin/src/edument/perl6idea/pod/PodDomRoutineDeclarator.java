@@ -2,6 +2,7 @@ package edument.perl6idea.pod;
 
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Trait;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +27,7 @@ public class PodDomRoutineDeclarator extends PodDomDeclarator {
     public void renderInto(StringBuilder builder, PodRenderingContext context) {
         // Render the name.
         builder.append("<h4 class=\"doc-routine-name\">");
-        builder.append(getPrimaryName());
+        builder.append(StringEscapeUtils.escapeHtml(getPrimaryName()));
         builder.append(" <span class=\"doc-kind\">");
         builder.append(routineKind);
         builder.append("</span>");
@@ -48,7 +49,7 @@ public class PodDomRoutineDeclarator extends PodDomDeclarator {
             }
             if (returnType != null) {
                 builder.append("<tr><td class=\"doc-prop-name\">Return Type</td><td><code>");
-                builder.append(returnType);
+                builder.append(StringEscapeUtils.escapeHtml(returnType));
                 builder.append("</code></td></tr>");
             }
             builder.append("</table>\n");
