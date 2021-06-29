@@ -36,6 +36,7 @@ import edument.perl6idea.repl.Perl6ReplState;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.sdk.Perl6SettingTypeId;
 import edument.perl6idea.utils.Perl6Utils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -131,6 +132,14 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                 builder.append("</h3>\n");
             }
             builder.append("</header>\n");
+        }
+        else if (getFileType() instanceof Perl6ModuleFileType) {
+            String moduleName = getEnclosingPerl6ModuleName();
+            if (moduleName != null) {
+                builder.append("<header>\n<h1>");
+                builder.append(StringEscapeUtils.escapeHtml(moduleName));
+                builder.append("</h1>\n</header>\n");
+            }
         }
 
         // Render all of the non-semantic blocks.
