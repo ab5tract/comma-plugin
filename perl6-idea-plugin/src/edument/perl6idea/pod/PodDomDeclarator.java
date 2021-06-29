@@ -39,28 +39,31 @@ public abstract class PodDomDeclarator extends PodDomNode {
 
     protected void renderDocComments(StringBuilder builder, PodRenderingContext context) {
         boolean inParagraph = false;
+        int seenNewLines = 0;
         for (PsiElement comment : docComments) {
-            String text = comment == null ? "" : comment.getText().trim();
-
             // Process empty lines, which may be paragraph breaks.
-            if (text.isEmpty()) {
-                // If we're in a paragraph, end it.
-                if (inParagraph) {
-                    builder.append("</p>");
-                    inParagraph = false;
-                }
+            if (comment == null) {
+                seenNewLines++;
+                continue;
             }
+
+            // Add paragraph break if needed.
+            if (seenNewLines > 1 && inParagraph) {
+                builder.append("</p>");
+                inParagraph = false;
+            }
+            else {
+                builder.append(' ');
+            }
+            seenNewLines = 0;
 
             // If it's not empty, emit the content, starting a paragraph if
             // needed.
-            else {
-                if (!inParagraph) {
-                    builder.append("<p>");
-                    inParagraph = true;
-                }
-                builder.append(text);
-                builder.append(' ');
+            if (!inParagraph) {
+                builder.append("<p>");
+                inParagraph = true;
             }
+            builder.append(comment.getText());
         }
         if (inParagraph)
             builder.append("</p>");

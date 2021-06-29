@@ -374,11 +374,10 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
                     ? context.prependGlobalNameParts(getRoutineName())
                     : null;
             Perl6Trait exportTrait = findTrait("is", "export");
-            String shortName = exportTrait != null ? getRoutineName() : null;
-            if (globalName == null && shortName == null)
+            if (globalName == null && exportTrait == null)
                 return;
 
-            PodDomRoutineDeclarator routine = new PodDomRoutineDeclarator(getTextOffset(), name, null,
+            PodDomRoutineDeclarator routine = new PodDomRoutineDeclarator(getTextOffset(), name, globalName,
                     getDocBlocks(), getRoutineKind(), getDocParameters(), getDocReturnType());
             context.addSub(routine);
         }

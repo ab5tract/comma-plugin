@@ -515,8 +515,14 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             String[] parts = name.split("::");
             String shortName = parts[parts.length - 1];
             String globalName = context.prependGlobalNameParts(name);
-            context.enterGlobalNamePart(name);
-            if (!(kind.equals("package") || kind.equals("module"))) {
+            boolean isLexical = !getScope().equals("our");
+            Perl6Trait exportTrait = findTrait("is", "export");
+            if (isLexical)
+                context.enterLexicalPackage();
+            else
+                context.enterGlobalNamePart(name);
+            boolean visible = !isLexical && globalName != null || exportTrait != null;
+            if (visible && !(kind.equals("package") || kind.equals("module"))) {
                 PodDomClassyDeclarator type = new PodDomClassyDeclarator(getTextOffset(), shortName, globalName,
                         getDocBlocks(), kind);
                 context.addType(type);
@@ -527,7 +533,10 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             else {
                 super.collectPodAndDocumentables(context);
             }
-            context.exitGlobalNamePart();
+            if (isLexical)
+                context.exitLexicalPackage();
+            else
+                context.exitGlobalNamePart();
         }
         else {
             super.collectPodAndDocumentables(context);

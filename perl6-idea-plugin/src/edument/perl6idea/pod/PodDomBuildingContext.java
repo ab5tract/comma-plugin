@@ -10,6 +10,7 @@ public class PodDomBuildingContext {
     private final List<PodDomDeclarator> types = new ArrayList<>();
     private final List<PodDomDeclarator> subs = new ArrayList<>();
     private final Deque<String> globalNameParts = new ArrayDeque<>();
+    private int inLexicalPackage = 0;
     private final Deque<PodDomClassyDeclarator> classyTypeStack = new ArrayDeque<>();
 
     public void addBlock(PodDomNode domNode) {
@@ -52,7 +53,18 @@ public class PodDomBuildingContext {
         globalNameParts.pop();
     }
 
+    public void enterLexicalPackage() {
+        inLexicalPackage++;
+    }
+
+    public void exitLexicalPackage() {
+        inLexicalPackage--;
+    }
+
+    @Nullable
     public String prependGlobalNameParts(String name) {
+        if (inLexicalPackage > 0)
+            return null;
         if (globalNameParts.isEmpty())
             return name;
         return String.join("::", globalNameParts) + "::" + name;
