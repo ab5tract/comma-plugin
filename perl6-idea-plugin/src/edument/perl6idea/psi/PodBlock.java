@@ -167,12 +167,12 @@ public interface PodBlock extends PodElement {
                 }
                 else if (outstandingNewlines > 1) {
                     // Need to start a new node unless we were in code and we're going
-                    // to continue with it after emitting he appropirate number of
+                    // to continue with it after emitting the appropriate number of
                     // newlines.
                     if (node instanceof PodDomCode && child.getElementType() == Perl6TokenTypes.POD_CODE) {
                         node.addChild(new PodDomText(child.getStartOffset(), "\n".repeat(outstandingNewlines)));
                     }
-                    else {
+                    else if (!(node instanceof PodDomPara && node.getChildren().isEmpty())) {
                         node = null;
                     }
                 }
