@@ -527,12 +527,12 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                         getDocBlocks(), exportTrait, kind);
                 context.addType(type);
                 context.enterClassyType(type);
-                super.collectPodAndDocumentables(context);
-                context.exitClassyType();
             }
             else {
-                super.collectPodAndDocumentables(context);
+                context.enterClassyType(null);
             }
+            super.collectPodAndDocumentables(context);
+            context.exitClassyType();
             if (isLexical)
                 context.exitLexicalPackage();
             else

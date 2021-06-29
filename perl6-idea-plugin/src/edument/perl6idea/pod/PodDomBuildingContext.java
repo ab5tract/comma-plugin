@@ -11,7 +11,7 @@ public class PodDomBuildingContext {
     private final List<PodDomDeclarator> subs = new ArrayList<>();
     private final Deque<String> globalNameParts = new ArrayDeque<>();
     private int inLexicalPackage = 0;
-    private final Deque<PodDomClassyDeclarator> classyTypeStack = new ArrayDeque<>();
+    private final Deque<Optional<PodDomClassyDeclarator>> classyTypeStack = new ArrayDeque<>();
 
     public void addBlock(PodDomNode domNode) {
         blocks.add(domNode);
@@ -71,7 +71,7 @@ public class PodDomBuildingContext {
     }
 
     public void enterClassyType(PodDomClassyDeclarator type) {
-        classyTypeStack.push(type);
+        classyTypeStack.push( Optional.ofNullable(type));
     }
 
     public void exitClassyType() {
@@ -80,6 +80,6 @@ public class PodDomBuildingContext {
 
     @Nullable
     public PodDomClassyDeclarator currentClassyDeclarator() {
-        return classyTypeStack.isEmpty() ? null : classyTypeStack.peek();
+        return classyTypeStack.isEmpty() ? null : classyTypeStack.peek().orElse(null);
     }
 }
