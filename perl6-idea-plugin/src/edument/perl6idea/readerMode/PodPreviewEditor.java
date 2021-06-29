@@ -76,17 +76,8 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
                             return new CefResourceRequestHandlerAdapter() {
                                 @Override
                                 public CefResourceHandler getResourceHandler(CefBrowser browser, CefFrame frame, CefRequest request) {
-                                    return new HtmlStringResourceHandler(latestContent);
-                                }
-
-                                @Override
-                                public void onResourceLoadComplete(CefBrowser browser,
-                                                                   CefFrame frame,
-                                                                   CefRequest request,
-                                                                   CefResponse response,
-                                                                   CefURLRequest.Status status,
-                                                                   long receivedContentLength) {
-                                    setupModeChangeHandlers();
+                                    String withHandlers = latestContent.replace("</body>", getModeChangeHandlers() + "</body>");
+                                    return new HtmlStringResourceHandler(withHandlers);
                                 }
                             };
                         }
@@ -114,48 +105,46 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
                 };
             }
         }, htmlPanel.getCefBrowser());
-        // Setup mode switch action handlers
-        setupModeChangeHandlers();
     }
 
-    public void setupModeChangeHandlers() {
+    public String getModeChangeHandlers() {
         CefBrowser browser = htmlPanel.getCefBrowser();
         JBCefBrowser jbBrowser = JBCefBrowser.getJBCefBrowser(browser);
-        if (jbBrowser != null) {
-            if (myCodeModeQuery == null) {
-                myCodeModeQuery = JBCefJSQuery.create(jbBrowser);
-                myCodeModeQuery.addHandler((ignore) -> {
-                    moduleViewEditor.updateState(Perl6ReaderModeState.CODE);
-                    return null;
-                });
-            }
-            if (mySplitModeQuery == null) {
-                mySplitModeQuery = JBCefJSQuery.create(jbBrowser);
-                mySplitModeQuery.addHandler((ignore) -> {
-                    moduleViewEditor.updateState(Perl6ReaderModeState.SPLIT);
-                    return null;
-                });
-            }
-            if (myDocModeQuery == null) {
-                myDocModeQuery = JBCefJSQuery.create(jbBrowser);
-                myDocModeQuery.addHandler((ignore) -> {
-                    moduleViewEditor.updateState(Perl6ReaderModeState.DOCS);
-                    return null;
-                });
-            }
-            browser.executeJavaScript(
-                "window.JavaPanelBridge = {" +
-                "    goToCodeMode : function() {" +
-                myCodeModeQuery.inject(null) +
-                "    }," +
-                "    goToSplitMode : function() {" +
-                mySplitModeQuery.inject(null) +
-                "    }," +
-                "    goToDocumentationMode : function() {" +
-                myDocModeQuery.inject(null) +
-                "    }" +
-                "}", previewOf.getUrl(), 0);
+        if (jbBrowser == null)
+            return "";
+        if (myCodeModeQuery == null) {
+            myCodeModeQuery = JBCefJSQuery.create(jbBrowser);
+            myCodeModeQuery.addHandler((ignore) -> {
+                moduleViewEditor.updateState(Perl6ReaderModeState.CODE);
+                return null;
+            });
         }
+        if (mySplitModeQuery == null) {
+            mySplitModeQuery = JBCefJSQuery.create(jbBrowser);
+            mySplitModeQuery.addHandler((ignore) -> {
+                moduleViewEditor.updateState(Perl6ReaderModeState.SPLIT);
+                return null;
+            });
+        }
+        if (myDocModeQuery == null) {
+            myDocModeQuery = JBCefJSQuery.create(jbBrowser);
+            myDocModeQuery.addHandler((ignore) -> {
+                moduleViewEditor.updateState(Perl6ReaderModeState.DOCS);
+                return null;
+            });
+        }
+        return
+            "<script>window.JavaPanelBridge = {" +
+            "    goToCodeMode : function() {" +
+            myCodeModeQuery.inject(null) +
+            "    }," +
+            "    goToSplitMode : function() {" +
+            mySplitModeQuery.inject(null) +
+            "    }," +
+            "    goToDocumentationMode : function() {" +
+            myDocModeQuery.inject(null) +
+            "    }" +
+            "}</script>\n";
     }
 
     @Nullable
