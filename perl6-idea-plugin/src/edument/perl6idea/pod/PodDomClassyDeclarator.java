@@ -1,6 +1,7 @@
 package edument.perl6idea.pod;
 
 import com.intellij.psi.PsiElement;
+import edument.perl6idea.psi.Perl6Trait;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,8 +15,9 @@ public class PodDomClassyDeclarator extends PodDomDeclarator {
     private final List<PodDomRoutineDeclarator> methods = new ArrayList<>();
 
     public PodDomClassyDeclarator(int offset, @NotNull String shortName,
-            @Nullable String globalName, List<PsiElement> docComments, @NotNull String packageKind) {
-        super(offset, shortName, globalName, docComments);
+              @Nullable String globalName, List<PsiElement> docComments,
+              @Nullable Perl6Trait exportTrait, @NotNull String packageKind) {
+        super(offset, shortName, globalName, docComments, exportTrait);
         this.packageKind = packageKind;
     }
 
@@ -34,7 +36,9 @@ public class PodDomClassyDeclarator extends PodDomDeclarator {
         builder.append(getPrimaryName());
         builder.append(" <span class=\"doc-kind\">");
         builder.append(packageKind);
-        builder.append("</span></h3>");
+        builder.append("</span>");
+        renderExportTags(builder, context);
+        builder.append("</h3>");
         renderDocComments(builder, context);
 
         // Render any attributes and methods.

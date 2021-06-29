@@ -1,6 +1,7 @@
 package edument.perl6idea.pod;
 
 import com.intellij.psi.PsiElement;
+import edument.perl6idea.psi.Perl6Trait;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,10 +13,10 @@ public class PodDomRoutineDeclarator extends PodDomDeclarator {
     private final String returnType;
 
     public PodDomRoutineDeclarator(int offset, @NotNull String shortName,
-            @Nullable String globalName, List<PsiElement> docComments,
-            @NotNull String routineKind, PodDomParameterDeclarator[] parameters,
-            @Nullable String returnType) {
-        super(offset, shortName, globalName, docComments);
+           @Nullable String globalName, List<PsiElement> docComments,
+           @Nullable Perl6Trait exportTrait, @NotNull String routineKind,
+           PodDomParameterDeclarator[] parameters, @Nullable String returnType) {
+        super(offset, shortName, globalName, docComments, exportTrait);
         this.routineKind = routineKind;
         this.parameters = parameters;
         this.returnType = returnType;
@@ -28,7 +29,9 @@ public class PodDomRoutineDeclarator extends PodDomDeclarator {
         builder.append(getPrimaryName());
         builder.append(" <span class=\"doc-kind\">");
         builder.append(routineKind);
-        builder.append("</span></h4>");
+        builder.append("</span>");
+        renderExportTags(builder, context);
+        builder.append("</h4>");
 
         // Parameters and return type.
         if (parameters.length > 0 || returnType != null) {

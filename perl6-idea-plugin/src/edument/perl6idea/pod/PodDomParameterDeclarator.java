@@ -14,7 +14,7 @@ public class PodDomParameterDeclarator extends PodDomDeclarator {
                                      @Nullable String globalName,
                                      List<PsiElement> docComments,
                                      @NotNull String definition) {
-        super(offset, shortName, globalName, docComments);
+        super(offset, shortName, globalName, docComments, null);
         this.definition = definition;
     }
 

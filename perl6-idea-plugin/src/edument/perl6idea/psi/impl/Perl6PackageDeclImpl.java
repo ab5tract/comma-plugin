@@ -524,7 +524,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             boolean visible = !isLexical && globalName != null || exportTrait != null;
             if (visible && !(kind.equals("package") || kind.equals("module"))) {
                 PodDomClassyDeclarator type = new PodDomClassyDeclarator(getTextOffset(), shortName, globalName,
-                        getDocBlocks(), kind);
+                        getDocBlocks(), exportTrait, kind);
                 context.addType(type);
                 context.enterClassyType(type);
                 super.collectPodAndDocumentables(context);

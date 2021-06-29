@@ -15,7 +15,7 @@ public class PodDomAttributeDeclarator extends PodDomDeclarator {
                                      @Nullable String globalName,
                                      List<PsiElement> docComments,
                                      boolean rw, String type) {
-        super(offset, shortName, globalName, docComments);
+        super(offset, shortName, globalName, docComments, null);
         this.rw = rw;
         this.type = type;
     }

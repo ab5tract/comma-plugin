@@ -365,7 +365,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
 
             // Build the doc node and add it to the class.
             PodDomRoutineDeclarator routine = new PodDomRoutineDeclarator(getTextOffset(), name, null,
-                      getDocBlocks(), getRoutineKind(), getDocParameters(), getDocReturnType());
+                      getDocBlocks(), null, getRoutineKind(), getDocParameters(), getDocReturnType());
             enclosingClass.addMethod(routine);
         }
         else {
@@ -378,7 +378,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
                 return;
 
             PodDomRoutineDeclarator routine = new PodDomRoutineDeclarator(getTextOffset(), name, globalName,
-                    getDocBlocks(), getRoutineKind(), getDocParameters(), getDocReturnType());
+                    getDocBlocks(), exportTrait, getRoutineKind(), getDocParameters(), getDocReturnType());
             context.addSub(routine);
         }
     }
