@@ -14,6 +14,8 @@ import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.pod.PodDomBuildingContext;
+import edument.perl6idea.pod.PodDomClassyDeclarator;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
@@ -503,5 +505,42 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (identifier != null)
             identifier.replace(nameElement);
         return this;
+    }
+
+    @Override
+    public void collectPodAndDocumentables(PodDomBuildingContext context) {
+        String kind = getPackageKind();
+        String name = getPackageName();
+        if (name != null && !name.isEmpty()) {
+            String[] parts = name.split("::");
+            String shortName = parts[parts.length - 1];
+            String globalName = context.prependGlobalNameParts(name);
+            String scope = getScope();
+            boolean isLexical = !(scope.equals("our") || scope.equals("unit"));
+            Perl6Trait exportTrait = findTrait("is", "export");
+            if (isLexical)
+                context.enterLexicalPackage();
+            else
+                context.enterGlobalNamePart(name);
+            boolean visible = !isLexical && globalName != null || exportTrait != null;
+            if (visible && !(kind.equals("package") || kind.equals("module"))) {
+                PodDomClassyDeclarator type = new PodDomClassyDeclarator(getTextOffset(), shortName, globalName,
+                        getDocBlocks(), exportTrait, kind);
+                context.addType(type);
+                context.enterClassyType(type);
+            }
+            else {
+                context.enterClassyType(null);
+            }
+            super.collectPodAndDocumentables(context);
+            context.exitClassyType();
+            if (isLexical)
+                context.exitLexicalPackage();
+            else
+                context.exitGlobalNamePart();
+        }
+        else {
+            super.collectPodAndDocumentables(context);
+        }
     }
 }

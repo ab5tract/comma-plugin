@@ -4,6 +4,9 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.pod.PodDomBuildingContext;
+import edument.perl6idea.pod.PodDomEnumDeclarator;
+import edument.perl6idea.pod.PodDomSubsetDeclarator;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6EnumStub;
 import edument.perl6idea.psi.stub.Perl6EnumStubElementType;
@@ -80,5 +83,22 @@ public class Perl6EnumImpl extends Perl6TypeStubBasedPsi<Perl6EnumStub> implemen
 
     public String toString() {
         return getClass().getSimpleName() + "(Perl6:ENUM)";
+    }
+
+    @Override
+    public void collectPodAndDocumentables(PodDomBuildingContext context) {
+        String name = getName();
+        if (name != null && !name.isEmpty()) {
+            String[] parts = name.split("::");
+            String globalName = context.prependGlobalNameParts(name);
+            boolean isLexical = !getScope().equals("our");
+            Perl6Trait exportTrait = findTrait("is", "export");
+            boolean visible = !isLexical && globalName != null || exportTrait != null;
+            if (visible) {
+                String shortName = parts[parts.length - 1];
+                context.addType(new PodDomEnumDeclarator(getTextOffset(), shortName, globalName,
+                        getDocBlocks(), exportTrait, getEnumValues()));
+            }
+        }
     }
 }

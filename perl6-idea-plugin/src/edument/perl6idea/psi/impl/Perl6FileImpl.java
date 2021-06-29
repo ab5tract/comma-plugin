@@ -23,6 +23,7 @@ import com.intellij.util.ui.JBFont;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.*;
 import edument.perl6idea.pod.PodDomBuildingContext;
+import edument.perl6idea.pod.PodDomDeclarator;
 import edument.perl6idea.pod.PodDomNode;
 import edument.perl6idea.pod.PodRenderingContext;
 import edument.perl6idea.psi.*;
@@ -35,6 +36,7 @@ import edument.perl6idea.repl.Perl6ReplState;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.sdk.Perl6SettingTypeId;
 import edument.perl6idea.utils.Perl6Utils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,14 +115,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     @Override
     public String renderPod() {
-        // Translate all of the blocks into PodDom for rendering.
-        Perl6StatementList stmts = PsiTreeUtil.getChildOfType(this, Perl6StatementList.class);
+        // Translate all Pod and documentable program elements into PodDom for rendering.
         PodDomBuildingContext context = new PodDomBuildingContext();
-        PodBlock[] blocks = PsiTreeUtil.getChildrenOfType(stmts, PodBlock.class);
-        List<PodDomNode> podDoms = new ArrayList<>();
-        if (blocks != null)
-            for (PodBlock pod : blocks)
-                podDoms.add(pod.buildPodDom(context));
+        collectPodAndDocumentables(context);
 
         // If there is a title or subtitle, use it has a header.
         StringBuilder builder = new StringBuilder();
@@ -136,10 +133,32 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             }
             builder.append("</header>\n");
         }
+        else if (getFileType() instanceof Perl6ModuleFileType) {
+            String moduleName = getEnclosingPerl6ModuleName();
+            if (moduleName != null) {
+                builder.append("<header>\n<h1>");
+                builder.append(StringEscapeUtils.escapeHtml(moduleName));
+                builder.append("</h1>\n</header>\n");
+            }
+        }
 
         // Render all of the non-semantic blocks.
-        for (PodDomNode dom : podDoms)
+        for (PodDomNode dom : context.getBlocks())
             dom.renderInto(builder, new PodRenderingContext());
+
+        // If there are documentable types and subs, render those API docs.
+        List<PodDomDeclarator> types = context.getTypes();
+        if (!types.isEmpty()) {
+            builder.append("<h2>Types</h2>\n");
+            for (PodDomDeclarator type : types)
+                type.renderInto(builder, new PodRenderingContext());
+        }
+        List<PodDomDeclarator> subs = context.getSubs();
+        if (!subs.isEmpty()) {
+            builder.append("<h2>Subroutines</h2>\n");
+            for (PodDomDeclarator sub : subs)
+                sub.renderInto(builder, new PodRenderingContext());
+        }
 
         // Substitute HTML into template.
         Map<String, String> substitute = new HashMap<>();

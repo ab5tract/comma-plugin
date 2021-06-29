@@ -11,11 +11,13 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.parsing.Perl6TokenTypes;
+import edument.perl6idea.pod.*;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
 import edument.perl6idea.psi.stub.Perl6TraitStub;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.psi.type.Perl6Type;
+import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -340,5 +342,64 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         } else if (Objects.equals(routineName, "ARGS-TO-CAPTURE")) {
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "&*ARGS-TO-CAPTURE"));
         }
+    }
+
+    @Override
+    public void collectPodAndDocumentables(PodDomBuildingContext context) {
+        // Only include things with a name.
+        String name = getName();
+        if (name == null || name.isEmpty())
+            return;
+
+        // Method or sub?
+        if (isMethod()) {
+            // Don't include private, BUILD, TWEAK or DESTROY, as these aren't for
+            // external callers.
+            if (isPrivate() || name.equals("BUILD") || name.equals("TWEAK") || name.equals("DESTROY"))
+                return;
+
+            // Method. Ensure there's an enclosing class.
+            PodDomClassyDeclarator enclosingClass = context.currentClassyDeclarator();
+            if (enclosingClass == null)
+                return;
+
+            // Build the doc node and add it to the class.
+            PodDomRoutineDeclarator routine = new PodDomRoutineDeclarator(getTextOffset(), name, null,
+                      getDocBlocks(), null, getRoutineKind(), getDocParameters(), getDocReturnType());
+            enclosingClass.addMethod(routine);
+        }
+        else {
+            // A sub should be our-scoped or exported.
+            String globalName = getScope().equals("our")
+                    ? context.prependGlobalNameParts(getRoutineName())
+                    : null;
+            Perl6Trait exportTrait = findTrait("is", "export");
+            if (globalName == null && exportTrait == null)
+                return;
+
+            PodDomRoutineDeclarator routine = new PodDomRoutineDeclarator(getTextOffset(), name, globalName,
+                    getDocBlocks(), exportTrait, getRoutineKind(), getDocParameters(), getDocReturnType());
+            context.addSub(routine);
+        }
+    }
+
+    @Nullable
+    private String getDocReturnType() {
+        Perl6Type returnType = getReturnType();
+        return returnType instanceof Perl6Untyped ? null : returnType.getName();
+    }
+
+    private PodDomParameterDeclarator[] getDocParameters() {
+        Perl6Signature signature = getSignatureNode();
+        if (signature == null)
+            return new PodDomParameterDeclarator[0];
+        Perl6Parameter[] parameters = signature.getParameters();
+        PodDomParameterDeclarator[] result = new PodDomParameterDeclarator[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            Perl6Parameter parameter = parameters[i];
+            result[i] = new PodDomParameterDeclarator(parameter.getTextOffset(), parameter.getVariableName(),
+                    null, parameter.getDocBlocks(), parameter.summary(true));
+        }
+        return result;
     }
 }

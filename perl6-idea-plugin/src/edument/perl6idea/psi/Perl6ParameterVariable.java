@@ -6,5 +6,5 @@ import edument.perl6idea.psi.symbols.Perl6LexicalSymbolContributor;
 
 public interface Perl6ParameterVariable extends Perl6PsiDeclaration, PsiNamedElement, PsiMetaOwner,
                                                 Perl6LexicalSymbolContributor {
-    String summary();
+    String summary(boolean includeName);
 }

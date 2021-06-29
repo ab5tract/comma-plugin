@@ -33,7 +33,7 @@ public class ExternalPerl6Signature extends Perl6ExternalPsiElement implements P
 
     @Override
     public String summary(Perl6Type retType) {
-        return String.join(", ", Arrays.stream(myParameters).map(p -> p.summary()).toArray(String[]::new)) + " --> " + retType.getName();
+        return String.join(", ", Arrays.stream(myParameters).map(p -> p.summary(false)).toArray(String[]::new)) + " --> " + retType.getName();
     }
 
     @Override
