@@ -179,6 +179,9 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testSignatureAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "multi sub encode-base64(Bool:D :$pad!, |c)                    { samewith(:pad(?$pad ?? '=' !! ''), |c) }");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "multi sub MAIN('nuke', Bool :<weak_warning descr=\"Unused parameter\">$confirm</weak_warning>, *<weak_warning descr=\"Unused parameter\">@names</weak_warning> ($, *@)) {}");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,

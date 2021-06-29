@@ -117,6 +117,8 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
         PsiElement quant = findChildByType(PARAMETER_QUANTIFIER);
         if (quant != null && quant.getText().equals("*") && getVariableName().startsWith("%"))
             return false;
+        if (quant != null && quant.getText().equals("|"))
+            return false;
 
         // Any other case is positional.
         return true;
