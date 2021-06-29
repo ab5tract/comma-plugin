@@ -21,16 +21,12 @@ import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.sdk.Perl6SettingTypeId;
-import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
-import static edument.perl6idea.parsing.Perl6TokenTypes.PARAMETER_SEPARATOR;
 
 public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements Perl6ParameterVariable {
     public Perl6ParameterVariableImpl(@NotNull ASTNode node) {
