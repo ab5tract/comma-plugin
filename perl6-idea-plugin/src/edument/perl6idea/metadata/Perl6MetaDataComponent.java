@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.components.Service;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -18,6 +17,7 @@ import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.Function;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.module.Perl6ModuleType;
@@ -35,9 +35,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Perl6MetaDataComponent {
     public static final String META6_JSON_NAME = "META6.json";
     public static final String META_OBSOLETE_NAME = "META.info";
-    private static final Logger LOG = Logger.getInstance(Perl6MetaDataComponent.class);
-    public Module module = null;
+    @Nullable
+    private Module myModule = null;
+    @Nullable
     private VirtualFile myMetaFile = null;
+    @Nullable
     private JSONObject myMeta = null;
 
     public Perl6MetaDataComponent(Module module) {
@@ -46,9 +48,11 @@ public class Perl6MetaDataComponent {
         if (name == null || !name.equals(Perl6ModuleType.getInstance().getId()))
             return;
 
-        this.module = module;
+        this.myModule = module;
 
-        this.module.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
+        // VFS events WILL NOT be passed to the module message bus,
+        // so connect to project one instead
+        this.myModule.getProject().getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             @Override
             public void after(@NotNull List<? extends VFileEvent> events) {
                 for (VFileEvent event : events) {
@@ -56,10 +60,14 @@ public class Perl6MetaDataComponent {
                     String fileName = event.getFile().getName();
                     if (!event.isFromSave() ||
                         !(fileName.equals(META6_JSON_NAME) || fileName.equals(META_OBSOLETE_NAME))) return;
+                    // Above we did a simple check to do a fast filtering of completely unrelated files,
+                    // but as we work with project-level bus, do the heavy check to make extra sure
+                    // it is the meta file of a module we are working with
+                    if (!event.getFile().equals(myMetaFile)) continue;
                     myMeta = checkMetaSanity();
                     saveFile();
                     if (myMeta != null) {
-                        Perl6ProjectModelSync.syncExternalLibraries(Perl6MetaDataComponent.this.module, getAllDependencies());
+                        Perl6ProjectModelSync.syncExternalLibraries(Perl6MetaDataComponent.this.myModule, getAllDependencies());
                     }
                 }
             }
@@ -85,8 +93,13 @@ public class Perl6MetaDataComponent {
 
         // Load dependencies
         if (myMeta != null) {
-            Perl6ProjectModelSync.syncExternalLibraries(this.module, getAllDependencies());
+            Perl6ProjectModelSync.syncExternalLibraries(this.myModule, getAllDependencies());
         }
+    }
+
+    @Nullable
+    public Module getModule() {
+        return myModule;
     }
 
     private VirtualFile checkOldMetaFile(VirtualFile metaParent) {
@@ -130,11 +143,47 @@ public class Perl6MetaDataComponent {
             catch (Perl6MetaException e) {
                 notifyMetaIssue(e.getMessage(), NotificationType.ERROR, e.myFix);
             }
-            catch (IOException|JSONException e) {
+            catch (IOException | JSONException e) {
                 notifyMetaIssue(e.getMessage(), NotificationType.ERROR);
             }
         }
         return meta;
+    }
+
+    public List<String> getResources() {
+        if (myMeta == null || !myMeta.has("resources"))
+            return new ArrayList<>();
+        JSONArray resources = myMeta.getJSONArray("resources");
+        return ContainerUtil.map(resources.toList(), r -> r instanceof String ? (String)r : null);
+    }
+
+    public void removeResource(String name) {
+        if (myMeta == null)
+            return;
+        JSONArray resources = myMeta.getJSONArray("resources");
+        if (resources != null) {
+            List<Object> resourceList = resources.toList();
+            for (int i = 0, size = resourceList.size(); i < size; i++) {
+                Object resource = resourceList.get(i);
+                if (resource instanceof String && resource.equals(name)) {
+                    resources.remove(i);
+                    myMeta.put("resources", resources);
+                    saveFile();
+                    break;
+                }
+            }
+        }
+    }
+
+    public void addResource(String newName) {
+        if (myMeta == null)
+            return;
+        if (!myMeta.has("resources"))
+            myMeta.put("resources", new JSONArray());
+        JSONArray resources = myMeta.getJSONArray("resources");
+        resources.put(newName);
+        myMeta.put("resources", resources);
+        saveFile();
     }
 
     /* Enforces number of rules for meta to check on start and every saving */
@@ -175,7 +224,7 @@ public class Perl6MetaDataComponent {
         myMetaFile = metaFile;
         myMeta = checkMetaSanity();
         if (myMeta != null) {
-            Perl6ProjectModelSync.syncExternalLibraries(module, getAllDependencies());
+            Perl6ProjectModelSync.syncExternalLibraries(myModule, getAllDependencies());
         }
     }
 
@@ -196,7 +245,7 @@ public class Perl6MetaDataComponent {
     }
 
     private void addDependsInternal(String key, String name) {
-        if (!isMetaDataExist() || !myMeta.has(key)) return;
+        if (myMeta == null || !myMeta.has(key)) return;
         Object depends = myMeta.has(key) ? myMeta.get(key) : new JSONArray();
         if (!(depends instanceof JSONArray)) return;
         JSONArray dependsArray = (JSONArray)depends;
@@ -229,7 +278,7 @@ public class Perl6MetaDataComponent {
     }
 
     private List<String> getDependsInternal(String key, boolean normalize) {
-        if (!isMetaDataExist()) return new ArrayList<>();
+        if (myMeta == null) return new ArrayList<>();
         if (!myMeta.has(key)) return new ArrayList<>();
         Object depends = myMeta.get(key);
         if (!(depends instanceof JSONArray)) return new ArrayList<>();
@@ -255,14 +304,16 @@ public class Perl6MetaDataComponent {
     }
 
     private void setDependsInternal(String key, List<String> buildDepends) {
-        if (!isMetaDataExist()) return;
+        if (myMeta == null) return;
         myMeta.put(key, new JSONArray(buildDepends));
         saveFile();
     }
 
     public Collection<String> getProvidedNames() {
-        if (!isMetaDataExist()) return new ArrayList<>();
+        if (myMeta == null) return new ArrayList<>();
         List<String> names = new ArrayList<>();
+        if (!myMeta.has("provides"))
+            return new ArrayList<>();
         Object provides = myMeta.get("provides");
         for (Object value : ((JSONObject)provides).toMap().keySet()) {
             names.add((String)value);
@@ -282,19 +333,20 @@ public class Perl6MetaDataComponent {
     }
 
     public void createStubMetaFile(String moduleName, VirtualFile firstRoot, boolean shouldOpenEditor) throws IOException {
+        if (myModule == null)
+            return;
         if (firstRoot == null)
             firstRoot = calculateMetaParent();
         if (firstRoot == null) {
-            if (module == null)
-                return;
-            ContentEntry[] entries = ModuleRootManager.getInstance(module).getContentEntries();
+            ContentEntry[] entries = ModuleRootManager.getInstance(myModule).getContentEntries();
             VirtualFile file = FileChooser.chooseFile(
                 FileChooserDescriptorFactory.createSingleFolderDescriptor(),
-                module.getProject(), entries.length == 1 && entries[0].getFile() != null ? entries[0].getFile() : null);
+                myModule.getProject(), entries.length == 1 && entries[0].getFile() != null ? entries[0].getFile() : null);
             if (file == null) {
                 notifyMetaIssue("Directory was not selected, meta file creation is canceled", NotificationType.INFORMATION);
                 return;
-            } else {
+            }
+            else {
                 firstRoot = file;
             }
         }
@@ -311,7 +363,7 @@ public class Perl6MetaDataComponent {
                 myMetaFile = metaFile;
 
                 if (shouldOpenEditor)
-                    FileEditorManager.getInstance(module.getProject()).openFile(metaFile, true);
+                    FileEditorManager.getInstance(myModule.getProject()).openFile(metaFile, true);
             }
             catch (IOException e) {
                 ex.set(e);
@@ -324,9 +376,9 @@ public class Perl6MetaDataComponent {
     }
 
     private VirtualFile calculateMetaParent() {
-        if (module == null)
+        if (myModule == null)
             return null;
-        VirtualFile[] sourceRoots = ModuleRootManager.getInstance(module).getSourceRoots();
+        VirtualFile[] sourceRoots = ModuleRootManager.getInstance(myModule).getSourceRoots();
         for (VirtualFile root : sourceRoots) {
             if (!root.getName().equals("lib")) continue;
             return root.getParent();
@@ -354,18 +406,22 @@ public class Perl6MetaDataComponent {
     }
 
     public void addNamespaceToProvides(String name) {
-        if (!isMetaDataExist()) return;
+        if (myMeta == null) return;
         String libBasedModulePath = String.format(
             "lib/%s.%s", name.replaceAll("::", "/"),
             Perl6ModuleFileType.INSTANCE.getDefaultExtension());
+        if (!myMeta.has("provides"))
+            myMeta.put("provides", new JSONArray());
         JSONObject provides = myMeta.getJSONObject("provides");
         provides.put(name, libBasedModulePath);
         myMeta.put("provides", provides);
         saveFile();
     }
 
-    public void removeNamespaceToProvides(String name) {
-        if (!isMetaDataExist()) return;
+    public void removeNamespaceFromProvides(String name) {
+        if (myMeta == null) return;
+        if (!myMeta.has("provides"))
+            myMeta.put("provides", new JSONArray());
         JSONObject provides = myMeta.getJSONObject("provides");
         provides.remove(name);
         myMeta.put("provides", provides);
@@ -374,65 +430,84 @@ public class Perl6MetaDataComponent {
 
     @Nullable
     public String getName() {
-        return isMetaDataExist() && myMeta.has("name") ? myMeta.getString("name") : null;
+        return myMeta != null && myMeta.has("name") ? myMeta.getString("name") : null;
     }
 
     public void setName(String name) {
-        myMeta.put("name", name); saveFile();
+        if (myMeta == null) return;
+        myMeta.put("name", name);
+        saveFile();
     }
 
     @Nullable
     public String getDescription() {
-        return isMetaDataExist() && myMeta.has("description") ? myMeta.getString("description") : null;
+        return myMeta != null && myMeta.has("description") ? myMeta.getString("description") : null;
     }
 
     public void setDescription(String description) {
-        myMeta.put("description", description); saveFile();
+        if (myMeta == null) return;
+        myMeta.put("description", description);
+        saveFile();
     }
 
     @Nullable
     public String getVersion() {
-        return isMetaDataExist() && myMeta.has("version") ? myMeta.getString("version") : null;
+        return myMeta != null && myMeta.has("version") ? myMeta.getString("version") : null;
     }
 
     public void setVersion(String version) {
-        myMeta.put("version", version); saveFile();
+        if (myMeta == null) return;
+        myMeta.put("version", version);
+        saveFile();
     }
 
     @Nullable
     public String getAuth() {
-        return isMetaDataExist() && myMeta.has("auth") ? myMeta.getString("auth") : null;
+        return myMeta != null && myMeta.has("auth") ? myMeta.getString("auth") : null;
     }
 
     public void setAuth(String auth) {
-        myMeta.put("auth", auth); saveFile();
+        if (myMeta == null) return;
+        myMeta.put("auth", auth);
+        saveFile();
     }
 
     @Nullable
     public String getLicense() {
-        return isMetaDataExist() && myMeta.has("license") ? myMeta.getString("license") : null;
+        return myMeta != null && myMeta.has("license") ? myMeta.getString("license") : null;
     }
 
     public void setLicense(String license) {
-        myMeta.put("license", license); saveFile();
+        if (myMeta == null) return;
+        myMeta.put("license", license);
+        saveFile();
     }
 
     @Nullable
     public String getSourceURL() {
-        return isMetaDataExist() && myMeta.has("source-url") ? myMeta.getString("source-url") : null;
+        return myMeta != null && myMeta.has("source-url") ? myMeta.getString("source-url") : null;
     }
 
     public void setSourceURL(String sourceURL) {
-        myMeta.put("source-url", sourceURL); saveFile();
+        if (myMeta == null) return;
+        myMeta.put("source-url", sourceURL);
+        saveFile();
     }
 
     @Nullable
     public List<Object> getAuthors() {
-        return isMetaDataExist() && myMeta.has("authors") ? myMeta.getJSONArray("authors").toList() : null;
+        return myMeta != null && myMeta.has("authors") ? myMeta.getJSONArray("authors").toList() : null;
     }
 
     public void setAuthors(List<String> authors) {
-        myMeta.put("authors", authors); saveFile();
+        if (myMeta == null) return;
+        myMeta.put("authors", authors);
+        saveFile();
+    }
+
+    @Nullable
+    public VirtualFile getMetaFile() {
+        return myMetaFile;
     }
 
     private void saveFile() {
@@ -454,6 +529,8 @@ public class Perl6MetaDataComponent {
     }
 
     private void notifyMetaIssue(String message, NotificationType type, AnAction... actions) {
+        if (myModule == null)
+            return;
         Notification notification = new Notification(
             "Raku meta error", Perl6Icons.CAMELIA,
             "Raku meta error", "",
@@ -462,8 +539,8 @@ public class Perl6MetaDataComponent {
             notification.addAction(new AnAction(String.format("Open %s", META6_JSON_NAME)) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
-                    if (module.isDisposed()) return;
-                    FileEditorManager.getInstance(module.getProject()).openFile(myMetaFile, true);
+                    if (myModule.isDisposed()) return;
+                    FileEditorManager.getInstance(myModule.getProject()).openFile(myMetaFile, true);
                     notification.expire();
                 }
             });
@@ -478,7 +555,7 @@ public class Perl6MetaDataComponent {
                 }
             });
         }
-        Notifications.Bus.notify(notification, module.getProject());
+        Notifications.Bus.notify(notification, myModule.getProject());
     }
 
     private void notifyMissingMETA() {
@@ -492,8 +569,8 @@ public class Perl6MetaDataComponent {
             public void actionPerformed(@NotNull AnActionEvent e) {
                 try {
                     notification.expire();
-                    if (module.isDisposed()) return;
-                    createStubMetaFile(module.getName(), null, true);
+                    if (myModule == null || myModule.isDisposed()) return;
+                    createStubMetaFile(myModule.getName(), null, true);
                 }
                 catch (IOException e1) {
                     Notifications.Bus.notify(new Notification(

@@ -103,4 +103,8 @@
     <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/project-components/*)"/>
   </project-components>
 
+  <applicationListeners>
+    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/applicationListeners/*)"/>
+  </applicationListeners>
+
 </idea-plugin>

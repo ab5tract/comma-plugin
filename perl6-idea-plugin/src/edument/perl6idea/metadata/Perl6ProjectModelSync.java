@@ -39,7 +39,7 @@ public class Perl6ProjectModelSync {
             for (String metaDep : completeMETADependencies) {
                 // If local, project module, attach it as dependency
                 if (projectModules.containsKey(metaDep)) {
-                    Module moduleOfMetaDep = projectModules.get(metaDep).module;
+                    Module moduleOfMetaDep = projectModules.get(metaDep).getModule();
                     if (ModuleRootManager.getInstance(module).isDependsOn(moduleOfMetaDep)) {
                         entriesPresentInMETA.add(moduleOfMetaDep.getName());
                         removeDuplicateEntries(model, moduleOfMetaDep.getName());
