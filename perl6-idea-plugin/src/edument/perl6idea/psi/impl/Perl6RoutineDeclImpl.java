@@ -364,12 +364,30 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
                 return;
 
             // Build the doc node and add it to the class.
-            Perl6Type returnType = getReturnType();
-            String returnTypeName = returnType instanceof Perl6Untyped ? null : returnType.getName();
             PodDomRoutineDeclarator routine = new PodDomRoutineDeclarator(getTextOffset(), name, null,
-                    getDocBlocks(), getRoutineKind(), getDocParameters(), returnTypeName);
+                      getDocBlocks(), getRoutineKind(), getDocParameters(), getDocReturnType());
             enclosingClass.addMethod(routine);
         }
+        else {
+            // A sub should be our-scoped or exported.
+            String globalName = getScope().equals("our")
+                    ? context.prependGlobalNameParts(getRoutineName())
+                    : null;
+            Perl6Trait exportTrait = findTrait("is", "export");
+            String shortName = exportTrait != null ? getRoutineName() : null;
+            if (globalName == null && shortName == null)
+                return;
+
+            PodDomRoutineDeclarator routine = new PodDomRoutineDeclarator(getTextOffset(), name, null,
+                    getDocBlocks(), getRoutineKind(), getDocParameters(), getDocReturnType());
+            context.addSub(routine);
+        }
+    }
+
+    @Nullable
+    private String getDocReturnType() {
+        Perl6Type returnType = getReturnType();
+        return returnType instanceof Perl6Untyped ? null : returnType.getName();
     }
 
     private PodDomParameterDeclarator[] getDocParameters() {
