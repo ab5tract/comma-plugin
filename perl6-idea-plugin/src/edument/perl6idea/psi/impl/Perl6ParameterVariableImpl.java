@@ -50,32 +50,6 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
         return nameIdent != null ? nameIdent.getText() : "";
     }
 
-    @Nullable
-    @Override
-    public String getDocsString() {
-        StringBuilder builder = new StringBuilder();
-        Perl6Parameter parameter = PsiTreeUtil.getParentOfType(this, Perl6Parameter.class);
-        if (parameter == null) return null;
-        PsiElement temp = parameter.getPrevSibling();
-        List<PsiElement> comments = new ArrayList<>();
-        Perl6Documented.gatherInlineComments(temp, false, comments);
-        if (comments.size() != 0)
-            comments.remove(comments.size() - 1);
-        PsiElement maybeSeparator = Perl6PsiUtil.skipSpaces(parameter.getNextSibling(), true);
-        boolean hasSeparator = maybeSeparator != null && maybeSeparator.getNode().getElementType() == PARAMETER_SEPARATOR;
-        temp = hasSeparator ? parameter.getNextSibling() : parameter.getFirstChild();
-        while (temp != null && !(temp instanceof PodPostComment))
-            temp = temp.getNextSibling();
-        Perl6Documented.gatherInlineComments(temp, true, comments);
-        for (PsiElement comment : comments) {
-            if (comment == NEWLINE_COMMENT_ELEMENT)
-                builder.append("\n");
-            else
-                builder.append(comment.getText().trim());
-        }
-        return builder.toString().trim().replace("\n", "<br>");
-    }
-
     @NotNull
     @Override
     public SearchScope getUseScope() {

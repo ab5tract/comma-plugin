@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static edument.perl6idea.parsing.Perl6TokenTypes.PARAMETER_SEPARATOR;
+
 public interface Perl6Documented {
     @Nullable
     PsiElement NEWLINE_COMMENT_ELEMENT = null;
@@ -21,14 +23,23 @@ public interface Perl6Documented {
             return Collections.emptyList();
         List<PsiElement> result = new ArrayList<>();
 
-        Perl6Statement statement = PsiTreeUtil.getParentOfType((PsiElement)this, Perl6Statement.class);
-        if (statement == null) return Collections.emptyList();
-        PsiElement temp = statement.getPrevSibling();
+        Perl6PsiElement nodeToGatherComments =
+            PsiTreeUtil.getParentOfType((PsiElement)this, Perl6Statement.class, Perl6Parameter.class);
+        if (nodeToGatherComments == null) return Collections.emptyList();
+        PsiElement temp = nodeToGatherComments.getPrevSibling();
         gatherInlineComments(temp, false, result);
-        if (result.size() != 1)
+        if (result.size() != 0)
             result.remove(result.size() - 1);
-        temp = statement.getNextSibling();
-        gatherInlineComments(temp, true, result);
+        PsiElement maybeSeparator = Perl6PsiUtil.skipSpaces(nodeToGatherComments.getNextSibling(), true);
+        boolean shouldVisitNodeChildren = nodeToGatherComments instanceof Perl6Parameter &&
+                                          maybeSeparator != null && maybeSeparator.getNode().getElementType() != PARAMETER_SEPARATOR;
+        temp = shouldVisitNodeChildren ?
+               nodeToGatherComments.getFirstChild() :
+               nodeToGatherComments.getNextSibling();
+        while (temp != null && !(temp instanceof PodPostComment))
+            temp = temp.getNextSibling();
+        if (temp != null)
+            gatherInlineComments(temp, true, result);
         return result;
     }
 
