@@ -76,10 +76,11 @@ public class RakuResourceFileChangeListener extends RakuProjectFileChangeListene
     public void processDirectoryDelete(VFileEvent event) {
         VirtualFile file = Objects.requireNonNull(event.getFile());
         // If it's the resources directory itself, purify everything!
-        if (file.getName().equals("resources")) {
+        if (file.getName().equals("resources") && resourcePaths.contains(file.getPath())) {
             for (String resource : myMetaData.getResources()) {
                 myMetaData.removeResource(resource);
             }
+            return;
         }
         // Otherwise the normal procedure, remove everything
         // residing in this directory
