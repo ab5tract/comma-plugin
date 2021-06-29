@@ -254,6 +254,7 @@
     <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.RakuSuggestVariableName"/>
     <liveTemplateOptionalProcessor implementation="edument.perl6idea.liveTemplates.AddUseProcessor"/>
     <iw.actionProvider implementation="edument.perl6idea.readerMode.Perl6ActionProvider"/>
+    <readerModeMatcher implementation="edument.perl6idea.readerMode.Perl6DefaultReaderModeMatcher"/>
   </extensions>
 
   <actions>
