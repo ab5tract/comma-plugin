@@ -107,6 +107,16 @@ public class DocumentationTest extends CommaFixtureTestCase {
         testQuickDoc(":$parameter = 42");
     }
 
+    public void testParamIntegration1() {
+        testGeneratedDoc("documented int param 1<br>documented int param 2");
+    }
+    public void testParamIntegration2() {
+        testGeneratedDoc("documented named foo 1<br>documented named foo 2<br>documented named foo 3");
+    }
+    public void testParamIntegration3() {
+        testGeneratedDoc("foo docs 1<br>foo docs 2");
+    }
+
     public void testQuickRegex() {
         testQuickDoc("regex foo { one two }");
     }

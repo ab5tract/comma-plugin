@@ -3,7 +3,6 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.SearchScope;
@@ -22,6 +21,7 @@ import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.sdk.Perl6SettingTypeId;
+import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,6 @@ import java.util.Objects;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.PARAMETER_SEPARATOR;
-import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements Perl6ParameterVariable {
     public Perl6ParameterVariableImpl(@NotNull ASTNode node) {
@@ -62,10 +61,10 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
         Perl6Documented.gatherInlineComments(temp, false, comments);
         if (comments.size() != 0)
             comments.remove(comments.size() - 1);
-        temp = parameter.getNextSibling();
-        while (temp != null && (temp.getNode().getElementType() == PARAMETER_SEPARATOR ||
-                                temp.getNode().getElementType() == UNV_WHITE_SPACE ||
-                                temp instanceof PsiWhiteSpace))
+        PsiElement maybeSeparator = Perl6PsiUtil.skipSpaces(parameter.getNextSibling(), true);
+        boolean hasSeparator = maybeSeparator != null && maybeSeparator.getNode().getElementType() == PARAMETER_SEPARATOR;
+        temp = hasSeparator ? parameter.getNextSibling() : parameter.getFirstChild();
+        while (temp != null && !(temp instanceof PodPostComment))
             temp = temp.getNextSibling();
         Perl6Documented.gatherInlineComments(temp, true, comments);
         for (PsiElement comment : comments) {
@@ -133,8 +132,8 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
         PsiElement type = PsiTreeUtil.findSiblingBackward(this, TYPE_NAME, null);
         if (type instanceof Perl6TypeName) {
             return sigilType == null
-                   ? ((Perl6TypeName) type).inferType()
-                   : new Perl6ParametricType(sigilType, new Perl6Type[] { ((Perl6TypeName) type).inferType() });
+                   ? ((Perl6TypeName)type).inferType()
+                   : new Perl6ParametricType(sigilType, new Perl6Type[]{((Perl6TypeName)type).inferType()});
         }
 
         // Otherwise, sometimes we have a context that can indicate a parameter type.
@@ -174,7 +173,7 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, this));
             if (!collector.isSatisfied() && name.startsWith("&") && getScope().equals("my"))
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
-                    this, name.substring(1)));
+                                                                     this, name.substring(1)));
         }
     }
 
