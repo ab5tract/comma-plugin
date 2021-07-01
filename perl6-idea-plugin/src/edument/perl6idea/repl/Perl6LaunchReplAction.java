@@ -25,7 +25,7 @@ public class Perl6LaunchReplAction extends AnAction {
     }
 
     protected void startRepl(@NotNull AnActionEvent e, @Nullable String useModule) {
-        if (getSdkHome(e) == null)
+        if (getSdkHome(e) == null || e.getProject() == null)
             return;
         Project project = e.getProject();
         Perl6ReplConsole console = new Perl6ReplConsole(project, "Raku REPL", project.getBasePath());

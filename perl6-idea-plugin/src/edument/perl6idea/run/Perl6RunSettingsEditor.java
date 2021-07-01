@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration> {
-    private Project myProject;
+    private final Project myProject;
     private TextFieldWithBrowseButton fileField;
     private CommonProgramParametersPanel myParams;
     private JTextField myDebugPort;

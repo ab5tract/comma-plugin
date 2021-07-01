@@ -29,9 +29,9 @@ import javax.swing.*;
 import java.util.*;
 
 public class ExternalPerl6File implements Perl6File {
-    private Project myProject;
-    private FileViewProvider myViewProvider;
-    private VirtualFile myFile;
+    private final Project myProject;
+    private final FileViewProvider myViewProvider;
+    private final VirtualFile myFile;
     private List<Perl6Symbol> mySymbols = new ArrayList<>();
 
     public ExternalPerl6File(Project project,

@@ -9,8 +9,8 @@ import edument.perl6idea.psi.stub.Perl6SubCallStub;
 import java.util.Map;
 
 public class Perl6SubCallStubImpl extends StubBase<Perl6SubCall> implements Perl6SubCallStub {
-    private String name;
-    private Map<String, String> frameworkData;
+    private final String name;
+    private final Map<String, String> frameworkData;
 
     public Perl6SubCallStubImpl(StubElement parent, String name, Map<String, String> frameworkData) {
         super(parent, Perl6ElementTypes.SUB_CALL);

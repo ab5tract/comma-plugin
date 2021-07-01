@@ -15,7 +15,7 @@ import java.util.*;
 
 public class Perl6StructureViewElement implements StructureViewTreeElement {
     private final Perl6PsiElement element;
-    private ItemPresentation calculatedPresentation;
+    private final ItemPresentation calculatedPresentation;
 
     public Perl6StructureViewElement(Perl6PsiElement element) {
         this.element = element;

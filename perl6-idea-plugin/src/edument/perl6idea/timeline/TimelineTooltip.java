@@ -10,9 +10,9 @@ import java.awt.*;
 import java.util.Map;
 
 public class TimelineTooltip extends JPanel {
-    private static Font defaultFont = JBUI.Fonts.label();
-    private static Font nameFont = defaultFont.deriveFont(Font.BOLD, (float)defaultFont.getSize() + 4);
-    private static Font pathFont = defaultFont.deriveFont((float)defaultFont.getSize() - 4);
+    private static final Font defaultFont = JBUI.Fonts.label();
+    private static final Font nameFont = defaultFont.deriveFont(Font.BOLD, (float)defaultFont.getSize() + 4);
+    private static final Font pathFont = defaultFont.deriveFont((float)defaultFont.getSize() - 4);
 
     public TimelineTooltip(Logged logged) {
         super(new GridBagLayout());

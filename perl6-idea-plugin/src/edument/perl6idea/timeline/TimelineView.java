@@ -10,10 +10,10 @@ import java.awt.*;
 
 /** The timeline chart with scroll bar and so forth. */
 public class TimelineView extends JPanel {
-    private Timeline timeline;
-    private TimelineChart chart;
-    private JBScrollBar scrollbar;
-    private ContextHelpLabel help;
+    private final Timeline timeline;
+    private final TimelineChart chart;
+    private final JBScrollBar scrollbar;
+    private final ContextHelpLabel help;
 
     public TimelineView() {
         super();

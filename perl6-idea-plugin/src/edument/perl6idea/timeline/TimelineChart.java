@@ -30,10 +30,10 @@ public class TimelineChart extends JPanel {
     private final Timeline timeline;
 
     // Fonts and font metrics.
-    private Font font = JBUI.Fonts.label();
-    private Font categoryNameFont = font.deriveFont(Font.BOLD);
-    private Font moduleNameFont = categoryNameFont.deriveFont((float)categoryNameFont.getSize() + 4);
-    private FontRenderContext fontRenderContext = new FontRenderContext(null, true, false);
+    private final Font font = JBUI.Fonts.label();
+    private final Font categoryNameFont = font.deriveFont(Font.BOLD);
+    private final Font moduleNameFont = categoryNameFont.deriveFont((float)categoryNameFont.getSize() + 4);
+    private final FontRenderContext fontRenderContext = new FontRenderContext(null, true, false);
     private final int moduleNameHeight = (int)new TextLayout("Sample", moduleNameFont, fontRenderContext)
             .getBounds().getHeight();
     private final int textHeight = (int)new TextLayout("Sample", font, fontRenderContext)
@@ -405,8 +405,8 @@ public class TimelineChart extends JPanel {
 
     // Information about a single line on the chart to render.
     private class RenderLine {
-        private List<Logged> loggedItems;
-        private int top;
+        private final List<Logged> loggedItems;
+        private final int top;
 
         public RenderLine(List<Logged> loggedItems, int top) {
             this.loggedItems = loggedItems;

@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class WithConstructionAnnotator implements Annotator {
-    public static Set<String> terms = new HashSet<>();
+    public final static Set<String> terms = new HashSet<>();
 
     static {
         Collections.addAll(terms, "if", "elsif", "unless");

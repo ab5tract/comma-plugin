@@ -8,9 +8,9 @@ import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 import edument.perl6idea.psi.stub.Perl6SubsetStub;
 
 public class Perl6SubsetStubImpl extends StubBase<Perl6Subset> implements Perl6SubsetStub {
-    private String subsetName;
-    private boolean isExported;
-    private String baseTypeName;
+    private final String subsetName;
+    private final boolean isExported;
+    private final String baseTypeName;
 
     public Perl6SubsetStubImpl(StubElement stub, String name, boolean exported, String typeName) {
         super(stub, Perl6ElementTypes.SUBSET);

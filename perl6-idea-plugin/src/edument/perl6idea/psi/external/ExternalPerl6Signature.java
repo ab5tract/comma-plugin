@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ExternalPerl6Signature extends Perl6ExternalPsiElement implements Perl6Signature {
-    private Perl6Parameter[] myParameters;
+    private final Perl6Parameter[] myParameters;
 
     public ExternalPerl6Signature(Project project, PsiElement parent, JSONObject signature) {
         myProject = project;

@@ -8,9 +8,9 @@ import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 import edument.perl6idea.psi.stub.Perl6VariableDeclStub;
 
 public class Perl6VariableDeclStubImpl extends StubBase<Perl6VariableDecl> implements Perl6VariableDeclStub {
-    private String[] variableNames;
-    private String variableType;
-    private boolean isExported;
+    private final String[] variableNames;
+    private final String variableType;
+    private final boolean isExported;
 
     public Perl6VariableDeclStubImpl(StubElement stub, String[] names, String type, boolean exported) {
         super(stub, Perl6ElementTypes.VARIABLE_DECLARATION);

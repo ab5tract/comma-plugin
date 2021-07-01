@@ -4,8 +4,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 
 public class Perl6ExplicitSymbol implements Perl6Symbol {
-    private Perl6SymbolKind kind;
-    private PsiNamedElement psi;
+    private final Perl6SymbolKind kind;
+    private final PsiNamedElement psi;
     protected double myPriority;
     private boolean myWasDeffered = false;
 

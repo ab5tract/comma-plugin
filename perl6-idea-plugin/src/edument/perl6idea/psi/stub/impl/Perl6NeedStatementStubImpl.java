@@ -9,7 +9,7 @@ import edument.perl6idea.psi.stub.Perl6NeedStatementStub;
 import java.util.List;
 
 public class Perl6NeedStatementStubImpl extends StubBase<Perl6NeedStatement> implements Perl6NeedStatementStub {
-    private List<String> moduleNames;
+    private final List<String> moduleNames;
 
     public Perl6NeedStatementStubImpl(StubElement parent, List<String> moduleNames) {
         super(parent, Perl6ElementTypes.NEED_STATEMENT);

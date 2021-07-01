@@ -26,17 +26,17 @@ public class Perl6ModuleWizardStep extends ModuleWizardStep {
     private Perl6ProjectType currentType;
     private JPanel myMainPanel;
     // Script fields
-    private JTextField myScriptName = new JBTextField(40);
+    private final JTextField myScriptName = new JBTextField(40);
 
     // Module fields
-    private JTextField myModuleName = new JBTextField(40);
+    private final JTextField myModuleName = new JBTextField(40);
 
     // Application fields
-    private JTextField myEntryName = new JBTextField(40);
+    private final JTextField myEntryName = new JBTextField(40);
 
     // Cro application fields
-    private JCheckBox myWebsocketSupport = new JCheckBox();
-    private JCheckBox myTemplatingSUpport = new JCheckBox();
+    private final JCheckBox myWebsocketSupport = new JCheckBox();
+    private final JCheckBox myTemplatingSUpport = new JCheckBox();
 
     Perl6ModuleWizardStep(Perl6ModuleBuilder builder) {
         this.builder = builder;

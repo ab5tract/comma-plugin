@@ -30,7 +30,7 @@ import java.util.List;
 
 public class Perl6ReplConsole extends AbstractConsoleRunnerWithHistory<LanguageConsoleView> {
     private Perl6CommandLine commandLine;
-    private Perl6ReplState replState;
+    private final Perl6ReplState replState;
     private File myReplBackendFile;
 
     public Perl6ReplConsole(@NotNull Project project,

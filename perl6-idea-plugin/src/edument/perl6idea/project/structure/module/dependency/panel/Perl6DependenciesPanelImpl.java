@@ -181,10 +181,9 @@ public class Perl6DependenciesPanelImpl extends JPanel {
 
     private static class Perl6DependencyAddAction extends DialogWrapper {
         private final DependenciesTableModel myModel;
-        private Project myProject;
-        private Set<Perl6DependencyTableItem> alreadyAdded;
-        private JPanel myPanel;
-        private ComboBox<Perl6DependencyScope> myScopeCombo = new ComboBox<>(Perl6DependencyScope.values());
+        private final Project myProject;
+        private final Set<Perl6DependencyTableItem> alreadyAdded;
+        private final ComboBox<Perl6DependencyScope> myScopeCombo = new ComboBox<>(Perl6DependencyScope.values());
         private TextFieldWithAutoCompletion<String> myNameField;
 
         @Nullable
@@ -210,7 +209,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             setTitle("Add Dependency");
         }
 
-        public Perl6DependencyAddAction(Project project, DependenciesTableModel model, Perl6DependencyTableItem item) {
+        Perl6DependencyAddAction(Project project, DependenciesTableModel model, Perl6DependencyTableItem item) {
             super(project, false);
             myModel = model;
             myProject = project;
@@ -224,13 +223,13 @@ public class Perl6DependenciesPanelImpl extends JPanel {
         @Nullable
         @Override
         protected JComponent createCenterPanel() {
-            myPanel = new JPanel(new MigLayout());
-            myPanel.add(new JLabel("Name:"));
+            JPanel panel = new JPanel(new MigLayout());
+            panel.add(new JLabel("Name:"));
             myNameField = TextFieldWithAutoCompletion.create(myProject, new HashSet<>(), false, null);
             myNameField.setMinimumSize(new Dimension(250, 20));
-            myPanel.add(myNameField, "wrap");
-            myPanel.add(new JLabel("Scope:"));
-            myPanel.add(myScopeCombo);
+            panel.add(myNameField, "wrap");
+            panel.add(new JLabel("Scope:"));
+            panel.add(myScopeCombo);
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(myProject, "Getting Raku Modules List") {
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
@@ -248,7 +247,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
                     myNameField.setVariants(Stream.concat(names.stream(), localNames.stream()).collect(Collectors.toSet()));
                 }
             }, new EmptyProgressIndicator());
-            return myPanel;
+            return panel;
         }
 
         @Nullable

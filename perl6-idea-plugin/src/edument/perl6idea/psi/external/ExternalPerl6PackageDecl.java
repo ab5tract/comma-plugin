@@ -23,7 +23,7 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     private List<String> myMRO = new ArrayList<>();
     private String myPackageKind;
     private String myName;
-    private Set<String> myGettersPool = new HashSet<>();
+    private final Set<String> myGettersPool = new HashSet<>();
     private Perl6PackageDecl myMetaClass;
 
     public ExternalPerl6PackageDecl(Project project, Perl6File file, String kind, String name, String type, String base,

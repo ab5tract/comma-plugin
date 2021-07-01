@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 public class MissingModuleFix implements IntentionAction {
-    private String moduleName;
+    private final String moduleName;
 
     public MissingModuleFix(String holder) {
         moduleName = holder;

@@ -99,7 +99,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         VARIABLE_SYMBOLS.put("$*DEFAULT-READ-ELEMS", Perl6SettingTypeId.Int);
     }
 
-    private static RakuMultiExtensionFileType[] RAKU_FILE_TYPES = new RakuMultiExtensionFileType[] {
+    private static final RakuMultiExtensionFileType[] RAKU_FILE_TYPES = new RakuMultiExtensionFileType[] {
         Perl6ModuleFileType.INSTANCE, Perl6ScriptFileType.INSTANCE,
         Perl6TestFileType.INSTANCE, Perl6PodFileType.INSTANCE
     };

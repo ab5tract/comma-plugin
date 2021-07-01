@@ -13,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implements Perl6VariableDecl {
-    private String myName;
-    private String myScope;
-    private String myType;
+    private final String myName;
+    private final String myScope;
+    private final String myType;
 
     public ExternalPerl6VariableDecl(Project project, PsiElement parent, String name, String scope, String type) {
         myProject = project;

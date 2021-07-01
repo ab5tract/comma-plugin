@@ -9,6 +9,7 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.ConcurrencyUtil;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import com.intellij.xdebugger.frame.XCompositeNode;
@@ -41,10 +42,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Perl6DebugThread extends Thread {
     private static final Logger LOG = Logger.getInstance(Perl6DebugThread.class);
+    public static final String DEBUG_THREAD_NAME = "Debugger events handler thread";
     private final XDebugSession mySession;
     private final ExecutionResult myExecutionResult;
     private RemoteInstance client;
-    private static final Executor myExecutor = Executors.newSingleThreadExecutor();
+    private static final Executor myExecutor = ConcurrencyUtil.newSingleThreadExecutor(DEBUG_THREAD_NAME);
     private final List<BreakpointActionRequest> breakpointQueue = new CopyOnWriteArrayList<>();
     private boolean ready = false;
 
@@ -72,7 +74,7 @@ public class Perl6DebugThread extends Thread {
             if (mySession.isStopped()) {
                 return;
             }
-            Notification notification = new Notification("Raku Debugger", "Connection Error", "Could not connect to debug server",
+            Notification notification = new Notification("Raku Debugger", "Connection error", "Could not connect to debug server",
                                                          NotificationType.ERROR);
             Notifications.Bus.notify(notification,  mySession.getProject());
         }
@@ -83,7 +85,7 @@ public class Perl6DebugThread extends Thread {
         events.subscribeOn(Schedulers.newThread()).subscribe(event -> {
             if (event.getEventType() == EventType.BreakpointNotification) {
                 Perl6DebugThread thread = this;
-                Executors.newSingleThreadExecutor().execute(() -> {
+                ConcurrencyUtil.newSingleThreadExecutor(DEBUG_THREAD_NAME).execute(() -> {
                     BreakpointNotification bpn = (BreakpointNotification) event;
                     Perl6ThreadDescriptor[] threads;
                     try {
@@ -110,7 +112,7 @@ public class Perl6DebugThread extends Thread {
             }
             else if (event.getEventType() == EventType.StepCompleted) {
                 Perl6DebugThread thread = this;
-                Executors.newSingleThreadExecutor().execute(() -> {
+                ConcurrencyUtil.newSingleThreadExecutor(DEBUG_THREAD_NAME).execute(() -> {
                     StepCompletedNotification scn = (StepCompletedNotification)event;
                     Perl6ThreadDescriptor[] threads;
                     try {

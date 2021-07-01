@@ -22,7 +22,7 @@ public class Perl6IntroduceDialog extends DialogWrapper {
     private final String myHelpId;
     private final RakuNameValidator myValidator;
     private ComboBox myNameComboBox;
-    private Project myProject;
+    private final Project myProject;
     private JPanel myContentPane;
 
     public Perl6IntroduceDialog(Project project,

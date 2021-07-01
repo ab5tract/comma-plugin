@@ -63,7 +63,7 @@ public class Perl6SdkEditor implements Configurable, Place.Navigator {
 
     private String myInitialName;
     private String myInitialPath;
-    private boolean myIsDownloading = false;
+    private final boolean myIsDownloading = false;
     private final History myHistory;
 
     private final Disposable myDisposable = Disposer.newDisposable();

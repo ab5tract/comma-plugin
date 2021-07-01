@@ -25,16 +25,16 @@ public class OPP {
         public PsiBuilder.Marker endMarker;
     }
 
-    private PsiBuilder builder;
+    private final PsiBuilder builder;
 
     private PsiBuilder.Marker curPrefixStartMarker;
     private int curInfixStartPosition;
     private PsiBuilder.Marker termStartMarker;
     private PsiBuilder.Marker termEndMarker;
-    private List<Op> prefixes = new ArrayList<>();
-    private List<Op> postfixes = new ArrayList<>();
-    private List<Op> opStack = new ArrayList<>();
-    private List<Term> termStack = new ArrayList<>();
+    private final List<Op> prefixes = new ArrayList<>();
+    private final List<Op> postfixes = new ArrayList<>();
+    private final List<Op> opStack = new ArrayList<>();
+    private final List<Term> termStack = new ArrayList<>();
     private String opPrec = "";
 
     public OPP(PsiBuilder builder) {

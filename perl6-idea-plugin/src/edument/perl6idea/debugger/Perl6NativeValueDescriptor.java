@@ -1,8 +1,8 @@
 package edument.perl6idea.debugger;
 
 public class Perl6NativeValueDescriptor extends Perl6ValueDescriptor {
-    private String kind;
-    private String value;
+    private final String kind;
+    private final String value;
 
     Perl6NativeValueDescriptor(String name, String kind, String value) {
         super(name);

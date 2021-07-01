@@ -6,10 +6,10 @@ import edument.perl6idea.psi.Perl6PackageDecl;
 import java.util.*;
 
 public class Perl6SingleResolutionSymbolCollector implements Perl6SymbolCollector {
-    private Set<String> traversedNames = new HashSet<>();
-    private List<Perl6Symbol> results = new ArrayList<>();
-    private String wantedName;
-    private Perl6SymbolKind wantedKind;
+    private final Set<String> traversedNames = new HashSet<>();
+    private final List<Perl6Symbol> results = new ArrayList<>();
+    private final String wantedName;
+    private final Perl6SymbolKind wantedKind;
     private boolean satisfied = false;
     private boolean wasDeferred = false;
 

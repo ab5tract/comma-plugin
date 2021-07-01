@@ -8,12 +8,12 @@ import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
 import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
 public class Perl6RoutineDeclStubImpl extends StubBase<Perl6RoutineDecl> implements Perl6RoutineDeclStub {
-    private String routineName;
-    private String routineKind;
-    private boolean isExported;
-    private boolean isPrivate;
-    private String multiness;
-    private String returnType;
+    private final String routineName;
+    private final String routineKind;
+    private final boolean isExported;
+    private final boolean isPrivate;
+    private final String multiness;
+    private final String returnType;
 
     public Perl6RoutineDeclStubImpl(StubElement stub, String name, String kind, boolean isPrivate,
                                     boolean exported, String multiness, String returnType) {

@@ -1,7 +1,7 @@
 package edument.perl6idea.debugger;
 
 public abstract class Perl6ValueDescriptor {
-    private String name;
+    private final String name;
 
     Perl6ValueDescriptor(String name) {
         this.name = name;

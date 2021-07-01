@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Perl6FileStubImpl extends PsiFileStubImpl<Perl6File> implements Perl6FileStub {
-    private String compilationUnitName;
-    private Map<Integer, List<Integer>> statementLineMap;
+    private final String compilationUnitName;
+    private final Map<Integer, List<Integer>> statementLineMap;
 
     public Perl6FileStubImpl(Perl6File file, String compilationUnitName, Map<Integer, List<Integer>> statementLineMap) {
         super(file);

@@ -10,7 +10,7 @@ import edument.perl6idea.parsing.Perl6TokenTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6SpellCheckingStrategy extends SpellcheckingStrategy {
-    private Tokenizer perl6CommentTokenizer = new Tokenizer() {
+    private final Tokenizer perl6CommentTokenizer = new Tokenizer() {
         @Override
         public void tokenize(@NotNull PsiElement element, TokenConsumer consumer) {
             consumer.consumeToken(element, CommentSplitter.getInstance());

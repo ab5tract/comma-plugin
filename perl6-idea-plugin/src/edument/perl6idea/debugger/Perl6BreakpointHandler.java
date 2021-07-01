@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Perl6BreakpointHandler extends XBreakpointHandler {
     private final Perl6DebugThread debugThread;
-    private static Logger LOG = Logger.getInstance(Perl6BreakpointHandler.class);
+    private static final Logger LOG = Logger.getInstance(Perl6BreakpointHandler.class);
 
     Perl6BreakpointHandler(Perl6DebugThread debugThread) {
         super(Perl6LineBreakpointType.class);

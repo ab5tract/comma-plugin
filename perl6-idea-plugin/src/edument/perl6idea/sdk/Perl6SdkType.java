@@ -57,7 +57,7 @@ public class Perl6SdkType extends SdkType {
     public static final NotificationGroup
         RAKU_SDK_ERRORS_GROUP = new NotificationGroup("Raku SDK errors", NotificationDisplayType.BALLOON, true);
     private boolean sdkIssueNotified = false;
-    private static Logger LOG = Logger.getInstance(Perl6SdkType.class);
+    private static final Logger LOG = Logger.getInstance(Perl6SdkType.class);
     private Map<String, String> moarBuildConfig;
 
     // Project-specific cache with PsiFile instances

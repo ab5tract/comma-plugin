@@ -5,10 +5,10 @@ import java.util.Map;
 /* The common things that all logged items on the timeline have, be they
  * events or tasks. */
 public abstract class Logged {
-    private String module;
-    private String category;
-    private String name;
-    private Map<String, Object> data;
+    private final String module;
+    private final String category;
+    private final String name;
+    private final Map<String, Object> data;
     protected Lane lane;
 
     public Logged(String module, String category, String name, Map<String, Object> data) {

@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Perl6SelfReference extends PsiReferenceBase<Perl6Self> {
-    private List<String> validPackageKinds = new ArrayList<>(
+    private final List<String> validPackageKinds = new ArrayList<>(
         Arrays.asList("class", "role", "monitor", "package")
     );
 

@@ -35,7 +35,7 @@ public class DependenciesTableModel extends ListTableModel<Perl6DependencyTableI
               return Perl6DependencyScope.class;
           }
       };
-    private ModuleConfigurationState myState;
+    private final ModuleConfigurationState myState;
     private Set<Perl6DependencyTableItem> myInitialSet = new HashSet<>();
 
     public DependenciesTableModel(ModuleConfigurationState state) {

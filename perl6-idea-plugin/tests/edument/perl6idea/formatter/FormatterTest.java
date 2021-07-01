@@ -316,10 +316,10 @@ public class FormatterTest extends CommaFixtureTestCase {
     }
 
     private class FormatManager {
-        private CodeStyleManager myManager;
-        private CodeStyleSettingsManager mySettingsManager;
-        private CodeStyleSettings myTemp;
-        private CodeStyleSettings myOriginalSettigns;
+        private final CodeStyleManager myManager;
+        private final CodeStyleSettingsManager mySettingsManager;
+        private final CodeStyleSettings myTemp;
+        private final CodeStyleSettings myOriginalSettigns;
 
         public FormatManager() {
             myManager = CodeStyleManager.getInstance(myFixture.getProject());

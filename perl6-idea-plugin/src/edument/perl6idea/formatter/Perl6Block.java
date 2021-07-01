@@ -38,9 +38,9 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     private final CommonCodeStyleSettings myCommonSettings;
     private final Perl6CodeStyleSettings myCustomSettings;
     private BlockWithParent myParent;
-    private Boolean isStatementContinuation;
+    private final Boolean isStatementContinuation;
 
-    private TokenSet WHITESPACES = TokenSet.create(
+    private final TokenSet WHITESPACES = TokenSet.create(
             UNV_WHITE_SPACE, WHITE_SPACE,
             VERTICAL_WHITE_SPACE, UNSP_WHITE_SPACE
     );

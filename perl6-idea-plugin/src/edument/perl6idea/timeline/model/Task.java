@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Task extends Logged {
-    private double start;
+    private final double start;
     private double end;
-    private List<Logged> children;
+    private final List<Logged> children;
 
     public Task(String module, String category, String name, Map<String, Object> data, double start) {
         super(module, category, name, data);

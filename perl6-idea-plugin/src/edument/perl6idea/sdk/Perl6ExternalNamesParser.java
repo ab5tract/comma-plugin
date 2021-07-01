@@ -24,9 +24,9 @@ public class Perl6ExternalNamesParser {
     private JSONArray myJson;
     private final Project myProject;
     private final Perl6File myFile;
-    private List<Perl6Symbol> result = new ArrayList<>();
-    private Map<String, Perl6PackageDecl> externalClasses = new HashMap<>();
-    private Map<String, Perl6PackageDecl> metamodelCache = new HashMap<>();
+    private final List<Perl6Symbol> result = new ArrayList<>();
+    private final Map<String, Perl6PackageDecl> externalClasses = new HashMap<>();
+    private final Map<String, Perl6PackageDecl> metamodelCache = new HashMap<>();
 
     public Perl6ExternalNamesParser(Project project, Perl6File file, JSONArray json) {
         myProject = project;

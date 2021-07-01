@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class Perl6SubCallReference extends PsiReferenceBase.Poly<Perl6SubCallName> {
-    private boolean maybeCoercion;
+    private final boolean maybeCoercion;
 
     public Perl6SubCallReference(Perl6SubCallNameImpl call, boolean maybeCoercion) {
         super(call, new TextRange(0, call.getTextLength()), false);
