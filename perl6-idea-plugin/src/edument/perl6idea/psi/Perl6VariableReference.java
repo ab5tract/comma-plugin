@@ -3,6 +3,7 @@ package edument.perl6idea.psi;
 import com.intellij.codeInsight.PsiEquivalenceUtil;
 import com.intellij.codeInsight.navigation.NavigationUtil;
 import com.intellij.navigation.GotoRelatedItem;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Perl6VariableReference extends PsiReferenceBase.Poly<Perl6Variable> {
@@ -51,6 +51,8 @@ public class Perl6VariableReference extends PsiReferenceBase.Poly<Perl6Variable>
             }
         }
         else if (twigil == '*') {
+            if (DumbService.isDumb(getElement().getProject()))
+                return ResolveResult.EMPTY_ARRAY;
             Collection<Perl6VariableDecl> decls =
                 StubIndex.getElements(Perl6StubIndexKeys.DYNAMIC_VARIABLES, name, myElement.getProject(), GlobalSearchScope.allScope(
                     myElement.getProject()), Perl6VariableDecl.class);
