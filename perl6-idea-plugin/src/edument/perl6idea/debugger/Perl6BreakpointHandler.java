@@ -18,7 +18,7 @@ public class Perl6BreakpointHandler extends XBreakpointHandler {
     @Override
     public void registerBreakpoint(@NotNull XBreakpoint breakpoint) {
         if (breakpoint instanceof XLineBreakpoint) {
-            debugThread.queueBreakpoint((XLineBreakpoint)breakpoint, false);
+            debugThread.queueBreakpoint((XLineBreakpoint<?>)breakpoint, false);
         } else {
             LOG.warn("Unknown breakpoint during register action");
         }
@@ -27,7 +27,7 @@ public class Perl6BreakpointHandler extends XBreakpointHandler {
     @Override
     public void unregisterBreakpoint(@NotNull XBreakpoint breakpoint, boolean temporary) {
         if (breakpoint instanceof XLineBreakpoint) {
-            debugThread.queueBreakpoint((XLineBreakpoint)breakpoint, true);
+            debugThread.queueBreakpoint((XLineBreakpoint<?>)breakpoint, true);
         } else {
             LOG.warn("Unknown breakpoint during un-register action");
         }

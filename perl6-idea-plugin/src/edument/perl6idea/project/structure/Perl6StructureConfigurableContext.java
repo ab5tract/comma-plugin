@@ -4,11 +4,9 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 
 public class Perl6StructureConfigurableContext implements Disposable {
-    private final Project myProject;
     Perl6ModulesConfigurator myModulesConfigurator;
 
-    public Perl6StructureConfigurableContext(Project project, Perl6ModulesConfigurator modulesConfigurator) {
-        myProject = project;
+    public Perl6StructureConfigurableContext(Perl6ModulesConfigurator modulesConfigurator) {
         myModulesConfigurator = modulesConfigurator;
     }
 

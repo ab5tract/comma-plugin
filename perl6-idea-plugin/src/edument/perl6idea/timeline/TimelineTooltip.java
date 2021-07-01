@@ -7,6 +7,7 @@ import edument.perl6idea.timeline.model.Event;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.Map;
 
 public class TimelineTooltip extends JPanel {
@@ -94,6 +95,6 @@ public class TimelineTooltip extends JPanel {
     }
 
     private String capitalize(String s) {
-        return s.isEmpty() ? s : s.substring(0, 1).toUpperCase() + s.substring(1);
+        return s.isEmpty() ? s : s.substring(0, 1).toUpperCase(Locale.ENGLISH) + s.substring(1);
     }
 }

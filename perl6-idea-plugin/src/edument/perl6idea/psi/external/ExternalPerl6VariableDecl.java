@@ -122,7 +122,7 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
             if (collector.isSatisfied()) return;
             if (symbolsAllowed.privateAttributesVisible) {
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
-                                                                     this, name.substring(0, 1) + "!" + name.substring(2)));
+                                                                     this, name.charAt(0) + "!" + name.substring(2)));
                 if (collector.isSatisfied()) return;
             }
             // Offer self.foo;

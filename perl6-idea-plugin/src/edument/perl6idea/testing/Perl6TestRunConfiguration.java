@@ -105,7 +105,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
             }
         }
         Element isPassParentEnv = element.getChild(PASS_PARENT_ENV);
-        passParentEnvs = isPassParentEnv == null ? true : Boolean.valueOf(isPassParentEnv.getText());
+        passParentEnvs = isPassParentEnv == null || Boolean.valueOf(isPassParentEnv.getText());
         Element params = element.getChild(INTERPRETER_PARAMETERS);
         interpreterArguments = params == null ? "-Ilib" : params.getText();
     }

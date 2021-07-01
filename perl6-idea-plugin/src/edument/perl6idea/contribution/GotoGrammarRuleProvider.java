@@ -46,7 +46,7 @@ public class GotoGrammarRuleProvider extends GotoRelatedProvider {
         for (Perl6RegexDecl maybeRegex : decls) {
             VirtualFile actionFile = maybeRegex.getContainingFile().getOriginalFile().getVirtualFile();
             if (actionFile != null && fileIndex.getModuleForFile(actionFile) == module)
-                result.add(new GotoRelatedItem(maybeRegex, "Grammar rule"));
+                result.add(new GotoRelatedItem(maybeRegex, "Grammar Rule"));
         }
         return result;
     }

@@ -47,7 +47,7 @@ public class GotoActionMethodProvider extends GotoRelatedProvider {
             if (maybeAction.getRoutineKind().equals("method")) {
                 VirtualFile actionFile = maybeAction.getContainingFile().getOriginalFile().getVirtualFile();
                 if (actionFile != null && fileIndex.getModuleForFile(actionFile) == module)
-                    result.add(new GotoRelatedItem(maybeAction, "Action method"));
+                    result.add(new GotoRelatedItem(maybeAction, "Action Method"));
             }
         }
         return result;

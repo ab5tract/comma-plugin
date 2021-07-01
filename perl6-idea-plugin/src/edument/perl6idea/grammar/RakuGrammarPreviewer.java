@@ -435,7 +435,7 @@ public class RakuGrammarPreviewer extends JPanel {
         if (modelData.getError() != null) {
             errorMessage = "Error: " + modelData.getError();
         }
-        else if (modelData.getFailurePositions() != null) {
+        else if (modelData.getFailurePositions() != null && top != null) {
             errorMessage = top.isSuccessful()
                     ? "Grammar didn't match all input"
                     : "Grammar failed to match";
@@ -474,7 +474,7 @@ public class RakuGrammarPreviewer extends JPanel {
     }
 
     private class GrammarTreeNode extends DefaultMutableTreeNode {
-        public GrammarTreeNode(Object userObject) {
+        GrammarTreeNode(Object userObject) {
             super(userObject, true);
         }
 
@@ -485,14 +485,14 @@ public class RakuGrammarPreviewer extends JPanel {
 
             int realIndex = -1;
             int visibleIndex = -1;
-            Enumeration e = children.elements();
+            Enumeration<?> e = children.elements();
             while (e.hasMoreElements()) {
                 GrammarTreeNode node = (GrammarTreeNode)e.nextElement();
                 if (shouldDisplay(node))
                     visibleIndex++;
                 realIndex++;
                 if (visibleIndex == index)
-                    return (TreeNode)children.elementAt(realIndex);
+                    return children.elementAt(realIndex);
             }
 
             throw new ArrayIndexOutOfBoundsException("Index unmatched");
@@ -502,7 +502,7 @@ public class RakuGrammarPreviewer extends JPanel {
         public int getChildCount() {
             int count = 0;
             if (children != null) {
-                Enumeration e = children.elements();
+                Enumeration<?> e = children.elements();
                 while (e.hasMoreElements())
                     if (shouldDisplay((GrammarTreeNode)e.nextElement()))
                         count++;

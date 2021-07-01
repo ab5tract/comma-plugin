@@ -30,7 +30,8 @@ public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIn
             Perl6ElementFactory
                 .createStatementFromText(project, String.format("/$<x>=(%s)/", regexContent.substring(1, regexContent.length() - 1))),
             Perl6RegexVariable.class);
-        postProcess(project, editor, group.replace(capture));
+        if (capture != null)
+            postProcess(project, editor, group.replace(capture));
     }
 
     private static void postProcess(Project project, Editor editor, PsiElement element) {
@@ -80,11 +81,5 @@ public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIn
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
         return PsiTreeUtil.getNonStrictParentOfType(element, Perl6RegexCapturePositional.class) != null;
-    }
-
-    private static class NamedInplaceVariableIntroducer extends InplaceVariableIntroducer<PsiElement> {
-        public NamedInplaceVariableIntroducer(Project project, Editor editor, PsiNamedElement element) {
-            super(element, editor, project, "Introduce variable", PsiElement.EMPTY_ARRAY, null);
-        }
     }
 }

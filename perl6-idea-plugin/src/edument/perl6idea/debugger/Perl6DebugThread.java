@@ -33,10 +33,7 @@ import org.edument.moarvm.types.event.StepCompletedNotification;
 import org.jetbrains.annotations.NotNull;
 import org.msgpack.value.Value;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -442,7 +439,7 @@ public class Perl6DebugThread extends Thread {
                                     String nested = presentableDescriptionForType((ObjValue)result, false);
                                     if (nested == null)
                                         nested = defaultObjectRepresentation((ObjValue)result);
-                                    return "Promise." + statusString.toLowerCase() + "(" + nested + ")";
+                                    return "Promise." + statusString.toLowerCase(Locale.ENGLISH) + "(" + nested + ")";
                                 }
                             }
                         }
@@ -530,7 +527,7 @@ public class Perl6DebugThread extends Thread {
                         Perl6ValueDescriptor[] descriptors = convertLexicals(classEntry.getValue());
                         String className = classEntry.getKey();
                         for (Perl6ValueDescriptor desc : descriptors) {
-                            children.add(new Perl6XAttributeValue(desc, this, className));
+                            children.add(new Perl6XAttributeValue(desc, this));
                         }
                     }
                     node.addChildren(children, true);

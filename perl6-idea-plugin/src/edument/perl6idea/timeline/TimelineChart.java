@@ -86,7 +86,7 @@ public class TimelineChart extends JPanel {
         private final Rectangle area;
         private final Logged logged;
 
-        public VisibleLogged(Rectangle area, Logged logged) {
+        VisibleLogged(Rectangle area, Logged logged) {
             this.area = area;
             this.logged = logged;
         }
@@ -106,7 +106,7 @@ public class TimelineChart extends JPanel {
         private final Rectangle area;
         private final String key;
 
-        public VisibleLabel(Rectangle area, String key) {
+        VisibleLabel(Rectangle area, String key) {
             this.area = area;
             this.key = key;
         }
@@ -408,7 +408,7 @@ public class TimelineChart extends JPanel {
         private final List<Logged> loggedItems;
         private final int top;
 
-        public RenderLine(List<Logged> loggedItems, int top) {
+        RenderLine(List<Logged> loggedItems, int top) {
             this.loggedItems = loggedItems;
             this.top = top;
         }

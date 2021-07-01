@@ -55,7 +55,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                                               Set<Perl6PsiDeclaration> stoppers,
                                               Perl6PsiElement search) {
         // If we hit a stopper, don't enter it; it's another declaration in the tree.
-        if (stoppers.contains(search))
+        if (search instanceof Perl6PsiDeclaration && stoppers.contains(search))
             return;
 
         // See if this element is a DSL call.

@@ -27,7 +27,7 @@ public class TermASCIIConversionIntention extends TermConversionIntention {
         int offset = editor.getCaretModel().getOffset();
         PsiElement elementUnderCaret = file.findElementAt(offset);
         assert elementUnderCaret != null;
-        String replacement = null;
+        String replacement;
         switch (classifyOperation(project, editor, file)) {
             case TO_ASCII_SET: replacement = "set()"; break;
             case TO_ASCII_PI: replacement = "pi"; break;

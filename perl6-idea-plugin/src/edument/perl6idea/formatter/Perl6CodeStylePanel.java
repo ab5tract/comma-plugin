@@ -37,7 +37,7 @@ public class Perl6CodeStylePanel extends TabbedLanguageCodeStylePanel {
     private static class MyEditorPanel extends CodeStyleAbstractPanel {
         private JCheckBox myConvertToUnicodeCB;
 
-        public MyEditorPanel(CodeStyleSettings settings) {super(settings);}
+        MyEditorPanel(CodeStyleSettings settings) {super(settings);}
 
         @Override
         protected String getTabTitle() {

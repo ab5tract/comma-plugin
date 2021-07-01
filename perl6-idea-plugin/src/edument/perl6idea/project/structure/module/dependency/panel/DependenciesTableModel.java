@@ -87,7 +87,7 @@ public class DependenciesTableModel extends ListTableModel<Perl6DependencyTableI
     }
 
     private static class Perl6DependencyTableItemColumnInfo extends ColumnInfo<Perl6DependencyTableItem, Perl6DependencyTableItem> {
-        public Perl6DependencyTableItemColumnInfo() {
+        Perl6DependencyTableItemColumnInfo() {
             super("");
         }
 

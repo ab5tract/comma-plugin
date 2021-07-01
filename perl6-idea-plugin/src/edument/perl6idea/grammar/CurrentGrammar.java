@@ -92,7 +92,7 @@ public class CurrentGrammar {
             String grammarFileContent = grammarDocument.getText();
             application.executeOnPooledThread(() -> {
                 File inputAsFile = null;
-                File tweakedGrammarAsFile = null;
+                File tweakedGrammarAsFile;
                 try {
                     // Set up input file and tweaked grammar file to run with.
                     inputAsFile = writeToTempFile(currentInput);

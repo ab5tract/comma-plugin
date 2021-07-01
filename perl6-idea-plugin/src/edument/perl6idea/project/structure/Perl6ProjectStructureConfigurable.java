@@ -46,7 +46,6 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     public static final DataKey<Perl6ProjectStructureConfigurable> KEY = DataKey.create("Perl6ProjectStructureConfiguration");
     protected final Perl6ProjectStructureConfigurable.UIState myUiState = new Perl6ProjectStructureConfigurable.UIState();
     private final Project myProject;
-    private final Perl6ModulesConfigurator myModuleConfigurator;
     private final Perl6StructureConfigurableContext myContext;
     private JPanel myComponent;
     private OnePixelSplitter mySplitter;
@@ -56,7 +55,6 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     private Perl6ModuleStructureConfigurable myModulesConfigurable;
     private Perl6ProjectConfigurable myProjectConfigurable;
     private final List<Configurable> myName2Config = new ArrayList<>();
-    private JComponent myToolbarComponent;
     private final Wrapper myDetails = new Wrapper();
     private boolean myUiInitialized;
     private Configurable mySelectedConfigurable;
@@ -105,9 +103,9 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
 
     public Perl6ProjectStructureConfigurable(final Project project) {
         myProject = project;
-        myModuleConfigurator = new Perl6ModulesConfigurator(myProject);
-        myContext = new Perl6StructureConfigurableContext(myProject, myModuleConfigurator);
-        myModuleConfigurator.setContext(myContext);
+        Perl6ModulesConfigurator moduleConfigurator = new Perl6ModulesConfigurator(myProject);
+        myContext = new Perl6StructureConfigurableContext(moduleConfigurator);
+        moduleConfigurator.setContext(myContext);
 
         myModulesConfigurable = new Perl6ModuleStructureConfigurable(project, myContext);
         myModulesConfigurable.init(myContext);
@@ -165,10 +163,10 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         toolbarGroup.add(new ForwardAction(myComponent, this));
         final ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("Raku.ProjectStructure", toolbarGroup, true);
         toolbar.setTargetComponent(myComponent);
-        myToolbarComponent = toolbar.getComponent();
+        JComponent toolbarComponent = toolbar.getComponent();
         left.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
-        myToolbarComponent.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
-        left.add(myToolbarComponent, BorderLayout.NORTH);
+        toolbarComponent.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
+        left.add(toolbarComponent, BorderLayout.NORTH);
 
         initSidePanel();
         left.add(mySidePanel, BorderLayout.CENTER);

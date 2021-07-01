@@ -370,7 +370,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
                 if (collector.isSatisfied()) return;
                 if (symbolsAllowed.privateAttributesVisible) {
                     collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
-                                                                         this, name.substring(0, 1) + "!" + name.substring(2)));
+                                                                         this, name.charAt(0) + "!" + name.substring(2)));
                     if (collector.isSatisfied()) return;
                 }
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol( // Offer self.foo;

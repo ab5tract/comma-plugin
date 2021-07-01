@@ -117,7 +117,7 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
             @Nullable
             @Override
             public String getPresentableText() {
-                return frameworkData.get("method").toUpperCase() + " " + frameworkData.get("path");
+                return frameworkData.get("method").toUpperCase(Locale.ENGLISH) + " " + frameworkData.get("path");
             }
 
             @Nullable
@@ -140,7 +140,7 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
             @Nullable
             @Override
             public String getPresentableText() {
-                return frameworkData.get("method").toUpperCase() + " " + frameworkData.get("path");
+                return frameworkData.get("method").toUpperCase(Locale.ENGLISH) + " " + frameworkData.get("path");
             }
 
             @Nullable
