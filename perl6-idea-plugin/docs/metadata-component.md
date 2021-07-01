@@ -11,7 +11,7 @@ files using relative module source directories.
 
 In case of meta file absence, a balloon message is created which notifies user about it
 and offers user to add it. If user agrees, a dummy `META6.json` file is created
-and is opened in IDEA editor. Otherwise it does not do anything.
+and is opened in IDEA editor. Otherwise, it does not do anything.
 
 In case of incorrect JSON, a balloon error message is showed to a user with a button
 to open meta file.
@@ -23,7 +23,7 @@ by IDEA means and its methods are used.
 
 `Perl6MetaDataComponent` has such methods:
 
-* `void triggerMetaBuild(VirtualFile)` - asks component to to populate its data with JSON content of VirtualFile passed.
+* `void triggerMetaBuild(VirtualFile)` - asks component to populate its data with JSON content of VirtualFile passed.
 * `boolean isMetaDataExist()` - indicates if metadata file exists or was created on start.
 * `void createStubMetaFile(VirtualFile, boolean)` - creates a dummy metadata file with root specified by first argument and opens
 it in an editor if its first parameter is true. If root passed is `null`, it tries to calculate it based on module source roots, if

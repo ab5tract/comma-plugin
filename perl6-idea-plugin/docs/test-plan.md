@@ -5,7 +5,7 @@
 Currently, the testing environments are GNU/Linux and Windows, as
 there are no access to an OSX machine.
 
-Considering we are having 2 editions and 2 operation systems to test with (potentially 3),
+Considering we are having 2 editions and 2 operating systems to test with (potentially 3),
 it makes us 4 test runs in total.
 
 As we have automatic tests for large chunks of functionality, this manual test
@@ -34,7 +34,7 @@ Here we test ability of our product to be built and installed by the end-user.
   - Installer, installation paths contain Edument info
   - It creates file associations for: `.p6`, `.pm6`, `pl6`, `.pod6`
   - It can be uninstalled cleanly
-- [ ] Install plugin into IntelliJ IDEA 2019.1 and 2018.3.
+- [ ] Install the plugin into IntelliJ IDEA 2019.1 and 2018.3.
 
 ##### Plugin-specific
 
@@ -63,7 +63,7 @@ Here we test ability of our product to create new projects and consume existing 
 - [ ] Try to import a project from github, `https://github.com/jnthn/json-path`
 - [ ] Try to break a build, check if the exception feedback shows Edument data, cancel
 
-Here we test ability of our product to manipulate files inside of a project.
+Here we test ability of our product to manipulate files inside a project.
 
 For the last opened project.
 

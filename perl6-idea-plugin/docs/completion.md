@@ -61,7 +61,7 @@ Main flag that is used to indicate whether we export private methods and attribu
 
 ##### Nesting level
 
-Nesting level indicates how much did we ascend to parents of class/role. It initially starts from zero
+Nesting level indicates how much did we ascend toward parents of a class/role. It initially starts from zero
 and is increased when inheritance/composition chain is used to contribute symbols.
 
 For example
@@ -85,7 +85,7 @@ Level of C is 1, level of B *and* A is 1 regardless of their order in declaratio
 
 ##### Caller
 
-Caller flag indicates what type of package is enclosing for element we want to complete/resolve.
+The caller flag indicates what type of package is enclosing for the element we want to complete/resolve.
 It is needed because private attributes have different behavior based on `role does roles` or `class does roles` pattern.
 
 ##### Broken compositional chain
@@ -103,5 +103,5 @@ For example
 
 Because of inheritance rules, attribute `$!foo` is accessible in `B`, *but*
 is not accessible from `Test`. When it happens that `class` "steals" internals provided
-by role, it means that the "chain" is broken: regardless of what roles are there,
+by the role, it means that the "chain" is broken: regardless of what roles are there,
 their internals are not accessible because of one (or more) level of inheritance indirection.
