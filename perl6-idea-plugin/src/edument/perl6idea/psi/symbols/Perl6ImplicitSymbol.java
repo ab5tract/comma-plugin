@@ -3,8 +3,8 @@ package edument.perl6idea.psi.symbols;
 import com.intellij.psi.PsiElement;
 
 public class Perl6ImplicitSymbol implements Perl6Symbol {
-    public Perl6SymbolKind kind;
-    public String name;
+    public final Perl6SymbolKind kind;
+    public final String name;
     public PsiElement resolvesTo;
 
     public Perl6ImplicitSymbol(Perl6SymbolKind kind, String name) {

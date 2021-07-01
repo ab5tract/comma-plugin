@@ -5,12 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.StringJoiner;
 
 public class NewCodeBlockData {
-    public Perl6CodeBlockType type;
+    public final Perl6CodeBlockType type;
     public String scope = "";
-    public String name;
+    public final String name;
     public String returnType = "";
     public final Perl6VariableData[] variables;
-    public boolean isPrivateMethod;
+    public final boolean isPrivateMethod;
     public boolean containsExpression;
     public boolean wantsSemicolon;
 

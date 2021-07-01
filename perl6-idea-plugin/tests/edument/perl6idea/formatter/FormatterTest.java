@@ -1,5 +1,6 @@
 package edument.perl6idea.formatter;
 
+import com.intellij.application.options.CodeStyle;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.command.CommandProcessor;
@@ -89,8 +90,8 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("“{$CONFIG<mothership>}/$full-commit-hash?type=$backend&arch=$arch”",
                      "“{ $CONFIG<mothership> }/$full-commit-hash?type=$backend&arch=$arch”");
         reformatTest(
-          "“{$t.our-nick}, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”",
-          "“{ $t.our-nick }, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”");
+            "“{$t.our-nick}, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”",
+            "“{ $t.our-nick }, I cannot recognize this command. See wiki for some examples: https://github.com/perl6/whateverable/wiki/Committable”");
         reformatTest("my @a[1;2];",
                      "my @a[1;2];");
     }
@@ -128,7 +129,8 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("say 424242424242424242, True", "say\n        424242424242424242,\n        True",
                      (s1, s2) -> s1.RIGHT_MARGIN = 14);
         // traits
-        reformatTest("class Name is trait1 is trait2 is trait3 {}", "class Name\n        is trait1\n        is trait2\n        is trait3 {}",
+        reformatTest("class Name is trait1 is trait2 is trait3 {}",
+                     "class Name\n        is trait1\n        is trait2\n        is trait3 {}",
                      (s1, s2) -> s1.RIGHT_MARGIN = 14);
     }
 
@@ -147,7 +149,8 @@ public class FormatterTest extends CommaFixtureTestCase {
         enterTest("if True {\n    say 42,<caret>\n}", "if True {\n    say 42,\n        <caret>\n}");
         enterTest("Int.foo:<caret>", "Int.foo:\n        <caret>");
         enterTest("has $.a is rw<caret>;", "has $.a is rw\n        ;");
-        enterTest("constant @a = [\n    'Doctor',<caret>\n    'Master',\n];", "constant @a = [\n    'Doctor',\n    <caret>\n    'Master',\n];");
+        enterTest("constant @a = [\n    'Doctor',<caret>\n    'Master',\n];",
+                  "constant @a = [\n    'Doctor',\n    <caret>\n    'Master',\n];");
     }
 
     public void testIntegrationCases() {
@@ -194,10 +197,9 @@ public class FormatterTest extends CommaFixtureTestCase {
             custom.PACKAGE_DECLARATION_IN_ONE_LINE = !custom.PACKAGE_DECLARATION_IN_ONE_LINE;
             custom.POINTY_BLOCK_IN_ONE_LINE = !custom.POINTY_BLOCK_IN_ONE_LINE;
         });
-        reformatTest("braces-style", (common, custom) -> {
+        reformatTest("braces-style", (common, custom) ->
             custom.PACKAGE_DECL_BRACE_STYLE = custom.ROUTINE_DECL_BRACE_STYLE = custom.REGEX_DECL_BRACE_STYLE =
-            custom.PHASER_BRACE_STYLE = custom.OTHER_BRACE_STYLE = 2;
-        });
+            custom.PHASER_BRACE_STYLE = custom.OTHER_BRACE_STYLE = 2);
         reformatTest("spacing");
         reformatTest("spacing-reverse", (common, custom) -> {
             custom.BEFORE_COMMA = !custom.BEFORE_COMMA;
@@ -225,9 +227,7 @@ public class FormatterTest extends CommaFixtureTestCase {
             custom.REGEX_POSITIONAL_PARENS_SPACING = !custom.REGEX_POSITIONAL_PARENS_SPACING;
         });
         // Alignment
-        reformatTest("align", (common, custom) -> {
-            common.RIGHT_MARGIN = 20;
-        });
+        reformatTest("align", (common, custom) -> common.RIGHT_MARGIN = 20);
         reformatTest("align-wrap", (common, custom) -> {
             common.RIGHT_MARGIN = 20;
             // Wrap
@@ -258,12 +258,6 @@ public class FormatterTest extends CommaFixtureTestCase {
     /**
      * These methods are used to supplement testing of implicit reformatting (guided by an enter pressing)
      */
-    private void enterTest(String filename) {
-        myFixture.configureByFile(filename + ".in.p6");
-        executeEnter();
-        myFixture.checkResultByFile(filename + ".out.p6");
-    }
-
     private void enterTest(String input, String output) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, input);
         executeEnter();
@@ -276,9 +270,10 @@ public class FormatterTest extends CommaFixtureTestCase {
             EditorActionHandler enterHandler = actionManager.getActionHandler(IdeActions.ACTION_EDITOR_ENTER);
             try {
                 enterHandler.execute(myFixture.getEditor(), null, DataManager.getInstance().getDataContextFromFocusAsync().blockingGet(
-                  5, TimeUnit.SECONDS));
+                    5, TimeUnit.SECONDS));
             }
-            catch (TimeoutException|ExecutionException ignored) {}
+            catch (TimeoutException | ExecutionException ignored) {
+            }
         }, "", null);
     }
 
@@ -317,15 +312,12 @@ public class FormatterTest extends CommaFixtureTestCase {
 
     private class FormatManager {
         private final CodeStyleManager myManager;
-        private final CodeStyleSettingsManager mySettingsManager;
         private final CodeStyleSettings myTemp;
-        private final CodeStyleSettings myOriginalSettigns;
 
         FormatManager() {
             myManager = CodeStyleManager.getInstance(myFixture.getProject());
-            mySettingsManager = CodeStyleSettingsManager.getInstance(myFixture.getProject());
-            myTemp = mySettingsManager.getTemporarySettings();
-            myOriginalSettigns = myTemp.clone();
+            CodeStyleSettingsManager settingsManager = CodeStyleSettingsManager.getInstance(myFixture.getProject());
+            myTemp = settingsManager.getTemporarySettings();
         }
 
         public void updateTempSettings(BiConsumer<CommonCodeStyleSettings, Perl6CodeStyleSettings> config) {
@@ -335,9 +327,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         }
 
         public void reformatAndResetSettings(PsiFile file) {
-            mySettingsManager.setTemporarySettings(myTemp);
-            myManager.reformat(file);
-            mySettingsManager.setTemporarySettings(myOriginalSettigns);
+            CodeStyle.doWithTemporarySettings(file.getProject(), myTemp, () -> myManager.reformat(file));
         }
     }
 }

@@ -74,7 +74,7 @@ public class Perl6BackupSDKService implements PersistentStateComponent<Perl6Back
     }
 
     public static class State {
-        public Map<String, String> projectSdkPaths;
+        public final Map<String, String> projectSdkPaths;
 
         public State() {
             projectSdkPaths = new HashMap<>();

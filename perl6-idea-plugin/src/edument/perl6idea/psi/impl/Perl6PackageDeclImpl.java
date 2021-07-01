@@ -22,7 +22,6 @@ import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6IndexableType;
 import edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex;
 import edument.perl6idea.psi.symbols.*;
-import edument.perl6idea.sdk.Perl6ExternalNamesParser;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

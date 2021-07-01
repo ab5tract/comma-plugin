@@ -158,7 +158,7 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
                             if (newValue < 65536) {
                                 super.insertString(offs, str, a);
                             }
-                        } catch (NumberFormatException e) {
+                        } catch (NumberFormatException ignored) {
                         }
                     }
                 };

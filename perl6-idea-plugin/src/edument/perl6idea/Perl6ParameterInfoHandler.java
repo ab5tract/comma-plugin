@@ -19,17 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlockCall, Perl6RoutineDecl> {
-    @Override
-    public boolean couldShowInLookup() {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public Object[] getParametersForLookup(LookupElement item, ParameterInfoContext context) {
-        return ArrayUtil.EMPTY_OBJECT_ARRAY;
-    }
-
     @Nullable
     @Override
     public P6CodeBlockCall findElementForParameterInfo(@NotNull CreateParameterInfoContext context) {

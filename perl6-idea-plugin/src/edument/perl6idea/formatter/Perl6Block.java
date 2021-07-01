@@ -131,7 +131,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             return Pair.create((child) -> child.getElementType() == PARAMETER, Alignment.createAlignment());
         } else if (type == ARRAY_COMPOSER && myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT) {
             return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN && child.getElementType() == ARRAY_COMPOSER_CLOSE, Alignment.createAlignment());
-        } else if (type == Perl6OPPElementTypes.INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof Perl6MethodCall)) {
+        } else if (type == INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof Perl6MethodCall)) {
             if (!(node.getPsi() instanceof Perl6InfixApplication))
                 return null;
 

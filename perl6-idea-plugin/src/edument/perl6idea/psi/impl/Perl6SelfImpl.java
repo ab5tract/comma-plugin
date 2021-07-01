@@ -7,7 +7,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6Self;
 import edument.perl6idea.psi.Perl6SelfReference;
-import edument.perl6idea.psi.type.Perl6ResolvedType;
 import edument.perl6idea.psi.type.Perl6SelfType;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;

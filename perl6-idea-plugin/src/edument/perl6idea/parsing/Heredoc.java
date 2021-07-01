@@ -5,5 +5,5 @@ import java.util.Map;
 
 public class Heredoc {
     public String delim;
-    public Map<String, Object> language = new HashMap<>();
+    public final Map<String, Object> language = new HashMap<>();
 }

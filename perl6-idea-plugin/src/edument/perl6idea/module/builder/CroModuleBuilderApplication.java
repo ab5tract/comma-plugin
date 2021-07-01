@@ -189,9 +189,9 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     }
 
     public static class CroAppTemplateConfig {
-        public String moduleName;
-        public boolean websocketSupport;
-        public boolean templatingSupport;
+        public final String moduleName;
+        public final boolean websocketSupport;
+        public final boolean templatingSupport;
 
         public CroAppTemplateConfig(String moduleName, boolean websocketSupport, boolean templatingSupport) {
             this.moduleName = moduleName;

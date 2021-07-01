@@ -368,7 +368,7 @@ public class Perl6DebugThread extends Thread {
                                     elemsRendered.add("...lazy...");
                                 }
                                 else if (elems > 5) {
-                                    elemsRendered.add("...total " + Integer.toString(elems) + " elems");
+                                    elemsRendered.add("...total " + elems + " elems");
                                 }
                                 String values = String.join(", ", ArrayUtil.toStringArray(elemsRendered));
                                 return isArray ? "[" + values + "]" : "(" + values + ")";

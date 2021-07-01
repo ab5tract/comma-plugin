@@ -23,7 +23,6 @@ import edument.perl6idea.psi.type.Perl6ParametricType;
 import edument.perl6idea.psi.type.Perl6ResolvedType;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
-import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

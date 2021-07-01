@@ -20,7 +20,7 @@ public class MultiModuleCompletion extends CommaFixtureTestCase {
         return "perl6-idea-plugin/testData/multi-module";
     }
 
-    public void testCrossModules() throws IOException {
+    public void testCrossModules() {
         myFixture.copyFileToProject("Module/Inner.pm6", "../lib/Module/Inner.pm6");
         myFixture.configureByText("10-test.t", "use Module::Inner; Foo.mm<caret>");
         myFixture.complete(CompletionType.BASIC, 1);

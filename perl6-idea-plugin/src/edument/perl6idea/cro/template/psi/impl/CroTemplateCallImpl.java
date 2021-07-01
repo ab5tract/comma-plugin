@@ -33,7 +33,7 @@ public class CroTemplateCallImpl extends ASTWrapperPsiElement implements CroTemp
 
     @Override
     public String getName() {
-        ASTNode[] subName = getNode().getChildren(TokenSet.create(CroTemplateTokenTypes.SUB_NAME));
+        ASTNode[] subName = getNode().getChildren(TokenSet.create(SUB_NAME));
         return subName.length == 0 ? null : subName[0].getText();
     }
 

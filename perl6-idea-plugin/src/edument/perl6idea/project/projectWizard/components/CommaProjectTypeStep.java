@@ -5,7 +5,6 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.ide.wizard.CommitStepException;
 import com.intellij.internal.statistic.eventLog.FeatureUsageData;
-import com.intellij.internal.statistic.service.fus.collectors.FUCounterUsageLogger;
 import com.intellij.internal.statistic.utils.PluginInfoDetectorKt;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
@@ -396,7 +395,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
     }
 
     @Override
-    public void onWizardFinished() throws CommitStepException {
+    public void onWizardFinished() {
         reportStatistics("finish");
     }
 
@@ -585,7 +584,5 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
         if (step instanceof StatisticsAwareModuleWizardStep) {
             ((StatisticsAwareModuleWizardStep)step).addCustomFeatureUsageData(eventId, data);
         }
-
-        FUCounterUsageLogger.getInstance().logEvent("new.project.wizard", eventId, data);
     }
 }

@@ -1,5 +1,6 @@
 package edument.perl6idea.formatter;
 
+import com.intellij.formatting.FormattingContext;
 import com.intellij.formatting.FormattingModel;
 import com.intellij.formatting.FormattingModelBuilder;
 import com.intellij.formatting.Spacing;
@@ -13,7 +14,6 @@ import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.parsing.Perl6ElementTypes;
-import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,16 +36,16 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
     public Spacing SINGLE_LINE_BREAK;
     public Spacing DOUBLE_LINE_BREAK;
 
-    @NotNull
     @Override
-    public FormattingModel createModel(@NotNull PsiElement element, @NotNull CodeStyleSettings settings) {
-        final PsiFile psiFile = element.getContainingFile();
+    public @NotNull FormattingModel createModel(@NotNull FormattingContext formattingContext) {
+        final PsiFile psiFile = formattingContext.getContainingFile();
         List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules = new ArrayList<>();
+        CodeStyleSettings settings = formattingContext.getCodeStyleSettings();
         CommonCodeStyleSettings commonSettings = settings.getCommonSettings(Perl6Language.INSTANCE);
         Perl6CodeStyleSettings customSettings = settings.getCustomSettings(Perl6CodeStyleSettings.class);
         initRules(rules, commonSettings, customSettings);
         final Perl6Block block = new Perl6Block(psiFile.getNode(), null, null, commonSettings, customSettings, rules);
-        return new DocumentBasedFormattingModel(block, element.getProject(), settings, psiFile.getFileType(), psiFile);
+        return new DocumentBasedFormattingModel(block, formattingContext.getProject(), settings, psiFile.getFileType(), psiFile);
     }
 
     private void initRules(List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules,
@@ -66,7 +66,7 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                                   Perl6CodeStyleSettings customSettings,
                                   List<BiFunction<Perl6Block, Perl6Block, Spacing>> rules) {
         // Nothing between statement and its ;
-        rules.add((left, right) -> right.getNode().getElementType() == Perl6TokenTypes.STATEMENT_TERMINATOR
+        rules.add((left, right) -> right.getNode().getElementType() == STATEMENT_TERMINATOR
                                    ? CONSTANT_EMPTY_SPACING : null);
         // Nothing between statement and its absence of ;
         rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.UNTERMINATED_STATEMENT
@@ -120,8 +120,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
 
         // Fatarrow
         rules.add((left, right) -> {
-            boolean after = left.getNode().getElementType() == Perl6TokenTypes.INFIX && left.getNode().getText().equals("=>");
-            boolean before = right.getNode().getElementType() == Perl6TokenTypes.INFIX && right.getNode().getText().equals("=>");
+            boolean after = left.getNode().getElementType() == INFIX && left.getNode().getText().equals("=>");
+            boolean before = right.getNode().getElementType() == INFIX && right.getNode().getText().equals("=>");
             return (after && customSettings.AFTER_FATARROW) ||
                    (before && customSettings.BEFORE_FATARROW)
                    ? SINGLE_SPACE_SPACING
@@ -135,10 +135,10 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         // Various infix operator related rules
         rules.add((left, right) -> {
             boolean isLeftInfix =
-                left.getNode().getElementType() == Perl6TokenTypes.INFIX ||
+                left.getNode().getElementType() == INFIX ||
                 left.getNode().getElementType() == Perl6ElementTypes.INFIX;
             boolean isRightInfix =
-                right.getNode().getElementType() == Perl6TokenTypes.INFIX ||
+                right.getNode().getElementType() == INFIX ||
                 right.getNode().getElementType() == Perl6ElementTypes.INFIX;
             if (!isLeftInfix && !isRightInfix) return null;
 
@@ -183,7 +183,7 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         });
 
         // Lambda rules
-        rules.add((left, right) -> left.getNode().getElementType() == Perl6TokenTypes.LAMBDA
+        rules.add((left, right) -> left.getNode().getElementType() == LAMBDA
                                    ? (customSettings.AFTER_LAMBDA ? SINGLE_SPACE_SPACING : CONSTANT_EMPTY_SPACING) : null);
 
         /** Regex related ones */
@@ -205,9 +205,9 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         // Regex separator
         rules.add((left, right) -> {
             boolean isLeft = left.getNode().getElementType() == Perl6ElementTypes.REGEX_QUANTIFIER ||
-                             left.getNode().getElementType() == Perl6TokenTypes.REGEX_QUANTIFIER;
+                             left.getNode().getElementType() == REGEX_QUANTIFIER;
             boolean isRight = right.getNode().getElementType() == Perl6ElementTypes.REGEX_QUANTIFIER ||
-                              right.getNode().getElementType() == Perl6TokenTypes.REGEX_QUANTIFIER;
+                              right.getNode().getElementType() == REGEX_QUANTIFIER;
             if (!isLeft && !isRight) return null;
             String text = isLeft ? left.getNode().getText() : right.getNode().getText();
             if (!(text.startsWith("**") || text.startsWith("%") || text.startsWith("%%")))

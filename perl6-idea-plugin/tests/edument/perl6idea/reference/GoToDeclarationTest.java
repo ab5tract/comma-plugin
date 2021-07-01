@@ -4,10 +4,8 @@ import com.intellij.ide.actions.GotoRelatedSymbolAction;
 import com.intellij.navigation.GotoRelatedItem;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.ResolveResult;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.CommaFixtureTestCase;
-import edument.perl6idea.cro.template.psi.CroTemplateFile;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.psi.*;
 

@@ -6,7 +6,6 @@ import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.pod.PodDomEnumDeclarator;
-import edument.perl6idea.pod.PodDomSubsetDeclarator;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6EnumStub;
 import edument.perl6idea.psi.stub.Perl6EnumStubElementType;

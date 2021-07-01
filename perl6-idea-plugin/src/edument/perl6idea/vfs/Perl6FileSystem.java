@@ -161,7 +161,7 @@ public class Perl6FileSystem extends ArchiveFileSystem {
 
     @NotNull
     @Override
-    public byte[] contentsToByteArray(@NotNull VirtualFile file) throws IOException {
+    public byte[] contentsToByteArray(@NotNull VirtualFile file) {
         return getHandler(file).contentsToByteArray(getRelativePath(file));
     }
 

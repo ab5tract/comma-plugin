@@ -6,9 +6,7 @@ import com.intellij.psi.StubBasedPsiElement;
 import edument.perl6idea.psi.stub.Perl6RoutineDeclStub;
 import edument.perl6idea.psi.symbols.Perl6LexicalSymbolContributor;
 import edument.perl6idea.psi.symbols.Perl6MOPSymbolContributor;
-import edument.perl6idea.psi.type.Perl6Type;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
                                           StubBasedPsiElement<Perl6RoutineDeclStub>,
@@ -24,11 +22,6 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     Perl6Parameter[] getParams();
     String getMultiness();
     PsiElement getDeclaratorNode();
-
-    @Override
-    default @NotNull Perl6Type getReturnType() {
-        return Perl6SignatureHolder.super.getReturnType();
-    }
 
     boolean isMethod();
     boolean isSub();

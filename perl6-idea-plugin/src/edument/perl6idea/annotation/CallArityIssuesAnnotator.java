@@ -127,8 +127,8 @@ public class CallArityIssuesAnnotator implements Annotator {
     // Use a wrapper to avoid this...
     private static class AnnotationBuilderWrap {
         private final Perl6Signature signature;
-        public TextRange range;
-        public String text;
+        public final TextRange range;
+        public final String text;
 
         private AnnotationBuilderWrap(Perl6Signature signature, TextRange range, String text) {
             this.signature = signature;

@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class NewCroTemplateAction extends AnAction {
     @Override

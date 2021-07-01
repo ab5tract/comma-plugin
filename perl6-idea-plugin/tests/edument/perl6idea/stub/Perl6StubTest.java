@@ -18,7 +18,6 @@ import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Perl6StubTest extends CommaFixtureTestCase {
     private StubBuilder myBuilder;

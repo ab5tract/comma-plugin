@@ -20,7 +20,7 @@ public class NewProjectAction extends AnAction implements DumbAware {
     @Override
     public void update(@NotNull AnActionEvent e) {
         if (NewWelcomeScreen.isNewWelcomeScreen(e)) {
-            e.getPresentation().setIcon(AllIcons.Welcome.CreateNewProject);
+            e.getPresentation().setIcon(AllIcons.Welcome.CreateNewProjectTab);
         }
 
         String actionText = NewWelcomeScreen.isNewWelcomeScreen(e) ? "Create New Project" : "Project...";

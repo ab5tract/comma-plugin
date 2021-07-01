@@ -19,7 +19,6 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.impl.status.InlineProgressIndicator;
 import com.intellij.ui.TabbedPaneWrapper;
 import com.intellij.ui.navigation.History;
@@ -181,7 +180,7 @@ public class Perl6SdkEditor implements Configurable, Place.Navigator {
     private String suggestSdkName(final String homePath) {
         final String currentName = mySdk.getName();
         final String suggestedName = ((SdkType)mySdk.getSdkType()).suggestSdkName(currentName, homePath);
-        if (Comparing.equal(currentName, suggestedName)) return currentName;
+        if (Objects.equals(currentName, suggestedName)) return currentName;
         String newSdkName = suggestedName;
         final Set<String> allNames = new HashSet<>();
         Sdk[] sdks = mySdkModel.getSdks();
@@ -220,12 +219,12 @@ public class Perl6SdkEditor implements Configurable, Place.Navigator {
 
     @Override
     public boolean isModified() {
-        boolean isModified = !Comparing.equal(mySdk.getName(), myInitialName);
+        boolean isModified = !Objects.equals(mySdk.getName(), myInitialName);
         if (myIsDownloading) return isModified;
 
         isModified =
             isModified ||
-            !Comparing.equal(FileUtil.toSystemIndependentName(getHomeValue()), FileUtil.toSystemIndependentName(myInitialPath));
+            !Objects.equals(FileUtil.toSystemIndependentName(getHomeValue()), FileUtil.toSystemIndependentName(myInitialPath));
         for (PathEditor pathEditor : myPathEditors.values()) {
             isModified = isModified || pathEditor.isModified();
         }
@@ -260,7 +259,7 @@ public class Perl6SdkEditor implements Configurable, Place.Navigator {
     public void apply() throws ConfigurationException {
         if (myIsDownloading) return;
 
-        if (!Comparing.equal(myInitialName, mySdk.getName())) {
+        if (!Objects.equals(myInitialName, mySdk.getName())) {
             if (mySdk.getName().isEmpty()) {
                 throw new ConfigurationException("Please specify Raku compiler installation name");
             }

@@ -24,6 +24,6 @@ public class Perl6ThreadDescriptor {
     }
 
     public String getDescription() {
-        return "Thread " + Integer.toString(threadId) + " (native " + Long.toString(nativeThreadId) + ")";
+        return "Thread " + threadId + " (native " + nativeThreadId + ")";
     }
 }
