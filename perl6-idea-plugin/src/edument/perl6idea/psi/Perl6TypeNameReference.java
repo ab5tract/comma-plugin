@@ -36,9 +36,8 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
         return null;
     }
 
-    @NotNull
     @Override
-    public Object[] getVariants() {
+    public Object @NotNull [] getVariants() {
         Perl6PsiElement ref = getElement();
         return ref.getLexicalSymbolVariants(Perl6SymbolKind.TypeOrConstant)
             .stream()
@@ -62,7 +61,7 @@ public class Perl6TypeNameReference extends PsiReferenceBase<Perl6PsiElement> {
     }
 
     @Override
-    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         Perl6TypeName type = (Perl6TypeName)getElement();
         return type.setName(newElementName);
     }

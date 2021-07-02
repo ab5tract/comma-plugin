@@ -2,6 +2,7 @@ package edument.perl6idea.debugger;
 
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.intellij.xdebugger.breakpoints.XBreakpointProperties;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Perl6LineBreakpointProperties extends XBreakpointProperties<Perl6LineBreakpointProperties> {
@@ -12,7 +13,7 @@ public class Perl6LineBreakpointProperties extends XBreakpointProperties<Perl6Li
     }
 
     @Override
-    public void loadState(Perl6LineBreakpointProperties state) {
+    public void loadState(@NotNull Perl6LineBreakpointProperties state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 }

@@ -45,6 +45,7 @@ public class Perl6RegexDeclStubElementType extends IStubElementType<Perl6RegexDe
     public Perl6RegexDeclStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef regexNameRef = dataStream.readName();
         boolean exported = dataStream.readBoolean();
+        assert regexNameRef != null;
         return new Perl6RegexDeclStubImpl(parentStub, regexNameRef.getString(), exported);
     }
 

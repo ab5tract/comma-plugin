@@ -40,7 +40,7 @@ public class Perl6CodeStylePanel extends TabbedLanguageCodeStylePanel {
         MyEditorPanel(CodeStyleSettings settings) {super(settings);}
 
         @Override
-        protected String getTabTitle() {
+        protected @NotNull String getTabTitle() {
             return "Editor Behavior";
         }
 

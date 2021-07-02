@@ -13,7 +13,7 @@ public class PodDomHead extends PodDomBlock {
         builder.append("<h");
         builder.append(level);
         builder.append('>');
-        renderChlidrenInto(builder, context);
+        renderChildrenInfo(builder, context);
         builder.append("</h");
         builder.append(level);
         builder.append('>');

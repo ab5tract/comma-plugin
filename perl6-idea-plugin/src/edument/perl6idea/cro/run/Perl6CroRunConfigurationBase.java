@@ -38,7 +38,7 @@ public abstract class Perl6CroRunConfigurationBase extends Perl6RunConfiguration
                 Map<String, String> environment = new HashMap<>();
                 int port = 20000;
                 if (endpoints instanceof List) {
-                    for (Object entrypoint : (List)endpoints) {
+                    for (Object entrypoint : (List<?>)endpoints) {
                         if (!(entrypoint instanceof Map))
                             continue;
                         Map<String, Object> ep = (Map<String, Object>)entrypoint;

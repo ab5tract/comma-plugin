@@ -84,19 +84,13 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
     protected JComponent createEditor() {
         JComponent mainTab = getMainTab();
         JComponent debugTab = getDebugTab();
-        if (mainTab != null && debugTab != null) {
-            JBTabbedPane tabbedPaneWrapper = new JBTabbedPane();
-            tabbedPaneWrapper.addTab("Main", mainTab);
-            tabbedPaneWrapper.addTab("Debug", debugTab);
-            return tabbedPaneWrapper;
-        } else if (mainTab != null) {
-            return mainTab;
-        } else if (debugTab != null) {
-            return debugTab;
-        }
-        throw new RuntimeException("No components created for settings editor");
+        JBTabbedPane tabbedPaneWrapper = new JBTabbedPane();
+        tabbedPaneWrapper.addTab("Main", mainTab);
+        tabbedPaneWrapper.addTab("Debug", debugTab);
+        return tabbedPaneWrapper;
     }
 
+    @NotNull
     private JComponent getMainTab() {
         FileChooserDescriptor chooserDescriptor = new FileChooserDescriptor(
                 true, false,
@@ -141,6 +135,7 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
         return myParams;
     }
 
+    @NotNull
     private JComponent getDebugTab() {
         JPanel panel = new JPanel();
         panel.setLayout(new VerticalFlowLayout(VerticalFlowLayout.TOP, 0, 5, true, false));

@@ -122,7 +122,7 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     }
 
     @Override
-    public IStubElementType getElementType() {
+    public IStubElementType<?, ?> getElementType() {
         return null;
     }
 

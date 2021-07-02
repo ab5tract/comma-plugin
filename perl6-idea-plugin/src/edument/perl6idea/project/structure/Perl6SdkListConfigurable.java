@@ -44,7 +44,7 @@ public class Perl6SdkListConfigurable extends Perl6StructureConfigurable {
         private void updateName() {
             final TreePath path = myTree.getSelectionPath();
             if (path != null) {
-                final NamedConfigurable configurable = ((MyNode)path.getLastPathComponent()).getConfigurable();
+                final NamedConfigurable<?> configurable = ((MyNode)path.getLastPathComponent()).getConfigurable();
                 if (configurable instanceof Perl6SdkConfigurable) {
                     configurable.updateName();
                 }
@@ -125,7 +125,7 @@ public class Perl6SdkListConfigurable extends Perl6StructureConfigurable {
     public void apply() throws ConfigurationException {
         boolean modifiedJdks = false;
         for (int i = 0; i < myRoot.getChildCount(); i++) {
-            final NamedConfigurable configurable = ((MyNode)myRoot.getChildAt(i)).getConfigurable();
+            final NamedConfigurable<?> configurable = ((MyNode)myRoot.getChildAt(i)).getConfigurable();
             if (configurable.isModified()) {
                 configurable.apply();
                 modifiedJdks = true;

@@ -31,9 +31,8 @@ public class Perl6SelfReference extends PsiReferenceBase<Perl6Self> {
         return null;
     }
 
-    @NotNull
     @Override
-    public Object[] getVariants() {
+    public Object @NotNull [] getVariants() {
         return ArrayUtil.EMPTY_OBJECT_ARRAY;
     }
 }

@@ -107,7 +107,7 @@ public interface Perl6Signature extends Perl6PsiElement {
 
     default String prepareParamName(String variableName) {
         return StringUtils.stripEnd(StringUtils.stripStart(variableName, ":$@%&"), "?!");
-    };
+    }
 
     default int eatPositionalSlurpy(List<PsiElement> arguments,
                                            SignatureCompareResult result,

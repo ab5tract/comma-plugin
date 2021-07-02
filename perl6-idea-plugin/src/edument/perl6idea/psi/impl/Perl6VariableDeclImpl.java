@@ -73,9 +73,12 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         Perl6Variable var = Perl6ElementFactory.createVariable(getProject(), name);
-        ASTNode keyNode = getVariable().getNode();
-        ASTNode newKeyNode = var.getVariableToken().getNode();
-        getNode().replaceChild(keyNode, newKeyNode);
+        Perl6Variable variable = getVariable();
+        if (variable != null) {
+            ASTNode keyNode = variable.getNode();
+            ASTNode newKeyNode = var.getVariableToken().getNode();
+            getNode().replaceChild(keyNode, newKeyNode);
+        }
         return this;
     }
 
@@ -134,7 +137,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         for (int i = 0, parametersLength = parameters.length; i < parametersLength; i++) {
             Perl6Parameter parameter = parameters[i];
             Perl6Variable parameterVariable = PsiTreeUtil.findChildOfType(parameter, Perl6Variable.class);
-            if (Objects.equals(parameterVariable.getName(), variable.getName())) {
+            if (parameterVariable != null && Objects.equals(parameterVariable.getName(), variable.getName())) {
                 initIndex = i;
                 break;
             }
@@ -200,9 +203,11 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
             // Get all pieces, excluding deleteInit
             List<PsiElement> initPartsToPreserve = new ArrayList<>();
-            for (PsiElement initNode : getInitializer().getChildren()) {
-                if (!Objects.equals(initNode, deleteInit) && !(initNode instanceof Perl6Infix))
-                    initPartsToPreserve.add(initNode);
+            if (hasInitializer()) {
+                for (PsiElement initNode : Objects.requireNonNull(getInitializer()).getChildren()) {
+                    if (!Objects.equals(initNode, deleteInit) && !(initNode instanceof Perl6Infix))
+                        initPartsToPreserve.add(initNode);
+                }
             }
             // If we have only a single value left after exclusion, it is not InfixApplication anymore,
             // so we can just replace it with the value directly
@@ -220,7 +225,9 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
                     String.format(shouldEnclose ? "(%s)" : "%s", signature.toString()),
                     getInitializer().getText(), false);
 
-            PsiTreeUtil.getParentOfType(this, Perl6Statement.class).replace(newDeclaration);
+            Perl6Statement wholeStatement = PsiTreeUtil.getParentOfType(this, Perl6Statement.class);
+            if (wholeStatement != null)
+                wholeStatement.replace(newDeclaration);
         }
     }
 
@@ -412,9 +419,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             public void init(PsiElement element) {
             }
 
-            @NotNull
             @Override
-            public Object[] getDependencies() {
+            public Object @NotNull [] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };

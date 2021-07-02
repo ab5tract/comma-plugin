@@ -61,6 +61,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
 
     private static void stubRoutes(Perl6MetaDataComponent metaData, Path path, CroAppTemplateConfig conf) {
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
+        if (sourceRoot == null)
+            return;
         String templateContent = String.join("\n", Perl6Utils.getResourceAsLines(CRO_RESOURCE_PREFIX + "Routes.pm6"));
         templateContent = populateRouteVariables(templateContent, conf.websocketSupport, "ws.parts", "WS", conf);
         templateContent = populateRouteVariables(templateContent, conf.templatingSupport, "crotmp.parts", "CROTMP", conf);
@@ -136,7 +138,7 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         stubFileByResource(sourcePath, conf, ".cro.yml", "cro.yml");
     }
 
-    private void stubTemplatesDirectory(Path sourcePath, CroAppTemplateConfig conf) {
+    private static void stubTemplatesDirectory(Path sourcePath, CroAppTemplateConfig conf) {
         Path directoryPath = sourcePath.resolve("templates");
         try {
             Path templatesDirectoryPath = Files.createDirectory(directoryPath);

@@ -284,7 +284,7 @@ public class OPP {
             return (PrecInfoToken)token;
         }
         else {
-            throw new RuntimeException("Missing precedence info token (got " + token.toString() + ")");
+            throw new RuntimeException("Missing precedence info token (got " + (token == null ? "null" : token.toString()) + ")");
         }
     }
 

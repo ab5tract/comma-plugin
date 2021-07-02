@@ -34,9 +34,8 @@ class Perl6XDebugProcess extends XDebugProcess {
         return true;
     }
 
-    @NotNull
     @Override
-    public XBreakpointHandler<?>[] getBreakpointHandlers() {
+    public XBreakpointHandler<?> @NotNull [] getBreakpointHandlers() {
         return new XBreakpointHandler[]{new Perl6BreakpointHandler(myDebugThread)};
     }
 
@@ -60,7 +59,9 @@ class Perl6XDebugProcess extends XDebugProcess {
         myDebugThread.stepOut(getActiveThreadId(context));
     }
 
-    private int getActiveThreadId(@Nullable XSuspendContext context) {
+    private static int getActiveThreadId(@Nullable XSuspendContext context) {
+        if (context == null)
+            return 1;
         XExecutionStack stack = context.getActiveExecutionStack();
         int threadId = 1;
         if (stack instanceof Perl6ExecutionStack)

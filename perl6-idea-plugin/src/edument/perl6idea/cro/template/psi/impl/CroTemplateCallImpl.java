@@ -9,7 +9,6 @@ import com.intellij.psi.impl.source.codeStyle.CodeEditUtil;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes;
 import edument.perl6idea.cro.template.psi.CroTemplateArgList;
 import edument.perl6idea.cro.template.psi.CroTemplateCall;
 import edument.perl6idea.cro.template.psi.CroTemplateElementFactory;

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<RunProfileState> implements Perl6DebuggableConfiguration, LocatableConfiguration {
     // Kind and kind-specific fields
@@ -149,10 +150,7 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
     }
 
     public Integer getParallelismDegree() {
-        if (parallelismDegree == null) {
-            return 1;
-        }
-        return parallelismDegree;
+        return Objects.requireNonNullElse(parallelismDegree, 1);
     }
 
     public void setParallelismDegree(int parallelismDegree) {
@@ -236,6 +234,6 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
 
     @Override
     public boolean isGeneratedName() {
-        return suggestedName() != null && suggestedName().equals(getName());
+        return suggestedName() != null && Objects.equals(suggestedName(), getName());
     }
 }

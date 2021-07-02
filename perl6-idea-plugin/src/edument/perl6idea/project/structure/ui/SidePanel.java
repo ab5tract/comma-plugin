@@ -41,7 +41,7 @@ public class SidePanel extends JPanel {
         myList = new JBList<>(myModel);
         myList.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
         myList.setBorder(JBUI.Borders.emptyTop(5));
-        final ListItemDescriptor<SidePanelItem> descriptor = new ListItemDescriptor<SidePanelItem>() {
+        final ListItemDescriptor<SidePanelItem> descriptor = new ListItemDescriptor<>() {
             @Override
             public String getTextFor(final SidePanelItem value) {
                 return value.myText;
@@ -68,7 +68,7 @@ public class SidePanel extends JPanel {
             }
         };
 
-        myList.setCellRenderer(new GroupedItemsListRenderer<SidePanelItem>(descriptor) {
+        myList.setCellRenderer(new GroupedItemsListRenderer<>(descriptor) {
             JPanel myExtraPanel;
             SidePanelCountLabel myCountLabel;
             final CellRendererPane myValidationParent = new CellRendererPane();
@@ -144,7 +144,7 @@ public class SidePanel extends JPanel {
         });
     }
 
-    public JList getList() {
+    public JList<SidePanelItem> getList() {
         return myList;
     }
 

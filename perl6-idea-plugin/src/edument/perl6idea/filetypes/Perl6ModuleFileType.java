@@ -47,7 +47,7 @@ public class Perl6ModuleFileType extends LanguageFileType implements RakuMultiEx
 
     @Nullable
     @Override
-    public String getCharset(@NotNull VirtualFile file, @NotNull byte[] content) {
+    public String getCharset(@NotNull VirtualFile file, byte @NotNull [] content) {
         return "UTF-8";
     }
 

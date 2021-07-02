@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Perl6SubCallStubElementType extends IStubElementType<Perl6SubCallStub, Perl6SubCall> {
     public Perl6SubCallStubElementType() {
@@ -59,11 +60,11 @@ public class Perl6SubCallStubElementType extends IStubElementType<Perl6SubCallSt
     @NotNull
     @Override
     public Perl6SubCallStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
-        String name = dataStream.readName().getString();
+        String name = Objects.requireNonNull(dataStream.readName()).getString();
         Map<String, String> frameworkData = new HashMap<>();
         int elements = dataStream.readInt();
         for (int i = 0; i < elements; i++) {
-            String key = dataStream.readName().getString();
+            String key = Objects.requireNonNull(dataStream.readName()).getString();
             String value = dataStream.readUTF();
             frameworkData.put(key, value);
         }

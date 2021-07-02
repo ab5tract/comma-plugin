@@ -57,6 +57,7 @@ public class Perl6RoutineDeclStubElementType extends IStubElementType<Perl6Routi
         boolean exported = dataStream.readBoolean();
         StringRef multiness = dataStream.readName();
         StringRef returnType = dataStream.readName();
+        assert routineNameRef != null && routineKindRef != null && multiness != null;
         return new Perl6RoutineDeclStubImpl(parentStub, routineNameRef.getString(), routineKindRef.getString(), isPrivate,
                                             exported, multiness.getString(), returnType == null ? null : returnType.getString());
     }

@@ -19,10 +19,8 @@ public class Perl6TimelineExecutor extends Executor {
   }
 
     @Override
-    public String getStartActionText(String configurationName) {
-        final String name = configurationName != null
-                            ? escapeMnemonicsInConfigurationName(configurationName)
-                            : null;
+    public @NotNull String getStartActionText(@NotNull String configurationName) {
+        final String name = escapeMnemonicsInConfigurationName(configurationName);
         return "Run" + (StringUtil.isEmpty(name) ? "" : " '" + name + "'") + " and show _Timeline";
     }
 
@@ -31,12 +29,12 @@ public class Perl6TimelineExecutor extends Executor {
     }
 
     @Override
-    public String getToolWindowId() {
+    public @NotNull String getToolWindowId() {
         return ToolWindowId.RUN;
     }
 
     @Override
-    public Icon getToolWindowIcon() {
+    public @NotNull Icon getToolWindowIcon() {
         return AllIcons.Toolwindows.ToolWindowRun;
     }
 

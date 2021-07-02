@@ -27,9 +27,8 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
         this.calculatedPresentation = calculatedPresentation;
     }
 
-    @NotNull
     @Override
-    public TreeElement[] getChildren() {
+    public TreeElement @NotNull [] getChildren() {
         List<StructureViewTreeElement> structureElements = new ArrayList<>();
         if (element instanceof Perl6PsiScope) {
             // Add declarations.
@@ -146,7 +145,6 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                     return null;
                 }
 
-                @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
                     return Perl6Icons.REGEX;
@@ -165,7 +163,6 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                     return null;
                 }
 
-                @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
                     if (((Perl6RoutineDecl)element).getRoutineKind().equals("method"))
@@ -186,7 +183,6 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                     return null;
                 }
 
-                @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
                     return Perl6Icons.CONSTANT;
@@ -205,7 +201,6 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                     return null;
                 }
 
-                @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
                     return Perl6Icons.ATTRIBUTE;
@@ -224,7 +219,6 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                     return null;
                 }
 
-                @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
                     return Perl6Icons.SUBSET;
@@ -243,13 +237,12 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
                     return null;
                 }
 
-                @Nullable
                 @Override
                 public Icon getIcon(boolean b) {
                     return Perl6Icons.ENUM;
                 }
             };
-        return null;
+        throw new IllegalArgumentException();
     }
 
     @Override

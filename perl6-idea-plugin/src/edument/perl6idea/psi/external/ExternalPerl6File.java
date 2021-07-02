@@ -90,7 +90,7 @@ public class ExternalPerl6File implements Perl6File {
     }
 
     @Override
-    public boolean processChildren(PsiElementProcessor<? super PsiFileSystemItem> processor) {
+    public boolean processChildren(@NotNull PsiElementProcessor<? super PsiFileSystemItem> processor) {
         return false;
     }
 
@@ -116,9 +116,8 @@ public class ExternalPerl6File implements Perl6File {
         return PsiManager.getInstance(myProject);
     }
 
-    @NotNull
     @Override
-    public PsiElement[] getChildren() {
+    public PsiElement @NotNull [] getChildren() {
         return PsiElement.EMPTY_ARRAY;
     }
 
@@ -189,9 +188,8 @@ public class ExternalPerl6File implements Perl6File {
         return null;
     }
 
-    @NotNull
     @Override
-    public char[] textToCharArray() {
+    public char @NotNull [] textToCharArray() {
         return new char[0];
     }
 
@@ -307,9 +305,8 @@ public class ExternalPerl6File implements Perl6File {
         return null;
     }
 
-    @NotNull
     @Override
-    public PsiReference[] getReferences() {
+    public PsiReference @NotNull [] getReferences() {
         return PsiReference.EMPTY_ARRAY;
     }
 
@@ -377,9 +374,8 @@ public class ExternalPerl6File implements Perl6File {
         return Perl6ModuleFileType.INSTANCE;
     }
 
-    @NotNull
     @Override
-    public PsiFile[] getPsiRoots() {
+    public PsiFile @NotNull [] getPsiRoots() {
         return PsiFile.EMPTY_ARRAY;
     }
 

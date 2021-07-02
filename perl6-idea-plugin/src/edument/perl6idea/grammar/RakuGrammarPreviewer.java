@@ -23,6 +23,7 @@ import com.intellij.psi.stubs.StringStubIndexExtension;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.ui.*;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.ConcurrencyUtil;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.psi.Perl6RegexDecl;
@@ -39,12 +40,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.*;
 import java.util.List;
-import java.util.concurrent.Executors;
+import java.util.*;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class RakuGrammarPreviewer extends JPanel {
     private static final TextAttributes SELECTION_TEXT_ATTRS;
@@ -65,11 +64,11 @@ public class RakuGrammarPreviewer extends JPanel {
 
         HIGHWATER_TEXT_ATTRS = new TextAttributes();
         HIGHWATER_TEXT_ATTRS.setForegroundColor(new JBColor(Gray._64, Gray._230));
-        HIGHWATER_TEXT_ATTRS.setBackgroundColor(new JBColor(Color.yellow, new Color(132, 96, 6)));
+        HIGHWATER_TEXT_ATTRS.setBackgroundColor(new JBColor(new Color(255, 255, 0), new Color(132, 96, 6)));
 
         FAILED_TEXT_ATTRS = new TextAttributes();
         FAILED_TEXT_ATTRS.setForegroundColor(new JBColor(Gray._64, Gray._230));
-        FAILED_TEXT_ATTRS.setBackgroundColor(new JBColor(Color.red, new Color(142, 6, 37)));
+        FAILED_TEXT_ATTRS.setBackgroundColor(new JBColor(new Color(255, 0, 0), new Color(142, 6, 37)));
 
         NODE_TEXT_ATTRS = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK);
         CAPTURED_NODE_TEXT_ATTRS = new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, JBColor.BLACK);
@@ -78,7 +77,7 @@ public class RakuGrammarPreviewer extends JPanel {
     }
 
     private final Project myProject;
-    private JComboBox myGrammarComboBox;
+    private JXComboBox myGrammarComboBox;
     private Editor myInputDataEditor;
     private Tree myParseTree;
     private JLabel myStatusLabel;
@@ -94,7 +93,7 @@ public class RakuGrammarPreviewer extends JPanel {
 
     public RakuGrammarPreviewer(Project project) {
         this.myProject = project;
-        this.timedExecutor = Executors.newSingleThreadScheduledExecutor();
+        this.timedExecutor = ConcurrencyUtil.newSingleScheduledThreadExecutor("Raku grammar preview thread");
         initUI();
     }
 
@@ -269,11 +268,10 @@ public class RakuGrammarPreviewer extends JPanel {
 
     private void addGrammarsFrom(StringStubIndexExtension<Perl6IndexableType> index, List<Perl6IndexableType> packages) {
         for (String globalType : index.getAllKeys(myProject))
-            packages.addAll(index.get(globalType, myProject, GlobalSearchScope.projectScope(myProject))
-                .stream()
-                .filter(maybeGrammar -> maybeGrammar instanceof Perl6PackageDecl &&
-                        Objects.equals(((Perl6PackageDecl)maybeGrammar).getPackageKind(), "grammar"))
-                .collect(Collectors.toList()));
+            packages.addAll(ContainerUtil.filter(index.get(globalType, myProject, GlobalSearchScope.projectScope(myProject)),
+                                                 maybeGrammar -> maybeGrammar instanceof Perl6PackageDecl &&
+                                                                 Objects
+                                                                     .equals(((Perl6PackageDecl)maybeGrammar).getPackageKind(), "grammar")));
     }
 
     @NotNull
@@ -380,7 +378,7 @@ public class RakuGrammarPreviewer extends JPanel {
         });
         return tree;
     }
-    private static class GrammarComboBoxRenderer implements ListCellRenderer {
+    private static class GrammarComboBoxRenderer implements ListCellRenderer<Object> {
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             if (value instanceof String) {
@@ -511,9 +509,9 @@ public class RakuGrammarPreviewer extends JPanel {
         }
 
         @Override
-        public Enumeration children() {
+        public Enumeration<TreeNode> children() {
             int n = getChildCount();
-            return new Enumeration() {
+            return new Enumeration<>() {
                 private int i = 0;
 
                 @Override
@@ -522,7 +520,7 @@ public class RakuGrammarPreviewer extends JPanel {
                 }
 
                 @Override
-                public Object nextElement() {
+                public TreeNode nextElement() {
                     return getChildAt(i++);
                 }
             };
@@ -617,8 +615,8 @@ public class RakuGrammarPreviewer extends JPanel {
             // children do.
             boolean childCovers = false;
             if (covers || visitUnsuccessful) {
-                for (Enumeration e = treeNode.children(); e.hasMoreElements(); ) {
-                    TreeNode child = (TreeNode)e.nextElement();
+                for (Enumeration<TreeNode> e = treeNode.children(); e.hasMoreElements(); ) {
+                    TreeNode child = e.nextElement();
                     if (child instanceof DefaultMutableTreeNode) {
                         if (selectNodeCoveringOffset((DefaultMutableTreeNode)child, offset, visitUnsuccessful)) {
                             childCovers = true;

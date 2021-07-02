@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,10 +19,10 @@ public class ConvertNonCapturingGroupIntoPosIntention extends ConvertNonCapturin
     @Override
     PsiElement obtainReplacer(Project project, Perl6RegexGroup group) {
         String regexContent = group.getText();
-        return PsiTreeUtil.findChildOfType(
+        return Objects.requireNonNull(PsiTreeUtil.findChildOfType(
             Perl6ElementFactory
                 .createStatementFromText(project, String.format("/(%s)/", regexContent.substring(1, regexContent.length() - 1))),
-            Perl6RegexCapturePositional.class);
+            Perl6RegexCapturePositional.class));
     }
 
     @Override

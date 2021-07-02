@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends StubBasedPsiElementBase<T>
+public abstract class Perl6MemberStubBasedPsi<T extends StubElement<?>> extends StubBasedPsiElementBase<T>
         implements Perl6PsiDeclaration {
     public Perl6MemberStubBasedPsi(@NotNull T stub,
                                  @NotNull IStubElementType nodeType) {
@@ -28,7 +28,7 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
     public String getScope() {
         T stub = getStub();
         if (stub instanceof Perl6DeclStub)
-            return ((Perl6DeclStub)stub).getScope();
+            return ((Perl6DeclStub<?>)stub).getScope();
         PsiElement parent = getParent();
         return parent instanceof Perl6ScopedDecl ? ((Perl6ScopedDecl)parent).getScope() : defaultScope();
     }
@@ -42,7 +42,6 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
     @Override
     public ItemPresentation getPresentation() {
         return new ItemPresentation() {
-            @Nullable
             @Override
             public String getPresentableText() {
                 String displayName = presentableName();
@@ -97,7 +96,7 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement> extends Stu
             public Icon getIcon(boolean b) {
                 T stub = getStub();
                 if (stub == null) return getOriginElementIcon();
-                IStubElementType type = stub.getStubType();
+                IStubElementType<?, ?> type = stub.getStubType();
                 if (type instanceof Perl6RoutineDeclStubElementType) {
                     if (getScope().equals("has"))
                         return Perl6Icons.METHOD;

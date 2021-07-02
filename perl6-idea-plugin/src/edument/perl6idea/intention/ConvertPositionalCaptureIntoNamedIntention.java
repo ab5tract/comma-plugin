@@ -57,9 +57,8 @@ public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIn
             if (!dialog.showAndGet())
                 return;
             if (element instanceof PsiNamedElement)
-                WriteCommandAction.runWriteCommandAction(project, () -> {
-                    ((PsiNamedElement)element).setName(dialog.getName());
-                });
+                WriteCommandAction.runWriteCommandAction(project, "Raku Intention", null,
+                                                         () -> ((PsiNamedElement)element).setName(dialog.getName()));
         });
     }
 

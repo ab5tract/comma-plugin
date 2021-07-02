@@ -94,7 +94,7 @@ public class TimelineTooltip extends JPanel {
         }
     }
 
-    private String capitalize(String s) {
+    private static String capitalize(String s) {
         return s.isEmpty() ? s : s.substring(0, 1).toUpperCase(Locale.ENGLISH) + s.substring(1);
     }
 }

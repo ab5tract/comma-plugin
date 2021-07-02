@@ -54,7 +54,7 @@ public class TimelineContentBuilder extends CustomConsoleRunTab {
                 if (message == null)
                     message = "unknown problem";
                 Notifications.Bus.notify(
-                        new Notification("Timeline connection error", null,
+                        new Notification("raku.timeline.errors", null,
                                          "Timeline connection error", null,
                                          "Could not get timeline data: " + message,
                                          NotificationType.ERROR, null));

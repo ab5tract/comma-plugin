@@ -48,7 +48,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
         myModel = new DependenciesTableModel(state);
         myEntryTable = new JBTable(myModel);
         TableRowSorter<DependenciesTableModel> sorter = new TableRowSorter<>(myModel);
-        sorter.setComparator(0, (Comparator<Perl6DependencyTableItem>)(o1, o2) -> o1.getEntry().compareTo(o2.getEntry()));
+        sorter.setComparator(0, Comparator.comparing(o -> ((Perl6DependencyTableItem)o).getEntry()));
         myEntryTable.setRowSorter(sorter);
         sorter.setSortKeys(Arrays.asList(
           new RowSorter.SortKey(1, SortOrder.ASCENDING),
@@ -87,7 +87,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
             }
         }).addExtraAction(new AnActionButton("Edit", null, IconUtil.getEditIcon()) {
             @Override
-            public void actionPerformed(AnActionEvent e) {
+            public void actionPerformed(@NotNull AnActionEvent e) {
                 // Should not happen
                 if (getSelectedItem() == null) return;
                 Perl6DependencyAddAction action = new Perl6DependencyAddAction(
@@ -168,7 +168,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
 
     private static class TableItemRenderer extends ColoredTableCellRenderer {
         @Override
-        protected void customizeCellRenderer(JTable table,
+        protected void customizeCellRenderer(@NotNull JTable table,
                                              @Nullable Object value,
                                              boolean selected,
                                              boolean hasFocus,

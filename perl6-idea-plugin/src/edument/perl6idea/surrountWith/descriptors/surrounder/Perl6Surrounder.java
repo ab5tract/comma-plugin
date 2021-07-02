@@ -34,7 +34,7 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
     }
 
     @Override
-    public boolean isApplicable(@NotNull PsiElement[] elements) {
+    public boolean isApplicable(PsiElement @NotNull [] elements) {
         return true;
     }
 
@@ -63,7 +63,7 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
 
     @Nullable
     @Override
-    public TextRange surroundElements(@NotNull Project project, @NotNull Editor editor, @NotNull PsiElement[] statements) throws IncorrectOperationException {
+    public TextRange surroundElements(@NotNull Project project, @NotNull Editor editor, PsiElement @NotNull [] statements) throws IncorrectOperationException {
         if (!myIsStatement && statements.length > 1) {
             throw new IncorrectOperationException("Cannot surround this expression");
         }
@@ -106,6 +106,7 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
                 Perl6Do doWrapper = Perl6ElementFactory.createDoStatement(project);
                 Perl6Block block = PsiTreeUtil.getParentOfType(doWrapper.getBlock(), Perl6Block.class);
                 // Replace block of `do` with our single expression
+                assert block != null;
                 block.replace(surrounder);
                 replacement = doWrapper;
             } else {
@@ -122,8 +123,11 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
 
         // Try to get a topic to delete
         PsiElement anchor = getAnchor(surrounder);
-        if (anchor == null)
+        if (anchor == null) {
+            if (surrounder == null)
+                return null;
             return surrounder.getTextRange();
+        }
 
         TextRange range = anchor.getTextRange();
         TextRange textRange = new TextRange(range.getStartOffset(), range.getStartOffset());
@@ -132,9 +136,8 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
         return textRange;
     }
 
-    @NotNull
     private static PsiElement[] prepareSurroundedStatements(@NotNull Project project,
-                                                            @NotNull PsiElement[] statements) {
+                                                            PsiElement[] statements) {
         // Here we adjust statements that we will be surrounding so that they form
         // a correct resulting output
         PsiElement[] elementsToInsert;

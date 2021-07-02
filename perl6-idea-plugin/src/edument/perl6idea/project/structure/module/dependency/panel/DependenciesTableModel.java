@@ -13,28 +13,28 @@ import java.util.*;
 public class DependenciesTableModel extends ListTableModel<Perl6DependencyTableItem> implements ItemRemovable {
     static final String SCOPE_COLUMN_NAME = "Scope";
     private static final ColumnInfo<Perl6DependencyTableItem, Perl6DependencyScope> SCOPE_COLUMN_INFO =
-      new ColumnInfo<Perl6DependencyTableItem, Perl6DependencyScope>(SCOPE_COLUMN_NAME) {
-          @Nullable
-          @Override
-          public Perl6DependencyScope valueOf(Perl6DependencyTableItem item) {
-              return item.getScope();
-          }
+        new ColumnInfo<>(SCOPE_COLUMN_NAME) {
+            @Nullable
+            @Override
+            public Perl6DependencyScope valueOf(Perl6DependencyTableItem item) {
+                return item.getScope();
+            }
 
-          @Override
-          public void setValue(Perl6DependencyTableItem item, Perl6DependencyScope value) {
-              item.setScope(value);
-          }
+            @Override
+            public void setValue(Perl6DependencyTableItem item, Perl6DependencyScope value) {
+                item.setScope(value);
+            }
 
-          @Override
-          public boolean isCellEditable(Perl6DependencyTableItem item) {
-              return true;
-          }
+            @Override
+            public boolean isCellEditable(Perl6DependencyTableItem item) {
+                return true;
+            }
 
-          @Override
-          public Class<?> getColumnClass() {
-              return Perl6DependencyScope.class;
-          }
-      };
+            @Override
+            public Class<?> getColumnClass() {
+                return Perl6DependencyScope.class;
+            }
+        };
     private final ModuleConfigurationState myState;
     private Set<Perl6DependencyTableItem> myInitialSet = new HashSet<>();
 

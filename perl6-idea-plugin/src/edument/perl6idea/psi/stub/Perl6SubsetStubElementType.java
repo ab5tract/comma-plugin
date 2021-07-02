@@ -47,6 +47,8 @@ public class Perl6SubsetStubElementType extends IStubElementType<Perl6SubsetStub
         StringRef subsetNameRef = dataStream.readName();
         boolean exported = dataStream.readBoolean();
         StringRef subsetBaseRef = dataStream.readName();
+        assert subsetNameRef != null;
+        assert subsetBaseRef != null;
         return new Perl6SubsetStubImpl(parentStub, subsetNameRef.getString(), exported, subsetBaseRef.getString());
     }
 

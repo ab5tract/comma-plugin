@@ -19,7 +19,7 @@ public class Perl6DebugEventBreakpointReached extends Perl6DebugEventStop implem
     @Override
     public void run() {
         XDebugSession session = getDebugSession();
-        XLineBreakpoint breakpoint = DebugUtils.findBreakpoint(session.getProject(), this);
+        XLineBreakpoint<?> breakpoint = DebugUtils.findBreakpoint(session.getProject(), this);
         if (breakpoint != null) {
             getDebugSession().breakpointReached(breakpoint, "", getSuspendContext());
         }

@@ -79,7 +79,7 @@ public class TimelineChart extends JPanel {
     private int totalLanes = 0;
     private int lanesInView = 0;
     private int firstLane = 0;
-    private Consumer<VisibleLanesChanged> visibleLanesChangedHandler;
+    private Consumer<? super VisibleLanesChanged> visibleLanesChangedHandler;
 
     // Information about a rendered area on the chart, for handling tooltips and expansions.
     private static class VisibleLogged {
@@ -352,7 +352,7 @@ public class TimelineChart extends JPanel {
         fireVisibleLanesChangedHandler();
     }
 
-    public void setVisibleLanesChangedHandler(Consumer<VisibleLanesChanged> visibleLanesChangedHandler) {
+    public void setVisibleLanesChangedHandler(Consumer<? super VisibleLanesChanged> visibleLanesChangedHandler) {
         this.visibleLanesChangedHandler = visibleLanesChangedHandler;
     }
 
@@ -635,7 +635,7 @@ public class TimelineChart extends JPanel {
         return true;
     }
 
-    private boolean doesAnyLaneHaveChildren(List<Lane> lanes) {
+    private static boolean doesAnyLaneHaveChildren(List<Lane> lanes) {
         for (Lane lane : lanes)
             if (!lane.getChildTaskLaneGroups().isEmpty())
                 return true;
@@ -675,7 +675,7 @@ public class TimelineChart extends JPanel {
         g.fillPolygon(triangle);
     }
 
-    private void paintLeftAxis(Graphics2D g, int bottomY, int x) {
+    private static void paintLeftAxis(Graphics2D g, int bottomY, int x) {
         g.setColor(JBColor.BLACK);
         g.drawLine(x, chartPadding, x, bottomY);
     }

@@ -49,7 +49,7 @@ public class Perl6ModuleType extends ModuleType<Perl6ModuleBuilder> {
     }
 
     @Override
-    public Icon getNodeIcon(@Deprecated boolean b) {
+    public @NotNull Icon getNodeIcon(@Deprecated boolean b) {
         return Perl6Icons.CAMELIA;
     }
 

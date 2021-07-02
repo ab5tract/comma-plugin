@@ -132,14 +132,14 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
                 int line = Integer.parseInt(specialOutputLines.get(outputLineIdx++));
                 String pre = specialOutputLines.get(outputLineIdx++);
                 String post = specialOutputLines.get(outputLineIdx++);
-                String message = "";
+                StringBuilder message = new StringBuilder();
                 while (true) {
                     String messagePart = specialOutputLines.get(outputLineIdx++);
                     if (messagePart.equals("\u0001 ERROR-SPLIT"))
                         break;
-                    message += messagePart;
+                    message.append(messagePart);
                 }
-                errors[i] = new CompileError(line, pre, post, message);
+                errors[i] = new CompileError(line, pre, post, message.toString());
             }
             ApplicationManager.getApplication().invokeAndWait(() -> emitCompileErrors(errors));
         }
@@ -148,10 +148,10 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
             boolean inMessage = false;
             List<String> backtraceLines = new ArrayList<>();
             List<List<String>> awaitBacktraces = new ArrayList<>();
-            String message = "";
+            StringBuilder message = new StringBuilder();
             for (String line : specialOutputLines) {
                 if (inMessage) {
-                    message += line + "\n";
+                    message.append(line).append("\n");
                 }
                 else if (line.equals("\u0001 AWAIT-BACKTRACE-END")) {
                     awaitBacktraces.add(backtraceLines);
@@ -164,7 +164,7 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
                     backtraceLines.add(line);
                 }
             }
-            final String finalMessage = message;
+            final String finalMessage = message.toString();
             final List<String> finalBacktrace = backtraceLines;
             ApplicationManager.getApplication().invokeAndWait(() -> emitRuntimeError(finalMessage,
                     finalBacktrace, awaitBacktraces));

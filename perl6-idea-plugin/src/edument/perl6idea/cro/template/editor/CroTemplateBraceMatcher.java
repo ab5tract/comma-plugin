@@ -9,9 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CroTemplateBraceMatcher implements PairedBraceMatcher {
-    @NotNull
     @Override
-    public BracePair[] getPairs() {
+    public BracePair @NotNull [] getPairs() {
         return new BracePair[] {
                 new BracePair(CroTemplateTokenTypes.OPEN_PAREN, CroTemplateTokenTypes.CLOSE_PAREN, false),
                 new BracePair(CroTemplateTokenTypes.OPEN_BRACKET, CroTemplateTokenTypes.CLOSE_BRACKET, false),

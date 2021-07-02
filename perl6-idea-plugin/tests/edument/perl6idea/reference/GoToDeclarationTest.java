@@ -106,9 +106,7 @@ public class GoToDeclarationTest extends CommaFixtureTestCase {
 
     public void testPrivateMethodsReference() {
         doTest("class Foo { has $.foo; method test { $.fo<caret>o; } }", 0,
-                Perl6MethodCall.class, (call) -> {
-                    assertTrue(call instanceof Perl6VariableDecl);
-                });
+                Perl6MethodCall.class, (call) -> assertTrue(call instanceof Perl6VariableDecl));
     }
 
     public void testOverloadedPrivateMethodReference() {
@@ -122,9 +120,7 @@ public class GoToDeclarationTest extends CommaFixtureTestCase {
 
     public void testAttributeByCall() {
         doTest("class Foo { has $.foo; method test { $.fo<caret>o; } }", 0,
-                Perl6MethodCall.class, (call) -> {
-                    assertTrue(call instanceof Perl6VariableDecl);
-                });
+                Perl6MethodCall.class, (call) -> assertTrue(call instanceof Perl6VariableDecl));
     }
 
     public void testMultipleInheritance() {
@@ -187,9 +183,7 @@ public class GoToDeclarationTest extends CommaFixtureTestCase {
     }
 
     public void testDeferredType() {
-        doTest("class A {...}; class B { has <caret>A $.x; }; class A { has $.foo; }", 0, Perl6TypeName.class, (pkg) -> {
-            assertNotNull(pkg);
-        });
+        doTest("class A {...}; class B { has <caret>A $.x; }; class A { has $.foo; }", 0, Perl6TypeName.class, (pkg) -> assertNotNull(pkg));
     }
 
     public void testDynamicVariable() {

@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.impl.RootConfigurationAccessor;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -58,13 +59,13 @@ public class UIRootConfigurationAccessor extends RootConfigurationAccessor {
     }
 
     @Override
-    public Sdk getProjectSdk(final Project project) {
+    public Sdk getProjectSdk(final @NotNull Project project) {
         return Perl6ProjectStructureConfigurable.getInstance(project).getProjectSdksModel().getProjectSdk();
     }
 
     @Override
     @Nullable
-    public String getProjectSdkName(final Project project) {
+    public String getProjectSdkName(final @NotNull Project project) {
         final Sdk projectJdk = getProjectSdk(project);
         if (projectJdk != null) {
             return projectJdk.getName();

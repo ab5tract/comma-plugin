@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Perl6Utils {
     public static final Logger LOG = Logger.getInstance(Perl6Utils.class);
@@ -42,7 +43,8 @@ public class Perl6Utils {
             InputStream in = Perl6Utils.class.getClassLoader().getResourceAsStream(resourcePath);
             FileOutputStream out = new FileOutputStream(tempFile)
         ) {
-            in.transferTo(out);
+            if (in != null)
+                in.transferTo(out);
         } catch (IOException e) {
             LOG.error(e);
         }
@@ -53,7 +55,7 @@ public class Perl6Utils {
         List<String> lines = new ArrayList<>();
         try (
             InputStream resourceFileStream = Perl6Utils.class.getClassLoader().getResourceAsStream(filepath);
-            BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(resourceFileStream, StandardCharsets.UTF_8))
+            BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(resourceFileStream), StandardCharsets.UTF_8))
         ) {
             while (inputStreamReader.ready())
                 lines.add(inputStreamReader.readLine());

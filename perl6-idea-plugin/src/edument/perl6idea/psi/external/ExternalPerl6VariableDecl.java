@@ -64,7 +64,7 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
     }
 
     @Override
-    public IStubElementType getElementType() {
+    public IStubElementType<?, ?> getElementType() {
         return null;
     }
 

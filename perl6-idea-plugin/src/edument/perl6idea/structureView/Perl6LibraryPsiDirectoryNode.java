@@ -10,7 +10,7 @@ import com.intellij.util.PlatformIcons;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6LibraryPsiDirectoryNode extends PsiDirectoryNode {
-    public Perl6LibraryPsiDirectoryNode(Project project, AbstractTreeNode node, ViewSettings settings) {
+    public Perl6LibraryPsiDirectoryNode(Project project, AbstractTreeNode<?> node, ViewSettings settings) {
         super(project, (PsiDirectory)node.getValue(), settings);
     }
 

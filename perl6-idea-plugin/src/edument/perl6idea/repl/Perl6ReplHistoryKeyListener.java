@@ -86,7 +86,7 @@ public class Perl6ReplHistoryKeyListener extends KeyAdapter {
 
                 // Otherwise, we go back to the previous entry.
                 historyPos--;
-                WriteCommandAction.runWriteCommandAction(repl.getProject(), () -> {
+                WriteCommandAction.runWriteCommandAction(repl.getProject(), "Raku REPL", null, () -> {
                     document.setText(state.getExecutionText(historyPos));
                     EditorUtil.scrollToTheEnd(editor);
                     prevCaretOffset = 0;
@@ -106,7 +106,7 @@ public class Perl6ReplHistoryKeyListener extends KeyAdapter {
                 // Go forward in history. If we're at the end of history, then we
                 // put in place the preserved unfinished command.
                 historyPos++;
-                WriteCommandAction.runWriteCommandAction(repl.getProject(), () -> {
+                WriteCommandAction.runWriteCommandAction(repl.getProject(), "Raku REPL", null, () -> {
                     document.setText(historyPos == state.getHistorySize()
                             ? unfinishedCommand
                             : state.getExecutionText(historyPos));

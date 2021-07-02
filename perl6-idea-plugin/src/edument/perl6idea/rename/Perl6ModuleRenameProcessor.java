@@ -50,7 +50,7 @@ public class Perl6ModuleRenameProcessor extends RenamePsiElementProcessor {
     @Override
     public void renameElement(@NotNull PsiElement element,
                               @NotNull String newPackageName,
-                              @NotNull UsageInfo[] usages,
+                              UsageInfo @NotNull [] usages,
                               @Nullable RefactoringElementListener listener) throws IncorrectOperationException {
         Perl6File file = (Perl6File)element;
         PsiMetaData metaData = file.getMetaData();

@@ -70,7 +70,7 @@ public class StubMissingSubroutineFix implements IntentionAction {
         if (scopes.size() == 1) {
             invokeWithScope(project, editor, scopes.get(0), decl);
         } else {
-            IntroduceTargetChooser.showChooser(editor, scopes, new Pass<Perl6StatementList>() {
+            IntroduceTargetChooser.showChooser(editor, scopes, new Pass<>() {
                 @Override
                 public void pass(Perl6StatementList scope) {
                     invokeWithScope(project, editor, scope, decl);

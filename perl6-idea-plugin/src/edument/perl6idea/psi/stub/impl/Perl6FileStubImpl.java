@@ -25,7 +25,7 @@ public class Perl6FileStubImpl extends PsiFileStubImpl<Perl6File> implements Per
 
     @NotNull
     @Override
-    public IStubFileElementType getType() {
+    public IStubFileElementType<?> getType() {
         return Perl6ElementTypes.FILE;
     }
 
@@ -48,9 +48,9 @@ public class Perl6FileStubImpl extends PsiFileStubImpl<Perl6File> implements Per
             Stub current = toTry.remove(0);
             for (Stub child : current.getChildrenStubs()) {
                 if (child instanceof Perl6DeclStub) {
-                    Perl6DeclStub declStub = (Perl6DeclStub)child;
+                    Perl6DeclStub<?> declStub = (Perl6DeclStub<?>)child;
                     if (declStub.isExported())
-                        exports.add((Perl6PsiDeclaration)declStub.getPsi());
+                        exports.add(declStub.getPsi());
                 }
                 toTry.add(child);
             }

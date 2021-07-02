@@ -10,7 +10,7 @@ import edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class CroTemplateSpellCheckingStrategy extends SpellcheckingStrategy {
-    private final Tokenizer tokenizer = new Tokenizer() {
+    private final Tokenizer<?> tokenizer = new Tokenizer<>() {
         @Override
         public void tokenize(@NotNull PsiElement element, TokenConsumer consumer) {
             consumer.consumeToken(element, CommentSplitter.getInstance());
@@ -19,7 +19,7 @@ public class CroTemplateSpellCheckingStrategy extends SpellcheckingStrategy {
 
     @NotNull
     @Override
-    public Tokenizer getTokenizer(PsiElement element) {
+    public Tokenizer<?> getTokenizer(PsiElement element) {
         IElementType type = element.getNode().getElementType();
         return type == CroTemplateTokenTypes.LITERAL_TEXT ? tokenizer : EMPTY_TOKENIZER;
     }

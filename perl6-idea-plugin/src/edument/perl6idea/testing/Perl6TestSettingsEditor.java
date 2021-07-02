@@ -74,7 +74,7 @@ public class Perl6TestSettingsEditor extends SettingsEditor<Perl6TestRunConfigur
     protected void applyEditorTo(@NotNull Perl6TestRunConfiguration configuration) throws ConfigurationException {
         // Specific options
         configuration.setTestKind((RakuTestKind)myKindField.getSelectedItem());
-        switch ((RakuTestKind)myKindField.getSelectedItem()) {
+        switch ((RakuTestKind)Objects.requireNonNull(myKindField.getSelectedItem())) {
             case ALL:
                 break;
             case MODULE: {

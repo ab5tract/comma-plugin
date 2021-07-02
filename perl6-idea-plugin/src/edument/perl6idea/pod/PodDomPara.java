@@ -8,7 +8,7 @@ public class PodDomPara extends PodDomBlock {
     @Override
     public void renderInto(StringBuilder builder, PodRenderingContext context) {
         builder.append("<p>");
-        renderChlidrenInto(builder, context);
+        renderChildrenInfo(builder, context);
         builder.append("</p>");
     }
 }

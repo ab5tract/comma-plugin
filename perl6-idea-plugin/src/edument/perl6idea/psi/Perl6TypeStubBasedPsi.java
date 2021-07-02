@@ -23,7 +23,7 @@ import javax.swing.*;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.NAME;
 
-public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStub> extends StubBasedPsiElementBase<T>
+public abstract class Perl6TypeStubBasedPsi<T extends StubElement<?> & Perl6TypeStub<?>> extends StubBasedPsiElementBase<T>
         implements Perl6PsiDeclaration, Perl6LexicalSymbolContributor {
     public Perl6TypeStubBasedPsi(@NotNull T stub,
                                  @NotNull IStubElementType nodeType) {
@@ -85,9 +85,8 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
                 return globalName == null ? getName() : globalName;
             }
 
-            @Nullable
             @Override
-            public String getLocationString() {
+            public @NotNull String getLocationString() {
                 // Mangle file name into module name.
                 String moduleName = getEnclosingPerl6ModuleName();
                 if (moduleName == null)
@@ -108,7 +107,7 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement & Perl6TypeStu
             public Icon getIcon(boolean b) {
                 T stub = getStub();
                 if (stub == null) return getOriginElementIcon();
-                IStubElementType type = stub.getStubType();
+                IStubElementType<?, ?> type = stub.getStubType();
                 if (type instanceof Perl6PackageDeclStubElementType)
                     return Perl6Icons.iconForPackageDeclarator(((Perl6PackageDeclStubImpl)stub).getPackageKind());
                 else if (type instanceof Perl6SubsetStubElementType)

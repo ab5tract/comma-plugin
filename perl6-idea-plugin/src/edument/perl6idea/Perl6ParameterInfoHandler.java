@@ -1,6 +1,5 @@
 package edument.perl6idea;
 
-import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.lang.parameterInfo.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiPolyVariantReference;

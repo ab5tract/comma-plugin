@@ -3,7 +3,6 @@ package edument.perl6idea.project.projectWizard.components;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.*;
-import com.intellij.ide.wizard.CommitStepException;
 import com.intellij.internal.statistic.eventLog.FeatureUsageData;
 import com.intellij.internal.statistic.utils.PluginInfoDetectorKt;
 import com.intellij.openapi.Disposable;
@@ -49,7 +48,6 @@ import java.util.*;
 /**
  * @author Dmitry Avdeev
  */
-@SuppressWarnings("unchecked")
 public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsStep, Disposable {
     private static final Logger LOG = Logger.getInstance(CommaProjectTypeStep.class);
 
@@ -84,7 +82,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
         myProjectTypeList.setModel(new CollectionListModel<>(groups));
         myProjectTypeList.setSelectionModel(new SingleSelectionModel());
         myProjectTypeList.addListSelectionListener(__ -> updateSelection());
-        myProjectTypeList.setCellRenderer(new GroupedItemsListRenderer<TemplatesGroup>(new ListItemDescriptorAdapter<TemplatesGroup>() {
+        myProjectTypeList.setCellRenderer(new GroupedItemsListRenderer<>(new ListItemDescriptorAdapter<TemplatesGroup>() {
             @Nullable
             @Override
             public String getTextFor(TemplatesGroup value) {
@@ -121,7 +119,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
             }
         });
 
-        new ListSpeedSearch(myProjectTypeList) {
+        new ListSpeedSearch<>(myProjectTypeList) {
             @Override
             protected String getElementText(Object element) {
                 return ((TemplatesGroup)element).getName();
@@ -164,7 +162,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
         myTemplatesList.restoreSelection();
     }
 
-    private static ModuleType getModuleType(TemplatesGroup group) {
+    private static ModuleType<?> getModuleType(TemplatesGroup group) {
         ModuleBuilder moduleBuilder = group.getModuleBuilder();
         return moduleBuilder == null ? null : moduleBuilder.getModuleType();
     }
@@ -228,9 +226,9 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
         List<TemplatesGroup> groups = new ArrayList<>(myTemplatesMap.keySet());
 
         // sorting by module type popularity
-        final MultiMap<ModuleType, TemplatesGroup> moduleTypes = new MultiMap<>();
+        final MultiMap<ModuleType<?>, TemplatesGroup> moduleTypes = new MultiMap<>();
         for (TemplatesGroup group : groups) {
-            ModuleType type = getModuleType(group);
+            ModuleType<?> type = getModuleType(group);
             moduleTypes.putValue(type, group);
         }
         Collections.sort(groups, (o1, o2) -> {

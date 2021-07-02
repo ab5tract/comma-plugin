@@ -30,9 +30,8 @@ public class Perl6ModuleReference extends PsiReferenceBase<Perl6ModuleName> {
         return  elements.isEmpty() ? null : elements.iterator().next();
     }
 
-    @NotNull
     @Override
-    public Object[] getVariants() {
+    public Object @NotNull [] getVariants() {
         Project project = this.getElement().getProject();
         Collection<String> projectModules = ProjectModulesStubIndex.getInstance().getAllKeys(project);
         List<String> reallyInThisProject = new ArrayList<>();
@@ -52,7 +51,7 @@ public class Perl6ModuleReference extends PsiReferenceBase<Perl6ModuleName> {
     }
 
     @Override
-    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         Perl6ModuleName name = getElement();
         return name.setName(newElementName);
     }

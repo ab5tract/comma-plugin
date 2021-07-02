@@ -16,7 +16,6 @@ import com.intellij.openapi.projectRoots.ui.SdkPathEditor;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.wm.impl.status.InlineProgressIndicator;
@@ -62,7 +61,7 @@ public class Perl6SdkEditor implements Configurable, Place.Navigator {
 
     private String myInitialName;
     private String myInitialPath;
-    private final boolean myIsDownloading = false;
+    private static final boolean myIsDownloading = false;
     private final History myHistory;
 
     private final Disposable myDisposable = Disposer.newDisposable();

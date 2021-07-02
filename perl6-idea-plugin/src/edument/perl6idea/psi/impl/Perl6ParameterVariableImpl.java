@@ -179,9 +179,8 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
             public void init(PsiElement element) {
             }
 
-            @NotNull
             @Override
-            public Object[] getDependencies() {
+            public Object @NotNull [] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };

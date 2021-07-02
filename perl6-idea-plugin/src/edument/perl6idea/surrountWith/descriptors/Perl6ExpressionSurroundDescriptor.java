@@ -34,9 +34,8 @@ public class Perl6ExpressionSurroundDescriptor implements SurroundDescriptor {
         new Perl6HashContextSurrounder(false)
     };
 
-    @NotNull
     @Override
-    public PsiElement[] getElementsToSurround(PsiFile file, int startOffset, int endOffset) {
+    public PsiElement @NotNull [] getElementsToSurround(PsiFile file, int startOffset, int endOffset) {
         PsiElement start = file.findElementAt(startOffset);
         PsiElement end = file.findElementAt(endOffset == 0 ? 0 : endOffset - 1);
         start = Perl6PsiUtil.skipSpaces(start, true);
@@ -55,9 +54,8 @@ public class Perl6ExpressionSurroundDescriptor implements SurroundDescriptor {
         return PsiElement.EMPTY_ARRAY;
     }
 
-    @NotNull
     @Override
-    public Surrounder[] getSurrounders() {
+    public Surrounder @NotNull [] getSurrounders() {
         return SURROUNDERS;
     }
 

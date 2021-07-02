@@ -12,9 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CroTemplateFoldingBuilder extends FoldingBuilderEx implements DumbAware {
-    @NotNull
     @Override
-    public FoldingDescriptor[] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
+    public FoldingDescriptor @NotNull [] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
         return PsiTreeUtil.findChildrenOfAnyType(root, CroTemplateTagSequence.class)
                 .stream()
                 .filter(block -> !block.getTextRange().isEmpty())

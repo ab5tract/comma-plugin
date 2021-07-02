@@ -135,6 +135,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
         if (rangeElement2 instanceof Perl6Heredoc) {
             range1 = new LineRange(rangeElement1, rangeElement2);
             rangeElement2 = Perl6PsiUtil.skipSpaces(rangeElement2.getNextSibling(), true);
+            assert rangeElement2 != null;
         }
 
         if (heredoc1 instanceof Perl6Heredoc)

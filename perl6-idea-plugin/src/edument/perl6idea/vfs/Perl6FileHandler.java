@@ -103,9 +103,8 @@ public class Perl6FileHandler extends ArchiveHandler {
         return null;
     }
 
-    @NotNull
     @Override
-    public byte[] contentsToByteArray(@NotNull String relativePath) {
+    public byte @NotNull [] contentsToByteArray(@NotNull String relativePath) {
         getEntriesMap();
         try {
             String packageName = relativePath.substring(0, relativePath.length() - 4);

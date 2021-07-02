@@ -45,7 +45,7 @@ public class Perl6ConstantStubElementType extends IStubElementType<Perl6Constant
     public Perl6ConstantStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
         StringRef constantNameRef = dataStream.readName();
         boolean isExport = dataStream.readBoolean();
-        return new Perl6ConstantStubImpl(parentStub, constantNameRef.getString(), isExport);
+        return new Perl6ConstantStubImpl(parentStub, constantNameRef == null ? null : constantNameRef.getString(), isExport);
     }
 
     @Override

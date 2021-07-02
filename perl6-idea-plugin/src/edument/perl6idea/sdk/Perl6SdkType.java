@@ -55,7 +55,7 @@ public class Perl6SdkType extends SdkType {
     public static final String SETTING_FILE_NAME = "SETTINGS.pm6";
     private static final Set<String> BINARY_NAMES = new HashSet<>();
     public static final NotificationGroup
-        RAKU_SDK_ERRORS_GROUP = new NotificationGroup("Raku SDK errors", NotificationDisplayType.BALLOON, true);
+        RAKU_SDK_ERRORS_GROUP = NotificationGroupManager.getInstance().getNotificationGroup("raku.sdk.errors.group");
     private boolean sdkIssueNotified = false;
     private static final Logger LOG = Logger.getInstance(Perl6SdkType.class);
     private Map<String, String> moarBuildConfig;
@@ -197,7 +197,8 @@ public class Perl6SdkType extends SdkType {
                 if (process.waitFor() != 0)
                     return null;
             }
-        } catch (IOException|InterruptedException e) {
+        }
+        catch (IOException | InterruptedException e) {
             reactToSDKIssue(null);
         }
         return line;
@@ -241,7 +242,8 @@ public class Perl6SdkType extends SdkType {
                 }
             }
             moarBuildConfig = buildConfig;
-        } catch (ExecutionException e) {
+        }
+        catch (ExecutionException e) {
             reactToSDKIssue(project);
             return null;
         }
@@ -284,7 +286,9 @@ public class Perl6SdkType extends SdkType {
                         try {
                             coreSymbols.delete();
                             coreDocs.delete();
-                        } catch (Exception ignored) {}
+                        }
+                        catch (Exception ignored) {
+                        }
                         if (settingLines.isEmpty()) {
                             reactToSDKIssue(project, "getCoreSettingFile got no symbols from Raku, using fallback");
                             getFallback(project);
@@ -293,18 +297,23 @@ public class Perl6SdkType extends SdkType {
                             cache.setting = makeSettingSymbols(project, settingLines);
                         }
                         triggerCodeAnalysis(project);
-                    } catch (AssertionError e) {
+                    }
+                    catch (AssertionError e) {
                         // If the project was already disposed, do not die in a background thread
                     }
                 });
-            } else {
+            }
+            else {
                 try {
                     coreSymbols.delete();
                     coreDocs.delete();
-                } catch (Exception ignored) {}
+                }
+                catch (Exception ignored) {
+                }
             }
             return new ExternalPerl6File(project, new LightVirtualFile("DUMMY"));
-        } catch (ExecutionException e) {
+        }
+        catch (ExecutionException e) {
             reactToSDKIssue(project);
             return getFallback(project);
         }
@@ -383,14 +392,16 @@ public class Perl6SdkType extends SdkType {
     private Perl6File getFallback(Project project) {
         File fallback = Perl6Utils.getResourceAsFile("symbols/CORE.fallback");
         if (fallback == null) {
-            reactToSDKIssue(project, "getCoreSettingFile is called with corrupted resources bundle, try to set a proper SDK for this project");
+            reactToSDKIssue(project,
+                            "getCoreSettingFile is called with corrupted resources bundle, try to set a proper SDK for this project");
             return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
         }
 
         try {
             ProjectSymbolCache cache = perProjectSymbolCache.computeIfAbsent(project.getName(), (key) -> new ProjectSymbolCache());
-            return cache.setting = makeSettingSymbols(project, new String(Files.readAllBytes(fallback.toPath()), StandardCharsets.UTF_8));
-        } catch (IOException e) {
+            return cache.setting = makeSettingSymbols(project, Files.readString(fallback.toPath()));
+        }
+        catch (IOException e) {
             reactToSDKIssue(project);
             return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
         }
@@ -400,7 +411,8 @@ public class Perl6SdkType extends SdkType {
         try {
             settingJson = json;
             return makeSettingSymbols(project, new JSONArray(json));
-        } catch (JSONException e) {
+        }
+        catch (JSONException e) {
             reactToSDKIssue(project);
         }
         return new ExternalPerl6File(project, new LightVirtualFile(SETTING_FILE_NAME));
@@ -491,7 +503,8 @@ public class Perl6SdkType extends SdkType {
         if (homePath == null) {
             LOG.info(new ExecutionException("SDK path is not set"));
             return new ArrayList<>();
-        } else if (moduleSymbols == null) {
+        }
+        else if (moduleSymbols == null) {
             LOG.info(new ExecutionException("Necessary distribution file is missing"));
             return new ArrayList<>();
         }
@@ -504,11 +517,13 @@ public class Perl6SdkType extends SdkType {
             try {
                 symbols = new JSONArray(text);
                 symbolCache.put(name, text);
-            } catch (JSONException ex) {
+            }
+            catch (JSONException ex) {
                 return new ArrayList<>();
             }
             return new Perl6ExternalNamesParser(project, perl6File, symbols).parse().result();
-        } catch (ExecutionException e) {
+        }
+        catch (ExecutionException e) {
             return new ArrayList<>();
         }
     }
@@ -518,7 +533,8 @@ public class Perl6SdkType extends SdkType {
         File nqpSymbols = Perl6Utils.getResourceAsFile("symbols/nqp.ops");
         if (nqpSymbols == null) {
             ops.add("[]");
-        } else {
+        }
+        else {
             Path nqpSymbolsPath = nqpSymbols.toPath();
             try {
                 ops = Files.readAllLines(nqpSymbolsPath);

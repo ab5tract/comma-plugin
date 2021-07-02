@@ -24,7 +24,7 @@ public abstract class CroTemplateBaseReference<T extends PsiElement> extends Psi
 
     @NotNull
     @Override
-    public Object[] getVariants() {
+    public Object @NotNull [] getVariants() {
         CroTemplateCompletionCollector collector = new CroTemplateCompletionCollector(getSymbolKind());
         CroTemplateScopeWalker.walkWithCollector(collector, getElement());
         return collector.getResolutions().toArray();

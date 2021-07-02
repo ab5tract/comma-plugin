@@ -404,9 +404,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             public void init(PsiElement element) {
             }
 
-            @NotNull
             @Override
-            public Object[] getDependencies() {
+            public Object @NotNull [] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };

@@ -34,7 +34,7 @@ import java.util.List;
 public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction implements IntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element) throws IncorrectOperationException {
-        ColoredListCellRenderer<String> renderer = new ColoredListCellRenderer<String>() {
+        ColoredListCellRenderer<String> renderer = new ColoredListCellRenderer<>() {
             @Override
             protected void customizeCellRenderer(@NotNull JList<? extends String> list,
                                                  String value,

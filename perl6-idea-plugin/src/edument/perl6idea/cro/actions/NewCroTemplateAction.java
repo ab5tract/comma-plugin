@@ -45,9 +45,11 @@ public class NewCroTemplateAction extends AnAction {
         if (navigatable != null) {
             if (navigatable instanceof PsiDirectory)
                 templatePath = ((PsiDirectory) navigatable).getVirtualFile().getPath();
-            else if (navigatable instanceof PsiFile)
-                if (((PsiFile) navigatable).getParent() != null)
-                    templatePath = ((PsiFile) navigatable).getParent().getVirtualFile().getPath();
+            else if (navigatable instanceof PsiFile) {
+                PsiDirectory parent = ((PsiFile)navigatable).getParent();
+                if (parent != null)
+                    templatePath = parent.getVirtualFile().getPath();
+            }
         }
         if (templatePath == null)
             return;

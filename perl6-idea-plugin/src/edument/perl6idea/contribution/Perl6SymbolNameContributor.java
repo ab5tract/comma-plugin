@@ -13,9 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Perl6SymbolNameContributor implements ChooseByNameContributor {
-    @NotNull
     @Override
-    public String[] getNames(Project project, boolean includeNonProjectItems) {
+    public String @NotNull [] getNames(Project project, boolean includeNonProjectItems) {
         List<String> result = new ArrayList<>();
         result.addAll(Perl6GlobalTypeStubIndex.getInstance().getAllKeys(project));
         result.addAll(Perl6LexicalTypeStubIndex.getInstance().getAllKeys(project));
@@ -28,12 +27,11 @@ public class Perl6SymbolNameContributor implements ChooseByNameContributor {
         for (Perl6FrameworkCall ext : extensions)
             ext.contributeSymbolNames(project, result);
 
-        return result.toArray(ArrayUtil.EMPTY_STRING_ARRAY);
+        return ArrayUtil.toStringArray(result);
     }
 
-    @NotNull
     @Override
-    public NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
+    public NavigationItem @NotNull [] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
         List<NavigationItem> results = new ArrayList<>();
 
         Perl6GlobalTypeStubIndex globalIndex = Perl6GlobalTypeStubIndex.getInstance();

@@ -255,6 +255,11 @@
     <liveTemplateOptionalProcessor implementation="edument.perl6idea.liveTemplates.AddUseProcessor"/>
     <iw.actionProvider implementation="edument.perl6idea.readerMode.Perl6ActionProvider"/>
     <readerModeMatcher implementation="edument.perl6idea.readerMode.Perl6DefaultReaderModeMatcher"/>
+    <notificationGroup displayType="BALLOON" id="raku.sdk.errors.group"/>
+    <notificationGroup displayType="BALLOON" id="raku.debug.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.repl.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.meta.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.timeline.errors"/>
   </extensions>
 
   <actions>

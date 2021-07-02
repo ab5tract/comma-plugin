@@ -18,7 +18,7 @@ public interface Perl6RegexSurrounder extends Surrounder {
     PsiElement createAtom(Project project);
 
     @Override
-    default boolean isApplicable(@NotNull PsiElement[] elements) {
+    default boolean isApplicable(PsiElement @NotNull [] elements) {
         return true;
     }
 
@@ -28,7 +28,7 @@ public interface Perl6RegexSurrounder extends Surrounder {
 
     @Nullable
     @Override
-    default TextRange surroundElements(@NotNull Project project, @NotNull Editor editor, @NotNull PsiElement[] elements)
+    default TextRange surroundElements(@NotNull Project project, @NotNull Editor editor, PsiElement @NotNull [] elements)
         throws IncorrectOperationException {
         PsiElement regexAtom = createAtom(project);
         PsiElement group = PsiTreeUtil.findChildOfAnyType(regexAtom, Perl6RegexGroup.class, Perl6RegexCapturePositional.class);

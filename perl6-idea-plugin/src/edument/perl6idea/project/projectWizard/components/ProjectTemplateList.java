@@ -41,7 +41,7 @@ public class ProjectTemplateList extends JPanel {
         add(myPanel, BorderLayout.CENTER);
 
         GroupedItemsListRenderer<ProjectTemplate> renderer =
-            new GroupedItemsListRenderer<ProjectTemplate>(new ListItemDescriptorAdapter<ProjectTemplate>() {
+            new GroupedItemsListRenderer<>(new ListItemDescriptorAdapter<ProjectTemplate>() {
                 @NotNull
                 @Override
                 public String getTextFor(ProjectTemplate value) {
@@ -146,9 +146,9 @@ public class ProjectTemplateList extends JPanel {
 
     @TestOnly
     boolean setSelectedTemplate(@NotNull String name) {
-        ListModel model1 = myList.getModel();
+        ListModel<ProjectTemplate> model1 = myList.getModel();
         for (int j = 0; j < model1.getSize(); j++) {
-            if (name.equals(((ProjectTemplate)model1.getElementAt(j)).getName())) {
+            if (name.equals(model1.getElementAt(j).getName())) {
                 myList.setSelectedIndex(j);
                 return true;
             }

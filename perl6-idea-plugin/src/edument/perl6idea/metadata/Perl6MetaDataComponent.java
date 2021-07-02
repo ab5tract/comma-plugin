@@ -120,7 +120,7 @@ public class Perl6MetaDataComponent {
                                 catch (IOException ex) {
                                     Notifications.Bus.notify(
                                         new Notification(
-                                            "Raku meta error", "Raku META error",
+                                            "raku.meta.errors", "Raku META error",
                                             "Could not rename META file: " + ex.getMessage(),
                                             NotificationType.ERROR));
                                 }
@@ -532,7 +532,7 @@ public class Perl6MetaDataComponent {
         if (myModule == null)
             return;
         Notification notification = new Notification(
-            "Raku meta error", Perl6Icons.CAMELIA,
+            "raku.meta.errors", Perl6Icons.CAMELIA,
             "Raku meta error", "",
             message, type, null);
         if (myMetaFile != null) {
@@ -560,7 +560,7 @@ public class Perl6MetaDataComponent {
 
     private void notifyMissingMETA() {
         Notification notification = new Notification(
-            "Raku meta error", Perl6Icons.CAMELIA,
+            "raku.meta.errors", Perl6Icons.CAMELIA,
             "Raku meta file is missing", "",
             String.format("'%s' nor '%s' files seem to be present in this module.", META_OBSOLETE_NAME, META6_JSON_NAME),
             NotificationType.WARNING, null);
@@ -574,7 +574,7 @@ public class Perl6MetaDataComponent {
                 }
                 catch (IOException e1) {
                     Notifications.Bus.notify(new Notification(
-                        "Raku meta error", Perl6Icons.CAMELIA,
+                        "raku.meta.errors", Perl6Icons.CAMELIA,
                         String.format("%s error", META6_JSON_NAME),
                         String.format("Error has occurred during %s file creation", META6_JSON_NAME),
                         e1.getMessage(), NotificationType.ERROR, null));

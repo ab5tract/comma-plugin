@@ -6,7 +6,6 @@ import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.Perl6MultiModuleProjectDescriptor;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.List;
 
 public class MultiModuleCompletion extends CommaFixtureTestCase {

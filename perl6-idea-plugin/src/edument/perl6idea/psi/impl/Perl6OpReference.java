@@ -19,9 +19,8 @@ public class Perl6OpReference extends PsiReferenceBase.Poly<Perl6PsiElement> {
         super(operator, new TextRange(0, operator.getTextLength()), false);
     }
 
-    @NotNull
     @Override
-    public ResolveResult[] multiResolve(boolean incompleteCode) {
+    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         Perl6PsiElement op = getElement();
 
         String prefix = null;

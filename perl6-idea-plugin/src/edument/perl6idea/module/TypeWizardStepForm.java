@@ -13,7 +13,7 @@ import javax.swing.border.TitledBorder;
 public class TypeWizardStepForm extends ModuleWizardStep implements Disposable {
     private final boolean isCreatingNewProject;
     private JPanel basePanel;
-    private JList list1;
+    private JList<String> list1;
     private JLabel description;
     private JPanel panel1;
     private JPanel panel2;
@@ -33,7 +33,7 @@ public class TypeWizardStepForm extends ModuleWizardStep implements Disposable {
     }
 
     private String getSelectedType() {
-        return (String)list1.getSelectedValue();
+        return list1.getSelectedValue();
     }
 
     @Override

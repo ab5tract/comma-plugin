@@ -87,7 +87,6 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
         return false;
     }
 
-    @NotNull
     @Override
     public PsiElement[] getContent() {
         return PsiElement.EMPTY_ARRAY;
@@ -99,7 +98,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     }
 
     @Override
-    public @NotNull PsiElement[] getChildren() {
+    public @NotNull PsiElement @NotNull [] getChildren() {
         return new Perl6Signature[]{mySignature};
     }
 
@@ -114,7 +113,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     }
 
     @Override
-    public IStubElementType getElementType() {
+    public IStubElementType<?, ?> getElementType() {
         return null;
     }
 
