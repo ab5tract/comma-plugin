@@ -313,11 +313,14 @@ public class FormatterTest extends CommaFixtureTestCase {
     private class FormatManager {
         private final CodeStyleManager myManager;
         private final CodeStyleSettings myTemp;
+        private final CodeStyleSettings myOriginalSettigns;
+        private final CodeStyleSettingsManager mySettingsManager;
 
         FormatManager() {
             myManager = CodeStyleManager.getInstance(myFixture.getProject());
-            CodeStyleSettingsManager settingsManager = CodeStyleSettingsManager.getInstance(myFixture.getProject());
-            myTemp = settingsManager.getTemporarySettings();
+            mySettingsManager = CodeStyleSettingsManager.getInstance(myFixture.getProject());
+            myTemp = mySettingsManager.getTemporarySettings();
+            myOriginalSettigns = myTemp.clone();
         }
 
         public void updateTempSettings(BiConsumer<CommonCodeStyleSettings, Perl6CodeStyleSettings> config) {
@@ -327,7 +330,9 @@ public class FormatterTest extends CommaFixtureTestCase {
         }
 
         public void reformatAndResetSettings(PsiFile file) {
-            CodeStyle.doWithTemporarySettings(file.getProject(), myTemp, () -> myManager.reformat(file));
+            mySettingsManager.setTemporarySettings(myTemp);
+            myManager.reformat(file);
+            mySettingsManager.setTemporarySettings(myOriginalSettigns);
         }
     }
 }
