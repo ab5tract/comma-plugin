@@ -2,21 +2,20 @@
 
 ##### How to use this test plan
 
-Currently, the testing environments are GNU/Linux and Windows, as
-there are no access to an OSX machine.
+Currently, the testing environments are GNU/Linux, Windows and OSX.
 
-Considering we are having 2 editions and 2 operating systems to test with (potentially 3),
-it makes us 4 test runs in total.
+Considering we are having 2 editions and 3 operating systems to test with,
+it makes us 6 test runs in total.
 
 As we have automatic tests for large chunks of functionality, this manual test
 plan focuses on not repeatedly testing components that were tested automatically,
-but to cover areas where we lack proper automated testing: OS integration,
+but on covering areas where we lack proper automated testing: OS integration,
 UI components, components that are hard to test like `META6.json` changes listener.
 
 However, to ensure that components tested were loaded in the first place,
 this suite contains test cases of sort "Check an unknown variable annotator to work".
 
-Tests that involve file creation _must_ be checked on both GNU/Linux and Windows due to changes
+Tests that involve file creation _must_ be checked on all operating systems due to changes
 in path handling etc.
 
 Tests that check work of internal components such as code structure handler,
@@ -34,11 +33,11 @@ Here we test ability of our product to be built and installed by the end-user.
   - Installer, installation paths contain Edument info
   - It creates file associations for: `.p6`, `.pm6`, `pl6`, `.pod6`
   - It can be uninstalled cleanly
-- [ ] Install the plugin into IntelliJ IDEA 2019.1 and 2018.3.
+- [ ] Install the plugin into IntelliJ IDEA 2020.3
 
 ##### Plugin-specific
 
-- [ ] At Plugins modal window, the plugin version, description are correct
+- [ ] At `Plugins` modal window, the plugin's version and description are correct
 
 ##### Comma-specific
 
@@ -61,7 +60,7 @@ Here we test ability of our product to create new projects and consume existing 
 - [ ] Try to `Open` the same project based on `META6.json`
 - [ ] Check if directories are marked correctly, `lib`(as sources), `t`(as tests)
 - [ ] Try to import a project from github, `https://github.com/jnthn/json-path`
-- [ ] Try to break a build, check if the exception feedback shows Edument data, cancel
+- [ ] Try to trigger an exception, check if the exception feedback shows Edument data, cancel
 
 Here we test ability of our product to manipulate files inside a project.
 
