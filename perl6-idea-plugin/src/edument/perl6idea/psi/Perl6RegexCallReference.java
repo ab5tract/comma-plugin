@@ -10,7 +10,9 @@ import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -46,8 +48,8 @@ public class Perl6RegexCallReference extends PsiReferenceBase<Perl6RegexCall> {
 
     @Override
     public Object @NotNull [] getVariants() {
-        List<String> result = ContainerUtil.map(
-            getElement().getLexicalSymbolVariants(Perl6SymbolKind.Regex), sym -> sym.getName());
+        Collection<Perl6Symbol> variants = getElement().getLexicalSymbolVariants(Perl6SymbolKind.Regex);
+        List<String> result = variants.isEmpty() ? new ArrayList<>() : ContainerUtil.map(variants, sym -> sym.getName());
         Perl6PackageDecl selfType = getElement().getSelfType();
         if (selfType != null) {
             Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
