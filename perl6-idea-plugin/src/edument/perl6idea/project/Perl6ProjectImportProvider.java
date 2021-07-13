@@ -25,6 +25,12 @@ public class Perl6ProjectImportProvider {
     }
 
     public boolean canImportFromFile(VirtualFile file) {
+        if (file.isDirectory()) {
+            if (file.findChild("META6.json") != null)
+                return true;
+            if (file.findChild("META.info") != null)
+                return true;
+        }
         String fileName = file.getName();
         return fileName.equals("META6.json") || fileName.equals("META.info");
     }
@@ -69,6 +75,6 @@ public class Perl6ProjectImportProvider {
 
     @Language("HTML")
     public static String getDescription() {
-        return "<html><body>Select <strong>Raku</strong> project file (META6.json or META.info) or directory.</body></html>";
+        return "<html><body>Select <strong>Raku</strong> project file (META6.json or META.info) or a directory where it is placed.</body></html>";
     }
 }

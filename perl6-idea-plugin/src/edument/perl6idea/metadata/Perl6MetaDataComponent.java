@@ -309,16 +309,22 @@ public class Perl6MetaDataComponent {
         saveFile();
     }
 
-    public Collection<String> getProvidedNames() {
-        if (myMeta == null) return new ArrayList<>();
-        List<String> names = new ArrayList<>();
-        if (!myMeta.has("provides"))
-            return new ArrayList<>();
+    @Nullable
+    public Map<String, Object> getProvidedMap() {
+        if (myMeta == null || !myMeta.has("provides"))
+            return null;
+
         Object provides = myMeta.get("provides");
-        for (Object value : ((JSONObject)provides).toMap().keySet()) {
-            names.add((String)value);
-        }
-        return names;
+        if (provides instanceof JSONObject)
+            return ((JSONObject)provides).toMap();
+        return null;
+    }
+
+    public Collection<String> getProvidedNames() {
+        Map<String, Object> providedSet = getProvidedMap();
+        if (providedSet == null)
+            return new ArrayList<>();
+        return providedSet.keySet();
     }
 
     private static String normalizeDepends(String name) {

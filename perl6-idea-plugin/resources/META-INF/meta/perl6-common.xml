@@ -265,6 +265,8 @@
     <notificationGroup displayType="BALLOON" id="raku.repl.errors"/>
     <notificationGroup displayType="BALLOON" id="raku.meta.errors"/>
     <notificationGroup displayType="BALLOON" id="raku.timeline.errors"/>
+    <appStarter implementation="edument.perl6idea.application.RakuDocStarter"/>
+    <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
   </extensions>
 
   <actions>
