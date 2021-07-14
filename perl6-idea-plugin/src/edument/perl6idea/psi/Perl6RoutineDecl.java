@@ -25,4 +25,5 @@ public interface Perl6RoutineDecl extends Perl6PsiScope, Perl6PsiDeclaration,
 
     boolean isMethod();
     boolean isSub();
+    boolean isPure();
 }

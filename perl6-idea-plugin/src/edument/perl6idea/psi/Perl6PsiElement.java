@@ -9,6 +9,8 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.pod.PodDomBuildingContext;
+import edument.perl6idea.psi.effects.Effect;
+import edument.perl6idea.psi.effects.EffectCollection;
 import edument.perl6idea.psi.symbols.*;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
@@ -53,6 +55,7 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
         return collector.getResult();
     }
 
+    @Nullable
     default List<Perl6Symbol> resolveLexicalSymbolAllowingMulti(Perl6SymbolKind kind, String name) {
         Perl6SingleResolutionSymbolCollector collector = new Perl6SingleResolutionSymbolCollector(name, kind);
         applyLexicalSymbolCollector(collector);
@@ -169,5 +172,10 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
                 ((Perl6PsiElement)child).collectPodAndDocumentables(context);
             child = child.getNextSibling();
         }
+    }
+
+    @NotNull
+    default EffectCollection inferEffects() {
+        return EffectCollection.of(Effect.IMPURE);
     }
 }

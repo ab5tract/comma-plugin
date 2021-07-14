@@ -75,7 +75,7 @@ public class Perl6ExternalNamesParser {
                         ExternalPerl6RoutineDecl psi = new ExternalPerl6RoutineDecl(
                             myProject, myFile, j.getString("k"), j.getString("k").equals("m") ? "has" : "our",
                             j.getString("n"), isMulti == 0 ? "only" : "multi",
-                            deprecationMessage, j.getJSONObject("s"));
+                            deprecationMessage, j.getJSONObject("s"), j.has("p"));
                         if (j.has("d"))
                             psi.setDocs(j.getString("d"));
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, psi));
@@ -138,7 +138,7 @@ public class Perl6ExternalNamesParser {
                         myProject, psi,
                         routineJson.getString("k"), "has",
                         routineJson.getString("n"), isMulti == 0 ? "only" : "multi",
-                        deprecationMessage, signature);
+                        deprecationMessage, signature, routineJson.has("p"));
                     if (routineJson.has("d"))
                         routineDecl.setDocs(routineJson.getString("d"));
                     routines.add(routineDecl);

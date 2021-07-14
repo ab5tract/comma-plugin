@@ -269,7 +269,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testRangeWithNewlineIsCompleted() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<weak_warning descr=\"Range can be simplified\">0\n..\n1</weak_warning>");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $range = <weak_warning descr=\"Range can be simplified\">0\n..\n1</weak_warning>");
         myFixture.checkHighlighting();
     }
 
@@ -1246,6 +1246,72 @@ public class AnnotationTest extends CommaFixtureTestCase {
             "    say <weak_warning desrc=\"This will be taken as a block, not as a hash as may have been intended\">{ :a, :b($_) }</weak_warning>;\n" +
             "    say <weak_warning desrc=\"This will be taken as a block, not as a hash as may have been intended\">{ a => 1, b => $_ }</weak_warning>;\n" +
             "}");
+        myFixture.checkHighlighting();
+    }
+
+    public void testTopLevelUnused() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "say 0; <warning descr=\"Useless use of value in sink (void) context\">0;</warning> say 0;");
+        myFixture.checkHighlighting();
+    }
+
+    public void testBlockUnused() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "our sub foo() { say 0; <warning descr=\"Useless use of value in sink (void) context\">0;</warning> say 0; }");
+        myFixture.checkHighlighting();
+    }
+
+    public void testLastTopLevel() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "<warning descr=\"Useless use of value in sink (void) context\">0;</warning>");
+        myFixture.checkHighlighting();
+    }
+
+    public void testReturnNotSpecified() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "our sub foo() { 0; }");
+        myFixture.checkHighlighting();
+    }
+
+    public void testReturnNil() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "our sub foo(--> Nil) { <warning descr=\"Useless use of value in sink (void) context\">0;</warning> }");
+        myFixture.checkHighlighting();
+    }
+
+    public void testCoreAnnotatedAsPure() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "<warning descr=\"Useless use of value in sink (void) context\">0 + 0;</warning>");
+        myFixture.checkHighlighting();
+    }
+
+    public void testMultiNotAnnotatedAsPure() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "multi infix:<+>($, $) {};\n" +
+                                  "0 + 0;");
+        myFixture.checkHighlighting();
+    }
+
+    public void testSubAnnotatedAsPure() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "multi infix:<+>($, $) is pure {};\n" +
+                                  "<warning descr=\"Useless use of value in sink (void) context\">0 + 0;</warning>");
+        myFixture.checkHighlighting();
+    }
+
+    public void testProtoAnnotatedAsPure() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "proto infix:<+>($, $) is pure {}\n" +
+                                  "multi infix:<+>($, $) {}\n" +
+                                  "<warning descr=\"Useless use of value in sink (void) context\">0 + 0;</warning>");
+        myFixture.checkHighlighting();
+    }
+
+    public void testProtoNotAnnotatedAsPure() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "proto infix:<+>($, $) {}\n" +
+                                  "multi infix:<+>($, $) {}\n" +
+                                  "0 + 0;");
         myFixture.checkHighlighting();
     }
 }

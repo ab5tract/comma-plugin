@@ -616,8 +616,9 @@ sub pack-code(Mu $code, Int $multiness, Str $name?, :$docs, :$is-method) {
     my %signature = r => $s ~~ Any ?? $s.returns.^name !! 'Mu', p => @parameters;
     my $kind = $code.^name.comb.head.lc;
     my $deprecation = try { ~$code.DEPRECATED };
-    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness,
-       |(:d($_) with $docs), |(:x($_) with $deprecation) );
+    my $pure = so try { so $code.?is-pure || $code.dispatcher.is-pure };
+    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness, |(:p if $pure),
+       |(:d($_) with $docs), |(:x($_) with $deprecation));
 }
 
 sub pack-package(@elems, $name, Mu \object) {
