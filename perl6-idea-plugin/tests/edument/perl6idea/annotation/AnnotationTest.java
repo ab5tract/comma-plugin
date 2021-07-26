@@ -269,7 +269,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testRangeWithNewlineIsCompleted() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $range = <weak_warning descr=\"Range can be simplified\">0\n..\n1</weak_warning>");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my <weak_warning descr=\"Unused variable\">$range</weak_warning> = <weak_warning descr=\"Range can be simplified\">0\n..\n1</weak_warning>");
         myFixture.checkHighlighting();
     }
 
@@ -397,7 +397,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testRestrictUnitKeywordToMAINSubAnnotator() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error=\"The unit sub syntax is only allowed for the sub MAIN\">unit</error> sub foo() {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "<error=\"The unit sub syntax is only allowed for the sub MAIN\">unit</error> sub foo() {<warning descr=\"Useless use of value in sink (void) context\">}</warning>");
         myFixture.checkHighlighting();
     }
 
