@@ -1,9 +1,9 @@
 package edument.perl6idea.debugger;
 
 public class Perl6ThreadDescriptor {
-    private int threadId;
-    private long nativeThreadId;
-    private Perl6StackFrameDescriptor[] stackFrames;
+    private final int threadId;
+    private final long nativeThreadId;
+    private final Perl6StackFrameDescriptor[] stackFrames;
 
     public Perl6ThreadDescriptor(int threadId, long nativeThreadId, Perl6StackFrameDescriptor[] stackFrames) {
         this.threadId = threadId;
@@ -24,6 +24,6 @@ public class Perl6ThreadDescriptor {
     }
 
     public String getDescription() {
-        return "Thread " + Integer.toString(threadId) + " (native " + Long.toString(nativeThreadId) + ")";
+        return "Thread " + threadId + " (native " + nativeThreadId + ")";
     }
 }

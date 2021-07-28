@@ -28,7 +28,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
     public static final String FILE_COMMAND = "file";
     private final List<String> myBasePaths;
     @NotNull
-    private TapConsumer myConsumer;
+    private final TapConsumer myConsumer;
     private String currentTap = "";
     private ServiceMessageVisitor myVisitor;
     private String currentFile = "";

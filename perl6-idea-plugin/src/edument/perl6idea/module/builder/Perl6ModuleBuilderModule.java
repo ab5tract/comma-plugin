@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
-    private static Logger LOG = Logger.getInstance(Perl6ModuleBuilderModule.class);
+    private static final Logger LOG = Logger.getInstance(Perl6ModuleBuilderModule.class);
     private String myModuleName;
 
     @Override

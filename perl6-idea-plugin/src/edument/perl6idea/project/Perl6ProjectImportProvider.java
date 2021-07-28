@@ -69,6 +69,6 @@ public class Perl6ProjectImportProvider {
 
     @Language("HTML")
     public static String getDescription() {
-        return "<html>Select <b>Raku</b> project file (META6.json or META.info) or directory.</html>";
+        return "<html><body>Select <strong>Raku</strong> project file (META6.json or META.info) or directory.</body></html>";
     }
 }

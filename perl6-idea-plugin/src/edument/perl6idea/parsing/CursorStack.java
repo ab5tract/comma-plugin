@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public class CursorStack {
     /* The stack of cursors, current one at the top. */
-    public List<Cursor> cursors = new ArrayList<Cursor>();
+    public List<Cursor> cursors = new ArrayList<>();
 
     /* Target of the parse. */
     public CharSequence target;

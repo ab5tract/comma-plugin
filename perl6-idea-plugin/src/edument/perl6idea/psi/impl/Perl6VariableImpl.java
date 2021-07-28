@@ -53,12 +53,12 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
                 return null;
             }
         }
-        String name = varToken.getText();
+        StringBuilder name = new StringBuilder(varToken.getText());
         for (PsiElement colonPair : findChildrenByType(Perl6ElementTypes.COLON_PAIR)) {
             // We should properly mangle these at some point.
-            name += colonPair.getText();
+            name.append(colonPair.getText());
         }
-        return name;
+        return name.toString();
     }
 
     @NotNull

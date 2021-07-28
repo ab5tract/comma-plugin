@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CommaImportMode extends CommaWizardMode {
-    private Perl6ProjectImportProvider myProvider;
+    private final Perl6ProjectImportProvider myProvider;
 
     public CommaImportMode(Perl6ProjectImportProvider provider) {
         myProvider = provider;

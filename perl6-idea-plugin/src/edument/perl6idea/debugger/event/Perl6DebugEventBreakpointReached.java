@@ -7,8 +7,8 @@ import edument.perl6idea.debugger.Perl6DebugThread;
 import edument.perl6idea.debugger.Perl6ThreadDescriptor;
 
 public class Perl6DebugEventBreakpointReached extends Perl6DebugEventStop implements Perl6DebugEventBreakpoint {
-    private String path;
-    private int line;
+    private final String path;
+    private final int line;
 
     public Perl6DebugEventBreakpointReached(Perl6ThreadDescriptor[] threads, int activeThreadIndex, XDebugSession session, Perl6DebugThread thread, String path, int line) {
         super(threads, activeThreadIndex, session, thread);
@@ -19,7 +19,7 @@ public class Perl6DebugEventBreakpointReached extends Perl6DebugEventStop implem
     @Override
     public void run() {
         XDebugSession session = getDebugSession();
-        XLineBreakpoint breakpoint = DebugUtils.findBreakpoint(session.getProject(), this);
+        XLineBreakpoint<?> breakpoint = DebugUtils.findBreakpoint(session.getProject(), this);
         if (breakpoint != null) {
             getDebugSession().breakpointReached(breakpoint, "", getSuspendContext());
         }

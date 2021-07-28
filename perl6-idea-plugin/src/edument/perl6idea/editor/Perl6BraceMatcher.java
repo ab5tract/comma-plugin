@@ -9,9 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Perl6BraceMatcher implements PairedBraceMatcher {
-    @NotNull
     @Override
-    public BracePair[] getPairs() {
+    public BracePair @NotNull [] getPairs() {
         return new BracePair[]{
                 new BracePair(Perl6TokenTypes.BLOCK_CURLY_BRACKET_OPEN, Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE, true),
                 new BracePair(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN, Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE, false),

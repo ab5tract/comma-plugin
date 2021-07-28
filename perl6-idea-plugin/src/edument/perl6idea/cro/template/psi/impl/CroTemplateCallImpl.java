@@ -9,7 +9,6 @@ import com.intellij.psi.impl.source.codeStyle.CodeEditUtil;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes;
 import edument.perl6idea.cro.template.psi.CroTemplateArgList;
 import edument.perl6idea.cro.template.psi.CroTemplateCall;
 import edument.perl6idea.cro.template.psi.CroTemplateElementFactory;
@@ -33,7 +32,7 @@ public class CroTemplateCallImpl extends ASTWrapperPsiElement implements CroTemp
 
     @Override
     public String getName() {
-        ASTNode[] subName = getNode().getChildren(TokenSet.create(CroTemplateTokenTypes.SUB_NAME));
+        ASTNode[] subName = getNode().getChildren(TokenSet.create(SUB_NAME));
         return subName.length == 0 ? null : subName[0].getText();
     }
 

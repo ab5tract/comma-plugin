@@ -10,10 +10,9 @@ import java.awt.*;
 
 /** The timeline chart with scroll bar and so forth. */
 public class TimelineView extends JPanel {
-    private Timeline timeline;
-    private TimelineChart chart;
-    private JBScrollBar scrollbar;
-    private ContextHelpLabel help;
+    private final Timeline timeline;
+    private final TimelineChart chart;
+    private final JBScrollBar scrollbar;
 
     public TimelineView() {
         super();
@@ -21,11 +20,11 @@ public class TimelineView extends JPanel {
         this.timeline = new Timeline();
         this.chart = new TimelineChart(timeline);
         this.add(chart);
-        this.help = ContextHelpLabel.create(
+        ContextHelpLabel help = ContextHelpLabel.create(
             "<b>Zoom</b><br>Ctrl <em>+</em> Mouse Wheel / + / -<br>" +
             "<b>Move in time</b><br>Click and drag, left/right arrow keys<br>" +
             "<b>Scroll lanes</b><br>Mouse wheel, up/down arrow keys");
-        this.add(this.help);
+        this.add(help);
         this.scrollbar = new JBScrollBar(Adjustable.VERTICAL, 0, 3, 0, 3);
         this.add(this.scrollbar);
         setupScrollHandling();

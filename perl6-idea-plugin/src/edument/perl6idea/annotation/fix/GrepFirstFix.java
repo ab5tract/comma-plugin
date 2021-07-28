@@ -40,9 +40,13 @@ public class GrepFirstFix implements IntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
         myGrepCall.setName("first");
-        PsiElement innerCall = PsiTreeUtil.getParentOfType(myGrepCall, Perl6PostfixApplication.class).copy();
-        Perl6PostfixApplication outerCall = PsiTreeUtil.getParentOfType(myFirstCall, Perl6PostfixApplication.class);
-        outerCall.replace(innerCall);
+        Perl6PostfixApplication postfixApp = PsiTreeUtil.getParentOfType(myGrepCall, Perl6PostfixApplication.class);
+        if (postfixApp != null) {
+            PsiElement innerCall = postfixApp.copy();
+            Perl6PostfixApplication outerCall = PsiTreeUtil.getParentOfType(myFirstCall, Perl6PostfixApplication.class);
+            if (outerCall != null)
+                outerCall.replace(innerCall);
+        }
     }
 
     @Override

@@ -11,8 +11,6 @@ import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.METHOD_CALL_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.METHOD_CALL_OPERATOR;

@@ -72,9 +72,8 @@ public class CroTemplateSyntaxHighlighter extends SyntaxHighlighterBase {
         return new CroTemplateLexer();
     }
 
-    @NotNull
     @Override
-    public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
+    public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
         return SyntaxHighlighterBase.pack(ATTRIBUTES.get(tokenType));
     }
 }

@@ -3,10 +3,10 @@ package edument.perl6idea.debugger;
 public class Perl6ObjectValueDescriptor extends Perl6ValueDescriptor {
     private static final String LAL = "Rakudo::Internals::LoweredAwayLexical";
 
-    private String type;
-    private boolean concrete;
-    private int handle;
-    private String presentableDescription;
+    private final String type;
+    private final boolean concrete;
+    private final int handle;
+    private final String presentableDescription;
 
     Perl6ObjectValueDescriptor(String name, String type, boolean concrete, int handle,
                                String presentableDescription) {

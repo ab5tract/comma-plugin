@@ -8,8 +8,8 @@ import java.util.Map;
 /** A lane is an individual row in the timeline. It exists as part of a lane group,
  * which ensures we don't ever render two tasks on top of each other. */
 public class Lane {
-    private List<Logged> entries = new ArrayList<>();
-    private Map<String, LaneGroup> childTaskLaneGroups = new LinkedHashMap<>();
+    private final List<Logged> entries = new ArrayList<>();
+    private final Map<String, LaneGroup> childTaskLaneGroups = new LinkedHashMap<>();
 
     public boolean tryAdd(Logged entry) {
         if (entry instanceof Event) {

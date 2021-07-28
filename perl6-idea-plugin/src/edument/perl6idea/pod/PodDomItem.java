@@ -15,7 +15,7 @@ public class PodDomItem extends PodDomBlock {
     @Override
     public void renderInto(StringBuilder builder, PodRenderingContext context) {
         builder.append("<li>");
-        renderChlidrenInto(builder, context);
+        renderChildrenInfo(builder, context);
         builder.append("</li>");
     }
 }

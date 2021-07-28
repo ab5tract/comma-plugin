@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Perl6LoadedFileDescriptor {
-    private String myPath;
-    private String myName;
+    private final String myPath;
+    private final String myName;
     private String myModuleName;
 
     private final static char[] MODULE_NAME_AFTER_PATH_STARTS_WITH = {' ', '('};

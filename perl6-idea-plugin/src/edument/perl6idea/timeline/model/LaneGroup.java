@@ -7,7 +7,7 @@ import java.util.List;
  * this in the graph. A lane group takes care of making sure we don't ever have overlap.
  */
 public class LaneGroup {
-    private List<Lane> lanes = new ArrayList<>();
+    private final List<Lane> lanes = new ArrayList<>();
 
     public void add(Logged logged) {
         // Try to add to an existing lane.

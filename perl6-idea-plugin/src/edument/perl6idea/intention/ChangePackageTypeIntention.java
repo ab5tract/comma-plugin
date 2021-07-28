@@ -34,7 +34,7 @@ import java.util.List;
 public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction implements IntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, @NotNull PsiElement element) throws IncorrectOperationException {
-        ColoredListCellRenderer<String> renderer = new ColoredListCellRenderer<String>() {
+        ColoredListCellRenderer<String> renderer = new ColoredListCellRenderer<>() {
             @Override
             protected void customizeCellRenderer(@NotNull JList<? extends String> list,
                                                  String value,
@@ -71,7 +71,7 @@ public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction im
 
     private static void invokeImpl(Project project, Editor editor, PsiElement element, String type) {
         WriteCommandAction.runWriteCommandAction(
-            project, () -> {
+            project, "Change Package Type", null, () -> {
                 boolean shouldAddMonitorUsage = false;
 
                 PsiFile containingFile = element.getContainingFile();
@@ -82,8 +82,12 @@ public class ChangePackageTypeIntention extends PsiElementBaseIntentionAction im
                 }
 
                 Perl6PackageDecl decl = PsiTreeUtil.getParentOfType(element, Perl6PackageDecl.class);
+                if (decl == null)
+                    return;
                 String oldType = decl.getPackageKind();
                 PsiElement declarator = decl.getPackageKeywordNode();
+                if (declarator == null)
+                    return;
                 declarator.replace(Perl6ElementFactory.createPackageDeclarator(project, type));
 
                 PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());

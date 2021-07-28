@@ -25,7 +25,7 @@ public class Perl6ScriptFileType extends LanguageFileType implements RakuMultiEx
     @NotNull
     @Override
     public String getDescription() {
-        return "Raku Script";
+        return "Raku script";
     }
 
     @NotNull
@@ -47,7 +47,7 @@ public class Perl6ScriptFileType extends LanguageFileType implements RakuMultiEx
 
     @Nullable
     @Override
-    public String getCharset(@NotNull VirtualFile file, @NotNull byte[] content) {
+    public String getCharset(@NotNull VirtualFile file, byte @NotNull [] content) {
         return "UTF-8";
     }
 

@@ -10,7 +10,6 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.refactoring.introduce.inplace.InplaceVariableIntroducer;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.refactoring.RakuNameValidator;
@@ -30,7 +29,8 @@ public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIn
             Perl6ElementFactory
                 .createStatementFromText(project, String.format("/$<x>=(%s)/", regexContent.substring(1, regexContent.length() - 1))),
             Perl6RegexVariable.class);
-        postProcess(project, editor, group.replace(capture));
+        if (capture != null)
+            postProcess(project, editor, group.replace(capture));
     }
 
     private static void postProcess(Project project, Editor editor, PsiElement element) {
@@ -57,9 +57,8 @@ public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIn
             if (!dialog.showAndGet())
                 return;
             if (element instanceof PsiNamedElement)
-                WriteCommandAction.runWriteCommandAction(project, () -> {
-                    ((PsiNamedElement)element).setName(dialog.getName());
-                });
+                WriteCommandAction.runWriteCommandAction(project, "Raku Intention", null,
+                                                         () -> ((PsiNamedElement)element).setName(dialog.getName()));
         });
     }
 
@@ -80,11 +79,5 @@ public class ConvertPositionalCaptureIntoNamedIntention extends PsiElementBaseIn
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, @NotNull PsiElement element) {
         return PsiTreeUtil.getNonStrictParentOfType(element, Perl6RegexCapturePositional.class) != null;
-    }
-
-    private static class NamedInplaceVariableIntroducer extends InplaceVariableIntroducer<PsiElement> {
-        public NamedInplaceVariableIntroducer(Project project, Editor editor, PsiNamedElement element) {
-            super(element, editor, project, "Introduce variable", PsiElement.EMPTY_ARRAY, null);
-        }
     }
 }

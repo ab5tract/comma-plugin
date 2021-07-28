@@ -50,7 +50,7 @@ public class TimelineClient {
         try {
             InetSocketAddress address = new InetSocketAddress(host, port);
             AsynchronousSocketChannel conn = AsynchronousSocketChannel.open();
-            conn.connect(address, null, new CompletionHandler<Void, Object>() {
+            conn.connect(address, null, new CompletionHandler<>() {
                 @Override
                 public void completed(Void r, Object attachment) {
                     executor.shutdown();
@@ -101,7 +101,7 @@ public class TimelineClient {
 
     private void read(ConnectionState state) {
         ByteBuffer buffer = ByteBuffer.allocate(32768);
-        state.connection.read(buffer, null, new CompletionHandler<Integer, Object>() {
+        state.connection.read(buffer, null, new CompletionHandler<>() {
             @Override
             public void completed(Integer bytesRead, Object attachment) {
                 if (bytesRead >= 0) {

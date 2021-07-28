@@ -13,6 +13,7 @@ import com.intellij.util.Consumer;
 import edument.perl6idea.psi.Perl6PackageDecl;
 import edument.perl6idea.utils.Perl6CommandLine;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +30,7 @@ public class CurrentGrammar {
     private final Document grammarDocument;
     private final DocumentListener grammarDocumentChangeListener;
     private final Document inputDocument;
-    private final Consumer<ParseResultsModel> resultsUpdate;
+    private final Consumer<? super ParseResultsModel> resultsUpdate;
     private final Runnable processing;
     private final ScheduledExecutorService debounceExecutor;
 
@@ -37,7 +38,7 @@ public class CurrentGrammar {
     private boolean needsAnotherRun;
     private long debounceCounter;
 
-    public CurrentGrammar(Perl6PackageDecl decl, Document input, Consumer<ParseResultsModel> resultsUpdateCallback,
+    public CurrentGrammar(Perl6PackageDecl decl, Document input, Consumer<? super ParseResultsModel> resultsUpdateCallback,
                           Runnable processingCallback, ScheduledExecutorService timedExecutor) {
         project = decl.getProject();
         grammarName = decl.getPackageName();
@@ -48,7 +49,8 @@ public class CurrentGrammar {
                 scheduleUpdate();
             }
         };
-        grammarDocument.addDocumentListener(grammarDocumentChangeListener);
+        if (grammarDocument != null)
+            grammarDocument.addDocumentListener(grammarDocumentChangeListener);
         inputDocument = input;
         resultsUpdate = resultsUpdateCallback;
         processing = processingCallback;
@@ -92,7 +94,7 @@ public class CurrentGrammar {
             String grammarFileContent = grammarDocument.getText();
             application.executeOnPooledThread(() -> {
                 File inputAsFile = null;
-                File tweakedGrammarAsFile = null;
+                File tweakedGrammarAsFile;
                 try {
                     // Set up input file and tweaked grammar file to run with.
                     inputAsFile = writeToTempFile(currentInput);
@@ -156,20 +158,20 @@ public class CurrentGrammar {
         String supportCode = getSupportCode();
         if (supportCode == null)
             return null;
-        StringBuilder builder = new StringBuilder(content);
-        builder.append(";\n");
-        builder.append(supportCode.replace("__GRAMMAR_LIVE_PREVIEW_GRAMMAR_NAME__", grammarName));
-        builder.append("\ntry { ");
-        builder.append(grammarName);
-        builder.append(".parse(slurp(Q[[[");
-        builder.append(inputFile.getAbsolutePath());
-        builder.append("]]])); CATCH { default { $error = $_ } } }\n");
-        return builder.toString();
+        return content + ";\n" +
+               supportCode.replace("__GRAMMAR_LIVE_PREVIEW_GRAMMAR_NAME__", grammarName) +
+               "\ntry { " +
+               grammarName +
+               ".parse(slurp(Q[[[" +
+               inputFile.getAbsolutePath() +
+               "]]])); CATCH { default { $error = $_ } } }\n";
     }
 
+    @Nullable
     private String getSupportCode() {
-        InputStream supportCodeStream = this.getClass().getClassLoader()
-                .getResourceAsStream("grammarLivePreview/setup.p6");
+        InputStream supportCodeStream = this.getClass().getClassLoader().getResourceAsStream("grammarLivePreview/setup.p6");
+        if (supportCodeStream == null)
+            return null;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(supportCodeStream, StandardCharsets.UTF_8))) {
             return reader.lines().collect(Collectors.joining("\n"));
         }
@@ -182,11 +184,7 @@ public class CurrentGrammar {
     private void updateUsing(String input, String json) {
         ParseResultsModel model = new ParseResultsModel(input, json);
         Application application = ApplicationManager.getApplication();
-        application.invokeAndWait(() -> {
-            ApplicationManager.getApplication().runWriteAction(() -> {
-                resultsUpdate.consume(model);
-            });
-        });
+        application.invokeAndWait(() -> ApplicationManager.getApplication().runWriteAction(() -> resultsUpdate.consume(model)));
     }
 
     public void dispose() {

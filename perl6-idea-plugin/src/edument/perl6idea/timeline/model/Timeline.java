@@ -7,8 +7,8 @@ import java.time.Instant;
 import java.util.*;
 
 public class Timeline {
-    private Map<Integer, Task> activeTasks = new HashMap<>();
-    private Map<String, Map<String, Map<String, LaneGroup>>> topLevel = new LinkedHashMap<>();
+    private final Map<Integer, Task> activeTasks = new HashMap<>();
+    private final Map<String, Map<String, Map<String, LaneGroup>>> topLevel = new LinkedHashMap<>();
     private double firstTimestamp = 0.0;
     private Instant ourIinstantAtFirstTimestap;
     private double endTime = 0.0;

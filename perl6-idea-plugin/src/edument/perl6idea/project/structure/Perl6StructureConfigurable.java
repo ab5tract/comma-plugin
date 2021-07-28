@@ -116,7 +116,7 @@ public abstract class Perl6StructureConfigurable extends MasterDetailsComponent
     protected class MyRemoveAction extends MyDeleteAction {
         public MyRemoveAction() {
             //noinspection Convert2Lambda
-            super(new Condition<Object[]>() {
+            super(new Condition<>() {
                 @Override
                 public boolean value(final Object[] objects) {
                     List<MyNode> nodes = new ArrayList<>();

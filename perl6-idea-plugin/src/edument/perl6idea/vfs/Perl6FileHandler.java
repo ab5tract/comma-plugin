@@ -23,8 +23,8 @@ import java.util.regex.Pattern;
 
 public class Perl6FileHandler extends ArchiveHandler {
     private final Pattern pathPattern = Pattern.compile("/?(-?\\d+?):(.+?)");
-    private String myPath;
-    private static Map<String, String> packagesCache = new HashMap<>();
+    private final String myPath;
+    private static final Map<String, String> packagesCache = new HashMap<>();
     private final Logger LOG = Logger.getInstance(Perl6FileHandler.class);
 
     public Perl6FileHandler(@NotNull String path) {
@@ -103,9 +103,8 @@ public class Perl6FileHandler extends ArchiveHandler {
         return null;
     }
 
-    @NotNull
     @Override
-    public byte[] contentsToByteArray(@NotNull String relativePath) {
+    public byte @NotNull [] contentsToByteArray(@NotNull String relativePath) {
         getEntriesMap();
         try {
             String packageName = relativePath.substring(0, relativePath.length() - 4);

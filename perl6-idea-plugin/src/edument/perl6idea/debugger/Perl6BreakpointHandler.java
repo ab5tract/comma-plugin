@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Perl6BreakpointHandler extends XBreakpointHandler {
     private final Perl6DebugThread debugThread;
-    private static Logger LOG = Logger.getInstance(Perl6BreakpointHandler.class);
+    private static final Logger LOG = Logger.getInstance(Perl6BreakpointHandler.class);
 
     Perl6BreakpointHandler(Perl6DebugThread debugThread) {
         super(Perl6LineBreakpointType.class);
@@ -18,7 +18,7 @@ public class Perl6BreakpointHandler extends XBreakpointHandler {
     @Override
     public void registerBreakpoint(@NotNull XBreakpoint breakpoint) {
         if (breakpoint instanceof XLineBreakpoint) {
-            debugThread.queueBreakpoint((XLineBreakpoint)breakpoint, false);
+            debugThread.queueBreakpoint((XLineBreakpoint<?>)breakpoint, false);
         } else {
             LOG.warn("Unknown breakpoint during register action");
         }
@@ -27,7 +27,7 @@ public class Perl6BreakpointHandler extends XBreakpointHandler {
     @Override
     public void unregisterBreakpoint(@NotNull XBreakpoint breakpoint, boolean temporary) {
         if (breakpoint instanceof XLineBreakpoint) {
-            debugThread.queueBreakpoint((XLineBreakpoint)breakpoint, true);
+            debugThread.queueBreakpoint((XLineBreakpoint<?>)breakpoint, true);
         } else {
             LOG.warn("Unknown breakpoint during un-register action");
         }

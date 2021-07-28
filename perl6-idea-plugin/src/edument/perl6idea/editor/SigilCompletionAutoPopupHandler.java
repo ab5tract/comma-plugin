@@ -68,7 +68,7 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
     }
 
     @Nullable
-    private IElementType getCurrentToken(@NotNull Editor editor) {
+    private static IElementType getCurrentToken(@NotNull Editor editor) {
         int start = editor.getCaretModel().getOffset() - 1;
         if (start < 0)
             return null;

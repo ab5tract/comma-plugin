@@ -23,9 +23,9 @@ public class AssignmentToImmutableAnnotator implements Annotator {
         }
     }
 
-    private void checkAssignable(PsiElement operand,
-                                 @NotNull PsiElement annotate,
-                                 @NotNull AnnotationHolder holder) {
+    private static void checkAssignable(PsiElement operand,
+                                        @NotNull PsiElement annotate,
+                                        @NotNull AnnotationHolder holder) {
         if (operand instanceof Perl6Variable) {
             // Only scalars.
             String name = ((Perl6Variable)operand).getVariableName();

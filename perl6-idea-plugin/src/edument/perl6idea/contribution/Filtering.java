@@ -2,13 +2,14 @@ package edument.perl6idea.contribution;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 public class Filtering {
     public static Collection<String> typeMatch(Collection<String> in, String pattern) {
-        String[] patternParts = pattern.toLowerCase().split("::");
+        String[] patternParts = pattern.toLowerCase(Locale.ENGLISH).split("::");
         Collection<String> result = new ArrayList<>();
         tests: for (String test : in) {
-            String[] testParts = test.toLowerCase().split("::");
+            String[] testParts = test.toLowerCase(Locale.ENGLISH).split("::");
             for (String patternPart : patternParts)
                 for (String testPart : testParts)
                     if (testPart.contains(patternPart)) {

@@ -5,7 +5,6 @@ import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6ElementFactory;
@@ -37,7 +36,7 @@ public class UseDirectAttributeAccessFix implements IntentionAction {
     }
 
     @Override
-    public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException { ;
+    public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
         replacee.replace(Perl6ElementFactory.createVariable(project, attributeName));
     }
 

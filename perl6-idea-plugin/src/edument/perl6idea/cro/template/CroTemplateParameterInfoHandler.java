@@ -1,11 +1,9 @@
 package edument.perl6idea.cro.template;
 
-import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.lang.parameterInfo.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.ArrayUtil;
 import edument.perl6idea.cro.template.psi.CroTemplateCall;
 import edument.perl6idea.cro.template.psi.CroTemplateParameter;
 import edument.perl6idea.cro.template.psi.CroTemplateSignature;
@@ -18,17 +16,6 @@ import java.util.List;
 import java.util.StringJoiner;
 
 public class CroTemplateParameterInfoHandler implements ParameterInfoHandler<CroTemplateCall, CroTemplateSub> {
-    @Override
-    public boolean couldShowInLookup() {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public Object[] getParametersForLookup(LookupElement item, ParameterInfoContext context) {
-        return ArrayUtil.EMPTY_OBJECT_ARRAY;
-    }
-
     @Nullable
     @Override
     public CroTemplateCall findElementForParameterInfo(@NotNull CreateParameterInfoContext context) {

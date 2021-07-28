@@ -2,12 +2,7 @@ package edument.perl6idea.utils;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.psi.codeStyle.CodeStyleSettings;
-import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
-import edument.perl6idea.formatter.Perl6CodeStyleSettings;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -16,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Perl6Utils {
     public static final Logger LOG = Logger.getInstance(Perl6Utils.class);
@@ -47,7 +43,8 @@ public class Perl6Utils {
             InputStream in = Perl6Utils.class.getClassLoader().getResourceAsStream(resourcePath);
             FileOutputStream out = new FileOutputStream(tempFile)
         ) {
-            in.transferTo(out);
+            if (in != null)
+                in.transferTo(out);
         } catch (IOException e) {
             LOG.error(e);
         }
@@ -58,7 +55,7 @@ public class Perl6Utils {
         List<String> lines = new ArrayList<>();
         try (
             InputStream resourceFileStream = Perl6Utils.class.getClassLoader().getResourceAsStream(filepath);
-            BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(resourceFileStream, StandardCharsets.UTF_8))
+            BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(resourceFileStream), StandardCharsets.UTF_8))
         ) {
             while (inputStreamReader.ready())
                 lines.add(inputStreamReader.readLine());

@@ -12,15 +12,17 @@ import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class ConvertNonCapturingGroupIntoNamedIntention extends ConvertNonCapturingGroupIntention {
     @NotNull
     @Override
     PsiElement obtainReplacer(Project project, Perl6RegexGroup group) {
         String regexContent = group.getText();
-        return PsiTreeUtil.findChildOfType(
+        return Objects.requireNonNull(PsiTreeUtil.findChildOfType(
             Perl6ElementFactory
                 .createStatementFromText(project, String.format("/$<x>=(%s)/", regexContent.substring(1, regexContent.length() - 1))),
-            Perl6RegexVariable.class);
+            Perl6RegexVariable.class));
     }
 
     @Override

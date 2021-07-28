@@ -6,9 +6,8 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 public class Perl6OutputLinkProvider implements ConsoleFilterProvider {
-    @NotNull
     @Override
-    public Filter[] getDefaultFilters(@NotNull Project project) {
+    public Filter @NotNull [] getDefaultFilters(@NotNull Project project) {
         Perl6OutputLinkFilter filter = new Perl6OutputLinkFilter(project);
         return new Filter[]{filter};
     }

@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 public class Perl6ElementFactory {
     public static final String ARRAY_CONTEXTUALIZER = "@";

@@ -68,7 +68,7 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
         char sigil = Perl6Variable.getSigil(variableName);
         char twigil = Perl6Variable.getTwigil(variableName);
         String prefix = twigil != ' ' ?
-                        String.valueOf(sigil) + String.valueOf(twigil) :
+                        sigil + String.valueOf(twigil) :
                         String.valueOf(sigil);
         Perl6Variable variable =
             Perl6ElementFactory.createVariable(getProject(), prefix + name);
@@ -179,9 +179,8 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
             public void init(PsiElement element) {
             }
 
-            @NotNull
             @Override
-            public Object[] getDependencies() {
+            public Object @NotNull [] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };

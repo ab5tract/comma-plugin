@@ -24,13 +24,11 @@ import java.util.Collection;
 
 public class Perl6StackFrame extends XStackFrame {
     private final Perl6StackFrameDescriptor myFrameDescriptor;
-    private final Perl6ExecutionStack myStack;
     private final Perl6DebugThread myDebugThread;
     private final NullableLazyValue<VirtualFile> myVirtualFile;
 
     public Perl6StackFrame(Project project, Perl6StackFrameDescriptor frame, Perl6ExecutionStack stack) {
         myFrameDescriptor = frame;
-        myStack = stack;
         myDebugThread = stack.getSuspendContext().getDebugThread();
         myVirtualFile = NullableLazyValue.createValue(() -> {
             String localFilePath = myFrameDescriptor.getFile().getPath();

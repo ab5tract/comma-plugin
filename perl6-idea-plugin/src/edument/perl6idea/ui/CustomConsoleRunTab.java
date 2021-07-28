@@ -45,8 +45,8 @@ public abstract class CustomConsoleRunTab extends RunTab {
             .initTabDefaults(0, getCustomTabText(), null)
             .initTabDefaults(1, "Console", null);
         RunContentDescriptor descriptor = createDescriptor(uiUpdater);
-        Disposer.register(descriptor, this);
-        Disposer.register(myProject, descriptor);
+        Disposer.register(this, descriptor);
+        Disposer.register(myEnvironment, this);
         RunContentManagerImpl.copyContentAndBehavior(descriptor, reuseContent);
         myRunContentDescriptor = descriptor;
         return descriptor;
@@ -81,7 +81,7 @@ public abstract class CustomConsoleRunTab extends RunTab {
             if (console instanceof ObservableConsoleView && !ApplicationManager.getApplication().isUnitTestMode()) {
                 ((ObservableConsoleView)console).addChangeListener(
                     new RunContentBuilder.ConsoleToFrontListener(
-                        (RunConfigurationBase)profile,
+                        (RunConfigurationBase<?>)profile,
                         myProject, myEnvironment.getExecutor(), contentDescriptor, myUi), this);
             }
         }

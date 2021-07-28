@@ -11,6 +11,7 @@ import edument.perl6idea.contribution.Filtering;
 import edument.perl6idea.extensions.Perl6FrameworkCall;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.stub.Perl6SubCallStub;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -114,10 +115,9 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
     @Override
     public ItemPresentation getNavigatePresentation(Perl6PsiElement call, Map<String, String> frameworkData) {
         return new ItemPresentation() {
-            @Nullable
             @Override
-            public String getPresentableText() {
-                return frameworkData.get("method").toUpperCase() + " " + frameworkData.get("path");
+            public @NotNull String getPresentableText() {
+                return frameworkData.get("method").toUpperCase(Locale.ENGLISH) + " " + frameworkData.get("path");
             }
 
             @Nullable
@@ -126,9 +126,8 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
                 return call.getEnclosingPerl6ModuleName();
             }
 
-            @Nullable
             @Override
-            public Icon getIcon(boolean unused) {
+            public @NotNull Icon getIcon(boolean unused) {
                 return Perl6Icons.CRO;
             }
         };
@@ -137,10 +136,9 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
     @Override
     public ItemPresentation getStructureViewPresentation(Perl6PsiElement call, Map<String, String> frameworkData) {
         return new ItemPresentation() {
-            @Nullable
             @Override
-            public String getPresentableText() {
-                return frameworkData.get("method").toUpperCase() + " " + frameworkData.get("path");
+            public @NotNull String getPresentableText() {
+                return frameworkData.get("method").toUpperCase(Locale.ENGLISH) + " " + frameworkData.get("path");
             }
 
             @Nullable
@@ -149,9 +147,8 @@ public class CroFrameworkCall extends Perl6FrameworkCall {
                 return null;
             }
 
-            @Nullable
             @Override
-            public Icon getIcon(boolean unused) {
+            public @NotNull Icon getIcon(boolean unused) {
                 return Perl6Icons.CRO;
             }
         };

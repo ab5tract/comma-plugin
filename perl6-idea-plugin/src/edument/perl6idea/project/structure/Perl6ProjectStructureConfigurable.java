@@ -45,24 +45,22 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     private static final String CATEGORY = "category";
     public static final DataKey<Perl6ProjectStructureConfigurable> KEY = DataKey.create("Perl6ProjectStructureConfiguration");
     protected final Perl6ProjectStructureConfigurable.UIState myUiState = new Perl6ProjectStructureConfigurable.UIState();
-    private Project myProject;
-    private Perl6ModulesConfigurator myModuleConfigurator;
-    private Perl6StructureConfigurableContext myContext;
+    private final Project myProject;
+    private final Perl6StructureConfigurableContext myContext;
     private JPanel myComponent;
     private OnePixelSplitter mySplitter;
     private SidePanel mySidePanel;
-    private ProjectSdksModel myProjectSdkModel = new ProjectSdksModel();
+    private final ProjectSdksModel myProjectSdkModel = new ProjectSdksModel();
     // Configurables
     private Perl6ModuleStructureConfigurable myModulesConfigurable;
     private Perl6ProjectConfigurable myProjectConfigurable;
     private final List<Configurable> myName2Config = new ArrayList<>();
-    private JComponent myToolbarComponent;
-    private Wrapper myDetails = new Wrapper();
+    private final Wrapper myDetails = new Wrapper();
     private boolean myUiInitialized;
     private Configurable mySelectedConfigurable;
-    private History myHistory = new History(this);
+    private final History myHistory = new History(this);
     private JComponent myToFocus;
-    private JLabel myEmptySelection =
+    private final JLabel myEmptySelection =
         new JLabel("<html><body><center>Select a setting to view or edit its details here</center></body></html>",
                    SwingConstants.CENTER);
     private Perl6SdkListConfigurable myJdkListConfig;
@@ -105,9 +103,9 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
 
     public Perl6ProjectStructureConfigurable(final Project project) {
         myProject = project;
-        myModuleConfigurator = new Perl6ModulesConfigurator(myProject);
-        myContext = new Perl6StructureConfigurableContext(myProject, myModuleConfigurator);
-        myModuleConfigurator.setContext(myContext);
+        Perl6ModulesConfigurator moduleConfigurator = new Perl6ModulesConfigurator(myProject);
+        myContext = new Perl6StructureConfigurableContext(moduleConfigurator);
+        moduleConfigurator.setContext(myContext);
 
         myModulesConfigurable = new Perl6ModuleStructureConfigurable(project, myContext);
         myModulesConfigurable.init(myContext);
@@ -165,10 +163,10 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
         toolbarGroup.add(new ForwardAction(myComponent, this));
         final ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("Raku.ProjectStructure", toolbarGroup, true);
         toolbar.setTargetComponent(myComponent);
-        myToolbarComponent = toolbar.getComponent();
+        JComponent toolbarComponent = toolbar.getComponent();
         left.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
-        myToolbarComponent.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
-        left.add(myToolbarComponent, BorderLayout.NORTH);
+        toolbarComponent.setBackground(UIUtil.SIDE_PANEL_BACKGROUND);
+        left.add(toolbarComponent, BorderLayout.NORTH);
 
         initSidePanel();
         left.add(mySidePanel, BorderLayout.CENTER);

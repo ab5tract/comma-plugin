@@ -10,7 +10,7 @@ import static edument.perl6idea.metadata.Perl6MetaDataComponent.META6_JSON_NAME;
 import static edument.perl6idea.metadata.Perl6MetaDataComponent.META_OBSOLETE_NAME;
 
 public abstract class RakuProjectFileChangeListener {
-    public void processFileCreate(VFileEvent event) {};
+    public void processFileCreate(VFileEvent event) {}
     public void processDirectoryCreate(VFileEvent event) {}
     public void processFileDelete(VFileEvent event) {}
     public void processDirectoryDelete(VFileEvent event) {}

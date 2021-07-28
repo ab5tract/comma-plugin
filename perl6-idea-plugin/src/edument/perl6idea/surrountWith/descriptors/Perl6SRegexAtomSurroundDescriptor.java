@@ -16,9 +16,8 @@ public class Perl6SRegexAtomSurroundDescriptor implements SurroundDescriptor {
         new Perl6RegexNamedSurrounder()
     };
 
-    @NotNull
     @Override
-    public PsiElement[] getElementsToSurround(PsiFile file, int startOffset, int endOffset) {
+    public PsiElement @NotNull [] getElementsToSurround(PsiFile file, int startOffset, int endOffset) {
         PsiElement start = file.findElementAt(startOffset);
         PsiElement end = file.findElementAt(endOffset == 0 ? 0 : endOffset - 1);
         if (start == null || end == null)
@@ -44,9 +43,8 @@ public class Perl6SRegexAtomSurroundDescriptor implements SurroundDescriptor {
         return PsiTreeUtil.getElementsOfRange(atom1, atom2).toArray(PsiElement.EMPTY_ARRAY);
     }
 
-    @NotNull
     @Override
-    public Surrounder[] getSurrounders() {
+    public Surrounder @NotNull [] getSurrounders() {
         return SURROUNDERS;
     }
 

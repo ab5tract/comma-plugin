@@ -16,7 +16,7 @@ public class CroTemplateFileStubImpl extends PsiFileStubImpl<CroTemplateFile> im
 
     @Override
     public void declareExportedSymbols(CroTemplateSymbolCollector collector) {
-        for (StubElement child : getChildrenStubs()) {
+        for (StubElement<?> child : getChildrenStubs()) {
             if (child instanceof CroTemplateSubStub)
                 collector.offer(((CroTemplateSubStub)child).getName(), CroTemplateSymbolKind.Sub,
                         child.getPsi());

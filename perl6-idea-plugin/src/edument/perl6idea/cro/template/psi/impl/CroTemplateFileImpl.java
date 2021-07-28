@@ -36,7 +36,7 @@ public class CroTemplateFileImpl extends PsiFileBase implements CroTemplateFile 
 
     @Override
     public void declareExportedSymbols(CroTemplateSymbolCollector collector) {
-        StubElement stub = getStub();
+        StubElement<?> stub = getStub();
         if (stub instanceof CroTemplateFileStub)
             ((CroTemplateFileStub)stub).declareExportedSymbols(collector);
         else

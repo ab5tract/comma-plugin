@@ -7,7 +7,7 @@ import edument.perl6idea.psi.Perl6ScopedDecl;
 import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
 public class Perl6ScopedDeclStubImpl extends StubBase<Perl6ScopedDecl> implements Perl6ScopedDeclStub {
-    private String scope;
+    private final String scope;
 
     public Perl6ScopedDeclStubImpl(StubElement parent, String scope) {
         super(parent, Perl6ElementTypes.SCOPED_DECLARATION);

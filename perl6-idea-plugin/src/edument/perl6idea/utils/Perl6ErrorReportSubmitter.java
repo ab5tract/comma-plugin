@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
-    private static String URL = "https://commaide.com/api/error-reports";
+    private static final String URL = "https://commaide.com/api/error-reports";
 
     @NotNull
     @Override

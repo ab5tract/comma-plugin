@@ -50,9 +50,8 @@ public class Perl6ExternalPsiElement implements PsiNamedElement, NavigatablePsiE
         return PsiManager.getInstance(myProject);
     }
 
-    @NotNull
     @Override
-    public PsiElement[] getChildren() {
+    public PsiElement @NotNull [] getChildren() {
         return PsiElement.EMPTY_ARRAY;
     }
 
@@ -123,9 +122,8 @@ public class Perl6ExternalPsiElement implements PsiNamedElement, NavigatablePsiE
         return null;
     }
 
-    @NotNull
     @Override
-    public char[] textToCharArray() {
+    public char @NotNull [] textToCharArray() {
         return new char[0];
     }
 
@@ -263,9 +261,8 @@ public class Perl6ExternalPsiElement implements PsiNamedElement, NavigatablePsiE
         return null;
     }
 
-    @NotNull
     @Override
-    public PsiReference[] getReferences() {
+    public PsiReference @NotNull [] getReferences() {
         return PsiReference.EMPTY_ARRAY;
     }
 

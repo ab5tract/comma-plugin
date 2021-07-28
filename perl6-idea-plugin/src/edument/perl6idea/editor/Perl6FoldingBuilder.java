@@ -17,9 +17,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class Perl6FoldingBuilder extends FoldingBuilderEx implements DumbAware {
-    @NotNull
     @Override
-    public FoldingDescriptor[] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
+    public FoldingDescriptor @NotNull [] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
         int recursionLevel = 0;
         List<FoldingDescriptor> descriptors = new ArrayList<>();
         getLevelFolding(root, recursionLevel, descriptors);

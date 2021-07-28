@@ -115,9 +115,8 @@ public class Perl6FileSystem extends ArchiveFileSystem {
         return getAttributes(file) != null;
     }
 
-    @NotNull
     @Override
-    public String[] list(@NotNull VirtualFile file) {
+    public String @NotNull [] list(@NotNull VirtualFile file) {
         return getHandler(file).list(getRelativePath(file));
     }
 
@@ -159,9 +158,8 @@ public class Perl6FileSystem extends ArchiveFileSystem {
         throw new IOException("Cannot copy file");
     }
 
-    @NotNull
     @Override
-    public byte[] contentsToByteArray(@NotNull VirtualFile file) throws IOException {
+    public byte @NotNull [] contentsToByteArray(@NotNull VirtualFile file) {
         return getHandler(file).contentsToByteArray(getRelativePath(file));
     }
 

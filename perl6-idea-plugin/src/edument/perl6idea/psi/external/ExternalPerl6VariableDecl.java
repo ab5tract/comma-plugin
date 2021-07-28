@@ -13,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implements Perl6VariableDecl {
-    private String myName;
-    private String myScope;
-    private String myType;
+    private final String myName;
+    private final String myScope;
+    private final String myType;
 
     public ExternalPerl6VariableDecl(Project project, PsiElement parent, String name, String scope, String type) {
         myProject = project;
@@ -64,7 +64,7 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
     }
 
     @Override
-    public IStubElementType getElementType() {
+    public IStubElementType<?, ?> getElementType() {
         return null;
     }
 
@@ -122,7 +122,7 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
             if (collector.isSatisfied()) return;
             if (symbolsAllowed.privateAttributesVisible) {
                 collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Variable,
-                                                                     this, name.substring(0, 1) + "!" + name.substring(2)));
+                                                                     this, name.charAt(0) + "!" + name.substring(2)));
                 if (collector.isSatisfied()) return;
             }
             // Offer self.foo;

@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import java.util.*;
 
 class MetaDataJSONSerializer {
-    private static String[] fieldsOrder = new String[]{
+    private static final String[] fieldsOrder = new String[]{
             "name", "description", "version", "perl",
             "meta-version", "authors", "auth",
             "depends", "build-depends", "test-depends",

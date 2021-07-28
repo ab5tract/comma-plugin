@@ -3,11 +3,11 @@ package edument.perl6idea.debugger;
 import org.edument.moarvm.types.StackFrame;
 
 public class Perl6StackFrameDescriptor {
-    private Perl6LoadedFileDescriptor file;
-    private String bytecodeFile;
-    private int line;
-    private String name;
-    private String type;
+    private final Perl6LoadedFileDescriptor file;
+    private final String bytecodeFile;
+    private final int line;
+    private final String name;
+    private final String type;
     private Perl6ValueDescriptor[] lexicals;
 
     Perl6StackFrameDescriptor(Perl6LoadedFileDescriptor descriptor, StackFrame frame) {

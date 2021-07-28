@@ -18,7 +18,6 @@ import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Perl6StubTest extends CommaFixtureTestCase {
     private StubBuilder myBuilder;
@@ -41,20 +40,20 @@ public class Perl6StubTest extends CommaFixtureTestCase {
     }
 
     public void testConstant() {
-        StubElement e = doTest("constant $foo = 5;",
+        StubElement<?> e = doTest("constant $foo = 5;",
                 "Perl6FileStubImpl\n" +
                         "  CONSTANT:Perl6ConstantStubImpl\n");
-        List childrenStubs = e.getChildrenStubs();
+        List<?> childrenStubs = e.getChildrenStubs();
         assertEquals(1, childrenStubs.size());
         Perl6ConstantStub stub = (Perl6ConstantStub) childrenStubs.get(0);
         assertEquals("$foo", stub.getConstantName());
     }
 
     public void testEnum() {
-        StubElement e = doTest("enum Class <Wizard Crusader Priest>;",
+        StubElement<?> e = doTest("enum Class <Wizard Crusader Priest>;",
                 "Perl6FileStubImpl\n" +
                         "  ENUM:Perl6EnumStubImpl\n");
-        List childrenStubs = e.getChildrenStubs();
+        List<?> childrenStubs = e.getChildrenStubs();
         assertEquals(1, childrenStubs.size());
         Perl6EnumStub enumStub = (Perl6EnumStub)childrenStubs.get(0);
         assertEquals("Class", enumStub.getTypeName());
@@ -64,21 +63,21 @@ public class Perl6StubTest extends CommaFixtureTestCase {
     }
 
     public void testRegex() {
-        StubElement e = doTest("regex aa <1 2 3 4 5>",
+        StubElement<?> e = doTest("regex aa <1 2 3 4 5>",
                 "Perl6FileStubImpl\n" +
                         "  REGEX_DECLARATION:Perl6RegexDeclStubImpl\n");
-        List childrenStubs = e.getChildrenStubs();
+        List<?> childrenStubs = e.getChildrenStubs();
         assertEquals(1, childrenStubs.size());
         Perl6RegexDeclStub stub = (Perl6RegexDeclStub) childrenStubs.get(0);
         assertEquals("aa", stub.getRegexName());
     }
 
     public void testSubset() {
-        StubElement e = doTest("subset Alpha of Int;",
+        StubElement<?> e = doTest("subset Alpha of Int;",
                 "Perl6FileStubImpl\n" +
                         "  SUBSET:Perl6SubsetStubImpl\n" +
                         "    TYPE_NAME:Perl6TypeNameStubImpl\n");
-        List childrenStubs = e.getChildrenStubs();
+        List<?> childrenStubs = e.getChildrenStubs();
         assertEquals(1, childrenStubs.size());
         Perl6SubsetStub stub = (Perl6SubsetStub) childrenStubs.get(0);
         assertEquals("Alpha", stub.getTypeName());
@@ -86,11 +85,11 @@ public class Perl6StubTest extends CommaFixtureTestCase {
     }
 
     public void testNeed() {
-        StubElement e = doTest("need Foo::Bar; need Foo::Baz;",
+        StubElement<?> e = doTest("need Foo::Bar; need Foo::Baz;",
                 "Perl6FileStubImpl\n" +
                         "  NEED_STATEMENT:Perl6NeedStatementStubImpl\n" +
                         "  NEED_STATEMENT:Perl6NeedStatementStubImpl\n");
-        List childrenStubs = e.getChildrenStubs();
+        List<?> childrenStubs = e.getChildrenStubs();
         assertEquals(2, childrenStubs.size());
         Perl6NeedStatementStub stub1 = (Perl6NeedStatementStub) childrenStubs.get(0);
         assertEquals(Collections.singletonList("Foo::Bar"), stub1.getModuleNames());
@@ -99,11 +98,11 @@ public class Perl6StubTest extends CommaFixtureTestCase {
     }
 
     public void testUse() {
-        StubElement e = doTest("use Foo::Bar; use Foo::Baz;",
+        StubElement<?> e = doTest("use Foo::Bar; use Foo::Baz;",
                 "Perl6FileStubImpl\n" +
                         "  USE_STATEMENT:Perl6UseStatementStubImpl\n" +
                         "  USE_STATEMENT:Perl6UseStatementStubImpl\n");
-        List childrenStubs = e.getChildrenStubs();
+        List<?> childrenStubs = e.getChildrenStubs();
         assertEquals(2, childrenStubs.size());
         Perl6UseStatementStub stub1 = (Perl6UseStatementStub) childrenStubs.get(0);
         assertEquals("Foo::Bar", stub1.getModuleName());
@@ -128,7 +127,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
     }
 
     public void testClassWithAttributesAndMethods() {
-        StubElement e = doTest("class Foo { method mm {}; method !kk {}; has $!foo; has Int $.bar }",
+        StubElement<?> e = doTest("class Foo { method mm {}; method !kk {}; has $!foo; has Int $.bar }",
                 "Perl6FileStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
                         "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
@@ -138,7 +137,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
                         "    SCOPED_DECLARATION:Perl6ScopedDeclStubImpl\n" +
                         "      TYPE_NAME:Perl6TypeNameStubImpl\n" +
                         "      VARIABLE_DECLARATION:Perl6VariableDeclStubImpl\n");
-        List childrenStubs = e.getChildrenStubs();
+        List<?> childrenStubs = e.getChildrenStubs();
         assertEquals(1, childrenStubs.size());
         assert childrenStubs.get(0) instanceof Perl6PackageDeclStub;
         Perl6PackageDeclStub packageDeclStub = (Perl6PackageDeclStub) childrenStubs.get(0);
@@ -177,7 +176,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
     }
 
     public void testPackageTrait() {
-        StubElement e = doTest("role One {}; class Two does One {}; class Three is Two {};",
+        StubElement<?> e = doTest("role One {}; class Two does One {}; class Three is Two {};",
                 "Perl6FileStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
@@ -185,12 +184,12 @@ public class Perl6StubTest extends CommaFixtureTestCase {
                         "      TYPE_NAME:Perl6TypeNameStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
                         "    TRAIT:Perl6TraitStubImpl\n");
-        List childrenStubs = e.getChildrenStubs();
+        List<?> childrenStubs = e.getChildrenStubs();
         assertEquals(3, childrenStubs.size());
     }
 
     public void testAlso() {
-        StubElement e = doTest("role One {}; class Base {}; class Two { also does One; also is Base; }",
+        StubElement<?> e = doTest("role One {}; class Base {}; class Two { also does One; also is Base; }",
                 "Perl6FileStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
@@ -201,7 +200,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
     }
 
     public void testTrusts() {
-        StubElement e = doTest("class Two { trusts One; trusts Base; }",
+        StubElement<?> e = doTest("class Two { trusts One; trusts Base; }",
                 "Perl6FileStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
                         "    TYPE_NAME:Perl6TypeNameStubImpl\n" +
@@ -214,7 +213,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
     }
 
     public void testStubbedRoleUsageInComposition() {
-        StubElement e = doTest("my role Base { method mmm {}; method bbb {}; }; class C does Base { method ddd {}; };",
+        StubElement<?> e = doTest("my role Base { method mmm {}; method bbb {}; }; class C does Base { method ddd {}; };",
                 "Perl6FileStubImpl\n" +
                         "  PACKAGE_DECLARATION:Perl6PackageDeclStubImpl\n" +
                         "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n" +
@@ -223,7 +222,7 @@ public class Perl6StubTest extends CommaFixtureTestCase {
                         "    TRAIT:Perl6TraitStubImpl\n" +
                         "      TYPE_NAME:Perl6TypeNameStubImpl\n" +
                         "    ROUTINE_DECLARATION:Perl6RoutineDeclStubImpl\n");
-        StubElement stub = (StubElement) e.getChildrenStubs().get(1);
+        StubElement<?> stub = e.getChildrenStubs().get(1);
         Perl6PackageDecl decl = (Perl6PackageDecl) stub.getPsi();
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
         decl.contributeMOPSymbols(collector, new MOPSymbolsAllowed(false, false, false, false));
@@ -231,16 +230,16 @@ public class Perl6StubTest extends CommaFixtureTestCase {
         assertTrue(names.containsAll(Arrays.asList(".ddd", ".mmm", ".bbb")));
     }
 
-    private StubElement doTest(String source, String expected) {
+    private StubElement<?> doTest(String source, String expected) {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, source);
         PsiFile file = myFixture.getFile();
         FileASTNode fileASTNode = file.getNode();
         assertNotNull(fileASTNode);
 
-        StubElement stubTree = myBuilder.buildStubTree(file);
+        StubElement<?> stubTree = myBuilder.buildStubTree(file);
 
         file.getNode().getChildren(null); // force switch to AST
-        StubElement astBasedTree = myBuilder.buildStubTree(file);
+        StubElement<?> astBasedTree = myBuilder.buildStubTree(file);
 
         assertEquals(expected, DebugUtil.stubTreeToString(stubTree));
         assertEquals(expected, DebugUtil.stubTreeToString(astBasedTree));

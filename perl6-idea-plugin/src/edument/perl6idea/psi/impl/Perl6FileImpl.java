@@ -5,7 +5,6 @@ import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.FileViewProvider;
@@ -99,7 +98,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         VARIABLE_SYMBOLS.put("$*DEFAULT-READ-ELEMS", Perl6SettingTypeId.Int);
     }
 
-    private static RakuMultiExtensionFileType[] RAKU_FILE_TYPES = new RakuMultiExtensionFileType[] {
+    private static final RakuMultiExtensionFileType[] RAKU_FILE_TYPES = new RakuMultiExtensionFileType[] {
         Perl6ModuleFileType.INSTANCE, Perl6ScriptFileType.INSTANCE,
         Perl6TestFileType.INSTANCE, Perl6PodFileType.INSTANCE
     };
@@ -405,9 +404,8 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
             public void init(PsiElement element) {
             }
 
-            @NotNull
             @Override
-            public Object[] getDependencies() {
+            public Object @NotNull [] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };

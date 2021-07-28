@@ -33,9 +33,11 @@ public abstract class NewRakuFileAction<T extends DialogWrapper> extends AnActio
         if (navigatable != null) {
             if (navigatable instanceof PsiDirectory)
                 filePath = ((PsiDirectory) navigatable).getVirtualFile().getPath();
-            else if (navigatable instanceof PsiFile)
-                if (((PsiFile) navigatable).getParent() != null)
-                    filePath = ((PsiFile) navigatable).getParent().getVirtualFile().getPath();
+            else if (navigatable instanceof PsiFile) {
+                PsiDirectory parent = ((PsiFile)navigatable).getParent();
+                if (parent != null)
+                    filePath = parent.getVirtualFile().getPath();
+            }
         }
         if (filePath == null)
             return;

@@ -34,9 +34,8 @@ public class Perl6StatementSurroundDescriptor implements SurroundDescriptor {
         new Perl6HashContextSurrounder(true)
     };
 
-    @NotNull
     @Override
-    public PsiElement[] getElementsToSurround(PsiFile file, int startOffset, int endOffset) {
+    public PsiElement @NotNull [] getElementsToSurround(PsiFile file, int startOffset, int endOffset) {
         // We need to find all statements between start and end offset (including)
         // The issues here might include:
         // * Start offset might start at whitespace, so we need to skip it
@@ -98,9 +97,8 @@ public class Perl6StatementSurroundDescriptor implements SurroundDescriptor {
         return element;
     }
 
-    @NotNull
     @Override
-    public Surrounder[] getSurrounders() {
+    public Surrounder @NotNull [] getSurrounders() {
         return SURROUNDERS;
     }
 

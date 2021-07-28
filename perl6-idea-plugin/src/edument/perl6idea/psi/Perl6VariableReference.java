@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Perl6VariableReference extends PsiReferenceBase.Poly<Perl6Variable> {
@@ -222,29 +221,37 @@ public class Perl6VariableReference extends PsiReferenceBase.Poly<Perl6Variable>
             level = PsiTreeUtil.getParentOfType(level, Perl6File.class, Perl6RoutineDecl.class, Perl6StatementList.class);
             if (level == null || level instanceof Perl6RoutineDecl) return null;
 
-            PsiElementProcessor.CollectElements<PsiElement> processor = new PsiElementProcessor.CollectElements<PsiElement>() {
+            PsiElementProcessor.CollectElements<PsiElement> processor = new PsiElementProcessor.CollectElements<>() {
                 @Override
                 public boolean execute(@NotNull PsiElement each) {
-                    if (each.getTextOffset() > starter.getTextOffset())
+                    if (each.getTextOffset() > starter.getTextOffset()) {
                         return false;
-                    if (each instanceof Perl6InfixApplication)
+                    }
+                    if (each instanceof Perl6InfixApplication) {
                         return searchForRegexApplication((Perl6InfixApplication)each);
-                    else if (each instanceof Perl6WhenStatement || each instanceof Perl6IfStatement || each instanceof Perl6UnlessStatement)
+                    }
+                    else if (each instanceof Perl6WhenStatement ||
+                             each instanceof Perl6IfStatement ||
+                             each instanceof Perl6UnlessStatement) {
                         return searchForControlContextualizer((P6Control)each);
-                    else if (each instanceof Perl6Statement)
+                    }
+                    else if (each instanceof Perl6Statement) {
                         return searchForSinkRegex((Perl6Statement)each);
+                    }
                     return true;
                 }
 
                 private boolean searchForSinkRegex(Perl6Statement statement) {
-                    if (statement.getFirstChild() instanceof Perl6RegexDriver)
+                    if (statement.getFirstChild() instanceof Perl6RegexDriver) {
                         return super.execute(statement.getFirstChild());
+                    }
                     return true;
                 }
 
                 private boolean searchForControlContextualizer(P6Control control) {
-                    if (control.getTopic() instanceof Perl6RegexDriver)
+                    if (control.getTopic() instanceof Perl6RegexDriver) {
                         return super.execute(control.getTopic());
+                    }
                     return true;
                 }
 
@@ -254,8 +261,9 @@ public class Perl6VariableReference extends PsiReferenceBase.Poly<Perl6Variable>
                         if (ops.length == 2) {
                             Perl6Type regexType =
                                 Perl6SdkType.getInstance().getCoreSettingType(starter.getProject(), Perl6SettingTypeId.Regex);
-                            if (ops[1] instanceof Perl6PsiElement && ((Perl6PsiElement)ops[1]).inferType().equals(regexType))
+                            if (ops[1] instanceof Perl6PsiElement && ((Perl6PsiElement)ops[1]).inferType().equals(regexType)) {
                                 return super.execute(ops[1]);
+                            }
                         }
                     }
                     return app.getTextOffset() < anchor.getTextOffset();

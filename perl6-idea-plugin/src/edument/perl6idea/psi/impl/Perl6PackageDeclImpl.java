@@ -22,7 +22,6 @@ import edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex;
 import edument.perl6idea.psi.stub.index.Perl6IndexableType;
 import edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex;
 import edument.perl6idea.psi.symbols.*;
-import edument.perl6idea.sdk.Perl6ExternalNamesParser;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -172,7 +171,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     private void contributeInternals(Perl6SymbolCollector collector, MOPSymbolsAllowed symbolsAllowed) {
         Perl6PackageDeclStub stub = getStub();
         if (stub != null) {
-            for (StubElement nestedStub : stub.getChildrenStubs()) {
+            for (StubElement<?> nestedStub : stub.getChildrenStubs()) {
                 if (nestedStub instanceof Perl6RoutineDeclStub) {
                     Perl6RoutineDeclStub declStub = (Perl6RoutineDeclStub)nestedStub;
                     if (declStub.isPrivate() && !symbolsAllowed.privateMethodsVisible)
@@ -185,7 +184,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 else if (nestedStub instanceof Perl6ScopedDeclStub) {
                     Perl6ScopedDeclStub scopedVar = (Perl6ScopedDeclStub)nestedStub;
                     List<StubElement> stubsUnderScoped = scopedVar.getChildrenStubs();
-                    for (StubElement var : stubsUnderScoped) {
+                    for (StubElement<?> var : stubsUnderScoped) {
                         if (var instanceof Perl6VariableDeclStub) {
                             Perl6VariableDeclStub declStub = (Perl6VariableDeclStub)var;
                             if (!declStub.getScope().equals("has"))
@@ -241,7 +240,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
         if (stub != null) {
             List<StubElement> children = stub.getChildrenStubs();
-            for (StubElement child : children) {
+            for (StubElement<?> child : children) {
                 if (!(child instanceof Perl6TraitStub)) continue;
                 Perl6TraitStub traitStub = (Perl6TraitStub)child;
                 if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
@@ -317,8 +316,8 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (isAny)
             Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
         collector.decreasePriority();
-        if (isMu)
-            Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
+        // Always contribute Mu
+        Perl6SdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
     }
 
     private void contributeExternalPackage(Perl6SymbolCollector collector, String typeName,
@@ -417,14 +416,18 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         for (Perl6Trait trait : getTraits()) {
             Perl6IsTraitName isTrait = PsiTreeUtil.findChildOfType(trait, Perl6IsTraitName.class);
             if (isTrait != null) {
-                PsiElement resolved = isTrait.getReference().resolve();
+                PsiReference reference = isTrait.getReference();
+                assert reference != null;
+                PsiElement resolved = reference.resolve();
                 if (resolved instanceof Perl6PackageDecl)
                     parents.add((Perl6PackageDecl)resolved);
             }
             else {
                 Perl6TypeName doesTrait = PsiTreeUtil.findChildOfType(trait, Perl6TypeName.class);
                 if (doesTrait != null) {
-                    PsiElement resolved = doesTrait.getReference().resolve();
+                    PsiReference reference = doesTrait.getReference();
+                    assert reference != null;
+                    PsiElement resolved = reference.resolve();
                     if (resolved instanceof Perl6PackageDecl)
                         parents.add((Perl6PackageDecl)resolved);
                 }
@@ -490,9 +493,8 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             public void init(PsiElement element) {
             }
 
-            @NotNull
             @Override
-            public Object[] getDependencies() {
+            public Object @NotNull [] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };

@@ -56,7 +56,8 @@ public class Perl6EnumStubElementType extends IStubElementType<Perl6EnumStub, Pe
         StringRef enumNameRef = dataStream.readName();
         boolean exported = dataStream.readBoolean();
         StringRef values = dataStream.readName();
-        List<String> enumValues = new ArrayList<>(Arrays.asList(values.getString().split("#")));
+        List<String> enumValues = values == null ? new ArrayList<>() : new ArrayList<>(Arrays.asList(values.getString().split("#")));
+        assert enumNameRef != null;
         return new Perl6EnumStubImpl(parentStub, enumNameRef.getString(), exported, enumValues);
     }
 

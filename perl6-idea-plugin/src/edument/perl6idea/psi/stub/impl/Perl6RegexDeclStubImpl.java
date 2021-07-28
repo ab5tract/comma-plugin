@@ -8,8 +8,8 @@ import edument.perl6idea.psi.stub.Perl6RegexDeclStub;
 import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
 public class Perl6RegexDeclStubImpl extends StubBase<Perl6RegexDecl> implements Perl6RegexDeclStub {
-    private String regexName;
-    private boolean isExported;
+    private final String regexName;
+    private final boolean isExported;
 
     public Perl6RegexDeclStubImpl(StubElement stub, String name, boolean exported) {
         super(stub, Perl6ElementTypes.REGEX_DECLARATION);

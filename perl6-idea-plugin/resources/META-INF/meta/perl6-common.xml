@@ -255,6 +255,11 @@
     <liveTemplateOptionalProcessor implementation="edument.perl6idea.liveTemplates.AddUseProcessor"/>
     <iw.actionProvider implementation="edument.perl6idea.readerMode.Perl6ActionProvider"/>
     <readerModeMatcher implementation="edument.perl6idea.readerMode.Perl6DefaultReaderModeMatcher"/>
+    <notificationGroup displayType="BALLOON" id="raku.sdk.errors.group"/>
+    <notificationGroup displayType="BALLOON" id="raku.debug.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.repl.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.meta.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.timeline.errors"/>
   </extensions>
 
   <actions>
@@ -288,7 +293,7 @@
       <keyboard-shortcut first-keystroke="control ENTER" keymap="$default"/>
     </action>
     <action id="edument.perl6idea.repl.Perl6ReplUsingThisModuleAction" class="edument.perl6idea.repl.Perl6ReplUsingThisModuleAction"
-            text="REPL using this module" description="Launch a Raku REPL with this module used">
+            text="REPL Using This Module" description="Launch a Raku REPL with this module used">
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </action>
     <action id="edument.perl6idea.grammar.RakuGrammarPreviewAction" class="edument.perl6idea.grammar.RakuGrammarPreviewAction"

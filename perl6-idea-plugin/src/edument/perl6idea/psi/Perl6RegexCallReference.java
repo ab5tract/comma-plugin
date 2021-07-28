@@ -4,12 +4,15 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.impl.Perl6RegexCallImpl;
 import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -43,13 +46,10 @@ public class Perl6RegexCallReference extends PsiReferenceBase<Perl6RegexCall> {
         return null;
     }
 
-    @NotNull
     @Override
-    public Object[] getVariants() {
-        List<String> result = getElement()
-            .getLexicalSymbolVariants(Perl6SymbolKind.Regex)
-            .stream()
-            .map(sym -> sym.getName()).collect(toList());
+    public Object @NotNull [] getVariants() {
+        Collection<Perl6Symbol> variants = getElement().getLexicalSymbolVariants(Perl6SymbolKind.Regex);
+        List<String> result = variants.isEmpty() ? new ArrayList<>() : ContainerUtil.map(variants, sym -> sym.getName());
         Perl6PackageDecl selfType = getElement().getSelfType();
         if (selfType != null) {
             Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
@@ -66,7 +66,7 @@ public class Perl6RegexCallReference extends PsiReferenceBase<Perl6RegexCall> {
     }
 
     @Override
-    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         Perl6RegexCall call = getElement();
         return call.setName(newElementName);
     }

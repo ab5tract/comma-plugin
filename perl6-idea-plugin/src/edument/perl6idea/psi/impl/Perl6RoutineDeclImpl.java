@@ -95,7 +95,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public String getReturnsTrait() {
         Perl6RoutineDeclStub stub = getStub();
         if (stub != null)
-            for (StubElement s : stub.getChildrenStubs()) {
+            for (StubElement<?> s : stub.getChildrenStubs()) {
                 if (!(s instanceof Perl6TraitStub)) continue;
                 Perl6TraitStub traitStub = (Perl6TraitStub)s;
                 String modifier = traitStub.getTraitModifier();
@@ -116,7 +116,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     public boolean isDeprecated() {
         Perl6RoutineDeclStub stub = getStub();
         if (stub != null)
-            for (StubElement s : stub.getChildrenStubs()) {
+            for (StubElement<?> s : stub.getChildrenStubs()) {
                 if (!(s instanceof Perl6TraitStub)) continue;
                 Perl6TraitStub traitStub = (Perl6TraitStub)s;
                 String modifier = traitStub.getTraitModifier();
@@ -159,7 +159,6 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         return findChildByType(LONG_NAME);
     }
 
-    @NotNull
     @Override
     public PsiElement[] getContent() {
         Perl6StatementList statementList = PsiTreeUtil.findChildOfType(this, Perl6StatementList.class);
@@ -316,9 +315,8 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
             public void init(PsiElement element) {
             }
 
-            @NotNull
             @Override
-            public Object[] getDependencies() {
+            public Object @NotNull [] getDependencies() {
                 return ArrayUtil.EMPTY_OBJECT_ARRAY;
             }
         };

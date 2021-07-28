@@ -61,12 +61,11 @@ public class CroTemplateStructureViewElement implements StructureViewTreeElement
                     return Perl6Icons.CRO;
                 }
             };
-        return null;
+        throw new IllegalArgumentException();
     }
 
-    @NotNull
     @Override
-    public TreeElement[] getChildren() {
+    public TreeElement @NotNull [] getChildren() {
         List<StructureViewTreeElement> structureElements = new ArrayList<>();
         Queue<NavigatablePsiElement> visit = new ArrayDeque<>();
         visit.add(element);

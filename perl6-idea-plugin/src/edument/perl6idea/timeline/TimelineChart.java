@@ -30,10 +30,10 @@ public class TimelineChart extends JPanel {
     private final Timeline timeline;
 
     // Fonts and font metrics.
-    private Font font = JBUI.Fonts.label();
-    private Font categoryNameFont = font.deriveFont(Font.BOLD);
-    private Font moduleNameFont = categoryNameFont.deriveFont((float)categoryNameFont.getSize() + 4);
-    private FontRenderContext fontRenderContext = new FontRenderContext(null, true, false);
+    private final Font font = JBUI.Fonts.label();
+    private final Font categoryNameFont = font.deriveFont(Font.BOLD);
+    private final Font moduleNameFont = categoryNameFont.deriveFont((float)categoryNameFont.getSize() + 4);
+    private final FontRenderContext fontRenderContext = new FontRenderContext(null, true, false);
     private final int moduleNameHeight = (int)new TextLayout("Sample", moduleNameFont, fontRenderContext)
             .getBounds().getHeight();
     private final int textHeight = (int)new TextLayout("Sample", font, fontRenderContext)
@@ -79,14 +79,14 @@ public class TimelineChart extends JPanel {
     private int totalLanes = 0;
     private int lanesInView = 0;
     private int firstLane = 0;
-    private Consumer<VisibleLanesChanged> visibleLanesChangedHandler;
+    private Consumer<? super VisibleLanesChanged> visibleLanesChangedHandler;
 
     // Information about a rendered area on the chart, for handling tooltips and expansions.
     private static class VisibleLogged {
         private final Rectangle area;
         private final Logged logged;
 
-        public VisibleLogged(Rectangle area, Logged logged) {
+        VisibleLogged(Rectangle area, Logged logged) {
             this.area = area;
             this.logged = logged;
         }
@@ -106,7 +106,7 @@ public class TimelineChart extends JPanel {
         private final Rectangle area;
         private final String key;
 
-        public VisibleLabel(Rectangle area, String key) {
+        VisibleLabel(Rectangle area, String key) {
             this.area = area;
             this.key = key;
         }
@@ -352,7 +352,7 @@ public class TimelineChart extends JPanel {
         fireVisibleLanesChangedHandler();
     }
 
-    public void setVisibleLanesChangedHandler(Consumer<VisibleLanesChanged> visibleLanesChangedHandler) {
+    public void setVisibleLanesChangedHandler(Consumer<? super VisibleLanesChanged> visibleLanesChangedHandler) {
         this.visibleLanesChangedHandler = visibleLanesChangedHandler;
     }
 
@@ -405,10 +405,10 @@ public class TimelineChart extends JPanel {
 
     // Information about a single line on the chart to render.
     private class RenderLine {
-        private List<Logged> loggedItems;
-        private int top;
+        private final List<Logged> loggedItems;
+        private final int top;
 
-        public RenderLine(List<Logged> loggedItems, int top) {
+        RenderLine(List<Logged> loggedItems, int top) {
             this.loggedItems = loggedItems;
             this.top = top;
         }
@@ -635,7 +635,7 @@ public class TimelineChart extends JPanel {
         return true;
     }
 
-    private boolean doesAnyLaneHaveChildren(List<Lane> lanes) {
+    private static boolean doesAnyLaneHaveChildren(List<Lane> lanes) {
         for (Lane lane : lanes)
             if (!lane.getChildTaskLaneGroups().isEmpty())
                 return true;
@@ -675,7 +675,7 @@ public class TimelineChart extends JPanel {
         g.fillPolygon(triangle);
     }
 
-    private void paintLeftAxis(Graphics2D g, int bottomY, int x) {
+    private static void paintLeftAxis(Graphics2D g, int bottomY, int x) {
         g.setColor(JBColor.BLACK);
         g.drawLine(x, chartPadding, x, bottomY);
     }

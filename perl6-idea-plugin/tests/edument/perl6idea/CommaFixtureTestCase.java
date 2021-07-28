@@ -57,9 +57,14 @@ public class CommaFixtureTestCase extends BasePlatformTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        Perl6SdkType sdkType = (Perl6SdkType)testSdk.getSdkType();
-        sdkType.invalidateFileCaches(getProject());
-        SdkConfigurationUtil.removeSdk(testSdk);
-        super.tearDown();
+        try {
+            Perl6SdkType sdkType = (Perl6SdkType)testSdk.getSdkType();
+            sdkType.invalidateFileCaches(getProject());
+            SdkConfigurationUtil.removeSdk(testSdk);
+        } catch (Exception ignored) {
+        }
+        finally {
+            super.tearDown();
+        }
     }
 }

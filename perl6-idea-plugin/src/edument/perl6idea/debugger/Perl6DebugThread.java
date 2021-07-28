@@ -9,6 +9,7 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.ArrayUtil;
+import com.intellij.util.ConcurrencyUtil;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
 import com.intellij.xdebugger.frame.XCompositeNode;
@@ -32,19 +33,17 @@ import org.edument.moarvm.types.event.StepCompletedNotification;
 import org.jetbrains.annotations.NotNull;
 import org.msgpack.value.Value;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Perl6DebugThread extends Thread {
     private static final Logger LOG = Logger.getInstance(Perl6DebugThread.class);
+    public static final String DEBUG_THREAD_NAME = "Debugger events handler thread";
     private final XDebugSession mySession;
     private final ExecutionResult myExecutionResult;
     private RemoteInstance client;
-    private static final Executor myExecutor = Executors.newSingleThreadExecutor();
+    private static final Executor myExecutor = ConcurrencyUtil.newSingleThreadExecutor(DEBUG_THREAD_NAME);
     private final List<BreakpointActionRequest> breakpointQueue = new CopyOnWriteArrayList<>();
     private boolean ready = false;
 
@@ -58,21 +57,23 @@ public class Perl6DebugThread extends Thread {
     public void run() {
         try {
             Perl6DebuggableConfiguration runConfiguration = (Perl6DebuggableConfiguration) mySession.getRunProfile();
-            client = RemoteInstance.connect(runConfiguration.getDebugPort()).get(10, TimeUnit.SECONDS);
-            ready = true;
-            sendBreakpoints();
-            setEventHandler();
-            if (runConfiguration.isStartSuspended())
-                mySession.positionReached(new Perl6SuspendContext(getThreads(), 0, mySession, this));
-            else
-                client.resume();
+            if (runConfiguration != null) {
+                client = RemoteInstance.connect(runConfiguration.getDebugPort()).get(10, TimeUnit.SECONDS);
+                ready = true;
+                sendBreakpoints();
+                setEventHandler();
+                if (runConfiguration.isStartSuspended())
+                    mySession.positionReached(new Perl6SuspendContext(getThreads(), 0, mySession, this));
+                else
+                    client.resume();
+            }
         } catch (CancellationException | InterruptedException | TimeoutException | ExecutionException e) {
             // If the program didn't start properly, do not prompt an odd message
             // when we mis-interpret this situation
             if (mySession.isStopped()) {
                 return;
             }
-            Notification notification = new Notification("Raku Debugger", "Connection Error", "Could not connect to debug server",
+            Notification notification = new Notification("raku.debug.errors", "Connection error", "Could not connect to debug server",
                                                          NotificationType.ERROR);
             Notifications.Bus.notify(notification,  mySession.getProject());
         }
@@ -83,7 +84,7 @@ public class Perl6DebugThread extends Thread {
         events.subscribeOn(Schedulers.newThread()).subscribe(event -> {
             if (event.getEventType() == EventType.BreakpointNotification) {
                 Perl6DebugThread thread = this;
-                Executors.newSingleThreadExecutor().execute(() -> {
+                ConcurrencyUtil.newSingleThreadExecutor(DEBUG_THREAD_NAME).execute(() -> {
                     BreakpointNotification bpn = (BreakpointNotification) event;
                     Perl6ThreadDescriptor[] threads;
                     try {
@@ -110,7 +111,7 @@ public class Perl6DebugThread extends Thread {
             }
             else if (event.getEventType() == EventType.StepCompleted) {
                 Perl6DebugThread thread = this;
-                Executors.newSingleThreadExecutor().execute(() -> {
+                ConcurrencyUtil.newSingleThreadExecutor(DEBUG_THREAD_NAME).execute(() -> {
                     StepCompletedNotification scn = (StepCompletedNotification)event;
                     Perl6ThreadDescriptor[] threads;
                     try {
@@ -166,7 +167,7 @@ public class Perl6DebugThread extends Thread {
 
     private Perl6ThreadDescriptor[] getThreads() throws ExecutionException, InterruptedException {
         List<MoarThread> threads = client.threadList().get();
-        List<Perl6ThreadDescriptor> threadDescriptors = new ArrayList<Perl6ThreadDescriptor>(threads.size());
+        List<Perl6ThreadDescriptor> threadDescriptors = new ArrayList<>(threads.size());
         for (MoarThread thread : threads) {
             try {
                 ExecutionStack stack = client.threadStackTrace(thread.threadId).get();
@@ -369,7 +370,7 @@ public class Perl6DebugThread extends Thread {
                                     elemsRendered.add("...lazy...");
                                 }
                                 else if (elems > 5) {
-                                    elemsRendered.add("...total " + Integer.toString(elems) + " elems");
+                                    elemsRendered.add("...total " + elems + " elems");
                                 }
                                 String values = String.join(", ", ArrayUtil.toStringArray(elemsRendered));
                                 return isArray ? "[" + values + "]" : "(" + values + ")";
@@ -411,7 +412,7 @@ public class Perl6DebugThread extends Thread {
                                         break;
                                 }
                                 if (elems > 5) {
-                                    elemsRendered.add("...total " + Integer.toString(elems) + " elems");
+                                    elemsRendered.add("...total " + elems + " elems");
                                 }
                                 String values = String.join(", ", ArrayUtil.toStringArray(elemsRendered));
                                 return isHash ? "{" + values + "}" : "Map.new((" + values + "))";
@@ -430,17 +431,21 @@ public class Perl6DebugThread extends Thread {
                         Lexical status = attrsPromise.get("$!status");
                         Lexical result = attrsPromise.get("$!result");
                         if (status != null && status.getKind() == Kind.OBJ && result != null && result.getKind() == Kind.OBJ) {
-                            Map<String, Map<String, Lexical>> statusAttrs = client.getObjectAttributes(((ObjValue)status).getHandle()).get();
-                            String statusString = presentableDescriptionForType((ObjValue)statusAttrs.get("PromiseStatus").get("$!key"), false);
-                            switch (statusString) {
-                                case "Planned":
-                                    return "Promise.new (not yet kept or broken)";
-                                case "Kept":
-                                case "Broken": {
-                                    String nested = presentableDescriptionForType((ObjValue)result, false);
-                                    if (nested == null)
-                                        nested = defaultObjectRepresentation((ObjValue)result);
-                                    return "Promise." + statusString.toLowerCase() + "(" + nested + ")";
+                            Map<String, Map<String, Lexical>> statusAttrs =
+                                client.getObjectAttributes(((ObjValue)status).getHandle()).get();
+                            String statusString =
+                                presentableDescriptionForType((ObjValue)statusAttrs.get("PromiseStatus").get("$!key"), false);
+                            if (statusString != null) {
+                                switch (statusString) {
+                                    case "Planned":
+                                        return "Promise.new (not yet kept or broken)";
+                                    case "Kept":
+                                    case "Broken": {
+                                        String nested = presentableDescriptionForType((ObjValue)result, false);
+                                        if (nested == null)
+                                            nested = defaultObjectRepresentation((ObjValue)result);
+                                        return "Promise." + statusString.toLowerCase(Locale.ENGLISH) + "(" + nested + ")";
+                                    }
                                 }
                             }
                         }
@@ -457,7 +462,7 @@ public class Perl6DebugThread extends Thread {
     }
 
     @NotNull
-    private String defaultObjectRepresentation(ObjValue ov) {
+    private static String defaultObjectRepresentation(ObjValue ov) {
         String type = ov.getType();
         return ov.isConcrete() ? type + ".new" : "(" + type + ")";
     }
@@ -493,7 +498,7 @@ public class Perl6DebugThread extends Thread {
         }
     }
 
-    public void queueBreakpoint(XLineBreakpoint breakpoint, boolean isRemove) {
+    public void queueBreakpoint(XLineBreakpoint<?> breakpoint, boolean isRemove) {
         breakpointQueue.add(new BreakpointActionRequest(isRemove, breakpoint));
         sendBreakpoints();
     }
@@ -526,9 +531,8 @@ public class Perl6DebugThread extends Thread {
                   XValueChildrenList children = new XValueChildrenList();
                   for (Map.Entry<String, Map<String,Lexical>> classEntry : classAttrs.entrySet()) {
                         Perl6ValueDescriptor[] descriptors = convertLexicals(classEntry.getValue());
-                        String className = classEntry.getKey();
                         for (Perl6ValueDescriptor desc : descriptors) {
-                            children.add(new Perl6XAttributeValue(desc, this, className));
+                            children.add(new Perl6XAttributeValue(desc, this));
                         }
                     }
                     node.addChildren(children, true);
@@ -575,7 +579,7 @@ public class Perl6DebugThread extends Thread {
         final String file;
         final int line;
 
-        BreakpointActionRequest(boolean isRemove, XLineBreakpoint bp) {
+        BreakpointActionRequest(boolean isRemove, XLineBreakpoint<?> bp) {
             this.isRemove = isRemove;
             this.file = bp.getFileUrl().substring(7);
             this.line = bp.getLine();

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class CroTemplateCompletionCollector implements CroTemplateSymbolCollector {
     private final CroTemplateSymbolKind wantedKind;
-    private Map<String, PsiElement> seen = new HashMap<>();
+    private final Map<String, PsiElement> seen = new HashMap<>();
 
     public CroTemplateCompletionCollector(CroTemplateSymbolKind wantedKind) {
         this.wantedKind = wantedKind;

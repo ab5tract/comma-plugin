@@ -28,7 +28,7 @@ public class PodDomFormatted extends PodDomInnerNode {
             case 'U': renderTrival(builder, context, "u"); break;
             case 'Z': break;
             default:
-                renderChlidrenInto(builder, context);
+                renderChildrenInfo(builder, context);
         }
     }
 
@@ -36,7 +36,7 @@ public class PodDomFormatted extends PodDomInnerNode {
         builder.append('<');
         builder.append(tag);
         builder.append('>');
-        renderChlidrenInto(builder, context);
+        renderChildrenInfo(builder, context);
         builder.append("</");
         builder.append(tag);
         builder.append('>');
@@ -47,7 +47,7 @@ public class PodDomFormatted extends PodDomInnerNode {
         if (link != null)
             builder.append(StringEscapeUtils.escapeHtml(link));
         builder.append("\">");
-        renderChlidrenInto(builder, context);
+        renderChildrenInfo(builder, context);
         builder.append("</a>");
     }
 }

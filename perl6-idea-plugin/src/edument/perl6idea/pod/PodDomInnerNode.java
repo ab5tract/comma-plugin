@@ -20,7 +20,7 @@ public abstract class PodDomInnerNode extends PodDomNode {
         return children;
     }
 
-    protected void renderChlidrenInto(StringBuilder builder, PodRenderingContext context) {
+    protected void renderChildrenInfo(StringBuilder builder, PodRenderingContext context) {
         int listLevelsOpened = 0;
         for (PodDomNode child : children) {
             child.emitPositionInfo(builder);
@@ -39,7 +39,7 @@ public abstract class PodDomInnerNode extends PodDomNode {
                 context.listDepth - listLevelsOpened);
     }
 
-    private int emitListOpenings(StringBuilder builder, PodRenderingContext context, int listLevelsOpened, int desiredLevel) {
+    private static int emitListOpenings(StringBuilder builder, PodRenderingContext context, int listLevelsOpened, int desiredLevel) {
         while (desiredLevel > context.listDepth) {
             builder.append("<ul>");
             context.listDepth++;
@@ -48,7 +48,7 @@ public abstract class PodDomInnerNode extends PodDomNode {
         return listLevelsOpened;
     }
 
-    private int emitListClosings(StringBuilder builder, PodRenderingContext context, int listLevelsOpened, int desiredLevel) {
+    private static int emitListClosings(StringBuilder builder, PodRenderingContext context, int listLevelsOpened, int desiredLevel) {
         while (desiredLevel < context.listDepth) {
             builder.append("</ul>");
             context.listDepth--;

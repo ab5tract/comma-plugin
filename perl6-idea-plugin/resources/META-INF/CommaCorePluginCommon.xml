@@ -19,9 +19,9 @@
       <add-to-group group-id="NavBarToolBar" anchor="last"/>
     </action>
     <group id="WelcomeScreen.QuickStart.IDEA">
-      <action id="WelcomeScreen.CreateNewProject" class="edument.perl6idea.actions.comma.NewProjectAction" icon="AllIcons.Welcome.CreateNewProject"/>
+      <action id="WelcomeScreen.CreateNewProject" class="edument.perl6idea.actions.comma.NewProjectAction"/>
       <action id="WelcomeScreen.ImportProject" class="edument.perl6idea.actions.comma.ImportProjectAction" icon="AllIcons.ToolbarDecorator.Import"/>
-      <action id="WelcomeScreen.OpenProject" class="com.intellij.ide.actions.OpenFileAction" icon="AllIcons.Actions.Menu_open"/>
+      <action id="WelcomeScreen.OpenProject" class="com.intellij.ide.actions.OpenFileAction" icon="AllIcons.Actions.MenuOpen"/>
       <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
     </group>
     <group id="OpenProjectGroup">

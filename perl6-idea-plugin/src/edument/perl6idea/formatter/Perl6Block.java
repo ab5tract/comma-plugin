@@ -13,7 +13,6 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.parsing.Perl6ElementTypes;
-import edument.perl6idea.parsing.Perl6OPPElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.utils.Perl6PsiUtil;
@@ -38,9 +37,9 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     private final CommonCodeStyleSettings myCommonSettings;
     private final Perl6CodeStyleSettings myCustomSettings;
     private BlockWithParent myParent;
-    private Boolean isStatementContinuation;
+    private final Boolean isStatementContinuation;
 
-    private TokenSet WHITESPACES = TokenSet.create(
+    private final TokenSet WHITESPACES = TokenSet.create(
             UNV_WHITE_SPACE, WHITE_SPACE,
             VERTICAL_WHITE_SPACE, UNSP_WHITE_SPACE
     );
@@ -131,7 +130,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             return Pair.create((child) -> child.getElementType() == PARAMETER, Alignment.createAlignment());
         } else if (type == ARRAY_COMPOSER && myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT) {
             return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN && child.getElementType() == ARRAY_COMPOSER_CLOSE, Alignment.createAlignment());
-        } else if (type == Perl6OPPElementTypes.INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof Perl6MethodCall)) {
+        } else if (type == INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof Perl6MethodCall)) {
             if (!(node.getPsi() instanceof Perl6InfixApplication))
                 return null;
 

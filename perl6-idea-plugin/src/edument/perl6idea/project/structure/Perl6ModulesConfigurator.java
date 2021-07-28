@@ -179,6 +179,10 @@ public class Perl6ModulesConfigurator implements ModulesProvider, ModuleEditor.C
         return builder;
     }
 
+    public Perl6StructureConfigurableContext getContext() {
+        return myContext;
+    }
+
     public static boolean showDialog(@NotNull Project project, @Nullable final String moduleToSelect, @Nullable final String editorNameToSelect) {
         final Perl6ProjectStructureConfigurable config = Perl6ProjectStructureConfigurable.getInstance(project);
         return ShowSettingsUtil.getInstance().editConfigurable(project, config, () -> config.select(moduleToSelect, editorNameToSelect, true));

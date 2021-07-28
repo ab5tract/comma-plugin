@@ -9,7 +9,6 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
-import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
 import edument.perl6idea.psi.type.Perl6Type;
 import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
@@ -20,17 +19,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
-    static String[] ROUTINE_DEFAULT_TRAITS = new String[]{
+    static final String[] ROUTINE_DEFAULT_TRAITS = new String[]{
         "assoc", "tighter", "looser", "equiv", "default",
         "export", "rw", "raw", "nodal", "pure"
     };
-    static String[] VARIABLE_DEFAULT_TRAITS = new String[]{
+    static final String[] VARIABLE_DEFAULT_TRAITS = new String[]{
         "default", "required", "DEPRECATED", "rw"
     };
-    static String[] PARAMETER_DEFAULT_TRAITS = new String[]{
+    static final String[] PARAMETER_DEFAULT_TRAITS = new String[]{
         "copy", "raw", "rw", "readonly", "required"
     };
-    static String[] REGEX_DEFAULT_TRAITS = new String[]{
+    static final String[] REGEX_DEFAULT_TRAITS = new String[]{
         "DEPRECATED", "export"
     };
 

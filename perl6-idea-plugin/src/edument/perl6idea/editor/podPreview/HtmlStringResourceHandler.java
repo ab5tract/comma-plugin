@@ -2,7 +2,6 @@ package edument.perl6idea.editor.podPreview;
 
 import com.intellij.openapi.diagnostic.Logger;
 import org.cef.callback.CefCallback;
-import org.cef.handler.CefResourceHandler;
 import org.cef.handler.CefResourceHandlerAdapter;
 import org.cef.misc.IntRef;
 import org.cef.misc.StringRef;

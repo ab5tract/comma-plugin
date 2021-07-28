@@ -14,18 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CroTemplateSymbolNameContributor implements ChooseByNameContributor {
-    @NotNull
     @Override
-    public String[] getNames(Project project, boolean includeNonProjectItems) {
+    public String @NotNull [] getNames(Project project, boolean includeNonProjectItems) {
         List<String> result = new ArrayList<>();
         result.addAll(CroTemplateMacroIndex.getInstance().getAllKeys(project));
         result.addAll(CroTemplateSubIndex.getInstance().getAllKeys(project));
-        return result.toArray(ArrayUtil.EMPTY_STRING_ARRAY);
+        return ArrayUtil.toStringArray(result);
     }
 
-    @NotNull
     @Override
-    public NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
+    public NavigationItem @NotNull [] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
         List<NavigationItem> results = new ArrayList<>();
 
         CroTemplateMacroIndex macroIndex = CroTemplateMacroIndex.getInstance();

@@ -7,7 +7,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.Perl6ConditionalBranch;
-import edument.perl6idea.psi.Perl6IfStatement;
 import edument.perl6idea.psi.Perl6PostfixApplication;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;

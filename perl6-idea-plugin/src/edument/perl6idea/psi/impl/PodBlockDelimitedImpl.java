@@ -2,11 +2,8 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.PodBlockDelimited;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class PodBlockDelimitedImpl extends ASTWrapperPsiElement implements PodBlockDelimited {
     public PodBlockDelimitedImpl(@NotNull ASTNode node) {

@@ -38,7 +38,7 @@ public class Perl6ReplState {
     private final Perl6ReplConsole console;
     private final List<HistoryEntry> executionHistory = new ArrayList<>();
     public static final Key<Perl6ReplState> PERL6_REPL_STATE = Key.create("PERL6_REPL_STATE");
-    private List<Runnable> newHistoryListeners = new ArrayList<>();
+    private final List<Runnable> newHistoryListeners = new ArrayList<>();
     private Collection<PsiNamedElement> lastRegexVars = null;
 
     public Perl6ReplState(Perl6ReplConsole console) {

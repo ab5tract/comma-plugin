@@ -3,14 +3,14 @@ package edument.perl6idea.timeline.client;
 import java.util.Map;
 
 public class ClientEvent {
-    private String module;
-    private String category;
-    private String name;
-    private int kind;
-    private double timestamp;
-    private int id;
-    private int parentId;
-    private Map<String, Object> data;
+    private final String module;
+    private final String category;
+    private final String name;
+    private final int kind;
+    private final double timestamp;
+    private final int id;
+    private final int parentId;
+    private final Map<String, Object> data;
 
     public ClientEvent(String module, String category, String name,
                        int kind, double timestamp, int id, int parentId,

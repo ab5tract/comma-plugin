@@ -64,7 +64,7 @@ public class Perl6TestRunningState extends CommandLineState {
         final Perl6TestRunConfiguration runConfiguration = (Perl6TestRunConfiguration)getEnvironment().getRunProfile();
         final TestConsoleProperties testConsoleProperties = new Perl6TestConsoleProperties(runConfiguration, getEnvironment());
         final ConsoleView consoleView = SMTestRunnerConnectionUtil.createConsole("Raku tests", testConsoleProperties);
-        Disposer.register(myProject, consoleView);
+        Disposer.register(getEnvironment(), consoleView);
         return consoleView;
     }
 

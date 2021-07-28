@@ -8,9 +8,9 @@ import edument.perl6idea.psi.stub.Perl6PackageDeclStub;
 import edument.perl6idea.psi.stub.Perl6ScopedDeclStub;
 
 public class Perl6PackageDeclStubImpl extends StubBase<Perl6PackageDecl> implements Perl6PackageDeclStub {
-    private String packageKind;
-    private String packageName;
-    private boolean isExported;
+    private final String packageKind;
+    private final String packageName;
+    private final boolean isExported;
 
     public Perl6PackageDeclStubImpl(StubElement parent, String packageKind, String packageName, boolean exported) {
         super(parent, Perl6ElementTypes.PACKAGE_DECLARATION);

@@ -14,28 +14,28 @@ import java.util.Map;
 
 public class CroTemplateColorSettingsPage implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor("Bad Syntax", CroTemplateHighlighter.BAD_CHARACTER),
-            new AttributesDescriptor("Template Tag Markup", CroTemplateHighlighter.TEMPLATE_TAG),
-            new AttributesDescriptor("Declaration Keyword", CroTemplateHighlighter.DECLARATION),
-            new AttributesDescriptor("Variable Name", CroTemplateHighlighter.VARIABLE),
-            new AttributesDescriptor("Call Name", CroTemplateHighlighter.CALL_NAME),
-            new AttributesDescriptor("Infix Operator", CroTemplateHighlighter.INFIX),
-            new AttributesDescriptor("String Literal Quote", CroTemplateHighlighter.STRING_LITERAL_QUOTE),
-            new AttributesDescriptor("String Literal Value", CroTemplateHighlighter.STRING_LITERAL_CHAR),
-            new AttributesDescriptor("Numeric Literal", CroTemplateHighlighter.NUMERIC_LITERAL),
-            new AttributesDescriptor("Boolean Literal", CroTemplateHighlighter.BOOL_LITERAL),
-            new AttributesDescriptor("Literal Tag Markup", CroTemplateHighlighter.LITERAL_TAG),
-            new AttributesDescriptor("Literal Tag Name", CroTemplateHighlighter.LITERAL_TAG_NAME),
-            new AttributesDescriptor("Literal Attribute Name", CroTemplateHighlighter.LITERAL_ATTRIBUTE_NAME),
-            new AttributesDescriptor("Literal Attribute Value", CroTemplateHighlighter.LITERAL_ATTRIBUTE_VALUE),
-            new AttributesDescriptor("Literal Text", CroTemplateHighlighter.LITERAL_TEXT),
+            new AttributesDescriptor("Bad syntax", CroTemplateHighlighter.BAD_CHARACTER),
+            new AttributesDescriptor("Template tag markup", CroTemplateHighlighter.TEMPLATE_TAG),
+            new AttributesDescriptor("Declaration keyword", CroTemplateHighlighter.DECLARATION),
+            new AttributesDescriptor("Variable name", CroTemplateHighlighter.VARIABLE),
+            new AttributesDescriptor("Call name", CroTemplateHighlighter.CALL_NAME),
+            new AttributesDescriptor("Infix operator", CroTemplateHighlighter.INFIX),
+            new AttributesDescriptor("String literal quote", CroTemplateHighlighter.STRING_LITERAL_QUOTE),
+            new AttributesDescriptor("String literal value", CroTemplateHighlighter.STRING_LITERAL_CHAR),
+            new AttributesDescriptor("Numeric literal", CroTemplateHighlighter.NUMERIC_LITERAL),
+            new AttributesDescriptor("Boolean literal", CroTemplateHighlighter.BOOL_LITERAL),
+            new AttributesDescriptor("Literal tag markup", CroTemplateHighlighter.LITERAL_TAG),
+            new AttributesDescriptor("Literal tag name", CroTemplateHighlighter.LITERAL_TAG_NAME),
+            new AttributesDescriptor("Literal attribute name", CroTemplateHighlighter.LITERAL_ATTRIBUTE_NAME),
+            new AttributesDescriptor("Literal attribute value", CroTemplateHighlighter.LITERAL_ATTRIBUTE_VALUE),
+            new AttributesDescriptor("Literal text", CroTemplateHighlighter.LITERAL_TEXT),
             new AttributesDescriptor("Parentheses", CroTemplateHighlighter.PARENS),
-            new AttributesDescriptor("Array Indexer", CroTemplateHighlighter.BRACKETS),
-            new AttributesDescriptor("Curly Braces", CroTemplateHighlighter.BRACES),
+            new AttributesDescriptor("Array indexer", CroTemplateHighlighter.BRACKETS),
+            new AttributesDescriptor("Curly braces", CroTemplateHighlighter.BRACES),
             new AttributesDescriptor("Comma", CroTemplateHighlighter.COMMA),
             new AttributesDescriptor("Comment", CroTemplateHighlighter.COMMENT),
-            new AttributesDescriptor("Named Argument Syntax", CroTemplateHighlighter.NAMED_ARGUMENT_SYNTAX),
-            new AttributesDescriptor("Module Name", CroTemplateHighlighter.MODULE_NAME),
+            new AttributesDescriptor("Named argument syntax", CroTemplateHighlighter.NAMED_ARGUMENT_SYNTAX),
+            new AttributesDescriptor("Module name", CroTemplateHighlighter.MODULE_NAME),
     };
 
     @Nullable
@@ -79,15 +79,13 @@ public class CroTemplateColorSettingsPage implements ColorSettingsPage {
         return null;
     }
 
-    @NotNull
     @Override
-    public AttributesDescriptor[] getAttributeDescriptors() {
+    public AttributesDescriptor @NotNull [] getAttributeDescriptors() {
         return DESCRIPTORS;
     }
 
-    @NotNull
     @Override
-    public ColorDescriptor[] getColorDescriptors() {
+    public ColorDescriptor @NotNull [] getColorDescriptors() {
         return ColorDescriptor.EMPTY_ARRAY;
     }
 

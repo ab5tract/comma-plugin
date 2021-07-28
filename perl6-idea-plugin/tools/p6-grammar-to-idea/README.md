@@ -7,7 +7,7 @@ interfaces.
 This turns out to be a hard problem, since Raku grammars, used to specify
 the Raku language:
 
-* Rely on being able to nest sub-languages as deep as needed inside of each
+* Rely on being able to nest sub-languages as deep as needed inside each
   other (`my $rx = /"$foo."bar"()"+/;` has MAIN, Regex, Quote, MAIN, Quote
   at its deepest point).
 * Don't really distinguish lexing and parsing (it "writes a lexer for you",
@@ -29,7 +29,7 @@ more grammars, with one of them representing the main language being called
 `MAIN`. Inside each `grammar`, `rule` and `token` are supported, with `rule`
 doing the automatic insertion of `<.ws>` calls.
 
-The following constructs inside of those behave as in Raku grammars:
+The following constructs inside those behave as in Raku grammars:
 
 * Single line comments with `#`
 * `.` for matching any character

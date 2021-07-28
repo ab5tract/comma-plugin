@@ -12,10 +12,8 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
-import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.Perl6HyperMetaOp;
-import edument.perl6idea.psi.Perl6Infix;
 import edument.perl6idea.utils.Perl6OperatorUtils;
 import org.jetbrains.annotations.NotNull;
 

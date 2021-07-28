@@ -11,13 +11,13 @@ public abstract class Perl6DebugEventBreakpointBase extends Perl6DebugEventBase 
 
     @Override
     public void run() {
-        XLineBreakpoint bp = DebugUtils.findBreakpoint(getDebugSession().getProject(), this);
+        XLineBreakpoint<?> bp = DebugUtils.findBreakpoint(getDebugSession().getProject(), this);
         if (bp != null) {
             processBreakPoint(bp, getDebugSession());
         }
     }
 
-    protected abstract void processBreakPoint(@NotNull XLineBreakpoint bp, XDebugSession session);
+    protected abstract void processBreakPoint(@NotNull XLineBreakpoint<?> bp, XDebugSession session);
 
     @Override
     public String getPath() {

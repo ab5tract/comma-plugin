@@ -12,7 +12,7 @@ Do the following steps inside a work-related directory, for example, `comma`.
 * `git clone https://github.com/edumentab/intellij-community.git`
 * `cd intellij-community`
 * `git checkout comma-203.7148`
-* Do steps from `intellij-community` repo [README](https://github.com/JetBrains/intellij-community/#opening-the-intellij-source-code-for-build): creating `IDEA jdk` JDK and setting it to the project, running `getPlugins.sh` script.
+* Start with steps from `intellij-community` repo [README](https://github.com/JetBrains/intellij-community/#opening-the-intellij-source-code-for-build): creating `IDEA jdk` JDK and setting it to the project, running `getPlugins.sh` script.
 * `git clone https://github.com/edumentab/perl6-idea-plugin.git comma-build` (so the structure is `intellij-community/comma-build`)
 * Make sure revisions of android-related repos are fresh enough for the IDEA checkout:
   * `cd android; git checkout idea/203.7148.57`
@@ -58,8 +58,8 @@ While in the `comma-build` directory.
   - Name: `Comma`(does not matter for build, you also should specify an edition, "Complete" or "Community")
   - Main class: `com.intellij.idea.Main` (type `Main` in Search by Name and select needed)
   - VM options: `-ea  -Xmx192m -Didea.is.internal=true -Didea.platform.prefix=CommaCore -Didea.paths.selector=Comma`
-  - Working directory: `intellij-community/bin`
-  - Classpath of module: `edument.perl6.comma.complete` or `edument.perl6.comma.community` depending on edition you want to run
+  - The working directory: `intellij-community/bin`
+  - Classpath of module: `edument.perl6.comma.complete` or `edument.perl6.comma.community` depending on the edition you want to run
   - JRE: `IDEA jdk` (default for the project)
 
 * Run the configuration.
@@ -67,11 +67,11 @@ While in the `comma-build` directory.
 #### How to run Raku Plugin from IDEA Run Configuration for testing
 
 * Open Run Configurations. Create a new Run Configuration (you may copy `IDEA with Python plugin` and do appropriate changes if wanted):
-  - Name: `IDEA with Raku plugin`(does not matter for build, you also likely want to specify edition).
+  - Name: `IDEA with Raku plugin`(does not matter for build, you also likely want to specify the edition).
   - Main class: com.intellij.idea.Main (type `Main` in Search by Name and select needed)
   - VM options: `-ea -Xmx192m -Didea.is.internal=true`
-  - Working directory: `intellij-community/bin`
-  - Classpath of module: `edument.perl6.comma.complete` or `edument.perl6.comma.community` depending on edition you want to run
+  - The working directory: `intellij-community/bin`
+  - Classpath of module: `edument.perl6.comma.complete` or `edument.perl6.comma.community` depending on the edition you want to run
   - JRE: `IDEA jdk`
 
 * Run the configuration.

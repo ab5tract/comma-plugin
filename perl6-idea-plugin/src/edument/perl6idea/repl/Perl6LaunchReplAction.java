@@ -25,19 +25,17 @@ public class Perl6LaunchReplAction extends AnAction {
     }
 
     protected void startRepl(@NotNull AnActionEvent e, @Nullable String useModule) {
-        if (getSdkHome(e) == null)
+        if (getSdkHome(e) == null || e.getProject() == null)
             return;
         Project project = e.getProject();
         Perl6ReplConsole console = new Perl6ReplConsole(project, "Raku REPL", project.getBasePath());
         try {
             console.initAndRun();
             if (useModule != null)
-                ApplicationManager.getApplication().invokeAndWait(() -> {
-                    console.executeStatement("use " + useModule + ";");
-                });
+                ApplicationManager.getApplication().invokeAndWait(() -> console.executeStatement("use " + useModule + ";"));
         }
         catch (ExecutionException ex) {
-            Notification notification = new Notification("Raku REPL errors", Perl6Icons.CAMELIA, "Cannot run REPL",
+            Notification notification = new Notification("raku.repl.errors", Perl6Icons.CAMELIA, "Cannot run REPL",
                                                          "", "Could not start Raku REPL", NotificationType.ERROR, null);
             notification = notification.addAction(new AnAction("Check SDK") {
                 @Override

@@ -11,8 +11,8 @@ import java.util.Collection;
 
 public class Perl6EnumStubImpl extends StubBase<Perl6Enum> implements Perl6EnumStub {
     private final String enumName;
-    private boolean isExported;
-    private Collection<String> myEnumValues;
+    private final boolean isExported;
+    private final Collection<String> myEnumValues;
 
     public Perl6EnumStubImpl(StubElement stub, String name, boolean exported, Collection<String> enumValues) {
         super(stub, Perl6ElementTypes.ENUM);

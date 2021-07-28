@@ -286,7 +286,7 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
       if (myModel.executeAction(this, item, newItem -> {
         setSelectedItem(newItem);
         if (newItem instanceof SdkItem) {
-          myOnNewSdkAdded.consume(((SdkItem)newItem).getSdk());
+          myOnNewSdkAdded.consume(((SdkItem)newItem).sdk);
         }
       })) return;
     }
@@ -409,7 +409,7 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
     private final SdkItem myItem;
 
     private ActualJdkInnerItem(@NotNull SdkItem item) {
-      super(item.getSdk());
+      super(item.sdk);
       myItem = item;
     }
 

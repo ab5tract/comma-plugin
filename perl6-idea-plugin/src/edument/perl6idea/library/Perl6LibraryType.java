@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class Perl6LibraryType extends LibraryType<DummyLibraryProperties> {
-    public static final PersistentLibraryKind<DummyLibraryProperties> LIBRARY_KIND = new PersistentLibraryKind<DummyLibraryProperties>("perl6") {
+    public static final PersistentLibraryKind<DummyLibraryProperties> LIBRARY_KIND = new PersistentLibraryKind<>("perl6") {
         @NotNull
         @Override
         public DummyLibraryProperties createDefaultProperties() {
@@ -47,9 +47,8 @@ public class Perl6LibraryType extends LibraryType<DummyLibraryProperties> {
         return null;
     }
 
-    @NotNull
     @Override
-    public OrderRootType[] getExternalRootTypes() {
+    public OrderRootType @NotNull [] getExternalRootTypes() {
         return new OrderRootType[]{OrderRootType.SOURCES};
     }
 }

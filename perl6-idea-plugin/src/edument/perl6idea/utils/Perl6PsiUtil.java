@@ -6,9 +6,6 @@ import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
 public class Perl6PsiUtil {

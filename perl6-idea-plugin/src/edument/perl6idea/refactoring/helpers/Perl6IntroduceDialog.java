@@ -11,6 +11,7 @@ import com.intellij.ui.EditorTextField;
 import com.intellij.ui.StringComboboxEditor;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 import edument.perl6idea.refactoring.RakuNameValidator;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -21,8 +22,8 @@ import java.util.Collection;
 public class Perl6IntroduceDialog extends DialogWrapper {
     private final String myHelpId;
     private final RakuNameValidator myValidator;
-    private ComboBox myNameComboBox;
-    private Project myProject;
+    private ComboBox<String> myNameComboBox;
+    private final Project myProject;
     private JPanel myContentPane;
 
     public Perl6IntroduceDialog(Project project,
@@ -60,7 +61,7 @@ public class Perl6IntroduceDialog extends DialogWrapper {
         });
         ((EditorTextField)myNameComboBox.getEditor().getEditorComponent()).addDocumentListener(new DocumentListener() {
             @Override
-            public void documentChanged(DocumentEvent event) {
+            public void documentChanged(@NotNull DocumentEvent event) {
                 updateControls();
             }
         });

@@ -8,7 +8,6 @@ import edument.perl6idea.psi.Perl6TypeName;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.TYPE_NAME;
 

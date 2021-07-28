@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class Perl6ConstantStubImpl extends StubBase<Perl6Constant> implements Perl6ConstantStub {
     @Nullable
     private final String constantName;
-    private boolean isExported;
+    private final boolean isExported;
 
     public Perl6ConstantStubImpl(StubElement stub, @Nullable String name, boolean isExported) {
         super(stub, Perl6ElementTypes.CONSTANT);
