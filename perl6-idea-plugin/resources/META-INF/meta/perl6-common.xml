@@ -95,6 +95,7 @@
     <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllRoutinesStubIndex"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllRegexesStubIndex"/>
     <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6DynamicVariablesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.CroTemplatePartStubIndex"/>
     <gotoClassContributor implementation="edument.perl6idea.contribution.Perl6ClassNameContributor"/>
     <gotoSymbolContributor implementation="edument.perl6idea.contribution.Perl6SymbolNameContributor"/>
     <errorHandler implementation="edument.perl6idea.utils.Perl6ErrorReportSubmitter"/>
@@ -116,6 +117,7 @@
     <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor"/>
     <programRunner implementation="edument.perl6idea.timeline.Perl6TimelineRunner"/>
     <stubIndex implementation="edument.perl6idea.cro.CroRouteIndex"/>
+    <stubIndex implementation="edument.perl6idea.cro.CroTemplateIndex"/>
     <codeInsight.parameterInfo language="Perl6" implementationClass="edument.perl6idea.Perl6ParameterInfoHandler"/>
     <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
     <lang.inspectionSuppressor language="Perl6" implementationClass="edument.perl6idea.inspection.Perl6InspectionSuppressor"/>
@@ -229,6 +231,8 @@
     <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoActionMethodProvider"/>
     <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoGrammarRuleProvider"/>
     <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoTemplateFileProvider"/>
+    <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoTemplatePartFileProvider"/>
+    <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoTemplatePartCallProvider"/>
     <stubIndex implementation="edument.perl6idea.cro.template.psi.stub.index.CroTemplateSubIndex"/>
     <stubIndex implementation="edument.perl6idea.cro.template.psi.stub.index.CroTemplateMacroIndex"/>
     <gotoSymbolContributor implementation="edument.perl6idea.cro.template.CroTemplateSymbolNameContributor"/>

@@ -76,6 +76,7 @@
 
   <extensions defaultExtensionNs="edument.perl6idea">
     <frameworkCall implementation="edument.perl6idea.cro.CroFrameworkCall"/>
+    <frameworkCall implementation="edument.perl6idea.cro.CroTemplateCall"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
