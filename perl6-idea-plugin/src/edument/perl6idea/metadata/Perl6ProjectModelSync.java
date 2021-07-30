@@ -12,6 +12,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.impl.libraries.LibraryEx;
 import com.intellij.openapi.roots.libraries.Library;
+import com.intellij.serviceContainer.AlreadyDisposedException;
 import edument.perl6idea.library.Perl6LibraryType;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.services.Perl6BackupSDKService;
@@ -29,50 +30,59 @@ public class Perl6ProjectModelSync {
     public static void syncExternalLibraries(Module module, Set<String> firstLevelDeps) {
         if (ApplicationManager.getApplication().isUnitTestMode())
             return;
-        ApplicationManager.getApplication().invokeLaterOnWriteThread(() -> ModuleRootModificationUtil.updateModel(module, model -> {
-            Set<String> completeMETADependencies = ConcurrentHashMap.newKeySet();
-            completeMETADependencies.addAll(firstLevelDeps);
-            Sdk sdk = obtainSDKAndGatherLibraryDeps(module, firstLevelDeps, completeMETADependencies);
-            Map<String, Perl6MetaDataComponent> projectModules = getProjectModules(module);
-            Set<String> entriesPresentInMETA = new HashSet<>();
+        ApplicationManager.getApplication().invokeLaterOnWriteThread(() -> {
+            try {
+                ModuleRootModificationUtil.updateModel(module, model -> {
+                    Set<String> completeMETADependencies = ConcurrentHashMap.newKeySet();
+                    completeMETADependencies.addAll(firstLevelDeps);
+                    Sdk sdk = obtainSDKAndGatherLibraryDeps(module, firstLevelDeps, completeMETADependencies);
+                    Map<String, Perl6MetaDataComponent> projectModules = getProjectModules(module);
+                    Set<String> entriesPresentInMETA = new HashSet<>();
 
-            for (String metaDep : completeMETADependencies) {
-                // If local, project module, attach it as dependency
-                if (projectModules.containsKey(metaDep)) {
-                    Module moduleOfMetaDep = projectModules.get(metaDep).getModule();
-                    if (moduleOfMetaDep != null && ModuleRootManager.getInstance(module).isDependsOn(moduleOfMetaDep)) {
-                        entriesPresentInMETA.add(moduleOfMetaDep.getName());
-                        removeDuplicateEntries(model, moduleOfMetaDep.getName());
+                    for (String metaDep : completeMETADependencies) {
+                        // If local, project module, attach it as dependency
+                        if (projectModules.containsKey(metaDep)) {
+                            Module moduleOfMetaDep = projectModules.get(metaDep).getModule();
+                            if (moduleOfMetaDep != null && ModuleRootManager.getInstance(module).isDependsOn(moduleOfMetaDep)) {
+                                entriesPresentInMETA.add(moduleOfMetaDep.getName());
+                                removeDuplicateEntries(model, moduleOfMetaDep.getName());
+                            }
+                            else if (moduleOfMetaDep != null) {
+                                OrderEntry entry = model.addModuleOrderEntry(moduleOfMetaDep);
+                                entriesPresentInMETA.add(entry.getPresentableName());
+                            }
+                        }
+                        // If external library, attach as library
+                        else {
+                            if (sdk == null) continue;
+                            Library maybeLibrary = model.getModuleLibraryTable().getLibraryByName(metaDep);
+                            entriesPresentInMETA.add(metaDep);
+                            if (maybeLibrary == null) {
+                                // otherwise create and mark
+                                LibraryEx library = (LibraryEx)model.getModuleLibraryTable().createLibrary(metaDep);
+                                LibraryEx.ModifiableModelEx libraryModel = library.getModifiableModel();
+                                String url = String.format("raku://%d:%s!/", sdk.getName().hashCode(), metaDep);
+                                libraryModel.setKind(Perl6LibraryType.LIBRARY_KIND);
+                                libraryModel.addRoot(url, OrderRootType.SOURCES);
+                                LibraryOrderEntry entry = model.findLibraryOrderEntry(library);
+                                assert entry != null : library;
+                                entry.setScope(DependencyScope.COMPILE);
+                                WriteAction.run(libraryModel::commit);
+                            }
+                            else {
+                                removeDuplicateEntries(model, maybeLibrary.getName());
+                            }
+                        }
                     }
-                    else if (moduleOfMetaDep != null) {
-                        OrderEntry entry = model.addModuleOrderEntry(moduleOfMetaDep);
-                        entriesPresentInMETA.add(entry.getPresentableName());
-                    }
-                }
-                // If external library, attach as library
-                else {
-                    if (sdk == null) continue;
-                    Library maybeLibrary = model.getModuleLibraryTable().getLibraryByName(metaDep);
-                    entriesPresentInMETA.add(metaDep);
-                    if (maybeLibrary == null) {
-                        // otherwise create and mark
-                        LibraryEx library = (LibraryEx)model.getModuleLibraryTable().createLibrary(metaDep);
-                        LibraryEx.ModifiableModelEx libraryModel = library.getModifiableModel();
-                        String url = String.format("raku://%d:%s!/", sdk.getName().hashCode(), metaDep);
-                        libraryModel.setKind(Perl6LibraryType.LIBRARY_KIND);
-                        libraryModel.addRoot(url, OrderRootType.SOURCES);
-                        LibraryOrderEntry entry = model.findLibraryOrderEntry(library);
-                        assert entry != null : library;
-                        entry.setScope(DependencyScope.COMPILE);
-                        WriteAction.run(libraryModel::commit);
-                    }
-                    else {
-                        removeDuplicateEntries(model, maybeLibrary.getName());
-                    }
-                }
+                    removeOrderEntriesNotInMETA(model, entriesPresentInMETA);
+                });
+            } catch (AlreadyDisposedException ignore) {
+                // If the application or the project was closed while we did not finish the job,
+                // just ignore it hoping we will be more lucky next time: this sync
+                // algorithm should be robust enough not to leave any incurable "leftovers"
+                // and if it is so it's better to fix the underlying reasons.
             }
-            removeOrderEntriesNotInMETA(model, entriesPresentInMETA);
-        }));
+        });
     }
 
     @NotNull
