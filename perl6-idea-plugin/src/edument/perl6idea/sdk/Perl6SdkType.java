@@ -16,6 +16,7 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.serviceContainer.AlreadyDisposedException;
 import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.Perl6Icons;
@@ -459,10 +460,14 @@ public class Perl6SdkType extends SdkType {
     }
 
     private static Perl6File constructExternalPsiFile(Project project, String name, JSONArray externalsJSON) {
-        LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
-        ExternalPerl6File perl6File = new ExternalPerl6File(project, dummy);
-        Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(project, perl6File, externalsJSON);
-        perl6File.setSymbols(parser.parse().result());
+        ExternalPerl6File perl6File = null;
+        try {
+            LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
+            perl6File = new ExternalPerl6File(project, dummy);
+            Perl6ExternalNamesParser parser = new Perl6ExternalNamesParser(project, perl6File, externalsJSON);
+            perl6File.setSymbols(parser.parse().result());
+        } catch (AlreadyDisposedException ignored) {
+        }
         return perl6File;
     }
 
