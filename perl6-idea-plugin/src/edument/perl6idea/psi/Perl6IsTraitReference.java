@@ -9,6 +9,7 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
+import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
 import edument.perl6idea.psi.type.Perl6Type;
 import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
