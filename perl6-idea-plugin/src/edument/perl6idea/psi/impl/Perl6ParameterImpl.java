@@ -100,9 +100,11 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
 
     private PsiElement getMultideclarationInit() {
         Perl6Variable paramVariable = PsiTreeUtil.findChildOfType(this, Perl6Variable.class);
-        Perl6VariableDecl decl = PsiTreeUtil.getParentOfType(this, Perl6VariableDecl.class);
-        if (decl != null)
-            return decl.getInitializer(paramVariable);
+        // We try to see if we are really in a `my ($foo, $bar) ...` case or
+        // the signature we are in is just a part of some signature (in a pointy block or a sub)
+        PsiElement decl = PsiTreeUtil.getParentOfType(this, Perl6VariableDecl.class, Perl6PsiScope.class);
+        if (decl instanceof Perl6VariableDecl)
+            return ((Perl6VariableDecl)decl).getInitializer(paramVariable);
 
         return null;
     }

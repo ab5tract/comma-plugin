@@ -179,7 +179,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testSignatureAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "multi sub encode-base64(Bool:D :$pad!, |c)                    { samewith(:pad(?$pad ?? '=' !! ''), |c) }");
+                                  "multi sub encode-base64(Bool:D :$pad!, |c) { samewith(:pad(?$pad ?? '=' !! ''), |c) }");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "multi sub MAIN('nuke', Bool :<weak_warning descr=\"Unused parameter\">$confirm</weak_warning>, *<weak_warning descr=\"Unused parameter\">@names</weak_warning> ($, *@)) {}");
@@ -226,6 +226,10 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo(<error descr=\"Parameter $foo has a default value and so cannot be required\">$foo! = 42</error>) { $foo }");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub template-location(IO() $location, :$compile-all, :$test = { .IO.basename !~~ / ^ '.' / } --> Nil) is export { $location; $compile-all; $test; }");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my <weak_warning descr=\"Unused variable\">$foo</weak_warning> = sub foo(:<weak_warning descr=\"Unused parameter\">$a</weak_warning>!) {}");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my <weak_warning descr=\"Unused variable\">$bar</weak_warning> = -> :<weak_warning descr=\"Unused parameter\">$a</weak_warning>! {}");
         myFixture.checkHighlighting();
     }
 
