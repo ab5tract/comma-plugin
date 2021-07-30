@@ -36,31 +36,31 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Migrate to the 2020.03 version of the platform</li>
-<li>Provide a Pod live preview in the editor window when editing <code>pod6</code> or <code>rakudoc</code> files. It supports many formatting codes and block types, although not yet all of them. Links to other files in the project using the <code>L&lt;&gt;</code> format code will open an editor for that file (and some further heuristics try to guess destinations of other links)</li>
-<li>Reduce memory consumption resulting from caching information about modules (the caching is done in order to more rapidly open additional or different projects in the same Comma session)</li>
-<li>Speed up indexing of external modules</li>
-<li>Detect and highlight Pod code blocks, including inline code blocks (the style used is configurable)</li>
-<li>Highlight the <code>|</code> separator in Pod <code>L&lt;&gt;</code> and <code>X&lt;&gt;</code> format constructs, so it&#39;s easier to see the text and link part</li>
-<li>Add a <code>New Document (Pod)</code> action, creating a new empty Pod document file; the <code>.rakudoc</code> extension is added unless otherwise specified</li>
-<li>Provide completion for meta-class methods, allowing completion of e.g. <code>model Foo {}; Foo.^columns</code> for the <code>Red</code> ORM. It works for CORE types as well</li>
-<li>Add detection of duplicated conditional branches; Unicode/ASCII operator equivalents and commuting operators are accounted for</li>
-<li>Highlight hashes created with the <code>{}</code> syntax differently from code blocks (this can be configured in the color scheme, but is on by default)</li>
-<li>Add a weak warning where it seems likely that the user intended to form a hash using the <code>{}</code> syntax, but will end up with a code block instead</li>
-<li>Fix a rare exception when the module metadata editor was used with coverage results displayed</li>
-<li>Fix displaying coverage for files with the <code>.rakumod</code> extension</li>
-<li>Fix a bug where the colonpair syntax to specify a named call argument with a numeric value was not recognized, leading to a false positive annotation</li>
-<li>Fix a bug where a sub-signature was not correctly recognized, leading to a false positive annotating</li>
-<li>Fix a bug where the <code>New Test</code> action created a file without an extension if the parent path contained the <code>.</code> character, but the file name specified had no extension itself</li>
-<li>Fix parsing of package definitions with indirect package references like <code>::?CLASS</code></li>
-<li>Fix a bug where calls made by the accessor syntax (<code>$.foo($arg)</code>) were mistakenly annotated as having a signature mismatch</li>
-<li>Do not wrongly annotate indirect references (e.g. <code>::(&#39;Foo&#39;)</code>) as undeclared subs</li>
-<li>Fix parsing of ternary operators without spaces</li>
-<li>Parse the set equivalence operator in both ASCII and Unicode forms, and make it possible to convert between them</li>
-<li>Fix <code>Create Desktop Entry</code> action in <code>Tools</code> menu</li>
-<li>Fix false negatives for an annotation warning about some modules not being found in the ecosystem</li>
-<li>Fix a bug where symbols of the <code>Cro::HTTP::Test</code> module were not resolved properly</li>
-<ul>
+<li>Add a <code>raku-doc</code> mode for Comma. Now it is possible to start Comma passing the <code>raku-doc</code> option and paths to project directories as arguments. Comma will be invoked, it will import or open each relative project and will try to extract the documentation for the module and render it into simple HTML pages (e.g. <code>comma.sh raku-doc -o output cro-webapp cro-http</code>)</li>
+<li>Add an annotation warning about useless use of constant expressions in sink (void) context</li>
+<li>Support navigation for Cro template parts: using &#39;Related Symbols&#39; from the template part name jumps to related <code>template-part</code> calls in a <code>route</code> block and vice versa</li>
+<li>Fix exceptions related to changing projects</li>
+<li>Fix a bug where required parameters for a pointy block within a variable declaration got an annotation about presence of an initializer</li>
+<li>Fix an exception related to dynamic variables during indexing</li>
+<li>Fix discovery of traits to complete when multiple distributions are used in the same file</li>
+
+<li>Support preview and display of documentation of Raku modules in the editor. All Pod blocks will be rendered, followed by API documentation of all exported or globally visible types and subroutines, including declarator comments. A split mode (docs and code) is available for live preview when authoring documentation</li>
+<li>Rework and greatly improve syncing between the <code>META6.json</code> file and project files. It now includes handling of the <code>resources</code> directory, and some bugs in this area are fixed</li>
+<li>Support the Cro template part syntax planned in the next Cro release, with both syntax highlighting and parameter resolution</li>
+<li>Complete aliased names when completing custom traits (e.g. <code>:tel(:$telephone)</code> in a trait declaration will properly be suggested as both <code>is tel</code> and <code>is telephone</code>)</li>
+<li>Fix a validation false negative in the <code>New Documentation</code> dialog</li>
+<li>Fix a false positive annotation for calls on unknown types</li>
+<li>Fix a false positive annotation for a signature when a <code>|</code> parameter is present</li>
+
+<li>Add various Live Templates to ease working with the <code>Cro::HTTP</code>, <code>Cro::WebApp</code> and <code>Red</code> distributions. For example, typing <code>cro-http-get</code> and pressing enter will stub the code for making a HTTP request with <code>Cro::HTTP::Client</code>, and allow you to fill in the URL and variables that it declares. It will, if required, add a <code>use</code> statement and <code>depends</code> entry to the <code>META6.json</code>. Typing <code>red-model</code> and pressing enter will do similar</li>
+<li>Improve Pod6 parsing (fix issues with code blocks) and improve live preview (properly render multi-paragraph lists and nested lists)</li>
+<li>Support completion and resolution for dynamic variables. For now, they are assumed to be visible from anywhere in the project, rather than attempting any kind of call-chain analysis</li>
+<li>Provide completion of user-defined <code>is</code> traits, both from externals and in the project. This is especially useful for things like <code>is password</code> from the <code>Cro::WebApp::Form</code> module or <code>is serial</code> from the <code>Red</code> ORM</li>
+<li>The <code>Related Symbol</code> feature now recognizes <code>Cro::WebApp::Template</code> templates, allowing jumping from the string literal in e.g. <code>template &quot;foo.crotmp&quot;</code> to the corresponding template file, respecting the <code>template-location</code> calls</li>
+<li>Consider <code>is TypeName</code> declarations on variables when completing methods (e.g. <code>my %h is SetHash</code> will offer <code>SetHash</code> methods on <code>%h</code>)</li>
+<li>Support the <code>of</code> trait for specifying a type when completing methods (e.g. <code>my @a of Int; for @a {...}</code>)</li>
+</ul>
+
   ]]></change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
