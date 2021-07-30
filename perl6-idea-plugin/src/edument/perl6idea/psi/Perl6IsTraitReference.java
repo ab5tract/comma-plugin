@@ -97,9 +97,12 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
     }
 
     private void gatherExternalTraits(List<Object> types, String traitType) {
-        Perl6SingleResolutionSymbolCollector subsCollector = new Perl6SingleResolutionSymbolCollector("trait_mod:<is>", Perl6SymbolKind.Routine);
+        Perl6VariantsSymbolCollector subsCollector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Routine);
         myElement.applyLexicalSymbolCollector(subsCollector);
-        for (Perl6Symbol symbol : subsCollector.getResults()) {
+        myElement.applyExternalSymbolCollector(subsCollector);
+        for (Perl6Symbol symbol : subsCollector.getVariants()) {
+            if (!symbol.getName().equals("trait_mod:<is>"))
+                continue;
             Perl6RoutineDecl decl = (Perl6RoutineDecl)symbol.getPsi();
             Perl6Parameter[] params = decl.getParams();
             if (params.length != 2)
