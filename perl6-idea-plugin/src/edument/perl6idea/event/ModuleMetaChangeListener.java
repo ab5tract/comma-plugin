@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.*;
+import com.intellij.serviceContainer.AlreadyDisposedException;
 import com.intellij.util.messages.MessageBusConnection;
 import edument.perl6idea.event.handlers.RakuModuleFileChangeListener;
 import edument.perl6idea.event.handlers.RakuResourceFileChangeListener;
@@ -75,8 +76,12 @@ public class ModuleMetaChangeListener implements BulkFileListener {
                     if (!ApplicationManager.getApplication().isUnitTestMode()) {
                         ApplicationManager.getApplication().invokeLater(
                             () -> {
-                                ProjectView.getInstance(myModule.getProject()).refresh();
-                                LocalFileSystem.getInstance().refresh(false);
+                                try {
+                                    ProjectView.getInstance(myModule.getProject()).refresh();
+                                    LocalFileSystem.getInstance().refresh(false);
+                                } catch (AlreadyDisposedException ignored) {
+                                    // If we tried to refresh and the project is already disposed - forget about it
+                                }
                             });
                     }
                 }
