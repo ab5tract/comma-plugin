@@ -8,8 +8,12 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.effects.Effect;
+import edument.perl6idea.psi.effects.EffectCollection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.LONG_NAME;
 import static edument.perl6idea.parsing.Perl6TokenTypes.METHOD_CALL_NAME;
@@ -91,5 +95,14 @@ public class Perl6MethodCallImpl extends ASTWrapperPsiElement implements Perl6Me
         if (operatorNode != null)
             operatorNode.replace(newOperator);
         return this;
+    }
+
+    @Override
+    public @NotNull EffectCollection inferEffects() {
+        return Arrays.stream(getCallArguments())
+          .filter(c -> c instanceof Perl6PsiElement)
+          .map(c -> ((Perl6PsiElement)c).inferEffects())
+          .reduce(EffectCollection.EMPTY, EffectCollection::merge)
+          .with(Effect.IMPURE);
     }
 }

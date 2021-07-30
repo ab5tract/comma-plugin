@@ -25,11 +25,12 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     private String myReturnType;
     private final Perl6Signature mySignature;
     private final String myDeprecationMessage;
+    private final boolean myIsPure;
 
     public ExternalPerl6RoutineDecl(Project project, PsiElement parent,
                                     String kind, String scope, String name,
                                     String isMulti, String deprecationMessage,
-                                    JSONObject signature) {
+                                    JSONObject signature, boolean isPure) {
         myProject = project;
         myParent = parent;
         myKind = kind;
@@ -42,6 +43,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
         if (myReturnType.endsWith(":D") || myReturnType.endsWith(":U")) {
             myReturnType = myReturnType.substring(0, myReturnType.length() - 2);
         }
+        myIsPure = isPure;
     }
 
     @Override
@@ -185,5 +187,10 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     @Override
     public String getDeprecationMessage() {
         return myDeprecationMessage;
+    }
+
+    @Override
+    public boolean isPure() {
+        return myIsPure;
     }
 }

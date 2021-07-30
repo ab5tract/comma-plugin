@@ -4,11 +4,18 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.effects.Effect;
+import edument.perl6idea.psi.effects.EffectCollection;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.NULL_TERM;
 
@@ -60,5 +67,40 @@ public class Perl6InfixApplicationImpl extends ASTWrapperPsiElement implements P
         if (assignMetaOp != null)
             return true;
         return false;
+    }
+
+
+    @Override
+    public @NotNull EffectCollection inferEffects() {
+        return Arrays.stream(getOperands())
+              .filter(c -> c instanceof Perl6PsiElement)
+              .map(c -> ((Perl6PsiElement)c).inferEffects())
+              .reduce(EffectCollection.EMPTY, EffectCollection::merge)
+              .merge(inferOwnEffects());
+    }
+
+    // TODO generalized Perl6PsiElement method?
+    @NotNull
+    private EffectCollection inferOwnEffects() {
+        return isPure() ? EffectCollection.EMPTY : EffectCollection.of(Effect.IMPURE);
+    }
+
+    private boolean isPure() {
+        List<Perl6Symbol> symbols = resolveLexicalSymbolAllowingMulti(Perl6SymbolKind.Routine, "infix:<" + getOperator() + ">");
+        if (symbols == null || symbols.isEmpty())
+            return false; // If we can't resolve the operator, assume it's impure
+        List<Perl6RoutineDecl> decls = symbols.stream()
+          .map(Perl6Symbol::getPsi)
+          .filter(s -> s instanceof Perl6RoutineDecl)
+          .map(s -> ((Perl6RoutineDecl)s))
+          .collect(Collectors.toList());
+
+        // First see if there's a proto
+        for (Perl6RoutineDecl decl : decls) {
+            if ("proto".equals(decl.getMultiness()))
+                return decl.isPure();
+        }
+
+        return ContainerUtil.all(decls, Perl6RoutineDecl::isPure);
     }
 }
