@@ -75,7 +75,7 @@ public class Perl6ProjectBuilder extends ProjectBuilder {
         // in this case `model` parameter is not null
         final List<Module> result = new ArrayList<>();
         try {
-            WriteAction.run(() -> {
+            WriteAction.runAndWait(() -> {
                 final LocalFileSystem lfs = LocalFileSystem.getInstance();
                 String metaParentDirectory = Paths.get(getFileToImport()).toString();
                 String path = FileUtil.toSystemIndependentName(metaParentDirectory);

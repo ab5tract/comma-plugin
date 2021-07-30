@@ -6,7 +6,6 @@ import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
