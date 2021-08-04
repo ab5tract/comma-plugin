@@ -1,10 +1,12 @@
 package edument.perl6idea.readerMode;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.wm.IdeFocusManager;
+import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.JBSplitter;
@@ -17,12 +19,13 @@ import javax.swing.*;
 import java.beans.PropertyChangeListener;
 import java.util.Objects;
 
-public class Perl6ModuleViewEditor extends UserDataHolderBase implements FileEditor {
+public class Perl6ModuleViewEditor extends UserDataHolderBase implements TextEditor {
     private final String myName;
     private final TextEditor myEditor;
     private PodPreviewEditor myViewer;
     private JComponent myComponent;
     private Runnable myTriggerPodRenderCode;
+    private Perl6ReaderModeState myState;
 
     public Perl6ModuleViewEditor(TextEditor editor, PodPreviewEditor viewer, String editorName) {
         myEditor = editor;
@@ -56,6 +59,7 @@ public class Perl6ModuleViewEditor extends UserDataHolderBase implements FileEdi
 
     public void updateState(Perl6ReaderModeState state) {
         ApplicationManager.getApplication().invokeLater(() -> {
+            myState = state;
             PsiFile psiFile = PsiDocumentManager.getInstance(Objects.requireNonNull(myEditor.getEditor().getProject()))
                 .getPsiFile(myEditor.getEditor().getDocument());
             if (psiFile != null)
@@ -63,13 +67,23 @@ public class Perl6ModuleViewEditor extends UserDataHolderBase implements FileEdi
             myTriggerPodRenderCode.run();
             invalidateLayout();
             myEditor.getComponent().setVisible(state == Perl6ReaderModeState.CODE || state == Perl6ReaderModeState.SPLIT);
-            myViewer.getComponent().setVisible(state == Perl6ReaderModeState.DOCS ||  state == Perl6ReaderModeState.SPLIT);
+            myViewer.getComponent().setVisible(state == Perl6ReaderModeState.DOCS || state == Perl6ReaderModeState.SPLIT);
         });
     }
 
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
-        return myComponent;
+        if (myState == null)
+            myState = Perl6ReaderModeState.CODE;
+        switch (myState) {
+            case SPLIT:
+            case CODE:
+                return myEditor.getPreferredFocusedComponent();
+            case DOCS:
+                return myViewer.getPreferredFocusedComponent();
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     @Override
@@ -87,6 +101,13 @@ public class Perl6ModuleViewEditor extends UserDataHolderBase implements FileEdi
             if (compositeState.getViewerState() != null) {
                 myViewer.setState(compositeState.getViewerState());
             }
+        }
+    }
+
+    private void requestFocus() {
+        final JComponent focusComponent = getPreferredFocusedComponent();
+        if (focusComponent != null) {
+            IdeFocusManager.findInstanceByComponent(focusComponent).requestFocus(focusComponent, true);
         }
     }
 
@@ -131,6 +152,24 @@ public class Perl6ModuleViewEditor extends UserDataHolderBase implements FileEdi
 
     public void setCallback(Runnable triggerPodRenderCode) {
         myTriggerPodRenderCode = triggerPodRenderCode;
+    }
+
+    @Override
+    public @NotNull Editor getEditor() {
+        return myEditor.getEditor();
+    }
+
+    @Override
+    public boolean canNavigateTo(@NotNull Navigatable navigatable) {
+        return myEditor.canNavigateTo(navigatable);
+    }
+
+    @Override
+    public void navigateTo(@NotNull Navigatable navigatable) {
+        if (myState == Perl6ReaderModeState.DOCS)
+            updateState(Perl6ReaderModeState.CODE);
+        myEditor.navigateTo(navigatable);
+        requestFocus();
     }
 
     private static class Perl6ModuleEditorState implements FileEditorState {
