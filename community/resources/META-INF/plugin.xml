@@ -36,29 +36,8 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Add a <code>raku-doc</code> mode for Comma. Now it is possible to start Comma passing the <code>raku-doc</code> option and paths to project directories as arguments. Comma will be invoked, it will import or open each relative project and will try to extract the documentation for the module and render it into simple HTML pages (e.g. <code>comma.sh raku-doc -o output cro-webapp cro-http</code>)</li>
-<li>Add an annotation warning about useless use of constant expressions in sink (void) context</li>
-<li>Support navigation for Cro template parts: using &#39;Related Symbols&#39; from the template part name jumps to related <code>template-part</code> calls in a <code>route</code> block and vice versa</li>
-<li>Fix exceptions related to changing projects</li>
-<li>Fix a bug where required parameters for a pointy block within a variable declaration got an annotation about presence of an initializer</li>
-<li>Fix an exception related to dynamic variables during indexing</li>
-<li>Fix discovery of traits to complete when multiple distributions are used in the same file</li>
-
-<li>Support preview and display of documentation of Raku modules in the editor. All Pod blocks will be rendered, followed by API documentation of all exported or globally visible types and subroutines, including declarator comments. A split mode (docs and code) is available for live preview when authoring documentation</li>
-<li>Rework and greatly improve syncing between the <code>META6.json</code> file and project files. It now includes handling of the <code>resources</code> directory, and some bugs in this area are fixed</li>
-<li>Support the Cro template part syntax planned in the next Cro release, with both syntax highlighting and parameter resolution</li>
-<li>Complete aliased names when completing custom traits (e.g. <code>:tel(:$telephone)</code> in a trait declaration will properly be suggested as both <code>is tel</code> and <code>is telephone</code>)</li>
-<li>Fix a validation false negative in the <code>New Documentation</code> dialog</li>
-<li>Fix a false positive annotation for calls on unknown types</li>
-<li>Fix a false positive annotation for a signature when a <code>|</code> parameter is present</li>
-
-<li>Add various Live Templates to ease working with the <code>Cro::HTTP</code>, <code>Cro::WebApp</code> and <code>Red</code> distributions. For example, typing <code>cro-http-get</code> and pressing enter will stub the code for making a HTTP request with <code>Cro::HTTP::Client</code>, and allow you to fill in the URL and variables that it declares. It will, if required, add a <code>use</code> statement and <code>depends</code> entry to the <code>META6.json</code>. Typing <code>red-model</code> and pressing enter will do similar</li>
-<li>Improve Pod6 parsing (fix issues with code blocks) and improve live preview (properly render multi-paragraph lists and nested lists)</li>
-<li>Support completion and resolution for dynamic variables. For now, they are assumed to be visible from anywhere in the project, rather than attempting any kind of call-chain analysis</li>
-<li>Provide completion of user-defined <code>is</code> traits, both from externals and in the project. This is especially useful for things like <code>is password</code> from the <code>Cro::WebApp::Form</code> module or <code>is serial</code> from the <code>Red</code> ORM</li>
-<li>The <code>Related Symbol</code> feature now recognizes <code>Cro::WebApp::Template</code> templates, allowing jumping from the string literal in e.g. <code>template &quot;foo.crotmp&quot;</code> to the corresponding template file, respecting the <code>template-location</code> calls</li>
-<li>Consider <code>is TypeName</code> declarations on variables when completing methods (e.g. <code>my %h is SetHash</code> will offer <code>SetHash</code> methods on <code>%h</code>)</li>
-<li>Support the <code>of</code> trait for specifying a type when completing methods (e.g. <code>my @a of Int; for @a {...}</code>)</li>
+<li>Fixes navigation to symbols in another file</li>
+<li>Fixes displaying of the <code>Log::Timeline</code> view</li>
 </ul>
 
   ]]></change-notes>
