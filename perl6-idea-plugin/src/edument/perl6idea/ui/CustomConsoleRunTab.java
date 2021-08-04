@@ -45,8 +45,8 @@ public abstract class CustomConsoleRunTab extends RunTab {
             .initTabDefaults(0, getCustomTabText(), null)
             .initTabDefaults(1, "Console", null);
         RunContentDescriptor descriptor = createDescriptor(uiUpdater);
-        Disposer.register(this, descriptor);
-        Disposer.register(myEnvironment, this);
+        Disposer.register(descriptor, this);
+        Disposer.register(myProject, descriptor);
         RunContentManagerImpl.copyContentAndBehavior(descriptor, reuseContent);
         myRunContentDescriptor = descriptor;
         return descriptor;
