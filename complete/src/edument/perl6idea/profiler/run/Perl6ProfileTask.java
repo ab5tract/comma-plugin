@@ -4,7 +4,6 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -20,19 +19,20 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class Perl6ProfileTask extends Task.Backgroundable {
-    public static final Logger LOG = Logger.getInstance(Perl6ProfileTask.class);
     private final ProfilerView myProfilerView;
     private File sqlDataFile;
     private Perl6ProfileData myProfileData;
+    private final boolean myHasToRemoveTheFile;
 
     public Perl6ProfileTask(Project project,
                             String data,
                             boolean canBeCancelled,
                             File file,
-                            ProfilerView profilerView) {
+                            ProfilerView profilerView, boolean hasToRemoveTheFile) {
         super(project, data, canBeCancelled);
         sqlDataFile = file;
         myProfilerView = profilerView;
+        myHasToRemoveTheFile = hasToRemoveTheFile;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class Perl6ProfileTask extends Task.Backgroundable {
             myProfileData.cancel();
             myProfileData = null;
         }
-        if (sqlDataFile != null) {
+        if (sqlDataFile != null && myHasToRemoveTheFile) {
             sqlDataFile.delete();
             sqlDataFile = null;
         }
@@ -75,7 +75,7 @@ public class Perl6ProfileTask extends Task.Backgroundable {
             myProfilerView.setView(new JLabel("Could not collect profiling results"));
             throw new ProcessCanceledException();
         } finally {
-            if (sqlDataFile != null) {
+            if (sqlDataFile != null && myHasToRemoveTheFile) {
                 sqlDataFile.delete();
                 sqlDataFile = null;
             }

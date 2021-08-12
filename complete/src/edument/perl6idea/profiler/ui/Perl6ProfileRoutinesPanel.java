@@ -189,7 +189,10 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
     }
 
     private void updateCallData() {
-        int callRow = callsNavigation.convertRowIndexToModel(callsNavigation.getSelectedRow());
+        int row = callsNavigation.getSelectedRow();
+        if (row < 0)
+            return;
+        int callRow = callsNavigation.convertRowIndexToModel(row);
         if (callRow >= 0) {
             Perl6ProfileModel navigationModel = (Perl6ProfileModel)callsNavigation.getModel();
             int callId = navigationModel.getNodeId(callRow);
@@ -301,7 +304,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
         updateRowFilter();
 
         // Select first row
-        if (callsNavigation.getVisibleRowCount() > 0) {
+        if (callsNavigation.getRowCount() > 0) {
             callsNavigation.setRowSelectionInterval(0, 0);
         }
     }

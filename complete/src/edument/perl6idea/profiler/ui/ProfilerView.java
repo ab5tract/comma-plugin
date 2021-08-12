@@ -23,14 +23,14 @@ public class ProfilerView extends JPanel {
         add(myView, BorderLayout.CENTER);
     }
 
-    public void updateResultsFromFile(@Nullable File file) {
+    public void updateResultsFromFile(@Nullable File file, boolean hasToRemoveTheFile) {
         if (file == null) {
             setView(new JLabel("Error during results connecting: SQL file was absent"));
             return;
         } else {
             setView(new JLabel("The program has terminated, calculating results to present..."));
         }
-        Task.Backgroundable task = new Perl6ProfileTask(myProject, "Processing Profiling Data", true, file, this);
+        Task.Backgroundable task = new Perl6ProfileTask(myProject, "Processing Profiling Data", true, file, this, hasToRemoveTheFile);
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }
 

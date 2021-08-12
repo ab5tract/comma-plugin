@@ -11,6 +11,7 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.util.io.FileUtil;
 import edument.perl6idea.run.Perl6RunCommandLineState;
+import edument.perl6idea.run.Perl6RunConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -37,7 +38,7 @@ public class Perl6CoverageCommandLineState extends Perl6RunCommandLineState {
 
     @Override
     protected void setEnvironment(GeneralCommandLine cmd) {
-        Map<String, String> env = new HashMap<>(runConfiguration.getEnvs());
+        Map<String, String> env = new HashMap<>(((Perl6RunConfiguration)runConfiguration).getEnvs());
         env.put("MVM_SPESH_DISABLE", "1"); // Avoid MoarVM bug
         env.put("MVM_COVERAGE_LOG", coverageDir.getAbsolutePath() + "/coverage.%d");
         cmd.withEnvironment(env);

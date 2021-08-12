@@ -63,6 +63,7 @@
     <programRunner implementation="edument.perl6idea.coverage.Perl6CoverageRunner"/>
     <projectViewNodeDecorator implementation="edument.perl6idea.coverage.Perl6ProjectViewCoverageDecorator"/>
     <programRunner implementation="edument.perl6idea.profiler.run.Perl6ProfileRunner"/>
+    <programRunner implementation="edument.perl6idea.profiler.run.Perl6ImportProfileRunner"/>
     <executor implementation="edument.perl6idea.run.Perl6ProfileExecutor"/>
     <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6CompleteRefactoringSupportProvider"/>
     <inlineActionHandler implementation="edument.perl6idea.refactoring.inline.variable.Perl6InlineVariableActionHandler"/>
@@ -94,6 +95,11 @@
       <add-to-group group-id="CoverageMenu"/>
       <separator/>
     </group>
+    <action id="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction" class="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction"
+            text="Import Raku Profiler Report from File"
+            description="Imports a profiler report from an SQL data file">
+      <add-to-group group-id="RunMenu" />
+    </action>
   </actions>
 
   <module-components>

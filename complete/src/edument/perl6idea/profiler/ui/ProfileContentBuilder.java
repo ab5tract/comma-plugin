@@ -33,10 +33,14 @@ public class ProfileContentBuilder extends CustomConsoleRunTab {
         content.setPreferredFocusableComponent(profilerView);
         content.setCloseable(false);
         myUi.addContent(content, 0, PlaceInGrid.center, false);
+        loadProfileResults((Perl6ProfileCommandLineState)uiUpdater, profilerView);
+    }
+
+    protected void loadProfileResults(Perl6ProfileCommandLineState uiUpdater, ProfilerView profilerView) {
         myExecutionResult.getProcessHandler().addProcessListener(new ProcessAdapter() {
             @Override
             public void processTerminated(@NotNull ProcessEvent event) {
-                profilerView.updateResultsFromFile(((Perl6ProfileCommandLineState)uiUpdater).getProfileResultsFile());
+                profilerView.updateResultsFromFile(uiUpdater.getProfileResultsFile(), true);
             }
         });
     }

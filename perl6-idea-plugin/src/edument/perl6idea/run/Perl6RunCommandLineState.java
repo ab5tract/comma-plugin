@@ -3,6 +3,7 @@ package edument.perl6idea.run;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.process.KillableColoredProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.process.ProcessTerminatedListener;
@@ -19,12 +20,12 @@ import java.util.Locale;
 
 public class Perl6RunCommandLineState extends CommandLineState {
     protected List<String> command = new LinkedList<>();
-    protected Perl6RunConfiguration runConfiguration;
+    protected @NotNull RunProfile runConfiguration;
     protected boolean isDebug = false;
 
     public Perl6RunCommandLineState(ExecutionEnvironment environment) {
         super(environment);
-        runConfiguration = (Perl6RunConfiguration)getEnvironment().getRunProfile();
+        runConfiguration = getEnvironment().getRunProfile();
     }
 
     protected void populateRunCommand() throws ExecutionException {
@@ -32,7 +33,7 @@ public class Perl6RunCommandLineState extends CommandLineState {
     }
 
     protected void setInterpreterParameters() {
-        String params = runConfiguration.getInterpreterParameters();
+        String params = ((Perl6RunConfiguration)runConfiguration).getInterpreterParameters();
         if (params != null && !params.trim().isEmpty())
             command.addAll(Arrays.asList(params.split(" ")));
     }
@@ -49,16 +50,16 @@ public class Perl6RunCommandLineState extends CommandLineState {
         GeneralCommandLine cmd;
         if (isDebug) {
             if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win"))
-                cmd = new Perl6CommandLine(getEnvironment().getProject(), runConfiguration.getDebugPort());
+                cmd = new Perl6CommandLine(getEnvironment().getProject(), ((Perl6RunConfiguration)runConfiguration).getDebugPort());
             else
-                cmd = new Perl6ScriptRunner(getEnvironment().getProject(), runConfiguration.getDebugPort());
+                cmd = new Perl6ScriptRunner(getEnvironment().getProject(), ((Perl6RunConfiguration)runConfiguration).getDebugPort());
         } else {
             if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win"))
                 cmd = new Perl6CommandLine(getEnvironment().getProject());
             else
                 cmd = new Perl6ScriptRunner(getEnvironment().getProject());
         }
-        cmd.setWorkDirectory(runConfiguration.getWorkingDirectory());
+        cmd.setWorkDirectory(((Perl6RunConfiguration)runConfiguration).getWorkingDirectory());
         cmd.addParameters(command);
         setEnvironment(cmd);
         KillableColoredProcessHandler handler = new KillableColoredProcessHandler(cmd, true);
@@ -79,14 +80,14 @@ public class Perl6RunCommandLineState extends CommandLineState {
     }
 
     protected void setEnvironment(GeneralCommandLine cmd) {
-        cmd.withEnvironment(runConfiguration.getEnvs());
+        cmd.withEnvironment(((Perl6RunConfiguration)runConfiguration).getEnvs());
     }
 
     protected void setListeners(KillableColoredProcessHandler handler) {}
 
     private void setScript() {
-        command.add(runConfiguration.getScriptPath());
-        String params = runConfiguration.getProgramParameters();
+        command.add(((Perl6RunConfiguration)runConfiguration).getScriptPath());
+        String params = ((Perl6RunConfiguration)runConfiguration).getProgramParameters();
         // To avoid a call like `perl6 script.p6 ""`
         if (params != null && !params.trim().isEmpty())
             command.addAll(Arrays.asList(params.split(" ")));
