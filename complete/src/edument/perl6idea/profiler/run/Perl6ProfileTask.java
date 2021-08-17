@@ -17,22 +17,31 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Perl6ProfileTask extends Task.Backgroundable {
     private final ProfilerView myProfilerView;
     private File sqlDataFile;
     private Perl6ProfileData myProfileData;
-    private final boolean myHasToRemoveTheFile;
+    private boolean myHasToRemoveTheFile;
 
     public Perl6ProfileTask(Project project,
-                            String data,
+                            String title,
                             boolean canBeCancelled,
                             File file,
                             ProfilerView profilerView, boolean hasToRemoveTheFile) {
-        super(project, data, canBeCancelled);
+        super(project, title, canBeCancelled);
         sqlDataFile = file;
         myProfilerView = profilerView;
         myHasToRemoveTheFile = hasToRemoveTheFile;
+    }
+
+    public Perl6ProfileTask(Project project, String title, boolean canBeCancelled, Perl6ProfileData data, ProfilerView view) {
+        super(project, title, canBeCancelled);
+        myProfileData = data;
+        myProfilerView = view;
     }
 
     @Override
@@ -48,6 +57,12 @@ public class Perl6ProfileTask extends Task.Backgroundable {
         }
     }
 
+    private static String createProfileName() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+        return "Profile results at " + dateFormat.format(date);
+    }
+
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
         try {
@@ -56,7 +71,7 @@ public class Perl6ProfileTask extends Task.Backgroundable {
             indicator.setText("Creating a database...");
             indicator.setFraction(0.1);
             indicator.checkCanceled();
-            myProfileData = new Perl6ProfileData(sqlDataFile.getCanonicalPath());
+            myProfileData = myProfileData == null ? new Perl6ProfileData(myProject, createProfileName(), sqlDataFile) : myProfileData;
             indicator.setText("Loading profiler data into the database...");
             indicator.setFraction(0.2);
             myProfileData.initialize();

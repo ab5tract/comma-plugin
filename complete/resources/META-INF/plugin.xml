@@ -70,6 +70,8 @@
     <inlineActionHandler implementation="edument.perl6idea.refactoring.inline.call.Perl6InlineCallActionHandler"/>
     <projectService serviceImplementation="edument.perl6idea.coverage.Perl6CoverageDataManagerImpl"
                     serviceInterface="edument.perl6idea.coverage.Perl6CoverageDataManager"/>
+    <projectService serviceImplementation="edument.perl6idea.profiler.Perl6ProfileDataManagerImpl"
+                    serviceInterface="edument.perl6idea.profiler.Perl6ProfileDataManager"/>
   </extensions>
 
   <actions>
@@ -99,6 +101,10 @@
             text="Import Raku Profiler Report from File"
             description="Imports a profiler report from an SQL data file">
       <add-to-group group-id="RunMenu" />
+    </action>
+    <action id="edument.perl6idea.actions.LoadProfileResultsAction" class="edument.perl6idea.actions.LoadProfileResultsAction"
+            text="Load Raku Profile Result..." description="Select and load the Raku profiling results snapshot">
+      <add-to-group group-id="ToolsMenu"/>
     </action>
   </actions>
 

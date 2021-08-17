@@ -4,6 +4,7 @@ import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import edument.perl6idea.profiler.model.Perl6ProfileData;
 import edument.perl6idea.profiler.run.Perl6ProfileTask;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +32,11 @@ public class ProfilerView extends JPanel {
             setView(new JLabel("The program has terminated, calculating results to present..."));
         }
         Task.Backgroundable task = new Perl6ProfileTask(myProject, "Processing Profiling Data", true, file, this, hasToRemoveTheFile);
+        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
+    }
+
+    public void updateResultsFromData(Perl6ProfileData data) {
+        Task.Backgroundable task = new Perl6ProfileTask(myProject, "Processing Profiling Data", true, data, this);
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }
 

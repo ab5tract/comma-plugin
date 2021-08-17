@@ -7,21 +7,33 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.util.NlsSafe;
 import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.Perl6Icons;
+import edument.perl6idea.profiler.model.Perl6ProfileData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
 public class Perl6ImportRunner implements RunProfile {
-    private final VirtualFile file;
+    @Nullable
+    private VirtualFile file;
+    @Nullable
+    private Perl6ProfileData data;
 
-    public Perl6ImportRunner(VirtualFile file) {
+    public Perl6ImportRunner(@NotNull VirtualFile file) {
         this.file = file;
+    }
+
+    public Perl6ImportRunner(@NotNull Perl6ProfileData data) {
+        this.data = data;
     }
 
     @Override
     public @Nullable RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) {
-        return new Perl6ProfileCommandLineState(environment, file);
+        if (file != null)
+            return new Perl6ProfileCommandLineState(environment, file);
+        else if (data != null)
+            return new Perl6ProfileCommandLineState(environment, data);
+        return null;
     }
 
     @Override

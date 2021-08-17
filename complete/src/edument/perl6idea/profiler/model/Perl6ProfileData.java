@@ -1,18 +1,24 @@
 package edument.perl6idea.profiler.model;
 
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.Function;
+import edument.perl6idea.profiler.Perl6ProfileDataManager;
 import edument.perl6idea.profiler.ui.Perl6ProfileAllocationsPanel;
 import edument.perl6idea.profiler.ui.Perl6ProfileGCPanel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
@@ -27,23 +33,56 @@ public class Perl6ProfileData {
         "WHERE pc.routine_id = ? " +
         "GROUP BY c.routine_id " +
         "ORDER BY c.inclusive_time DESC;";
+    private final Project myProject;
     private Connection connection;
-    private final String sqlDataFilePath;
+    @Nullable
+    private String sqlDataFilePath;
+    @Nullable
+    private String sqlData;
+    private String myStatements;
+    private String myName;
+    private AtomicBoolean isInitialized = new AtomicBoolean();
 
-    public Perl6ProfileData(String pathToSqlFile) throws SQLException {
-        sqlDataFilePath = pathToSqlFile;
+    public Perl6ProfileData(@NotNull Project project, String name, @NotNull File file) throws SQLException {
+        myProject = project;
+        myName = name;
+        sqlDataFilePath = file.getPath();
+        connection = DriverManager.getConnection("jdbc:sqlite::memory:");
+    }
+
+    public Perl6ProfileData(@NotNull Project project, String name, @NotNull String sqlStatements) throws SQLException {
+        myProject = project;
+        myName = name;
+        sqlData = sqlStatements;
         connection = DriverManager.getConnection("jdbc:sqlite::memory:");
     }
 
     public void initialize() throws IOException, SQLException {
+        if (!isInitialized.compareAndSet(false, true))
+            return;
+
+        Perl6ProfileDataManager manager = ServiceManager.getService(myProject, Perl6ProfileDataManager.class);
+        if (manager != null) {
+            manager.saveProfileResult(this);
+        }
         try (Statement statement = connection.createStatement()) {
-            Stream<String> lines = Files.lines(Paths.get(sqlDataFilePath), StandardCharsets.UTF_8);
+            Stream<String> lines = sqlData == null
+                ? Files.lines(Paths.get(sqlDataFilePath), StandardCharsets.UTF_8)
+                : sqlData.lines();
             Iterator<String> iterator = lines.iterator();
             // Load the base from the file
+            StringJoiner joiner = new StringJoiner("\n");
             while (iterator.hasNext()) {
-                statement.executeUpdate(iterator.next());
+                String next = iterator.next();
+                joiner.add(next);
+                statement.executeUpdate(next);
             }
+            myStatements = joiner.toString();
         }
+    }
+
+    public String getName() {
+        return myName;
     }
 
     public void cancel() {
@@ -197,7 +236,7 @@ public class Perl6ProfileData {
             while (gcs.next()) {
                 gcList.add(new Perl6ProfileGCPanel.GCData(
                     gcs.getLong("max_time"),
-                    gcs.getLong("earliest_start_time") ,gcs.getLong("promoted_bytes"),
+                    gcs.getLong("earliest_start_time"), gcs.getLong("promoted_bytes"),
                     gcs.getLong("retained_bytes"), gcs.getLong("cleared_bytes"),
                     gcs.getString("participants"), gcs.getBoolean("full")
                 ));
@@ -267,6 +306,11 @@ public class Perl6ProfileData {
         return data;
     }
 
+    public byte[] getProfileText() {
+        return myStatements == null ? new byte[0] :
+               myStatements.getBytes(StandardCharsets.UTF_8);
+    }
+
     private static void convertProfilerNodes(List<Perl6ProfileCall> nodes, ResultSet calls) throws SQLException {
         while (calls.next()) {
             nodes.add(new Perl6ProfileCall(
@@ -301,7 +345,7 @@ public class Perl6ProfileData {
     }
 
     public List<Perl6ProfileCall> getCalleeListByCallId(int id) {
-        return getRelatedCallNodes(id,false);
+        return getRelatedCallNodes(id, false);
     }
 
     public List<Perl6ProfileCall> getCallerListByCallId(int id) {

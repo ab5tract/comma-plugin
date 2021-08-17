@@ -39,7 +39,8 @@ public class Perl6ImportProfileRunner extends Perl6DefaultRunner {
         ExecutionResult executionResult = new ExecutionResult() {
             @Override
             public ExecutionConsole getExecutionConsole() {
-                return TextConsoleBuilderFactory.getInstance().createBuilder(env.getProject(), GlobalSearchScope.allScope(env.getProject())).getConsole();
+                return TextConsoleBuilderFactory.getInstance().createBuilder(env.getProject(), GlobalSearchScope.allScope(env.getProject()))
+                    .getConsole();
             }
 
             @Override
@@ -61,7 +62,10 @@ public class Perl6ImportProfileRunner extends Perl6DefaultRunner {
                ? new ProfileContentBuilder(result, env) {
             @Override
             protected void loadProfileResults(Perl6ProfileCommandLineState uiUpdater, ProfilerView profilerView) {
-                profilerView.updateResultsFromFile(state.getProfileResultsFile(), false);
+                if (uiUpdater.hasFile())
+                    profilerView.updateResultsFromFile(state.getProfileResultsFile(), false);
+                else if (uiUpdater.hasData())
+                    profilerView.updateResultsFromData(state.getProfilerResultData());
             }
         }.showRunContent(env.getContentToReuse(), state)
                : null;
