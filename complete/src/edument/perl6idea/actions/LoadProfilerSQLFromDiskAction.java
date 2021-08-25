@@ -20,7 +20,7 @@ public class LoadProfilerSQLFromDiskAction extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
         assert project != null;
-        FileChooserDescriptor sqlDescriptor = FileChooserDescriptorFactory.createSingleFileDescriptor()
+        FileChooserDescriptor sqlDescriptor = FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor()
             .withFileFilter(vf -> vf.getName().endsWith(".sql"));
         sqlDescriptor.setTitle("Choose a File with SQL Data from the Raku Profiler");
         VirtualFile file = FileChooser.chooseFile(sqlDescriptor, project, null);
