@@ -55,6 +55,8 @@ public class Perl6ModuleEditorProvider implements FileEditorProvider, DumbAware 
             editor.getEditor().getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void documentChanged(@NotNull DocumentEvent event) {
+                    if (moduleViewEditor.getPresentedState() == Perl6ReaderModeState.CODE)
+                        return;
                     myAlarm.cancelAllRequests();
                     myAlarm.addRequest(() -> renderPreview(event.getDocument(), documentManager, viewer), 500);
                 }
@@ -62,6 +64,9 @@ public class Perl6ModuleEditorProvider implements FileEditorProvider, DumbAware 
             editor.getEditor().getScrollingModel().addVisibleAreaListener(new VisibleAreaListener() {
                 @Override
                 public void visibleAreaChanged(@NotNull VisibleAreaEvent e) {
+                    if (moduleViewEditor.getPresentedState() == Perl6ReaderModeState.CODE)
+                        return;
+
                     Editor editor = e.getEditor();
                     Rectangle nowInView = e.getNewRectangle();
                     LogicalPosition position = editor.xyToLogicalPosition(nowInView.getLocation());
