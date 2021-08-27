@@ -21,7 +21,7 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
     @Override
     protected StubElement<?> createStubForFile(@NotNull PsiFile file) {
         if (file instanceof Perl6File && ((Perl6File)file).isReal())
-            return new Perl6FileStubImpl((Perl6File)file, generateCompilationUnitName(file), ((Perl6File)file).getStatementLineMap());
+            return new Perl6FileStubImpl((Perl6File)file, generateCompilationUnitName(file));
         else
             return super.createStubForFile(file);
     }

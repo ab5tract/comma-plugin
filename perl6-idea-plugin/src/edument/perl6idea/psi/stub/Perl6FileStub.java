@@ -15,7 +15,4 @@ public interface Perl6FileStub extends PsiFileStub<Perl6File> {
     /* Locates everything that is exported and returns the matching PSI
      * elements. */
     List<Perl6PsiDeclaration> getExports();
-
-    /* Gets the statement line map, used for coverage. */
-    Map<Integer, List<Integer>> getStatementLineMap();
 }

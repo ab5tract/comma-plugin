@@ -15,12 +15,10 @@ import java.util.Map;
 
 public class Perl6FileStubImpl extends PsiFileStubImpl<Perl6File> implements Perl6FileStub {
     private final String compilationUnitName;
-    private final Map<Integer, List<Integer>> statementLineMap;
 
-    public Perl6FileStubImpl(Perl6File file, String compilationUnitName, Map<Integer, List<Integer>> statementLineMap) {
+    public Perl6FileStubImpl(Perl6File file, String compilationUnitName) {
         super(file);
         this.compilationUnitName = compilationUnitName;
-        this.statementLineMap = statementLineMap;
     }
 
     @NotNull
@@ -32,11 +30,6 @@ public class Perl6FileStubImpl extends PsiFileStubImpl<Perl6File> implements Per
     @Override
     public String getCompilationUnitName() {
         return compilationUnitName;
-    }
-
-    @Override
-    public Map<Integer, List<Integer>> getStatementLineMap() {
-        return statementLineMap;
     }
 
     @Override
