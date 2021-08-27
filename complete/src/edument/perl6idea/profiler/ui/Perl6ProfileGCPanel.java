@@ -44,20 +44,24 @@ public class Perl6ProfileGCPanel extends JPanel {
                                     return -1;
                                 if (o2.equals("-"))
                                     return 1;
-                                try {
-                                    Number o1Value = new DecimalFormat("###,###.###").parse((String)o1);
-                                    Number o2Value = new DecimalFormat("###,###.###").parse((String)o2);
-                                    return Double.compare(o1Value.doubleValue(), o2Value.doubleValue());
-                                }
-                                catch (ParseException e) {
-                                    return -1;
-                                }
+                                return parseAndCompare((String)o1, (String)o2);
                             }
                             return 0;
                         };
                 }
             }
         });
+    }
+
+    static int parseAndCompare(String o1, String o2) {
+        try {
+            Number o1Value = new DecimalFormat("###,###.###").parse(o1);
+            Number o2Value = new DecimalFormat("###,###.###").parse(o2);
+            return Double.compare(o1Value.doubleValue(), o2Value.doubleValue());
+        }
+        catch (ParseException e) {
+            return -1;
+        }
     }
 
     private static class GCTableModel implements TableModel, Perl6ProfileModelWithRatio {

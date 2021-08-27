@@ -15,9 +15,10 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.Comparator;
 import java.util.List;
+
+import static edument.perl6idea.profiler.ui.Perl6ProfileGCPanel.parseAndCompare;
 
 public class Perl6ProfileAllocationsPanel extends JPanel {
     private final Perl6ProfileData myProfileData;
@@ -43,14 +44,7 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
                 if (ArrayUtils.contains(columnsToParse, column))
                     return (Comparator<Object>)(o1, o2) -> {
                         if (ArrayUtils.contains(columnsToParse, column)) {
-                            try {
-                                Number o1Value = new DecimalFormat("###,###.###").parse((String)o1);
-                                Number o2Value = new DecimalFormat("###,###.###").parse((String)o2);
-                                return Double.compare(o1Value.doubleValue(), o2Value.doubleValue());
-                            }
-                            catch (ParseException e) {
-                                return -1;
-                            }
+                            return parseAndCompare((String)o1, (String)o2);
                         }
                         return 0;
                     };
@@ -72,11 +66,14 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
         allocationsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent event) {
+                if (event.getValueIsAdjusting())
+                    return;
                 updateAllocationData();
             }
         });
         updateAllocationData();
     }
+
     private void updateAllocationData() {
         int row = allocationsTable.getSelectedRow();
         if (row == -1)
@@ -89,6 +86,7 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
             typeDetailsTable.setModel(new Perl6ProfileTypeDetailsTableModel(list));
             typeDetailsTable.getColumnModel().getColumn(4).setCellRenderer(new PercentageTableCellRenderer());
             typeDetailsTable.getColumnModel().getColumn(7).setCellRenderer(new PercentageTableCellRenderer());
+            setupSorter(typeDetailsTable, 2, 3, 4, 5, 6, 7);
         }
     }
 
