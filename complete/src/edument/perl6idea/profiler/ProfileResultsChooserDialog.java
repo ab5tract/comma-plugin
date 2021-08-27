@@ -3,7 +3,6 @@ package edument.perl6idea.profiler;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder;
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -15,6 +14,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ScrollPaneFactory;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.PlatformIcons;
 import com.intellij.util.ui.ColumnInfo;
@@ -22,6 +22,7 @@ import com.intellij.util.ui.ListTableModel;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
 import edument.perl6idea.profiler.run.Perl6ImportRunner;
 import edument.perl6idea.run.Perl6ProfileExecutor;
+import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,8 +31,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
 
 public class ProfileResultsChooserDialog extends DialogWrapper {
     private final static Logger LOG = Logger.getInstance(ProfileResultsChooserDialog.class);
@@ -96,14 +95,18 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
     @Override
     protected @Nullable JComponent createNorthPanel() {
         DefaultActionGroup group = new DefaultActionGroup();
-        group.add(new DeleteResultsAction());
-        group.add(new DeleteAllAction());
+        group.add(new DeleteSelectedAction());
         return ActionManager.getInstance().createActionToolbar("Perl6ProfileResultsChooser", group, true).getComponent();
     }
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        return ScrollPaneFactory.createScrollPane(myProfilesTable);
+        JPanel result = new JPanel(new MigLayout());
+        result.add(new JLabel("<html>The last 10 profiles are retained by default.<br>Double-click on a profile to name it.<br>Note named profiles will never be deleted automatically.</html>"),
+                   "wrap");
+        JScrollPane pane = new JBScrollPane(myProfilesTable);
+        result.add(pane, "growx, growy, pushx, pushy");
+        return result;
     }
 
     private void initResults() {
@@ -119,8 +122,8 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
         myProfilesTableModel.setItems(Arrays.asList(profileSnapshots));
     }
 
-    private class DeleteResultsAction extends AnAction {
-        DeleteResultsAction() {
+    private class DeleteSelectedAction extends AnAction {
+        DeleteSelectedAction() {
             super("Delete", "Delete selected profile result", PlatformIcons.DELETE_ICON);
         }
 
@@ -137,20 +140,6 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
         @Override
         public void update(@NotNull AnActionEvent e) {
             e.getPresentation().setEnabled(myProfilesTable.getSelectedRowCount() != 0);
-        }
-    }
-
-    private class DeleteAllAction extends AnAction {
-        DeleteAllAction() {
-            super("Delete All", "Delete all profile results", AllIcons.Actions.Cancel);
-        }
-
-        @Override
-        public void actionPerformed(@NotNull AnActionEvent e) {
-            Deque<Perl6ProfileData> selectedData = myDataManager.getProfileResults();
-            for (Perl6ProfileData data : selectedData)
-                myDataManager.removeProfileResult(data);
-            myProfilesTableModel.setItems(Collections.emptyList());
         }
     }
 }
