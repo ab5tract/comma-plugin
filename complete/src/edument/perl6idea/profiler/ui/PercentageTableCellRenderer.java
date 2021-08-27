@@ -19,7 +19,9 @@ public class PercentageTableCellRenderer implements TableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         TableModel model = table.getModel();
-        long unboxedValue = value instanceof Integer ?(long)(int)value : (long)value;
+        long unboxedValue = value instanceof Integer
+                            ? (long)(int)value :
+                            value instanceof Long ? (long)value : 0L;
         double ratio;
         if (model instanceof Perl6ProfileModelWithRatio) {
             ratio = ((Perl6ProfileModelWithRatio)model).getRatio(unboxedValue, row, column);
