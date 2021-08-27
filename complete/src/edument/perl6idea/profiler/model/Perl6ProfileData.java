@@ -11,17 +11,17 @@ import edument.perl6idea.profiler.ui.Perl6ProfileGCPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
-import java.util.stream.Stream;
 
 public class Perl6ProfileData {
     public static final Logger LOG = Logger.getInstance(Perl6ProfileData.class);
@@ -80,13 +80,12 @@ public class Perl6ProfileData {
         if (manager != null) {
             manager.saveProfileResult(this);
         }
-        try (Statement statement = connection.createStatement()) {
-            Stream<String> lines = Files.lines(Paths.get(sqlDataFilePath), StandardCharsets.UTF_8);
-            Iterator<String> iterator = lines.iterator();
-            // Load the base from the file
-            while (iterator.hasNext()) {
-                String next = iterator.next();
-                statement.executeUpdate(next);
+        assert sqlDataFilePath != null;
+        try (Statement statement = connection.createStatement();
+             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(sqlDataFilePath), StandardCharsets.UTF_8));
+        ) {
+            for (String line; (line = reader.readLine()) != null;) {
+                statement.executeUpdate(line);
             }
         }
     }
