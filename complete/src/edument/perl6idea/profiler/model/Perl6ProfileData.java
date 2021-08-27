@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
@@ -37,24 +38,38 @@ public class Perl6ProfileData {
     private Connection connection;
     @Nullable
     private String sqlDataFilePath;
-    @Nullable
-    private String sqlData;
-    private String myStatements;
     private String myName;
     private AtomicBoolean isInitialized = new AtomicBoolean();
+    private boolean isNameChanged = false;
+    private String myDbPath;
 
-    public Perl6ProfileData(@NotNull Project project, String name, @NotNull File file) throws SQLException {
+    public Perl6ProfileData(@NotNull Project project, String name, @NotNull File sourceFile) throws IOException, SQLException {
         myProject = project;
         myName = name;
-        sqlDataFilePath = file.getPath();
-        connection = DriverManager.getConnection("jdbc:sqlite::memory:");
+        sqlDataFilePath = sourceFile.getPath();
+        connection = createNewDBConnection();
     }
 
-    public Perl6ProfileData(@NotNull Project project, String name, @NotNull String sqlStatements) throws SQLException {
+    public Perl6ProfileData(@NotNull Project project, String name, @NotNull Path filePath) throws Exception {
         myProject = project;
         myName = name;
-        sqlData = sqlStatements;
-        connection = DriverManager.getConnection("jdbc:sqlite::memory:");
+        connection = createNewDBConnection(filePath);
+    }
+
+    private Connection createNewDBConnection() throws SQLException, IOException {
+        try {
+            Path filePath = Files.createTempFile("comma-profile-tmp", ".sqlite3");
+            myDbPath = filePath.toString();
+            return DriverManager.getConnection("jdbc:sqlite:" + filePath);
+        } catch (IOException ex) {
+            throw new IOException("Could not create a temporary database: " + ex.getMessage());
+        }
+    }
+
+    private Connection createNewDBConnection(Path dbPath) throws SQLException {
+        isInitialized.compareAndSet(false, true);
+        myDbPath = dbPath.toString();
+        return DriverManager.getConnection("jdbc:sqlite:" + dbPath);
     }
 
     public void initialize() throws IOException, SQLException {
@@ -66,23 +81,35 @@ public class Perl6ProfileData {
             manager.saveProfileResult(this);
         }
         try (Statement statement = connection.createStatement()) {
-            Stream<String> lines = sqlData == null
-                ? Files.lines(Paths.get(sqlDataFilePath), StandardCharsets.UTF_8)
-                : sqlData.lines();
+            Stream<String> lines = Files.lines(Paths.get(sqlDataFilePath), StandardCharsets.UTF_8);
             Iterator<String> iterator = lines.iterator();
             // Load the base from the file
-            StringJoiner joiner = new StringJoiner("\n");
             while (iterator.hasNext()) {
                 String next = iterator.next();
-                joiner.add(next);
                 statement.executeUpdate(next);
             }
-            myStatements = joiner.toString();
         }
+    }
+
+    public String getFileName() {
+        return myDbPath;
+    }
+
+    public boolean isNameChanged() {
+        return isNameChanged;
+    }
+
+    public void setNameChanged(boolean nameChanged) {
+        isNameChanged = nameChanged;
     }
 
     public String getName() {
         return myName;
+    }
+
+    public void setName(String name) {
+        isNameChanged = true;
+        myName = name;
     }
 
     public void cancel() {
@@ -304,11 +331,6 @@ public class Perl6ProfileData {
             LOG.warn(e);
         }
         return data;
-    }
-
-    public byte[] getProfileText() {
-        return myStatements == null ? new byte[0] :
-               myStatements.getBytes(StandardCharsets.UTF_8);
     }
 
     private static void convertProfilerNodes(List<Perl6ProfileCall> nodes, ResultSet calls) throws SQLException {

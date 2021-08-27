@@ -15,9 +15,10 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.ScrollPaneFactory;
-import com.intellij.ui.SimpleListCellRenderer;
-import com.intellij.ui.components.JBList;
+import com.intellij.ui.table.JBTable;
 import com.intellij.util.PlatformIcons;
+import com.intellij.util.ui.ColumnInfo;
+import com.intellij.util.ui.ListTableModel;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
 import edument.perl6idea.profiler.run.Perl6ImportRunner;
 import edument.perl6idea.run.Perl6ProfileExecutor;
@@ -27,32 +28,42 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
-import java.util.List;
 
 public class ProfileResultsChooserDialog extends DialogWrapper {
     private final static Logger LOG = Logger.getInstance(ProfileResultsChooserDialog.class);
     private final Project myProject;
-    private final JBList<Perl6ProfileData> myResultsList;
     private final Perl6ProfileDataManager myDataManager;
+    private final JBTable myProfilesTable;
+    private final ListTableModel<Perl6ProfileData> myProfilesTableModel;
 
     public ProfileResultsChooserDialog(Project project) {
         super(project, true);
         myProject = project;
         myDataManager = ServiceManager.getService(project, Perl6ProfileDataManager.class);
 
-        myResultsList = new JBList<>();
-        myResultsList.getEmptyText().appendText("No profile results found.");
-        myResultsList.setCellRenderer(new SimpleListCellRenderer<>() {
+        myProfilesTableModel = new ListTableModel<>(new ColumnInfo<Perl6ProfileData, String>("Profile Name") {
             @Override
-            public void customize(@NotNull JList<? extends Perl6ProfileData> list,
-                                  Perl6ProfileData value,
-                                  int index,
-                                  boolean selected,
-                                  boolean hasFocus) {
-                setText(value.getName());
+            public @Nullable String valueOf(Perl6ProfileData data) {
+                return data.getName();
+            }
+
+            @Override
+            public boolean isCellEditable(Perl6ProfileData data) {
+                return true;
+            }
+
+            @Override
+            public void setValue(Perl6ProfileData data, String value) {
+                data.setName(value);
+                data.setNameChanged(true);
             }
         });
+        myProfilesTable = new JBTable(myProfilesTableModel);
+        myProfilesTable.getEmptyText().appendText("No profile results found.");
         initResults();
         setOKButtonText("Show Result");
         setTitle("Choose Raku Profile Data Results");
@@ -61,7 +72,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        Perl6ProfileData data = myResultsList.getSelectedValue();
+        Perl6ProfileData data = myProfilesTableModel.getItem(myProfilesTable.getSelectedRow());
         if (data == null)
             return;
         Perl6ImportRunner profile = new Perl6ImportRunner(data);
@@ -77,7 +88,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
 
     @Override
     protected @Nullable ValidationInfo doValidate() {
-        if (myResultsList.getSelectedValuesList().size() != 1)
+        if (myProfilesTable.getSelectedRowCount() != 1)
             return new ValidationInfo("Only one profiler result must be selected to display");
         return super.doValidate();
     }
@@ -92,7 +103,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        return ScrollPaneFactory.createScrollPane(myResultsList);
+        return ScrollPaneFactory.createScrollPane(myProfilesTable);
     }
 
     private void initResults() {
@@ -101,11 +112,11 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
             try {
                 data.initialize();
             }
-            catch (IOException|SQLException e) {
+            catch (IOException | SQLException e) {
                 LOG.warn("Could not initialize profiler results '" + data.getName() + "', cause: " + e.getMessage());
             }
         }
-        myResultsList.setListData(profileSnapshots);
+        myProfilesTableModel.setItems(Arrays.asList(profileSnapshots));
     }
 
     private class DeleteResultsAction extends AnAction {
@@ -115,16 +126,17 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
 
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
-            List<Perl6ProfileData> selectedData = myResultsList.getSelectedValuesList();
-            for (Perl6ProfileData data : selectedData) {
-                myDataManager.removeProfileResult(data);
-                myResultsList.setListData(selectedData.toArray(new Perl6ProfileData[0]));
+            int[] selectedData = myProfilesTable.getSelectedRows();
+            for (int data : selectedData) {
+                Perl6ProfileData selectedProfile = myProfilesTableModel.getItem(data);
+                myDataManager.removeProfileResult(selectedProfile);
             }
+            myProfilesTableModel.setItems(new ArrayList<>(myDataManager.getProfileResults()));
         }
 
         @Override
         public void update(@NotNull AnActionEvent e) {
-            e.getPresentation().setEnabled(myResultsList.getSelectedValuesList().size() != 0);
+            e.getPresentation().setEnabled(myProfilesTable.getSelectedRowCount() != 0);
         }
     }
 
@@ -138,7 +150,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
             Deque<Perl6ProfileData> selectedData = myDataManager.getProfileResults();
             for (Perl6ProfileData data : selectedData)
                 myDataManager.removeProfileResult(data);
-            myResultsList.setListData(selectedData.toArray(new Perl6ProfileData[0]));
+            myProfilesTableModel.setItems(Collections.emptyList());
         }
     }
 }

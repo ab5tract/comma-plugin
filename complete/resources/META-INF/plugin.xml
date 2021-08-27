@@ -104,7 +104,7 @@
     </action>
     <action id="edument.perl6idea.actions.LoadProfileResultsAction" class="edument.perl6idea.actions.LoadProfileResultsAction"
             text="Load Raku Profile Result..." description="Select and load the Raku profiling results snapshot">
-      <add-to-group group-id="ToolsMenu"/>
+      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction"/>
     </action>
   </actions>
 
