@@ -267,7 +267,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         if (fileData == null)
             return null;
 
-        // Look up file stub and line mapping for the file.
+        // Look up file and line mapping for the file.
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         if (psiFile == null)
             return null;
