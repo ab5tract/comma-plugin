@@ -97,14 +97,14 @@
       <add-to-group group-id="CoverageMenu"/>
       <separator/>
     </group>
-    <action id="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction" class="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction"
-            text="Import Raku Profiler Report from File"
-            description="Imports a profiler report from an SQL data file">
-      <add-to-group group-id="RunMenu" />
-    </action>
     <action id="edument.perl6idea.actions.LoadProfileResultsAction" class="edument.perl6idea.actions.LoadProfileResultsAction"
-            text="Load Raku Profile Result..." description="Select and load the Raku profiling results snapshot">
-      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction"/>
+            text="Show Recent Raku Profiles..." description="Select and load one of the recent Raku profiling results snapshot from this project">
+      <add-to-group group-id="RunMenu"/>
+    </action>
+    <action id="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction" class="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction"
+            text="Import Raku Profile SQL..."
+            description="Imports a profiler report from an SQL data file">
+      <add-to-group group-id="RunMenu"  anchor="after" relative-to-action="edument.perl6idea.actions.LoadProfileResultsAction"/>
     </action>
   </actions>
 
