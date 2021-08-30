@@ -1,20 +1,27 @@
 package edument.perl6idea.profiler.model;
 
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.Function;
+import edument.perl6idea.profiler.Perl6ProfileDataManager;
 import edument.perl6idea.profiler.ui.Perl6ProfileAllocationsPanel;
 import edument.perl6idea.profiler.ui.Perl6ProfileGCPanel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
-import java.util.stream.Stream;
 
 public class Perl6ProfileData {
     public static final Logger LOG = Logger.getInstance(Perl6ProfileData.class);
@@ -27,23 +34,81 @@ public class Perl6ProfileData {
         "WHERE pc.routine_id = ? " +
         "GROUP BY c.routine_id " +
         "ORDER BY c.inclusive_time DESC;";
+    private final Project myProject;
     private Connection connection;
-    private final String sqlDataFilePath;
+    @Nullable
+    private String sqlDataFilePath;
+    private String myName;
+    private final AtomicBoolean isInitialized = new AtomicBoolean();
+    private boolean isNameChanged = false;
+    private String myDbPath;
 
-    public Perl6ProfileData(String pathToSqlFile) throws SQLException {
-        sqlDataFilePath = pathToSqlFile;
-        connection = DriverManager.getConnection("jdbc:sqlite::memory:");
+    public Perl6ProfileData(@NotNull Project project, String name, @NotNull File sourceFile) throws IOException, SQLException {
+        myProject = project;
+        myName = name;
+        sqlDataFilePath = sourceFile.getPath();
+        connection = createNewDBConnection();
+    }
+
+    public Perl6ProfileData(@NotNull Project project, String name, @NotNull Path filePath) throws Exception {
+        myProject = project;
+        myName = name;
+        connection = createNewDBConnection(filePath);
+    }
+
+    private Connection createNewDBConnection() throws SQLException, IOException {
+        try {
+            Path filePath = Files.createTempFile("comma-profile-tmp", ".sqlite3");
+            myDbPath = filePath.toString();
+            return DriverManager.getConnection("jdbc:sqlite:" + filePath);
+        } catch (IOException ex) {
+            throw new IOException("Could not create a temporary database: " + ex.getMessage());
+        }
+    }
+
+    private Connection createNewDBConnection(Path dbPath) throws SQLException {
+        isInitialized.compareAndSet(false, true);
+        myDbPath = dbPath.toString();
+        return DriverManager.getConnection("jdbc:sqlite:" + dbPath);
     }
 
     public void initialize() throws IOException, SQLException {
-        try (Statement statement = connection.createStatement()) {
-            Stream<String> lines = Files.lines(Paths.get(sqlDataFilePath), StandardCharsets.UTF_8);
-            Iterator<String> iterator = lines.iterator();
-            // Load the base from the file
-            while (iterator.hasNext()) {
-                statement.executeUpdate(iterator.next());
+        if (!isInitialized.compareAndSet(false, true))
+            return;
+
+        Perl6ProfileDataManager manager = ServiceManager.getService(myProject, Perl6ProfileDataManager.class);
+        if (manager != null) {
+            manager.saveProfileResult(this);
+        }
+        assert sqlDataFilePath != null;
+        try (Statement statement = connection.createStatement();
+             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(sqlDataFilePath), StandardCharsets.UTF_8));
+        ) {
+            for (String line; (line = reader.readLine()) != null;) {
+                statement.executeUpdate(line);
             }
         }
+    }
+
+    public String getFileName() {
+        return myDbPath;
+    }
+
+    public boolean isNameChanged() {
+        return isNameChanged;
+    }
+
+    public void setNameChanged(boolean nameChanged) {
+        isNameChanged = nameChanged;
+    }
+
+    public String getName() {
+        return myName;
+    }
+
+    public void setName(String name) {
+        isNameChanged = true;
+        myName = name;
     }
 
     public void cancel() {
@@ -197,7 +262,7 @@ public class Perl6ProfileData {
             while (gcs.next()) {
                 gcList.add(new Perl6ProfileGCPanel.GCData(
                     gcs.getLong("max_time"),
-                    gcs.getLong("earliest_start_time") ,gcs.getLong("promoted_bytes"),
+                    gcs.getLong("earliest_start_time"), gcs.getLong("promoted_bytes"),
                     gcs.getLong("retained_bytes"), gcs.getLong("cleared_bytes"),
                     gcs.getString("participants"), gcs.getBoolean("full")
                 ));
@@ -301,7 +366,7 @@ public class Perl6ProfileData {
     }
 
     public List<Perl6ProfileCall> getCalleeListByCallId(int id) {
-        return getRelatedCallNodes(id,false);
+        return getRelatedCallNodes(id, false);
     }
 
     public List<Perl6ProfileCall> getCallerListByCallId(int id) {

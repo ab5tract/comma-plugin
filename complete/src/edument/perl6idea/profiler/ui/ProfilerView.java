@@ -4,6 +4,7 @@ import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import edument.perl6idea.profiler.model.Perl6ProfileData;
 import edument.perl6idea.profiler.run.Perl6ProfileTask;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,14 +24,22 @@ public class ProfilerView extends JPanel {
         add(myView, BorderLayout.CENTER);
     }
 
-    public void updateResultsFromFile(@Nullable File file) {
+    public void updateResultsFromFile(@Nullable File file, boolean hasToRemoveTheFile) {
         if (file == null) {
             setView(new JLabel("Error during results connecting: SQL file was absent"));
             return;
         } else {
-            setView(new JLabel("The program has terminated, calculating results to present..."));
+            if (hasToRemoveTheFile)
+                setView(new JLabel("The program has terminated, calculating results to present..."));
+            else
+                setView(new JLabel("Importing the SQL, calculating results to present..."));
         }
-        Task.Backgroundable task = new Perl6ProfileTask(myProject, "Processing Profiling Data", true, file, this);
+        Task.Backgroundable task = new Perl6ProfileTask(myProject, "Processing Profiling Data", true, file, this, hasToRemoveTheFile);
+        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
+    }
+
+    public void updateResultsFromData(Perl6ProfileData data) {
+        Task.Backgroundable task = new Perl6ProfileTask(myProject, "Processing Profiling Data", true, data, this);
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }
 

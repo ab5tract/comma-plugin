@@ -21,9 +21,9 @@ public class Perl6ProfileGCPanel extends JPanel {
         GCTableModel tableModel = new GCTableModel(data);
         gcTable.setModel(tableModel);
         gcTable.getColumnModel().getColumn(0).setMaxWidth(50);
-        gcTable.getColumnModel().getColumn(4).setCellRenderer(new PercentageTableCellRenderer());
         gcTable.getColumnModel().getColumn(5).setCellRenderer(new PercentageTableCellRenderer());
         gcTable.getColumnModel().getColumn(6).setCellRenderer(new PercentageTableCellRenderer());
+        gcTable.getColumnModel().getColumn(7).setCellRenderer(new PercentageTableCellRenderer());
         setupSorter(gcTable, tableModel);
         add(new JScrollPane(gcTable), BorderLayout.CENTER);
     }
@@ -44,14 +44,7 @@ public class Perl6ProfileGCPanel extends JPanel {
                                     return -1;
                                 if (o2.equals("-"))
                                     return 1;
-                                try {
-                                    Number o1Value = new DecimalFormat("###,###.###").parse((String)o1);
-                                    Number o2Value = new DecimalFormat("###,###.###").parse((String)o2);
-                                    return Double.compare(o1Value.doubleValue(), o2Value.doubleValue());
-                                }
-                                catch (ParseException e) {
-                                    return -1;
-                                }
+                                return parseAndCompare((String)o1, (String)o2);
                             }
                             return 0;
                         };
@@ -60,10 +53,21 @@ public class Perl6ProfileGCPanel extends JPanel {
         });
     }
 
+    static int parseAndCompare(String o1, String o2) {
+        try {
+            Number o1Value = new DecimalFormat("###,###.###").parse(o1);
+            Number o2Value = new DecimalFormat("###,###.###").parse(o2);
+            return Double.compare(o1Value.doubleValue(), o2Value.doubleValue());
+        }
+        catch (ParseException e) {
+            return -1;
+        }
+    }
+
     private static class GCTableModel implements TableModel, Perl6ProfileModelWithRatio {
         List<GCData> gcs;
 
-        public GCTableModel(Perl6ProfileData data) {
+        private GCTableModel(Perl6ProfileData data) {
             gcs = data.getGC();
         }
 
@@ -74,19 +78,20 @@ public class Perl6ProfileGCPanel extends JPanel {
 
         @Override
         public int getColumnCount() {
-            return 8;
+            return 9;
         }
 
         @Override
         public String getColumnName(int columnIndex) {
             switch (columnIndex) {
-                case 0: return "Full";
-                case 1: return "Time spent";
-                case 2: return "Start time";
-                case 3: return "Since previous";
-                case 4: return "Promoted bytes";
-                case 5: return "Retained bytes";
-                case 6: return "Cleared bytes";
+                case 0: return "N";
+                case 1: return "Full";
+                case 2: return "Time spent";
+                case 3: return "Start time";
+                case 4: return "Since previous";
+                case 5: return "Promoted bytes";
+                case 6: return "Retained bytes";
+                case 7: return "Cleared bytes";
                 default: return "Threads";
             }
         }
@@ -94,6 +99,8 @@ public class Perl6ProfileGCPanel extends JPanel {
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             if (columnIndex == 0)
+                return Integer.class;
+            else if (columnIndex == 1)
                 return Boolean.class;
             return String.class;
         }
@@ -111,22 +118,24 @@ public class Perl6ProfileGCPanel extends JPanel {
             GCData item = gcs.get(rowIndex);
             switch (columnIndex) {
                 case 0:
-                    return item.full;
+                    return rowIndex;
                 case 1:
-                    return new DecimalFormat("###.##").format(item.time / 1000f) + "ms";
+                    return item.full;
                 case 2:
+                    return new DecimalFormat("###.##").format(item.time / 1000f) + "ms";
+                case 3:
                     return String.format("%sms", new DecimalFormat("###.##").format(item.startTime / 1000f));
-                case 3: {
+                case 4: {
                     if (prev != null)
                         return String.format("%sms", new DecimalFormat("###.##").format((item.startTime - prev.time - prev.startTime) / 1000f));
                     else
                         return "-";
                 }
-                case 4:
-                    return item.promotedBytes;
                 case 5:
-                    return item.retainedBytes;
+                    return item.promotedBytes;
                 case 6:
+                    return item.retainedBytes;
+                case 7:
                     return item.clearedBytes;
                 default:
                     return item.threads;
