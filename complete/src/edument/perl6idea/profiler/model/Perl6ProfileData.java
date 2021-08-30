@@ -39,7 +39,7 @@ public class Perl6ProfileData {
     @Nullable
     private String sqlDataFilePath;
     private String myName;
-    private AtomicBoolean isInitialized = new AtomicBoolean();
+    private final AtomicBoolean isInitialized = new AtomicBoolean();
     private boolean isNameChanged = false;
     private String myDbPath;
 
