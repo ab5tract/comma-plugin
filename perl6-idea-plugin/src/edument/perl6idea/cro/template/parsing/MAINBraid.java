@@ -6698,23 +6698,11 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 return -3;
 
             case 2:
-                this.startToken(CroTemplateTokenTypes.OPEN_PAREN);
-                if (!(this.literal("("))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
+                this.setArgs();
                 this.state = 3;
-                return -3;
+                return 29;
 
             case 3:
-                this.setArgs();
-                this.state = 4;
-                return 51;
-
-            case 4:
                 if (this.lastResult.isFailed()) {
                     if (this.backtrack()) {
                         continue;
@@ -6724,27 +6712,6 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsMark(7);
-                this.state = 5;
-                break;
-            case 5:
-                this.startToken(CroTemplateTokenTypes.CLOSE_PAREN);
-                if (!(this.literal(")"))) {
-                    if (this.backtrack()) {
-                        continue;
-                    } else {
-                        return -2;
-                    }
-                }
-                this.state = 6;
-                return -3;
-
-            case 6:
-                this.bsCommit(7);
-                this.state = 7;
-                continue;
-
-            case 7:
                 return -1;
 
             }

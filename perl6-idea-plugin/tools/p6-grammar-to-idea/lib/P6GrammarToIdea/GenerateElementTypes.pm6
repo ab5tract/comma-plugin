@@ -46,11 +46,13 @@ sub generate-perl6-element-types(@element-names, $prefix, $package) is export {
         push @fields, InterfaceField.new: :type<IStubFileElementType>, :name<FILE>, :default(
             ConstructorCall.new(:name<CroTemplateFileElementType>, :arguments()));
 
-        %custom := set 'MACRO', 'SUB';
+        %custom := set 'MACRO', 'SUB', 'PART';
         push @fields, InterfaceField.new: :type<IStubElementType>, :name<MACRO>,
             :default(ConstructorCall.new(:name<CroTemplateMacroStubElementType>));
         push @fields, InterfaceField.new: :type<IStubElementType>, :name<SUB>,
             :default(ConstructorCall.new(:name<CroTemplateSubStubElementType>));
+        push @fields, InterfaceField.new: :type<IStubElementType>, :name<PART>,
+            :default(ConstructorCall.new(:name<CroTemplatePartStubElementType>));
     }
     else {
         push @fields, InterfaceField.new: :type<IFileElementType>, :name<FILE>, :default(

@@ -775,15 +775,7 @@ grammar MAIN {
         <.start-token('IDENTIFER')>
         <.identifier>
         <.end-token('IDENTIFER')>
-        <.start-token('OPEN_PAREN')>
-        '('
-        <.end-token('OPEN_PAREN')>
-        <.ws>
-        [
-            <.start-token('CLOSE_PAREN')>
-            ')'
-            <.end-token('CLOSE_PAREN')>
-        ]?
+        <.arglist>
         <.end-element('DEREF_METHOD')>
     }
 
