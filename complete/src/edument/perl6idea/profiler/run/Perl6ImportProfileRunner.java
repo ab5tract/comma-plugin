@@ -24,7 +24,7 @@ public class Perl6ImportProfileRunner extends Perl6DefaultRunner {
     @NotNull
     @Override
     public String getRunnerId() {
-        return "Raku Profiler";
+        return "Raku Profiler By Import";
     }
 
     @Override
