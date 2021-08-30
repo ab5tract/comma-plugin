@@ -64,6 +64,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testCursorAvailableInToken() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar G { token TOP { x { say $¢ } } }");
+        myFixture.checkHighlighting();
+    }
+
     public void testFalsePositive1() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,"my $x = 1, 2; my ($a) = $x; say $a");
         myFixture.checkHighlighting();
