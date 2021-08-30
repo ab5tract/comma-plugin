@@ -261,13 +261,15 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             return PsiElement.EMPTY_ARRAY;
         }
         List<PsiElement> targets = getExpressionTargets(element.getParent());
-        IntroduceTargetChooser.showChooser(editor, targets, new Pass<PsiElement>() {
+        if (targets.isEmpty())
+            return PsiElement.EMPTY_ARRAY;
+        IntroduceTargetChooser.showChooser(editor, targets, new Pass<>() {
             @Override
             public void pass(PsiElement element) {
                 isExpr = !(element instanceof Perl6Statement);
                 invokeWithStatements(element.getProject(), editor, file, new PsiElement[]{element});
             }
-        }, PsiElement::getText, "Select expression to extract");
+        }, PsiElement::getText, "Select Expression to Extract");
         return PsiElement.EMPTY_ARRAY;
     }
 
