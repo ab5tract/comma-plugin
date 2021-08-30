@@ -193,8 +193,10 @@ public class Perl6ProfileCallGraph extends JPanel {
     }
 
     private void updateAxis() {
-        String overallTimeString = String.format("Time: %s μs", Perl6Utils.formatDelimiters(myRoot.getInclusiveTime(), ",", 3));
-        myGraphPanel.getTimeLabel().setText(overallTimeString);
+        if (myRoot != null && myGraphPanel != null) {
+            String overallTimeString = String.format("Time: %s μs", Perl6Utils.formatDelimiters(myRoot.getInclusiveTime(), ",", 3));
+            myGraphPanel.getTimeLabel().setText(overallTimeString);
+        }
     }
 
     public void switchToThread(int newRootID) {
