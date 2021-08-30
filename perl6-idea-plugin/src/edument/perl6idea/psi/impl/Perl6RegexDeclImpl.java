@@ -13,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclStub> implements Perl6RegexDecl {
+    private static final String[] REGEX_SYMBOLS = { "$/", "$!", "$_", "$¢", "%_" };
+
     public Perl6RegexDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -114,6 +116,15 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
         if (name != null && scope.equals("has")) {
             collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.Regex, this));
             collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Method, this, "." + name));
+        }
+    }
+
+    @Override
+    public void contributeScopeSymbols(Perl6SymbolCollector collector) {
+        for (String sym : REGEX_SYMBOLS) {
+            collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, sym, this));
+            if (collector.isSatisfied())
+                return;
         }
     }
 }
