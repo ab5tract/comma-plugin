@@ -12,6 +12,7 @@ import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
@@ -140,6 +141,9 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
                 return null; // Do not align ?? !!, we'll just indent it
 
             if (infixApp.getOperator().equals(",")) {
+                // Do not touch heredoc for real
+                if (ContainerUtil.exists(infixApp.getOperands(), s -> s instanceof Perl6Heredoc))
+                    return null;
                 // If we have a comma separated list, there can be two cases: non-literal array init or signature
                 // check those cases, otherwise just do as infix guides us
                 PsiElement origin = PsiTreeUtil.getParentOfType(infixApp, Perl6VariableDecl.class, P6CodeBlockCall.class, Perl6ArrayComposer.class, Perl6Statement.class);

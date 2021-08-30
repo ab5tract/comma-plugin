@@ -171,6 +171,7 @@ public class FormatterTest extends CommaFixtureTestCase {
         reformatTest("comment");
         reformatTest("escapes");
         reformatTest("call-staircase");
+        reformatTest("heredoc-with-indent");
     }
 
     public void testSettingsApplication() {
