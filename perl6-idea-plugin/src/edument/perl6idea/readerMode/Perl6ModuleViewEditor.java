@@ -116,6 +116,10 @@ public class Perl6ModuleViewEditor extends UserDataHolderBase implements TextEdi
         return new Perl6ModuleEditorState(myEditor.getState(level), myViewer.getState(level));
     }
 
+    public Perl6ReaderModeState getPresentedState() {
+        return myState;
+    }
+
     @Override
     public boolean isModified() {
         return myEditor.isModified();

@@ -2,7 +2,6 @@ package edument.perl6idea.coverage;
 
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.ide.projectView.ProjectView;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.components.Service;
@@ -15,7 +14,6 @@ import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
@@ -24,14 +22,16 @@ import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.stubs.*;
 import com.intellij.util.Alarm;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
-import edument.perl6idea.psi.stub.Perl6FileStub;
+import edument.perl6idea.psi.Perl6File;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -268,13 +268,10 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
             return null;
 
         // Look up file stub and line mapping for the file.
-        ObjectStubTree stubTree = StubTreeLoader.getInstance().readFromVFile(project, file);
-        if (stubTree == null)
+        PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+        if (psiFile == null)
             return null;
-        Stub stubRoot = stubTree.getRoot();
-        if (!(stubRoot instanceof Perl6FileStub))
-            return null;
-        Map<Integer, List<Integer>> statementLineMap = ((Perl6FileStub)stubRoot).getStatementLineMap();
+        Map<Integer, List<Integer>> statementLineMap = ((Perl6File)psiFile).getStatementLineMap();
 
         // Make a flat map of all line starters we might cover.
         Set<Integer> coverable = new HashSet<>();
