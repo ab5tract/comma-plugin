@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -83,6 +84,16 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
         catch (ExecutionException e1) {
             Messages.showErrorDialog(myProject, e1.getMessage(), "Loading Failed");
         }
+    }
+
+    @Override
+    protected @NotNull Action getCancelAction() {
+        return new DialogWrapperAction("Close") {
+            @Override
+            protected void doAction(ActionEvent e) {
+                doCancelAction();
+            }
+        };
     }
 
     @Override
