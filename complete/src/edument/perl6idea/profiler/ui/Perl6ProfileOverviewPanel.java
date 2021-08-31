@@ -1,5 +1,6 @@
 package edument.perl6idea.profiler.ui;
 
+import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
@@ -20,6 +21,7 @@ public class Perl6ProfileOverviewPanel extends JPanel {
         JPanel panel = new JPanel(new MigLayout());
         JTextPane textPane = new JTextPane();
         textPane.setContentType("text/html");
+        textPane.setForeground(JBColor.foreground());
         JScrollPane scrollPane = new JBScrollPane(textPane);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         String style = "<head><style>body {\n" +
