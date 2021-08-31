@@ -32,8 +32,18 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Fixes navigation to symbols in another file</li>
-<li>Fixes displaying of the <code>Log::Timeline</code> view</li>
+<li>Save profiles for a project for later viewing. Up to 10 recent profiles are saved automatically, and can be accessed through <code>Show Recent Raku Profiles...</code> in the <code>Run</code> menu. They can be named; named profiles are never automatically deleted.</li>
+<li>Add a new action in the <code>Run</code> menu to import profile results from a SQL file</li>
+<li>Add an overview page to the profiler, giving a summary of the profiled execution</li>
+<li>Add a new column indicating GC sequence number in the profiler</li>
+<li>Fix incorrect indentation of heredoc text blocks when formatting</li>
+<li>Support method argument lists in the Cro template parser</li>
+<li>Do not mark the special variables <code>$¢</code> and <code>%_</code> as unknown in a regex declaration</li>
+<li>Fix a bug where renaming a module with the <code>.rakudoc</code> extension would instead replace it with the <code>.pm6</code> legacy extension; now on module renaming the original extension is preserved</li>
+<li>Reduce memory consumption when loading profile results SQL</li>
+<li>Improve performance during typing for large projects</li>
+<li>Fix a possible exception in profiler results view</li>
+<li>Fix a possible exception in the Extract Code Block refactoring</li>
 </ul>
   ]]>
   </change-notes>
