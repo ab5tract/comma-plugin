@@ -700,17 +700,6 @@ public class CroTemplateParser implements PsiParser {
         return true;
     }
 
-    private boolean derefitemmethod_18_quant_1(PsiBuilder builder, OPP opp) {
-        String tt2;
-        tt2 = builder.getTokenText();
-        if (((builder.getTokenType()) == CroTemplateTokenTypes.CLOSE_PAREN) && (tt2.equals(")"))) {
-            builder.advanceLexer();
-        } else {
-            return false;
-        }
-        return true;
-    }
-
     private boolean derefitemmethod_18(PsiBuilder builder) {
         OPP opp;
         opp = null;
@@ -721,22 +710,8 @@ public class CroTemplateParser implements PsiParser {
         } else {
             return false;
         }
-        String tt1;
-        tt1 = builder.getTokenText();
-        if (((builder.getTokenType()) == CroTemplateTokenTypes.OPEN_PAREN) && (tt1.equals("("))) {
-            builder.advanceLexer();
-        } else {
+        if (!(this.arglist_3(builder))) {
             return false;
-        }
-        if (!(this.ws_67(builder))) {
-            return false;
-        }
-        PsiBuilder.Marker quantMarker2;
-        quantMarker2 = builder.mark();
-        if (this.derefitemmethod_18_quant_1(builder, opp)) {
-            quantMarker2.drop();
-        } else {
-            quantMarker2.rollbackTo();
         }
         marker1.done(CroTemplateElementTypes.DEREF_METHOD);
         return true;

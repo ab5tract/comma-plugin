@@ -1,14 +1,16 @@
 package edument.perl6idea.cro.template.parsing;
+import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IStubFileElementType;
 import com.intellij.psi.stubs.IStubElementType;
+import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.cro.template.psi.stub.*;
 
 public interface CroTemplateElementTypes {
-    IStubFileElementType<?> FILE = new CroTemplateFileElementType();
-    IStubElementType<?, ?> MACRO = new CroTemplateMacroStubElementType();
-    IStubElementType<?, ?> SUB = new CroTemplateSubStubElementType();
-    IStubElementType<?, ?> PART = new CroTemplatePartStubElementType();
+    IStubFileElementType FILE = new CroTemplateFileElementType();
+    IStubElementType MACRO = new CroTemplateMacroStubElementType();
+    IStubElementType SUB = new CroTemplateSubStubElementType();
+    IStubElementType PART = new CroTemplatePartStubElementType();
     IElementType APPLY = new CroTemplateElementType("APPLY");
     IElementType ARGLIST = new CroTemplateElementType("ARGLIST");
     IElementType BODY = new CroTemplateElementType("BODY");
