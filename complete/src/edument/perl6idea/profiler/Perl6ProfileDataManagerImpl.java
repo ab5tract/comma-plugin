@@ -102,7 +102,7 @@ public class Perl6ProfileDataManagerImpl implements Perl6ProfileDataManager, Per
             while (iterator.hasNext()) {
                 Perl6ProfileData next = iterator.next();
                 if (!next.isNameChanged()) {
-                    myProfileResults.remove(next);
+                    removeProfileResult(next);
                     break;
                 }
             }
@@ -112,6 +112,12 @@ public class Perl6ProfileDataManagerImpl implements Perl6ProfileDataManager, Per
 
     @Override
     public void removeProfileResult(Perl6ProfileData data) {
+        try {
+            Files.deleteIfExists(Paths.get(data.getFileName()));
+        }
+        catch (IOException e) {
+            Logger.getInstance(Perl6ProfileDataManagerImpl.class).warn("Could not delete profile: " + e.getMessage());
+        }
         myProfileResults.remove(data);
     }
 }
