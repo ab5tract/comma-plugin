@@ -35,6 +35,7 @@ public class Perl6ProfileData {
         "GROUP BY c.routine_id " +
         "ORDER BY c.inclusive_time DESC;";
     private final Project myProject;
+    private final boolean isImported;
     private Connection connection;
     @Nullable
     private String sqlDataFilePath;
@@ -43,14 +44,16 @@ public class Perl6ProfileData {
     private boolean isNameChanged = false;
     private String myDbPath;
 
-    public Perl6ProfileData(@NotNull Project project, String name, @NotNull File sourceFile) throws IOException, SQLException {
+    public Perl6ProfileData(@NotNull Project project, String name, @NotNull File sourceFile, boolean hasToRemoveTheFile) throws IOException, SQLException {
+        isImported = !hasToRemoveTheFile;
         myProject = project;
         myName = name;
         sqlDataFilePath = sourceFile.getPath();
         connection = createNewDBConnection();
     }
 
-    public Perl6ProfileData(@NotNull Project project, String name, @NotNull Path filePath) throws Exception {
+    public Perl6ProfileData(@NotNull Project project, String name, @NotNull Path filePath, boolean isImported) throws Exception {
+        this.isImported = isImported;
         myProject = project;
         myName = name;
         connection = createNewDBConnection(filePath);
@@ -76,9 +79,11 @@ public class Perl6ProfileData {
         if (!isInitialized.compareAndSet(false, true))
             return;
 
-        Perl6ProfileDataManager manager = ServiceManager.getService(myProject, Perl6ProfileDataManager.class);
-        if (manager != null) {
-            manager.saveProfileResult(this);
+        if (!isImported) {
+            Perl6ProfileDataManager manager = ServiceManager.getService(myProject, Perl6ProfileDataManager.class);
+            if (manager != null) {
+                manager.saveProfileResult(this);
+            }
         }
         assert sqlDataFilePath != null;
         try (Statement statement = connection.createStatement();
@@ -325,6 +330,98 @@ public class Perl6ProfileData {
                     calls.getInt(7), calls.getLong(8),
                     calls.getLong(9)
                 ));
+            }
+        } catch (SQLException e) {
+            LOG.warn(e);
+        }
+        return data;
+    }
+
+    public Perl6ProfileOverviewData getOverviewData() {
+        Perl6ProfileOverviewData data = new Perl6ProfileOverviewData();
+        try (Statement statement = connection.createStatement()) {
+            String OVERVIEW_STATEMENT = String.format(
+                "select\n" +
+                "    total_time,\n" +
+                "    first_entry_time,\n" +
+                "    root_node,\n" +
+                "    spesh_time as spesh_time\n" +
+                "from profile\n" +
+                "order by thread_id asc;");
+            ResultSet overviewData = statement.executeQuery(OVERVIEW_STATEMENT);
+            data.totalTime = 0;
+            while (overviewData.next()) {
+                data.threads++;
+                if (data.speshTime == 0)
+                    data.speshTime = overviewData.getInt("spesh_time") / 1000f;
+                int tempTotalTime = overviewData.getInt("first_entry_time") + overviewData.getInt("total_time");
+                if (tempTotalTime > data.totalTime)
+                    data.totalTime = tempTotalTime / 1000f;
+            }
+                //data.totalTime = overviewData.getInt("total_time");
+                // data.threads = overviewData.getInt("threads");
+                // data.speshTime = overviewData.getInt("spesh_time");
+            //}
+            String CALLS_STATEMENT = "select\n" +
+                                     "    total(entries) as entries_total,\n" +
+                                     "    total(spesh_entries) as spesh_entries_total,\n" +
+                                     "    total(jit_entries) as jit_entries_total,\n" +
+                                     "    total(inlined_entries) as inlined_entries_total,\n" +
+                                     "    total(deopt_one) as deopt_one_total,\n" +
+                                     "    total(deopt_all) as deopt_all_total,\n" +
+                                     "    total(osr) as osr_total\n" +
+                                     "from calls;";
+            ResultSet overviewCallData = statement.executeQuery(CALLS_STATEMENT);
+            if (overviewCallData.next()) {
+                data.spesh = overviewCallData.getInt("spesh_entries_total");
+                data.entriesTotal = overviewCallData.getInt("entries_total");
+                data.inlineEntriesTotal = overviewCallData.getInt("inlined_entries_total");
+                data.jit = overviewCallData.getInt("jit_entries_total");
+                data.deopted = overviewCallData.getInt("deopt_one_total");
+                data.globalDeopt = overviewCallData.getInt("deopt_all_total");
+                data.OSR = overviewCallData.getInt("osr_total");
+            }
+            String GC_STATEMENT = "select\n" +
+                                  "    avg(case when full == 0 then latest_end - earliest end) as avg_minor_time,\n" +
+                                  "    min(case when full == 0 then latest_end - earliest end) as min_minor_time,\n" +
+                                  "    max(case when full == 0 then latest_end - earliest end) as max_minor_time,\n" +
+                                  "    avg(case when full == 1 then latest_end - earliest end) as avg_major_time,\n" +
+                                  "    min(case when full == 1 then latest_end - earliest end) as min_major_time,\n" +
+                                  "    max(case when full == 1 then latest_end - earliest end) as max_major_time,\n" +
+                                  "    total(case when full == 0 then latest_end - earliest end) as total_minor,\n" +
+                                  "    total(case when full == 1 then latest_end - earliest end) as total_major,\n" +
+                                  "    total(latest_end - earliest) as total," +
+                                  "    count(DISTINCT sequence_num) as gc_total,\n" +
+                                  "    count(DISTINCT (case when full then sequence_num end)) as full_gc_total\n" +
+                                  "    from (select\n" +
+                                  "            min(start_time) as earliest,\n" +
+                                  "            max(start_time + time) as latest_end,\n" +
+                                  "            full, sequence_num\n" +
+                                  "        from gcs\n" +
+                                  "            group by sequence_num\n" +
+                                  "            order by sequence_num asc)";
+            ResultSet gcCallData = statement.executeQuery(GC_STATEMENT);
+            if (gcCallData.next()) {
+                data.gcTotalTime = gcCallData.getInt("total") / 1000f;
+                data.gcNumber = gcCallData.getInt("gc_total");
+                data.fullGCNumber = gcCallData.getInt("full_gc_total");
+                data.totalMajor = gcCallData.getInt("total_minor");
+                data.totalMinor = gcCallData.getInt("total_major");
+                data.minMinorTime = gcCallData.getInt("min_minor_time");
+                data.maxMinorTime = gcCallData.getInt("max_minor_time");
+                data.avgMinorTime = gcCallData.getInt("avg_minor_time");
+                data.minMajorTime = gcCallData.getInt("min_major_time");
+                data.maxMajorTime = gcCallData.getInt("max_major_time");
+                data.avgMajorTime = gcCallData.getInt("avg_major_time");
+            }
+            String ALLOCS_STATEMENT = "select\n" +
+                                      "    total(a.jit + a.spesh + a.count) as allocated,\n" +
+                                      "    total(a.replaced) as replaced\n" +
+                                      "from allocations a;";
+            ResultSet overviewAllocsData = statement.executeQuery(ALLOCS_STATEMENT);
+            if (overviewAllocsData.next()) {
+                data.allocated = overviewCallData.getInt("allocated");
+                data.replaced = overviewCallData.getInt("replaced");
             }
         } catch (SQLException e) {
             LOG.warn(e);

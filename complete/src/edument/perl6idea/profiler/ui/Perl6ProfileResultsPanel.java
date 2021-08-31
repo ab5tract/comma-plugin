@@ -17,12 +17,17 @@ public class Perl6ProfileResultsPanel extends JPanel {
         myProject = project;
         myProfileData = profileData;
         JBTabbedPane tabbedPaneWrapper = new JBTabbedPane();
+        tabbedPaneWrapper.addTab("Overview", getOverviewTab());
         tabbedPaneWrapper.addTab("Routines", getRoutinesTab());
         tabbedPaneWrapper.addTab("Call Graph", getCallGraphTab());
         tabbedPaneWrapper.addTab("Modules", getModulesTab());
         tabbedPaneWrapper.addTab("GC", getGCTab());
         tabbedPaneWrapper.addTab("Allocations", getAllocationsTab());
         add(tabbedPaneWrapper, BorderLayout.CENTER);
+    }
+
+    private Component getOverviewTab() {
+        return new Perl6ProfileOverviewPanel(myProfileData).getPanel();
     }
 
     private Component getRoutinesTab() {

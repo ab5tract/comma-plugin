@@ -51,7 +51,7 @@ public class Perl6ProfileDataManagerImpl implements Perl6ProfileDataManager, Per
                 String name = child.getAttributeValue("name");
                 String filename = child.getAttributeValue("filename");
                 if (filename != null) {
-                    Perl6ProfileData value = new Perl6ProfileData(myProject, name, Paths.get(filename));
+                    Perl6ProfileData value = new Perl6ProfileData(myProject, name, Paths.get(filename), false);
                     String renamed = child.getAttributeValue("isRenamed");
                     value.setNameChanged(renamed != null && !renamed.isEmpty());
                     myProfileResults.addLast(value);

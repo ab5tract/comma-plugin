@@ -71,7 +71,7 @@ public class Perl6ProfileTask extends Task.Backgroundable {
             indicator.setText("Creating a database...");
             indicator.setFraction(0.1);
             indicator.checkCanceled();
-            myProfileData = myProfileData == null ? new Perl6ProfileData(myProject, createProfileName(), sqlDataFile) : myProfileData;
+            myProfileData = myProfileData == null ? new Perl6ProfileData(myProject, createProfileName(), sqlDataFile, myHasToRemoveTheFile) : myProfileData;
             indicator.setText("Loading profiler data into the database...");
             indicator.setFraction(0.2);
             myProfileData.initialize();
