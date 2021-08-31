@@ -79,7 +79,7 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
         if (row == -1)
             row = 0;
         int typeRow = allocationsTable.convertRowIndexToModel(row);
-        if (typeRow >= 0) {
+        if (typeRow >= 0 && allocationsTable.getModel().getRowCount() > 0) {
             Perl6ProfileAllocationsTableModel model = (Perl6ProfileAllocationsTableModel)allocationsTable.getModel();
             int typeId = model.getAllocationId(typeRow);
             List<AllocatedTypeDetails> list = myProfileData.getAllocatedTypeData(typeId);

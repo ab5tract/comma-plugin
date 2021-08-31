@@ -34,12 +34,16 @@ public class Perl6ProfileGCPanel extends JPanel {
             public Comparator<?> getComparator(int column) {
                 switch (column) {
                     case 0:
-                        return Comparator.naturalOrder();
+                    case 1:
+                    case 5:
+                    case 6:
                     case 7:
+                        return Comparator.naturalOrder();
+                    case 8:
                         return null;
                     default:
                         return (Comparator<Object>)(o1, o2) -> {
-                            if (column >= 1 && column <= 6) {
+                            if (column >= 2 && column <= 6) {
                                 if (o1.equals("-"))
                                     return -1;
                                 if (o2.equals("-"))
