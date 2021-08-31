@@ -21,7 +21,6 @@ public class Perl6ProfileOverviewPanel extends JPanel {
         JPanel panel = new JPanel(new MigLayout());
         JTextPane textPane = new JTextPane();
         textPane.setContentType("text/html");
-        textPane.setForeground(JBColor.foreground());
         JScrollPane scrollPane = new JBScrollPane(textPane);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         String style = "<head><style>body {\n" +
@@ -32,6 +31,7 @@ public class Perl6ProfileOverviewPanel extends JPanel {
                          + generateGCText() + generateCallText() + generateOptText() + "</html>");
         textPane.setContentType("text/html");
         textPane.setBorder(JBUI.Borders.empty());
+        textPane.setForeground(JBColor.foreground());
         panel.add(scrollPane, "pushx, pushy, growx, growy");
         return panel;
     }
