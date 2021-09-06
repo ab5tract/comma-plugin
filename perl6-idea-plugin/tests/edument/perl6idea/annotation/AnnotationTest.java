@@ -1324,4 +1324,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
                                   "0 + 0;");
         myFixture.checkHighlighting();
     }
+
+    public void testHyphenInCharacterClass() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "/<[<warning descr=\"A hyphen is used in a character class, maybe '..' was intended to denote a range? Otherwise a hyphen should be at the end ofthe character class.\">-</warning>a..b<warning descr=\"A hyphen is used in a character class, maybe '..' was intended to denote a range? Otherwise a hyphen should be at the end ofthe character class.\">-</warning>cd-]>/"
+        );
+        myFixture.checkHighlighting();
+    }
 }

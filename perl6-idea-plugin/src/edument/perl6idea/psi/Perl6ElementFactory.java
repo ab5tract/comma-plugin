@@ -323,4 +323,9 @@ public class Perl6ElementFactory {
     public static Perl6Parameter createParameter(Project project, String text) {
         return produceElement(project, String.format("sub (%s) {}", text), Perl6Parameter.class);
     }
+
+    public static PsiElement createRegexRangeDelimiter(Project project) {
+        Perl6RegexCClassElem elem = produceElement(project, "/<[..]>/", Perl6RegexCClassElem.class);
+        return elem.getFirstChild().getNextSibling();
+    }
 }
