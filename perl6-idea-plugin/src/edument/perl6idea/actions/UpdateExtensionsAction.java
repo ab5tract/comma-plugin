@@ -34,7 +34,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UpdateExtensionsAction extends AnAction {
-    public static final Pattern LEGACY_EXTENSION_PATTERN = Pattern.compile(".+?\\.(p6|pl6|pm6|pm|pod6|pod)");
+    public static final Pattern LEGACY_EXTENSION_PATTERN = Pattern.compile(".+?\\.(p6|pl6|pm6|pod6)");
+    public static final Pattern FULL_LEGACY_EXTENSION_PATTERN = Pattern.compile(".+?\\.(p6|pl6|pm6|pm|pod6|pod)");
     private static final Map<String, String> nonLegacyExts = new HashMap<>();
 
     static {
@@ -52,7 +53,7 @@ public class UpdateExtensionsAction extends AnAction {
         assert project != null;
         Module @NotNull [] modules = ModuleManager.getInstance(project).getModules();
 
-        Map<String, List<File>> filesToUpdate = collectFilesWithLegacyNames(modules);
+        Map<String, List<File>> filesToUpdate = collectFilesWithLegacyNames(modules, true);
         if (filesToUpdate.isEmpty())
             return;
 
@@ -60,15 +61,17 @@ public class UpdateExtensionsAction extends AnAction {
     }
 
     @NotNull
-    public static Map<String, List<File>> collectFilesWithLegacyNames(Module @NotNull [] modules) {
+    public static Map<String, List<File>> collectFilesWithLegacyNames(Module @NotNull [] modules, boolean fullCheck) {
         Map<String, List<File>> filesToUpdate = new HashMap<>();
 
         for (Module module : modules) {
             for (VirtualFile root : ModuleRootManager.getInstance(module).getSourceRoots()) {
                 if (root.isDirectory()) {
-                    @NotNull List<File> files = FileUtil.findFilesByMask(LEGACY_EXTENSION_PATTERN, root.toNioPath().toFile());
+                    @NotNull List<File> files = FileUtil.findFilesByMask(
+                        fullCheck ? FULL_LEGACY_EXTENSION_PATTERN : LEGACY_EXTENSION_PATTERN,
+                        root.toNioPath().toFile());
                     for (File file : files) {
-                        Matcher matcher = LEGACY_EXTENSION_PATTERN.matcher(file.getName());
+                        Matcher matcher = (fullCheck ? FULL_LEGACY_EXTENSION_PATTERN : LEGACY_EXTENSION_PATTERN).matcher(file.getName());
                         if (matcher.matches()) {
                             filesToUpdate.compute(matcher.group(1), (f, list) -> {
                                 if (list == null)
@@ -200,6 +203,7 @@ public class UpdateExtensionsAction extends AnAction {
 
         private StringItem(String ext) {
             this.ext = ext;
+            isSelected = !ext.equals("pod") && !ext.equals("pm");
         }
     }
 }

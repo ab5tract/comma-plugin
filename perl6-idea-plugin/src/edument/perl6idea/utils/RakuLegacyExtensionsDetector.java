@@ -21,7 +21,7 @@ public class RakuLegacyExtensionsDetector implements StartupActivity {
     @Override
     public void runActivity(@NotNull Project project) {
         Module @NotNull [] modules = ModuleManager.getInstance(project).getModules();
-        Map<String, List<File>> filesToUpdate = UpdateExtensionsAction.collectFilesWithLegacyNames(modules);
+        Map<String, List<File>> filesToUpdate = UpdateExtensionsAction.collectFilesWithLegacyNames(modules, false);
         if (!filesToUpdate.isEmpty()) {
             Notification notification = new Notification(
                 "raku.misc", Perl6Icons.CAMELIA,
