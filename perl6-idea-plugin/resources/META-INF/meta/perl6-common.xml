@@ -313,6 +313,11 @@
             description="Opens a tool to setup Raku SDK of this project, which can be used by different components">
       <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
     </action>
+    <action id="edument.perl6idea.actions.UpdateExtensionsAction" class="edument.perl6idea.actions.UpdateExtensionsAction"
+            text="Update Raku File Extensions"
+            description="Renames files with obsolete Raku extensions to use official replacement ones">
+      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
+    </action>
   </actions>
 
   <module-components>
