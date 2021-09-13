@@ -12,7 +12,6 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
@@ -24,15 +23,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,12 +56,11 @@ public class UpdateExtensionsAction extends AnAction {
         if (filesToUpdate.isEmpty())
             return;
 
-        DialogWrapper check = new ChooseExtensionsToUpdate(project, filesToUpdate.keySet(), filesToUpdate);
-        check.show();
+        new RakuChooseExtensionsToUpdateDialog(project, filesToUpdate).show();
     }
 
     @NotNull
-    private static Map<String, List<File>> collectFilesWithLegacyNames(Module @NotNull [] modules) {
+    public static Map<String, List<File>> collectFilesWithLegacyNames(Module @NotNull [] modules) {
         Map<String, List<File>> filesToUpdate = new HashMap<>();
 
         for (Module module : modules) {
@@ -93,7 +89,7 @@ public class UpdateExtensionsAction extends AnAction {
         e.getPresentation().setEnabled(e.getProject() != null);
     }
 
-    private static class ChooseExtensionsToUpdate extends DialogWrapper {
+    public static class RakuChooseExtensionsToUpdateDialog extends DialogWrapper {
         private final List<StringItem> exts;
         private final Map<String, List<File>> filesToUpdate;
         private final Project myProject;
@@ -101,12 +97,11 @@ public class UpdateExtensionsAction extends AnAction {
         private ListTableModel<StringItem> myModel;
 
 
-        private ChooseExtensionsToUpdate(Project project,
-                                         Set<String> exts,
-                                         Map<String, List<File>> filesToUpdate) {
+        public RakuChooseExtensionsToUpdateDialog(Project project,
+                                                  Map<String, List<File>> filesToUpdate) {
             super(project, true);
             this.myProject = project;
-            this.exts = ContainerUtil.map(exts, e -> new StringItem(e));
+            this.exts = ContainerUtil.map(filesToUpdate.keySet(), e -> new StringItem(e));
             this.filesToUpdate = filesToUpdate;
             init();
         }

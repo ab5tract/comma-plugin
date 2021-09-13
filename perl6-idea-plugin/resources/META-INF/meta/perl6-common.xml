@@ -245,6 +245,7 @@
     <toolWindow id="Raku Grammar Preview" anchor="right" factoryClass="edument.perl6idea.grammar.RakuGrammarPreviewFactory"
                 secondary="false" canCloseContents="false"/>
     <backgroundPostStartupActivity implementation="edument.perl6idea.utils.Perl6ModuleListStarter"/>
+    <backgroundPostStartupActivity implementation="edument.perl6idea.utils.RakuLegacyExtensionsDetector"/>
     <projectService configurationSchemaKey="raku.backup.sdk" serviceImplementation="edument.perl6idea.services.Perl6BackupSDKService"/>
     <projectService serviceImplementation="edument.perl6idea.utils.Perl6ModuleListFetcher"/>
     <moduleService serviceImplementation="edument.perl6idea.metadata.Perl6MetaDataComponent"/>
@@ -265,6 +266,7 @@
     <notificationGroup displayType="BALLOON" id="raku.repl.errors"/>
     <notificationGroup displayType="BALLOON" id="raku.meta.errors"/>
     <notificationGroup displayType="BALLOON" id="raku.timeline.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.misc"/>
     <appStarter implementation="edument.perl6idea.application.RakuDocStarter"/>
     <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
   </extensions>
