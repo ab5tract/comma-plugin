@@ -1,13 +1,15 @@
 package edument.perl6idea.pm.impl;
 
 import com.intellij.execution.ExecutionException;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.sh.run.ShRunner;
 import edument.perl6idea.pm.RakuPackageManager;
 import edument.perl6idea.pm.RakuPackageManagerKind;
 import edument.perl6idea.utils.Perl6CommandLine;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class RakuPakkuPM extends RakuPackageManager {
@@ -26,7 +28,13 @@ public class RakuPakkuPM extends RakuPackageManager {
         cmd.addParameter(location);
         cmd.addParameter("add");
         cmd.addParameter(spec);
-        List<String> result = cmd.executeAndRead(null);
+
+        ShRunner shRunner = ServiceManager.getService(project, ShRunner.class);
+        if (shRunner != null) {
+            ApplicationManager.getApplication().invokeAndWait(() -> {
+                shRunner.run(cmd.getCommandLineString(), System.getProperty("java.io.tmpdir"), "Installing Raku Distributions...", true);
+            });
+        }
     }
 
     @Override
