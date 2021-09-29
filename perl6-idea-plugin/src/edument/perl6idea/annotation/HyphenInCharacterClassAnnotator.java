@@ -16,8 +16,8 @@ public class HyphenInCharacterClassAnnotator implements Annotator {
             while (child != null) {
                 if (child.getText().equals("-"))
                     holder.newAnnotation(
-                        HighlightSeverity.WARNING,
-                        "A hyphen is used in a character class, maybe '..' was intended to denote a range? Otherwise a hyphen should be at the end ofthe character class.")
+                        HighlightSeverity.ERROR,
+                        "A hyphen is used in a character class, maybe '..' was intended to denote a range? Otherwise a hyphen should be at the end of the character class.")
                         .range(child)
                         .withFix(new ReplaceHyphenWithRange(child))
                         .create();
