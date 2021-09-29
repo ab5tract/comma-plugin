@@ -70,7 +70,7 @@ public class Perl6ProfileData {
     }
 
     private Connection createNewDBConnection(Path dbPath) throws SQLException {
-        isInitialized.compareAndSet(false, true);
+        isInitialized.set(true);
         myDbPath = dbPath.toString();
         return DriverManager.getConnection("jdbc:sqlite:" + dbPath);
     }

@@ -13,12 +13,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.PlatformIcons;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
+import edument.perl6idea.profiler.compare.ProfileCompareProcessor;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
 import edument.perl6idea.profiler.run.Perl6ImportRunner;
 import edument.perl6idea.run.Perl6ProfileExecutor;
@@ -107,6 +107,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
     protected @Nullable JComponent createNorthPanel() {
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(new DeleteSelectedAction());
+        group.add(new CompareSelectedAction());
         return ActionManager.getInstance().createActionToolbar("Perl6ProfileResultsChooser", group, true).getComponent();
     }
 
@@ -151,6 +152,27 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
         @Override
         public void update(@NotNull AnActionEvent e) {
             e.getPresentation().setEnabled(myProfilesTable.getSelectedRowCount() != 0);
+        }
+    }
+
+    private class CompareSelectedAction extends AnAction {
+        CompareSelectedAction() { super("Compare", "Compare selected profile results", PlatformIcons.CHECK_ICON); }
+
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent e) {
+            int[] selectedData = myProfilesTable.getSelectedRows();
+            if (selectedData.length != 2) {
+                Messages.showErrorDialog(myProject, "You need to select two profiles to compare (using shift for multiple selection).", "Profile comparison failed");
+                return;
+            }
+            Perl6ProfileData[] profiles = {myProfilesTableModel.getItem(selectedData[0]), myProfilesTableModel.getItem(selectedData[1])};
+            try {
+                ProfileCompareProcessor.ProfileCompareResults results = new ProfileCompareProcessor(profiles).process();
+                new ProfileCompareDialog(myProject, results).show();
+            } catch (SQLException | IOException ex) {
+                LOG.error(ex);
+                Messages.showErrorDialog(myProject, "Could not compare profiles.", "Profile comparison failed");
+            }
         }
     }
 }
