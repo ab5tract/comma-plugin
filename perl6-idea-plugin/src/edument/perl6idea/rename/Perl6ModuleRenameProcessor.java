@@ -16,10 +16,10 @@ import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6ModuleName;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -74,11 +74,9 @@ public class Perl6ModuleRenameProcessor extends RenamePsiElementProcessor {
         List<String> oldName = new ArrayList<>(Arrays.asList(oldNameArray));
         oldName.remove(oldName.size() - 1);
         List<String> newName = new ArrayList<>(Arrays.asList(newNameArray));
-        // Yes, Java has no Path.extension method
-        int i = file.getName().lastIndexOf(".");
-        String extension = i >= 0 ? file.getName().substring(i + 1) : null;
+        String extension = Perl6Utils.getNameExtension(file.getName());
         String newFileName = newName.get(newName.size() - 1) + "." +
-                             (extension != null ? extension : Perl6ModuleFileType.INSTANCE.getDefaultExtension());
+                             (extension.isEmpty() ? Perl6ModuleFileType.INSTANCE.getDefaultExtension() : extension);
         newName.remove(newName.size() - 1);
         VirtualFile directoryToCleanupAfter = file.getVirtualFile().getParent();
 

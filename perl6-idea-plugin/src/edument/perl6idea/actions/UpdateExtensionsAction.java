@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 public class UpdateExtensionsAction extends AnAction {
     public static final Pattern LEGACY_EXTENSION_PATTERN = Pattern.compile(".+?\\.(p6|pl6|pm6|pod6)");
-    public static final Pattern FULL_LEGACY_EXTENSION_PATTERN = Pattern.compile(".+?\\.(p6|pl6|pm6|pm|pod6|pod)");
+    public static final Pattern FULL_LEGACY_EXTENSION_PATTERN = Pattern.compile(".+?\\.(p6|pl6|pm6|pm|pod6|pod|t)");
     private static final Map<String, String> nonLegacyExts = new HashMap<>();
 
     static {
@@ -45,6 +45,7 @@ public class UpdateExtensionsAction extends AnAction {
         nonLegacyExts.put("pm", "rakumod");
         nonLegacyExts.put("pod6", "rakudoc");
         nonLegacyExts.put("pod", "rakudoc");
+        nonLegacyExts.put("t", "rakutest");
     }
 
     @Override
@@ -114,7 +115,7 @@ public class UpdateExtensionsAction extends AnAction {
             JPanel panel = new JPanel(new MigLayout());
             myModel = new ListTableModel<>(
                 new ColumnInfo[]{
-                    new ColumnInfo<StringItem, Boolean>("#") {
+                    new ColumnInfo<StringItem, Boolean>("Update") {
                         @Override
                         public Boolean valueOf(StringItem item) {
                             return item.isSelected;
@@ -151,7 +152,7 @@ public class UpdateExtensionsAction extends AnAction {
 
         @Override
         protected void doOKAction() {
-            List<Pair<Path, Path>> failedToProcess = new ArrayList<>();
+            List<Pair<Path, String>> failedToProcess = new ArrayList<>();
             WriteCommandAction.runWriteCommandAction(myProject, "Renaming...", null, () -> {
                 for (int i = 0; i < myTable.getRowCount(); i++) {
                     if (myTable.getValueAt(i, 0) instanceof Boolean && ((Boolean)myTable.getValueAt(i, 0)).booleanValue()) {
@@ -159,13 +160,14 @@ public class UpdateExtensionsAction extends AnAction {
                         List<File> files = filesToUpdate.get(ext);
                         for (File file : files) {
                             Path target = file.toPath();
-                            Path newTarget =
-                                target.resolveSibling(target.getFileName().toString().replace("." + ext, "." + nonLegacyExts.get(ext)));
+                            String newName = target.getFileName().toString().replace("." + ext, "." + nonLegacyExts.get(ext));
                             try {
-                                Files.move(target, newTarget);
+                                VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(file);
+                                if (vf != null)
+                                    vf.rename(this, newName);
                             }
                             catch (IOException e) {
-                                failedToProcess.add(Pair.create(target, newTarget));
+                                failedToProcess.add(Pair.create(target, newName));
                             }
                         }
                     }
@@ -178,9 +180,9 @@ public class UpdateExtensionsAction extends AnAction {
         }
 
         private class FailureDialog extends DialogWrapper {
-            private final List<Pair<Path, Path>> filesToShow;
+            private final List<Pair<Path, String>> filesToShow;
 
-            private FailureDialog(List<Pair<Path, Path>> failedToProcess) {
+            private FailureDialog(List<Pair<Path, String>> failedToProcess) {
                 super(myProject, true);
                 this.filesToShow = failedToProcess;
                 init();
@@ -190,7 +192,7 @@ public class UpdateExtensionsAction extends AnAction {
             protected @Nullable JComponent createCenterPanel() {
                 StringJoiner joiner = new StringJoiner("<br>");
                 joiner.add("Could not rename those files:<br>");
-                for (Pair<Path, Path> pair : filesToShow)
+                for (Pair<Path, String> pair : filesToShow)
                     joiner.add(pair.first + " -> " + pair.second);
                 return new JBLabel("<html>" + joiner.toString() + "</html>");
             }
