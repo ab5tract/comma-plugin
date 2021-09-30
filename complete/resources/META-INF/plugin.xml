@@ -32,18 +32,9 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Save profiles for a project for later viewing. Up to 10 recent profiles are saved automatically, and can be accessed through <code>Show Recent Raku Profiles...</code> in the <code>Run</code> menu. They can be named; named profiles are never automatically deleted.</li>
-<li>Add a new action in the <code>Run</code> menu to import profile results from a SQL file</li>
-<li>Add an overview page to the profiler, giving a summary of the profiled execution</li>
-<li>Add a new column indicating GC sequence number in the profiler</li>
-<li>Fix incorrect indentation of heredoc text blocks when formatting</li>
-<li>Support method argument lists in the Cro template parser</li>
-<li>Do not mark the special variables <code>$¢</code> and <code>%_</code> as unknown in a regex declaration</li>
-<li>Fix a bug where renaming a module with the <code>.rakudoc</code> extension would instead replace it with the <code>.pm6</code> legacy extension; now on module renaming the original extension is preserved</li>
-<li>Reduce memory consumption when loading profile results SQL</li>
-<li>Improve performance during typing for large projects</li>
-<li>Fix a possible exception in profiler results view</li>
-<li>Fix a possible exception in the Extract Code Block refactoring</li>
+<li>Add an integration with two Raku package managers: zef and Pakku. The corresponding package manager can be set in the Project Settings dialog and then used to detect which dependencies of a project are not installed, and trigger their installation from within the IDE</li>
+<li>Add a tool for migrating from legacy Perl 6 extensions to Raku ones. By default, on project open it detects unambiguous Perl 6 extensions used in the project and suggests to update them. If the project is not mixed with Perl code, a more complete set of checks can be run from the Tools menu, to include ambiguous legacy extensions such as <code>t</code> or <code>pm</code></li>
+<li>Add an annotator to detect incorrect hyphen usage in a regex character class, and a quickfix for the case</li>
 </ul>
   ]]>
   </change-notes>
