@@ -15,6 +15,7 @@ import com.intellij.openapi.vfs.newvfs.impl.VirtualDirectoryImpl;
 import edument.perl6idea.event.RakuProjectFileChangeListener;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +65,7 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
         VirtualFile file = Objects.requireNonNull(event.getFile());
         String oldModuleName = calculateModuleName(file.getCanonicalPath());
         if (oldModuleName != null)
-            updateMetaProvides(oldModuleName, null);
+            updateMetaProvides(oldModuleName, null, null);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
         VirtualFile file = Objects.requireNonNull(event.getFile());
         if (oldModuleName != null) {
             String newModuleName = calculateModuleName(file.getCanonicalPath());
-            updateMetaProvides(oldModuleName, newModuleName);
+            updateMetaProvides(oldModuleName, newModuleName, file.getExtension());
         }
     }
 
@@ -126,7 +127,8 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
         for (String name : myMetaData.getProvidedNames()) {
             if (name.startsWith(oldPrefix)) {
                 myMetaData.removeNamespaceFromProvides(name);
-                myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()));
+                String ext = oldName.split("\\.")[1];
+                myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()), ext);
             }
         }
     }
@@ -155,7 +157,7 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
             for (String name : myMetaData.getProvidedNames()) {
                 if (name.startsWith(oldPrefix)) {
                     myMetaData.removeNamespaceFromProvides(name);
-                    myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()));
+                    myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()), Perl6Utils.getNameExtension(name));
                 }
             }
         } else if (isToLib) {
@@ -164,7 +166,7 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
                 @Override
                 public boolean visitFile(@NotNull VirtualFile file) {
                     if (FileTypeManager.getInstance().getFileTypeByFile(file) instanceof Perl6ModuleFileType) {
-                        myMetaData.addNamespaceToProvides(calculateModuleName(file.getPath()));
+                        myMetaData.addNamespaceToProvides(calculateModuleName(file.getPath()), Perl6Utils.getNameExtension(file.getExtension()));
                     }
                     return true;
                 }
@@ -200,10 +202,10 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
         return null;
     }
 
-    private void updateMetaProvides(String oldName, String newName) {
+    private void updateMetaProvides(String oldName, @Nullable String newName, @Nullable String ext) {
         myMetaData.removeNamespaceFromProvides(oldName);
         if (newName != null) {
-            myMetaData.addNamespaceToProvides(newName);
+            myMetaData.addNamespaceToProvides(newName, ext);
         }
     }
 }

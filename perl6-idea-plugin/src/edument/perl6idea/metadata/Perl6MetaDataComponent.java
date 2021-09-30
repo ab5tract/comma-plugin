@@ -411,11 +411,9 @@ public class Perl6MetaDataComponent {
             .put("source-url", "Write me!");
     }
 
-    public void addNamespaceToProvides(String name) {
+    public void addNamespaceToProvides(String name, String ext) {
         if (myMeta == null) return;
-        String libBasedModulePath = String.format(
-            "lib/%s.%s", name.replaceAll("::", "/"),
-            Perl6ModuleFileType.INSTANCE.getDefaultExtension());
+        String libBasedModulePath = String.format("lib/%s.%s", name.replaceAll("::", "/"), ext);
         if (!myMeta.has("provides"))
             myMeta.put("provides", new JSONArray());
         JSONObject provides = myMeta.getJSONObject("provides");

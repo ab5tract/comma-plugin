@@ -83,4 +83,8 @@ public class Perl6Utils {
         }
         return builder.reverse().toString();
     }
+
+    public static String getNameExtension(@Nullable String filename) {
+        return filename != null && filename.contains(".") ? filename.substring(filename.lastIndexOf(".") + 1) : "";
+    }
 }
