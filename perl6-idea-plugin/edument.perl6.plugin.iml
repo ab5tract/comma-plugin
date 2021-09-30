@@ -79,5 +79,6 @@
     <orderEntry type="library" name="Trove4j" level="project" />
     <orderEntry type="module" module-name="intellij.java.remoteServers.impl" />
     <orderEntry type="library" name="jcef" level="project" />
+    <orderEntry type="module" module-name="intellij.sh" />
   </component>
 </module>
