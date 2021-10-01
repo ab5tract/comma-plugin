@@ -1,12 +1,10 @@
 package edument.perl6idea.pm.impl;
 
 import com.intellij.execution.ExecutionException;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.sh.run.ShRunner;
+ import com.intellij.openapi.project.Project;
 import edument.perl6idea.pm.RakuPackageManager;
 import edument.perl6idea.pm.RakuPackageManagerKind;
+import edument.perl6idea.pm.ui.Perl6PMWidget;
 import edument.perl6idea.utils.Perl6CommandLine;
 
 import java.util.HashSet;
@@ -28,13 +26,7 @@ public class RakuZefPM extends RakuPackageManager {
         cmd.addParameter(location);
         cmd.addParameter("install");
         cmd.addParameter(spec);
-
-        ShRunner shRunner = ServiceManager.getService(project, ShRunner.class);
-        if (shRunner != null) {
-            ApplicationManager.getApplication().invokeAndWait(() -> {
-                shRunner.run(cmd.getCommandLineString(), System.getProperty("java.io.tmpdir"), "Installing Raku Distributions...", true);
-            });
-        }
+        Perl6PMWidget.initAndRun(project, cmd);
     }
 
     @Override

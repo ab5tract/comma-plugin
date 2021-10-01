@@ -89,8 +89,8 @@ public class RakuModuleInstallPromptStarter implements StartupActivity {
                         catch (ExecutionException e) {
                             LOG.warn("Could not install a distribution '" + dep + "': " + e.getMessage());
                         }
-                        panel.getParent().remove(panel);
                     }
+                    panel.getParent().remove(panel);
                 });
             }
 
