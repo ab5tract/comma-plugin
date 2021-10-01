@@ -1070,6 +1070,18 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testAssignmentToLiteral() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "<error descr=\"Cannot assign to a readonly Int literal\">1 = 2</error>; <error descr=\"Cannot assign to a readonly Str literal\">'foo' = 2</error>; <error descr=\"Cannot assign to a readonly Rat literal\">3.4 = 2</error>; <error descr=\"Cannot assign to a readonly Num literal\">2E3 = 2</error>;");
+        myFixture.checkHighlighting();
+    }
+
+    public void testAssignmentToScalar() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "constant $foo = 42; <error descr=\"Cannot assign to a constant\">$foo = 42</error>;");
+        myFixture.checkHighlighting();
+    }
+
     public void testCallArityMismatchAnnotating() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub worst-case { for <a> -> \\x, \\y {} }");
         myFixture.checkHighlighting();

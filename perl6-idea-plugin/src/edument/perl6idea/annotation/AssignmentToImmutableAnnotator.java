@@ -49,9 +49,22 @@ public class AssignmentToImmutableAnnotator implements Annotator {
                 // Ensure it's readonly.
                 if (((Perl6Parameter)parameter).isCopy() || ((Perl6Parameter)parameter).isRW())
                     return;
-                holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a readonly parameter")
-                    .create();
+                holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a readonly parameter").create();
+            } else if (declaration instanceof Perl6Constant) {
+                holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a constant").create();
             }
+        } else if (operand instanceof Perl6IntLiteral) {
+            holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a readonly Int literal").create();
+        } else if (operand instanceof Perl6StrLiteral) {
+            holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a readonly Str literal").create();
+        } else if (operand instanceof Perl6ComplexLiteral) {
+            holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a readonly Complex literal").create();
+        } else if (operand instanceof Perl6NumLiteral) {
+            holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a readonly Num literal").create();
+        } else if (operand instanceof Perl6RatLiteral) {
+            holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a readonly Rat literal").create();
+        } else if (operand instanceof Perl6RegexLiteral) {
+            holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a readonly Regex literal").create();
         }
     }
 }
