@@ -1072,7 +1072,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testAssignmentToLiteral() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "<error descr=\"Cannot assign to an Int literal\">1 = 2</error>; <error descr=\"Cannot assign to a Str literal\">'foo' = 2</error>; <error descr=\"Cannot assign to a Rat literal\">3.4 = 2</error>; <error descr=\"Cannot assign to a Num literal\">2E3 = 2</error>;");
+                                  "<error descr=\"Cannot assign to a readonly Int literal\">1 = 2</error>; <error descr=\"Cannot assign to a readonly Str literal\">'foo' = 2</error>; <error descr=\"Cannot assign to a readonly Rat literal\">3.4 = 2</error>; <error descr=\"Cannot assign to a readonly Num literal\">2E3 = 2</error>;");
         myFixture.checkHighlighting();
     }
 
