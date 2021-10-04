@@ -1,10 +1,7 @@
 package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.*;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
 import com.intellij.psi.search.LocalSearchScope;
@@ -12,6 +9,7 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.pod.PodDomAttributeDeclarator;
 import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.pod.PodDomClassyDeclarator;
@@ -461,6 +459,15 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             PodDomAttributeDeclarator attribute = new PodDomAttributeDeclarator(getTextOffset(), shortName, null,
                     getDocBlocks(), rw, typename);
             enclosingClass.addAttribute(attribute);
+        }
+    }
+
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof RakuHighlightVisitor) {
+            ((RakuHighlightVisitor)visitor).visitVariableDecl(this);
+        } else {
+            super.accept(visitor);
         }
     }
 }

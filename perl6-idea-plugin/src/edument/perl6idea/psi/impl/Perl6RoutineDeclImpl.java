@@ -2,6 +2,7 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
 import com.intellij.psi.stubs.IStubElementType;
@@ -10,6 +11,8 @@ import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.highlighter.RakuElementVisitor;
+import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.pod.*;
 import edument.perl6idea.psi.*;
@@ -404,5 +407,14 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
                     null, parameter.getDocBlocks(), parameter.summary(true));
         }
         return result;
+    }
+
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof RakuElementVisitor) {
+            ((RakuElementVisitor)visitor).visitRoutine(this);
+        } else {
+            super.accept(visitor);
+        }
     }
 }

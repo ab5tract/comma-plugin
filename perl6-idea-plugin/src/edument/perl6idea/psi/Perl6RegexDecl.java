@@ -11,4 +11,6 @@ public interface Perl6RegexDecl extends Perl6PsiScope, Perl6PsiDeclaration,
                                         Perl6MOPSymbolContributor {
     String getRegexKind();
     String getRegexName();
+    @Override
+    String getMultiness();
 }

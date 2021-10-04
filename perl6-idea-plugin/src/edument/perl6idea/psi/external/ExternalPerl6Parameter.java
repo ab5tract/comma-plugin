@@ -140,4 +140,9 @@ public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements P
 
     @Override
     public void contributeLexicalSymbols(Perl6SymbolCollector collector) {}
+
+    @Override
+    public boolean equalsParameter(Perl6Parameter other) {
+        return false;
+    }
 }

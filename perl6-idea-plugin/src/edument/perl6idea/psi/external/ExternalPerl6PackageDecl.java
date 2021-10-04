@@ -191,4 +191,10 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     public void setAttributes(List<Perl6VariableDecl> attributes) {
         myAttributes = attributes;
     }
+
+    @Override
+    public Perl6Parameter[] getSignature() {
+        // TODO
+        return new Perl6Parameter[0];
+    }
 }

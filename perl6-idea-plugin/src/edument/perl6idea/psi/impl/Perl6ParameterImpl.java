@@ -254,4 +254,22 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         return null;
     }
+
+    @Override
+    public boolean equalsParameter(Perl6Parameter other) {
+        // If sigils differ, not equal
+        if (isPositional() != other.isPositional() ||
+            isNamed() != other.isNamed() ||
+            isSlurpy() != other.isSlurpy())
+            return false;
+
+        if (Perl6Variable.getSigil(other.getVariableName()) != Perl6Variable.getSigil(getVariableName()))
+            return false;
+
+        Perl6Type selfType = inferType();
+        Perl6Type otherType = other.inferType();
+        if (selfType.equals(otherType))
+            return true;
+        return false; // Better to get more false negatives than false positives
+    }
 }

@@ -15,4 +15,8 @@ public interface Perl6Type {
         Perl6Type nominal = nominalType();
         return nominal == this ? nominal : nominal.dispatchType();
     }
+
+    default boolean isEqual(Perl6Type other) {
+        return this == other;
+    }
 }

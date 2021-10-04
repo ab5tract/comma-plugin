@@ -4,6 +4,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
@@ -14,6 +15,8 @@ import com.intellij.psi.stubs.StubElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.highlighter.RakuElementVisitor;
+import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.pod.PodDomClassyDeclarator;
 import edument.perl6idea.psi.*;
@@ -89,6 +92,14 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     @Override
     public PsiElement getPackageKeywordNode() {
         return getDeclarator();
+    }
+
+    @Override
+    public Perl6Parameter[] getSignature() {
+        Perl6RoleSignature signature = PsiTreeUtil.getChildOfType(this, Perl6RoleSignature.class);
+        if (signature == null)
+            return new Perl6Parameter[0];
+        return PsiTreeUtil.getChildrenOfType(signature, Perl6Parameter.class);
     }
 
     public String toString() {
@@ -543,6 +554,15 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         }
         else {
             super.collectPodAndDocumentables(context);
+        }
+    }
+
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof RakuElementVisitor) {
+            ((RakuElementVisitor)visitor).visitPackage(this);
+        } else {
+            super.accept(visitor);
         }
     }
 }

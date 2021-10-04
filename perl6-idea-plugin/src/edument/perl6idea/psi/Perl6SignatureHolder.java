@@ -7,7 +7,7 @@ import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface Perl6SignatureHolder {
+public interface Perl6SignatureHolder extends Perl6MultiHolder {
     String getSignature();
     @Nullable
     Perl6Signature getSignatureNode();
