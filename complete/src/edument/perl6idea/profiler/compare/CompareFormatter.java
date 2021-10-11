@@ -6,13 +6,9 @@ import com.intellij.util.containers.ContainerUtil;
 import java.util.List;
 
 public abstract class CompareFormatter {
-    public abstract Object[][] format(List<ProfileCompareProcessor.ProfileCompareRow> rows, List<Pair<String, String>> columns);
+    public abstract Object[][] format(List<ProfileCompareProcessor.ProfileCompareRow> rows, List<ProfileCompareProcessor.ProfileCompareColumn> columns);
 
-    public Object[] getColumnNames(List<Pair<String, String>> columns) {
-      return ContainerUtil.map2Array(columns, p -> p.first);
-    }
-
-    public abstract Object[] formatTableColumns(List<Pair<String, String>> columns);
+    public abstract Object[] formatTableColumns(List<ProfileCompareProcessor.ProfileCompareColumn> columns);
 
 
     protected static String diff(ProfileCompareProcessor.ProfileMetricValue data) {

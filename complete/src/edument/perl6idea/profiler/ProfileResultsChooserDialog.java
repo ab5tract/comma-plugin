@@ -156,23 +156,23 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
     }
 
     private class CompareSelectedAction extends AnAction {
-        CompareSelectedAction() { super("Compare", "Compare selected profile results", PlatformIcons.CHECK_ICON); }
+        CompareSelectedAction() { super("Compare selected profiles (select two profiles)", "Compare selected profile results", PlatformIcons.CHECK_ICON); }
 
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
             int[] selectedData = myProfilesTable.getSelectedRows();
-            if (selectedData.length != 2) {
-                Messages.showErrorDialog(myProject, "You need to select two profiles to compare (using shift for multiple selection).", "Profile comparison failed");
-                return;
-            }
-            Perl6ProfileData[] profiles = {myProfilesTableModel.getItem(selectedData[0]), myProfilesTableModel.getItem(selectedData[1])};
+            Perl6ProfileData[] profiles = {myProfilesTableModel.getItem(selectedData[0]), myProfilesTableModel.getItem(selectedData[0])};
             try {
                 ProfileCompareProcessor.ProfileCompareResults results = new ProfileCompareProcessor(profiles).process();
                 new ProfileCompareDialog(myProject, results).show();
             } catch (SQLException | IOException ex) {
-                LOG.error(ex);
-                Messages.showErrorDialog(myProject, "Could not compare profiles.", "Profile comparison failed");
+                Messages.showErrorDialog(myProject, "Could not compare profiles: " + ex.getMessage(), "Profile Comparison Failed");
             }
+        }
+
+        @Override
+        public void update(@NotNull AnActionEvent e) {
+            e.getPresentation().setEnabled(myProfilesTable.getSelectedRows().length == 2);
         }
     }
 }

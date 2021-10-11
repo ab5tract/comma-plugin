@@ -14,7 +14,7 @@ public class ProfileCompareCalls extends ProfileCompareDataProvider {
     private final static String sql;
 
     static {
-      sql = Perl6Utils.getResourceAsString("sql/compare-profiler-calls-results.sql");
+        sql = Perl6Utils.getResourceAsString("sql/compare-profiler-calls-results.sql");
     }
 
     private final Statement stmt;
@@ -29,21 +29,21 @@ public class ProfileCompareCalls extends ProfileCompareDataProvider {
         results.addTab(new ProfileCompareTab("Deopt", TAB_DEOPT, this, ByNameCompareFormatter.BOTH_NAMES));
     }
 
-    public static final List<Pair<String, String>> TAB_ENTRIES = ContainerUtil.immutableList(
-        Pair.create("JIT entries", "jit_entries"),
-        Pair.create("Inlined entries", "inlined_entries"),
-        Pair.create("Spesh entries", "spesh_entries")
+    public static final List<ProfileCompareProcessor.ProfileCompareColumn> TAB_ENTRIES = ContainerUtil.immutableList(
+        new ProfileCompareProcessor.ProfileCompareColumn("JIT entries", "jit_entries"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Inlined entries", "inlined_entries"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Spesh entries", "spesh_entries")
     );
 
-    public static final List<Pair<String, String>> TAB_TIME = ContainerUtil.immutableList(
-        Pair.create("Total calls", "entries"),
-        Pair.create("Inclusive time", "inclusive_time"),
-        Pair.create("Exclusive time", "exclusive_time")
+    public static final List<ProfileCompareProcessor.ProfileCompareColumn> TAB_TIME = ContainerUtil.immutableList(
+        new ProfileCompareProcessor.ProfileCompareColumn("Total calls", "entries"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Inclusive time", "inclusive_time"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Exclusive time", "exclusive_time")
     );
 
-    public static final List<Pair<String, String>> TAB_DEOPT = ContainerUtil.immutableList(
-        Pair.create("Deopt: One", "deopt_one"),
-        Pair.create("Deopt: All", "deopt_all")
+    public static final List<ProfileCompareProcessor.ProfileCompareColumn> TAB_DEOPT = ContainerUtil.immutableList(
+        new ProfileCompareProcessor.ProfileCompareColumn("Deopt: One", "deopt_one"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Deopt: All", "deopt_all")
     );
 
     private static String[] METRICS = new String[]{

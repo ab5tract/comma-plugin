@@ -2,6 +2,7 @@ package edument.perl6idea.profiler;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.AnimatedIcon;
@@ -15,9 +16,11 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 
 public class ProfileCompareDialog extends DialogWrapper {
+    private final static Logger LOG = Logger.getInstance(ProfileCompareDialog.class);
     private final ProfileCompareProcessor.ProfileCompareResults myResults;
 
     public ProfileCompareDialog(Project project, ProfileCompareProcessor.ProfileCompareResults results) {
@@ -29,22 +32,23 @@ public class ProfileCompareDialog extends DialogWrapper {
     @Override
     protected @Nullable JComponent createCenterPanel() {
         final JBTabbedPane tabbedPane = new JBTabbedPane();
-        int i = 0;
         List<ProfileCompareTab> tabs = myResults.getTabs();
-        for (ProfileCompareTab tab : tabs) {
+        for (int i = 0; i < tabs.size(); i++) {
+            ProfileCompareTab tab = tabs.get(i);
             final int _i = i;
-            tabbedPane.insertTab(tab.tabName, null, new JBLabel("Loading", AnimatedIcon.Default.INSTANCE, SwingConstants.LEFT), null, i++);
+            tabbedPane.insertTab(tab.tabName, null, new JBLabel("Loading", AnimatedIcon.Default.INSTANCE, SwingConstants.LEFT), null, i);
             tab.onDataReady(data -> {
-                System.out.println("Data is ready! #" + _i + " (" + tab.dataProvider.getClass().getName() + ")");
+                LOG.info("Data loaded! #" + _i + " (" + tab.dataProvider.getClass().getName() + ")");
                 JBTable table = new JBTable(new DefaultTableModel(data, tab.getTableColumns()));
                 table.setDefaultEditor(Object.class, null);
                 ApplicationManager.getApplication().invokeLater(() -> {
-                    System.out.println("Later... #" + _i + " (" + tab.dataProvider.getClass().getName() + ")");
+                    LOG.info("Data loaded later... #" + _i + " (" + tab.dataProvider.getClass().getName() + ")");
                     tabbedPane.setComponentAt(_i, new JBScrollPane(table));
                 }, ModalityState.any());
             });
         }
 
+        tabbedPane.setPreferredSize(new Dimension(600, 800));
         return tabbedPane;
     }
 }

@@ -1,25 +1,29 @@
 package edument.perl6idea.profiler.compare;
 
+import com.intellij.openapi.diagnostic.Logger;
+import edument.perl6idea.profiler.ProfileResultsChooserDialog;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public abstract class ProfileCompareDataProvider {
+    private final static Logger LOG = Logger.getInstance(ProfileCompareDataProvider.class);
     protected CompletableFuture<List<ProfileCompareProcessor.ProfileCompareRow>> task;
 
-    public CompletableFuture<List<ProfileCompareProcessor.ProfileCompareRow>> getTask() {
+    private CompletableFuture<List<ProfileCompareProcessor.ProfileCompareRow>> getTask() {
         if (task != null)
             return task;
         return task = CompletableFuture.supplyAsync(() -> {
             try {
-                System.out.println("Loading rows (" + getClass().getName() + ")");
+                LOG.info("Loading rows (" + getClass().getName() + ")");
                 List<ProfileCompareProcessor.ProfileCompareRow> rows = getRows();
-                System.out.println("Rows loaded (" + getClass().getName() + ")");
+                LOG.info("Rows loaded (" + getClass().getName() + ")");
                 return rows;
             }
             catch (SQLException e) {
-                e.printStackTrace();
+                LOG.warn(e);
                 return null;
             }
         });

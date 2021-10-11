@@ -1,6 +1,5 @@
 package edument.perl6idea.profiler.compare;
 
-import com.intellij.openapi.util.Pair;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
@@ -40,18 +39,18 @@ public class ProfileCompareTypes extends ProfileCompareDataProvider {
     };
 
     // ???
-    public static final List<Pair<String, String>> TAB_ALLOCS = ContainerUtil.immutableList(
+    public static final List<ProfileCompareProcessor.ProfileCompareColumn> TAB_ALLOCS = ContainerUtil.immutableList(
         //Pair.create("Optimized by Spesh", "spesh"),
         //Pair.create("JIT", "jit"),
-        Pair.create("Count", "count"),
-        Pair.create("Optimized Away", "replaced")
+        new ProfileCompareProcessor.ProfileCompareColumn("Count", "count"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Optimized Away", "replaced")
     );
 
-    public static final List<Pair<String, String>> TAB_DEALLOCS = ContainerUtil.immutableList(
-        Pair.create("Nursery: Fresh", "nursery_fresh"),
-        Pair.create("Nursery: Seen", "nursery_seen"),
-        Pair.create("Reached old generation", "gen2"),
-        Pair.create("GC cycles with that type", "num_gcs")
+    public static final List<ProfileCompareProcessor.ProfileCompareColumn> TAB_DEALLOCS = ContainerUtil.immutableList(
+        new ProfileCompareProcessor.ProfileCompareColumn("Nursery: Fresh", "nursery_fresh"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Nursery: Seen", "nursery_seen"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Reached old generation", "gen2"),
+        new ProfileCompareProcessor.ProfileCompareColumn("GC cycles with that type", "num_gcs")
     );
 
     @Override

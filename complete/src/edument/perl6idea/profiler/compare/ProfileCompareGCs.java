@@ -28,11 +28,11 @@ public class ProfileCompareGCs extends ProfileCompareDataProvider {
         results.addTab(new ProfileCompareTab("GC", TAB_GC, this, SingleRowCompareFormatter.INSTANCE));
     }
 
-    public static final List<Pair<String, String>> TAB_GC = ContainerUtil.immutableList(
-        Pair.create("Total Time", "total_time"),
-        Pair.create("Avg Time", "avg_time"),
-        Pair.create("Avg Retained Bytes", "retained_bytes"),
-        Pair.create("Avg Promoted Bytes", "promoted_bytes")
+    public static final List<ProfileCompareProcessor.ProfileCompareColumn> TAB_GC = ContainerUtil.immutableList(
+        new ProfileCompareProcessor.ProfileCompareColumn("Total Time", "total_time"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Avg Time", "avg_time"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Avg Retained Bytes", "retained_bytes"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Avg Promoted Bytes", "promoted_bytes")
     );
 
     private static String[] METRICS = new String[]{

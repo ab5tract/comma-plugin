@@ -1,9 +1,7 @@
 package edument.perl6idea.profiler.compare;
 
-import com.intellij.openapi.util.Pair;
 import com.intellij.util.containers.ContainerUtil;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class ByNameCompareFormatter extends CompareFormatter {
@@ -16,7 +14,7 @@ public class ByNameCompareFormatter extends CompareFormatter {
     }
 
     @Override
-    public Object[][] format(List<ProfileCompareProcessor.ProfileCompareRow> rows, List<Pair<String, String>> columns) {
+    public Object[][] format(List<ProfileCompareProcessor.ProfileCompareRow> rows, List<ProfileCompareProcessor.ProfileCompareColumn> columns) {
           int skippedRows = 0;
           int offset = getOffset();
           Object[][] allData = new Object[rows.size()][offset + 3 * columns.size()];
@@ -37,10 +35,10 @@ public class ByNameCompareFormatter extends CompareFormatter {
               }
 
               for (int j = 0; j < columns.size(); j++) {
-                  String metricKey = columns.get(j).second;
-                  ProfileCompareProcessor.ProfileMetricValue metricData = result.myMetrics.get(metricKey);
-                  allData[i][offset + j * 3] = metricData.first();
-                  allData[i][offset + 1 + j * 3] = metricData.second();
+                  ProfileCompareProcessor.ProfileCompareColumn column = columns.get(j);
+                  ProfileCompareProcessor.ProfileMetricValue metricData = result.myMetrics.get(column.key);
+                  allData[i][offset + j * 3] = column.format(metricData.first);
+                  allData[i][offset + 1 + j * 3] = column.format(metricData.second);
                   allData[i][offset + 2 + j * 3] = diff(metricData);
               }
           }
@@ -54,9 +52,9 @@ public class ByNameCompareFormatter extends CompareFormatter {
     }
 
     // Skip rows for which all the (used) values are 0 on both sides
-    private static boolean isRowEmpty(ProfileCompareProcessor.ProfileCompareRow result, List<Pair<String, String>> columns) {
-        for (Pair<String, String> column : columns) {
-            ProfileCompareProcessor.ProfileMetricValue metricData = result.myMetrics.get(column.second);
+    private static boolean isRowEmpty(ProfileCompareProcessor.ProfileCompareRow result, List<ProfileCompareProcessor.ProfileCompareColumn> columns) {
+        for (ProfileCompareProcessor.ProfileCompareColumn column : columns) {
+            ProfileCompareProcessor.ProfileMetricValue metricData = result.myMetrics.get(column.key);
             if (metricData.first != 0 || metricData.second != 0)
                 return false;
         }
@@ -68,9 +66,9 @@ public class ByNameCompareFormatter extends CompareFormatter {
     }
 
     @Override
-    public Object[] formatTableColumns(List<Pair<String, String>> columns) {
+    public Object[] formatTableColumns(List<ProfileCompareProcessor.ProfileCompareColumn> columns) {
         int offset = getOffset();
-        Object[] columnNames = getColumnNames(columns);
+        Object[] columnNames = ContainerUtil.map2Array(columns, p -> p.name);
         String[] objects = new String[offset + 3 * columnNames.length];
 
         // Only display both names if they might differ

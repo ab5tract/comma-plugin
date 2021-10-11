@@ -33,41 +33,42 @@ public class ProfileCompareProcessor {
         }
     }
 
+    static public class ProfileCompareColumn {
+        String name;
+        String key;
+        String unit;
+
+        public ProfileCompareColumn(String name, String key, String unit) {
+            this.name = name;
+            this.key = key;
+            this.unit = unit;
+        }
+
+        public ProfileCompareColumn(String name, String key) {
+            this.name = name;
+            this.key = key;
+            this.unit = null;
+        }
+
+        public String format(int v) {
+            if (unit == null)
+                return String.format("%,d", v);//.trim();
+            return String.format("%,d %s", v, unit);//.trim();
+        }
+    }
+
     static public class ProfileMetricValue {
         public final int first;
         public final int second;
-        public final String unit; // XXX maybe a better idea on columns?
-
-        public String first() {
-            return format(first);
-        }
-
-        public String second() {
-            return format(second);
-        }
-
-        private String format(int v) {
-            if (unit == null)
-                return String.format("%,d", v).trim();
-            return String.format("%,d %s", v, unit).trim();
-        }
 
         ProfileMetricValue(int first) {
             this.first = first;
             this.second = first;
-            this.unit = null;
         }
 
         ProfileMetricValue(int first, int second) {
             this.first = first;
             this.second = second;
-            this.unit = null;
-        }
-
-        ProfileMetricValue(int first, int second, String unit) {
-            this.first = first;
-            this.second = second;
-            this.unit = unit;
         }
     }
 
@@ -85,10 +86,6 @@ public class ProfileCompareProcessor {
         }
     }
 
-    public String getDbPath() {
-        return myDbPath;
-    }
-
     public ProfileCompareResults process() throws SQLException, IOException {
         Connection connection = connect();
         myData[0].initialize();
@@ -101,8 +98,7 @@ public class ProfileCompareProcessor {
             System.out.println(myData[1].getFileName());
             Statement stmt = connection.createStatement();
             stmt.execute("ATTACH DATABASE '" + myData[0].getFileName() + "' as db1");
-            // TODO change to `myData[1]`
-            stmt.execute("ATTACH DATABASE '" + myData[0].getFileName() + "' as db2");
+            stmt.execute("ATTACH DATABASE '" + myData[1].getFileName() + "' as db2");
             stmt.close();
 
             results = new ProfileCompareResults();
@@ -116,7 +112,7 @@ public class ProfileCompareProcessor {
             compareTypes.addTabs(results);
             compareGCs.addTabs(results);
         } finally {
-            // Need to compose some kind of callback from both comparators
+            // Need to compose some kind of callback from all the comparators
             //connection.close();
         }
 

@@ -8,11 +8,11 @@ import java.util.function.Consumer;
 
 public class ProfileCompareTab {
     public final String tabName;
-    public final List<Pair<String, String>> columns;
+    public final List<ProfileCompareProcessor.ProfileCompareColumn> columns;
     public final ProfileCompareDataProvider dataProvider;
     private final CompareFormatter formatter;
 
-    public ProfileCompareTab(String tabName, List<Pair<String, String>> columns, ProfileCompareDataProvider dataProvider, CompareFormatter formatter) {
+    public ProfileCompareTab(String tabName, List<ProfileCompareProcessor.ProfileCompareColumn> columns, ProfileCompareDataProvider dataProvider, CompareFormatter formatter) {
         this.tabName = tabName;
         this.columns = columns;
         this.dataProvider = dataProvider;

@@ -24,7 +24,6 @@ public class ProfileCompareSummary extends ProfileCompareDataProvider {
         this.stmt = stmt;
     }
 
-
     @Override
     protected List<ProfileCompareProcessor.ProfileCompareRow> getRows() throws SQLException {
         ArrayList<ProfileCompareProcessor.ProfileCompareRow> results = new ArrayList<>();
@@ -41,9 +40,6 @@ public class ProfileCompareSummary extends ProfileCompareDataProvider {
         for (String metric : METRICS) {
             metrics.put(metric, new ProfileCompareProcessor.ProfileMetricValue(rs.getInt(metric), 0));
         }
-        for (String metric : METRICS_MS) {
-            metrics.put(metric, new ProfileCompareProcessor.ProfileMetricValue(rs.getInt(metric), 0, "ms"));
-        }
         rs.close();
 
         return new ProfileCompareProcessor.ProfileCompareRow("", "", metrics);
@@ -59,10 +55,7 @@ public class ProfileCompareSummary extends ProfileCompareDataProvider {
         "calls_deopt_all",
         "calls_deopt_one",
         "allocations_total",
-        "allocations_replaced"
-    };
-
-    public static final String[] METRICS_MS = new String[] {
+        "allocations_replaced",
         "gc_total_time",
         "gc_avg_minor_time",
         "gc_min_minor_time",
@@ -76,28 +69,28 @@ public class ProfileCompareSummary extends ProfileCompareDataProvider {
         "profile_run_time"
     };
 
-    public static final List<Pair<String, String>> TAB_SUMMARY = ContainerUtil.immutableList(
-        Pair.create("GC run", "gc_count"),
-        Pair.create("GC major count", "gc_full_count"),
-        Pair.create("GC total time", "gc_total_time"),
-        Pair.create("GC avg minor time", "gc_avg_minor_time"),
-        Pair.create("GC min minor time", "gc_min_minor_time"),
-        Pair.create("GC max minor time", "gc_max_minor_time"),
-        Pair.create("GC avg major time", "gc_avg_major_time"),
-        Pair.create("GC min major time", "gc_min_major_time"),
-        Pair.create("GC max major time", "gc_max_major_time"),
-        Pair.create("Total time", "profile_total_time"),
-        Pair.create("Total spesh time", "profile_total_spesh_time"),
-        Pair.create("Highest spesh time", "profile_highest_spesh_time"),
-        Pair.create("Run Total Time", "profile_run_time"),
-        Pair.create("Entries", "calls_entries"),
-        Pair.create("Spesh Entries", "calls_spesh_entries"),
-        Pair.create("JIT Entries", "calls_jit_entries"),
-        Pair.create("Inlined Entries", "calls_inlined_entries"),
-        Pair.create("Deopt(All)", "calls_deopt_all"),
-        Pair.create("Deopt(1)", "calls_deopt_one"),
-        Pair.create("Allocations total", "allocations_total"),
-        Pair.create("Allocations replaced", "allocations_replaced")
+    public static final List<ProfileCompareProcessor.ProfileCompareColumn> TAB_SUMMARY = ContainerUtil.immutableList(
+        new ProfileCompareProcessor.ProfileCompareColumn("GC run", "gc_count"),
+        new ProfileCompareProcessor.ProfileCompareColumn("GC major count", "gc_full_count"),
+        new ProfileCompareProcessor.ProfileCompareColumn("GC total time", "gc_total_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("GC avg minor time", "gc_avg_minor_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("GC min minor time", "gc_min_minor_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("GC max minor time", "gc_max_minor_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("GC avg major time", "gc_avg_major_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("GC min major time", "gc_min_major_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("GC max major time", "gc_max_major_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Total time", "profile_total_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Total spesh time", "profile_total_spesh_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Highest spesh time", "profile_highest_spesh_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Run Total Time", "profile_run_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Entries", "calls_entries"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Spesh", "calls_spesh_entries"),
+        new ProfileCompareProcessor.ProfileCompareColumn("JIT", "calls_jit_entries"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Inlined", "calls_inlined_entries"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Deopt(All)", "calls_deopt_all"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Deopt(1)", "calls_deopt_one"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Allocations total", "allocations_total"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Allocations replaced", "allocations_replaced")
     );
 
     public void addTabs(ProfileCompareProcessor.ProfileCompareResults results) {
