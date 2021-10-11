@@ -3,7 +3,9 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6ImplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
@@ -107,5 +109,14 @@ public class Perl6BlockOrHashImpl extends ASTWrapperPsiElement implements Perl6B
         if (element instanceof Perl6Variable)
             return Perl6Variable.getSigil(((Perl6Variable)element).getVariableName()) == '%';
         return false;
+    }
+
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof RakuHighlightVisitor) {
+            ((RakuHighlightVisitor)visitor).visitRakuElement(this);
+        } else {
+            super.accept(visitor);
+        }
     }
 }

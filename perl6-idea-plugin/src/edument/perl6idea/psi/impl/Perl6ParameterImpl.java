@@ -222,7 +222,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     }
 
     @Override
-    public String getScope() {
+    public @NotNull String getScope() {
         return "my";
     }
 

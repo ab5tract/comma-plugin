@@ -1,4 +1,3 @@
-// Copyright 2000-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.highlighter;
 
 import com.intellij.codeInsight.PsiEquivalenceUtil;
@@ -12,19 +11,16 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.symbols.*;
 import gnu.trove.THashMap;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RakuHighlightVisitor extends RakuElementVisitor implements HighlightVisitor {
-    private final Map<String, List<Perl6PackageDecl>> myDuplicateClassesPool = new THashMap<>();
-    private final Map<String, List<Perl6SignatureHolder>> myDuplicateRoutinesPool = new THashMap<>();
-    private final Map<String, List<Perl6Variable>> myDuplicateVariablesPool = new THashMap<>();
-
     private HighlightInfoHolder myHolder;
+    private final Map<String, List<Perl6PackageDecl>> ourScopedPackagesPool = new THashMap<>();
 
     @Override
     public boolean suitableForFile(@NotNull PsiFile file) {
@@ -55,7 +51,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
         }
         finally {
             myHolder = null;
-            myDuplicateClassesPool.clear();
+            ourScopedPackagesPool.clear();
         }
 
         return true;
@@ -67,72 +63,118 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
         return new RakuHighlightVisitor();
     }
 
-    // Visitor methods
-
     @Override
-    public void visitPackage(Perl6PackageDecl packageDecl) {
-        super.visitPackage(packageDecl);
-        if (packageDecl.getGlobalName() == null || packageDecl.getPackageKeywordNode() == null ||
-            packageDecl.getNameIdentifier() == null)
-            return;
-        visitPackageDeclarations(myHolder, packageDecl);
-        TextRange range = new TextRange(packageDecl.getPackageKeywordNode().getTextOffset(),
-                                        packageDecl.getNameIdentifier().getTextRange().getEndOffset());
-        myDuplicateClassesPool.compute(packageDecl.getGlobalName(), (k, v) -> {
-            if (v == null) {
-                v = new ArrayList<>();
+    public void visitScope(Perl6PsiScope element) {
+        Map<String, List<Perl6PackageDecl>> duplicateClassesPool = new THashMap<>();
+        Map<String, List<Perl6SignatureHolder>> duplicateRoutinesPool = new THashMap<>();
+        Map<String, List<Perl6Variable>> duplicateVariablesPool = new THashMap<>();
+        List<Perl6LexicalSymbolContributor> decls = element.getSymbolContributors();
+        for (Perl6LexicalSymbolContributor contributor : decls) {
+            if (contributor instanceof Perl6UseStatement) {
+                visitUseStatement(duplicateClassesPool, contributor);
             }
-            else {
-                // For roles we need to care about different signatures
-                if (packageDecl.getPackageKind().equals("role")) {
-                    Perl6Parameter[] newParams = packageDecl.getSignature();
-                    for (Perl6PackageDecl decl : v) {
-                        Perl6Parameter[] oldParams = decl.getSignature();
-                        // Different numbers of args
-                        if (newParams.length == oldParams.length)
-                            myHolder.add(getDuplicateHighlightInfo(v.get(0), range, packageDecl.getGlobalName(), HighlightInfoType.ERROR));
-                    }
-                }
-                else {
-                    myHolder.add(getDuplicateHighlightInfo(v.get(0), range, packageDecl.getGlobalName(), HighlightInfoType.ERROR));
-                }
-            }
-            v.add(packageDecl);
-            return v;
-        });
-    }
 
-    private void visitPackageDeclarations(HighlightInfoHolder holder,
-                                          Perl6PackageDecl packageDecl) {
-        Map<String, List<Perl6SignatureHolder>> methodsPool = new THashMap<>();
-        List<Perl6PsiDeclaration> decls = packageDecl.getDeclarations();
+            if (!(contributor instanceof Perl6PsiDeclaration))
+                continue;
+            Perl6PsiDeclaration decl = (Perl6PsiDeclaration)contributor;
 
-        for (Perl6PsiDeclaration decl : decls) {
             if (decl instanceof Perl6RoutineDecl) {
-                if (decl.getNameIdentifier() == null || ((Perl6RoutineDecl)decl).getDeclaratorNode() == null)
-                    continue;
-                TextRange textRange = new TextRange(((Perl6RoutineDecl)decl).getDeclaratorNode().getTextOffset(), decl.getNameIdentifier().getTextRange().getEndOffset());
-                visitSignatureHolder(holder, (Perl6SignatureHolder)decl, ((Perl6RoutineDecl)decl).getRoutineName(), textRange, methodsPool);
-            } else if (decl instanceof Perl6RegexDecl) {
+                if (((Perl6RoutineDecl)decl).getDeclaratorNode() == null ||
+                    ((Perl6RoutineDecl)decl).getRoutineName() == null || decl.getNameIdentifier() == null)
+                    return;
+                TextRange textRange = new TextRange(((Perl6RoutineDecl)decl).getDeclaratorNode().getTextOffset(),
+                                                    decl.getNameIdentifier().getTextRange().getEndOffset());
+                visitSignatureHolder(myHolder, (Perl6SignatureHolder)decl, ((Perl6RoutineDecl)decl).getRoutineName(),
+                                     textRange, duplicateRoutinesPool);
+            }
+            else if (decl instanceof Perl6RegexDecl) {
                 if (decl.getName() == null || decl.getNameIdentifier() == null)
                     return;
                 TextRange textRange = new TextRange(decl.getTextOffset(), decl.getNameIdentifier().getTextRange().getEndOffset());
-                visitSignatureHolder(holder, (Perl6SignatureHolder)decl, decl.getName(), textRange, methodsPool);
+                visitSignatureHolder(myHolder, (Perl6SignatureHolder)decl, decl.getName(),
+                                     textRange, duplicateRoutinesPool);
+            }
+            else if (decl instanceof Perl6VariableDecl) {
+                visitVariableDecl(duplicateVariablesPool, (Perl6VariableDecl)decl);
+            }
+            else if (decl instanceof Perl6PackageDecl) {
+                if (decl.getGlobalName() != null) {
+                    boolean marked = false;
+                    if (decl.getScope().equals("our"))
+                        marked = visitPackageDecl((Perl6PackageDecl)decl, ourScopedPackagesPool, true);
+                    visitPackageDecl((Perl6PackageDecl)decl, duplicateClassesPool, !marked);
+                }
             }
         }
     }
 
-    @Override
-    public void visitRegex(Perl6RegexDecl regexDecl) {
-        super.visitRegex(regexDecl);
-        if (regexDecl.getName() == null || regexDecl.getNameIdentifier() == null)
-            return;
-        // First, exclude routines from packages, they have their own check in visitPackage
-        if (PsiTreeUtil.getParentOfType(regexDecl, Perl6PackageDecl.class) != null)
-            return;
+    private void visitUseStatement(Map<String, List<Perl6PackageDecl>> duplicateClassesPool, Perl6LexicalSymbolContributor contributor) {
+        Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(
+            Perl6SymbolKind.TypeOrConstant, Perl6SymbolKind.Routine);
+        contributor.contributeLexicalSymbols(collector);
+        for (Perl6Symbol symbol : collector.getVariants()) {
+            PsiElement psi = symbol.getPsi();
+            if (psi instanceof Perl6PackageDecl && ((Perl6PackageDecl)psi).getGlobalName() != null) {
+                visitPackageDecl((Perl6PackageDecl)psi, duplicateClassesPool, false);
+            }
+        }
+    }
 
-        TextRange textRange = new TextRange(regexDecl.getTextOffset(), regexDecl.getNameIdentifier().getTextRange().getEndOffset());
-        visitSignatureHolder(myHolder, regexDecl, regexDecl.getName(), textRange, myDuplicateRoutinesPool);
+    private boolean visitPackageDecl(Perl6PackageDecl decl,
+                                     Map<String, List<Perl6PackageDecl>> pool,
+                                     boolean shouldMark) {
+        List<Perl6PackageDecl> value = pool.compute(decl.getGlobalName(), (k, v) -> {
+            if (v == null) {
+                v = new ArrayList<>();
+            }
+            v.add(decl);
+            return v;
+        });
+        if (shouldMark && value.size() > 1)
+            return markDuplicateValue(decl, value);
+        return false;
+    }
+
+    private boolean markDuplicateValue(Perl6PackageDecl decl, List<Perl6PackageDecl> v) {
+        AtomicBoolean marked = new AtomicBoolean(false);
+        Optional<Perl6PackageDecl> maxRedecl = v.stream()
+            .filter(d -> d.getContainingFile().isEquivalentTo(decl.getContainingFile()))
+            .max(Comparator.comparingInt(PsiElement::getTextOffset));
+        if (maxRedecl.isEmpty())
+            maxRedecl = v.stream().max(Comparator.comparingInt(PsiElement::getTextOffset));
+
+        maxRedecl.ifPresent(redecl -> {
+            if (redecl.getPackageKeywordNode() == null || redecl.getNameIdentifier() == null)
+                return;
+            TextRange range = new TextRange(redecl.getPackageKeywordNode().getTextOffset(),
+                                            redecl.getNameIdentifier().getTextRange().getEndOffset());
+            Optional<Perl6PackageDecl> minRedecl =
+                v.stream()
+                    .filter(d -> !d.getContainingFile().isEquivalentTo(decl.getContainingFile()))
+                    .min(Comparator.comparingInt(PsiElement::getTextOffset));
+            if (minRedecl.isEmpty())
+                minRedecl = v.stream().min(Comparator.comparingInt(PsiElement::getTextOffset));
+            minRedecl.ifPresent(packageDecl -> {
+                if (packageDecl.getPackageKind().equals("role")) {
+                    Perl6Parameter[] newParams = decl.getSignature();
+                    for (Perl6PackageDecl role : v) {
+                        Perl6Parameter[] oldParams = role.getSignature();
+                        // Different numbers of args
+                        if (newParams.length == oldParams.length && role.getTextOffset() != decl.getTextOffset()) {
+                            marked.set(true);
+                            myHolder.add(getDuplicateHighlightInfo(packageDecl, range, packageDecl.getGlobalName(),
+                                                                   HighlightInfoType.ERROR));
+                        }
+                    }
+                }
+                else {
+                    marked.set(true);
+                    myHolder.add(
+                        getDuplicateHighlightInfo(packageDecl, range, packageDecl.getGlobalName(), HighlightInfoType.ERROR));
+                }
+            });
+        });
+        return marked.get();
     }
 
     protected void visitSignatureHolder(HighlightInfoHolder infoHolder, Perl6SignatureHolder holder,
@@ -203,43 +245,13 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
         return firstDuplicateIndex;
     }
 
-    @Override
-    public void visitRoutine(Perl6RoutineDecl routineDecl) {
-        super.visitRoutine(routineDecl);
-        if (routineDecl.getDeclaratorNode() == null || routineDecl.getName() == null || routineDecl.getNameIdentifier() == null)
-            return;
-        // First, exclude routines from packages, they have their own check in visitPackage
-        if (PsiTreeUtil.getParentOfType(routineDecl, Perl6PackageDecl.class) != null)
-            return;
-        TextRange textRange = new TextRange(routineDecl.getDeclaratorNode().getTextOffset(), routineDecl.getNameIdentifier().getTextRange().getEndOffset());
-
-        visitSignatureHolder(myHolder, routineDecl, routineDecl.getName(), textRange, myDuplicateRoutinesPool);
-    }
-
-    private static HighlightInfo getDuplicateHighlightInfo(Perl6PsiElement originalDecl,
-                                                           TextRange range,
-                                                           String name, HighlightInfoType infoType) {
-        if (!originalDecl.isValid())
-            return null;
-        PsiFile containingFile = originalDecl.getContainingFile();
-        String previousPos = containingFile.getName() +
-                             ":" +
-                             (StringUtil.offsetToLineNumber(containingFile.getText(), originalDecl.getTextOffset()) + 1);
-        return HighlightInfo.newHighlightInfo(infoType)
-            .range(range)
-            .descriptionAndTooltip(String.format("Re-declaration of %s from %s", name, previousPos))
-            .create();
-    }
-
-    @Override
-    public void visitVariableDecl(Perl6VariableDecl variableDecl) {
-        super.visitVariableDecl(variableDecl);
+    public void visitVariableDecl(Map<String, List<Perl6Variable>> pool, Perl6VariableDecl variableDecl) {
         for (Perl6Variable variable : variableDecl.getVariables()) {
             String varName = variable.getVariableName();
-            // Don't visit anonymous ones
-            if (varName.length() < 2)
+            // Don't visit anonymous ones or dynamic
+            if (varName == null || varName.length() < 2 || varName.contains("*"))
                 continue;
-            myDuplicateVariablesPool.compute(varName, (k, v) -> {
+            pool.compute(varName, (k, v) -> {
                 if (v == null) {
                     v = new ArrayList<>();
                 }
@@ -259,5 +271,20 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 return v;
             });
         }
+    }
+
+    private static HighlightInfo getDuplicateHighlightInfo(Perl6PsiElement originalDecl,
+                                                           TextRange range,
+                                                           String name, HighlightInfoType infoType) {
+        if (!originalDecl.isValid())
+            return null;
+        PsiFile containingFile = originalDecl.getContainingFile();
+        String previousPos = containingFile.getName() +
+                             ":" +
+                             (StringUtil.offsetToLineNumber(containingFile.getText(), originalDecl.getTextOffset()) + 1);
+        return HighlightInfo.newHighlightInfo(infoType)
+            .range(range)
+            .descriptionAndTooltip(String.format("Re-declaration of %s from %s", name, previousPos))
+            .create();
     }
 }

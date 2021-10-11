@@ -141,7 +141,7 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
     @Override
     public void accept(@NotNull PsiElementVisitor visitor) {
         if (visitor instanceof RakuElementVisitor) {
-            ((RakuElementVisitor)visitor).visitRegex(this);
+            ((RakuElementVisitor)visitor).visitRakuElement(this);
         } else {
             super.accept(visitor);
         }

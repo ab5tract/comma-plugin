@@ -69,7 +69,7 @@ public abstract class Perl6TypeStubBasedPsi<T extends StubElement<?> & Perl6Type
     }
 
     @Override
-    public String getScope() {
+    public @NotNull String getScope() {
         PsiElement parent = getNode().getPsi().getParent();
         return parent instanceof Perl6ScopedDecl ? ((Perl6ScopedDecl)parent).getScope() : "our";
     }

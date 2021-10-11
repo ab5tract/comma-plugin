@@ -74,7 +74,7 @@ public class ExternalPerl6VariableDecl extends Perl6ExternalPsiElement implement
     }
 
     @Override
-    public String getScope() {
+    public @NotNull String getScope() {
         return myScope;
     }
 

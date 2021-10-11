@@ -18,7 +18,7 @@ public class Perl6LabelImpl extends ASTWrapperPsiElement implements Perl6Label {
     }
 
     @Override
-    public String getScope() {
+    public @NotNull String getScope() {
         return "my";
     }
 

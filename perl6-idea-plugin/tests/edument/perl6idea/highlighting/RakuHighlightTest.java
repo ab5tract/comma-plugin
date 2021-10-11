@@ -4,8 +4,14 @@ import edument.perl6idea.CommaFixtureTestCase;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
 public class RakuHighlightTest extends CommaFixtureTestCase {
+    @Override
+    protected String getTestDataPath() {
+        return "perl6-idea-plugin/testData/highlight";
+    }
+
     public void testDuplicatedSubs() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo { 1 }; <error descr=\"Re-declaration of foo from aaa.p6:1\">sub foo</error> { 2 }; foo;");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "sub foo { 1 }; <error descr=\"Re-declaration of foo from aaa.p6:1\">sub <weak_warning descr=\"Unused subroutine\">foo</weak_warning></error> { 2 }; foo;");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "multi sub b {}; multi <error descr=\"Re-declaration of b from aaa.p6:1\">sub b</error> {}");
         myFixture.checkHighlighting();
@@ -41,6 +47,8 @@ public class RakuHighlightTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nclass A {\nclass B {}\n};\n<error descr=\"Re-declaration of A::B from aaa.p6:3\">class A::B</error> {};");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nclass A {\nclass B {}\n};\n<error descr=\"Re-declaration of A::B from aaa.p6:3\">class A::B</error> {};");
+        myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nclass A::B {};\nclass A {\n<error descr=\"Re-declaration of A::B from aaa.p6:2\">class B</error> {}\n};");
         myFixture.checkHighlighting();
     }
@@ -63,6 +71,7 @@ public class RakuHighlightTest extends CommaFixtureTestCase {
     }
 
     public void testDuplicatesInExternal() {
-
+        myFixture.configureByFiles("User.rakumod", "Base.rakumod");
+        myFixture.checkHighlighting();
     }
 }

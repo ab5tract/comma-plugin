@@ -7,10 +7,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.*;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
@@ -21,6 +18,7 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.ui.JBFont;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.filetypes.*;
+import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.pod.PodDomDeclarator;
 import edument.perl6idea.pod.PodDomNode;
@@ -508,6 +506,15 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                 buildStatementLineMap(result, covered, document, (Perl6StatementList)child);
             else
                 findNestedStatements(result, covered, document, (Perl6PsiElement)child);
+        }
+    }
+
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof RakuHighlightVisitor) {
+            ((RakuHighlightVisitor)visitor).visitRakuElement(this);
+        } else {
+            super.accept(visitor);
         }
     }
 }

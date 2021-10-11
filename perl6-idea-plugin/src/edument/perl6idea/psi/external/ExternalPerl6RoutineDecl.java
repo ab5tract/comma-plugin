@@ -125,7 +125,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     }
 
     @Override
-    public String getScope() {
+    public @NotNull String getScope() {
         return myScope;
     }
 

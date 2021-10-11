@@ -461,13 +461,4 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             enclosingClass.addAttribute(attribute);
         }
     }
-
-    @Override
-    public void accept(@NotNull PsiElementVisitor visitor) {
-        if (visitor instanceof RakuHighlightVisitor) {
-            ((RakuHighlightVisitor)visitor).visitVariableDecl(this);
-        } else {
-            super.accept(visitor);
-        }
-    }
 }

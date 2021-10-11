@@ -412,7 +412,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
     @Override
     public void accept(@NotNull PsiElementVisitor visitor) {
         if (visitor instanceof RakuElementVisitor) {
-            ((RakuElementVisitor)visitor).visitRoutine(this);
+            ((RakuElementVisitor)visitor).visitRakuElement(this);
         } else {
             super.accept(visitor);
         }

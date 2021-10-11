@@ -560,7 +560,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
     @Override
     public void accept(@NotNull PsiElementVisitor visitor) {
         if (visitor instanceof RakuElementVisitor) {
-            ((RakuElementVisitor)visitor).visitPackage(this);
+            ((RakuElementVisitor)visitor).visitRakuElement(this);
         } else {
             super.accept(visitor);
         }

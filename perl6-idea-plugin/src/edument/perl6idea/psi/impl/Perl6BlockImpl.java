@@ -3,7 +3,9 @@ package edument.perl6idea.psi.impl;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
+import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6ImplicitSymbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
@@ -25,5 +27,14 @@ public class Perl6BlockImpl extends ASTWrapperPsiElement implements Perl6Block {
         PsiElement parent = getParent();
         if (parent instanceof P6Topicalizer && ((P6Topicalizer)parent).isTopicalizing())
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, "$_", parent));
+    }
+
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof RakuHighlightVisitor) {
+            ((RakuHighlightVisitor)visitor).visitRakuElement(this);
+        } else {
+            super.accept(visitor);
+        }
     }
 }

@@ -117,7 +117,7 @@ public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements P
     }
 
     @Override
-    public String getScope() {
+    public @NotNull String getScope() {
         return "my";
     }
 

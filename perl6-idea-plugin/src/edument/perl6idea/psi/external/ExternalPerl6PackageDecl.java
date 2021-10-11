@@ -132,8 +132,8 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     }
 
     @Override
-    public String getScope() {
-        return null;
+    public @NotNull String getScope() {
+        return "our";
     }
 
     @Nullable
