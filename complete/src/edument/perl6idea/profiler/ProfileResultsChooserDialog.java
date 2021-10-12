@@ -161,7 +161,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
             int[] selectedData = myProfilesTable.getSelectedRows();
-            Perl6ProfileData[] profiles = {myProfilesTableModel.getItem(selectedData[0]), myProfilesTableModel.getItem(selectedData[0])};
+            Perl6ProfileData[] profiles = {myProfilesTableModel.getItem(selectedData[0]), myProfilesTableModel.getItem(selectedData[1])};
             try {
                 ProfileCompareProcessor.ProfileCompareResults results = new ProfileCompareProcessor(profiles).process();
                 new ProfileCompareDialog(myProject, results).show();
