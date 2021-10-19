@@ -184,6 +184,9 @@ public class AnnotationTest extends CommaFixtureTestCase {
 
     public void testSignatureAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "sub sift4(Str $s1, Str $s2, Int $maxOffset = 100, Int $maxDistance = 100 --> Int) is export { say $s1, $s2, $maxOffset, $maxDistance; }");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "multi sub encode-base64(Bool:D :$pad!, |c) { samewith(:pad(?$pad ?? '=' !! ''), |c) }");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,

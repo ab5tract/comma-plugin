@@ -34,7 +34,7 @@ public class SignatureAnnotator implements Annotator {
             }
 
             // Positionals go first
-            if (state != SignatureState.POSITIONAL && parameter.isPositional() &&
+            if (state != SignatureState.POSITIONAL && parameter.isPositional() && !parameter.isOptional() &&
                 !parameter.isExplicitlyOptional() && !parameter.isSlurpy()) {
                 String message = "";
                 switch (state) {
