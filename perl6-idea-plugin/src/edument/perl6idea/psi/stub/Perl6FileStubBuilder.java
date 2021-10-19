@@ -16,6 +16,8 @@ import edument.perl6idea.psi.stub.impl.Perl6FileStubImpl;
 import edument.perl6idea.vfs.Perl6FileSystem;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.Path;
+
 public class Perl6FileStubBuilder extends DefaultStubBuilder {
     @NotNull
     @Override
@@ -44,23 +46,16 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
             if (parentModule == null)
                 return null;
 
-            ContentEntry[] entries = ModuleRootManager.getInstance(parentModule).getContentEntries();
-            if (entries.length != 1)
-                return null;
-
-            VirtualFile moduleDirectory = entries[0].getFile();
-            if (moduleDirectory == null)
-                return null;
-
-            if (filePath.startsWith(moduleDirectory.getPath())) {
-                String relPath = filePath.substring(moduleDirectory.getPath().length() + 1);
-                if (relPath.startsWith("lib/") || relPath.startsWith("lib\\"))
-                    relPath = relPath.substring(4);
-                String[] parts = relPath.split("[/\\\\]");
-                int lastDot = parts[parts.length - 1].lastIndexOf('.');
-                if (lastDot > 0)
-                    parts[parts.length - 1] = parts[parts.length - 1].substring(0, lastDot);
-                return String.join("::", parts);
+            VirtualFile[] entries = ModuleRootManager.getInstance(parentModule).getSourceRoots();
+            for (VirtualFile sourceRoot : entries) {
+                if (filePath.startsWith(sourceRoot.getPath())) {
+                    String relPath = sourceRoot.toNioPath().relativize(vf.toNioPath()).toString();
+                    String[] parts = relPath.split("[/\\\\]");
+                    int lastDot = parts[parts.length - 1].lastIndexOf('.');
+                    if (lastDot > 0)
+                        parts[parts.length - 1] = parts[parts.length - 1].substring(0, lastDot);
+                    return String.join("::", parts);
+                }
             }
         }
 
