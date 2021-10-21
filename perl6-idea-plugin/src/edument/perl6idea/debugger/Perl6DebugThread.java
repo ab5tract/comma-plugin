@@ -138,6 +138,8 @@ public class Perl6DebugThread extends Thread {
             else {
                 System.out.println("Event + " + event.getClass().getName());
             }
+        }, (error) -> {
+            throw new RuntimeException(error);
         });
     }
 
@@ -166,16 +168,14 @@ public class Perl6DebugThread extends Thread {
     }
 
     private Perl6ThreadDescriptor[] getThreads() throws ExecutionException, InterruptedException {
+        // By now the program must be suspended
         List<MoarThread> threads = client.threadList().get();
         List<Perl6ThreadDescriptor> threadDescriptors = new ArrayList<>(threads.size());
         for (MoarThread thread : threads) {
-            try {
+            if (thread.suspended) {
                 ExecutionStack stack = client.threadStackTrace(thread.threadId).get();
                 threadDescriptors.add(new Perl6ThreadDescriptor(thread.threadId, thread.nativeId,
-                        stackToFrames(thread, stack)));
-            }
-            catch (ExecutionException e) {
-                // Some threads we can not get (e.g. the debug or spesh threads). Ignore.
+                                                                stackToFrames(thread, stack)));
             }
         }
         return threadDescriptors.toArray(new Perl6ThreadDescriptor[0]);
