@@ -61,7 +61,7 @@ public class CallArityIssuesAnnotator implements Annotator {
         for (ResolveResult def : defs) {
             if (!(def.getElement() instanceof Perl6RoutineDecl))
                 return;
-            Perl6Signature signature = PsiTreeUtil.findChildOfType(def.getElement(), Perl6Signature.class);
+            Perl6Signature signature = ((Perl6RoutineDecl)def.getElement()).getSignatureNode();
             if (signature == null)
                 signature = Perl6ElementFactory.createRoutineSignature(element.getProject(), new ArrayList<>());
             Perl6Signature.SignatureCompareResult result = signature.acceptsArguments(args, true, element instanceof Perl6MethodCall);
