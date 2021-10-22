@@ -23,11 +23,11 @@ public class SummaryTest extends CommaFixtureTestCase {
     }
 
     public void testSingleVariable() {
-        doTestVariable("has $.ab<caret>cd-abcd", "$.abcd-abcd");
+        doTestVariable("has $.ab<caret>cd-abcd", "$!abcd-abcd, $.abcd-abcd");
     }
 
     public void testManyVariables() {
-        doTestVariable("has ($.a, $.b, $.as<caret>df, $!qwer)", "$.a, $.b, $.asdf, $!qwer");
+        doTestVariable("has ($.a, $.b, $.as<caret>df, $!qwer)", "$!a, $!b, $!asdf, $.a, $.b, $.asdf, $!qwer");
     }
 
     public void testSingleSigil() {

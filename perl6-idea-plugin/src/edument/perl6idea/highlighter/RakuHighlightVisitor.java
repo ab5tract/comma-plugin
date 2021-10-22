@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RakuHighlightVisitor extends RakuElementVisitor implements HighlightVisitor {
     private HighlightInfoHolder myHolder;
-    private final Map<String, List<Perl6PackageDecl>> ourScopedPackagesPool = new THashMap<>();
+    private final Map<String, List<Perl6PsiElement>> ourScopedPackagesPool = new THashMap<>();
 
     @Override
     public boolean suitableForFile(@NotNull PsiFile file) {
@@ -66,7 +66,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
 
     @Override
     public void visitScope(Perl6PsiScope element) {
-        Map<String, List<Perl6PackageDecl>> duplicateClassesPool = new THashMap<>();
+        Map<String, List<Perl6PsiElement>> duplicateClassesPool = new THashMap<>();
         Map<String, List<Perl6SignatureHolder>> duplicateRoutinesPool = new THashMap<>();
         Map<String, List<Perl6PsiElement>> duplicateVariablesPool = new THashMap<>();
         List<Perl6LexicalSymbolContributor> decls = element.getSymbolContributors();
@@ -102,6 +102,10 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                                      textRange, duplicateRoutinesPool);
             }
             else if (decl instanceof Perl6VariableSource) {
+                if (decl instanceof Perl6Parameter) {
+                    if (PsiTreeUtil.getParentOfType(decl, Perl6VariableDecl.class, Perl6RoutineDecl.class) instanceof Perl6VariableDecl)
+                        continue;
+                }
                 visitVariableDecl(
                     duplicateVariablesPool, ((Perl6VariableSource)decl).getVariables(),
                     ((Perl6VariableSource)decl).getVariableNames(),
@@ -112,14 +116,22 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 if (decl.getGlobalName() != null && !((Perl6PackageDecl)decl).isStubbed()) {
                     boolean marked = false;
                     if (decl.getScope().equals("our"))
-                        marked = visitPackageDecl((Perl6PackageDecl)decl, ourScopedPackagesPool, true);
-                    visitPackageDecl((Perl6PackageDecl)decl, duplicateClassesPool, !marked);
+                        marked = visitPackageDecl(decl, ourScopedPackagesPool, true);
+                    visitPackageDecl(decl, duplicateClassesPool, !marked);
+                }
+            }
+            else if (decl instanceof Perl6Subset) {
+                if (decl.getGlobalName() != null) {
+                    boolean marked = false;
+                    if (decl.getScope().equals("our"))
+                        marked = visitPackageDecl(decl, ourScopedPackagesPool, true);
+                    visitPackageDecl(decl, duplicateClassesPool, !marked);
                 }
             }
         }
     }
 
-    private void visitUseStatement(Map<String, List<Perl6PackageDecl>> duplicateClassesPool, Perl6LexicalSymbolContributor contributor) {
+    private void visitUseStatement(Map<String, List<Perl6PsiElement>> duplicateClassesPool, Perl6LexicalSymbolContributor contributor) {
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(
             Perl6SymbolKind.TypeOrConstant, Perl6SymbolKind.Routine);
         contributor.contributeLexicalSymbols(collector);
@@ -131,10 +143,10 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
         }
     }
 
-    private boolean visitPackageDecl(Perl6PackageDecl decl,
-                                     Map<String, List<Perl6PackageDecl>> pool,
+    private boolean visitPackageDecl(Perl6PsiElement decl,
+                                     Map<String, List<Perl6PsiElement>> pool,
                                      boolean shouldMark) {
-        List<Perl6PackageDecl> value = pool.compute(decl.getGlobalName(), (k, v) -> {
+        List<Perl6PsiElement> value = pool.compute(((Perl6PsiDeclaration)decl).getGlobalName(), (k, v) -> {
             if (v == null) {
                 v = new ArrayList<>();
             }
@@ -146,44 +158,51 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
         return false;
     }
 
-    private boolean markDuplicateValue(Perl6PackageDecl decl, List<Perl6PackageDecl> v) {
+    private boolean markDuplicateValue(Perl6PsiElement decl, List<Perl6PsiElement> v) {
         AtomicBoolean marked = new AtomicBoolean(false);
-        Optional<Perl6PackageDecl> maxRedecl = v.stream()
+        Optional<Perl6PsiElement> maxRedecl = v.stream()
             .filter(d -> d.getContainingFile().isEquivalentTo(decl.getContainingFile()))
             .max(Comparator.comparingInt(PsiElement::getTextOffset));
         if (maxRedecl.isEmpty())
             maxRedecl = v.stream().max(Comparator.comparingInt(PsiElement::getTextOffset));
 
         maxRedecl.ifPresent(redecl -> {
-            if (redecl.getPackageKeywordNode() == null || redecl.getNameIdentifier() == null)
+            if (redecl instanceof Perl6PackageDecl &&
+                (((Perl6PackageDecl)redecl).getPackageKeywordNode() == null || ((Perl6PackageDecl)redecl).getNameIdentifier() == null) ||
+                redecl instanceof Perl6Subset && ((Perl6Subset)redecl).getNameIdentifier() == null)
                 return;
-            TextRange range = new TextRange(redecl.getPackageKeywordNode().getTextOffset(),
-                                            redecl.getNameIdentifier().getTextRange().getEndOffset());
-            Optional<Perl6PackageDecl> minRedecl =
-                v.stream()
-                    .filter(d -> !d.getContainingFile().isEquivalentTo(decl.getContainingFile()))
-                    .min(Comparator.comparingInt(PsiElement::getTextOffset));
-            if (minRedecl.isEmpty())
-                minRedecl = v.stream().min(Comparator.comparingInt(PsiElement::getTextOffset));
-            minRedecl.ifPresent(packageDecl -> {
-                if (packageDecl.getPackageKind().equals("role")) {
-                    Perl6Parameter[] newParams = decl.getSignature();
-                    for (Perl6PackageDecl role : v) {
-                        Perl6Parameter[] oldParams = role.getSignature();
+            TextRange range;
+            //noinspection ConstantConditions
+            range = new TextRange(redecl.getTextOffset(),
+                                  ((Perl6PsiDeclaration)redecl).getNameIdentifier().getTextRange().getEndOffset());
+            if (redecl instanceof Perl6PackageDecl && ((Perl6PackageDecl)redecl).getPackageKind().equals("role")) {
+                Perl6Parameter[] newParams = decl instanceof Perl6PackageDecl ? ((Perl6PackageDecl)decl).getSignature() : new Perl6Parameter[0];
+                for (Perl6PsiElement role : v) {
+                    if (role instanceof Perl6PackageDecl) {
+                        Perl6Parameter[] oldParams = ((Perl6PackageDecl)role).getSignature();
                         // Different numbers of args
                         if (newParams.length == oldParams.length && role.getTextOffset() != decl.getTextOffset()) {
                             marked.set(true);
-                            myHolder.add(getDuplicateHighlightInfo(packageDecl, range, packageDecl.getGlobalName(),
-                                                                   HighlightInfoType.ERROR));
+                            myHolder.add(getDuplicateHighlightInfo(
+                                role, range, ((Perl6PackageDecl)redecl).getGlobalName(), HighlightInfoType.ERROR));
+                            break;
                         }
                     }
                 }
-                else {
+            }
+            else {
+                Optional<Perl6PsiElement> minRedecl =
+                    v.stream()
+                        .filter(d -> !d.getContainingFile().isEquivalentTo(decl.getContainingFile()))
+                        .min(Comparator.comparingInt(PsiElement::getTextOffset));
+                if (minRedecl.isEmpty())
+                    minRedecl = v.stream().min(Comparator.comparingInt(PsiElement::getTextOffset));
+                minRedecl.ifPresent(packageDecl -> {
                     marked.set(true);
                     myHolder.add(
-                        getDuplicateHighlightInfo(packageDecl, range, packageDecl.getGlobalName(), HighlightInfoType.ERROR));
-                }
-            });
+                        getDuplicateHighlightInfo(packageDecl, range, ((Perl6PsiDeclaration)packageDecl).getGlobalName(), HighlightInfoType.ERROR));
+                });
+            }
         });
         return marked.get();
     }

@@ -171,7 +171,8 @@ public class Perl6StubTest extends CommaFixtureTestCase {
         Perl6TypeNameStub typeNameStub = (Perl6TypeNameStub) childrenStubs.get(0);
         assertEquals("Int", typeNameStub.getTypeName());
         Perl6VariableDeclStub variableDeclStub2 = (Perl6VariableDeclStub) childrenStubs.get(1);
-        assertEquals("$.bar", variableDeclStub2.getVariableNames()[0]);
+        assertEquals("$!bar", variableDeclStub2.getVariableNames()[0]);
+        assertEquals("$.bar", variableDeclStub2.getVariableNames()[1]);
         assertEquals("Int", variableDeclStub2.getVariableType());
     }
 

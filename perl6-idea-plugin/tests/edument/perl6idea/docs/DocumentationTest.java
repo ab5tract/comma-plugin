@@ -62,11 +62,11 @@ public class DocumentationTest extends CommaFixtureTestCase {
 
     public void testQuickDocsAttribute() {
         testGeneratedDoc("One<br>Two<br>Three!<br>Very important variable");
-        testQuickDoc("has $.foo = 42 (attribute of Foo)");
+        testQuickDoc("has $!foo, $.foo = 42 (attribute of Foo)");
     }
 
     public void testQuickDocsAttributeNoInit() {
-        testQuickDoc("has $.foo (attribute of Foo)");
+        testQuickDoc("has $!foo, $.foo (attribute of Foo)");
     }
 
     public void testQuickDocsPrivateMethod() {

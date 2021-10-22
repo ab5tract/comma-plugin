@@ -39,29 +39,35 @@ public class RakuHighlightTest extends CommaFixtureTestCase {
     }
 
     public void testDuplicatedPackages() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\n\nclass A {};\n\n<error descr=\"Re-declaration of A from aaa.p6:3\">class A</error> {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\n\nclass A {};\n\nclass <error descr=\"Re-declaration of A from aaa.p6:3\">A</error> {}");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar Baz {}; <error descr=\"Re-declaration of Baz from aaa.p6:1\">grammar Baz</error> {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "grammar Baz {}; grammar <error descr=\"Re-declaration of Baz from aaa.p6:1\">Baz</error> {}");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class A { class A {} };");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nclass A {\nclass B {}\n};\n<error descr=\"Re-declaration of A::B from aaa.p6:3\">class A::B</error> {};");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nclass A {\nclass B {}\n};\nclass <error descr=\"Re-declaration of A::B from aaa.p6:3\">A::B</error> {};");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nclass A {\nclass B {}\n};\n<error descr=\"Re-declaration of A::B from aaa.p6:3\">class A::B</error> {};");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nclass A {\nclass B {}\n};\nclass <error descr=\"Re-declaration of A::B from aaa.p6:3\">A::B</error> {};");
         myFixture.checkHighlighting();
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nclass A::B {};\nclass A {\n<error descr=\"Re-declaration of A::B from aaa.p6:2\">class B</error> {}\n};");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nclass A::B {};\nclass A {\nclass <error descr=\"Re-declaration of A::B from aaa.p6:2\">B</error> {}\n};");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Agrammon::Outputs { ... }\nclass Agrammon::Outputs { }");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "subset CCCC1 of Int; class <error descr=\"Re-declaration of CCCC1 from aaa.p6:1\">CCCC1</error> {}");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class DDDD1 {}; subset <error descr=\"Re-declaration of DDDD1 from aaa.p6:1\">DDDD1</error> of Int;");
         myFixture.checkHighlighting();
     }
 
     public void testDuplicatedRoles() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Baz {}; <error descr=\"Re-declaration of Baz from aaa.p6:1\">role Baz</error> {}");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Baz {}; role <error descr=\"Re-declaration of Baz from aaa.p6:1\">Baz</error> {}");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
-                                  "role Bar[Type] {}; <error descr=\"Re-declaration of Bar from aaa.p6:1\">role Bar</error>[Type] {}; role Bar {};");
+                                  "role Bar[Type] {}; role <error descr=\"Re-declaration of Bar from aaa.p6:1\">Bar</error>[Type] {}; role Bar {};");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Saz {}; role Saz[Type] {}; role Saz[Type1, Type2] {};");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role R1 {};\nrole R1[Type] {};\nrole <error descr=\"Re-declaration of R1 from aaa.p6:2\">R1</error>[Type] {};");
         myFixture.checkHighlighting();
     }
 
