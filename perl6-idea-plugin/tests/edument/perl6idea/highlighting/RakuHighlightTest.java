@@ -51,6 +51,8 @@ public class RakuHighlightTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nclass A::B {};\nclass A {\n<error descr=\"Re-declaration of A::B from aaa.p6:2\">class B</error> {}\n};");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class Agrammon::Outputs { ... }\nclass Agrammon::Outputs { }");
+        myFixture.checkHighlighting();
     }
 
     public void testDuplicatedRoles() {
@@ -67,6 +69,12 @@ public class RakuHighlightTest extends CommaFixtureTestCase {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my $foo; say $foo; my <warning descr=\"Re-declaration of $foo from aaa.p6:1\"><weak_warning descr=\"Unused variable\">$foo</weak_warning></warning>; say $foo;");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nmy $bar;\nsay $bar;\n{ my $bar; say $bar; };\nmy <warning descr=\"Re-declaration of $bar from aaa.p6:2\"><weak_warning descr=\"Unused variable\">$bar</weak_warning></warning>;\nsay $bar;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub blah($x) { my <warning descr=\"Re-declaration of $x from aaa.p6:1\"><weak_warning descr=\"Unused variable\">$x</weak_warning></warning> = 42; say $x; }; blah(3);");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub x() {}; my <warning descr=\"Re-declaration of &x from aaa.p6:1\"><weak_warning descr=\"Unused variable\">&x</weak_warning></warning> = -> {}");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nmy my <weak_warning descr=\"Unused variable\">&y</weak_warning>;\n<warning descr=\"Re-declaration of &y from aaa.p6:2\">sub y() {}</warning>;");
         myFixture.checkHighlighting();
     }
 

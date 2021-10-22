@@ -109,7 +109,7 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
                 continue;
             Perl6Type caller = params[0].inferType();
             if (caller.getName().equals(traitType)) {
-                List<String> traitNames = params[1].getVariableNames();
+                String[] traitNames = params[1].getVariableNames();
                 for (String traitName : traitNames) {
                     if (traitName.length() > 1)
                         types.add(traitName.substring(1));

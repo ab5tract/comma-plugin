@@ -2,9 +2,11 @@ package edument.perl6idea.psi.external;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6PsiElement;
+import edument.perl6idea.psi.Perl6Variable;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6UnresolvedType;
@@ -54,10 +56,15 @@ public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements P
     }
 
     @Override
-    public List<String> getVariableNames() {
+    public Perl6Variable[] getVariables() {
+        return new Perl6Variable[0];
+    }
+
+    @Override
+    public String[] getVariableNames() {
         return myNames.size() == 0
-               ? Collections.singletonList(getVariableName())
-               : ContainerUtil.map(myNames, s -> "$" + s);
+               ? new String[]{getVariableName()}
+               : ArrayUtil.toStringArray(ContainerUtil.map(myNames, s -> "$" + s));
     }
 
     @Override

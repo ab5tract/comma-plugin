@@ -5,6 +5,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
@@ -87,8 +88,14 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     }
 
     @Override
-    public List<String> getVariableNames() {
-        return Collections.singletonList(getVariableName());
+    public Perl6Variable[] getVariables() {
+        Perl6Variable var = PsiTreeUtil.findChildOfType(this, Perl6Variable.class);
+        return var == null ? new Perl6Variable[0] : new Perl6Variable[] {var};
+    }
+
+    @Override
+    public String[] getVariableNames() {
+        return new String[]{getVariableName()};
     }
 
     @Nullable
