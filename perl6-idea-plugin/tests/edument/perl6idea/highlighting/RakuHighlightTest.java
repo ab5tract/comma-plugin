@@ -78,6 +78,11 @@ public class RakuHighlightTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testDuplicateAttributes() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "class C { has <weak_warning descr=\"Unused attribute\">$!a</weak_warning>; has <error descr=\"Re-declaration of $!a from aaa.p6:1\">$.a</error>; }");
+        myFixture.checkHighlighting();
+    }
+
     public void testDuplicatesInExternal() {
         myFixture.configureByFiles("User.rakumod", "Base.rakumod");
         myFixture.checkHighlighting();

@@ -26,9 +26,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6VariableDeclStub>
-        implements Perl6VariableDecl, PsiMetaOwner {
+    implements Perl6VariableDecl, PsiMetaOwner {
     public Perl6VariableDeclImpl(@NotNull ASTNode node) {
         super(node);
     }
@@ -86,9 +87,22 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (stub != null)
             return stub.getVariableNames();
         Perl6Variable[] variables = getVariables();
-        return variables.length == 0
-               ? ArrayUtil.EMPTY_STRING_ARRAY
-               : Arrays.stream(variables).map(v -> v.getVariableName()).filter(n -> n != null).toArray(String[]::new);
+        if (variables.length == 0) {
+            return ArrayUtil.EMPTY_STRING_ARRAY;
+        }
+        else {
+            List<String> privates = new ArrayList<>();
+            for (Perl6Variable variable : variables) {
+                String name = variable.getVariableName();
+                if (name != null && Perl6Variable.getTwigil(name) == '.') {
+                    privates.add(name.replace('.', '!'));
+                }
+            }
+            return Stream.concat(
+                privates.stream(),
+                Arrays.stream(variables).map(v -> v.getVariableName()).filter(n -> n != null)
+            ).toArray(String[]::new);
+        }
     }
 
     @Override
@@ -97,7 +111,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         if (signature == null) {
             Perl6Variable variable = getVariable();
             return variable == null ? new Perl6Variable[0] : new Perl6Variable[]{variable};
-        } else {
+        }
+        else {
             return PsiTreeUtil.findChildrenOfType(signature, Perl6Variable.class).toArray(new Perl6Variable[0]);
         }
     }
@@ -120,8 +135,9 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
         if (identificator instanceof Perl6Variable) {
             return infix.skipWhitespacesForward();
-        } else if (identificator != null) {
-            PsiElement init = extractInitializerForSignatureVar((Perl6Signature) identificator, variable, infix);
+        }
+        else if (identificator != null) {
+            PsiElement init = extractInitializerForSignatureVar((Perl6Signature)identificator, variable, infix);
             if (init != null)
                 return init;
         }
@@ -129,7 +145,9 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     }
 
     @Nullable
-    private static PsiElement extractInitializerForSignatureVar(Perl6Signature signature, Perl6Variable variable, @NotNull Perl6Infix infix) {
+    private static PsiElement extractInitializerForSignatureVar(Perl6Signature signature,
+                                                                Perl6Variable variable,
+                                                                @NotNull Perl6Infix infix) {
         int initIndex = -1;
         Perl6Parameter[] parameters = signature.getParameters();
         for (int i = 0, parametersLength = parameters.length; i < parametersLength; i++) {
@@ -148,8 +166,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
                 Perl6Infix[] commas = PsiTreeUtil.getChildrenOfType(multiInit, Perl6Infix.class);
                 if (commas != null && commas.length >= initIndex) {
                     return initIndex == 0 ?
-                            commas[0].skipWhitespacesBackward() :
-                            commas[initIndex - 1].skipWhitespacesForward();
+                           commas[0].skipWhitespacesBackward() :
+                           commas[initIndex - 1].skipWhitespacesForward();
                 }
             }
         }
@@ -183,7 +201,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             if (maybeWS instanceof PsiWhiteSpace)
                 maybeWS.delete();
             statement.delete();
-        } else {
+        }
+        else {
             // Should we enclose resulting variable list with parentheses or no
             boolean shouldEnclose = variables.length - 1 != 1;
 
@@ -211,17 +230,18 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             // so we can just replace it with the value directly
             if (initPartsToPreserve.size() == 1) {
                 getInitializer().replace(initPartsToPreserve.get(0));
-            } else {
+            }
+            else {
                 // Otherwise, create a new application and use it
                 Perl6InfixApplication newApplication = Perl6ElementFactory.
-                        createInfixApplication(getProject(), ", ", initPartsToPreserve);
+                    createInfixApplication(getProject(), ", ", initPartsToPreserve);
                 getInitializer().replace(newApplication);
             }
 
             PsiElement newDeclaration = Perl6ElementFactory.createVariableAssignment(
-                    variable.getProject(),
-                    String.format(shouldEnclose ? "(%s)" : "%s", signature.toString()),
-                    getInitializer().getText(), false);
+                variable.getProject(),
+                String.format(shouldEnclose ? "(%s)" : "%s", signature.toString()),
+                getInitializer().getText(), false);
 
             Perl6Statement wholeStatement = PsiTreeUtil.getParentOfType(this, Perl6Statement.class);
             if (wholeStatement != null)
@@ -245,8 +265,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
         Perl6Type type = typeName != null ? typeName.inferType() : getOfType();
         if (type != null) {
             return baseType == null
-                    ? type
-                    : new Perl6ParametricType(baseType, new Perl6Type[] { type });
+                   ? type
+                   : new Perl6ParametricType(baseType, new Perl6Type[]{type});
         }
 
         if (baseType == null) {
@@ -300,8 +320,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             if (typeName == null)
                 continue;
             result = result == null
-                    ? typeName.inferType()
-                    : new Perl6ParametricType(result, new Perl6Type[] { typeName.inferType() });
+                     ? typeName.inferType()
+                     : new Perl6ParametricType(result, new Perl6Type[]{typeName.inferType()});
         }
         return result;
     }
@@ -315,7 +335,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             if (Objects.equals(variableName, getVariableNames()[0])) {
                 return null;
             }
-        } else if (value instanceof Perl6PostfixApplication) {
+        }
+        else if (value instanceof Perl6PostfixApplication) {
             if (value.getFirstChild() instanceof Perl6Variable)
                 if (Objects.equals(((Perl6Variable)value.getFirstChild()).getVariableName(), getVariableNames()[0])) {
                     return null;
@@ -348,7 +369,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
                     if (collector.isSatisfied()) return;
                     if (name.startsWith("&"))
                         collector.offerSymbol(new Perl6ExplicitAliasedSymbol(Perl6SymbolKind.Routine,
-                                this, name.substring(1)));
+                                                                             this, name.substring(1)));
                 }
             }
         }
@@ -457,7 +478,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
             if (!(type instanceof Perl6Untyped))
                 typename = type.getName();
             PodDomAttributeDeclarator attribute = new PodDomAttributeDeclarator(getTextOffset(), shortName, null,
-                    getDocBlocks(), rw, typename);
+                                                                                getDocBlocks(), rw, typename);
             enclosingClass.addAttribute(attribute);
         }
     }

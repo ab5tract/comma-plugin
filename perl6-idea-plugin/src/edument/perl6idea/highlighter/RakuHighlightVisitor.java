@@ -288,7 +288,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                         }
                     }
                     myHolder
-                        .add(getDuplicateHighlightInfo(originalDecl, finalRange, varName, level));
+                        .add(getDuplicateHighlightInfo(originalDecl, finalRange, varName, varName.contains("!") ? HighlightInfoType.ERROR : HighlightInfoType.WARNING));
                 }
                 v.add(variables[finalI]);
                 return v;
