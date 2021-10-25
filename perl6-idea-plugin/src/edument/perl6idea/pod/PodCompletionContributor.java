@@ -16,7 +16,7 @@ import static edument.perl6idea.parsing.Perl6TokenTypes.POD_TYPENAME;
 public class PodCompletionContributor extends CompletionContributor {
     public static final String[] POD_KEYWORDS = new String[]{
         "finish", "begin", "end", "for", "pod", "item", "table",
-        "head1", "head2", "head3", "head4"
+        "head1", "head2", "head3", "head4", "code", "para", "defn"
     };
 
     public PodCompletionContributor() {
