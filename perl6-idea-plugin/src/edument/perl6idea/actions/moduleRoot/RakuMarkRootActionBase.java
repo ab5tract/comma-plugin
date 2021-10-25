@@ -8,6 +8,7 @@ import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.SourceFolder;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.stubs.StubTreeLoader;
 import edument.perl6idea.module.Perl6ModuleType;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,5 +41,6 @@ public abstract class RakuMarkRootActionBase extends MarkRootActionBase {
     @Override
     protected void modifyRoots(VirtualFile file, ContentEntry entry) {
         entry.addSourceFolder(file, myTestMarker);
+        StubTreeLoader.getInstance().rebuildStubTree(file);
     }
 }
