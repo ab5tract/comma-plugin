@@ -93,4 +93,25 @@ public class RakuHighlightTest extends CommaFixtureTestCase {
         myFixture.configureByFiles("User.rakumod", "Base.rakumod");
         myFixture.checkHighlighting();
     }
+
+    public void testRoutineScopes() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "class C {\n" +
+                                  "    method m() {}\n" +
+                                  "    sub <weak_warning descr=\"Unused subroutine\">m</weak_warning>() {}\n" +
+                                  "}\n" +
+                                  "class D {\n" +
+                                  "    my method m() {}\n" +
+                                  "    <error descr=\"Re-declaration of m from aaa.p6:6\">sub m</error>() {}\n" +
+                                  "}");
+        myFixture.checkHighlighting();
+    }
+
+    // TODO should warn
+    public void testPackageScopes() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "my class A { class B {} };\n" +
+                                  "class A::B {}");
+        myFixture.checkHighlighting();
+    }
 }

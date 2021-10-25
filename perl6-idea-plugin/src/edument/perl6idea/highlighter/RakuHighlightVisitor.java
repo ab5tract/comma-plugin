@@ -5,6 +5,7 @@ import com.intellij.codeInsight.daemon.impl.*;
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
@@ -83,23 +84,21 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 if (((Perl6RoutineDecl)decl).getDeclaratorNode() == null ||
                     ((Perl6RoutineDecl)decl).getRoutineName() == null || decl.getNameIdentifier() == null)
                     return;
-                TextRange textRange = new TextRange(((Perl6RoutineDecl)decl).getDeclaratorNode().getTextOffset(),
-                                                    decl.getNameIdentifier().getTextRange().getEndOffset());
                 boolean wasReported = visitSignatureHolder(myHolder, (Perl6SignatureHolder)decl, ((Perl6RoutineDecl)decl).getRoutineName(),
-                                     textRange, duplicateRoutinesPool);
+                                                           duplicateRoutinesPool);
                 if (!wasReported && ((Perl6RoutineDecl)decl).isSub() && ((Perl6RoutineDecl)decl).getMultiness() == "only") {
                     // If a subroutine, expose `&foo` variable
+                    TextRange textRange = new TextRange(((Perl6RoutineDecl)decl).getDeclaratorNode().getTextOffset(),
+                                                        decl.getNameIdentifier().getTextRange().getEndOffset());
                     visitVariableDecl(
                         duplicateVariablesPool, new Perl6PsiElement[]{decl}, new String[]{"&" + ((Perl6RoutineDecl)decl).getRoutineName()},
-                        new TextRange[]{textRange}, HighlightInfoType.ERROR);
+                        new TextRange[]{textRange});
                 }
             }
             else if (decl instanceof Perl6RegexDecl) {
                 if (decl.getName() == null || decl.getNameIdentifier() == null)
                     return;
-                TextRange textRange = new TextRange(decl.getTextOffset(), decl.getNameIdentifier().getTextRange().getEndOffset());
-                visitSignatureHolder(myHolder, (Perl6SignatureHolder)decl, decl.getName(),
-                                     textRange, duplicateRoutinesPool);
+                visitSignatureHolder(myHolder, (Perl6SignatureHolder)decl, decl.getName(), duplicateRoutinesPool);
             }
             else if (decl instanceof Perl6VariableSource) {
                 if (decl instanceof Perl6Parameter) {
@@ -109,8 +108,8 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 visitVariableDecl(
                     duplicateVariablesPool, ((Perl6VariableSource)decl).getVariables(),
                     ((Perl6VariableSource)decl).getVariableNames(),
-                    ContainerUtil.map2Array(((Perl6VariableSource)decl).getVariables(), TextRange.class, v -> v.getTextRange()),
-                    HighlightInfoType.WARNING);
+                    ContainerUtil.map2Array(((Perl6VariableSource)decl).getVariables(), TextRange.class, v -> v.getTextRange())
+                );
             }
             else if (decl instanceof Perl6PackageDecl) {
                 if (decl.getGlobalName() != null && !((Perl6PackageDecl)decl).isStubbed()) {
@@ -176,7 +175,8 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
             range = new TextRange(redecl.getTextOffset(),
                                   ((Perl6PsiDeclaration)redecl).getNameIdentifier().getTextRange().getEndOffset());
             if (redecl instanceof Perl6PackageDecl && ((Perl6PackageDecl)redecl).getPackageKind().equals("role")) {
-                Perl6Parameter[] newParams = decl instanceof Perl6PackageDecl ? ((Perl6PackageDecl)decl).getSignature() : new Perl6Parameter[0];
+                Perl6Parameter[] newParams =
+                    decl instanceof Perl6PackageDecl ? ((Perl6PackageDecl)decl).getSignature() : new Perl6Parameter[0];
                 for (Perl6PsiElement role : v) {
                     if (role instanceof Perl6PackageDecl) {
                         Perl6Parameter[] oldParams = ((Perl6PackageDecl)role).getSignature();
@@ -200,7 +200,8 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 minRedecl.ifPresent(packageDecl -> {
                     marked.set(true);
                     myHolder.add(
-                        getDuplicateHighlightInfo(packageDecl, range, ((Perl6PsiDeclaration)packageDecl).getGlobalName(), HighlightInfoType.ERROR));
+                        getDuplicateHighlightInfo(packageDecl, range, ((Perl6PsiDeclaration)packageDecl).getGlobalName(),
+                                                  HighlightInfoType.ERROR));
                 });
             }
         });
@@ -208,20 +209,33 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
     }
 
     protected boolean visitSignatureHolder(HighlightInfoHolder infoHolder, Perl6SignatureHolder holder,
-                                        String name, TextRange textRange,
-                                        Map<String, List<Perl6SignatureHolder>> pool) {
-        if (name == null || textRange == null)
+                                           String name, Map<String, List<Perl6SignatureHolder>> pool) {
+        if (name == null)
             return false;
         return pool.compute(name, (k, v) -> {
             if (v == null) {
                 v = new ArrayList<>();
             }
             else {
-                int firstDuplicateIndex = isElementInPool(holder, v);
-                if (firstDuplicateIndex >= 0 && firstDuplicateIndex < v.size()) {
-                    Perl6SignatureHolder oldHolder = v.get(firstDuplicateIndex);
-                    if (oldHolder instanceof Perl6PsiElement)
-                        infoHolder.add(getDuplicateHighlightInfo((Perl6PsiElement)oldHolder, textRange, name, HighlightInfoType.ERROR));
+                Pair<Perl6SignatureHolder, Perl6SignatureHolder> oldAndNewHolders = isElementInPool(holder, v);
+                if (oldAndNewHolders != null) {
+                    TextRange textRange = null;
+                    if (oldAndNewHolders.second instanceof Perl6RoutineDecl) {
+                        Perl6RoutineDecl decl = (Perl6RoutineDecl)oldAndNewHolders.second;
+                        if (decl.getNameIdentifier() != null)
+                            textRange = new TextRange(decl.getDeclaratorNode().getTextOffset(),
+                                                      decl.getNameIdentifier().getTextRange()
+                                                          .getEndOffset());
+                    }
+                    else if (oldAndNewHolders.second instanceof Perl6RegexDecl) {
+                        Perl6RegexDecl decl = (Perl6RegexDecl)oldAndNewHolders.second;
+                        if (decl.getNameIdentifier() != null)
+                            textRange = new TextRange(decl.getTextOffset(),
+                                                      decl.getNameIdentifier().getTextRange().getEndOffset());
+                    }
+                    if (textRange != null)
+                        infoHolder
+                            .add(getDuplicateHighlightInfo((Perl6PsiElement)oldAndNewHolders.first, textRange, name, HighlightInfoType.ERROR));
                 }
             }
             v.add(holder);
@@ -229,55 +243,69 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
         }).size() > 1;
     }
 
-    private static int isElementInPool(Perl6SignatureHolder holder, List<Perl6SignatureHolder> v) {
-        int firstDuplicateIndex = -1;
+    private static Pair<Perl6SignatureHolder, Perl6SignatureHolder> isElementInPool(Perl6SignatureHolder holder, List<Perl6SignatureHolder> v) {
+        String scope = holder instanceof Perl6PsiDeclaration ? ((Perl6PsiDeclaration)holder).getScope() : "";
+
         // For multi routines we need to compare signatures
         Perl6Parameter[] paramsNew =
             holder.getSignatureNode() == null ? new Perl6Parameter[0] : holder.getSignatureNode().getParameters();
         Perl6PsiScope newScope = PsiTreeUtil.getParentOfType((PsiElement)holder, Perl6PsiScope.class);
+        List<Perl6SignatureHolder> matchingDecls = new ArrayList<>();
         ROUTINES:
-        for (int j = 0; j < v.size(); j++) {
-            Perl6SignatureHolder decl = v.get(j);
-            if (holder == decl)
+        for (Perl6SignatureHolder checkedDecl : v) {
+            if (holder == checkedDecl)
+                continue;
+            String checkedDeclScope = checkedDecl instanceof Perl6PsiDeclaration ? ((Perl6PsiDeclaration)checkedDecl).getScope() : "";
+            if (!Objects.equals(checkedDeclScope, scope))
                 continue;
 
-            Perl6PsiScope oldScope = PsiTreeUtil.getParentOfType((PsiElement)decl, Perl6PsiScope.class);
+            Perl6PsiScope oldScope = PsiTreeUtil.getParentOfType((PsiElement)checkedDecl, Perl6PsiScope.class);
             if (newScope != null && oldScope != null && !PsiEquivalenceUtil.areElementsEquivalent(newScope, oldScope))
                 continue;
 
-            if (decl.getMultiness() == "only") {
-                firstDuplicateIndex = j;
-                break;
+            if (checkedDecl.getMultiness() == "only") {
+                matchingDecls.add(checkedDecl);
+                continue;
             }
             Perl6Parameter[] paramsKnown =
-                decl.getSignatureNode() == null ? new Perl6Parameter[0] : decl.getSignatureNode().getParameters();
+                checkedDecl.getSignatureNode() == null ? new Perl6Parameter[0] : checkedDecl.getSignatureNode().getParameters();
             // No params == both are duplicates
             if (paramsKnown.length == 0 && paramsNew.length == 0) {
-                firstDuplicateIndex = j;
-                break;
+                matchingDecls.add(checkedDecl);
+                continue;
             }
             // Different signature length - not a duplicate
             if (paramsKnown.length != paramsNew.length) {
                 continue;
             }
-            // Compare by type as best as we can now
-            for (int i = 0; i < paramsKnown.length; i++) {
-                Perl6Parameter parameter1 = paramsKnown[i];
-                Perl6Parameter parameter2 = paramsNew[i];
+            // Compare by type as precise as we can for now
+            for (int j = 0; j < paramsKnown.length; j++) {
+                Perl6Parameter parameter1 = paramsKnown[j];
+                Perl6Parameter parameter2 = paramsNew[j];
                 if (!parameter1.equalsParameter(parameter2)) {
                     continue ROUTINES;
                 }
             }
-            firstDuplicateIndex = j;
+            matchingDecls.add(checkedDecl);
             break;
         }
-        return firstDuplicateIndex;
+
+        if (!matchingDecls.isEmpty()) {
+            matchingDecls.add(holder);
+            Optional<PsiElement> maybeMin = matchingDecls.stream().filter(d -> d instanceof PsiElement)
+                .map(d -> (PsiElement)d).min(Comparator.comparingInt(PsiElement::getTextOffset));
+            Optional<PsiElement> maybeMax = matchingDecls.stream().filter(d -> d instanceof PsiElement)
+                .map(d -> (PsiElement)d).max(Comparator.comparingInt(PsiElement::getTextOffset));
+            if (maybeMin.isPresent() && maybeMax.isPresent())
+                return Pair.create((Perl6SignatureHolder) maybeMin.get(), (Perl6SignatureHolder)maybeMax.get());
+        }
+        return null;
     }
 
     public void visitVariableDecl(Map<String, List<Perl6PsiElement>> pool,
                                   Perl6PsiElement[] variables,
                                   String[] variableNames,
-                                  TextRange[] ranges, HighlightInfoType level) {
+                                  TextRange[] ranges) {
         for (int i = 0; i < variables.length; i++) {
             String varName = variableNames[i];
             // Don't visit anonymous ones or dynamic
@@ -307,7 +335,8 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                         }
                     }
                     myHolder
-                        .add(getDuplicateHighlightInfo(originalDecl, finalRange, varName, varName.contains("!") ? HighlightInfoType.ERROR : HighlightInfoType.WARNING));
+                        .add(getDuplicateHighlightInfo(originalDecl, finalRange, varName,
+                                                       varName.contains("!") ? HighlightInfoType.ERROR : HighlightInfoType.WARNING));
                 }
                 v.add(variables[finalI]);
                 return v;
