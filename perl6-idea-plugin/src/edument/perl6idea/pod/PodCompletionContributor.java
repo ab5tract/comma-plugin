@@ -7,6 +7,7 @@ import com.intellij.patterns.ElementPatternCondition;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ProcessingContext;
+import edument.perl6idea.psi.PodBlockDelimited;
 import edument.perl6idea.psi.PodBlockParagraph;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +53,7 @@ public class PodCompletionContributor extends CompletionContributor {
                     result.addElement(LookupElementBuilder.create(keyword));
                 }
                 PsiElement el = parameters.getPosition().getParent();
-                if (el.getNode().getElementType() != POD_TYPENAME && !(el instanceof PodBlockParagraph)) {
+                if (!(el instanceof PodBlockParagraph || el instanceof PodBlockDelimited)) {
                     result.addElement(LookupElementBuilder.create(POD_PARAGRAPH));
                     result.addElement(LookupElementBuilder.create(POD_FINISH));
                     result.addElement(LookupElementBuilder.create(POD_BEGIN));
