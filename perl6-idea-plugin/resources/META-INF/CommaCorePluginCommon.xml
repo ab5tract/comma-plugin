@@ -43,7 +43,7 @@
     <group>
       <action id="MarkRakuSourceRoot" class="edument.perl6idea.actions.moduleRoot.MarkRakuSourceRootAction"/>
       <action id="MarkRakuTestsSourceRoot" class="edument.perl6idea.actions.moduleRoot.MarkRakuTestsSourceRootAction"/>
-      <action id="UnmarkRoot" class="com.intellij.ide.projectView.actions.UnmarkRootAction"/>
+      <action id="UnmarkRoot" class="edument.perl6idea.actions.moduleRoot.RakuUnmarkRootAction"/>
       <add-to-group group-id="MarkRootGroup"/>
     </group>
   </actions>

@@ -1,7 +1,10 @@
 package edument.perl6idea.psi.stub;
 
 import com.intellij.psi.StubBuilder;
-import com.intellij.psi.stubs.*;
+import com.intellij.psi.stubs.IndexSink;
+import com.intellij.psi.stubs.StubElement;
+import com.intellij.psi.stubs.StubInputStream;
+import com.intellij.psi.stubs.StubOutputStream;
 import com.intellij.psi.tree.IStubFileElementType;
 import com.intellij.util.io.StringRef;
 import edument.perl6idea.Perl6Language;
@@ -10,10 +13,6 @@ import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Perl6FileElementType extends IStubFileElementType<Perl6FileStub> {
     public static final int STUB_VERSION = 29;
