@@ -15,6 +15,8 @@ import edument.perl6idea.psi.stub.impl.Perl6FileStubImpl;
 import edument.perl6idea.vfs.Perl6FileSystem;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.file.FileSystems;
+
 public class Perl6FileStubBuilder extends DefaultStubBuilder {
     @NotNull
     @Override
@@ -46,7 +48,7 @@ public class Perl6FileStubBuilder extends DefaultStubBuilder {
 
             VirtualFile[] entries = ModuleRootManager.getInstance(parentModule).getSourceRoots();
             for (VirtualFile sourceRoot : entries) {
-                if (filePath.startsWith(sourceRoot.getPath())) {
+                if (filePath.startsWith(sourceRoot.getPath() + FileSystems.getDefault().getSeparator())) {
                     String relPath = sourceRoot.toNioPath().relativize(vf.toNioPath()).toString();
                     String[] parts = relPath.split("[/\\\\]");
                     int lastDot = parts[parts.length - 1].lastIndexOf('.');
