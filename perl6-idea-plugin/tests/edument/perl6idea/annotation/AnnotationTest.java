@@ -1093,6 +1093,8 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot assign to a signature literal\">:($a) = 55</error>;");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my constant x = 42; <error descr=\"Cannot assign to a constant\">x = 55</error>;");
+        myFixture.checkHighlighting();
     }
 
     public void testCallArityMismatchAnnotating() {

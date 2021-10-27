@@ -81,6 +81,14 @@ public class AssignmentToImmutableAnnotator implements Annotator {
                 holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a Pair literal").create();
         } else if (operand instanceof Perl6Capture) {
             holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a capture literal").create();
+        } else if (operand instanceof Perl6TypeName) {
+            PsiReference reference = operand.getReference();
+            if (reference == null)
+                return;
+            PsiElement declaration = reference.resolve();
+            if (declaration instanceof Perl6Constant) {
+                holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a constant").create();
+            }
         }
     }
 }
