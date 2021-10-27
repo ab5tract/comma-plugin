@@ -18,7 +18,7 @@ public abstract class CompareFormatter {
             return "(+∞%)";
         int diff = y - x;
         float percent = 100 * ((float)y / x) - 100;
-        return String.format("%d (%s%.2f%%)", diff, percent > 0 ? "+" : "", percent);
+        return String.format("%,d (%s%.2f%%)", diff, percent > 0 ? "+" : "", percent);
     }
 
     protected static String orAnon(String s) {

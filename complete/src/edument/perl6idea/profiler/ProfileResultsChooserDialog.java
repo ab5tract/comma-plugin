@@ -164,7 +164,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
             Perl6ProfileData[] profiles = {myProfilesTableModel.getItem(selectedData[0]), myProfilesTableModel.getItem(selectedData[1])};
             try {
                 ProfileCompareProcessor.ProfileCompareResults results = new ProfileCompareProcessor(profiles).process();
-                new ProfileCompareDialog(myProject, results).show();
+                new ProfileCompareDialog(myProject, profiles, results).show();
             } catch (SQLException | IOException ex) {
                 Messages.showErrorDialog(myProject, "Could not compare profiles: " + ex.getMessage(), "Profile Comparison Failed");
             }

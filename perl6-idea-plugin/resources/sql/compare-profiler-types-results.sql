@@ -23,7 +23,7 @@ graded AS (
 matches AS (
   SELECT lft.id AS lft, rgt.id AS rgt, lft.name AS name
   FROM graded lft
-  INNER JOIN graded rgt
+  LEFT JOIN graded rgt
     ON rgt.db = 2
     AND rgt.count_by_name = 1
     AND lft.name = rgt.name
@@ -66,9 +66,9 @@ deallocations_by_type AS (
 
 SELECT m.*,
        a1.spesh AS c1_spesh, a1.jit AS c1_jit, a1.count AS c1_count, a1.replaced AS c1_replaced,
-       a2.spesh AS c2_spesh, a2.jit AS c2_jit, a2.count AS c2_count, a2.replaced AS c2_replaced,
+       coalesce(a2.spesh, 0) AS c2_spesh, coalesce(a2.jit, 0) AS c2_jit, coalesce(a2.count, 0) AS c2_count, coalesce(a2.replaced, 0) AS c2_replaced,
        d1.num_gcs AS c1_num_gcs, d1.nursery_fresh AS c1_nursery_fresh, d1.nursery_seen AS c1_nursery_seen, d1.gen2 AS c1_gen2,
-       d2.num_gcs AS c2_num_gcs, d2.nursery_fresh AS c2_nursery_fresh, d2.nursery_seen AS c2_nursery_seen, d2.gen2 AS c2_gen2
+       coalesce(d2.num_gcs, 0) AS c2_num_gcs, coalesce(d2.nursery_fresh, 0) AS c2_nursery_fresh, coalesce(d2.nursery_seen, 0) AS c2_nursery_seen, coalesce(d2.gen2, 0) AS c2_gen2
 FROM matches m
 LEFT JOIN allocations_by_type a1
   ON a1.db = 1

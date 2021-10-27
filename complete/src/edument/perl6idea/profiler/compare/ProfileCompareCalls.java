@@ -73,7 +73,7 @@ public class ProfileCompareCalls extends ProfileCompareDataProvider {
             for (String metric : METRICS) {
                 metrics.put(metric, new ProfileCompareProcessor.ProfileMetricValue(rs.getInt("c1_" + metric), rs.getInt("c2_" + metric)));
             }
-            metrics.put("inclusive_time", new ProfileCompareProcessor.ProfileMetricValue(db1Inclusives.get(id), db2Inclusives.get(id)));
+            metrics.put("inclusive_time", new ProfileCompareProcessor.ProfileMetricValue(db1Inclusives.getOrDefault(id, 0), db2Inclusives.getOrDefault(id, 0)));
 
             results.add(new ProfileCompareProcessor.ProfileCompareRow(lftName, rgtName, metrics));
         }
@@ -82,6 +82,7 @@ public class ProfileCompareCalls extends ProfileCompareDataProvider {
         return results;
     }
 
+    @NotNull
     private static Map<Integer, Integer> computeInclusives(Statement stmt, String tableName) throws SQLException {
         ResultSet rs = stmt.executeQuery("SELECT id, routine_id, parent_id, inclusive_time FROM " + tableName + " GROUP BY 1"); // TODO why group by?
 

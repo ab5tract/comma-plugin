@@ -1,6 +1,5 @@
 package edument.perl6idea.profiler.compare;
 
-import com.intellij.openapi.util.Pair;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.utils.Perl6Utils;
 
@@ -73,12 +72,12 @@ public class ProfileCompareSummary extends ProfileCompareDataProvider {
         new ProfileCompareProcessor.ProfileCompareColumn("GC run", "gc_count"),
         new ProfileCompareProcessor.ProfileCompareColumn("GC major count", "gc_full_count"),
         new ProfileCompareProcessor.ProfileCompareColumn("GC total time", "gc_total_time", "ms"),
-        new ProfileCompareProcessor.ProfileCompareColumn("GC avg minor time", "gc_avg_minor_time", "ms"),
-        new ProfileCompareProcessor.ProfileCompareColumn("GC min minor time", "gc_min_minor_time", "ms"),
-        new ProfileCompareProcessor.ProfileCompareColumn("GC max minor time", "gc_max_minor_time", "ms"),
-        new ProfileCompareProcessor.ProfileCompareColumn("GC avg major time", "gc_avg_major_time", "ms"),
-        new ProfileCompareProcessor.ProfileCompareColumn("GC min major time", "gc_min_major_time", "ms"),
-        new ProfileCompareProcessor.ProfileCompareColumn("GC max major time", "gc_max_major_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Nursery avg time", "gc_avg_minor_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Nursery min time", "gc_min_minor_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Nursery max time", "gc_max_minor_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Full avg time", "gc_avg_major_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Full min time", "gc_min_major_time", "ms"),
+        new ProfileCompareProcessor.ProfileCompareColumn("Full max time", "gc_max_major_time", "ms"),
         new ProfileCompareProcessor.ProfileCompareColumn("Total time", "profile_total_time", "ms"),
         new ProfileCompareProcessor.ProfileCompareColumn("Total spesh time", "profile_total_spesh_time", "ms"),
         new ProfileCompareProcessor.ProfileCompareColumn("Highest spesh time", "profile_highest_spesh_time", "ms"),

@@ -22,8 +22,8 @@ public abstract class ProfileCompareDataProvider {
                 LOG.info("Rows loaded (" + getClass().getName() + ")");
                 return rows;
             }
-            catch (SQLException e) {
-                LOG.warn(e);
+            catch (Exception e) {
+                LOG.error(e);
                 return null;
             }
         });
