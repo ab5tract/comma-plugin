@@ -36,7 +36,7 @@ public class HeapSnapshotCollection {
     /**
      * List of Snapshot objects populated from snapmeta datablocks.
      */
-    List<Snapshot> snapshotList;
+    public final List<Snapshot> snapshotList;
     /**
      * List of SnapshotData objects, potentially without data, ready to be reified.
      */
@@ -45,15 +45,15 @@ public class HeapSnapshotCollection {
     /**
      * String data, which is made up from multiple datablocks across the file.
      */
-    SnapshotData.StringData stringData;
+    public final SnapshotData.StringData stringData;
     /**
      * Static Frame data, which is made up from multiple datablocks across the file.
      */
-    SnapshotData.StaticFrameData staticFrameData;
+    public final SnapshotData.StaticFrameData staticFrameData;
     /**
      * Type data, which is made up from multiple datablocks across the file.
      */
-    SnapshotData.TypeData typeData;
+    public final SnapshotData.TypeData typeData;
 
     /**
      * The filemeta specifies a sub-version of the format for smaller changes to the format.
@@ -110,8 +110,6 @@ public class HeapSnapshotCollection {
         TocEntry[] outerToc = readTocAt(inputFile, outerTocPosition);
 
         List<List<TocEntry>> partsOfSnapshots = new ArrayList<>();
-
-        stringData = new SnapshotData.StringData();
 
         for (TocEntry e : outerToc) {
             if (e.kind.equals("filemeta")) {
@@ -234,6 +232,30 @@ public class HeapSnapshotCollection {
             snapshotDataList.add(snapshotIndex, snapshotData);
             snapshotIndex++;
         }
+
+        typeData.typenameIndices = readAllCompressedDatablocksInt(inputFile, typeData.typenamePieces);
+        typeData.reprnameIndices = readAllCompressedDatablocksInt(inputFile, typeData.reprnamePieces);
+        staticFrameData.nameIndices = readAllCompressedDatablocksInt(inputFile, staticFrameData.namePieces);
+        staticFrameData.lineIndices = readAllCompressedDatablocksInt(inputFile, staticFrameData.linePieces);
+        staticFrameData.fileIndices = readAllCompressedDatablocksInt(inputFile, staticFrameData.filePieces);
+        staticFrameData.cuidIndices = readAllCompressedDatablocksInt(inputFile, staticFrameData.cuidPieces);
+    }
+
+    /* Reads all the TOCs for a given list and returns a single array with all elements appended.
+     */
+    static int[] readAllCompressedDatablocksInt(RandomAccessFile f, List<TocEntry> tocs) throws IOException {
+        int[] result = new int[0];
+
+        for (TocEntry toc : tocs) {
+            int[] o = (int[]) readCompressedDatablock(f, toc);
+            if (o == null)
+                return null;
+
+            int offset = result.length;
+            result = Arrays.copyOf(result, offset + o.length);
+            System.arraycopy(o, 0, result, offset, o.length);
+        }
+        return result;
     }
 
     static Long readLong(RandomAccessFile f) throws IOException {
@@ -256,6 +278,10 @@ public class HeapSnapshotCollection {
      * @returns null if decompression fails, otherwise a low-level array of integer, long, short, or byte.
      */
     static Object readCompressedDatablock(RandomAccessFile f, TocEntry toc) throws IOException {
+        /* Seek the beginning of the TOC, ignore the kind */
+        f.seek(toc.position);
+        readKindAsString(f);
+
         short sizePerEntry = readShort(f);
         /* Blocks start with their size, but since that requires seeking backwards after writing,
         * or buffering a load up front, they sometimes end up 0; we rely on the toc instead, since
@@ -496,7 +522,7 @@ public class HeapSnapshotCollection {
      * @throws ArrayIndexOutOfBoundsException if the snapshot index is invalid.
      * @throws IOException if the file used to create this HeapSnapshotCollection couldn't be read for some reason
      */
-    public SnapshotData getSnapshotData(Integer snapshotIndex) throws ArrayIndexOutOfBoundsException, IOException {
+    public SnapshotData getSnapshotData(int snapshotIndex) throws ArrayIndexOutOfBoundsException, IOException {
         if (snapshotIndex >= snapshotTocEntries.size()) {
             throw new ArrayIndexOutOfBoundsException();
         }

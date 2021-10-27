@@ -1,16 +1,23 @@
 package edument.perl6idea.heapsnapshot.ui;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTabbedPane;
 import edument.perl6idea.heapsnapshot.HeapSnapshotCollection;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Perl6HeapSnapshotResultsPanel extends JPanel {
     private Project project;
-    private HeapSnapshotCollection snapshotCollection;
 
     public Perl6HeapSnapshotResultsPanel(Project project, HeapSnapshotCollection snapshotCollection) {
+        super(new BorderLayout());
         this.project = project;
-        this.snapshotCollection = snapshotCollection;
+
+        JBTabbedPane tabs = new JBTabbedPane();
+        tabs.addTab("Overview", new HeapSnapshotSummaryTab(snapshotCollection));
+        tabs.addTab("Browser", new HeapSnapshotBrowserTab(snapshotCollection));
+        add(new JBScrollPane(tabs));
     }
 }

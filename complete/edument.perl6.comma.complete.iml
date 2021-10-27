@@ -40,5 +40,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="xchart-3.8.0" level="project" />
+    <orderEntry type="module" module-name="intellij.platform.ide" />
   </component>
 </module>

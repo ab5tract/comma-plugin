@@ -13,10 +13,10 @@ import java.util.Arrays;
  */
 public class TocEntry {
     public final String kind;
-    public final Long position;
-    public final Long end;
+    public final long position;
+    public final long end;
 
-    public Integer length() {
+    public int length() {
         return Math.toIntExact(end - position);
     }
 

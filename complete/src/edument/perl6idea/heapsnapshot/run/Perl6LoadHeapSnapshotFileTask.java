@@ -52,7 +52,7 @@ public class Perl6LoadHeapSnapshotFileTask extends Task.Backgroundable {
                  "Error parsing heap snapshot results",
                  e.getMessage(), NotificationType.ERROR));
             heapSnapshotView.setView(new JLabel("Could not parse heap snapshot results"));
-            LOG.debug(e);
+            LOG.error(e);
             throw new ProcessCanceledException();
         }
     }

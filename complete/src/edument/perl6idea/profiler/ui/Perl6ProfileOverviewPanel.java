@@ -10,7 +10,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class Perl6ProfileOverviewPanel extends JPanel {
+public class Perl6ProfileOverviewPanel {
     private final Perl6ProfileOverviewData myData;
 
     public Perl6ProfileOverviewPanel(Perl6ProfileData data) {

@@ -4,15 +4,15 @@ package edument.perl6idea.heapsnapshot;
  * Class to hold metadata from a Snapshot that is part of a HeapSnapshotCollection.
  */
 public class Snapshot {
-    final Long snapTime;
-    final Long gcSeqNum;
-    final Integer snapshotIndex;
-    final Long totalHeapSize;
-    final Long totalObjects;
-    final Long totalTypeobjects;
-    final Long totalStables;
-    final Long totalFrames;
-    final Long totalRefs;
+    final public Long snapTime;
+    final public Long gcSeqNum;
+    final public Integer snapshotIndex;
+    final public Long totalHeapSize;
+    final public Long totalObjects;
+    final public Long totalTypeobjects;
+    final public Long totalStables;
+    final public Long totalFrames;
+    final public Long totalRefs;
 
     public Snapshot(Integer snapshotIndex,
                     Long snapTime,

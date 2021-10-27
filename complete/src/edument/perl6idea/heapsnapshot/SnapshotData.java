@@ -30,9 +30,6 @@ public class SnapshotData {
      */
     public void ensureData() throws IOException {
         for (TocEntry e : dataLocations) {
-            sourceFile.seek(e.position);
-            HeapSnapshotCollection.readKindAsString(sourceFile);
-
             Object datablock = HeapSnapshotCollection.readCompressedDatablock(this.sourceFile, e);
             switch (e.kind) {
                 case "colkind":
@@ -75,9 +72,8 @@ public class SnapshotData {
             strings = new ArrayList<>(1024);
         }
 
-        List<TocEntry> stringDataPieces;
-
-        List<String> strings;
+        public final List<TocEntry> stringDataPieces;
+        public final List<String> strings;
     }
 
     public static class StaticFrameData {
@@ -88,10 +84,15 @@ public class SnapshotData {
             linePieces = new ArrayList<>();
         }
 
-        List<TocEntry> namePieces;
-        List<TocEntry> cuidPieces;
-        List<TocEntry> filePieces;
-        List<TocEntry> linePieces;
+        public final List<TocEntry> namePieces;
+        public final List<TocEntry> cuidPieces;
+        public final List<TocEntry> filePieces;
+        public final List<TocEntry> linePieces;
+
+        public int[] nameIndices;
+        public int[] cuidIndices;
+        public int[] fileIndices;
+        public int[] lineIndices;
     }
 
     public static class TypeData {
@@ -100,23 +101,25 @@ public class SnapshotData {
             typenamePieces = new ArrayList<>();
         }
 
-        List<TocEntry> reprnamePieces;
-        List<TocEntry> typenamePieces;
+        public final List<TocEntry> reprnamePieces;
+        public final List<TocEntry> typenamePieces;
+        public int[] typenameIndices;
+        public int[] reprnameIndices;
     }
 
     TocEntry positionOfToc;
     List<TocEntry> dataLocations;
 
-    short[] collectableKind;
-    short[] collectableSize;
-    int[] collectableTypeOrFrameIndex; // "type or frame index" based on kind
-    int[] collectableReferencesCount; // how many outgoing references does this collectable have?
-    long[] collectableReferencesStart;
-    long[] collectableUnmanagedSize;
-    long[] referenceDescription;
-    long[] referenceTarget;
-    long[] topIDs;
-    long[] topScores;
+    public short[] collectableKind;
+    public short[] collectableSize;
+    public int[] collectableTypeOrFrameIndex; // "type or frame index" based on kind
+    public int[] collectableReferencesCount; // how many outgoing references does this collectable have?
+    public long[] collectableReferencesStart;
+    public long[] collectableUnmanagedSize;
+    public long[] referenceDescription;
+    public long[] referenceTarget;
+    public long[] topIDs;
+    public long[] topScores;
 
     RandomAccessFile sourceFile;
 }
