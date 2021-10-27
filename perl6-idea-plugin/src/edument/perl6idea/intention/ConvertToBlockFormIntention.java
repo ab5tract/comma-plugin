@@ -27,9 +27,7 @@ public class ConvertToBlockFormIntention extends PsiElementBaseIntentionAction i
         PsiElement replacer = Perl6ElementFactory.createStatementFromText(
             project, String.format("%s {\n%s;\n}", modificator.getText(),
                                    statement.getText().substring(0, endIndex)));
-        // Reformat the resulting node
-        replacer = CodeStyleManager.getInstance(project).reformat(replacer);
-        statement.replace(replacer);
+        replacer = statement.replace(replacer);
         // Move caret to end of the inner statement we re-wrote into
         PsiElement innerLine = PsiTreeUtil.findChildOfType(replacer, Perl6Statement.class);
         assert innerLine != null;
