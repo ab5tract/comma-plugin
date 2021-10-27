@@ -1070,8 +1070,35 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testAssignmentToLiteral() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "<error descr=\"Cannot assign to an Int literal\">1 = 2</error>; <error descr=\"Cannot assign to a Str literal\">'foo' = 2</error>; <error descr=\"Cannot assign to a Rat literal\">3.4 = 2</error>; <error descr=\"Cannot assign to a Num literal\">2E3 = 2</error>;");
+        myFixture.checkHighlighting();
+    }
+
+    public void testAssignmentToScalar() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "constant $foo = 42; <error descr=\"Cannot assign to a constant\">$foo = 42</error>;");
+        myFixture.checkHighlighting();
+    }
+
+    public void testBogusAssignment() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub foo() {}; <error descr=\"Cannot assign to a routine\">&foo = -> {}</error>");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot assign to a routine declaration\">sub foo() {} = 42</error>;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot assign to a Pair literal\">(a => 42) = 50</error>;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot assign to a Pair literal\">(a => 42) = 50</error>;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<error descr=\"Cannot assign to a signature literal\">:($a) = 55</error>;");
+        myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "my constant x = 42; <error descr=\"Cannot assign to a constant\">x = 55</error>;");
+        myFixture.checkHighlighting();
+    }
+
     public void testCallArityMismatchAnnotating() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub worst-case { for <a> -> \\x, \\y {} }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub worst-case { for <a> -> \\x, \\y {} }; worst-case;");
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub ssss(:$named, :$shamed = 'not set') { $named; $shamed; }; ssss(:5named); ssss(:5named, :5shamed);");
         myFixture.checkHighlighting();
