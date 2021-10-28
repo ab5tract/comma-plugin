@@ -31,13 +31,11 @@ public class SubCompletionTest extends CommaFixtureTestCase {
         assertNull(vars);
     }
 
-    public void testComplectionFromOurLocal() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub foo() {}\nfo<caret>");
+    public void testCompletionFromOurLocal() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "our sub fooooo() {}\nfooo<caret>");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> vars = myFixture.getLookupElementStrings();
-        assertNotNull(vars);
-        assertContainsElements(vars, "foo");
-        assertEquals(2, new ArrayList<>(new HashSet<>(vars)).size());
+        assertNull(vars);
     }
 
     public void testCompletionFromCORE() {
@@ -60,10 +58,11 @@ public class SubCompletionTest extends CommaFixtureTestCase {
     }
 
     public void testAnonymousSubIsSafeToComplete() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub { f<caret> }");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "sub { ase<caret> }");
         myFixture.complete(CompletionType.BASIC, 1);
         List<String> subs = myFixture.getLookupElementStrings();
         assertNotNull(subs);
+        assertContainsElements(subs, "asec", "asech", "samecase");
     }
 
     public void testNqpComplete() throws InterruptedException {

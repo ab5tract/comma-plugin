@@ -46,4 +46,9 @@ public class CroTemplatePartImpl extends StubBasedPsiElementBase<CroTemplatePart
         // FIXME No renaming for now
         return this;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(CroTemplate:PART)";
+    }
 }
