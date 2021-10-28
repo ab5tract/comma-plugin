@@ -71,6 +71,9 @@ public class ProfileCompareDialog extends DialogWrapper {
         JBTable table = new JBTable(model);
         table.setDefaultEditor(Object.class, null);
 
+        // Install a StringToIntComparator for every column, since
+        // 1) We don't exactly know which column is which
+        // 2) The comparator happily falls back to string comparison if it's a non-int column
         TableRowSorter<TableModel> trs = new TableRowSorter<>(model);
         for (int i = 0; i < model.getColumnCount(); i++) {
             trs.setComparator(i, new StringToIntComparator());
