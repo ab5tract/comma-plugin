@@ -73,7 +73,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
         List<Perl6LexicalSymbolContributor> decls = element.getSymbolContributors();
         for (Perl6LexicalSymbolContributor contributor : decls) {
             if (contributor instanceof Perl6UseStatement) {
-                visitUseStatement(duplicateClassesPool, contributor);
+                visitUseStatement(duplicateClassesPool, duplicateRoutinesPool, contributor);
             }
 
             if (!(contributor instanceof Perl6PsiDeclaration))
@@ -130,14 +130,18 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
         }
     }
 
-    private void visitUseStatement(Map<String, List<Perl6PsiElement>> duplicateClassesPool, Perl6LexicalSymbolContributor contributor) {
+    private void visitUseStatement(Map<String, List<Perl6PsiElement>> packagesPool,
+                                   Map<String, List<Perl6SignatureHolder>> routinesPool,
+                                   Perl6LexicalSymbolContributor contributor) {
         Perl6VariantsSymbolCollector collector = new Perl6VariantsSymbolCollector(
             Perl6SymbolKind.TypeOrConstant, Perl6SymbolKind.Routine);
         contributor.contributeLexicalSymbols(collector);
         for (Perl6Symbol symbol : collector.getVariants()) {
             PsiElement psi = symbol.getPsi();
             if (psi instanceof Perl6PackageDecl && ((Perl6PackageDecl)psi).getGlobalName() != null) {
-                visitPackageDecl((Perl6PackageDecl)psi, duplicateClassesPool, false);
+                visitPackageDecl((Perl6PackageDecl)psi, packagesPool, false);
+            } else if (psi instanceof Perl6RoutineDecl) {
+                visitSignatureHolder(myHolder, (Perl6SignatureHolder)psi, ((Perl6RoutineDecl)psi).getRoutineName(), routinesPool);
             }
         }
     }
@@ -260,7 +264,9 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 continue;
 
             Perl6PsiScope oldScope = PsiTreeUtil.getParentOfType((PsiElement)checkedDecl, Perl6PsiScope.class);
-            if (newScope != null && oldScope != null && !PsiEquivalenceUtil.areElementsEquivalent(newScope, oldScope))
+            if (newScope != null && oldScope != null &&
+                !(newScope instanceof Perl6File) && !(oldScope instanceof Perl6File) &&
+                !PsiEquivalenceUtil.areElementsEquivalent(newScope, oldScope))
                 continue;
 
             if (checkedDecl.getMultiness() == "only") {
