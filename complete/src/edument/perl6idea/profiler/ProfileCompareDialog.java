@@ -13,12 +13,18 @@ import com.intellij.ui.table.JBTable;
 import edument.perl6idea.profiler.compare.ProfileCompareProcessor;
 import edument.perl6idea.profiler.compare.ProfileCompareTab;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ProfileCompareDialog extends DialogWrapper {
     private final static Logger LOG = Logger.getInstance(ProfileCompareDialog.class);
@@ -43,17 +49,53 @@ public class ProfileCompareDialog extends DialogWrapper {
             tabbedPane.insertTab(tab.tabName, null, new JBLabel("Loading", AnimatedIcon.Default.INSTANCE, SwingConstants.LEFT), null, i);
             tab.onDataReady(data -> {
                 LOG.info("Data loaded! #" + _i + " (" + tab.dataProvider.getClass().getName() + ")");
-                JBTable table = new JBTable(new DefaultTableModel(data, tab.getTableColumns()));
-                table.setDefaultEditor(Object.class, null);
-                table.setAutoCreateRowSorter(true);
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    LOG.info("Data loaded later... #" + _i + " (" + tab.dataProvider.getClass().getName() + ")");
-                    tabbedPane.setComponentAt(_i, new JBScrollPane(table));
-                }, ModalityState.any());
+                try {
+                    JBTable table = getTable(tab, data);
+                    ApplicationManager.getApplication().invokeLater(() -> {
+                        LOG.info("Data loaded later... #" + _i + " (" + tab.dataProvider.getClass().getName() + ")");
+                        tabbedPane.setComponentAt(_i, new JBScrollPane(table));
+                    }, ModalityState.any());
+                } catch (Exception e) {
+                    LOG.error(e);
+                }
             });
         }
 
         tabbedPane.setPreferredSize(new Dimension(600, 800));
         return tabbedPane;
+    }
+
+    @NotNull
+    private static JBTable getTable(ProfileCompareTab tab, Object[][] data) {
+        DefaultTableModel model = new DefaultTableModel(data, tab.getTableColumns());
+        JBTable table = new JBTable(model);
+        table.setDefaultEditor(Object.class, null);
+
+        TableRowSorter<TableModel> trs = new TableRowSorter<>(model);
+        for (int i = 0; i < model.getColumnCount(); i++) {
+            trs.setComparator(i, new StringToIntComparator());
+        }
+
+        table.setRowSorter(trs);
+
+        return table;
+    }
+
+    /* Comparator class that tries to recover the int value from the presented value.
+    * Also tries to extract the int value from a comparison column, i.e. "+3 (+0.3%)" */
+    private static class StringToIntComparator implements Comparator<String> {
+        private static Pattern INT_PATTERN = Pattern.compile("^[+-]?[\\d,.]+");
+
+        @Override
+        public int compare(String left, String right) {
+            Matcher leftMatcher = INT_PATTERN.matcher(left);
+            Matcher rightMatcher = INT_PATTERN.matcher(right);
+            if (leftMatcher.find() && rightMatcher.find()) {
+                String leftValue = leftMatcher.group(0).replace(",", "").replace(".", "");
+                String rightValue = rightMatcher.group(0).replace(",", "").replace(".", "");
+                return Integer.compare(Integer.parseInt(leftValue), Integer.parseInt(rightValue));
+            }
+            return left.compareTo(right);
+        }
     }
 }

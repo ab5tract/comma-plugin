@@ -4,6 +4,7 @@
 -- CREATE TABLE allocations(call_id INT, type_id INT, spesh INT, jit INT, count INT, replaced INT, PRIMARY KEY(call_id, type_id), FOREIGN KEY(call_id) REFERENCES calls(id), FOREIGN KEY(type_id) REFERENCES types(id));
 -- CREATE TABLE deallocations(gc_seq_num INT, gc_thread_id INT, type_id INT, nursery_fresh INT, nursery_seen INT, gen2 INT, PRIMARY KEY(gc_seq_num, gc_thread_id, type_id), FOREIGN KEY(gc_seq_num, gc_thread_id) REFERENCES gcs(sequence_num, thread_id), FOREIGN KEY(type_id) REFERENCES types(id));
 
+-- Group the GC entries by their sequence number and compute some statistics
 WITH
 gc_sequences AS (
   SELECT sequence_num, full, time,
@@ -13,6 +14,7 @@ gc_sequences AS (
   GROUP BY 1
 ),
 
+-- Compute GC sequence statistics
 gc_summary AS (
   SELECT sum(time) AS gc_total_time,
          count(*) AS gc_count,
@@ -27,6 +29,7 @@ gc_summary AS (
   FROM gc_sequences
 ),
 
+-- Compute profile statistics
 profile_summary AS (
   SELECT sum(total_time)/1000.0 AS profile_total_time,
          sum(spesh_time)/1000.0 AS profile_total_spesh_time,
@@ -35,6 +38,7 @@ profile_summary AS (
   FROM %DB%.profile
 ),
 
+-- Compute call statistics
 calls_summary AS (
   SELECT sum(entries) as calls_entries,
          sum(spesh_entries) as calls_spesh_entries,
@@ -45,12 +49,14 @@ calls_summary AS (
   FROM %DB%.calls
 ),
 
+-- Compute allocation statistics
 allocations_summary AS (
   SELECT sum(jit + spesh + count) as allocations_total,
          sum(replaced) as allocations_replaced
   FROM %DB%.allocations
 )
 
+-- Aggregate all statistics
 SELECT gc.*, profile.*, calls.*, allocations.*
 FROM gc_summary gc
 LEFT JOIN profile_summary profile ON 1

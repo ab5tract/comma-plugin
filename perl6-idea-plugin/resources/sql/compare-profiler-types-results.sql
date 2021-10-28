@@ -4,6 +4,7 @@
 -- CREATE TABLE allocations(call_id INT, type_id INT, spesh INT, jit INT, count INT, replaced INT, PRIMARY KEY(call_id, type_id), FOREIGN KEY(call_id) REFERENCES calls(id), FOREIGN KEY(type_id) REFERENCES types(id));
 -- CREATE TABLE deallocations(gc_seq_num INT, gc_thread_id INT, type_id INT, nursery_fresh INT, nursery_seen INT, gen2 INT, PRIMARY KEY(gc_seq_num, gc_thread_id, type_id), FOREIGN KEY(gc_seq_num, gc_thread_id) REFERENCES gcs(sequence_num, thread_id), FOREIGN KEY(type_id) REFERENCES types(id));
 
+-- Union all the types together so we have an easier time grading them
 WITH
 all_types AS (
   SELECT 1 AS db, * FROM db1.types
@@ -11,6 +12,7 @@ UNION
   SELECT 2 AS db, * FROM db2.types
 ),
 
+-- Grade the types by the number of homographs they have
 graded AS (
   SELECT db, id, name,
          COUNT(*) OVER by_name AS count_by_name
@@ -20,6 +22,7 @@ graded AS (
     (PARTITION BY db, name)
 ),
 
+-- Matches types that are unique by name. Types that aren't are discarded.
 matches AS (
   SELECT lft.id AS lft, rgt.id AS rgt, lft.name AS name
   FROM graded lft
@@ -31,12 +34,14 @@ matches AS (
   AND lft.count_by_name = 1
 ),
 
+-- Union all the allocations together so we have an easier time computing statistics
 all_allocations AS (
   SELECT 1 AS db, * FROM db1.allocations
 UNION
   SELECT 2 AS db, * FROM db2.allocations
 ),
 
+-- Compute statistics for our allocations based on their type_id
 allocations_by_type AS (
   SELECT db, type_id,
          sum(spesh) spesh,
@@ -47,6 +52,7 @@ allocations_by_type AS (
   GROUP BY 1, 2
 ),
 
+-- Union all the deallocations together so we have an easier time computing statistics
 all_deallocations AS (
   SELECT 1 as db, * FROM db1.deallocations
 UNION
@@ -70,15 +76,19 @@ SELECT m.*,
        d1.num_gcs AS c1_num_gcs, d1.nursery_fresh AS c1_nursery_fresh, d1.nursery_seen AS c1_nursery_seen, d1.gen2 AS c1_gen2,
        coalesce(d2.num_gcs, 0) AS c2_num_gcs, coalesce(d2.nursery_fresh, 0) AS c2_nursery_fresh, coalesce(d2.nursery_seen, 0) AS c2_nursery_seen, coalesce(d2.gen2, 0) AS c2_gen2
 FROM matches m
+-- The left side's allocations
 LEFT JOIN allocations_by_type a1
   ON a1.db = 1
   AND a1.type_id = m.lft
+-- The right side's allocations
 LEFT JOIN allocations_by_type a2
   ON a2.db = 2
   AND a2.type_id = m.rgt
+-- The left side's deallocations
 LEFT JOIN deallocations_by_type d1
   ON d1.db = 1
   AND d1.type_id = m.lft
+-- The right side's deallocations
 LEFT JOIN deallocations_by_type d2
   ON d2.db = 2
   AND d2.type_id = m.lft

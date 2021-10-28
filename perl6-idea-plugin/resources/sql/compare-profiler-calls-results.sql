@@ -1,6 +1,7 @@
 -- CREATE TABLE routines(id INTEGER PRIMARY KEY ASC, name TEXT, line INT, file TEXT);
 -- CREATE TABLE calls(id INTEGER PRIMARY KEY ASC, parent_id INT, routine_id INT, osr INT, spesh_entries INT, jit_entries INT, inlined_entries INT, inclusive_time INT, exclusive_time INT, entries INT, deopt_one INT, deopt_all INT, rec_depth INT, first_entry_time INT, highest_child_id INT, FOREIGN KEY(routine_id) REFERENCES routines(id));
 
+-- Union all the routines together so we have an easier time grading them
 WITH
 all_routines AS (
   SELECT 1 AS db, * FROM db1.routines
@@ -8,6 +9,12 @@ UNION
   SELECT 2 AS db, * FROM db2.routines
 ),
 
+-- Grade the routines depending on multiple factors:
+-- 1) Number of homographs
+-- 2) Number of homographs in that file
+-- 3) Number of functions at that line in that file
+-- 4) Nth homograph in that file
+-- 4) Nth function at that line in that file
 graded AS (
   SELECT db, id, file, line,
          CASE
@@ -30,12 +37,14 @@ graded AS (
     (PARTITION BY db, file, line)
 ),
 
+-- Extract the left side's routines for easier JOINing later
 lft AS (
   SELECT *
   FROM graded
   WHERE db = 1
 ),
 
+-- Extract the right side's routines for easier JOINing later
 rgt AS (
   SELECT *
   FROM graded
@@ -81,6 +90,8 @@ best_matches AS (
     AND lft.nth_by_file_by_name = c5.nth_by_file_by_name
 ),
 
+-- Since we have several JOINs in `best_matches`, we might have several rows.
+-- Make sure to only extract the first one so one routine doesn't appear several times.
 aggregated AS (
   SELECT bm.id,
          first_value(bm.best_match_id) OVER (PARTITION BY bm.id) AS best_match_id
@@ -89,12 +100,14 @@ aggregated AS (
   GROUP BY 1
 ),
 
+-- Union all the calls together so we have an easier time grading them
 all_calls AS (
   SELECT 1 AS db, * FROM db1.calls
 UNION
   SELECT 2 AS db, * FROM db2.calls
 ),
 
+-- Compute statistics for calls
 aggregated_calls AS (
     SELECT db, routine_id,
            sum(spesh_entries)   AS spesh_entries,
@@ -114,11 +127,15 @@ SELECT a.id, a.best_match_id,
        c1.spesh_entries AS c1_spesh_entries, c1.jit_entries AS c1_jit_entries, c1.inlined_entries AS c1_inlined_entries, c1.inclusive_time AS c1_inclusive_time, c1.exclusive_time AS c1_exclusive_time, c1.entries AS c1_entries, c1.deopt_one AS c1_deopt_one, c1.deopt_all AS c1_deopt_all,
        c2.spesh_entries AS c2_spesh_entries, c2.jit_entries AS c2_jit_entries, c2.inlined_entries AS c2_inlined_entries, c2.inclusive_time AS c2_inclusive_time, c2.exclusive_time AS c2_exclusive_time, c2.entries AS c2_entries, c2.deopt_one AS c2_deopt_one, c2.deopt_all AS c2_deopt_all
 FROM aggregated a
+-- The left side's routines
 LEFT JOIN db1.routines r1
   ON r1.id = a.id
+-- The right side's routines
 INNER JOIN db2.routines r2
   ON r2.id = a.best_match_id
+-- The left side's call statistics
 INNER JOIN aggregated_calls c1
   ON c1.routine_id = a.id AND c1.db = 1
+-- The right side's call statistics
 INNER JOIN aggregated_calls c2
   ON c2.routine_id = a.best_match_id AND c2.db = 2

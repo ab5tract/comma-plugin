@@ -1,6 +1,8 @@
 -- CREATE TABLE gcs(time INT, retained_bytes INT, promoted_bytes INT, gen2_roots INT, stolen_gen2_roots INT, full INT, responsible INT, cleared_bytes INT, start_time INT, sequence_num INT, thread_id INT, PRIMARY KEY(sequence_num, thread_id));
 
--- XXX I wanted to avoid creating a "all_gcs" table to gain some time
+-- Compute GC statistics.
+-- While we could aggregated all `gcs` entries into a single table,
+-- this would be wasteful as the number of entries is very high, and also because the statistics we have to compute aren't too complex.
 
 WITH gc_data AS (
   SELECT 1 AS db,
@@ -20,6 +22,7 @@ WITH gc_data AS (
   FROM db2.gcs
 )
 
+-- We need that outer query for the `ORDER BY` here
 SELECT *
 FROM gc_data
 ORDER BY db
