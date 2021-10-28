@@ -8,9 +8,9 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.*;
 
 @Service
 @State(name = "edument.perl6idea.pm.RakuPackageManagerManager", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
@@ -112,6 +112,24 @@ public class RakuPackageManagerManager implements PersistentStateComponent<Eleme
         return pm;
     }
 
+    public static void detectPMs(List<SuggestedItem> detected) {
+        Map<RakuPackageManagerKind, String[]> execNames = new HashMap<>();
+        execNames.put(RakuPackageManagerKind.ZEF, new String[]{"zef", "zef.exe", "zef.bat"});
+        execNames.put(RakuPackageManagerKind.PAKKU, new String[]{"pakku", "pakku.exe", "pakku.bat"});
+
+        for (RakuPackageManagerKind kind : execNames.keySet()) {
+            String[] strings = execNames.get(kind);
+            for (String name : strings) {
+                for (String path : System.getenv("PATH").split(":")) {
+                    File file = Paths.get(path, name).toFile();
+                    if (file.exists() && file.canExecute()) {
+                        detected.add(new SuggestedItem(kind, Paths.get(path, name).toString()));
+                    }
+                }
+            }
+        }
+    }
+
     public static class PMInstanceData {
         public RakuPackageManagerKind kind;
         public String location;
@@ -124,6 +142,16 @@ public class RakuPackageManagerManager implements PersistentStateComponent<Eleme
         public PMInstanceData(RakuPackageManager pm) {
             this.kind = pm.getKind();
             this.location = pm.getLocation();
+        }
+
+        public RakuPackageManager toPM() {
+            return parsePM(kind.getName().toUpperCase(Locale.ROOT), location);
+        }
+    }
+
+    public static class SuggestedItem extends RakuPackageManagerManager.PMInstanceData {
+        public SuggestedItem(RakuPackageManagerKind kind, String location) {
+            super(kind, location);
         }
     }
 }

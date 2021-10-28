@@ -22,6 +22,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.Perl6ModuleType;
+import edument.perl6idea.pm.RakuPackageManager;
+import edument.perl6idea.pm.RakuPackageManagerManager;
+import edument.perl6idea.pm.ui.RakuPackageManagerConfigurable;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -110,6 +113,15 @@ public class Perl6ProjectBuilder extends ProjectBuilder {
                     if (firstModule == null) return;
                     Perl6MetaDataComponent component = firstModule.getService(Perl6MetaDataComponent.class);
                     component.triggerMetaBuild(metaFile);
+                }
+                // Detect and set PM from path
+                RakuPackageManagerManager manager = project.getService(RakuPackageManagerManager.class);
+                if (manager != null) {
+                    List<RakuPackageManagerManager.SuggestedItem> list = new ArrayList<>();
+                    RakuPackageManagerManager.detectPMs(list);
+                    if (list.size() != 0) {
+                        manager.setPM(list.get(0).toPM());
+                    }
                 }
             });
         }

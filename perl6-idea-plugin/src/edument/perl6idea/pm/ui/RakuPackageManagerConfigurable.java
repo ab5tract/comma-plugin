@@ -2,28 +2,21 @@ package edument.perl6idea.pm.ui;
 
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ui.configuration.SdkListItem;
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.ComboBoxPopupState;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.ImmutableList;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.pm.RakuPackageManager;
 import edument.perl6idea.pm.RakuPackageManagerKind;
 import edument.perl6idea.pm.RakuPackageManagerManager;
 import edument.perl6idea.pm.impl.RakuPakkuPM;
 import edument.perl6idea.pm.impl.RakuZefPM;
-import edument.perl6idea.psi.external.ExternalPerl6File;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.nio.file.Paths;
 import java.util.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -73,21 +66,14 @@ public class RakuPackageManagerConfigurable implements UnnamedConfigurable {
                 }
             });
             myPMComboBox.addItem(new EmptyPMItem());
-            // Add detected ones!
-            Map<RakuPackageManagerKind, String[]> execNames = new HashMap<>();
-            execNames.put(RakuPackageManagerKind.ZEF, new String[]{"zef", "zef.exe", "zef.bat"});
-            execNames.put(RakuPackageManagerKind.PAKKU, new String[]{"pakku", "pakku.exe", "pakku.bat"});
 
-            for (RakuPackageManagerKind kind : execNames.keySet()) {
-                String[] strings = execNames.get(kind);
-                for (String name : strings) {
-                    for (String path : System.getenv("PATH").split(":")) {
-                        File file = Paths.get(path, name).toFile();
-                        if (file.exists() && file.canExecute()) {
-                            myPMComboBox.addItem(new SuggestedItem(kind, Paths.get(path, name).toString()));
-                        }
-                    }
-                }
+            // Add detected ones
+            List<RakuPackageManagerManager.SuggestedItem> detected = new ArrayList<>();
+
+            RakuPackageManagerManager.detectPMs(detected);
+
+            for (RakuPackageManagerManager.SuggestedItem item : detected) {
+                myPMComboBox.addItem(item);
             }
 
             myPMComboBox.addActionListener(new ActionListener() {
@@ -109,17 +95,7 @@ public class RakuPackageManagerConfigurable implements UnnamedConfigurable {
                         myPMComboBox.setSelectedItem(newItem);
                     }
                     else if (item instanceof RakuPackageManagerManager.PMInstanceData) {
-                        RakuPackageManager pmToSet = null;
-                        switch (((RakuPackageManagerManager.PMInstanceData)item).kind) {
-                            case EMPTY:
-                                throw new IllegalArgumentException("Unknown kind of Package Manager");
-                            case ZEF:
-                                pmToSet = new RakuZefPM(((RakuPackageManagerManager.PMInstanceData)item).location);
-                                break;
-                            case PAKKU:
-                                pmToSet = new RakuPakkuPM(((RakuPackageManagerManager.PMInstanceData)item).location);
-                                break;
-                        }
+                        RakuPackageManager pmToSet = ((RakuPackageManagerManager.PMInstanceData)item).toPM();
                         if (pmToSet != null)
                             newPM = pmToSet;
                     }
@@ -182,7 +158,7 @@ public class RakuPackageManagerConfigurable implements UnnamedConfigurable {
             int lastSepIndex = 0;
             for (int i = 0; i < myItems.size(); i++) {
                 RakuPackageManagerManager.PMInstanceData data = myItems.get(i);
-                if (!mySuggestedStep && data instanceof SuggestedItem) {
+                if (!mySuggestedStep && data instanceof RakuPackageManagerManager.SuggestedItem) {
                     mySuggestedStep = true;
                     if (lastSepIndex < i) {
                         mySeparators.put(data, "Detected PMs");
@@ -231,12 +207,6 @@ public class RakuPackageManagerConfigurable implements UnnamedConfigurable {
         @Override
         public void removeElementAt(int index) {
             myItems.remove(index);
-        }
-    }
-
-    private static class SuggestedItem extends RakuPackageManagerManager.PMInstanceData {
-        public SuggestedItem(RakuPackageManagerKind kind, String location) {
-            super(kind, location);
         }
     }
 }
