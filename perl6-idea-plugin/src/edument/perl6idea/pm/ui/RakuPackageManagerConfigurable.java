@@ -2,7 +2,6 @@ package edument.perl6idea.pm.ui;
 
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -13,18 +12,15 @@ import edument.perl6idea.pm.RakuPackageManagerKind;
 import edument.perl6idea.pm.RakuPackageManagerManager;
 import edument.perl6idea.pm.impl.RakuPakkuPM;
 import edument.perl6idea.pm.impl.RakuZefPM;
-import edument.perl6idea.psi.external.ExternalPerl6File;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.List;
 
 public class RakuPackageManagerConfigurable implements UnnamedConfigurable {
     public static final EmptyPMItem EMPTY_PM_ITEM = new EmptyPMItem();
@@ -47,8 +43,9 @@ public class RakuPackageManagerConfigurable implements UnnamedConfigurable {
             myPanel = new JPanel(new MigLayout("", "left", "top"));
             final String text = "<html><b>Project Package Manager:</b><br>This PM will be used to install dependencies from Comma.</html>";
             myPanel.add(new JLabel(text), "wrap, span 3");
-            myPMComboBox = new ComboBox<>() {
-            };
+            myPMComboBox = new ComboBox<>();
+            RakuComboBoxModel pmListModel = new RakuComboBoxModel(new ArrayList<>());
+            myPMComboBox.setModel(pmListModel);
             myPMComboBox.setRenderer(new DefaultListCellRenderer() {
                 @Override
                 public Component getListCellRendererComponent(JList<?> list,
@@ -69,6 +66,16 @@ public class RakuPackageManagerConfigurable implements UnnamedConfigurable {
                 }
             });
             myPMComboBox.addItem(new EmptyPMItem());
+
+            // Add detected ones
+            List<RakuPackageManagerManager.SuggestedItem> detected = new ArrayList<>();
+
+            RakuPackageManagerManager.detectPMs(detected);
+
+            for (RakuPackageManagerManager.SuggestedItem item : detected) {
+                myPMComboBox.addItem(item);
+            }
+
             myPMComboBox.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -88,17 +95,7 @@ public class RakuPackageManagerConfigurable implements UnnamedConfigurable {
                         myPMComboBox.setSelectedItem(newItem);
                     }
                     else if (item instanceof RakuPackageManagerManager.PMInstanceData) {
-                        RakuPackageManager pmToSet = null;
-                        switch (((RakuPackageManagerManager.PMInstanceData)item).kind) {
-                            case EMPTY:
-                                throw new IllegalArgumentException("Unknown kind of Package Manager");
-                            case ZEF:
-                                pmToSet = new RakuZefPM(((RakuPackageManagerManager.PMInstanceData)item).location);
-                                break;
-                            case PAKKU:
-                                pmToSet = new RakuPakkuPM(((RakuPackageManagerManager.PMInstanceData)item).location);
-                                break;
-                        }
+                        RakuPackageManager pmToSet = ((RakuPackageManagerManager.PMInstanceData)item).toPM();
                         if (pmToSet != null)
                             newPM = pmToSet;
                     }
@@ -145,6 +142,71 @@ public class RakuPackageManagerConfigurable implements UnnamedConfigurable {
     private static class EmptyPMItem extends RakuPackageManagerManager.PMInstanceData {
         EmptyPMItem() {
             super(RakuPackageManagerKind.EMPTY, "");
+        }
+    }
+
+    public static class RakuComboBoxModel extends AbstractListModel<RakuPackageManagerManager.PMInstanceData>
+        implements MutableComboBoxModel<RakuPackageManagerManager.PMInstanceData> {
+        private final List<RakuPackageManagerManager.PMInstanceData> myItems;
+        private Object mySelected;
+
+        public RakuComboBoxModel(List<RakuPackageManagerManager.PMInstanceData> items) {
+            myItems = items;
+
+            Map<RakuPackageManagerManager.PMInstanceData, String> mySeparators = new HashMap<>();
+            boolean mySuggestedStep = false;
+            int lastSepIndex = 0;
+            for (int i = 0; i < myItems.size(); i++) {
+                RakuPackageManagerManager.PMInstanceData data = myItems.get(i);
+                if (!mySuggestedStep && data instanceof RakuPackageManagerManager.SuggestedItem) {
+                    mySuggestedStep = true;
+                    if (lastSepIndex < i) {
+                        mySeparators.put(data, "Detected PMs");
+                        lastSepIndex = i;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public int getSize() {
+            return myItems.size();
+        }
+
+        @Override
+        public RakuPackageManagerManager.PMInstanceData getElementAt(int index) {
+            return myItems.get(index);
+        }
+
+        @Override
+        public void setSelectedItem(Object anItem) {
+            mySelected = anItem;
+        }
+
+        @Override
+        public Object getSelectedItem() {
+            return mySelected;
+        }
+
+        @Override
+        public void addElement(RakuPackageManagerManager.PMInstanceData item) {
+            myItems.add(item);
+        }
+
+        @Override
+        public void removeElement(Object obj) {
+            if (obj instanceof RakuPackageManagerManager.PMInstanceData)
+                myItems.remove((RakuPackageManagerManager.PMInstanceData)obj);
+        }
+
+        @Override
+        public void insertElementAt(RakuPackageManagerManager.PMInstanceData item, int index) {
+            myItems.add(index, item);
+        }
+
+        @Override
+        public void removeElementAt(int index) {
+            myItems.remove(index);
         }
     }
 }
