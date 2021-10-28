@@ -36,10 +36,25 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Fixes navigation to symbols in another file</li>
-<li>Fixes displaying of the <code>Log::Timeline</code> view</li>
+<li>Warn about most cases of duplicate declarations for packages, routines and variables</li>
+<li>Make the debugger more stable: avoid excessive triggering of the same breakpoint, fix a bug in stepping, and prevent some other issues (also depends on fixes released in Rakudo 2021.10)</li>
+<li>Properly resolve modules from different directories marked as <code>Source Root</code>. Marking or unmarking a directory now triggers re-calculation of module accessibility without a need to restart the IDE</li>
+<li>Auto-complete for Pod directives such as <code>=begin</code> and <code>=head1</code></li>
+<li>Detect more cases of bogus assignment to a constant or to a literal</li>
+<li>Suggest Raku package managers found from user&#39;s <code>PATH</code> environment variable in the Project Settings dialog in Comma</li>
+<li>Fix a false positive in the signature annotator</li>
+<li>Fix a false positive in the call arguments annotator</li>
+<li>Fix a bug in the intention converting a postfix condition to a block, which caused the caret to jump to the wrong place afterwards</li>
+<li>Improve class line marker and grammar to action method navigation performance in larger projects</li>
+<li>Add an integration with two Raku package managers: zef and Pakku. The corresponding package manager can be set in the Project Settings dialog and then used to detect which dependencies of a project are not installed, and trigger their installation from within the IDE</li>
+<li>Add a tool for migrating from legacy Perl 6 extensions to Raku ones. By default, on project open it detects unambiguous Perl 6 extensions used in the project and suggests to update them. If the project is not mixed with Perl code, a more complete set of checks can be run from the Tools menu, to include ambiguous legacy extensions such as <code>t</code> or <code>pm</code></li>
+<li>Add an annotator to detect incorrect hyphen usage in a regex character class, and a quickfix for the case</li>
+<li>Fix incorrect indentation of heredoc text blocks when formatting</li>
+<li>Support method argument lists in the Cro template parser</li>
+<li>Do not mark the special variables <code>$¢</code> and <code>%_</code> as unknown in a regex declaration</li>
+<li>Fix a bug where renaming a module with the <code>.rakudoc</code> extension would instead replace it with the <code>.pm6</code> legacy extension; now on module renaming the original extension is preserved</li>
+<li>Improve performance during typing for large projects</li>
 </ul>
-
   ]]></change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
