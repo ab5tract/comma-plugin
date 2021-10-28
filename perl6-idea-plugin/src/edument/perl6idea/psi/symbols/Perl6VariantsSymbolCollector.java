@@ -7,13 +7,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Perl6VariantsSymbolCollector implements Perl6SymbolCollector {
+    private final String wantedName;
     private final Set<String> traversedNames = new HashSet<>();
     private final Set<Perl6SymbolKind> wantedKinds;
     private final Map<String, Perl6Symbol> seen = new HashMap<>();
     private final List<Perl6Symbol> multi = new LinkedList<>();
     private double myPriority = 1000;
 
+    public Perl6VariantsSymbolCollector(String wantedName, Perl6SymbolKind... wantedKinds) {
+        this.wantedName = wantedName;
+        this.wantedKinds = ContainerUtil.set(wantedKinds);
+    }
+
     public Perl6VariantsSymbolCollector(Perl6SymbolKind... wantedKinds) {
+        this.wantedName = null;
         this.wantedKinds = ContainerUtil.set(wantedKinds);
     }
 
@@ -25,7 +32,7 @@ public class Perl6VariantsSymbolCollector implements Perl6SymbolCollector {
     @Override
     public void offerSymbol(Perl6Symbol symbol) {
         String name = symbol.getName();
-        if (wantedKinds.contains(symbol.getKind()) && !seen.containsKey(name)) {
+        if (wantedKinds.contains(symbol.getKind()) && (wantedName == null || Objects.equals(wantedName, name)) && !seen.containsKey(name)) {
             symbol.setPriority(myPriority);
             seen.put(name, symbol);
         }
@@ -33,7 +40,8 @@ public class Perl6VariantsSymbolCollector implements Perl6SymbolCollector {
 
     @Override
     public void offerMultiSymbol(Perl6Symbol symbol, boolean isProto) {
-        if (wantedKinds.contains(symbol.getKind())) {
+        String name = symbol.getName();
+        if (wantedKinds.contains(symbol.getKind()) && (wantedName == null || Objects.equals(wantedName, name))) {
             symbol.setPriority(myPriority);
             multi.add(symbol);
         }

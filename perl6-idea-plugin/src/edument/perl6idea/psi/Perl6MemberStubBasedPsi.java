@@ -25,7 +25,7 @@ public abstract class Perl6MemberStubBasedPsi<T extends StubElement<?>> extends 
     }
 
     @Override
-    public String getScope() {
+    public @NotNull String getScope() {
         T stub = getStub();
         if (stub instanceof Perl6DeclStub)
             return ((Perl6DeclStub<?>)stub).getScope();

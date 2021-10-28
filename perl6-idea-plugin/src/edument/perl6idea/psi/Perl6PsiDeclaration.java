@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface Perl6PsiDeclaration extends Perl6PsiElement, PsiNameIdentifierOwner, Perl6Documented {
+    @NotNull
     String getScope();
 
     @NotNull

@@ -273,6 +273,7 @@
     <appStarter implementation="edument.perl6idea.application.RakuDocStarter"/>
     <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
     <completion.contributor language="Perl6" implementationClass="edument.perl6idea.pod.PodCompletionContributor"/>
+    <highlightVisitor implementation="edument.perl6idea.highlighter.RakuHighlightVisitor"/>
   </extensions>
 
   <actions>

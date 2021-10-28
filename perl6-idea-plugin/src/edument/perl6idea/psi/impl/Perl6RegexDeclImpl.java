@@ -2,7 +2,10 @@ package edument.perl6idea.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
 import com.intellij.util.IncorrectOperationException;
+import edument.perl6idea.highlighter.RakuElementVisitor;
+import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
@@ -54,6 +57,13 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
     public String getRegexName() {
         String name = getName();
         return name == null ? "<anon>" : name;
+    }
+
+    @Override
+    public String getMultiness() {
+        // TODO copy-paste stub-implementation?
+        PsiElement parent = getParent();
+        return parent instanceof Perl6MultiDecl ? ((Perl6MultiDecl)parent).getMultiness() : "only";
     }
 
     @Override
@@ -125,6 +135,15 @@ public class Perl6RegexDeclImpl extends Perl6MemberStubBasedPsi<Perl6RegexDeclSt
             collector.offerSymbol(new Perl6ImplicitSymbol(Perl6SymbolKind.Variable, sym, this));
             if (collector.isSatisfied())
                 return;
+        }
+    }
+
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof RakuElementVisitor) {
+            ((RakuElementVisitor)visitor).visitRakuElement(this);
+        } else {
+            super.accept(visitor);
         }
     }
 }

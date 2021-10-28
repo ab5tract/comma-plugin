@@ -28,4 +28,5 @@ public interface Perl6PackageDecl extends Perl6PsiScope, Perl6PsiDeclaration,
     @Nullable
     Perl6PackageDecl getMetaClass();
     void setMetaClass(Perl6PackageDecl metaClass);
+    Perl6Parameter[] getSignature();
 }

@@ -10,18 +10,18 @@ import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Query;
+import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.annotation.fix.RemoveUnusedRoutineFix;
 import edument.perl6idea.annotation.fix.MakeSubroutineExportedFix;
 import edument.perl6idea.highlighter.Perl6Highlighter;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class UnusedRoutineAnnotation implements Annotator {
-    private static final Set<String> AUTOCALLED = new HashSet<>(Arrays.asList("MAIN", "USAGE", "EXPORT"));
+    private static final Set<String> AUTOCALLED = ContainerUtil.set("MAIN", "USAGE", "EXPORT");
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {

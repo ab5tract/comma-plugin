@@ -6,10 +6,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface Perl6Parameter extends Perl6PsiElement, Perl6PsiDeclaration, Perl6LexicalSymbolContributor {
+public interface Perl6Parameter extends Perl6PsiElement, Perl6PsiDeclaration, Perl6LexicalSymbolContributor, Perl6VariableSource {
     String summary(boolean includeName);
     String getVariableName();
-    List<String> getVariableNames();
     @Nullable
     PsiElement getInitializer();
     boolean isPositional();
@@ -21,4 +20,5 @@ public interface Perl6Parameter extends Perl6PsiElement, Perl6PsiDeclaration, Pe
     boolean isExplicitlyOptional();
     boolean isCopy();
     boolean isRW();
+    boolean equalsParameter(Perl6Parameter other);
 }

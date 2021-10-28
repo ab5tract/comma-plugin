@@ -5,6 +5,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
@@ -87,8 +88,14 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     }
 
     @Override
-    public List<String> getVariableNames() {
-        return Collections.singletonList(getVariableName());
+    public Perl6Variable[] getVariables() {
+        Perl6Variable var = PsiTreeUtil.findChildOfType(this, Perl6Variable.class);
+        return var == null ? new Perl6Variable[0] : new Perl6Variable[] {var};
+    }
+
+    @Override
+    public String[] getVariableNames() {
+        return new String[]{getVariableName()};
     }
 
     @Nullable
@@ -222,7 +229,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     }
 
     @Override
-    public String getScope() {
+    public @NotNull String getScope() {
         return "my";
     }
 
@@ -253,5 +260,23 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         return null;
+    }
+
+    @Override
+    public boolean equalsParameter(Perl6Parameter other) {
+        // If sigils differ, not equal
+        if (isPositional() != other.isPositional() ||
+            isNamed() != other.isNamed() ||
+            isSlurpy() != other.isSlurpy())
+            return false;
+
+        if (Perl6Variable.getSigil(other.getVariableName()) != Perl6Variable.getSigil(getVariableName()))
+            return false;
+
+        Perl6Type selfType = inferType();
+        Perl6Type otherType = other.inferType();
+        if (selfType.equals(otherType))
+            return true;
+        return false; // Better to get more false negatives than false positives
     }
 }

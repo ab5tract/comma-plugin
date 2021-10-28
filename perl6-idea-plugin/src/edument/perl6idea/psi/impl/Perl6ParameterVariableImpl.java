@@ -58,7 +58,7 @@ public class Perl6ParameterVariableImpl extends ASTWrapperPsiElement implements 
     }
 
     @Override
-    public String getScope() {
+    public @NotNull String getScope() {
         return getName().contains("!") ? "has" : "my";
     }
 
