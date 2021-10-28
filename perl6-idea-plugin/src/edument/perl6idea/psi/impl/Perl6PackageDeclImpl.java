@@ -461,6 +461,23 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         return children;
     }
 
+    @Override
+    public @Nullable Perl6Trait findTrait(String mod, String name) {
+        Perl6PackageDeclStub stub = getStub();
+        if (stub == null)
+            return super.findTrait(mod, name);
+
+        List<StubElement> children = stub.getChildrenStubs();
+        for (StubElement<?> child : children) {
+            if (!(child instanceof Perl6TraitStub))
+                continue;
+            Perl6TraitStub traitStub = (Perl6TraitStub)child;
+            if (traitStub.getTraitModifier().equals(mod) && traitStub.getTraitName().equals(name))
+                return traitStub.getPsi();
+        }
+        return null;
+    }
+
     @Nullable
     @Override
     public PsiMetaData getMetaData() {
