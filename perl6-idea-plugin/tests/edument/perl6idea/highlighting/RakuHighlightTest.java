@@ -19,6 +19,10 @@ public class RakuHighlightTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\n\nmulti sub d {};\nmulti sub d(Int $n) { $n; };\nmulti <error descr=\"Re-declaration of d from aaa.p6:4\">sub d</error>(Int $n) { $n; };\nmulti <error descr=\"Re-declaration of d from aaa.p6:3\">sub d</error> {}");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "multi trait_mod:<is>(Parameter:D $param, :$header! --> Nil) is export { $param does Header; $header; };\n" +
+                                  "multi <error descr=\"Re-declaration of trait_mod:<is> from aaa.p6:1\">trait_mod:<is></error>(Parameter:D $param, :$header! --> Nil) is export { $param does Header; $header; };");
+        myFixture.checkHighlighting();
     }
 
     public void testDuplicatedMethods() {
