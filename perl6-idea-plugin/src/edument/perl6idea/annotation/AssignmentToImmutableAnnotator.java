@@ -10,6 +10,8 @@ import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.type.Perl6Type;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class AssignmentToImmutableAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
@@ -54,6 +56,8 @@ public class AssignmentToImmutableAnnotator implements Annotator {
             } else if (declaration instanceof Perl6Constant) {
                 holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a constant").create();
             } else if (declaration instanceof Perl6RoutineDecl) {
+                if (Objects.equals(name, "$_"))
+                    return;
                 holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a routine").create();
             }
         } else if (operand instanceof Perl6IntLiteral) {
