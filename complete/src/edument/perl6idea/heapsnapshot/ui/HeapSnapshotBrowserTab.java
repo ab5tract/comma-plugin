@@ -83,14 +83,14 @@ public class HeapSnapshotBrowserTab extends JPanel {
     }
 
     public HeapSnapshotBrowserTab(HeapSnapshotCollection snapshotCollection) {
-        super(new MigLayout("wrap 1"));
+        super(new MigLayout("", "[grow, fill]", ""));
         this.snapshotCollection = snapshotCollection;
         this.indices = IntStream.range(0, snapshotCollection.snapshotList.size()).toArray();
 
-        JPanel tableContainer = new JPanel(new MigLayout("wrap 1"));
+        JPanel tableContainer = new JPanel(new MigLayout("", "[grow, fill]", ""));
         loadSnapshotInTable(tableContainer, -1);
 
-        add(getComboBox(tableContainer));
+        add(getComboBox(tableContainer), "wrap");
         add(tableContainer);
     }
 
@@ -154,11 +154,11 @@ public class HeapSnapshotBrowserTab extends JPanel {
             selectObject.accept(-1);
 
             // Top part: Locating objects
-            JPanel objectLocationPanel = new JPanel(new MigLayout(""));
+            JPanel objectLocationPanel = new JPanel(new MigLayout("", "[grow][grow]", ""));
 
             JBTabbedPane locationTabs = new JBTabbedPane();
             locationTabs.setPreferredSize(new Dimension(400, 200));
-            JPanel currentObjectLocations = new JPanel(new MigLayout());
+            JPanel currentObjectLocations = new JPanel(new MigLayout("", "[grow,fill]", ""));
 
             // The function when you select an object location
             BiConsumer<TabData, TypeOrFrameIndex> renderer = (TabData tabData, TypeOrFrameIndex i) -> {
@@ -171,10 +171,10 @@ public class HeapSnapshotBrowserTab extends JPanel {
             locationTabs.addTab("Types", renderLocationTab(typeToTypes, renderer));
             locationTabs.addTab("Static Frames", renderLocationTab(staticToFrames, renderer));
 
-            objectLocationPanel.add(locationTabs, "w 200:400:400,h 200:400:400");
-            objectLocationPanel.add(new JBScrollPane(currentObjectLocations), "h 200:400:400");
+            objectLocationPanel.add(locationTabs, "growx, growy");
+            objectLocationPanel.add(new JBScrollPane(currentObjectLocations), "growx, growy");
 
-            panel.add(objectLocationPanel);
+            panel.add(objectLocationPanel, "wrap");
             panel.add(currentObjectPanel);
         } catch (Exception e) {
             LOG.error(e);
@@ -214,7 +214,7 @@ public class HeapSnapshotBrowserTab extends JPanel {
         table.setDefaultEditor(Object.class, null);
         table.setShowGrid(true);
         table.getEmptyText().setText("No items");
-        return table;
+        return new JBScrollPane(table);
     }
 
     private void renderCurrentObjectLocations(JPanel locationsPanel,
@@ -234,7 +234,7 @@ public class HeapSnapshotBrowserTab extends JPanel {
             selectObject.accept(locations.get(row));
         });
 
-        locationsPanel.add(list);
+        locationsPanel.add(new JBScrollPane(list));
     }
 
     private static class TabData {

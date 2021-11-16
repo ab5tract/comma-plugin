@@ -2,6 +2,7 @@ package edument.perl6idea.heapsnapshot;
 
 import com.github.luben.zstd.ZstdDirectBufferDecompressingStream;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.vfs.CharsetToolkit;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -85,6 +86,7 @@ public class HeapSnapshotCollection {
         long outerTocPosition;
         /* Last written TOC has its address put at the very end of the file */
         final long endOfOuterToc = inputFile.length() - 8;
+        readGreeting(inputFile);
         inputFile.seek(endOfOuterToc);
         outerTocPosition = readLong(inputFile);
 
@@ -256,6 +258,12 @@ public class HeapSnapshotCollection {
             System.arraycopy(o, 0, result, offset, o.length);
         }
         return result;
+    }
+
+    static void readGreeting(RandomAccessFile f) throws IOException {
+        byte[] greetData = new byte[16];
+        f.readFully(greetData, 0, 16);
+        new String(greetData, CharsetToolkit.UTF8_CHARSET);
     }
 
     static Long readLong(RandomAccessFile f) throws IOException {

@@ -3,6 +3,7 @@ package edument.perl6idea.heapsnapshot.ui;
 import com.intellij.openapi.util.text.StringUtilRt;
 import edument.perl6idea.heapsnapshot.HeapSnapshotCollection;
 import edument.perl6idea.heapsnapshot.Snapshot;
+import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.knowm.xchart.XChartPanel;
@@ -21,14 +22,17 @@ public class HeapSnapshotSummaryTab extends JPanel {
     private double[] indices;
 
     public HeapSnapshotSummaryTab(HeapSnapshotCollection snapshotCollection) {
-        super(new MigLayout("wrap 2"));
+        super(new MigLayout("ins 0, wrap 1, fillx"));
         this.snapshotCollection = snapshotCollection;
         this.indices = IntStream.range(0, snapshotCollection.snapshotList.size()).mapToDouble(i -> i).toArray();
 
-        add(new JLabel(summarize()), "span 2");
-        add(new XChartPanel<>(getHeapsizeChart()));
-        add(new XChartPanel<>(getObjectsChart()));
-        add(new XChartPanel<>(getFramesAndTypeObjectsChart()));
+        CC componentConstraints = new CC();
+        componentConstraints.alignX("center").spanX();
+        componentConstraints.gapBottom("10px");
+        add(new JLabel("<html>" + summarize() + "</html>"), componentConstraints);
+        add(new XChartPanel<>(getHeapsizeChart()), componentConstraints);
+        add(new XChartPanel<>(getObjectsChart()), componentConstraints);
+        add(new XChartPanel<>(getFramesAndTypeObjectsChart()), componentConstraints);
     }
 
     private XYChart getObjectsChart() {
@@ -68,28 +72,36 @@ public class HeapSnapshotSummaryTab extends JPanel {
     private String summarize() {
         int size = snapshotCollection.snapshotList.size();
         if (size == 0) {
-            return "There are no snapshots.";
+            return "There are <b>no snapshots</b>.";
         }
 
         StringBuilder s = new StringBuilder();
         if (size == 1) {
-            s.append("There is a single snapshot. ");
+            s.append("There is <b>a single</b> snapshot. ");
         } else {
-            s.append("There are ").append(size).append(" snapshots.\n");
+            s.append("There %s <b>").append(size).append(" snapshots</b>.<br>");
         }
 
         int typeCount = snapshotCollection.typeData.typenamePieces.size();
-        s.append("There are ").append(typeCount).append(" type objects.\n");
+        if (typeCount == 1) {
+            s.append("There is <b>").append(typeCount).append(" type object</b>.<br>");
+        } else if (typeCount > 0) {
+            s.append("There are <b>").append(typeCount).append(" type objects</b>.<br>");
+        }
 
         int staticFrameCount = snapshotCollection.staticFrameData.namePieces.size();
-        s.append("There are ").append(staticFrameCount).append(" static frames.\n");
+        if (staticFrameCount == 1) {
+            s.append("There is <b>").append(staticFrameCount).append(" static frame</b>.<br>");
+        } else if (staticFrameCount > 0) {
+            s.append("There are <b>").append(staticFrameCount).append(" static frames</b>.<br>");
+        }
 
         long highestHeapSize = snapshotLongStream(h -> h.totalHeapSize).max().getAsLong();
-        s.append("The heap size was at most ").append(highestHeapSize).append(" bytes ");
+        s.append("The heap size was <b>at most ").append(highestHeapSize).append(" bytes</b> ");
         long lowestHeapSize = snapshotLongStream(h -> h.totalHeapSize).max().getAsLong();
-        s.append("and at least ").append(StringUtilRt.formatFileSize(lowestHeapSize)).append(" bytes ");
+        s.append("and <b>at least ").append(StringUtilRt.formatFileSize(lowestHeapSize)).append(" bytes</b> ");
         long avgHeapSize = (long)snapshotLongStream(h -> h.totalHeapSize).average().getAsDouble();
-        s.append("for an average of ").append(StringUtilRt.formatFileSize(avgHeapSize)).append(" bytes.\n");
+        s.append("for an <b>average of ").append(StringUtilRt.formatFileSize(avgHeapSize)).append(" bytes</b>.<br>");
 
         return s.toString();
     }

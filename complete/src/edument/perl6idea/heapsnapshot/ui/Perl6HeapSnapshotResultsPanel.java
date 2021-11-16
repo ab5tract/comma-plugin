@@ -16,8 +16,8 @@ public class Perl6HeapSnapshotResultsPanel extends JPanel {
         this.project = project;
 
         JBTabbedPane tabs = new JBTabbedPane();
-        tabs.addTab("Overview", new HeapSnapshotSummaryTab(snapshotCollection));
-        tabs.addTab("Browser", new HeapSnapshotBrowserTab(snapshotCollection));
-        add(new JBScrollPane(tabs));
+        tabs.addTab("Overview", new JBScrollPane(new HeapSnapshotSummaryTab(snapshotCollection)));
+        tabs.addTab("Browser", new JBScrollPane(new HeapSnapshotBrowserTab(snapshotCollection)));
+        add(tabs);
     }
 }
