@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ItemEvent;
@@ -202,7 +201,18 @@ public class HeapSnapshotBrowserTab extends JPanel {
             data[i][3] = tabData.unmanagedSizeByType.get(id);
         }
 
-        JBTable table = new JBTable(new DefaultTableModel(data, LOCATION_COLUMNS));
+        DefaultTableModel model = new DefaultTableModel(data, LOCATION_COLUMNS) {
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                switch (columnIndex) {
+                    case 0:
+                        return String.class;
+                    default:
+                        return Integer.class;
+                }
+            }
+        };
+        JBTable table = new JBTable(model);
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -211,6 +221,7 @@ public class HeapSnapshotBrowserTab extends JPanel {
                 renderer.accept(tabData, index);
             }
         });
+        table.setAutoCreateRowSorter(true);
         table.setDefaultEditor(Object.class, null);
         table.setShowGrid(true);
         table.getEmptyText().setText("No items");
