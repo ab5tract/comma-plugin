@@ -113,6 +113,8 @@ public class HeapSnapshotBrowserTab extends JPanel {
                 if (selectedIndex[0] != index) {
                     selectedIndex[0] = index;
                     loadSnapshotInTable(tableContainer, index);
+                } else {
+                    currentData.forgetData();
                 }
             }
         });
@@ -134,10 +136,6 @@ public class HeapSnapshotBrowserTab extends JPanel {
 
         try {
             SnapshotData data = snapshotCollection.getSnapshotData(index);
-
-            // TODO factor this out
-            if (currentData != null)
-                currentData.forgetData();
             currentData = data;
 
             TabData typeToObjects = computeTypeOrFrameMap(data, KIND_OBJECT);
