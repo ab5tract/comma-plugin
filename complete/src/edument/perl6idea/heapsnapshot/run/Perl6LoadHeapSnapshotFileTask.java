@@ -50,9 +50,8 @@ public class Perl6LoadHeapSnapshotFileTask extends Task.Backgroundable {
         catch (Exception e) {
             Notifications.Bus.notify(new Notification("Raku Heap Snapshot Recorder",
                  "Error parsing heap snapshot results",
-                 e.getMessage(), NotificationType.ERROR));
+                 e.getMessage() != null ? e.getMessage() : "Unknown error", NotificationType.ERROR));
             heapSnapshotView.setView(new JLabel("Could not parse heap snapshot results"));
-            LOG.error(e);
             throw new ProcessCanceledException();
         }
     }

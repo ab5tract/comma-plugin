@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class HeapSnapshotCollection {
     static final Logger LOG = Logger.getInstance(HeapSnapshotCollection.class);
@@ -86,7 +87,9 @@ public class HeapSnapshotCollection {
         long outerTocPosition;
         /* Last written TOC has its address put at the very end of the file */
         final long endOfOuterToc = inputFile.length() - 8;
-        readGreeting(inputFile);
+        String greeting = readGreeting(inputFile);
+        if (!Objects.equals(greeting, "MoarHeapDumpv003"))
+            throw new IOException("Could not parse heap file, wrong format, expected version 3, got: '" + greeting + "'");
         inputFile.seek(endOfOuterToc);
         outerTocPosition = readLong(inputFile);
 
@@ -156,7 +159,7 @@ public class HeapSnapshotCollection {
         for (List<TocEntry> innerParts : partsOfSnapshots) {
             List<TocEntry> dataPieces = new ArrayList<>(8);
             Snapshot snapshotObject;
-            SnapshotData snapshotData = new SnapshotData();
+            SnapshotData snapshotData = new SnapshotData(this);
             for (TocEntry innerToc : innerParts) {
                 if (innerToc.kind.equals("snapmeta")) {
                     inputFile.seek(innerToc.position);
@@ -260,10 +263,13 @@ public class HeapSnapshotCollection {
         return result;
     }
 
-    static void readGreeting(RandomAccessFile f) throws IOException {
+    static String readGreeting(RandomAccessFile f) throws IOException {
         byte[] greetData = new byte[16];
-        f.readFully(greetData, 0, 16);
-        new String(greetData, CharsetToolkit.UTF8_CHARSET);
+        if (f.length() > 16)
+            f.readFully(greetData, 0, 16);
+        else
+            return null;
+        return new String(greetData, CharsetToolkit.UTF8_CHARSET);
     }
 
     static Long readLong(RandomAccessFile f) throws IOException {
@@ -443,7 +449,7 @@ public class HeapSnapshotCollection {
         try (ZstdDirectBufferDecompressingStream decompressStream = new ZstdDirectBufferDecompressingStream(inputBuffer)) {
 
             ByteBuffer resultBuffer = ByteBuffer
-              .allocateDirect(Math.max(ZstdDirectBufferDecompressingStream.recommendedTargetBufferSize(), (wholeBlock.length >> 3) << 4));
+              .allocateDirect(2 * Math.max(ZstdDirectBufferDecompressingStream.recommendedTargetBufferSize(), (wholeBlock.length >> 3) << 4));
             resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
             finalResult = new byte[(wholeBlock.length >> 1) << 2];
@@ -453,13 +459,18 @@ public class HeapSnapshotCollection {
             /* Read the entire compressed block at once */
 
             while (decompressStream.hasRemaining()) {
-                try {
-                    decompressStream.read(resultBuffer);
-                }
-                catch (IOException e) {
-                    // TODO logger or throw exception further upwards
-                    LOG.error("IOException while trying to read string heap data", e);
-                    throw e;
+                while (true) {
+                    try {
+                        decompressStream.read(resultBuffer);
+                        break;
+                    }
+                    catch (IOException e) {
+                        if (e.getMessage().contains("too small")) {
+                            resultBuffer = ByteBuffer.allocateDirect(resultBuffer.limit() * 2);
+                        } else {
+                            throw e;
+                        }
+                    }
                 }
                 resultBuffer.flip();
 

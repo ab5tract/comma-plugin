@@ -27,12 +27,12 @@ public class HeapSnapshotSummaryTab extends JPanel {
         this.indices = IntStream.range(0, snapshotCollection.snapshotList.size()).mapToDouble(i -> i).toArray();
 
         CC componentConstraints = new CC();
-        componentConstraints.alignX("center").spanX();
         componentConstraints.gapBottom("10px");
         add(new JLabel("<html>" + summarize() + "</html>"), componentConstraints);
         add(new XChartPanel<>(getHeapsizeChart()), componentConstraints);
         add(new XChartPanel<>(getObjectsChart()), componentConstraints);
-        add(new XChartPanel<>(getFramesAndTypeObjectsChart()), componentConstraints);
+        add(new XChartPanel<>(getFramesChart()), componentConstraints);
+        add(new XChartPanel<>(getTypeObjectsChart()), componentConstraints);
     }
 
     private XYChart getObjectsChart() {
@@ -42,19 +42,24 @@ public class HeapSnapshotSummaryTab extends JPanel {
         return chart;
     }
 
-    private XYChart getFramesAndTypeObjectsChart() {
-        XYChart chart = makeAreaChart("Frames & Type Objects");
+    private XYChart getFramesChart() {
+        XYChart chart = makeAreaChart("Frames");
         double[] frames = snapshotLongStream(h -> h.totalFrames).mapToDouble(i -> i).toArray();
-        double[] types = snapshotLongStream(h -> h.totalTypeobjects).mapToDouble(i -> i).toArray();
         chart.addSeries("Total Frames", indices, frames);
+        return chart;
+    }
+
+    private XYChart getTypeObjectsChart() {
+        XYChart chart = makeAreaChart("Type Objects");
+        double[] types = snapshotLongStream(h -> h.totalTypeobjects).mapToDouble(i -> i).toArray();
         chart.addSeries("Total Type Objects", indices, types);
         return chart;
     }
 
     private XYChart getHeapsizeChart() {
         XYChart chart = makeAreaChart("Heapsize");
-        double[] heapsizes = snapshotLongStream(h -> h.totalHeapSize).mapToDouble(i -> i).toArray();
-        chart.addSeries("Total Heap Size", indices, heapsizes);
+        double[] heapsizes = snapshotLongStream(h -> h.totalHeapSize).mapToDouble(i -> i / 1024f / 1024f).toArray();
+        chart.addSeries("Total Heap Size, MB", indices, heapsizes);
         return chart;
     }
 
@@ -79,17 +84,17 @@ public class HeapSnapshotSummaryTab extends JPanel {
         if (size == 1) {
             s.append("There is <b>a single</b> snapshot. ");
         } else {
-            s.append("There %s <b>").append(size).append(" snapshots</b>.<br>");
+            s.append("There <b>").append(size).append(" snapshots</b>.<br>");
         }
 
-        int typeCount = snapshotCollection.typeData.typenamePieces.size();
+        int typeCount = snapshotCollection.typeData.typenameIndices.length;
         if (typeCount == 1) {
-            s.append("There is <b>").append(typeCount).append(" type object</b>.<br>");
+            s.append("There is <b>").append(typeCount).append(" distinct type object</b>.<br>");
         } else if (typeCount > 0) {
-            s.append("There are <b>").append(typeCount).append(" type objects</b>.<br>");
+            s.append("There are <b>").append(typeCount).append(" distinct type objects</b>.<br>");
         }
 
-        int staticFrameCount = snapshotCollection.staticFrameData.namePieces.size();
+        int staticFrameCount = snapshotCollection.staticFrameData.nameIndices.length;
         if (staticFrameCount == 1) {
             s.append("There is <b>").append(staticFrameCount).append(" static frame</b>.<br>");
         } else if (staticFrameCount > 0) {
@@ -97,11 +102,11 @@ public class HeapSnapshotSummaryTab extends JPanel {
         }
 
         long highestHeapSize = snapshotLongStream(h -> h.totalHeapSize).max().getAsLong();
-        s.append("The heap size was <b>at most ").append(highestHeapSize).append(" bytes</b> ");
-        long lowestHeapSize = snapshotLongStream(h -> h.totalHeapSize).max().getAsLong();
-        s.append("and <b>at least ").append(StringUtilRt.formatFileSize(lowestHeapSize)).append(" bytes</b> ");
+        s.append("The heap size was <b>at most ").append(StringUtilRt.formatFileSize(highestHeapSize)).append("</b> ");
+        long lowestHeapSize = snapshotLongStream(h -> h.totalHeapSize).min().getAsLong();
+        s.append("and <b>at least ").append(StringUtilRt.formatFileSize(lowestHeapSize)).append("</b> ");
         long avgHeapSize = (long)snapshotLongStream(h -> h.totalHeapSize).average().getAsDouble();
-        s.append("for an <b>average of ").append(StringUtilRt.formatFileSize(avgHeapSize)).append(" bytes</b>.<br>");
+        s.append("for an <b>average of ").append(StringUtilRt.formatFileSize(avgHeapSize)).append("</b>.<br>");
 
         return s.toString();
     }
