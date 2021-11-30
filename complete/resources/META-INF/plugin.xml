@@ -32,16 +32,13 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Warn about most cases of duplicate declarations for packages, routines and variables</li>
-<li>Make the debugger more stable: avoid excessive triggering of the same breakpoint, fix a bug in stepping, and prevent some other issues (also depends on fixes released in Rakudo 2021.10)</li>
-<li>Properly resolve modules from different directories marked as <code>Source Root</code>. Marking or unmarking a directory now triggers re-calculation of module accessibility without a need to restart the IDE</li>
-<li>Auto-complete for Pod directives such as <code>=begin</code> and <code>=head1</code></li>
-<li>Detect more cases of bogus assignment to a constant or to a literal</li>
-<li>Suggest Raku package managers found from user&#39;s <code>PATH</code> environment variable in the Project Settings dialog in Comma</li>
-<li>Fix a false positive in the signature annotator</li>
-<li>Fix a false positive in the call arguments annotator</li>
-<li>Fix a bug in the intention converting a postfix condition to a block, which caused the caret to jump to the wrong place afterwards</li>
-<li>Improve class line marker and grammar to action method navigation performance in larger projects</li>
+<li>Add a way to run Raku programs and collect heap snapshots (available on the <code>Run</code> menu),
+and provide a viewer for the results, allowing one to see whether the heap grows over
+snapshots, and to search and navigate the object graph. This requires a MoarVM built with
+version 3 of the heap snapshot format.</li>
+<li>Fix an exception in duplicate declaration highlighting</li>
+<li>Fix a false positive case in the bogus assignment annotator</li>
+<li>Fix incorrect annotation of a hyphen character at the start of a regex character class</li>
 </ul>
   ]]>
   </change-notes>
