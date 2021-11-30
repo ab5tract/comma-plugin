@@ -56,7 +56,7 @@ public class AssignmentToImmutableAnnotator implements Annotator {
             } else if (declaration instanceof Perl6Constant) {
                 holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a constant").create();
             } else if (declaration instanceof Perl6RoutineDecl) {
-                if (Objects.equals(name, "$_"))
+                if (Objects.equals(name, "$_") || Objects.equals(name, "$!") || Objects.equals(name, "$/"))
                     return;
                 holder.newAnnotation(HighlightSeverity.ERROR, "Cannot assign to a routine").create();
             }
