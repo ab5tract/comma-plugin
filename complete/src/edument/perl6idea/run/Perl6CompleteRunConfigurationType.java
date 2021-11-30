@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.coverage.Perl6CoverageCommandLineState;
 import edument.perl6idea.debugger.Perl6DebugCommandLineState;
+import edument.perl6idea.heapsnapshot.run.Perl6HeapSnapshotCommandLineState;
 import edument.perl6idea.profiler.run.Perl6ProfileCommandLineState;
 import edument.perl6idea.timeline.Perl6TimelineCommandLineState;
 import edument.perl6idea.timeline.Perl6TimelineExecutor;
@@ -60,6 +61,9 @@ public class Perl6CompleteRunConfigurationType extends ConfigurationTypeBase {
             }
             else if (executor instanceof Perl6ProfileExecutor) {
                 return new Perl6ProfileCommandLineState(environment);
+            }
+            else if (executor instanceof Perl6HeapSnapshotExecutor) {
+                return new Perl6HeapSnapshotCommandLineState(environment);
             }
             if (Objects.equals(executor.getClass().getSimpleName(), "CoverageExecutor")) {
                 return new Perl6CoverageCommandLineState(environment);
