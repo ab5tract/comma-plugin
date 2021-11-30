@@ -274,7 +274,9 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 !PsiEquivalenceUtil.areElementsEquivalent(newScope, oldScope))
                 continue;
 
-            if (checkedDecl.getMultiness() == "only") {
+            if (!Objects.equals(holder.getMultiness(), checkedDecl.getMultiness()))
+                continue;
+            if (Objects.equals(checkedDecl.getMultiness(), "only")) {
                 matchingDecls.add(checkedDecl);
                 continue;
             }
