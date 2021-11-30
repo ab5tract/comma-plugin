@@ -81,8 +81,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
             Perl6PsiDeclaration decl = (Perl6PsiDeclaration)contributor;
 
             if (decl instanceof Perl6RoutineDecl) {
-                if (((Perl6RoutineDecl)decl).getDeclaratorNode() == null ||
-                    ((Perl6RoutineDecl)decl).getRoutineName() == null || decl.getNameIdentifier() == null)
+                if (((Perl6RoutineDecl)decl).getRoutineName() == null || decl.getNameIdentifier() == null)
                     return;
                 boolean wasReported = visitSignatureHolder(myHolder, (Perl6SignatureHolder)decl, ((Perl6RoutineDecl)decl).getRoutineName(),
                                                            duplicateRoutinesPool);
@@ -226,10 +225,16 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                     TextRange textRange = null;
                     if (oldAndNewHolders.second instanceof Perl6RoutineDecl) {
                         Perl6RoutineDecl decl = (Perl6RoutineDecl)oldAndNewHolders.second;
-                        if (decl.getNameIdentifier() != null)
-                            textRange = new TextRange(decl.getDeclaratorNode().getTextOffset(),
-                                                      decl.getNameIdentifier().getTextRange()
-                                                          .getEndOffset());
+                        if (decl.getNameIdentifier() != null) {
+                            PsiElement declaratorNode = decl.getDeclaratorNode();
+                            if (declaratorNode != null)
+                                textRange = new TextRange(declaratorNode.getTextOffset(),
+                                                          decl.getNameIdentifier().getTextRange().getEndOffset());
+                            else if (decl.getParent() instanceof Perl6MultiDecl) {
+                                textRange = new TextRange(decl.getTextOffset(),
+                                                          decl.getNameIdentifier().getTextRange().getEndOffset());
+                            }
+                        }
                     }
                     else if (oldAndNewHolders.second instanceof Perl6RegexDecl) {
                         Perl6RegexDecl decl = (Perl6RegexDecl)oldAndNewHolders.second;
@@ -269,7 +274,9 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 !PsiEquivalenceUtil.areElementsEquivalent(newScope, oldScope))
                 continue;
 
-            if (checkedDecl.getMultiness() == "only") {
+            if (!Objects.equals(holder.getMultiness(), checkedDecl.getMultiness()))
+                continue;
+            if (Objects.equals(checkedDecl.getMultiness(), "only")) {
                 matchingDecls.add(checkedDecl);
                 continue;
             }
