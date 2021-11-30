@@ -1,9 +1,9 @@
 <component xmlns="http://jetbrains.org/intellij/schema/application-info"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://jetbrains.org/intellij/schema/application-info http://jetbrains.org/intellij/schema/ApplicationInfo.xsd">
-  <version major="2021" minor="10" micro="0" eap="false"/>
+  <version major="2021" minor="11" micro="0" eap="false"/>
   <company name="Edument Central Europe s.r.o." url="https://www.edument.se" copyrightStart="2010"/>
-  <build number="CP-202.6948.91" date="20211028"/>
+  <build number="CP-202.6948.92" date="20211130"/>
   <logo url="/comma_core_logo.png" textcolor="000000" progressColor="000000" progressX="114" progressY="278" progressHeight="3"/>
   <about url="/comma_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="000000"
          copyrightForeground="000000" linkColor="000000"/>
