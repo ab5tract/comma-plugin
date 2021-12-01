@@ -1,6 +1,6 @@
 package edument.perl6idea.debugger;
 
-import com.intellij.util.io.CharSequenceBackedByChars;
+import com.intellij.util.text.CharSequenceBackedByChars;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

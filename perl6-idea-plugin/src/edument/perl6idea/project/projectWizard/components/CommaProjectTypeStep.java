@@ -1,12 +1,14 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package edument.perl6idea.project.projectWizard.components;
 
+import com.intellij.diagnostic.PluginException;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.internal.statistic.eventLog.FeatureUsageData;
 import com.intellij.internal.statistic.utils.PluginInfoDetectorKt;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.WebModuleTypeBase;
@@ -15,6 +17,7 @@ import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.ui.popup.ListItemDescriptorAdapter;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.platform.ProjectTemplate;
 import com.intellij.platform.ProjectTemplateEP;
 import com.intellij.platform.ProjectTemplatesFactory;
@@ -51,6 +54,7 @@ import java.util.*;
 public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsStep, Disposable {
     private static final Logger LOG = Logger.getInstance(CommaProjectTypeStep.class);
 
+    private static final ExtensionPointName<ProjectTemplateEP> TEMPLATE_EP = new ExtensionPointName<>("com.intellij.projectTemplate");
     private static final String TEMPLATES_CARD = "templates card";
     private static final String FRAMEWORKS_CARD = "frameworks card";
     private static final String PROJECT_WIZARD_GROUP = "project.wizard.group";
@@ -450,29 +454,52 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
 
     private MultiMap<String, ProjectTemplate> loadLocalTemplates() {
         MultiMap<String, ProjectTemplate> map = MultiMap.createConcurrent();
-        ProjectTemplateEP[] extensions = ProjectTemplateEP.EP_NAME.getExtensions();
-        for (ProjectTemplateEP ep : extensions) {
-            ClassLoader classLoader = ep.getLoaderForClass();
-            URL url = classLoader.getResource(ep.templatePath);
-            if (url != null) {
-                try {
-                    LocalArchivedTemplate template = new LocalArchivedTemplate(url, classLoader);
-                    if (ep.category) {
-                        TemplateBasedCategory category = new TemplateBasedCategory(template, ep.projectType);
-                        myTemplatesMap.putValue(new TemplatesGroup(category), template);
-                    }
-                    else {
-                        map.putValue(ep.projectType, template);
-                    }
+        TEMPLATE_EP.processWithPluginDescriptor((ep, pluginDescriptor) -> {
+            ClassLoader classLoader = pluginDescriptor.getClassLoader();
+            URL url = classLoader.getResource(StringUtil.trimStart(ep.templatePath, "/"));
+            if (url == null) {
+                LOG.error(
+                    new PluginException("Can't find resource for project template: " + ep.templatePath, pluginDescriptor.getPluginId()));
+                return;
+            }
+
+            try {
+                LocalArchivedTemplate template = new LocalArchivedTemplate(url, classLoader);
+                if (ep.category) {
+                    TemplateBasedCategory category = new TemplateBasedCategory(template, ep.projectType);
+                    myTemplatesMap.putValue(new TemplatesGroup(category), template);
                 }
-                catch (Exception e) {
-                    LOG.error("Error loading template from URL '" + ep.templatePath + "' [Plugin: " + ep.getPluginId() + "]", e);
+                else {
+                    map.putValue(ep.projectType, template);
                 }
             }
-            else {
-                LOG.error("Can't find resource for project template '" + ep.templatePath + "' [Plugin: " + ep.getPluginId() + "]");
+            catch (Exception e) {
+                LOG.error(new PluginException("Error loading template from URL: " + ep.templatePath, e, pluginDescriptor.getPluginId()));
             }
-        }
+        });
+        //ProjectTemplateEP[] extensions = ProjectTemplateEP.EP_NAME.getExtensions();
+        //for (ProjectTemplateEP ep : extensions) {
+        //    ClassLoader classLoader = ep.getLoaderForClass();
+        //    URL url = classLoader.getResource(ep.templatePath);
+        //    if (url != null) {
+        //        try {
+        //            LocalArchivedTemplate template = new LocalArchivedTemplate(url, classLoader);
+        //            if (ep.category) {
+        //                TemplateBasedCategory category = new TemplateBasedCategory(template, ep.projectType);
+        //                myTemplatesMap.putValue(new TemplatesGroup(category), template);
+        //            }
+        //            else {
+        //                map.putValue(ep.projectType, template);
+        //            }
+        //        }
+        //        catch (Exception e) {
+        //            LOG.error("Error loading template from URL '" + ep.templatePath + "' [Plugin: " + ep.getPluginId() + "]", e);
+        //        }
+        //    }
+        //    else {
+        //        LOG.error("Can't find resource for project template '" + ep.templatePath + "' [Plugin: " + ep.getPluginId() + "]");
+        //    }
+        //}
         return map;
     }
 

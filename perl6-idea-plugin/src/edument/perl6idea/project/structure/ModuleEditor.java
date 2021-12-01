@@ -8,6 +8,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleConfigurationEditor;
 import com.intellij.openapi.module.impl.ModuleConfigurationStateImpl;
+import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.*;
@@ -156,7 +157,7 @@ public abstract class ModuleEditor implements Place.Navigator, Disposable {
         if (module == null) return;
 
         ModuleConfigurationState state = createModuleConfigurationState();
-        for (ModuleConfigurationEditorProvider provider : collectProviders(module)) {
+        for (ModuleConfigurationEditorProvider provider : ModuleConfigurationEditorProvider.EP_NAME.getExtensionList(module)) {
             ModuleConfigurationEditor[] editors = provider.createEditors(state);
             if (editors.length > 0 && provider instanceof ModuleConfigurationEditorProviderEx &&
                 ((ModuleConfigurationEditorProviderEx)provider).isCompleteEditorSet()) {
@@ -169,10 +170,6 @@ public abstract class ModuleEditor implements Place.Navigator, Disposable {
             }
         }
 
-        //for (Configurable moduleConfigurable : module.getComponentInstancesOfType(Configurable.class)) {
-        //    reportDeprecatedModuleEditor(moduleConfigurable.getClass());
-        //    myEditors.add(new ModuleConfigurableWrapper(moduleConfigurable));
-        //}
         //for (ModuleConfigurableEP extension : MODULE_CONFIGURABLES.getExtensionList(module)) {
         //    if (extension.canCreateConfigurable()) {
         //        Configurable configurable = extension.createConfigurable();
@@ -198,16 +195,6 @@ public abstract class ModuleEditor implements Place.Navigator, Disposable {
                      ModuleConfigurationEditorProvider.class.getName() +
                      " extension point should be used instead");
         }
-    }
-
-    private static ModuleConfigurationEditorProvider @NotNull [] collectProviders(@NotNull Module module) {
-        List<ModuleConfigurationEditorProvider> result =
-            new ArrayList<>(module.getComponentInstancesOfType(ModuleConfigurationEditorProvider.class));
-        for (ModuleConfigurationEditorProvider component : result) {
-            reportDeprecatedModuleEditor(component.getClass());
-        }
-        ContainerUtil.addAll(result, ModuleConfigurationEditorProvider.EP_NAME.getExtensions(module));
-        return result.toArray(new ModuleConfigurationEditorProvider[0]);
     }
 
     @NotNull

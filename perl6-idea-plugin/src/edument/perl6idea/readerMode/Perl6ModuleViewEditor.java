@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.UserDataHolderBase;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiDocumentManager;
@@ -22,15 +23,25 @@ import java.util.Objects;
 public class Perl6ModuleViewEditor extends UserDataHolderBase implements TextEditor {
     private final String myName;
     private final TextEditor myEditor;
+    private final VirtualFile myFile;
     private PodPreviewEditor myViewer;
     private JComponent myComponent;
     private Runnable myTriggerPodRenderCode;
     private Perl6ReaderModeState myState;
 
-    public Perl6ModuleViewEditor(TextEditor editor, PodPreviewEditor viewer, String editorName) {
+    public Perl6ModuleViewEditor(TextEditor editor,
+                                 PodPreviewEditor viewer,
+                                 @NotNull VirtualFile file,
+                                 String editorName) {
         myEditor = editor;
         myViewer = viewer;
+        myFile = file;
         myName = editorName;
+    }
+
+    @Override
+    public @Nullable VirtualFile getFile() {
+        return myFile;
     }
 
     @Override
