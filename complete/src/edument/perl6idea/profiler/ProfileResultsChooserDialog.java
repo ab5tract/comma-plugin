@@ -43,7 +43,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
     public ProfileResultsChooserDialog(Project project) {
         super(project, true);
         myProject = project;
-        myDataManager = ServiceManager.getService(project, Perl6ProfileDataManager.class);
+        myDataManager = project.getComponent(Perl6ProfileDataManager.class);
 
         myProfilesTableModel = new ListTableModel<>(new ColumnInfo<Perl6ProfileData, String>("Profile Name") {
             @Override

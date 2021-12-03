@@ -269,7 +269,7 @@ public class HeapSnapshotCollection {
             f.readFully(greetData, 0, 16);
         else
             return null;
-        return new String(greetData, CharsetToolkit.UTF8_CHARSET);
+        return new String(greetData, StandardCharsets.UTF_8);
     }
 
     static Long readLong(RandomAccessFile f) throws IOException {

@@ -10,6 +10,7 @@ import edument.perl6idea.module.builder.Perl6ModuleBuilderScript;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -60,6 +61,6 @@ public class NewActionsTest extends CommaFixtureTestCase {
     }
 
     private static void checkMETAContent(VirtualFile basePath, Function<String, Boolean> check) throws IOException {
-        assertTrue(check.fun(new String(basePath.contentsToByteArray(), CharsetToolkit.UTF8_CHARSET)));
+        assertTrue(check.fun(new String(basePath.contentsToByteArray(), StandardCharsets.UTF_8)));
     }
 }

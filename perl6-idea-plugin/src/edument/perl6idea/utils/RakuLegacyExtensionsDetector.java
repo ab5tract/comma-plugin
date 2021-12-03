@@ -24,10 +24,10 @@ public class RakuLegacyExtensionsDetector implements StartupActivity {
         Map<String, List<File>> filesToUpdate = UpdateExtensionsAction.collectFilesWithLegacyNames(modules, false);
         if (!filesToUpdate.isEmpty()) {
             Notification notification = new Notification(
-                "raku.misc", Perl6Icons.CAMELIA,
-                "Obsolete Raku extensions are detected", "",
+                "raku.misc", "Obsolete Raku extensions are detected",
                 "Obsolete file extensions are detected: " + String.join(", ", filesToUpdate.keySet()),
-                NotificationType.WARNING, null);
+                NotificationType.WARNING);
+            notification.setIcon(Perl6Icons.CAMELIA);
             notification.addAction(new AnAction("Run Comma Legacy File Rename Tool") {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {

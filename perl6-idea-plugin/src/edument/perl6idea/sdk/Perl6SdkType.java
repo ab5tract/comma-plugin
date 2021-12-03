@@ -110,12 +110,6 @@ public class Perl6SdkType extends SdkType {
         return Perl6Icons.CAMELIA;
     }
 
-    @NotNull
-    @Override
-    public Icon getIconForAddAction() {
-        return getIcon();
-    }
-
     @Nullable
     @Override
     public String suggestHomePath() {

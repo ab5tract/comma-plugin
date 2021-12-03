@@ -153,7 +153,7 @@ public class Perl6ModuleStructureConfigurable extends Perl6StructureConfigurable
     }
 
     public static Perl6ModuleStructureConfigurable getInstance(Project project) {
-        return ServiceManager.getService(project, Perl6ModuleStructureConfigurable.class);
+        return project.getComponent(Perl6ModuleStructureConfigurable.class);
     }
 
     private class AddModuleAction extends AnAction implements DumbAware {

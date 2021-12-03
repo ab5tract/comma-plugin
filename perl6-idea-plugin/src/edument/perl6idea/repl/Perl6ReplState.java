@@ -19,6 +19,7 @@ import edument.perl6idea.psi.symbols.Perl6LexicalSymbolContributor;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -63,7 +64,7 @@ public class Perl6ReplState {
             // Form a Perl6File holding the history entry.
             String historyEntryFilename = consoleFile.getName() + executionHistory.size() + ".p6";
             LightVirtualFile file = new LightVirtualFile(historyEntryFilename, Perl6Language.INSTANCE, code);
-            file.setCharset(CharsetToolkit.UTF8_CHARSET);
+            file.setCharset(StandardCharsets.UTF_8);
             file.setWritable(false);
             PsiFile psiFile = ((PsiFileFactoryImpl)PsiFileFactory.getInstance(project)).trySetupPsiForFile(
                 file, Perl6Language.INSTANCE, true, false);
