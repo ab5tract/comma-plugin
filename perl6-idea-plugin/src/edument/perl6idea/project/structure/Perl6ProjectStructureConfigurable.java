@@ -345,7 +345,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     }
 
     public static Perl6ProjectStructureConfigurable getInstance(final Project project) {
-        return ServiceManager.getService(project, Perl6ProjectStructureConfigurable.class);
+        return project.getComponent(Perl6ProjectStructureConfigurable.class);
     }
 
     @Override

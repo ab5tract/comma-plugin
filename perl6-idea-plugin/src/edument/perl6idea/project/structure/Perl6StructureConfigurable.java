@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.util.*;
+import java.util.function.Predicate;
 
 public abstract class Perl6StructureConfigurable extends MasterDetailsComponent
   implements SearchableConfigurable, Disposable, Place.Navigator {
@@ -116,9 +117,9 @@ public abstract class Perl6StructureConfigurable extends MasterDetailsComponent
     protected class MyRemoveAction extends MyDeleteAction {
         public MyRemoveAction() {
             //noinspection Convert2Lambda
-            super(new Condition<>() {
+            super(new Predicate<>() {
                 @Override
-                public boolean value(final Object[] objects) {
+                public boolean test(final Object[] objects) {
                     List<MyNode> nodes = new ArrayList<>();
                     for (Object object : objects) {
                         if (!(object instanceof MyNode)) return false;
