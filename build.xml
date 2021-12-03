@@ -4,7 +4,7 @@
   <property name="out.dir" value="${project.home}/out"/>
   <property name="tmp.dir" value="${project.home}/out/tmp"/>
   <property name="idea.build.number" value="0"/>
-  <property name="idea.path" value=""/>
+  <property name="idea.path" value="${project.home}"/>
 
   <target name="cleanup">
     <delete dir="${out.dir}" failonerror="false"/>
@@ -19,7 +19,7 @@
     <attribute name="script" />
     <sequential>
       <java failonerror="true" jar="${project.home}/lib/ant/lib/ant-launcher.jar" fork="true">
-        <jvmarg line="-Xmx2048m -Didea.build.number=${idea.build.number} &quot;-DideaPath=${idea.path}&quot; -Dintellij.build.test.failFast=true"/>
+        <jvmarg line="-Xmx2048m -Didea.build.number=${idea.build.number} &quot;-Didea.home.path=${idea.path}&quot; &quot;-DideaPath=${idea.path}&quot; -Dintellij.build.test.failFast=true"/>
         <sysproperty key="java.awt.headless" value="true"/>
         <arg line="&quot;-Dgant.script=@{script}&quot;"/>
         <arg line="&quot;-Dteamcity.build.tempDir=${tmp.dir}&quot;"/>
