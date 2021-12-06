@@ -60,7 +60,7 @@ public class Perl6SdkListConfigurable extends Perl6StructureConfigurable {
     }
 
     public static Perl6SdkListConfigurable getInstance(Project project) {
-        return project.getComponent(Perl6SdkListConfigurable.class);
+        return project.getService(Perl6SdkListConfigurable.class);
     }
 
     @Override

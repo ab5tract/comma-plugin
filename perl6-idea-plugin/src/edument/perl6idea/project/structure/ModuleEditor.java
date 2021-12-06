@@ -204,6 +204,16 @@ public abstract class ModuleEditor implements Place.Navigator, Disposable {
             public FacetsProvider getFacetsProvider() {
                 return null;
             }
+
+            @Override
+            public ModifiableRootModel getModifiableRootModel() {
+                return getModifiableRootModelProxy();
+            }
+
+            @Override
+            public ModuleRootModel getCurrentRootModel() {
+                return ModuleEditor.this.getRootModel();
+            }
         };
     }
 

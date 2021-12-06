@@ -74,7 +74,275 @@
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/extensions/*)"/>
+    <postFormatProcessor implementation="edument.perl6idea.formatter.Perl6FormatPostprocessor"/>
+    <fileType name="Raku Script" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ScriptFileType" fieldName="INSTANCE"
+              extensions="p6;pl6;raku"/>
+    <fileType name="Raku Module" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6ModuleFileType" fieldName="INSTANCE"
+              extensions="pm6;rakumod"/>
+    <fileType name="Raku Test" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6TestFileType" fieldName="INSTANCE"
+              extensions="t;t6;rakutest"/>
+    <fileType name="Raku Pod" language="Perl6" implementationClass="edument.perl6idea.filetypes.Perl6PodFileType" fieldName="INSTANCE"
+              extensions="pod6;rakudoc"/>
+    <fileTypeDetector order="FIRST" implementation="edument.perl6idea.filetypes.Perl6FileTypeDetector"/>
+    <fileTypeDetector implementation="edument.perl6idea.filetypes.Perl6FileShebangTypeDetector"/>
+    <fileTypeDetector implementation="edument.perl6idea.filetypes.RakuFileShebangTypeDetector"/>
+    <fileTypeDetector implementation="edument.perl6idea.filetypes.RakudoFileShebangTypeDetector"/>
+    <moduleType id="PERL6_MODULE_TYPE" implementationClass="edument.perl6idea.module.Perl6ModuleType"/>
+    <sdkType implementation="edument.perl6idea.sdk.Perl6SdkType"/>
+    <programRunner implementation="edument.perl6idea.debugger.Perl6DebugRunner"/>
+    <xdebugger.breakpointType implementation="edument.perl6idea.debugger.Perl6LineBreakpointType"/>
+    <lang.syntaxHighlighterFactory language="Perl6" implementationClass="edument.perl6idea.highlighter.Perl6SyntaxHighlighterFactory"/>
+    <lang.parserDefinition language="Perl6" implementationClass="edument.perl6idea.parsing.Perl6ParserDefinition"/>
+    <colorSettingsPage implementation="edument.perl6idea.highlighter.Perl6ColorSettingsPage"/>
+    <lang.formatter language="Perl6" implementationClass="edument.perl6idea.formatter.Perl6FormattingModelBuilder"/>
+    <langCodeStyleSettingsProvider implementation="edument.perl6idea.formatter.Perl6CodeStyleSettingsProvider"/>
+    <lang.braceMatcher language="Perl6" implementationClass="edument.perl6idea.editor.Perl6BraceMatcher"/>
+    <lang.psiStructureViewFactory language="Perl6" implementationClass="edument.perl6idea.structureView.Perl6StructureViewFactory"/>
+    <declarationRangeHandler key="edument.perl6idea.psi.Perl6PackageDecl"
+                             implementationClass="edument.perl6idea.structureView.PackageDeclarationRangeHandler"/>
+    <declarationRangeHandler key="edument.perl6idea.psi.Perl6RoutineDecl"
+                             implementationClass="edument.perl6idea.structureView.RoutineDeclarationRangeHandler"/>
+    <lang.commenter language="Perl6" implementationClass="edument.perl6idea.editor.Perl6Commenter"/>
+    <lang.foldingBuilder language="Perl6" implementationClass="edument.perl6idea.editor.Perl6FoldingBuilder"/>
+    <typedHandler implementation="edument.perl6idea.editor.SigilCompletionAutoPopupHandler"/>
+    <typedHandler implementation="edument.perl6idea.editor.UnicodeReplacementHandler"/>
+    <backspaceHandlerDelegate implementation="edument.perl6idea.editor.BackspaceUnicodeHandler"/>
+    <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultPerl6.xml"/>
+    <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaPerl6.xml"/>
+    <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultCroTemplate.xml"/>
+    <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaCroTemplate.xml"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NullRegexAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredVariableAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredOrDeprecatedRoutineAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredPrivateMethodAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredAttributeAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.editor.SigSpaceAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.LeadingZeroAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MethodNotOnRangeAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingUnitKeywordAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.PodFormatAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.SignatureAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UsedModuleAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.WheneverOutsideOfReactAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.IllegalVariableDeclarationAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UnitSubAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NoEndpointRangeAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.InterpolatedEVALAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingRoleMethodAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MyScopedVariableExportedAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.IncomposableDoesAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MonitorUsageAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NonInheritableComposableDeclAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.ProblematicReturnAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.MissingThingsAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NamedPairArgumentAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.IdiomaticLoopAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.WithConstructionAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.SimplifiedRangeAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.GrepFirstAnnotation"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.BuiltinSubmethodAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.EmptyInitializationAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.Perl6ExecutableStringAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NonNillReturnAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.ListAssignmentAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UnusedVariableAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UnusedRoutineAnnotation"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.SelfAvailabilityAnnotation"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UselessMethodDeclarationAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.AssignmentToImmutableAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.CallArityIssuesAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UnknownRegexModAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.DeprecatedMethodAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.HashOrBlockAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.DuplicateConditionAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UselessUseAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.HyphenInCharacterClassAnnotator"/>
+    <stubElementTypeHolder class="edument.perl6idea.parsing.Perl6ElementTypes"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.ProjectModulesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6GlobalTypeStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6LexicalTypeStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllConstantsStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllAttributesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllRoutinesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6AllRegexesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.Perl6DynamicVariablesStubIndex"/>
+    <stubIndex implementation="edument.perl6idea.psi.stub.index.CroTemplatePartStubIndex"/>
+    <gotoClassContributor implementation="edument.perl6idea.contribution.Perl6ClassNameContributor"/>
+    <gotoSymbolContributor implementation="edument.perl6idea.contribution.Perl6SymbolNameContributor"/>
+    <errorHandler implementation="edument.perl6idea.utils.Perl6ErrorReportSubmitter"/>
+    <statementUpDownMover implementation="edument.perl6idea.editor.Perl6StatementMover"/>
+    <treeStructureProvider implementation="edument.perl6idea.structureView.Perl6ProjectStructureProvider"/>
+    <spellchecker.support language="Perl6" implementationClass="edument.perl6idea.editor.Perl6SpellCheckingStrategy"/>
+    <enterHandlerDelegate implementation="edument.perl6idea.editor.Perl6EnterDelegate"/>
+    <lang.findUsagesProvider language="Perl6" implementationClass="edument.perl6idea.findUsages.Perl6FindUsagesProvider"/>
+    <lang.namesValidator language="Perl6" implementationClass="edument.perl6idea.rename.Perl6InputValidator"/>
+    <lang.namesValidator language="CroTemplate" implementationClass="edument.perl6idea.rename.Perl6InputValidator"/>
+    <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6ModuleRenameProcessor"/>
+    <renamePsiElementProcessor implementation="edument.perl6idea.rename.Perl6PsiElementProcessor"/>
+    <usageTypeProvider implementation="edument.perl6idea.findUsages.Perl6UsageTypeProvider"/>
+    <lang.smartEnterProcessor language="Perl6" implementationClass="edument.perl6idea.editor.smartEnter.Perl6SmartEnterProcessor"/>
+    <enterBetweenBracesDelegate language="Perl6" implementationClass="edument.perl6idea.editor.Perl6EnterBetweenBracesDelegate"/>
+    <consoleFilterProvider implementation="edument.perl6idea.run.Perl6OutputLinkProvider"/>
+    <codeInsight.lineMarkerProvider language="Perl6" implementationClass="edument.perl6idea.providers.Perl6LineMarkerProvider"/>
+    <runLineMarkerContributor language="Perl6" implementationClass="edument.perl6idea.testing.Perl6TestLineMarkerContributor"/>
+    <executor implementation="edument.perl6idea.timeline.Perl6TimelineExecutor"/>
+    <programRunner implementation="edument.perl6idea.timeline.Perl6TimelineRunner"/>
+    <stubIndex implementation="edument.perl6idea.cro.CroRouteIndex"/>
+    <stubIndex implementation="edument.perl6idea.cro.CroTemplateIndex"/>
+    <codeInsight.parameterInfo language="Perl6" implementationClass="edument.perl6idea.Perl6ParameterInfoHandler"/>
+    <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
+    <lang.inspectionSuppressor language="Perl6" implementationClass="edument.perl6idea.inspection.Perl6InspectionSuppressor"/>
+    <moduleConfigurationEditorProvider implementation="edument.perl6idea.project.structure.module.Perl6ModuleConfigurationEditorProvider"
+                                       order="FIRST"/>
+
+    <fileType name="Cro Template" language="CroTemplate" implementationClass="edument.perl6idea.cro.template.CroTemplateFileType"
+              fieldName="INSTANCE" extensions="crotmp"/>
+    <lang.parserDefinition language="CroTemplate" implementationClass="edument.perl6idea.cro.template.parsing.CroTemplateParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="CroTemplate"
+                                   implementationClass="edument.perl6idea.cro.template.highlighter.CroTemplateSyntaxHighlighterFactory"/>
+    <colorSettingsPage implementation="edument.perl6idea.cro.template.highlighter.CroTemplateColorSettingsPage"/>
+    <lang.braceMatcher language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateBraceMatcher"/>
+    <lang.quoteHandler language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateQuoteHandler"/>
+    <spellchecker.support language="CroTemplate"
+                          implementationClass="edument.perl6idea.cro.template.editor.CroTemplateSpellCheckingStrategy"/>
+    <lang.foldingBuilder language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateFoldingBuilder"/>
+    <codeInsight.parameterInfo language="CroTemplate" implementationClass="edument.perl6idea.cro.template.CroTemplateParameterInfoHandler"/>
+
+    <intentionAction>
+      <className>edument.perl6idea.intention.ChangePackageTypeIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.MakeMethodPublicIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.MakeAttributeRequiredIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.UnparenthesizeIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.UnwrapPromiseAllOfIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.SingleQuotesToDoubleIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.DoubleQuotesToSingleIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.ConvertToBlockFormIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.TernaryExpandingIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.ConvertNonCapturingGroupIntoPosIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.ConvertNonCapturingGroupIntoNamedIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.ConvertPositionalCaptureIntoNamedIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.SplitDeclarationIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.MakeMethodPrivateIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.UnicodeConvertIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.UnicodeUnconvertIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.ColonpairToFatarrowIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.annotation.fix.FatarrowSimplificationFix</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.TermUnicodeConversionIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+    <intentionAction>
+      <className>edument.perl6idea.intention.TermASCIIConversionIntention</className>
+      <category>Raku intentions</category>
+    </intentionAction>
+
+    <lang.surroundDescriptor language="Perl6"
+                             implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6StatementSurroundDescriptor"/>
+    <lang.surroundDescriptor language="Perl6"
+                             implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6ExpressionSurroundDescriptor"/>
+    <lang.surroundDescriptor language="Perl6"
+                             implementationClass="edument.perl6idea.surrountWith.descriptors.Perl6SRegexAtomSurroundDescriptor"/>
+    <lang.documentationProvider language="Perl6" implementationClass="edument.perl6idea.docs.Perl6DocumentationProvider"/>
+    <virtualFileSystem key="raku" implementationClass="edument.perl6idea.vfs.Perl6FileSystem"/>
+    <library.type implementation="edument.perl6idea.library.Perl6LibraryType"/>
+
+    <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoActionMethodProvider"/>
+    <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoGrammarRuleProvider"/>
+    <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoTemplateFileProvider"/>
+    <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoTemplatePartFileProvider"/>
+    <gotoRelatedProvider implementation="edument.perl6idea.contribution.GotoTemplatePartCallProvider"/>
+    <stubIndex implementation="edument.perl6idea.cro.template.psi.stub.index.CroTemplateSubIndex"/>
+    <stubIndex implementation="edument.perl6idea.cro.template.psi.stub.index.CroTemplateMacroIndex"/>
+    <gotoSymbolContributor implementation="edument.perl6idea.cro.template.CroTemplateSymbolNameContributor"/>
+    <lang.psiStructureViewFactory language="CroTemplate"
+                                  implementationClass="edument.perl6idea.cro.template.structureView.CroTemplateStructureViewFactory"/>
+    <lang.findUsagesProvider language="CroTemplate"
+                             implementationClass="edument.perl6idea.cro.template.findUsages.CroTemplateFindUsagesProvider"/>
+    <usageTypeProvider implementation="edument.perl6idea.cro.template.findUsages.CroTemplateUsageTypeProvider"/>
+    <toolWindow id="Raku Grammar Preview" anchor="right" factoryClass="edument.perl6idea.grammar.RakuGrammarPreviewFactory"
+                secondary="false" canCloseContents="false"/>
+    <backgroundPostStartupActivity implementation="edument.perl6idea.utils.Perl6ModuleListStarter"/>
+    <backgroundPostStartupActivity implementation="edument.perl6idea.utils.RakuLegacyExtensionsDetector"/>
+    <backgroundPostStartupActivity implementation="edument.perl6idea.pm.RakuModuleInstallPromptStarter"/>
+    <projectService configurationSchemaKey="raku.backup.sdk" serviceImplementation="edument.perl6idea.services.Perl6BackupSDKService"/>
+    <projectService serviceImplementation="edument.perl6idea.utils.Perl6ModuleListFetcher"/>
+    <moduleService serviceImplementation="edument.perl6idea.metadata.Perl6MetaDataComponent"/>
+    <moduleService serviceImplementation="edument.perl6idea.event.ModuleMetaChangeListener"/>
+    <projectService serviceImplementation="edument.perl6idea.metadata.Perl6ProjectModelSync"/>
+    <projectService serviceImplementation="edument.perl6idea.pm.RakuPackageManagerManager"/>
+    <fileEditorProvider implementation="edument.perl6idea.readerMode.Perl6ModuleEditorProvider"/>
+    <defaultLiveTemplates file="/liveTemplates/Cro-HTTP-Client.xml"/>
+    <defaultLiveTemplates file="/liveTemplates/Cro-WebApp.xml"/>
+    <defaultLiveTemplates file="/liveTemplates/Red.xml"/>
+    <liveTemplateContext implementation="edument.perl6idea.liveTemplates.RakuContext"/>
+    <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.CroClientVar"/>
+    <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.RakuSuggestVariableName"/>
+    <liveTemplateOptionalProcessor implementation="edument.perl6idea.liveTemplates.AddUseProcessor"/>
+    <iw.actionProvider implementation="edument.perl6idea.readerMode.Perl6ActionProvider"/>
+    <readerModeMatcher implementation="edument.perl6idea.readerMode.Perl6DefaultReaderModeMatcher"/>
+    <notificationGroup displayType="BALLOON" id="raku.sdk.errors.group"/>
+    <notificationGroup displayType="BALLOON" id="raku.debug.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.repl.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.meta.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.timeline.errors"/>
+    <notificationGroup displayType="BALLOON" id="raku.misc"/>
+    <appStarter implementation="edument.perl6idea.application.RakuDocStarter"/>
+    <projectOpenProcessor implementation="edument.perl6idea.project.Perl6ProjectOpenProcessor"/>
+    <completion.contributor language="Perl6" implementationClass="edument.perl6idea.pod.PodCompletionContributor"/>
+    <highlightVisitor implementation="edument.perl6idea.highlighter.RakuHighlightVisitor"/>
     <runConfigurationProducer implementation="edument.perl6idea.testing.Perl6CommunityTestRunConfigurationProducer"/>
     <configurationType implementation="edument.perl6idea.run.Perl6CommunityRunConfigurationType"/>
     <configurationType implementation="edument.perl6idea.testing.Perl6CommunityTestConfigurationType"/>
@@ -83,7 +351,54 @@
   </extensions>
 
   <actions>
-    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/actions/*)"/>
+    <action id="Perl6Plugin.NewScriptAction" class="edument.perl6idea.actions.NewScriptAction" text="Raku Script"
+            description="Create new Raku script in current project" icon="/icons/camelia.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
+    </action>
+    <action id="Perl6Plugin.NewModuleAction" class="edument.perl6idea.actions.NewModuleAction" text="Raku Module"
+            description="Create new Raku module in current project" icon="/icons/camelia.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewScriptAction"/>
+    </action>
+    <action id="Perl6Plugin.NewTestAction" class="edument.perl6idea.actions.NewTestAction" text="Raku Test"
+            description="Create new Raku test in current project" icon="/icons/camelia.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewModuleAction"/>
+    </action>
+    <action id="Perl6Plugin.NewPodDocumentation" class="edument.perl6idea.actions.NewDocumentationAction" text="Raku Documentation (Pod6)"
+            description="Create new Raku documentation file in current project" icon="/icons/camelia.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewTestAction"/>
+    </action>
+    <action id="Perl6Plugin.NewCroTemplateAction" class="edument.perl6idea.cro.actions.NewCroTemplateAction" text="Cro Template"
+            description="Create new Cro template in current project" icon="/icons/cro.png">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="Perl6Plugin.NewPodDocumentation"/>
+    </action>
+    <action id="edument.perl6idea.repl.Perl6LaunchReplAction" class="edument.perl6idea.repl.Perl6LaunchReplAction" text="Launch Raku REPL"
+            description="Runs the Raku REPL associated with the current project&#39;s SDK.">
+      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
+    </action>
+    <action id="Perl6ReplExecute" class="com.intellij.openapi.actionSystem.EmptyAction"
+            text="Execute Raku Code"
+            description="Execute Raku code in REPL console">
+      <keyboard-shortcut first-keystroke="control ENTER" keymap="$default"/>
+    </action>
+    <action id="edument.perl6idea.repl.Perl6ReplUsingThisModuleAction" class="edument.perl6idea.repl.Perl6ReplUsingThisModuleAction"
+            text="REPL Using This Module" description="Launch a Raku REPL with this module used">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+    <action id="edument.perl6idea.grammar.RakuGrammarPreviewAction" class="edument.perl6idea.grammar.RakuGrammarPreviewAction"
+            text="Preview Raku Grammar"
+            description="Opens a tool to preview Raku grammar parsing results">
+      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
+    </action>
+    <action id="edument.perl6idea.actions.ShowSecondarySdkSetter" class="edument.perl6idea.actions.ShowSecondarySdkSetter"
+            text="Setup Raku SDK"
+            description="Opens a tool to setup Raku SDK of this project, which can be used by different components">
+      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
+    </action>
+    <action id="edument.perl6idea.actions.UpdateExtensionsAction" class="edument.perl6idea.actions.UpdateExtensionsAction"
+            text="Update Raku File Extensions"
+            description="Renames files with obsolete Raku extensions to use official replacement ones">
+      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
+    </action>
     <action id="Perl6Plugin.UpgradeToCommaComplete" class="edument.perl6idea.actions.UpdateToCommaCompleteAction" text="Upgrade to Comma Complete "
             description="Visit Comma website" icon="/icons/camelia.png">
       <add-to-group group-id="HelpMenu" anchor="after" relative-to-action="About"/>

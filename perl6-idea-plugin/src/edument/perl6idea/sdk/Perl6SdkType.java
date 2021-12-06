@@ -149,7 +149,7 @@ public class Perl6SdkType extends SdkType {
     }
 
     public static String secondarySDKHome(@NotNull Project project) {
-        Perl6BackupSDKService service = project.getComponent(Perl6BackupSDKService.class);
+        Perl6BackupSDKService service = project.getService(Perl6BackupSDKService.class);
         return service.getProjectSdkPath(project.getProjectFilePath());
     }
 
