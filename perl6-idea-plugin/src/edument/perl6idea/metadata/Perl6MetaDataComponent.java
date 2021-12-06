@@ -19,7 +19,6 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.Perl6Icons;
-import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.module.Perl6ModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -83,7 +82,7 @@ public class Perl6MetaDataComponent {
             metaFile = checkOldMetaFile(metaParent);
 
             // If everything fails, notify about META absence
-            // and suggest to stub it
+            // and suggest stubbing it
             if (metaFile == null) {
                 notifyMissingMETA();
                 return;
@@ -196,10 +195,10 @@ public class Perl6MetaDataComponent {
         checkParameter(meta, "license", v -> v instanceof String, "string");
 
         checkParameter(meta, "depends", v ->
-            v instanceof JSONArray && ((JSONArray)v).toList().stream().allMatch(iv -> iv instanceof String), "string array");
+            v instanceof JSONArray && ContainerUtil.and(((JSONArray)v).toList(), iv -> iv instanceof String), "string array");
 
         checkParameter(meta, "provides", v ->
-            v instanceof JSONObject && ((JSONObject)v).toMap().values().stream().allMatch(iv -> iv instanceof String), "provides object");
+            v instanceof JSONObject && ContainerUtil.and(((JSONObject)v).toMap().values(), iv -> iv instanceof String), "provides object");
     }
 
     private static void checkParameter(JSONObject meta, String name,
@@ -577,11 +576,12 @@ public class Perl6MetaDataComponent {
                     createStubMetaFile(myModule.getName(), null, true);
                 }
                 catch (IOException e1) {
-                    Notifications.Bus.notify(new Notification(
-                        "raku.meta.errors", Perl6Icons.CAMELIA,
-                        String.format("%s error", META6_JSON_NAME),
-                        String.format("Error has occurred during %s file creation", META6_JSON_NAME),
-                        e1.getMessage(), NotificationType.ERROR, null));
+                    Notification notification1 = new Notification(
+                        "raku.meta.errors", String.format("%s error", META6_JSON_NAME),
+                        e1.getMessage(), NotificationType.ERROR);
+                    notification1.setIcon(Perl6Icons.CAMELIA);
+                    notification1.setSubtitle(String.format("Error has occurred during %s file creation", META6_JSON_NAME));
+                    Notifications.Bus.notify(notification1);
                 }
             }
         });
