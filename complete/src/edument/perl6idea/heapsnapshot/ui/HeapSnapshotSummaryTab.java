@@ -82,9 +82,9 @@ public class HeapSnapshotSummaryTab extends JPanel {
 
         StringBuilder s = new StringBuilder();
         if (size == 1) {
-            s.append("There is <b>a single</b> snapshot. ");
+            s.append("There is <b>a single</b> snapshot.<br>");
         } else {
-            s.append("There <b>").append(size).append(" snapshots</b>.<br>");
+            s.append("There are <b>").append(size).append(" snapshots</b>.<br>");
         }
 
         int typeCount = snapshotCollection.typeData.typenameIndices.length;
