@@ -90,10 +90,8 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
                             ((VFileMoveEvent)event).getOldPath();
         String oldModuleName = calculateModuleName(oldPathRaw);
         VirtualFile file = Objects.requireNonNull(event.getFile());
-        if (oldModuleName != null) {
-            String newModuleName = calculateModuleName(file.getCanonicalPath());
-            updateMetaProvides(oldModuleName, newModuleName, file.getExtension());
-        }
+        String newModuleName = calculateModuleName(file.getCanonicalPath());
+        updateMetaProvides(oldModuleName, newModuleName, file.getExtension());
     }
 
     @Override
@@ -140,7 +138,7 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
         Path libPath = null;
 
         for (String modulePath : modulePaths) {
-            if (event.getPath().startsWith(modulePath)) {
+            if (oldPath.startsWith(modulePath) || newPath.startsWith(modulePath)) {
                 libPath = Paths.get(modulePath);
                 break;
             }
@@ -166,7 +164,7 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
                 @Override
                 public boolean visitFile(@NotNull VirtualFile file) {
                     if (FileTypeManager.getInstance().getFileTypeByFile(file) instanceof Perl6ModuleFileType) {
-                        myMetaData.addNamespaceToProvides(calculateModuleName(file.getPath()), Perl6Utils.getNameExtension(file.getExtension()));
+                        myMetaData.addNamespaceToProvides(calculateModuleName(file.getPath()), file.getExtension());
                     }
                     return true;
                 }
@@ -202,10 +200,10 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
         return null;
     }
 
-    private void updateMetaProvides(String oldName, @Nullable String newName, @Nullable String ext) {
-        myMetaData.removeNamespaceFromProvides(oldName);
-        if (newName != null) {
+    private void updateMetaProvides(@Nullable String oldName, @Nullable String newName, @Nullable String ext) {
+        if (oldName != null)
+            myMetaData.removeNamespaceFromProvides(oldName);
+        if (newName != null)
             myMetaData.addNamespaceToProvides(newName, ext);
-        }
     }
 }
