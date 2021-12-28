@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public class RakuLegacyExtensionsDetector implements StartupActivity {
+public class RakuLegacyExtensionsDetector implements StartupActivity.Background {
     @Override
     public void runActivity(@NotNull Project project) {
         Module @NotNull [] modules = ModuleManager.getInstance(project).getModules();

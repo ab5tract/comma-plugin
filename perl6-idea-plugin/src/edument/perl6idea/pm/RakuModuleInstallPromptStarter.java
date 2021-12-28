@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class RakuModuleInstallPromptStarter implements StartupActivity {
+public class RakuModuleInstallPromptStarter implements StartupActivity.Background {
     private static final Logger LOG = Logger.getInstance(RakuModuleInstallPromptStarter.class);
 
     @Override
