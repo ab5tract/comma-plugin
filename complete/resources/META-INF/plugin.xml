@@ -431,15 +431,13 @@ version 3 of the heap snapshot format.</li>
   </actions>
 
   <module-components>
-    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/module-components/*)"/>
   </module-components>
 
   <project-components>
-    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/project-components/*)"/>
   </project-components>
 
   <applicationListeners>
-    <xi:include href="/META-INF/meta/perl6-common.xml" xpointer="xpointer(/idea-plugin/applicationListeners/*)"/>
+    <listener class="edument.perl6idea.sdk.Perl6SdkCacheManager" topic="com.intellij.openapi.project.ProjectManagerListener"/>
   </applicationListeners>
 
 </idea-plugin>
