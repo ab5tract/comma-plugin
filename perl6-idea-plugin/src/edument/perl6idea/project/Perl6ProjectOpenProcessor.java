@@ -1,6 +1,5 @@
 package edument.perl6idea.project;
 
-import com.intellij.ide.impl.OpenProjectTask;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
@@ -43,12 +42,17 @@ public class Perl6ProjectOpenProcessor extends ProjectOpenProcessor {
         Perl6ProjectBuilder projectBuilder = new Perl6ProjectBuilder(null);
         projectBuilder.setFileToImport(nioPath.toString());
         newProject = projectBuilder.createProject(name, nioPath.toString());
-
         if (newProject == null) {
             return null;
         } else {
             projectBuilder.commit(newProject, null, ModulesProvider.EMPTY_MODULES_PROVIDER);
+            ProjectManagerEx.getInstanceEx().openProject(newProject);
             return newProject;
         }
+    }
+
+    @Override
+    public boolean isStrongProjectInfoHolder() {
+        return true;
     }
 }
