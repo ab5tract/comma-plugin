@@ -16,6 +16,7 @@ import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.event.HyperlinkEvent;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -57,20 +58,23 @@ public class RakuModuleInstallPromptStarter implements StartupActivity.Backgroun
             return;
 
         // Report if there are modules to install
-        @NotNull EditorNotificationPanel notification = getPanel(project, pmManager.getCurrentPM(), unavailableDeps);
         FileEditor[] editors = FileEditorManager.getInstance(project).getSelectedEditors();
         ApplicationManager.getApplication().invokeAndWait(() -> {
             for (FileEditor fileEditor : editors) {
+                @NotNull DismissableNotificationPanel notification = getPanel(project, pmManager.getCurrentPM(), unavailableDeps);
                 FileEditorManager.getInstance(project).addTopComponent(fileEditor, notification);
+                notification.setDismissCallback(() -> {
+                    FileEditorManager.getInstance(project).removeTopComponent(fileEditor, notification);
+                });
             }
         });
     }
 
     @NotNull
-    private static EditorNotificationPanel getPanel(@NotNull Project project,
+    private static DismissableNotificationPanel getPanel(@NotNull Project project,
                                                     RakuPackageManager pm,
                                                     List<String> unavailableDeps) {
-        EditorNotificationPanel panel = new EditorNotificationPanel();
+        DismissableNotificationPanel panel = new DismissableNotificationPanel();
         panel.setText("Some Raku dependencies for this project are not installed (" + getListText(unavailableDeps) + ").");
         String installButtonText = "Install with " + pm.getKind().getName();
         AtomicBoolean startedProcessing = new AtomicBoolean();
@@ -100,6 +104,20 @@ public class RakuModuleInstallPromptStarter implements StartupActivity.Backgroun
         return panel;
     }
 
+    static class DismissableNotificationPanel extends EditorNotificationPanel {
+        void setDismissCallback(Runnable callback) {
+            createActionLabel("Dismiss", new ActionHandler() {
+                @Override
+                public void handlePanelActionClick(@NotNull EditorNotificationPanel panel, @NotNull HyperlinkEvent event) {
+                    callback.run();
+                }
+
+                @Override
+                public void handleQuickFixClick(@NotNull Editor editor, @NotNull PsiFile psiFile) {}
+            }, true);
+        }
+    }
+
     private static String getListText(List<String> deps) {
         StringJoiner joiner = new StringJoiner(", ");
         boolean complete = true;
@@ -110,6 +128,6 @@ public class RakuModuleInstallPromptStarter implements StartupActivity.Backgroun
                 break;
             }
         }
-        return joiner.toString() + (complete ? "" : "...");
+        return joiner + (complete ? "" : "...");
     }
 }
