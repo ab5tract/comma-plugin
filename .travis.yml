@@ -1,7 +1,7 @@
 language: generic
 dist: xenial
 before_install:
-- git clone --progress --depth 1 -b comma-203.7148 git@github.com:edumentab/intellij-community.git
+- git clone --progress --depth 1 -b comma-213.5744 git@github.com:edumentab/intellij-community.git
 - mkdir intellij-community/comma-build
 - shopt -s extglob
 - mv !(intellij-community) intellij-community/comma-build/
