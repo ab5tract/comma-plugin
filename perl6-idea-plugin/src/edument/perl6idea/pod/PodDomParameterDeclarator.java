@@ -1,7 +1,7 @@
 package edument.perl6idea.pod;
 
 import com.intellij.psi.PsiElement;
-import org.apache.commons.lang.StringEscapeUtils;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +22,7 @@ public class PodDomParameterDeclarator extends PodDomDeclarator {
     @Override
     public void renderInto(StringBuilder builder, PodRenderingContext context) {
         builder.append("<code>");
-        builder.append(StringEscapeUtils.escapeHtml(definition));
+        builder.append(Perl6Utils.escapeHTML(definition));
         builder.append("</code>");
         renderDocComments(builder, context);
     }

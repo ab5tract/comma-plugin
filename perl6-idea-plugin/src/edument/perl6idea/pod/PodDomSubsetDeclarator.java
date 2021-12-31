@@ -2,7 +2,7 @@ package edument.perl6idea.pod;
 
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Trait;
-import org.apache.commons.lang.StringEscapeUtils;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +25,7 @@ public class PodDomSubsetDeclarator extends PodDomDeclarator {
     public void renderInto(StringBuilder builder, PodRenderingContext context) {
         // Render the name.
         builder.append("<h3 class=\"doc-package-name\">");
-        builder.append(StringEscapeUtils.escapeHtml(getPrimaryName()));
+        builder.append(Perl6Utils.escapeHTML(getPrimaryName()));
         builder.append(" <span class=\"doc-kind\">subset</span>");
         renderExportTags(builder, context);
         builder.append("</h3>");
@@ -33,7 +33,7 @@ public class PodDomSubsetDeclarator extends PodDomDeclarator {
         // Base type.
         builder.append("<table class=\"doc-prop-table\">\n");
         builder.append("<tr><td class=\"doc-prop-name\">Base Type</td><td><code>");
-        builder.append(StringEscapeUtils.escapeHtml(baseType == null ? "Any" : baseType));
+        builder.append(Perl6Utils.escapeHTML(baseType == null ? "Any" : baseType));
         builder.append("</code></td></tr>");
         builder.append("</table>\n");
 

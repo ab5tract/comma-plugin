@@ -2,7 +2,7 @@ package edument.perl6idea.pod;
 
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6Trait;
-import org.apache.commons.lang.StringEscapeUtils;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +26,7 @@ public class PodDomEnumDeclarator extends PodDomDeclarator {
     public void renderInto(StringBuilder builder, PodRenderingContext context) {
         // Render the name.
         builder.append("<h3 class=\"doc-package-name\">");
-        builder.append(StringEscapeUtils.escapeHtml(getPrimaryName()));
+        builder.append(Perl6Utils.escapeHTML(getPrimaryName()));
         builder.append(" <span class=\"doc-kind\">enum</span>");
         renderExportTags(builder, context);
         builder.append("</h3>");
@@ -37,7 +37,7 @@ public class PodDomEnumDeclarator extends PodDomDeclarator {
             builder.append("<tr><td class=\"doc-prop-name\">Values</td><td>");
             for (String value : enumValues) {
                 builder.append("<code>");
-                builder.append(StringEscapeUtils.escapeHtml(value));
+                builder.append(Perl6Utils.escapeHTML(value));
                 builder.append("</code><br>");
             }
             builder.append("</td></tr>");
