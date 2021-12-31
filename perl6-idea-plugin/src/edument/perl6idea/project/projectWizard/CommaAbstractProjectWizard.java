@@ -34,13 +34,13 @@ public abstract class CommaAbstractProjectWizard extends AbstractWizard<ModuleWi
     public CommaAbstractProjectWizard(String title, Project project, String defaultPath) {
         super(title, project);
         myWizardContext = initContext(project, defaultPath, getDisposable());
-        myWizardContext.setWizard(this);
+        myWizardContext.putUserData(AbstractWizard.KEY, this);
     }
 
     public CommaAbstractProjectWizard(String title, Project project, Component dialogParent) {
         super(title, dialogParent);
         myWizardContext = initContext(project, null, getDisposable());
-        myWizardContext.setWizard(this);
+        myWizardContext.putUserData(AbstractWizard.KEY, this);
     }
 
     @Override

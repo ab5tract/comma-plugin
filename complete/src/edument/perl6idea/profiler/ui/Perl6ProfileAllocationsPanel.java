@@ -4,7 +4,6 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
 import edument.perl6idea.profiler.model.Perl6ProfileModelWithRatio;
-import org.apache.commons.lang.ArrayUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -15,6 +14,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -41,9 +41,9 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
         table.setRowSorter(new TableRowSorter<>(table.getModel()) {
             @Override
             public Comparator<?> getComparator(int column) {
-                if (ArrayUtils.contains(columnsToParse, column))
+                if (Arrays.stream(columnsToParse).anyMatch(c -> c == column))
                     return (Comparator<Object>)(o1, o2) -> {
-                        if (ArrayUtils.contains(columnsToParse, column)) {
+                        if (Arrays.stream(columnsToParse).anyMatch(c -> c == column)) {
                             return parseAndCompare((String)o1, (String)o2);
                         }
                         return 0;

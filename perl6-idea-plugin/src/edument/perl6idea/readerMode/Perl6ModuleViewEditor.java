@@ -1,16 +1,22 @@
 package edument.perl6idea.readerMode;
 
+import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
+import com.intellij.codeHighlighting.HighlightingPass;
+import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.UserDataHolderBase;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.JBSplitter;
 import com.intellij.util.ui.JBUI;
+import edument.perl6idea.highlighter.RakuHighlightVisitor;
+import edument.perl6idea.structureView.Perl6StructureViewBuilder;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,15 +28,25 @@ import java.util.Objects;
 public class Perl6ModuleViewEditor extends UserDataHolderBase implements TextEditor {
     private final String myName;
     private final TextEditor myEditor;
+    private final VirtualFile myFile;
     private PodPreviewEditor myViewer;
     private JComponent myComponent;
     private Runnable myTriggerPodRenderCode;
     private Perl6ReaderModeState myState;
 
-    public Perl6ModuleViewEditor(TextEditor editor, PodPreviewEditor viewer, String editorName) {
+    public Perl6ModuleViewEditor(TextEditor editor,
+                                 PodPreviewEditor viewer,
+                                 @NotNull VirtualFile file,
+                                 String editorName) {
         myEditor = editor;
         myViewer = viewer;
+        myFile = file;
         myName = editorName;
+    }
+
+    @Override
+    public @Nullable VirtualFile getFile() {
+        return myFile;
     }
 
     @Override
@@ -121,6 +137,18 @@ public class Perl6ModuleViewEditor extends UserDataHolderBase implements TextEdi
     }
 
     @Override
+    public @Nullable StructureViewBuilder getStructureViewBuilder() {
+        PsiFile psiFile = PsiDocumentManager.getInstance(Objects.requireNonNull(myEditor.getEditor().getProject()))
+            .getPsiFile(myEditor.getEditor().getDocument());
+        return psiFile == null ? null : new Perl6StructureViewBuilder(psiFile);
+    }
+
+    @Override
+    public @Nullable BackgroundEditorHighlighter getBackgroundHighlighter() {
+        return myEditor.getBackgroundHighlighter();
+    }
+
+  @Override
     public boolean isModified() {
         return myEditor.isModified();
     }

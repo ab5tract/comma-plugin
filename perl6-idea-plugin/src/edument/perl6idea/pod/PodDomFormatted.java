@@ -1,6 +1,6 @@
 package edument.perl6idea.pod;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import edument.perl6idea.utils.Perl6Utils;
 
 public class PodDomFormatted extends PodDomInnerNode {
     private final char code;
@@ -45,7 +45,7 @@ public class PodDomFormatted extends PodDomInnerNode {
     private void renderLink(StringBuilder builder, PodRenderingContext context) {
         builder.append("<a href=\"");
         if (link != null)
-            builder.append(StringEscapeUtils.escapeHtml(link));
+            builder.append(Perl6Utils.escapeHTML(link));
         builder.append("\">");
         renderChildrenInfo(builder, context);
         builder.append("</a>");

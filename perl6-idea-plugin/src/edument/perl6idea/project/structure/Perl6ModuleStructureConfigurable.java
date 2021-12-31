@@ -4,7 +4,6 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.projectView.impl.ModuleGroupingTreeHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleGrouper;
 import com.intellij.openapi.module.ModuleManager;
@@ -153,7 +152,7 @@ public class Perl6ModuleStructureConfigurable extends Perl6StructureConfigurable
     }
 
     public static Perl6ModuleStructureConfigurable getInstance(Project project) {
-        return ServiceManager.getService(project, Perl6ModuleStructureConfigurable.class);
+        return project.getService(Perl6ModuleStructureConfigurable.class);
     }
 
     private class AddModuleAction extends AnAction implements DumbAware {

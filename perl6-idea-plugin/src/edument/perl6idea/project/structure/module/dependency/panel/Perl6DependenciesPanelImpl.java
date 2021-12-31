@@ -235,7 +235,7 @@ public class Perl6DependenciesPanelImpl extends JPanel {
                 public void run(@NotNull ProgressIndicator indicator) {
                     Set<String> names = Perl6ModuleListFetcher.getNames(myProject);
                     Set<String> localNames = new ArrayListSet<>();
-                    Module currentlyEditedModule = myModel.getState().getRootModel().getModule();
+                    Module currentlyEditedModule = myModel.getState().getCurrentRootModel().getModule();
                     Module[] modules = ModuleManager.getInstance(myProject).getModules();
                     for (Module module : modules) {
                         if (module.equals(currentlyEditedModule))

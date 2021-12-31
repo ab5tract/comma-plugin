@@ -4,6 +4,7 @@ import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.Perl6Language;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,12 @@ public class Perl6ModuleFileType extends LanguageFileType implements RakuMultiEx
     @Override
     public String getName() {
         return "Raku Module";
+    }
+
+    @Nls
+    @Override
+    public @NotNull String getDisplayName() {
+        return getName();
     }
 
     @NotNull

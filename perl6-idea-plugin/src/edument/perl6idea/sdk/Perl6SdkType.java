@@ -110,12 +110,6 @@ public class Perl6SdkType extends SdkType {
         return Perl6Icons.CAMELIA;
     }
 
-    @NotNull
-    @Override
-    public Icon getIconForAddAction() {
-        return getIcon();
-    }
-
     @Nullable
     @Override
     public String suggestHomePath() {
@@ -155,7 +149,7 @@ public class Perl6SdkType extends SdkType {
     }
 
     public static String secondarySDKHome(@NotNull Project project) {
-        Perl6BackupSDKService service = ServiceManager.getService(project, Perl6BackupSDKService.class);
+        Perl6BackupSDKService service = project.getService(Perl6BackupSDKService.class);
         return service.getProjectSdkPath(project.getProjectFilePath());
     }
 

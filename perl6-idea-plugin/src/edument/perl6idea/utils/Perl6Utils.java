@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Perl6Utils {
     public static final Logger LOG = Logger.getInstance(Perl6Utils.class);
@@ -86,5 +87,20 @@ public class Perl6Utils {
 
     public static String getNameExtension(@Nullable String filename) {
         return filename != null && filename.contains(".") ? filename.substring(filename.lastIndexOf(".") + 1) : "";
+    }
+
+    public static String escapeHTML(String str) {
+        return str.chars().mapToObj(c -> c > 127 || "\"'<>&".indexOf(c) != -1 ?
+                                         "&" + htmlReplace(c) + ";" : String.valueOf((char) c)).collect(Collectors.joining());
+    }
+
+    private static String htmlReplace(int c) {
+        if (c == 62)
+            return "gt";
+        if (c == 60)
+            return "lt";
+        if (c == 38)
+            return "amp";
+        return String.valueOf(c);
     }
 }

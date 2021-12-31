@@ -53,11 +53,10 @@ public class TimelineContentBuilder extends CustomConsoleRunTab {
                 String message = e.getMessage();
                 if (message == null)
                     message = "unknown problem";
-                Notifications.Bus.notify(
-                        new Notification("raku.timeline.errors", null,
-                                         "Timeline connection error", null,
-                                         "Could not get timeline data: " + message,
-                                         NotificationType.ERROR, null));
+                Notifications.Bus.notify(new Notification("raku.timeline.errors",
+                                                          "Timeline connection error",
+                                                          "Could not get timeline data: " + message,
+                                                          NotificationType.ERROR));
             }
         });
         myExecutionResult.getProcessHandler().addProcessListener(new ProcessAdapter() {

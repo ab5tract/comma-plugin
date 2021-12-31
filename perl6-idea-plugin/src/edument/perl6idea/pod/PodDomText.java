@@ -1,6 +1,6 @@
 package edument.perl6idea.pod;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import edument.perl6idea.utils.Perl6Utils;
 
 public class PodDomText extends PodDomNode {
     private final String text;
@@ -16,6 +16,6 @@ public class PodDomText extends PodDomNode {
 
     @Override
     public void renderInto(StringBuilder builder, PodRenderingContext context) {
-        builder.append(StringEscapeUtils.escapeHtml(text));
+        builder.append(Perl6Utils.escapeHTML(text));
     }
 }

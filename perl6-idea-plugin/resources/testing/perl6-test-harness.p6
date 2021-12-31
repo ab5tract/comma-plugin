@@ -94,8 +94,10 @@ sub process-path($path, $cwd, $args, $coverage-dir, %coverage-index, :$pattern) 
                 }
 
                 my $pid;
-                whenever $proc.ready {
-                    $cov-file ~= ".$_" if $cov-file;
+                if $cov-file {
+                    whenever $proc.ready {
+                        $cov-file ~= ".$_";
+                    }
                 }
 
                 whenever $proc.start(:$ENV) -> $exit {

@@ -36,7 +36,7 @@ public class Perl6OutputLinkFilter implements Filter {
 
         String pathPart = matcher.group(1);
         Collection<VirtualFile> files =
-            FilenameIndex.getVirtualFilesByName(myProject, Paths.get(pathPart).getFileName().toString(), GlobalSearchScope.allScope(myProject));
+            FilenameIndex.getVirtualFilesByName(Paths.get(pathPart).getFileName().toString(), GlobalSearchScope.allScope(myProject));
         if (files.isEmpty())
             return null;
 

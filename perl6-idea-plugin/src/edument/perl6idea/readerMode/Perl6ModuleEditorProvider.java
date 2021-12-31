@@ -42,7 +42,7 @@ public class Perl6ModuleEditorProvider implements FileEditorProvider, DumbAware 
     public @NotNull FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {
         TextEditor editor = (TextEditor)TextEditorProvider.getInstance().createEditor(project, file);
         if (JBCefApp.isSupported()) {
-            Perl6ModuleViewEditor moduleViewEditor = new Perl6ModuleViewEditor(editor, null, "Raku Module Editor");
+            Perl6ModuleViewEditor moduleViewEditor = new Perl6ModuleViewEditor(editor, null, file,"Raku Module Editor");
             PodPreviewEditor viewer = new PodPreviewEditor(project, file, (EditorImpl)editor.getEditor(), moduleViewEditor);
             Disposer.register(editor, viewer);
 

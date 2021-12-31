@@ -19,7 +19,6 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.Perl6Icons;
-import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.module.Perl6ModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -82,7 +82,7 @@ public class Perl6MetaDataComponent {
             metaFile = checkOldMetaFile(metaParent);
 
             // If everything fails, notify about META absence
-            // and suggest to stub it
+            // and suggest stubbing it
             if (metaFile == null) {
                 notifyMissingMETA();
                 return;
@@ -136,7 +136,7 @@ public class Perl6MetaDataComponent {
         JSONObject meta = null;
         if (myMetaFile != null && myMetaFile.exists()) {
             try {
-                String content = new String(myMetaFile.contentsToByteArray(), CharsetToolkit.UTF8_CHARSET);
+                String content = new String(myMetaFile.contentsToByteArray(), StandardCharsets.UTF_8);
                 meta = new JSONObject(content);
                 checkMetaSanity(meta);
             }
@@ -195,10 +195,10 @@ public class Perl6MetaDataComponent {
         checkParameter(meta, "license", v -> v instanceof String, "string");
 
         checkParameter(meta, "depends", v ->
-            v instanceof JSONArray && ((JSONArray)v).toList().stream().allMatch(iv -> iv instanceof String), "string array");
+            v instanceof JSONArray && ContainerUtil.and(((JSONArray)v).toList(), iv -> iv instanceof String), "string array");
 
         checkParameter(meta, "provides", v ->
-            v instanceof JSONObject && ((JSONObject)v).toMap().values().stream().allMatch(iv -> iv instanceof String), "provides object");
+            v instanceof JSONObject && ContainerUtil.and(((JSONObject)v).toMap().values(), iv -> iv instanceof String), "provides object");
     }
 
     private static void checkParameter(JSONObject meta, String name,
@@ -364,7 +364,7 @@ public class Perl6MetaDataComponent {
             try {
                 JSONObject meta = getStubMetaObject(moduleName);
                 VirtualFile metaFile = finalFirstRoot.findOrCreateChildData(this, META6_JSON_NAME);
-                metaFile.setBinaryContent(MetaDataJSONSerializer.serializer(meta).getBytes(CharsetToolkit.UTF8_CHARSET));
+                metaFile.setBinaryContent(MetaDataJSONSerializer.serializer(meta).getBytes(StandardCharsets.UTF_8));
                 myMeta = meta;
                 myMetaFile = metaFile;
 
@@ -522,7 +522,7 @@ public class Perl6MetaDataComponent {
                 try {
                     if (!myMetaFile.isValid())
                         myMetaFile = myMetaFile.getParent().createChildData(this, myMetaFile.getName());
-                    myMetaFile.setBinaryContent(json.getBytes(CharsetToolkit.UTF8_CHARSET));
+                    myMetaFile.setBinaryContent(json.getBytes(StandardCharsets.UTF_8));
                     triggerMetaBuild(myMetaFile);
                 }
                 catch (IOException e) {
@@ -536,9 +536,8 @@ public class Perl6MetaDataComponent {
         if (myModule == null)
             return;
         Notification notification = new Notification(
-            "raku.meta.errors", Perl6Icons.CAMELIA,
-            "Raku meta error", "",
-            message, type, null);
+            "raku.meta.errors", "Raku meta error", message, type);
+        notification.setIcon(Perl6Icons.CAMELIA);
         if (myMetaFile != null) {
             notification.addAction(new AnAction(String.format("Open %s", META6_JSON_NAME)) {
                 @Override
@@ -564,10 +563,10 @@ public class Perl6MetaDataComponent {
 
     private void notifyMissingMETA() {
         Notification notification = new Notification(
-            "raku.meta.errors", Perl6Icons.CAMELIA,
-            "Raku meta file is missing", "",
+            "raku.meta.errors", "Raku meta file is missing",
             String.format("'%s' nor '%s' files seem to be present in this module.", META_OBSOLETE_NAME, META6_JSON_NAME),
-            NotificationType.WARNING, null);
+            NotificationType.WARNING);
+        notification.setIcon(Perl6Icons.CAMELIA);
         notification.addAction(new AnAction(String.format("Stub and open %s file", META6_JSON_NAME)) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
@@ -577,11 +576,12 @@ public class Perl6MetaDataComponent {
                     createStubMetaFile(myModule.getName(), null, true);
                 }
                 catch (IOException e1) {
-                    Notifications.Bus.notify(new Notification(
-                        "raku.meta.errors", Perl6Icons.CAMELIA,
-                        String.format("%s error", META6_JSON_NAME),
-                        String.format("Error has occurred during %s file creation", META6_JSON_NAME),
-                        e1.getMessage(), NotificationType.ERROR, null));
+                    Notification notification1 = new Notification(
+                        "raku.meta.errors", String.format("%s error", META6_JSON_NAME),
+                        e1.getMessage(), NotificationType.ERROR);
+                    notification1.setIcon(Perl6Icons.CAMELIA);
+                    notification1.setSubtitle(String.format("Error has occurred during %s file creation", META6_JSON_NAME));
+                    Notifications.Bus.notify(notification1);
                 }
             }
         });

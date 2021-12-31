@@ -17,17 +17,17 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-public class RakuLegacyExtensionsDetector implements StartupActivity {
+public class RakuLegacyExtensionsDetector implements StartupActivity.Background {
     @Override
     public void runActivity(@NotNull Project project) {
         Module @NotNull [] modules = ModuleManager.getInstance(project).getModules();
         Map<String, List<File>> filesToUpdate = UpdateExtensionsAction.collectFilesWithLegacyNames(modules, false);
         if (!filesToUpdate.isEmpty()) {
             Notification notification = new Notification(
-                "raku.misc", Perl6Icons.CAMELIA,
-                "Obsolete Raku extensions are detected", "",
+                "raku.misc", "Obsolete Raku extensions are detected",
                 "Obsolete file extensions are detected: " + String.join(", ", filesToUpdate.keySet()),
-                NotificationType.WARNING, null);
+                NotificationType.WARNING);
+            notification.setIcon(Perl6Icons.CAMELIA);
             notification.addAction(new AnAction("Run Comma Legacy File Rename Tool") {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {

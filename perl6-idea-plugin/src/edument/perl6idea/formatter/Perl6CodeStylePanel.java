@@ -53,7 +53,7 @@ public class Perl6CodeStylePanel extends TabbedLanguageCodeStylePanel {
         protected @Nullable EditorHighlighter createHighlighter(EditorColorsScheme scheme) {
             FileType fileType = getFileType();
             return FileTypeEditorHighlighterProviders.INSTANCE.forFileType(fileType).getEditorHighlighter(
-                ProjectUtil.guessCurrentProject(getPanel()), fileType, null, scheme);
+                null, fileType, null, scheme);
         }
 
         @Override

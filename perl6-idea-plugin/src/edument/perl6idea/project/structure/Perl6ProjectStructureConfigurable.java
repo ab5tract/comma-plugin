@@ -217,38 +217,35 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
 
     @Override
     public void reset() {
-        AccessToken token = HeavyProcessLatch.INSTANCE.processStarted("Resetting Raku Project Structure");
-        try {
-            myContext.reset();
-            myProjectSdkModel.reset(myProject);
-            Configurable toSelect = null;
-            for (Configurable each : myName2Config) {
-                if (myUiState.lastEditedConfigurable != null && myUiState.lastEditedConfigurable.equals(each.getDisplayName())) {
-                    toSelect = each;
+        HeavyProcessLatch.INSTANCE.performOperation(
+            HeavyProcessLatch.Type.Processing, "Resetting Raku Project Structure", () -> {
+                myContext.reset();
+                myProjectSdkModel.reset(myProject);
+                Configurable toSelect = null;
+                for (Configurable each : myName2Config) {
+                    if (myUiState.lastEditedConfigurable != null && myUiState.lastEditedConfigurable.equals(each.getDisplayName())) {
+                        toSelect = each;
+                    }
+                    if (each instanceof MasterDetailsComponent) {
+                        ((MasterDetailsComponent)each).setHistory(myHistory);
+                    }
+                    each.reset();
                 }
-                if (each instanceof MasterDetailsComponent) {
-                    ((MasterDetailsComponent)each).setHistory(myHistory);
+
+                myHistory.clear();
+
+                if (toSelect == null && myName2Config.size() > 0) {
+                    toSelect = myName2Config.iterator().next();
                 }
-                each.reset();
-            }
 
-            myHistory.clear();
+                removeSelected();
 
-            if (toSelect == null && myName2Config.size() > 0) {
-                toSelect = myName2Config.iterator().next();
-            }
+                navigateTo(toSelect != null ? createPlaceFor(toSelect) : null, false);
 
-            removeSelected();
-
-            navigateTo(toSelect != null ? createPlaceFor(toSelect) : null, false);
-
-            if (myUiState.proportion > 0) {
-                mySplitter.setProportion(myUiState.proportion);
-            }
-        }
-        finally {
-            token.finish();
-        }
+                if (myUiState.proportion > 0) {
+                    mySplitter.setProportion(myUiState.proportion);
+                }
+            });
     }
 
     @Override
@@ -345,7 +342,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
     }
 
     public static Perl6ProjectStructureConfigurable getInstance(final Project project) {
-        return ServiceManager.getService(project, Perl6ProjectStructureConfigurable.class);
+        return project.getService(Perl6ProjectStructureConfigurable.class);
     }
 
     @Override

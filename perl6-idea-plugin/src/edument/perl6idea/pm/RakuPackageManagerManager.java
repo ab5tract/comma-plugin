@@ -14,7 +14,7 @@ import java.util.*;
 
 @Service
 @State(name = "edument.perl6idea.pm.RakuPackageManagerManager", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
-public class RakuPackageManagerManager implements PersistentStateComponent<Element> {
+public final class RakuPackageManagerManager implements PersistentStateComponent<Element> {
     private RakuPackageManager currentPM;
     private List<RakuPackageManager> pmList = new ArrayList<>();
 

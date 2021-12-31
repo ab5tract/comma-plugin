@@ -2,6 +2,7 @@ package edument.perl6idea.annotation;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.effects.Effect;
@@ -21,7 +22,9 @@ public class UselessUseAnnotator implements Annotator {
       for (int i = 0; i < statements.length - (lastSunk ? 0 : 1); i++) {
         EffectCollection effect = statements[i].inferEffects();
         if (!effect.is(Effect.IMPURE) && !effect.is(Effect.DECLARATION))
-          holder.createWarningAnnotation(statements[i], "Useless use of value in sink (void) context");
+          holder.newAnnotation(HighlightSeverity.WARNING, "Useless use of value in sink (void) context")
+              .range(statements[i])
+              .create();
       }
     }
   }

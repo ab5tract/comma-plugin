@@ -86,7 +86,7 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     private Set<String> myEmptyFields = new HashSet<>();
 
     public ModuleMetaEditor(ModuleConfigurationState state) {
-        myModule = state.getRootModel().getModule();
+        myModule = state.getCurrentRootModel().getModule();
     }
 
     @Nls

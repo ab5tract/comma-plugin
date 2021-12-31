@@ -80,7 +80,7 @@ public class Perl6ProfileData {
             return;
 
         if (!isImported) {
-            Perl6ProfileDataManager manager = ServiceManager.getService(myProject, Perl6ProfileDataManager.class);
+            Perl6ProfileDataManager manager = myProject.getComponent(Perl6ProfileDataManager.class);
             if (manager != null) {
                 manager.saveProfileResult(this);
             }

@@ -1,7 +1,7 @@
 package edument.perl6idea.pod;
 
 import com.intellij.psi.PsiElement;
-import org.apache.commons.lang.StringEscapeUtils;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,13 +25,13 @@ public class PodDomAttributeDeclarator extends PodDomDeclarator {
     public void renderInto(StringBuilder builder, PodRenderingContext context) {
         // Render the name and documentation.
         builder.append("<h4 class=\"doc-attribute-name\">");
-        builder.append(StringEscapeUtils.escapeHtml(getPrimaryName()));
+        builder.append(Perl6Utils.escapeHTML(getPrimaryName()));
         builder.append(" <span class=\"doc-kind\">attribute</span></h4>");
         if (type != null || rw) {
             builder.append("<table class=\"doc-prop-table\">\n");
             if (type != null) {
                 builder.append("<tr><td class=\"doc-prop-name\">Type</td><td><code>");
-                builder.append(StringEscapeUtils.escapeHtml(type));
+                builder.append(Perl6Utils.escapeHTML(type));
                 builder.append("</code></td></tr>");
             }
             if (rw)

@@ -35,8 +35,9 @@ public class Perl6LaunchReplAction extends AnAction {
                 ApplicationManager.getApplication().invokeAndWait(() -> console.executeStatement("use " + useModule + ";"));
         }
         catch (ExecutionException ex) {
-            Notification notification = new Notification("raku.repl.errors", Perl6Icons.CAMELIA, "Cannot run REPL",
-                                                         "", "Could not start Raku REPL", NotificationType.ERROR, null);
+            Notification notification = new Notification("raku.repl.errors", "Cannot run REPL",
+                                                         "Could not start Raku REPL", NotificationType.ERROR);
+            notification.setIcon(Perl6Icons.CAMELIA);
             notification = notification.addAction(new AnAction("Check SDK") {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {

@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6ColonPair;
 import edument.perl6idea.psi.Perl6Trait;
-import org.apache.commons.lang.StringEscapeUtils;
+import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +65,7 @@ public abstract class PodDomDeclarator extends PodDomNode {
                 builder.append("<p>");
                 inParagraph = true;
             }
-            builder.append(StringEscapeUtils.escapeHtml(comment.getText()));
+            builder.append(Perl6Utils.escapeHTML(comment.getText()));
         }
         if (inParagraph)
             builder.append("</p>");
@@ -90,7 +90,7 @@ public abstract class PodDomDeclarator extends PodDomNode {
 
         for (String tag : tags) {
             builder.append(" <span class=\"doc-export-tag\">");
-            builder.append(StringEscapeUtils.escapeHtml(tag));
+            builder.append(Perl6Utils.escapeHTML(tag));
             builder.append("</span>");
         }
     }

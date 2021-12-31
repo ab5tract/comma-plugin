@@ -1,9 +1,8 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <xi:include href="/META-INF/PlatformLangPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/XmlPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
-  <xi:include href="/META-INF/JsonPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/SpellCheckerPlugin.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/CommaCorePluginCommon.xml" xpointer="xpointer(/idea-plugin/*)"/>
-  <xi:include href="/META-INF/RemoteServers.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/intellij.json.xml" xpointer="xpointer(/idea-plugin/*)"/>
 </idea-plugin>
