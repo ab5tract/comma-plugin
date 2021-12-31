@@ -3475,6 +3475,7 @@ grammar MAIN {
                <.quote_nibbler>
                [<.start-token('STRING_LITERAL_QUOTE_CLOSE')> <.stopper> <.end-token('STRING_LITERAL_QUOTE_CLOSE')>]?
             || <.quote_escape>
+            || <.start-token('STRING_LITERAL_CHAR')> <.alpha>+ <.end-token('STRING_LITERAL_CHAR')>
             || <.start-token('STRING_LITERAL_CHAR')> . <.end-token('STRING_LITERAL_CHAR')>
             ]
         ]*
