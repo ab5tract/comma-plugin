@@ -10,13 +10,13 @@ import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.psi.symbols.Perl6VariantsSymbolCollector;
 import edument.perl6idea.psi.type.Perl6Type;
-import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
     static final String[] ROUTINE_DEFAULT_TRAITS = new String[]{
@@ -79,7 +79,7 @@ public class Perl6IsTraitReference extends PsiReferenceBase<Perl6PsiElement> {
         else if (owner instanceof Perl6RoutineDecl) {
             List<Object> options = new ArrayList<>();
             gatherExternalTraits(options, "Routine");
-            return ArrayUtils.addAll(options.toArray(), ROUTINE_DEFAULT_TRAITS);
+            return Stream.concat(options.stream(), Arrays.stream(ROUTINE_DEFAULT_TRAITS)).toArray();
         }
         else if (owner instanceof Perl6RegexDecl) {
             List<Object> traits = new ArrayList<>(Arrays.asList(REGEX_DEFAULT_TRAITS));

@@ -3,7 +3,6 @@ package edument.perl6idea.psi;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.type.Perl6Type;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -106,7 +105,24 @@ public interface Perl6Signature extends Perl6PsiElement {
     }
 
     default String prepareParamName(String variableName) {
-        return StringUtils.stripEnd(StringUtils.stripStart(variableName, ":$@%&"), "?!");
+        int start = 0, end = 0;
+        for (int i = 0; i < variableName.length(); i++) {
+            if (variableName.charAt(i) == ':' ||
+                variableName.charAt(i) == '$' ||
+                variableName.charAt(i) == '@' ||
+                variableName.charAt(i) == '%' ||
+                variableName.charAt(i) == '&') {
+                start = i + 1;
+            }
+            else if (variableName.charAt(i) == '?' || variableName.charAt(i) == '!') {
+                end = i;
+                break;
+            }
+            else {
+                end = i;
+            }
+        }
+        return variableName.substring(start, end + 1);
     }
 
     default int eatPositionalSlurpy(List<PsiElement> arguments,

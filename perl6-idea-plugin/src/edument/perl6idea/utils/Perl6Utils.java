@@ -91,6 +91,16 @@ public class Perl6Utils {
 
     public static String escapeHTML(String str) {
         return str.chars().mapToObj(c -> c > 127 || "\"'<>&".indexOf(c) != -1 ?
-                                         "&#" + c + ";" : String.valueOf((char) c)).collect(Collectors.joining());
+                                         "&" + htmlReplace(c) + ";" : String.valueOf((char) c)).collect(Collectors.joining());
+    }
+
+    private static String htmlReplace(int c) {
+        if (c == 62)
+            return "gt";
+        if (c == 60)
+            return "lt";
+        if (c == 38)
+            return "amp";
+        return String.valueOf(c);
     }
 }
