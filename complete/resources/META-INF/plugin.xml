@@ -32,13 +32,13 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Add a way to run Raku programs and collect heap snapshots (available on the <code>Run</code> menu),
-and provide a viewer for the results, allowing one to see whether the heap grows over
-snapshots, and to search and navigate the object graph. This requires a MoarVM built with
-version 3 of the heap snapshot format.</li>
-<li>Fix an exception in duplicate declaration highlighting</li>
-<li>Fix a false positive case in the bogus assignment annotator</li>
-<li>Fix incorrect annotation of a hyphen character at the start of a regex character class</li>
+<li>Migrate to the 2021.3 version of the IntelliJ platform</li>
+<li>Double click on a word in a string literal now selects the whole word</li>
+<li>Improve stability of running tests for some edge cases</li>
+<li>Improve behaviour of the &quot;Import or Open&quot; button on the Welcome screen</li>
+<li>Fix some edge cases of a directory with module files move not being reflected properly in the META6.json file</li>
+<li>A prompt suggesting to install missing Raku distributions can be dismissed now</li>
+<li>Fix labels&#39; text on the heap overview panel</li>
 </ul>
   ]]>
   </change-notes>
