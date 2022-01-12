@@ -93,5 +93,6 @@
     </orderEntry>
     <orderEntry type="module" module-name="intellij.platform.ide.util.io" />
     <orderEntry type="module" module-name="intellij.platform.codeStyle.impl" />
+    <orderEntry type="module" module-name="intellij.idea.community.build.tasks" />
   </component>
 </module>
