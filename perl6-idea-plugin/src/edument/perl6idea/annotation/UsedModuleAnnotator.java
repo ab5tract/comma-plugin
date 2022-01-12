@@ -73,6 +73,13 @@ public class UsedModuleAnnotator implements Annotator {
         dependencies.addAll(metaData.getBuildDepends(true));
         for (String dependency : dependencies) {
             Set<String> providesOfDependency = Perl6ModuleListFetcher.getProvidesByModule(project, dependency, new HashSet<>());
+            // Maybe it is a part of the distribution, and we can get something out its parent distribution
+            if (providesOfDependency.isEmpty()) {
+                String parentModuleName = Perl6ModuleListFetcher.getModuleByProvide(project, dependency);
+                if (parentModuleName != null) {
+                    providesOfDependency = Perl6ModuleListFetcher.getProvidesByModule(project, parentModuleName, new HashSet<>());
+                }
+            }
             // If a module is in dependencies list, do nothing
             if (providesOfDependency.contains(moduleName))
                 return;
