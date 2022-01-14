@@ -14,6 +14,7 @@ import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.parsing.Perl6ElementTypes;
+import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -109,7 +110,8 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
         rules.add((left, right) -> CLOSERS.contains(right.getNode().getElementType()) ? EMPTY_SPACING : null);
 
         // Comma operator, a space after one if it's not a dangling one
-        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.INFIX && left.getNode().getText().equals(",")
+        rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.INFIX && left.getNode().getText().equals(",") &&
+                                   right.getNode().getElementType() != METAOP
                                    ? ((isDanglingComma(left.getNode().getTreeNext())
                                        ? EMPTY_SPACING
                                        : customSettings.AFTER_COMMA ? SINGLE_SPACE_SPACING : CONSTANT_EMPTY_SPACING)) : null);
