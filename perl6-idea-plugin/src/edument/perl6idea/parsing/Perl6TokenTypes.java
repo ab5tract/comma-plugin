@@ -167,6 +167,7 @@ public interface Perl6TokenTypes {
     IElementType STRING_LITERAL_QUOTE_CLOSE = new Perl6ElementType("STRING_LITERAL_QUOTE_CLOSE");
     IElementType STRING_LITERAL_QUOTE_OPEN = new Perl6ElementType("STRING_LITERAL_QUOTE_OPEN");
     IElementType STRING_LITERAL_QUOTE_SYNTAX = new Perl6ElementType("STRING_LITERAL_QUOTE_SYNTAX");
+    IElementType STRING_LITERAL_REQUOTE_ESCAPE = new Perl6ElementType("STRING_LITERAL_REQUOTE_ESCAPE");
     IElementType STUB_CODE = new Perl6ElementType("STUB_CODE");
     IElementType SUBSET_ANON = new Perl6ElementType("SUBSET_ANON");
     IElementType SUBSET_INCOMPLETE = new Perl6ElementType("SUBSET_INCOMPLETE");

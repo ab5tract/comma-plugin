@@ -3542,6 +3542,11 @@ grammar MAIN {
            <.start-token('STRING_LITERAL_ESCAPE')>
            '\\' \W
            <.end-token('STRING_LITERAL_ESCAPE')>
+        || <?before '\\' 'q'> [<?{ $*Q_QBACKSLASH }> || <?{ $*Q_QQBACKSLASH }>]
+           <.start-token('STRING_LITERAL_REQUOTE_ESCAPE')>
+           '\\'
+           <.end-token('STRING_LITERAL_REQUOTE_ESCAPE')>
+           <.quote>?
         || <?[\\]> <?{ $*Q_QQBACKSLASH }>
            <.start-token('BAD_ESCAPE')> '\\' \w <.end-token('BAD_ESCAPE')>
         || <?[\\]> <?{ $*Q_QBACKSLASH }>
