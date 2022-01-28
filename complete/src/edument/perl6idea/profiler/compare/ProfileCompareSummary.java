@@ -18,9 +18,13 @@ public class ProfileCompareSummary extends ProfileCompareDataProvider {
     }
 
     private final Statement stmt;
+    private final String leftName;
+    private final String rightName;
 
-    public ProfileCompareSummary(Statement stmt) {
+    public ProfileCompareSummary(Statement stmt, String leftName, String rightName) {
         this.stmt = stmt;
+        this.leftName = leftName;
+        this.rightName = rightName;
     }
 
     @Override
@@ -93,6 +97,6 @@ public class ProfileCompareSummary extends ProfileCompareDataProvider {
     );
 
     public void addTabs(ProfileCompareProcessor.ProfileCompareResults results) {
-        results.addTab(new ProfileCompareTab("Summary", TAB_SUMMARY, this, SingleRowCompareFormatter.INSTANCE));
+        results.addTab(new ProfileCompareTab("Summary", TAB_SUMMARY, this, new SingleRowCompareFormatter(this.leftName, this.rightName)));
     }
 }

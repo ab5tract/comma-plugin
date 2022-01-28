@@ -1,6 +1,5 @@
 package edument.perl6idea.profiler.compare;
 
-import com.intellij.openapi.util.Pair;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.utils.Perl6Utils;
 
@@ -19,13 +18,17 @@ public class ProfileCompareGCs extends ProfileCompareDataProvider {
     }
 
     private final Statement stmt;
+    private final String leftName;
+    private final String rightName;
 
-    ProfileCompareGCs(Statement stmt) {
+    ProfileCompareGCs(Statement stmt, String leftName, String rightName) {
         this.stmt = stmt;
+        this.leftName = leftName;
+        this.rightName = rightName;
     }
 
     public void addTabs(ProfileCompareProcessor.ProfileCompareResults results) {
-        results.addTab(new ProfileCompareTab("GC", TAB_GC, this, SingleRowCompareFormatter.INSTANCE));
+        results.addTab(new ProfileCompareTab("GC", TAB_GC, this, new SingleRowCompareFormatter(leftName, rightName)));
     }
 
     public static final List<ProfileCompareProcessor.ProfileCompareColumn> TAB_GC = ContainerUtil.immutableList(

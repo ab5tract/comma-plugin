@@ -94,18 +94,16 @@ public class ProfileCompareProcessor {
         ProfileCompareResults results;
 
         try {
-            System.out.println(myData[0].getFileName());
-            System.out.println(myData[1].getFileName());
             Statement stmt = connection.createStatement();
             stmt.execute("ATTACH DATABASE '" + myData[0].getFileName() + "' as db1");
             stmt.execute("ATTACH DATABASE '" + myData[1].getFileName() + "' as db2");
             stmt.close();
 
             results = new ProfileCompareResults();
-            ProfileCompareSummary compareSummary = new ProfileCompareSummary(connection.createStatement());
+            ProfileCompareSummary compareSummary = new ProfileCompareSummary(connection.createStatement(), myData[0].getName(), myData[1].getName());
             ProfileCompareCalls compareCalls = new ProfileCompareCalls(connection.createStatement());
             ProfileCompareTypes compareTypes = new ProfileCompareTypes(connection.createStatement());
-            ProfileCompareGCs compareGCs = new ProfileCompareGCs(connection.createStatement());
+            ProfileCompareGCs compareGCs = new ProfileCompareGCs(connection.createStatement(), myData[0].getName(), myData[1].getName());
 
             compareSummary.addTabs(results);
             compareCalls.addTabs(results);

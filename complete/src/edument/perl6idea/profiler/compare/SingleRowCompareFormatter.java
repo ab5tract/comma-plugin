@@ -1,16 +1,17 @@
 package edument.perl6idea.profiler.compare;
 
-import com.intellij.openapi.util.Pair;
-
 import java.util.List;
 
 public class SingleRowCompareFormatter extends CompareFormatter {
-    public static final SingleRowCompareFormatter INSTANCE = new SingleRowCompareFormatter();
-    private static final Object[] TABLE_COLUMNS = new Object[] {
-        "Metric", "A", "B", "%"
-    };
+    private final String[] TABLE_COLUMNS;
 
-  @Override
+    public SingleRowCompareFormatter(String nameLeft, String nameRight) {
+        TABLE_COLUMNS = new String[] {
+            "Metric", nameLeft, nameRight, "%"
+        };
+    }
+
+    @Override
     public Object[][] format(List<ProfileCompareProcessor.ProfileCompareRow> rows, List<ProfileCompareProcessor.ProfileCompareColumn> columns) {
         Object[][] objects = new Object[columns.size()][4];
         ProfileCompareProcessor.ProfileCompareRow fst = rows.get(0);

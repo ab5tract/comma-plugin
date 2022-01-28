@@ -46,7 +46,7 @@ public class ProfileCompareCalls extends ProfileCompareDataProvider {
         new ProfileCompareProcessor.ProfileCompareColumn("Deopt: All", "deopt_all")
     );
 
-    private static String[] METRICS = new String[]{
+    private static final String[] METRICS = new String[]{
         "spesh_entries",
         "jit_entries",
         "inlined_entries",

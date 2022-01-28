@@ -3,10 +3,7 @@ package edument.perl6idea.profiler;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -43,7 +40,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
     public ProfileResultsChooserDialog(Project project) {
         super(project, true);
         myProject = project;
-        myDataManager = project.getComponent(Perl6ProfileDataManager.class);
+        myDataManager = project.getService(Perl6ProfileDataManager.class);
 
         myProfilesTableModel = new ListTableModel<>(new ColumnInfo<Perl6ProfileData, String>("Profile Name") {
             @Override
@@ -108,7 +105,9 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(new DeleteSelectedAction());
         group.add(new CompareSelectedAction());
-        return ActionManager.getInstance().createActionToolbar("Perl6ProfileResultsChooser", group, true).getComponent();
+        ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("Perl6ProfileResultsChooser", group, true);
+        toolbar.setTargetComponent(myProfilesTable);
+        return toolbar.getComponent();
     }
 
     @Override

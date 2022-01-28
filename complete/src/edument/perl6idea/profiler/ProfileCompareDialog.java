@@ -13,6 +13,7 @@ import com.intellij.ui.table.JBTable;
 import edument.perl6idea.profiler.compare.ProfileCompareProcessor;
 import edument.perl6idea.profiler.compare.ProfileCompareTab;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
+import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,12 +30,16 @@ import java.util.regex.Pattern;
 public class ProfileCompareDialog extends DialogWrapper {
     private final static Logger LOG = Logger.getInstance(ProfileCompareDialog.class);
     private final ProfileCompareProcessor.ProfileCompareResults myResults;
+    private final String leftName;
+    private final String rightName;
 
     public ProfileCompareDialog(Project project,
                                 Perl6ProfileData[] profiles,
                                 ProfileCompareProcessor.ProfileCompareResults results) {
         super(project, true);
         myResults = results;
+        leftName = profiles[0].getName();
+        rightName = profiles[1].getName();
         setTitle("Comparing " + profiles[0].getName() + " (A) with " + profiles[1].getName() + " (B)");
         init();
     }
@@ -62,7 +67,11 @@ public class ProfileCompareDialog extends DialogWrapper {
         }
 
         tabbedPane.setPreferredSize(new Dimension(600, 800));
-        return tabbedPane;
+        JPanel panel = new JPanel(new MigLayout());
+        panel.add(new JLabel("A: " + leftName), "wrap");
+        panel.add(new JLabel("B: " + rightName), "wrap");
+        panel.add(new JBScrollPane(tabbedPane), "grow, push");
+        return panel;
     }
 
     @NotNull
