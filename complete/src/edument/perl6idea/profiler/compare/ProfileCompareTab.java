@@ -1,8 +1,5 @@
 package edument.perl6idea.profiler.compare;
 
-import com.intellij.openapi.util.Pair;
-import com.intellij.util.containers.ContainerUtil;
-
 import java.util.List;
 import java.util.function.Consumer;
 

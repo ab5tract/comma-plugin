@@ -15,40 +15,29 @@ public class ByNameCompareFormatter extends CompareFormatter {
 
     @Override
     public Object[][] format(List<ProfileCompareProcessor.ProfileCompareRow> rows, List<ProfileCompareProcessor.ProfileCompareColumn> columns) {
-          int skippedRows = 0;
-          int offset = getOffset();
-          Object[][] allData = new Object[rows.size()][offset + 3 * columns.size()];
+        int offset = getOffset();
+        Object[][] allData = new Object[rows.size()][offset + 3 * columns.size()];
 
-          // Add a row for every column for every row (C*R)
-          for (int i = 0; i < rows.size(); i++) {
-              ProfileCompareProcessor.ProfileCompareRow result = rows.get(i);
+        // Add a row for every column for every row (C*R)
+        for (int i = 0; i < rows.size(); i++) {
+            ProfileCompareProcessor.ProfileCompareRow result = rows.get(i);
 
-              // Only display both names if they might be different
-              allData[i][0] = orAnon(result.myLftName);
-              if (bothNames) {
-                  allData[i][1] = orAnon(result.myRgtName);
-              }
+            // Only display both names if they might be different
+            allData[i][0] = orAnon(result.myLftName);
+            if (bothNames) {
+                allData[i][1] = orAnon(result.myRgtName);
+            }
 
-              if (isRowEmpty(result, columns)) {
-                  skippedRows++;
-                  continue;
-              }
+            for (int j = 0; j < columns.size(); j++) {
+                ProfileCompareProcessor.ProfileCompareColumn column = columns.get(j);
+                ProfileCompareProcessor.ProfileMetricValue metricData = result.myMetrics.get(column.key);
+                allData[i][offset + j * 3] = column.format(metricData.first);
+                allData[i][offset + 1 + j * 3] = column.format(metricData.second);
+                allData[i][offset + 2 + j * 3] = diff(metricData);
+            }
+        }
 
-              for (int j = 0; j < columns.size(); j++) {
-                  ProfileCompareProcessor.ProfileCompareColumn column = columns.get(j);
-                  ProfileCompareProcessor.ProfileMetricValue metricData = result.myMetrics.get(column.key);
-                  allData[i][offset + j * 3] = column.format(metricData.first);
-                  allData[i][offset + 1 + j * 3] = column.format(metricData.second);
-                  allData[i][offset + 2 + j * 3] = diff(metricData);
-              }
-          }
-
-          // Remove the skipped rows (empty in `allData`)
-          int rowsLeft = rows.size() - skippedRows;
-          Object[][] data = new Object[rowsLeft][offset + 3 * columns.size()];
-          System.arraycopy(allData, 0, data, 0, rowsLeft);
-
-          return data;
+        return allData;
     }
 
     // Skip rows for which all the (used) values are 0 on both sides
