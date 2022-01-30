@@ -1,6 +1,5 @@
 package edument.perl6idea.profiler.compare;
 
-import com.intellij.openapi.util.Pair;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.utils.Perl6Utils;
 import org.jetbrains.annotations.NotNull;
