@@ -70,7 +70,7 @@ public class ProfileCompareDialog extends DialogWrapper {
         JPanel panel = new JPanel(new MigLayout());
         panel.add(new JLabel("A: " + leftName), "wrap");
         panel.add(new JLabel("B: " + rightName), "wrap");
-        panel.add(new JBScrollPane(tabbedPane), "grow, push");
+        panel.add(tabbedPane, "grow, push");
         return panel;
     }
 
