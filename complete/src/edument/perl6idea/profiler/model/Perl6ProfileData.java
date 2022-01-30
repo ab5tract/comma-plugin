@@ -1,6 +1,5 @@
 package edument.perl6idea.profiler.model;
 
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
@@ -85,7 +84,7 @@ public class Perl6ProfileData {
             return;
 
         if (!isImported) {
-            Perl6ProfileDataManager manager = myProject.getComponent(Perl6ProfileDataManager.class);
+            Perl6ProfileDataManager manager = myProject.getService(Perl6ProfileDataManager.class);
             if (manager != null) {
                 manager.saveProfileResult(this);
             }
