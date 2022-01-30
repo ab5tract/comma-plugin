@@ -24,6 +24,7 @@ graded AS (
 
 -- Matches types that are unique by name. Types that aren't are discarded.
 matches AS (
+  SELECT lft, rgt, name FROM (
   SELECT lft.id AS lft, rgt.id AS rgt, lft.name AS name
   FROM graded lft
   LEFT JOIN graded rgt
@@ -32,6 +33,16 @@ matches AS (
     AND lft.name = rgt.name
   WHERE lft.db = 1
   AND lft.count_by_name = 1
+  UNION ALL
+  SELECT lft.id AS lft, rgt.id AS rgt, rgt.name AS name
+  FROM graded rgt
+  LEFT JOIN graded lft
+    ON lft.db = 1
+    AND rgt.count_by_name = 1
+	AND lft.name = NULL
+  WHERE rgt.db = 2
+  AND rgt.count_by_name = 1
+  ) GROUP BY name
 ),
 
 -- Union all the allocations together so we have an easier time computing statistics
