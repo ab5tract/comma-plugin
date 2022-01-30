@@ -4,7 +4,6 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -160,7 +159,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
             int[] selectedData = myProfilesTable.getSelectedRows();
-            Perl6ProfileData[] profiles = {myProfilesTableModel.getItem(selectedData[0]), myProfilesTableModel.getItem(selectedData[1])};
+            Perl6ProfileData[] profiles = {myProfilesTableModel.getItem(selectedData[1]), myProfilesTableModel.getItem(selectedData[0])};
             try {
                 ProfileCompareProcessor.ProfileCompareResults results = new ProfileCompareProcessor(profiles).process();
                 new ProfileCompareDialog(myProject, profiles, results).show();
