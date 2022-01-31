@@ -77,7 +77,6 @@
     <orderEntry type="module" module-name="intellij.platform.core.ui" />
     <orderEntry type="library" name="Trove4j" level="project" />
     <orderEntry type="library" name="Trove4j" level="project" />
-    <orderEntry type="module" module-name="intellij.java.remoteServers.impl" />
     <orderEntry type="library" name="jcef" level="project" />
     <orderEntry type="module" module-name="intellij.sh" />
     <orderEntry type="module-library">
@@ -94,5 +93,6 @@
     <orderEntry type="module" module-name="intellij.platform.ide.util.io" />
     <orderEntry type="module" module-name="intellij.platform.codeStyle.impl" />
     <orderEntry type="module" module-name="intellij.idea.community.build.tasks" />
+    <orderEntry type="module" module-name="intellij.platform.remoteServers.impl" scope="RUNTIME" />
   </component>
 </module>
