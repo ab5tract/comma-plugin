@@ -112,7 +112,9 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
     @Override
     protected @Nullable JComponent createCenterPanel() {
         JPanel result = new JPanel(new MigLayout());
-        result.add(new JLabel("<html>The last 10 profiles are retained by default.<br>Double-click on a profile to name it.<br>Named profiles will never be deleted automatically.</html>"),
+        result.add(new JLabel("<html>The last 10 profiles are retained by default.<br>Double-click on a profile to name it.<br>" +
+                              "Hold Ctrl to select two profiles to compare.<br>" +
+                              "Named profiles will never be deleted automatically.</html>"),
                    "wrap");
         JScrollPane pane = new JBScrollPane(myProfilesTable);
         result.add(pane, "growx, growy, pushx, pushy");

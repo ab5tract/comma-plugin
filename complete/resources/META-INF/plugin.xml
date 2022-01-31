@@ -420,7 +420,7 @@
       <separator/>
     </group>
     <action id="edument.perl6idea.actions.LoadProfileResultsAction" class="edument.perl6idea.actions.LoadProfileResultsAction"
-            text="Show Recent Raku Profiles..." description="Select and load one of the recent Raku profiling results snapshot from this project">
+            text="Show And Compare Recent Raku Profiles..." description="Select and load one of the recent Raku profiling results snapshot from this project or select two and compare">
       <add-to-group group-id="RunMenu"/>
     </action>
     <action id="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction" class="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction"
