@@ -3,22 +3,18 @@ package edument.perl6idea.profiler;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.PlatformIcons;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
+import edument.perl6idea.profiler.compare.ProfileCompareProcessor;
 import edument.perl6idea.profiler.model.Perl6ProfileData;
 import edument.perl6idea.profiler.run.Perl6ImportRunner;
 import edument.perl6idea.run.Perl6ProfileExecutor;
@@ -43,7 +39,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
     public ProfileResultsChooserDialog(Project project) {
         super(project, true);
         myProject = project;
-        myDataManager = project.getComponent(Perl6ProfileDataManager.class);
+        myDataManager = project.getService(Perl6ProfileDataManager.class);
 
         myProfilesTableModel = new ListTableModel<>(new ColumnInfo<Perl6ProfileData, String>("Profile Name") {
             @Override
@@ -107,13 +103,18 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
     protected @Nullable JComponent createNorthPanel() {
         DefaultActionGroup group = new DefaultActionGroup();
         group.add(new DeleteSelectedAction());
-        return ActionManager.getInstance().createActionToolbar("Perl6ProfileResultsChooser", group, true).getComponent();
+        group.add(new CompareSelectedAction());
+        ActionToolbar toolbar = ActionManager.getInstance().createActionToolbar("Perl6ProfileResultsChooser", group, true);
+        toolbar.setTargetComponent(myProfilesTable);
+        return toolbar.getComponent();
     }
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
         JPanel result = new JPanel(new MigLayout());
-        result.add(new JLabel("<html>The last 10 profiles are retained by default.<br>Double-click on a profile to name it.<br>Named profiles will never be deleted automatically.</html>"),
+        result.add(new JLabel("<html>The last 10 profiles are retained by default.<br>Double-click on a profile to name it.<br>" +
+                              "Hold Ctrl to select two profiles to compare.<br>" +
+                              "Named profiles will never be deleted automatically.</html>"),
                    "wrap");
         JScrollPane pane = new JBScrollPane(myProfilesTable);
         result.add(pane, "growx, growy, pushx, pushy");
@@ -151,6 +152,27 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
         @Override
         public void update(@NotNull AnActionEvent e) {
             e.getPresentation().setEnabled(myProfilesTable.getSelectedRowCount() != 0);
+        }
+    }
+
+    private class CompareSelectedAction extends AnAction {
+        CompareSelectedAction() { super("Compare selected profiles (select two profiles)", "Compare selected profile results", PlatformIcons.CHECK_ICON); }
+
+        @Override
+        public void actionPerformed(@NotNull AnActionEvent e) {
+            int[] selectedData = myProfilesTable.getSelectedRows();
+            Perl6ProfileData[] profiles = {myProfilesTableModel.getItem(selectedData[1]), myProfilesTableModel.getItem(selectedData[0])};
+            try {
+                ProfileCompareProcessor.ProfileCompareResults results = new ProfileCompareProcessor(profiles).process();
+                new ProfileCompareDialog(myProject, profiles, results).show();
+            } catch (SQLException | IOException ex) {
+                Messages.showErrorDialog(myProject, "Could not compare profiles: " + ex.getMessage(), "Profile Comparison Failed");
+            }
+        }
+
+        @Override
+        public void update(@NotNull AnActionEvent e) {
+            e.getPresentation().setEnabled(myProfilesTable.getSelectedRows().length == 2);
         }
     }
 }

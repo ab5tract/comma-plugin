@@ -1,6 +1,5 @@
 package edument.perl6idea.profiler.model;
 
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
@@ -65,14 +64,19 @@ public class Perl6ProfileData {
             myDbPath = filePath.toString();
             return DriverManager.getConnection("jdbc:sqlite:" + filePath);
         } catch (IOException ex) {
-            throw new IOException("Could not create a temporary database: " + ex.getMessage());
+            throw new IOException("Cannot create temporary database", ex);
         }
     }
 
     private Connection createNewDBConnection(Path dbPath) throws SQLException {
-        isInitialized.compareAndSet(false, true);
-        myDbPath = dbPath.toString();
-        return DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+        try {
+            isInitialized.set(true);
+            myDbPath = dbPath.toString();
+            return DriverManager.getConnection("jdbc:sqlite:" + dbPath);
+        } catch (SQLException ex) {
+            isInitialized.set(false);
+            throw ex;
+        }
     }
 
     public void initialize() throws IOException, SQLException {
@@ -80,7 +84,7 @@ public class Perl6ProfileData {
             return;
 
         if (!isImported) {
-            Perl6ProfileDataManager manager = myProject.getComponent(Perl6ProfileDataManager.class);
+            Perl6ProfileDataManager manager = myProject.getService(Perl6ProfileDataManager.class);
             if (manager != null) {
                 manager.saveProfileResult(this);
             }
