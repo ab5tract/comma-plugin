@@ -32,13 +32,11 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Migrate to the 2021.3 version of the IntelliJ platform</li>
-<li>Double click on a word in a string literal now selects the whole word</li>
-<li>Improve stability of running tests for some edge cases</li>
-<li>Improve behaviour of the &quot;Import or Open&quot; button on the Welcome screen</li>
-<li>Fix some edge cases of a directory with module files move not being reflected properly in the META6.json file</li>
-<li>A prompt suggesting to install missing Raku distributions can be dismissed now</li>
-<li>Fix labels&#39; text on the heap overview panel</li>
+<li>Add a profile comparison feature; after recording two profiles, they can be selected and a comparison calculated between them (for example, differences in numbers of GC runs, allocations, call counts, time spent, etc.)</li>
+<li>Fix a compatibility issue with the Docker plugin</li>
+<li>Correctly parse and highlight the <code>qq</code> escape sequence in strings</li>
+<li>Fix a bug when dependencies specified as single modules of a distribution were not recognized as implying whole distributions</li>
+<li>Fix a bug when the code formatter produced incorrect code by splitting the <code>,=</code> combined operator with a space</li>
 </ul>
   ]]>
   </change-notes>
