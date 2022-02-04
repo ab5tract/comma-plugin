@@ -11,13 +11,12 @@ of the platform used (see above for the current version).
 Do the following steps inside a work-related directory, for example, `comma`.
 * `git clone https://github.com/edumentab/intellij-community.git`
 * `cd intellij-community`
-* `git checkout comma-203.7148`
+* `git checkout comma-213.5744`
 * Start with steps from `intellij-community` repo [README](https://github.com/JetBrains/intellij-community/#opening-the-intellij-source-code-for-build): creating `IDEA jdk` JDK and setting it to the project, running `getPlugins.sh` script.
 * `git clone https://github.com/edumentab/perl6-idea-plugin.git comma-build` (so the structure is `intellij-community/comma-build`)
 * Make sure revisions of android-related repos are fresh enough for the IDEA checkout:
-  * `cd android; git checkout idea/203.7148.57`
-  * `cd tools-base; git checkout idea/201.7223.18`
-  * `cd ../..`
+  * `cd android; git checkout idea/212.3116.43`
+  * `cd ..`
 * Start IDEA instance, open existing project from `intellij-community` directory. Make sure you are using correct IDEA version.
 * An `Unregistered VCS root detected` for `comma-bulid` will appear - let IDEA add this root.
 * At this point, `json` and`tap4j` dependencies may be missing.
