@@ -2,8 +2,8 @@
 
 #### Preparation
 
-Currently, Comma is based upon 203 Intellij revision/branch.
-Raku Comma plugin supports versions starting revision 203 (2020.03).
+Currently, Comma is based upon 213 Intellij revision/branch.
+Raku Comma plugin supports versions starting revision 213 (2021.03).
 
 To develop Comma, version of IDEA you use **must** correspond to version
 of the platform used (see above for the current version).
