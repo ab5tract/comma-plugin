@@ -148,6 +148,7 @@ grammar MAIN {
         || <.sigil-tag-body>
         || <.sigil-tag-apply>
         || <.sigil-tag-part>
+        || <.sigil-tag-separator>
         || <.sigil-tag-use>
     }
 
@@ -392,7 +393,7 @@ grammar MAIN {
                         <.decl-sigil>
                         [
                             <.start-token('DECL_OPENER')>
-                            'sub'
+                            'part'
                             <.end-token('DECL_OPENER')>
                         ]?
                         <.tgt>?
@@ -416,6 +417,36 @@ grammar MAIN {
             [ [<.single-quote-string> || <.module-name>] <.hws>? <.tgt>? ]?
         ]?
         <.end-element('USE')>
+    }
+
+    token sigil-tag-separator {
+        <?before '<:separator'>
+        <.start-element('SEPARATOR')>
+        <.tlt>
+        <.decl-sigil>
+        <.start-token('DECL_OPENER')>
+        'separator'
+        <.end-token('DECL_OPENER')>
+        [
+            <.hws>?
+            [
+                <.tgt>
+                <.sequence-element-group>
+                [
+                    <?before '</:'>
+                    <.tlt>
+                    <.tclose>
+                    <.decl-sigil>
+                    [
+                        <.start-token('DECL_OPENER')>
+                        'separator'
+                        <.end-token('DECL_OPENER')>
+                    ]?
+                    <.tgt>?
+                ]?
+            ]?
+        ]?
+        <.end-element('SEPARATOR')>
     }
 
     token module-name {
