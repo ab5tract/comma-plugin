@@ -577,7 +577,7 @@ my $new-param-API = so Parameter.^can('suffix');
 # Collect archetypes first
 pack-package(@EXTERNAL_COMMA_ELEMS, 'EXPORTHOW', CORE::EXPORTHOW);
 
-for CORE::.keys -> $_ {
+for CORE::.keys(:implementation-detail) -> $_ {
     # Ignore a few things.
     when 'EXPORTHOW'|'Rakudo' { }
     # Collect all top-level subs and EVAL.
