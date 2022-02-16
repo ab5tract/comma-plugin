@@ -76,7 +76,7 @@ public class Perl6VariableImpl extends ASTWrapperPsiElement implements Perl6Vari
         String oldVarName = getVariableName();
         if (oldVarName == null) return this;
         // If this variable derives from sub, it must have `&` prefix
-        String fixedName = oldVarName.startsWith("&") ? "&" + name : name;
+        String fixedName = oldVarName.startsWith("&") && !name.startsWith("&") ? "&" + name : name;
         // If this variable was public, but had `!` accessing before, preserve it
         fixedName = oldVarName.charAt(1) == '!' ? fixedName.replace('.', '!') : fixedName;
         return replace(Perl6ElementFactory.createVariable(getProject(), fixedName));
