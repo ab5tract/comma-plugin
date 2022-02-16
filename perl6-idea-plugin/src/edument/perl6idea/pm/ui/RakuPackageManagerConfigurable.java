@@ -10,17 +10,15 @@ import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.pm.RakuPackageManager;
 import edument.perl6idea.pm.RakuPackageManagerKind;
 import edument.perl6idea.pm.RakuPackageManagerManager;
-import edument.perl6idea.pm.impl.RakuPakkuPM;
-import edument.perl6idea.pm.impl.RakuZefPM;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.*;
 
 public class RakuPackageManagerConfigurable implements UnnamedConfigurable {
     public static final EmptyPMItem EMPTY_PM_ITEM = new EmptyPMItem();

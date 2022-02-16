@@ -4,6 +4,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import edument.perl6idea.language.RakuLanguageVersionService;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderScript;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,8 +19,9 @@ public class NewScriptAction extends NewRakuFileAction<NewScriptDialog> {
         if (fileName == null)
             return;
 
+        RakuLanguageVersionService service = project.getService(RakuLanguageVersionService.class);
         scriptPath = Perl6ModuleBuilderScript.stubScript(
-          Paths.get(scriptPath), fileName, shouldFill);
+            Paths.get(scriptPath), fileName, shouldFill, service.getVersion());
         VirtualFile scriptFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(scriptPath);
         assert scriptFile != null;
         FileEditorManager.getInstance(project).openFile(scriptFile, true);

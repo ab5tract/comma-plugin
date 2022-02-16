@@ -25,6 +25,7 @@ public class Perl6ProjectConfigurable extends NamedConfigurable<Project> impleme
     private JTextField myProjectName;
     private Perl6ProjectSdkConfigurable myProjectSdkConfigurable;
     private RakuPackageManagerConfigurable myPackageManagerConfigurable;
+    private RakuLanguageVersionConfigurable myLanguageVersionConfigurable;
 
     public Perl6ProjectConfigurable(Project project, Perl6StructureConfigurableContext context,
                                     ProjectSdksModel model) {
@@ -46,11 +47,13 @@ public class Perl6ProjectConfigurable extends NamedConfigurable<Project> impleme
         myProjectSdkConfigurable = new Perl6ProjectSdkConfigurable(myProject, model);
         myPanel.add(myProjectSdkConfigurable.createComponent(), "shrink 0, wrap");
         myPackageManagerConfigurable = new RakuPackageManagerConfigurable(myProject);
-        myPanel.add(myPackageManagerConfigurable.createComponent(), "shrink 0");
+        myPanel.add(myPackageManagerConfigurable.createComponent(), "shrink 0, wrap");
+        myLanguageVersionConfigurable = new RakuLanguageVersionConfigurable(myProject);
+        myPanel.add(myLanguageVersionConfigurable.createComponent(), "shrink 0");
     }
 
     @Override
-    public void setDisplayName(String name) {}
+    public void setDisplayName(String name) { }
 
     @Override
     public Project getEditableObject() {
@@ -86,7 +89,8 @@ public class Perl6ProjectConfigurable extends NamedConfigurable<Project> impleme
     @Override
     public boolean isModified() {
         if (!getProjectName().equals(myProject.getName())) return true;
-        return myProjectSdkConfigurable.isModified() || myPackageManagerConfigurable.isModified();
+        return myProjectSdkConfigurable.isModified() || myPackageManagerConfigurable.isModified() ||
+               myLanguageVersionConfigurable.isModified();
     }
 
     @Override
@@ -95,6 +99,7 @@ public class Perl6ProjectConfigurable extends NamedConfigurable<Project> impleme
             myProjectName.setText(myProject.getName());
         myProjectSdkConfigurable.reset();
         myPackageManagerConfigurable.reset();
+        myLanguageVersionConfigurable.reset();
     }
 
     @Override
@@ -105,6 +110,7 @@ public class Perl6ProjectConfigurable extends NamedConfigurable<Project> impleme
         ApplicationManager.getApplication().runWriteAction(() -> {
             myProjectSdkConfigurable.apply();
             myPackageManagerConfigurable.apply();
+            myLanguageVersionConfigurable.apply();
             if (myProjectName != null) {
                 ((ProjectEx)myProject).setProjectName(getProjectName());
             }

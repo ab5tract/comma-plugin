@@ -18,6 +18,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
+import edument.perl6idea.language.RakuLanguageVersionService;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
 
@@ -77,9 +78,10 @@ public class NewModuleAction extends AnAction {
         String moduleName = dialog.getModuleName();
         String moduleType = dialog.getModuleType();
         boolean isUnitScoped = dialog.isUnitModule();
+        RakuLanguageVersionService langVersionService = project.getService(RakuLanguageVersionService.class);
         String modulePath = Perl6ModuleBuilderModule.stubModule(
             metaData, Paths.get(myBaseDir), moduleName, !metaData.isMetaDataExist(),
-            true, null, moduleType, isUnitScoped);
+            true, null, moduleType, isUnitScoped, langVersionService.getVersion());
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(modulePath).toFile());
         if (moduleFile != null) {
             OpenFileDescriptor descriptor = new OpenFileDescriptor(project, moduleFile);

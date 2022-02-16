@@ -1,10 +1,10 @@
 package edument.perl6idea.actions;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.Function;
 import edument.perl6idea.CommaFixtureTestCase;
+import edument.perl6idea.language.RakuLanguageVersion;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderScript;
 
@@ -18,7 +18,7 @@ import java.util.Collections;
 public class NewActionsTest extends CommaFixtureTestCase {
     public void testNewScriptAction() {
         Path basePath = Paths.get(getProject().getBasePath());
-        Perl6ModuleBuilderScript.stubScript(basePath, "test.p6", true);
+        Perl6ModuleBuilderScript.stubScript(basePath, "test.p6", true, RakuLanguageVersion.D);
         File path = basePath.resolve("test.p6").toFile();
         assertTrue(path.exists());
     }
