@@ -1368,4 +1368,9 @@ public class AnnotationTest extends CommaFixtureTestCase {
         );
         myFixture.checkHighlighting();
     }
+
+    public void testImplementationDetailUsage() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<warning descr=\"The '&dd' routine is implementation detail\">dd</warning> 42;");
+        myFixture.checkHighlighting();
+    }
 }

@@ -617,7 +617,8 @@ sub pack-code(Mu $code, Int $multiness, Str $name?, :$docs, :$is-method) {
     my $kind = $code.^name.comb.head.lc;
     my $deprecation = try { ~$code.DEPRECATED };
     my $pure = so try { so $code.?is-pure || $code.dispatcher.is-pure };
-    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness, |(:p if $pure),
+    my $impl-detail = so try { so $code.?is-implementation-detail };
+    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness, |(:p if $pure), |(:rakudo if $impl-detail),
        |(:d($_) with $docs), |(:x($_) with $deprecation));
 }
 

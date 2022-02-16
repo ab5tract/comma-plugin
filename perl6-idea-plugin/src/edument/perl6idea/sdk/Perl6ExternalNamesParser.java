@@ -78,6 +78,8 @@ public class Perl6ExternalNamesParser {
                             deprecationMessage, j.getJSONObject("s"), j.has("p"));
                         if (j.has("d"))
                             psi.setDocs(j.getString("d"));
+                        if (j.has("rakudo"))
+                            psi.setImplementationDetail(true);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, psi));
                         break;
                     }

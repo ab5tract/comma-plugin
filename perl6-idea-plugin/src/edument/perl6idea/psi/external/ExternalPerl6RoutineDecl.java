@@ -26,6 +26,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     private final Perl6Signature mySignature;
     private final String myDeprecationMessage;
     private final boolean myIsPure;
+    private boolean myIsImplementationDetail;
 
     public ExternalPerl6RoutineDecl(Project project, PsiElement parent,
                                     String kind, String scope, String name,
@@ -44,6 +45,7 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
             myReturnType = myReturnType.substring(0, myReturnType.length() - 2);
         }
         myIsPure = isPure;
+        myIsImplementationDetail = false;
     }
 
     @Override
@@ -192,5 +194,13 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
     @Override
     public boolean isPure() {
         return myIsPure;
+    }
+
+    public void setImplementationDetail(boolean flag) {
+        myIsImplementationDetail = flag;
+    }
+
+    public boolean isImplementationDetail() {
+        return myIsImplementationDetail;
     }
 }
