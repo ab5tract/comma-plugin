@@ -10,6 +10,8 @@ class Foo {
 
   #| m
   method m(Int $foo) {} #= m
+
+  method impl is implementation-detail {}
 }
 
 #| subset 1

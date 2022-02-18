@@ -41,6 +41,9 @@ subtest {
     ok $variable<n> eq '$test-variable';
     ok $variable<k> eq 'v';
     ok $variable<t> eq 'Any';
+
+    my $class = $data.first(*.<n> eq 'Foo');
+    ok $class eqv ${:a($[{:d("one\none"), :k("v"), :n("\$.one"), :t("Mu")},]), :b("A"), :d("Zero line. First line. Second line. Foo"), :k("c"), :m($[{:d("m\nm"), :k("m"), :m(0), :n("m"), :s(${:p($[{:n("\$foo"), :t("Int")}, {:n("*\%_"), :nn($[]), :t("Mu")}]), :r("Mu")})}, {:k("m"), :m(0), :n("impl"), :rakudo(Bool::True), :s(${:p($[{:n("*\%_"), :nn($[]), :t("Mu")},]), :r("Mu")})}, {:k("m"), :m(0), :n("one"), :s(${:p($[{:n("*\%_"), :nn($[]), :t("Mu")},]), :r("Mu")})}, {:k("s"), :m(0), :n("BUILDALL"), :s(${:p($[{:n("\@auto"), :t("Any")}, {:n("\%init"), :t("Any")}, {:n("*\%_"), :nn($[]), :t("Mu")}]), :r("Mu")})}]), :mro($["Any"]), :n("Foo"), :t("Foo")};
 }
 
 done-testing;

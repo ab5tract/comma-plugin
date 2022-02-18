@@ -129,7 +129,7 @@ public class Perl6ExternalNamesParser {
             psi.setDocs(j.getString("d"));
 
         List<Perl6RoutineDecl> routines = new ArrayList<>();
-        if (j.has("m"))
+        if (j.has("m") && j.get("m") instanceof JSONArray)
             for (Object routine : j.getJSONArray("m"))
                 if (routine instanceof JSONObject) {
                     JSONObject routineJson = (JSONObject)routine;
@@ -143,6 +143,8 @@ public class Perl6ExternalNamesParser {
                         deprecationMessage, signature, routineJson.has("p"));
                     if (routineJson.has("d"))
                         routineDecl.setDocs(routineJson.getString("d"));
+                    if (routineJson.has("rakudo"))
+                        routineDecl.setImplementationDetail(true);
                     routines.add(routineDecl);
                 }
 

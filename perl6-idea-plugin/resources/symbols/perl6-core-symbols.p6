@@ -669,7 +669,11 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     } else {
         try @privates = object.^private_method_table.values;
     }
-    try for object.^methods(:local) -> $method {
+
+    my @methods = (try object.^methods(:local, :implementation-detail)) // try object.^methods(:local);
+
+    try for @methods -> $method {
+        next without $method;
         if $kind eq 'mm' {
             %class<m>.push: pack-code($method, 0, '^'~ $method.name, :is-method) unless $method.name.starts-with('!');
         } elsif $method !~~ ForeignCode {
