@@ -73,11 +73,8 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         Perl6Variable var = Perl6ElementFactory.createVariable(getProject(), name);
         Perl6Variable variable = getVariable();
-        if (variable != null) {
-            ASTNode keyNode = variable.getNode();
-            ASTNode newKeyNode = var.getVariableToken().getNode();
-            getNode().replaceChild(keyNode, newKeyNode);
-        }
+        if (variable != null)
+            variable.replace(var);
         return this;
     }
 
