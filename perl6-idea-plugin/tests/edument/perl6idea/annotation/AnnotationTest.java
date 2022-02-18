@@ -1370,7 +1370,7 @@ public class AnnotationTest extends CommaFixtureTestCase {
     }
 
     public void testImplementationDetailUsage() {
-        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<warning descr=\"The '&dd' routine is implementation detail\">dd</warning> 42; my @a; @a<warning descr=\"The '&.FLATTENABLE_LIST' routine is implementation detail\">.FLATTENABLE_LIST</warning>;");
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<warning descr=\"The '&dd' routine is implementation detail\">dd</warning> 42; my @a; @a<warning descr=\"The '&.FLATTENABLE_LIST' method is implementation detail\">.FLATTENABLE_LIST</warning>;");
         myFixture.checkHighlighting();
     }
 }
