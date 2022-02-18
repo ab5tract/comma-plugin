@@ -196,6 +196,8 @@ public class RenameTest extends CommaFixtureTestCase {
 
     public void testAttributeWithHyphenRename() {
         myFixture.configureByFile("AttrWithHyphen.pm6");
+        myFixture.renameElementAtCaret("&.some-co");
+        myFixture.getEditor().getCaretModel().moveToOffset(21);
         myFixture.renameElementAtCaret("&.some-code");
         myFixture.checkResultByFile("AttrWithHyphenAfter.pm6");
     }
