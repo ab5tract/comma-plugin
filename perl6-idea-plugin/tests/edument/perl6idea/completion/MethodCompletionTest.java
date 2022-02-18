@@ -537,7 +537,7 @@ public class MethodCompletionTest extends CommaFixtureTestCase {
     }
 
     public void testAccessorsPrivacy2() {
-        doTestNotContainsAll("class A { has $.test; my class B { method a { self.te<caret> } } }", ".test");
+        doTestNotContainsAll("class A { has $.test; my class B { method a { self.tes<caret> } } }", ".test");
     }
 
     public void testReturnTypeBasedExternal() {
