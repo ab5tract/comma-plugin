@@ -1,6 +1,7 @@
 package edument.perl6idea.annotation;
 
 import edument.perl6idea.CommaFixtureTestCase;
+import edument.perl6idea.cro.template.CroTemplateFileType;
 import edument.perl6idea.filetypes.Perl6ScriptFileType;
 
 public class AnnotationTest extends CommaFixtureTestCase {

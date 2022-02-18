@@ -35,6 +35,7 @@ public interface CroTemplateElementTypes {
     IElementType PARAMETER_DEFAULT = new CroTemplateElementType("PARAMETER_DEFAULT");
     IElementType PARENTHESIZED_EXPRESSION = new CroTemplateElementType("PARENTHESIZED_EXPRESSION");
     IElementType RAT_LITERAL = new CroTemplateElementType("RAT_LITERAL");
+    IElementType SEPARATOR = new CroTemplateElementType("SEPARATOR");
     IElementType SIGNATURE = new CroTemplateElementType("SIGNATURE");
     IElementType STRING_LITERAL = new CroTemplateElementType("STRING_LITERAL");
     IElementType TAG_SEQUENCE = new CroTemplateElementType("TAG_SEQUENCE");
