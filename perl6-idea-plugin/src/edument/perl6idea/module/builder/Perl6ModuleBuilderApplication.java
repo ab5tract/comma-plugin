@@ -35,7 +35,7 @@ public class Perl6ModuleBuilderApplication implements Perl6ModuleBuilderGeneric 
         } else if (Objects.equals(directoryName.toString(), "t")) {
             Perl6ModuleBuilderModule.stubTest(path,
                      "00-sanity.t",
-                         Collections.singletonList(myModuleName));
+                         Collections.singletonList(myModuleName), languageVersion);
         }
     }
 

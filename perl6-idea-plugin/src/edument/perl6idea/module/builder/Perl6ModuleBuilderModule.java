@@ -39,7 +39,7 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
                        false, languageVersion);
         } else if (Objects.equals(directoryName.toString(), "t")) {
             stubTest(path, "00-sanity.t",
-                     Collections.singletonList(myModuleName));
+                     Collections.singletonList(myModuleName), languageVersion);
         }
     }
 
@@ -75,7 +75,7 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
         }
         String modulePath = Paths.get(moduleLibraryPath.toString(), moduleName.split("::")) + "." + Perl6ModuleFileType.INSTANCE.getDefaultExtension();
         new File(modulePath).getParentFile().mkdirs();
-        List<String> code = getModuleCodeByType(moduleType, moduleName, isUnitScoped);
+        List<String> code = new ArrayList<>(getModuleCodeByType(moduleType, moduleName, isUnitScoped));
         if (languageVersion != null)
             code.add(0, String.format("use v%s;", languageVersion));
         Perl6Utils.writeCodeToPath(Paths.get(modulePath), code);
@@ -133,12 +133,16 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
         }
     }
 
-    public static String stubTest(Path testDirectoryPath, String fileName, List<String> imports) {
+    public static String stubTest(Path testDirectoryPath,
+                                  String fileName,
+                                  List<String> imports,
+                                  RakuLanguageVersion languageVersion) {
         Path testPath = testDirectoryPath.resolve(fileName);
         // If no extension, add default `.t`
         if (!fileName.contains("."))
             testPath = Paths.get(testDirectoryPath.toString(), fileName + "." + Perl6TestFileType.INSTANCE.getDefaultExtension());
         List<String> lines = new LinkedList<>();
+        lines.add(String.format("use v%s;", languageVersion));
         imports.forEach(i -> lines.add(String.format("use %s;", i)));
         lines.addAll(Arrays.asList("use Test;", "", "done-testing;"));
         Perl6Utils.writeCodeToPath(testPath, lines);

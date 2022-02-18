@@ -54,8 +54,8 @@ public class NewActionsTest extends CommaFixtureTestCase {
     public void testNewTestAction() {
         Project p = getProject();
         String basePath = p.getBasePath();
-        Perl6ModuleBuilderModule.stubTest(Paths.get(basePath, "t"), "10-sanity", Collections.emptyList());
-        Perl6ModuleBuilderModule.stubTest(Paths.get(basePath, "t"), "20-sanity.t", Collections.emptyList());
+        Perl6ModuleBuilderModule.stubTest(Paths.get(basePath, "t"), "10-sanity", Collections.emptyList(), RakuLanguageVersion.D);
+        Perl6ModuleBuilderModule.stubTest(Paths.get(basePath, "t"), "20-sanity.t", Collections.emptyList(), RakuLanguageVersion.D);
         assertTrue(Paths.get(basePath, "t", "10-sanity.t").toFile().exists());
         assertTrue(Paths.get(basePath, "t", "20-sanity.t").toFile().exists());
     }
