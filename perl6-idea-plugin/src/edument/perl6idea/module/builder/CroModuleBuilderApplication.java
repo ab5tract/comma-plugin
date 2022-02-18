@@ -9,6 +9,7 @@ import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import edument.perl6idea.language.RakuLanguageVersion;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.Perl6ModuleWizardStep;
 import edument.perl6idea.utils.Perl6Utils;
@@ -30,12 +31,14 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
     private boolean myTemplatingSupport;
 
     @Override
-    public void setupRootModelOfPath(@NotNull ModifiableRootModel model, Path path) {
+    public void setupRootModelOfPath(@NotNull ModifiableRootModel model,
+                                     Path path,
+                                     RakuLanguageVersion languageVersion) {
         Path directoryName = path.getFileName();
         CroAppTemplateConfig conf = new CroAppTemplateConfig(myModuleName, myWebsocketSupport, myTemplatingSupport);
         if (Objects.equals(directoryName.toString(), "lib")) {
             Perl6MetaDataComponent metaData = model.getModule().getService(Perl6MetaDataComponent.class);
-            stubRoutes(metaData, path, conf);
+            stubRoutes(metaData, path, conf, languageVersion);
         } else if (Objects.equals(directoryName.toString(), "t")) {
             stubCroTest(path, conf);
         } else {
@@ -59,7 +62,10 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         return new String[]{"lib", "t", ""};
     }
 
-    private static void stubRoutes(Perl6MetaDataComponent metaData, Path path, CroAppTemplateConfig conf) {
+    private static void stubRoutes(Perl6MetaDataComponent metaData,
+                                   Path path,
+                                   CroAppTemplateConfig conf,
+                                   RakuLanguageVersion languageVersion) {
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
         if (sourceRoot == null)
             return;
@@ -71,8 +77,8 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
 
             String modulePath = Perl6ModuleBuilderModule.stubModule(metaData, path,
                                                 conf.moduleName + "::Routes",
-                                                true, false, sourceRoot.getParent(),
-                                                "Empty", false);
+                                                                    true, false, sourceRoot.getParent(),
+                                                                    "Empty", false, languageVersion);
 
             VirtualFile routesFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(modulePath));
             if (routesFile == null)

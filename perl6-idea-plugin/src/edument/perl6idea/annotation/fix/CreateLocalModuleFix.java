@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.actions.NewModuleDialog;
+import edument.perl6idea.language.RakuLanguageVersionService;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.builder.Perl6ModuleBuilderModule;
 import edument.perl6idea.psi.Perl6ModuleName;
@@ -68,11 +69,12 @@ public class CreateLocalModuleFix implements IntentionAction {
         boolean isOk = dialog.showAndGet();
         if (!isOk) return;
 
+        RakuLanguageVersionService langVersionService = project.getService(RakuLanguageVersionService.class);
         String newModulePath = Perl6ModuleBuilderModule.stubModule(
             module.getService(Perl6MetaDataComponent.class),
             Paths.get(moduleLibraryPath),
             dialog.getModuleName(), false, true,
-            moduleLibraryRoot.getParent(), dialog.getModuleType(), false);
+            moduleLibraryRoot.getParent(), dialog.getModuleType(), false, langVersionService.getVersion());
         VirtualFile moduleFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(Paths.get(newModulePath).toFile());
 
         // If the user changed stubbed module name in form,

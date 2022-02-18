@@ -19,6 +19,8 @@ import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import edument.perl6idea.language.RakuLanguageVersion;
+import edument.perl6idea.language.RakuLanguageVersionService;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.builder.*;
 import edument.perl6idea.sdk.Perl6SdkType;
@@ -59,7 +61,14 @@ public class Perl6ModuleBuilder extends ModuleBuilder {
         List<Pair<String, String>> sourcePaths = myBuilder.getSourcePaths(getContentEntryPath());
         for (final Pair<String, String> sourcePathPair : sourcePaths) {
             Path sourcePath = addSourceRoot(contentEntry, sourcePathPair);
-            myBuilder.setupRootModelOfPath(model, sourcePath);
+            Project project = model.getProject();
+            RakuLanguageVersion prefix;
+            RakuLanguageVersionService langVersionService = project.getService(RakuLanguageVersionService.class);
+            if (langVersionService.getIsExplicit())
+                prefix = langVersionService.getVersion();
+            else
+                prefix = null;
+            myBuilder.setupRootModelOfPath(model, sourcePath, prefix);
         }
     }
 

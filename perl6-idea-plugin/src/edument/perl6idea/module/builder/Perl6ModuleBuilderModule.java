@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
 import edument.perl6idea.filetypes.Perl6TestFileType;
+import edument.perl6idea.language.RakuLanguageVersion;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.Perl6ModuleWizardStep;
 import edument.perl6idea.utils.Perl6Utils;
@@ -26,17 +27,19 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
     private String myModuleName;
 
     @Override
-    public void setupRootModelOfPath(@NotNull ModifiableRootModel model, Path path) {
+    public void setupRootModelOfPath(@NotNull ModifiableRootModel model,
+                                     Path path,
+                                     RakuLanguageVersion languageVersion) {
         Perl6MetaDataComponent metaData = model.getModule().getService(Perl6MetaDataComponent.class);
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
         Path directoryName = path.getFileName();
         if (Objects.equals(directoryName.toString(), "lib")) {
             stubModule(metaData, path, myModuleName, true,
                        false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty",
-                       false);
+                       false, languageVersion);
         } else if (Objects.equals(directoryName.toString(), "t")) {
             stubTest(path, "00-sanity.t",
-                     Collections.singletonList(myModuleName));
+                     Collections.singletonList(myModuleName), languageVersion);
         }
     }
 
@@ -50,9 +53,15 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
         return new String[]{"lib", "t"};
     }
 
-    public static String stubModule(Perl6MetaDataComponent metaData, Path moduleLibraryPath,
-                                    String moduleName, boolean firstModule, boolean shouldOpenEditor,
-                                    VirtualFile root, String moduleType, boolean isUnitScoped) {
+    public static String stubModule(Perl6MetaDataComponent metaData,
+                                    Path moduleLibraryPath,
+                                    String moduleName,
+                                    boolean firstModule,
+                                    boolean shouldOpenEditor,
+                                    VirtualFile root,
+                                    String moduleType,
+                                    boolean isUnitScoped,
+                                    RakuLanguageVersion languageVersion) {
         if (firstModule) {
             try {
                 metaData.createStubMetaFile(moduleName, root, shouldOpenEditor);
@@ -66,7 +75,10 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
         }
         String modulePath = Paths.get(moduleLibraryPath.toString(), moduleName.split("::")) + "." + Perl6ModuleFileType.INSTANCE.getDefaultExtension();
         new File(modulePath).getParentFile().mkdirs();
-        Perl6Utils.writeCodeToPath(Paths.get(modulePath), getModuleCodeByType(moduleType, moduleName, isUnitScoped));
+        List<String> code = new ArrayList<>(getModuleCodeByType(moduleType, moduleName, isUnitScoped));
+        if (languageVersion != null)
+            code.add(0, String.format("use v%s;", languageVersion));
+        Perl6Utils.writeCodeToPath(Paths.get(modulePath), code);
         if (moduleType.equals("Monitor")) {
             metaData.addDepends("OO::Monitors");
         }
@@ -76,7 +88,9 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
         return modulePath;
     }
 
-    private static List<String> getModuleCodeByType(String type, String name, boolean isUnitScoped) {
+    private static List<String> getModuleCodeByType(String type,
+                                                    String name,
+                                                    boolean isUnitScoped) {
         if (isUnitScoped) {
             String declText = String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name);
             switch (type) {
@@ -119,12 +133,16 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
         }
     }
 
-    public static String stubTest(Path testDirectoryPath, String fileName, List<String> imports) {
+    public static String stubTest(Path testDirectoryPath,
+                                  String fileName,
+                                  List<String> imports,
+                                  RakuLanguageVersion languageVersion) {
         Path testPath = testDirectoryPath.resolve(fileName);
         // If no extension, add default `.t`
         if (!fileName.contains("."))
             testPath = Paths.get(testDirectoryPath.toString(), fileName + "." + Perl6TestFileType.INSTANCE.getDefaultExtension());
         List<String> lines = new LinkedList<>();
+        lines.add(String.format("use v%s;", languageVersion));
         imports.forEach(i -> lines.add(String.format("use %s;", i)));
         lines.addAll(Arrays.asList("use Test;", "", "done-testing;"));
         Perl6Utils.writeCodeToPath(testPath, lines);

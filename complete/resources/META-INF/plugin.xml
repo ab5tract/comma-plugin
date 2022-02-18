@@ -309,6 +309,7 @@
     <moduleService serviceImplementation="edument.perl6idea.event.ModuleMetaChangeListener"/>
     <projectService serviceImplementation="edument.perl6idea.metadata.Perl6ProjectModelSync"/>
     <projectService serviceImplementation="edument.perl6idea.pm.RakuPackageManagerManager"/>
+    <projectService serviceImplementation="edument.perl6idea.language.RakuLanguageVersionService"/>
     <fileEditorProvider implementation="edument.perl6idea.readerMode.Perl6ModuleEditorProvider"/>
     <defaultLiveTemplates file="/liveTemplates/Cro-HTTP-Client.xml"/>
     <defaultLiveTemplates file="/liveTemplates/Cro-WebApp.xml"/>

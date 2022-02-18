@@ -6,6 +6,7 @@ import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import edument.perl6idea.language.RakuLanguageVersion;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.Perl6ModuleWizardStep;
 import edument.perl6idea.utils.Perl6Utils;
@@ -19,19 +20,22 @@ public class Perl6ModuleBuilderApplication implements Perl6ModuleBuilderGeneric 
     private String myEntryPointName;
 
     @Override
-    public void setupRootModelOfPath(@NotNull ModifiableRootModel model, Path path) {
+    public void setupRootModelOfPath(@NotNull ModifiableRootModel model,
+                                     Path path,
+                                     RakuLanguageVersion languageVersion) {
         Path directoryName = path.getFileName();
         if (Objects.equals(directoryName.toString(), "lib")) {
             Perl6MetaDataComponent metaData = model.getModule().getService(Perl6MetaDataComponent.class);
             VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
             Perl6ModuleBuilderModule.stubModule(metaData, path, myModuleName, true, false,
-                                                sourceRoot == null ? null : sourceRoot.getParent(), "Empty", false);
+                                                sourceRoot == null ? null : sourceRoot.getParent(), "Empty", false,
+                                                languageVersion);
         } else if (Objects.equals(directoryName.toString(), "bin")) {
-            stubEntryPoint(path, myModuleName, myEntryPointName);
+            stubEntryPoint(path, myModuleName, myEntryPointName, languageVersion);
         } else if (Objects.equals(directoryName.toString(), "t")) {
             Perl6ModuleBuilderModule.stubTest(path,
                      "00-sanity.t",
-                         Collections.singletonList(myModuleName));
+                         Collections.singletonList(myModuleName), languageVersion);
         }
     }
 
@@ -46,10 +50,14 @@ public class Perl6ModuleBuilderApplication implements Perl6ModuleBuilderGeneric 
         return new String[]{"bin", "lib", "t"};
     }
 
-    private static void stubEntryPoint(Path moduleLibraryPath, String moduleName, String entryPoitnName) {
+    private static void stubEntryPoint(Path moduleLibraryPath,
+                                       String moduleName,
+                                       String entryPoitnName,
+                                       RakuLanguageVersion languageVersion) {
         Path entryPath = moduleLibraryPath.resolve(entryPoitnName);
         List<String> lines = Arrays.asList(
             "#!/usr/bin/env perl6",
+            languageVersion != null ? String.format("use v%s;", languageVersion) : "",
             String.format("use %s;", moduleName)
         );
         Perl6Utils.writeCodeToPath(entryPath, lines);
