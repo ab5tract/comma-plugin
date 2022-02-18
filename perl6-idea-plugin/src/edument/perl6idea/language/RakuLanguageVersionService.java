@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 @Service
 @State(name = "edument.perl6idea.language.RakuLanguageVersionService")
 public final class RakuLanguageVersionService implements PersistentStateComponent<Element> {
-    private RakuLanguageVersion myVersion;
-    private boolean myIsExplicit;
+    private RakuLanguageVersion myVersion = RakuLanguageVersion.D;
+    private boolean myIsExplicit = true;
 
     public RakuLanguageVersion getVersion() {
         return myVersion;
