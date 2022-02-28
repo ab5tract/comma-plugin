@@ -57,8 +57,12 @@ public class Perl6FindUsagesProvider implements FindUsagesProvider {
     @NotNull
     @Override
     public String getDescriptiveName(@NotNull PsiElement element) {
-        String name = ((PsiNamedElement)element).getName();
-        return name == null ? "" : name;
+        if (element instanceof PsiNamedElement) {
+            String name = ((PsiNamedElement)element).getName();
+            return name == null ? "" : name;
+        } else {
+            return "";
+        }
     }
 
     @NotNull
