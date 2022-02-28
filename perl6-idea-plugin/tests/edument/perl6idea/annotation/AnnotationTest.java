@@ -573,43 +573,43 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
-   public void testPackageDeclAnnotator2() {
+    public void testPackageDeclAnnotator2() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "module Foo {}");
         myFixture.checkHighlighting();
     }
 
-   public void testPackageDeclAnnotator3() {
+    public void testPackageDeclAnnotator3() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "module Foo <error descr=\"module cannot compose a role\">does A</error> {}");
         myFixture.checkHighlighting();
     }
 
-   public void testPackageDeclAnnotator4() {
+    public void testPackageDeclAnnotator4() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "module Foo <error descr=\"module cannot inherit a class\">is A</error> {}");
         myFixture.checkHighlighting();
     }
 
-   public void testPackageDeclAnnotator5() {
+    public void testPackageDeclAnnotator5() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "module Foo <error descr=\"module cannot compose a role\">does A</error> <error descr\"module cannot inherit a class\">is A</error> {}");
         myFixture.checkHighlighting();
     }
 
-   public void testPackageDeclAnnotator6() {
+    public void testPackageDeclAnnotator6() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "package Foo <error descr=\"package cannot compose a role\">does A</error> {}");
         myFixture.checkHighlighting();
     }
 
-   public void testPackageDeclAnnotator7() {
+    public void testPackageDeclAnnotator7() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "package Foo <error descr=\"package cannot inherit a class\">is A</error> {}");
         myFixture.checkHighlighting();
     }
 
-   public void testPackageDeclAnnotator8() {
+    public void testPackageDeclAnnotator8() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
                                   "package Foo <error descr=\"package cannot compose a role\">does A</error> <error descr\"package cannot inherit a class\">is A</error> {}");
         myFixture.checkHighlighting();
@@ -1366,6 +1366,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.configureByText(
           Perl6ScriptFileType.INSTANCE, "/<[-a..b<error descr=\"A hyphen is used in a character class, maybe '..' was intended to denote a range? Otherwise a hyphen should be at the end of the character class.\">-</error>cd-]>/"
         );
+        myFixture.checkHighlighting();
+    }
+
+    public void testImplementationDetailUsage() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "<warning descr=\"The '&dd' routine is implementation detail\">dd</warning> 42; my @a; @a<warning descr=\"The '&.FLATTENABLE_LIST' method is implementation detail\">.FLATTENABLE_LIST</warning>;");
         myFixture.checkHighlighting();
     }
 }

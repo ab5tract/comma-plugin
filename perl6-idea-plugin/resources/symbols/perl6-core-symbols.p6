@@ -577,7 +577,7 @@ my $new-param-API = so Parameter.^can('suffix');
 # Collect archetypes first
 pack-package(@EXTERNAL_COMMA_ELEMS, 'EXPORTHOW', CORE::EXPORTHOW);
 
-for CORE::.keys -> $_ {
+for CORE::.keys(:implementation-detail) -> $_ {
     # Ignore a few things.
     when 'EXPORTHOW'|'Rakudo' { }
     # Collect all top-level subs and EVAL.
@@ -617,7 +617,8 @@ sub pack-code(Mu $code, Int $multiness, Str $name?, :$docs, :$is-method) {
     my $kind = $code.^name.comb.head.lc;
     my $deprecation = try { ~$code.DEPRECATED };
     my $pure = so try { so $code.?is-pure || $code.dispatcher.is-pure };
-    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness, |(:p if $pure),
+    my $impl-detail = so try { so $code.?is-implementation-detail };
+    %( k => $kind, n => $name // $code.name, s => %signature, m => $multiness, |(:p if $pure), |(:rakudo if $impl-detail),
        |(:d($_) with $docs), |(:x($_) with $deprecation));
 }
 
@@ -668,7 +669,10 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     } else {
         try @privates = object.^private_method_table.values;
     }
-    try for object.^methods(:local) -> $method {
+
+    my @methods = (try object.^methods(:local, :implementation-detail)) // try object.^methods(:local);
+
+    try for @methods -> $method {
         if $kind eq 'mm' {
             %class<m>.push: pack-code($method, 0, '^'~ $method.name, :is-method) unless $method.name.starts-with('!');
         } elsif $method !~~ ForeignCode {

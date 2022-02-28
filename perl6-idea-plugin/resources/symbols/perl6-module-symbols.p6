@@ -283,6 +283,7 @@ sub pack-code($code, Int $multiness, Str $name?, :$is-method) {
     try %code<d> = $code.WHY.gist if $code.WHY ~~ Pod::Block::Declarator;
     try { %code<x> = ~$_ with $code.DEPRECATED; }
     try { %code<p> = True if $code.is-pure }
+    %code<rakudo> = True if so try { so $code.?is-implementation-detail };
     %code;
 }
 
@@ -340,7 +341,10 @@ sub describe-OOP(@elems, $name, $kind, Mu \object) {
     } else {
         try @privates = object.^private_method_table.values;
     }
-    try for object.^methods(:local) -> $method {
+
+    my @methods = (try object.^methods(:local, :implementation-detail)) // try object.^methods(:local);
+
+    try for @methods -> $method {
         if $kind eq 'mm' {
             %class<m>.push: pack-code($method, 0, '^'~ $method.name, :is-method);
         } elsif $method !~~ ForeignCode {
