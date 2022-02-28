@@ -32,11 +32,12 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Add a profile comparison feature; after recording two profiles, they can be selected and a comparison calculated between them (for example, differences in numbers of GC runs, allocations, call counts, time spent, etc.)</li>
-<li>Fix a compatibility issue with the Docker plugin</li>
-<li>Correctly parse and highlight the <code>qq</code> escape sequence in strings</li>
-<li>Fix a bug when dependencies specified as single modules of a distribution were not recognized as implying whole distributions</li>
-<li>Fix a bug when the code formatter produced incorrect code by splitting the <code>,=</code> combined operator with a space</li>
+<li>Add a way to set the project&#39;s language level in the Project Structure dialog, including optionally setting the <code>use v6</code> pragma in newly created project files to match.  By default, language level is set to <code>6.d</code> and automatic <code>use v6</code> is enabled.</li>
+<li>Fix a bug where the Rakudo implementation detail routine <code>dd</code> was not recognized. Now external routines marked with the <code>is implementation-detail</code> trait are recognized, but annotated as potentially unsafe.</li>
+<li>For the Cro template language parse the <code>&lt;:separator&gt;...&lt;/:&gt;</code> tag and add an annotation that warns about mis-used template separators</li>
+<li>Fix renaming of an attribute with the <code>&amp;</code> sigil</li>
+<li>Fix a bug where an attribute could not be renamed twice in a row</li>
+<li>Fix a rare bug related to the Usages view</li>
 </ul>
   ]]>
   </change-notes>
