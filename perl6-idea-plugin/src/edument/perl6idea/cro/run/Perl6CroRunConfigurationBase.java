@@ -29,7 +29,7 @@ public abstract class Perl6CroRunConfigurationBase extends Perl6RunConfiguration
             try (
                 BufferedInputStream yamlConfStream = new BufferedInputStream(new FileInputStream(croConfPath))
             ) {
-                Map<String, Object> croConf = yaml.load(yamlConfStream);
+                Map<String, Object> croConf = (Map<String, Object>)yaml.load(yamlConfStream);
                 Object scriptPath = croConf.get("entrypoint");
                 if (scriptPath instanceof String)
                     setScriptPath(Paths.get(path, (String)scriptPath).toString());
