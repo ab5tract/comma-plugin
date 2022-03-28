@@ -9,4 +9,9 @@ public class Perl6RegexLiteralImpl extends ASTWrapperPsiElement implements Perl6
     public Perl6RegexLiteralImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public boolean mightMatchZeroWidth() {
+        return getTextLength() == 0;
+    }
 }

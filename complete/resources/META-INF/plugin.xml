@@ -142,6 +142,7 @@
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.DuplicateConditionAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UselessUseAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.HyphenInCharacterClassAnnotator"/>
+    <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NotProgressingRegexAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.RakudoImplementationDetailAnnotator"/>
     <annotator language="CroTemplate" implementationClass="edument.perl6idea.cro.template.annotation.DuplicateSeparatorAnnotator"/>
     <annotator language="CroTemplate" implementationClass="edument.perl6idea.cro.template.annotation.MisplacedSeparatorAnnotation"/>

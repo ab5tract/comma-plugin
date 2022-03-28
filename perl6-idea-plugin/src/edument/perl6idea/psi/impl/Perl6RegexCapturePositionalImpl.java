@@ -47,4 +47,23 @@ public class Perl6RegexCapturePositionalImpl extends ASTWrapperPsiElement implem
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         return null;
     }
+
+    @Override
+    public boolean mightMatchZeroWidth() {
+        // Everything in the capturing group must potentially match nothing.
+        for (PsiElement child : getChildren()) {
+            // If it's not a known regex element, then can't analyze it.
+            if (!(child instanceof Perl6RegexPsiElement))
+                return false;
+
+            // Otherwise, see if it might match zero width. If we can't be
+            // sure it will, then have to assume it can match something.
+            if (!((Perl6RegexPsiElement)child).mightMatchZeroWidth())
+                return false;
+        }
+
+        // If everything could match zero width, then this is true of the
+        // group as a whole.
+        return true;
+    }
 }
