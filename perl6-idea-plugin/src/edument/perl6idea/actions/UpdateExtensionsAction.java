@@ -26,7 +26,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -34,7 +33,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UpdateExtensionsAction extends AnAction {
-    public static final Pattern LEGACY_EXTENSION_PATTERN = Pattern.compile(".+?\\.(p6|pl6|pm6|pod6)");
     public static final Pattern FULL_LEGACY_EXTENSION_PATTERN = Pattern.compile(".+?\\.(p6|pl6|pm6|pm|pod6|pod|t)");
     private static final Map<String, String> nonLegacyExts = new HashMap<>();
 
@@ -54,7 +52,7 @@ public class UpdateExtensionsAction extends AnAction {
         assert project != null;
         Module @NotNull [] modules = ModuleManager.getInstance(project).getModules();
 
-        Map<String, List<File>> filesToUpdate = collectFilesWithLegacyNames(modules, true);
+        Map<String, List<File>> filesToUpdate = collectFilesWithLegacyNames(modules);
         if (filesToUpdate.isEmpty())
             return;
 
@@ -62,17 +60,17 @@ public class UpdateExtensionsAction extends AnAction {
     }
 
     @NotNull
-    public static Map<String, List<File>> collectFilesWithLegacyNames(Module @NotNull [] modules, boolean fullCheck) {
+    public static Map<String, List<File>> collectFilesWithLegacyNames(Module @NotNull [] modules) {
         Map<String, List<File>> filesToUpdate = new HashMap<>();
 
         for (Module module : modules) {
             for (VirtualFile root : ModuleRootManager.getInstance(module).getSourceRoots()) {
                 if (root.isDirectory()) {
                     @NotNull List<File> files = FileUtil.findFilesByMask(
-                        fullCheck ? FULL_LEGACY_EXTENSION_PATTERN : LEGACY_EXTENSION_PATTERN,
+                        FULL_LEGACY_EXTENSION_PATTERN,
                         root.toNioPath().toFile());
                     for (File file : files) {
-                        Matcher matcher = (fullCheck ? FULL_LEGACY_EXTENSION_PATTERN : LEGACY_EXTENSION_PATTERN).matcher(file.getName());
+                        Matcher matcher = FULL_LEGACY_EXTENSION_PATTERN.matcher(file.getName());
                         if (matcher.matches()) {
                             filesToUpdate.compute(matcher.group(1), (f, list) -> {
                                 if (list == null)
