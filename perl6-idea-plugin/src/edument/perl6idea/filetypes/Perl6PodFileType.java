@@ -31,7 +31,7 @@ public class Perl6PodFileType extends LanguageFileType implements RakuMultiExten
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "pod6";
+        return "rakudoc";
     }
 
     @Nullable
