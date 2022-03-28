@@ -28,6 +28,8 @@ import java.util.concurrent.*;
 public class Perl6ModuleListFetcher {
     public static final String GITHUB_MIRROR1 = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/p6c1.json";
     public static final String CPAN_MIRROR1 = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/cpan1.json";
+    public static final String FEZ_MIRROR1 = "https://360.zef.pm/";
+    public static final String REA_MIRROR1 = "https://raw.githubusercontent.com/Raku/REA/main/META.json";
     public static final List<String> PREINSTALLED_MODULES =
         ContainerUtil.immutableList("CompUnit::Repository::Staging",
                                     "CompUnit::Repository::FileSystem",
@@ -150,14 +152,14 @@ public class Perl6ModuleListFetcher {
     }
 
     private static void populateModules() {
-        // Try first mirror
-        String githubOutput = doRequest(GITHUB_MIRROR1);
-        // Try second mirror
-        String cpanOutput = doRequest(CPAN_MIRROR1);
-
         JSONArray jsonArray = new JSONArray();
-        populateArrayFromSource(githubOutput, jsonArray);
-        populateArrayFromSource(cpanOutput, jsonArray);
+        for (String url : Arrays.asList(GITHUB_MIRROR1, CPAN_MIRROR1, FEZ_MIRROR1, REA_MIRROR1)) {
+            String output = doRequest(url);
+            if (output != null) {
+                populateArrayFromSource(output, jsonArray);
+            }
+        }
+
         Map<String, JSONObject> modulesMap = new ConcurrentHashMap<>();
         for (Object json : jsonArray) {
             JSONObject jsonObject = (JSONObject)json;
@@ -201,7 +203,6 @@ public class Perl6ModuleListFetcher {
     }
 
     private static void populateArrayFromSource(String output, JSONArray array) {
-        if (output == null) return;
         try {
             new JSONArray(output).forEach((o) -> array.put(o));
         }
@@ -209,6 +210,7 @@ public class Perl6ModuleListFetcher {
         }
     }
 
+    @Nullable
     private static String doRequest(String url) {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
