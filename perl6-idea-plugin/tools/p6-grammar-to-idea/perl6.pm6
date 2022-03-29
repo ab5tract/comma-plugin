@@ -4399,47 +4399,44 @@ grammar MAIN {
     }
 
     token termseq {
-        <.termaltseq>
-    }
+        :my $*PREC = '';
+        :my $*SUB_PREC = '';
+        :my $*ASSOC = '';
+        :my $*NEXT_TERM = '';
+        :my $*FAKE = 0;
 
-    token termaltseq {
-        <.termconjseq>
-        [
-            <!rxinfixstopper>
-            <.start-token('REGEX_INFIX')> '||' <.end-token('REGEX_INFIX')>
-            <.rxws>
-            [<.termconjseq> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
-        ]*
-    }
-
-    token termconjseq {
-        <.termalt>
-        [
-            <!rxinfixstopper>
-            <.start-token('REGEX_INFIX')> '&&' <.end-token('REGEX_INFIX')>
-            <.rxws>
-            [<.termalt> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
-        ]*
-    }
-
-    token termalt {
-        <.termconj>
-        [
-            <!rxinfixstopper>
-            <.start-token('REGEX_INFIX')> '|' <![|]> <.end-token('REGEX_INFIX')>
-            <.rxws>
-            [<.termconj> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
-        ]*
-    }
-
-    token termconj {
+        <.opp-start-expr>
+        <.opp-regex-mode>
+        
+        <.opp-start-prefixes><.opp-end-prefixes>
         <.rxtermish>
+        <.opp-start-postfixes><.opp-end-postfixes>
+
         [
             <!rxinfixstopper>
-            <.start-token('REGEX_INFIX')> '&' <![&]> <.end-token('REGEX_INFIX')>
+            <.opp-start-infix>
+            [
+            || <.start-token('REGEX_INFIX')> '||' <.end-token('REGEX_INFIX')>
+               { $*PREC = 'a=' } { $*ASSOC = 'list' }
+            || <.start-token('REGEX_INFIX')> '&&' <.end-token('REGEX_INFIX')>
+               { $*PREC = 'b=' } { $*ASSOC = 'list' }
+            || <.start-token('REGEX_INFIX')> '|' <.end-token('REGEX_INFIX')>
+               { $*PREC = 'c=' } { $*ASSOC = 'list' }
+            || <.start-token('REGEX_INFIX')> '&' <.end-token('REGEX_INFIX')>
+               { $*PREC = 'd=' } { $*ASSOC = 'list' }
+            ]
+            <.opp-end-infix>
             <.rxws>
-            [<.rxtermish> || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>]
+
+            [
+            || <.opp-start-prefixes><.opp-end-prefixes>
+               <.rxtermish>
+               <.opp-start-postfixes><.opp-end-postfixes>
+            || <.start-token('REGEX_MISSING_TERM')> <?> <.end-token('REGEX_MISSING_TERM')>
+            ]
         ]*
+
+        <.opp-end-expr>
     }
 
     token rxtermish {

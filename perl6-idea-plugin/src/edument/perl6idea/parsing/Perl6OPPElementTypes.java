@@ -8,4 +8,5 @@ public interface Perl6OPPElementTypes {
     IElementType POSTFIX_APPLICATION = new Perl6ElementType("POSTFIX_APPLICATION");
     IElementType INFIX_APPLICATION = new Perl6ElementType("INFIX_APPLICATION");
     IElementType ADVERB_APPLICATION = new Perl6ElementType("ADVERB_APPLICATION");
+    IElementType REGEX_INFIX_APPLICATION = new Perl6ElementType("REGEX_INFIX_APPLICATION");
 }
