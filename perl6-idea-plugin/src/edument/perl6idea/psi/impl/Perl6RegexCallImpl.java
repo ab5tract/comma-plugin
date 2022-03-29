@@ -17,6 +17,11 @@ public class Perl6RegexCallImpl extends ASTWrapperPsiElement implements Perl6Reg
     }
 
     @Override
+    public String getName() {
+        return this.getText();
+    }
+
+    @Override
     public PsiReference getReference() {
         return new Perl6RegexCallReference(this);
     }
