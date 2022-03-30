@@ -76,12 +76,16 @@ public class Perl6CompleteTestRunConfigurationProducer extends LazyRunConfigurat
 
     private static String calculateParameters(ContentEntry contentEntryToTest) {
         VirtualFile rakuModuleRoot = contentEntryToTest.getFile();
+        if (rakuModuleRoot == null)
+            return "";
         StringJoiner argsLine = new StringJoiner(" ");
         Arrays.stream(contentEntryToTest.getSourceFolders()).forEachOrdered((sourceFolder) -> {
             if (sourceFolder.isTestSource()) return;
             VirtualFile dir = sourceFolder.getFile();
             if (dir == null) return;
-            argsLine.add("-I" + dir.getPath().substring(rakuModuleRoot.getPath().length() + 1));
+            String rootPath = rakuModuleRoot.getPath();
+            if (rootPath.length() != 0)
+                argsLine.add("-I" + dir.getPath().substring(rootPath.length() + 1));
         });
         return argsLine.toString();
     }
