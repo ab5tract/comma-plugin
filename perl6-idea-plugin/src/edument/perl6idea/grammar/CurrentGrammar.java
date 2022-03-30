@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +39,8 @@ public class CurrentGrammar {
     private boolean currentlyRunning;
     private boolean needsAnotherRun;
     private long debounceCounter;
+    private Process currentProcess;
+    private boolean cancelled;
 
     public CurrentGrammar(Perl6PackageDecl decl, Document input, Consumer<? super ParseResultsModel> resultsUpdateCallback,
                           Runnable processingCallback, ScheduledExecutorService timedExecutor) {
@@ -112,7 +116,8 @@ public class CurrentGrammar {
                     cmd.setWorkDirectory(project.getBasePath());
                     cmd.addParameter("-Ilib");
                     cmd.addParameter(tweakedGrammarAsFile.getAbsolutePath());
-                    List<String> lines = cmd.executeAndRead(tweakedGrammarAsFile);
+                    cancelled = false;
+                    List<String> lines = executeAndRead(cmd, tweakedGrammarAsFile);
 
                     // Find the lines that we need (we ignore those before a marker, in
                     // case the user has added prints or whatever).
@@ -127,7 +132,7 @@ public class CurrentGrammar {
                     String jsonOutput = String.join("\n", jsonLines).trim();
                     updateUsing(currentInput, jsonOutput.startsWith("{")
                             ? jsonOutput
-                            : "{ \"e\": \"Failed to compile grammar\" }");
+                            : (cancelled ? "{ \"e\": \"Cancelled\" }" : "{ \"e\": \"Failed to compile grammar\" }"));
                 }
                 catch (ExecutionException e) {
                     LOG.warn(e);
@@ -140,6 +145,45 @@ public class CurrentGrammar {
                 }
             });
         });
+    }
+
+    @NotNull
+    private List<String> executeAndRead(Perl6CommandLine cmd, @Nullable File scriptFile) {
+        List<String> results = new LinkedList<>();
+        try {
+            Process p = cmd.createProcess();
+            currentProcess = p;
+            try (
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))
+            ) {
+                String line;
+                while ((line = reader.readLine()) != null)
+                    results.add(line);
+                if (p.waitFor() != 0) {
+                    if (scriptFile != null)
+                        scriptFile.delete();
+                    return new ArrayList<>();
+                }
+            }
+            catch (IOException e) {
+                LOG.warn(e);
+            }
+        }
+        catch (InterruptedException | ExecutionException e) {
+            LOG.warn(e);
+        }
+        finally {
+            currentProcess = null;
+        }
+        if (scriptFile != null)
+            scriptFile.delete();
+        return results;
+    }
+
+    public void cancel() {
+        cancelled = true;
+        Process process = currentProcess;
+        process.destroyForcibly();
     }
 
     private static File writeToTempFile(String input) {
