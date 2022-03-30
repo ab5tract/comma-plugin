@@ -32,12 +32,13 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Add a way to set the project&#39;s language level in the Project Structure dialog, including optionally setting the <code>use v6</code> pragma in newly created project files to match.  By default, language level is set to <code>6.d</code> and automatic <code>use v6</code> is enabled.</li>
-<li>Fix a bug where the Rakudo implementation detail routine <code>dd</code> was not recognized. Now external routines marked with the <code>is implementation-detail</code> trait are recognized, but annotated as potentially unsafe.</li>
-<li>For the Cro template language parse the <code>&lt;:separator&gt;...&lt;/:&gt;</code> tag and add an annotation that warns about mis-used template separators</li>
-<li>Fix renaming of an attribute with the <code>&amp;</code> sigil</li>
-<li>Fix a bug where an attribute could not be renamed twice in a row</li>
-<li>Fix a rare bug related to the Usages view</li>
+<li>Add an annotation to detect and highlight potentially infinite regexes</li>
+<li>Raku distributions from fez and REA ecosystems are now correctly processed to show up in completion and related features</li>
+<li>The extensions for new Raku project files now default to modern (post-rename) convention</li>
+<li>The legacy extensions updater is simpler now. Prior to this release it did not prompt about .t extensions on start, trying to guess mixed Raku/Perl codebases. Test files were prompted to update when the update tool was reached via the Tools menu. Now the logic is unified to always complain about .t files belonging to a Raku project module as obsolete.</li>
+<li>Prevent an exception occurring during showing parameter info for a method call</li>
+<li>Fix a bug where using Replace on completion could replace more tokens than necessary</li>
+<li>Fix a rare exception related to producing Raku testing run configurations</li>
 </ul>
   ]]>
   </change-notes>
