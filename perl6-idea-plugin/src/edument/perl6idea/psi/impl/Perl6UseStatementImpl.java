@@ -6,6 +6,7 @@ import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StubIndex;
+import com.intellij.util.SlowOperations;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6ModuleName;
 import edument.perl6idea.psi.Perl6UseStatement;
@@ -40,29 +41,33 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
             // We cannot contribute based on stubs when indexing is in progress
             if (DumbService.isDumb(getProject())) return;
 
-            Collection<Perl6File> found = ProjectModulesStubIndex.getInstance()
-                    .get(name, project, GlobalSearchScope.projectScope(project));
-            if (found.size() > 0) {
-                Perl6File file = found.iterator().next();
-                file.contributeGlobals(collector, new HashSet<>());
-                Set<String> seen = new HashSet<>();
-                seen.add(name);
-                file.contributeGlobals(collector, seen);
-            }
-            else {
-                Collection<Perl6File> elements = StubIndex.getElements(Perl6StubIndexKeys.PROJECT_MODULES, name, project, GlobalSearchScope.allScope(project), Perl6File.class);
-                if (!elements.isEmpty()) {
-                    elements.iterator().next().contributeGlobals(collector, new HashSet<>());
-                }
-
-                if (collector.isSatisfied())
-                    return;
-
-                Perl6File file = Perl6SdkType.getInstance().getPsiFileForModule(project, name, getText());
-                if (file != null) {
+            SlowOperations.allowSlowOperations(() -> {
+                Collection<Perl6File> found =
+                    ProjectModulesStubIndex.getInstance().get(name, project, GlobalSearchScope.projectScope(project));
+                if (found.size() > 0) {
+                    Perl6File file = found.iterator().next();
                     file.contributeGlobals(collector, new HashSet<>());
+                    Set<String> seen = new HashSet<>();
+                    seen.add(name);
+                    file.contributeGlobals(collector, seen);
                 }
-            }
+                else {
+                    Collection<Perl6File> elements =
+                        StubIndex.getElements(Perl6StubIndexKeys.PROJECT_MODULES, name, project, GlobalSearchScope.allScope(project),
+                                              Perl6File.class);
+                    if (!elements.isEmpty()) {
+                        elements.iterator().next().contributeGlobals(collector, new HashSet<>());
+                    }
+
+                    if (collector.isSatisfied())
+                        return;
+
+                    Perl6File file = Perl6SdkType.getInstance().getPsiFileForModule(project, name, getText());
+                    if (file != null) {
+                        file.contributeGlobals(collector, new HashSet<>());
+                    }
+                }
+            });
         }
     }
 
