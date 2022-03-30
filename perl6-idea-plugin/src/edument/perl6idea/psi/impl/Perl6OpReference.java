@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Perl6OpReference extends PsiReferenceBase.Poly<Perl6PsiElement> {
     public Perl6OpReference(Perl6PsiElement operator) {
-        super(operator, new TextRange(0, operator.getTextLength()), false);
+        super(operator, new TextRange(0, operator.getFirstChild().getTextLength()), false);
     }
 
     @Override
