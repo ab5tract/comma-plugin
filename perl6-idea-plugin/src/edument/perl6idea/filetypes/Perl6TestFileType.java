@@ -38,7 +38,7 @@ public class Perl6TestFileType extends LanguageFileType implements RakuMultiExte
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "t";
+        return "rakutest";
     }
 
     @Nullable

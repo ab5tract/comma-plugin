@@ -38,7 +38,7 @@ public class Perl6ModuleFileType extends LanguageFileType implements RakuMultiEx
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "pm6";
+        return "rakumod";
     }
 
     @Nullable

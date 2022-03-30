@@ -34,7 +34,7 @@ public class Perl6ModuleBuilderApplication implements Perl6ModuleBuilderGeneric 
             stubEntryPoint(path, myModuleName, myEntryPointName, languageVersion);
         } else if (Objects.equals(directoryName.toString(), "t")) {
             Perl6ModuleBuilderModule.stubTest(path,
-                     "00-sanity.t",
+                     "basic.rakutest",
                          Collections.singletonList(myModuleName), languageVersion);
         }
     }
@@ -56,7 +56,7 @@ public class Perl6ModuleBuilderApplication implements Perl6ModuleBuilderGeneric 
                                        RakuLanguageVersion languageVersion) {
         Path entryPath = moduleLibraryPath.resolve(entryPoitnName);
         List<String> lines = Arrays.asList(
-            "#!/usr/bin/env perl6",
+            "#!/usr/bin/env raku",
             languageVersion != null ? String.format("use v%s;", languageVersion) : "",
             String.format("use %s;", moduleName)
         );

@@ -18,8 +18,8 @@ import java.util.Collections;
 public class NewActionsTest extends CommaFixtureTestCase {
     public void testNewScriptAction() {
         Path basePath = Paths.get(getProject().getBasePath());
-        Perl6ModuleBuilderScript.stubScript(basePath, "test.p6", true, RakuLanguageVersion.D);
-        File path = basePath.resolve("test.p6").toFile();
+        Perl6ModuleBuilderScript.stubScript(basePath, "test.raku", true, RakuLanguageVersion.D);
+        File path = basePath.resolve("test.raku").toFile();
         assertTrue(path.exists());
     }
 
@@ -55,9 +55,9 @@ public class NewActionsTest extends CommaFixtureTestCase {
         Project p = getProject();
         String basePath = p.getBasePath();
         Perl6ModuleBuilderModule.stubTest(Paths.get(basePath, "t"), "10-sanity", Collections.emptyList(), RakuLanguageVersion.D);
-        Perl6ModuleBuilderModule.stubTest(Paths.get(basePath, "t"), "20-sanity.t", Collections.emptyList(), RakuLanguageVersion.D);
-        assertTrue(Paths.get(basePath, "t", "10-sanity.t").toFile().exists());
-        assertTrue(Paths.get(basePath, "t", "20-sanity.t").toFile().exists());
+        Perl6ModuleBuilderModule.stubTest(Paths.get(basePath, "t"), "20-sanity.rakutest", Collections.emptyList(), RakuLanguageVersion.D);
+        assertTrue(Paths.get(basePath, "t", "10-sanity.rakutest").toFile().exists());
+        assertTrue(Paths.get(basePath, "t", "20-sanity.rakutest").toFile().exists());
     }
 
     private static void checkMETAContent(VirtualFile basePath, Function<String, Boolean> check) throws IOException {

@@ -36,7 +36,7 @@ public class Perl6ModuleBuilderScript implements Perl6ModuleBuilderGeneric {
                                     String scriptName,
                                     boolean shouldFill,
                                     RakuLanguageVersion languageVersion) {
-        List<String> lines = new ArrayList<>(Collections.singletonList("#!/usr/bin/env perl6"));
+        List<String> lines = new ArrayList<>(Collections.singletonList("#!/usr/bin/env raku"));
         if (languageVersion != null)
             lines.addAll(List.of(String.format("use v%s;", languageVersion)));
         if (shouldFill)

@@ -38,7 +38,7 @@ public class Perl6ScriptFileType extends LanguageFileType implements RakuMultiEx
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "p6";
+        return "raku";
     }
 
     @Nullable
