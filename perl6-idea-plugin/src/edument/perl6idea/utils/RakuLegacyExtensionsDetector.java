@@ -21,7 +21,7 @@ public class RakuLegacyExtensionsDetector implements StartupActivity.Background 
     @Override
     public void runActivity(@NotNull Project project) {
         Module @NotNull [] modules = ModuleManager.getInstance(project).getModules();
-        Map<String, List<File>> filesToUpdate = UpdateExtensionsAction.collectFilesWithLegacyNames(modules, false);
+        Map<String, List<File>> filesToUpdate = UpdateExtensionsAction.collectFilesWithLegacyNames(modules);
         if (!filesToUpdate.isEmpty()) {
             Notification notification = new Notification(
                 "raku.misc", "Obsolete Raku extensions are detected",
