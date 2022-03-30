@@ -299,6 +299,8 @@ public class Perl6ParserDefinition implements ParserDefinition {
             return new Perl6ConstantImpl(astNode);
         if (type == Perl6ElementTypes.REGEX)
             return new Perl6RegexImpl(astNode);
+      if (type == Perl6OPPElementTypes.REGEX_INFIX_APPLICATION)
+        return new Perl6RegexInfixApplicationImpl(astNode);
         if (type == Perl6ElementTypes.REGEX_ATOM)
             return new Perl6RegexAtomImpl(astNode);
         if (type == Perl6ElementTypes.REGEX_SIGSPACE)

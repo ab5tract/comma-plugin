@@ -19,8 +19,8 @@ my constant %IGNORE-NAMES = set 'start-element', 'end-element', 'alpha', 'ww',
                                 'start-queue-heredoc', 'end-queue-heredoc', 'has-heredoc',
                                 'dequeue-heredoc', 'opp-start-expr', 'opp-start-infix',
                                 'opp-end-expr', 'opp-start-prefixes', 'opp-end-prefixes',
-                                'opp-start-postfixes', 'opp-end-postfixes', 'scope-push',
-                                'scope-pop', 'start-symbol', 'end-symbol', 'is-name',
+                                'opp-start-postfixes', 'opp-end-postfixes', 'opp-regex-mode',
+                                'scope-push', 'scope-pop', 'start-symbol', 'end-symbol', 'is-name',
                                 'pod-ws-start', 'pod-ws-commit', 'pod-eat-removed-ws';
 
 class X::P6GrammarToIdea::UncoveredByToken is Exception {

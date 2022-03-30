@@ -47,4 +47,9 @@ public class Perl6RegexCapturePositionalImpl extends ASTWrapperPsiElement implem
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         return null;
     }
+
+    @Override
+    public boolean mightMatchZeroWidth() {
+        return atomsMightMatchZeroWidth(PsiTreeUtil.getChildrenOfType(this, Perl6RegexAtom.class));
+    }
 }

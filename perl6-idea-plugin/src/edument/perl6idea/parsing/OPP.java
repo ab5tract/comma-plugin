@@ -27,6 +27,7 @@ public class OPP {
 
     private final PsiBuilder builder;
 
+    private boolean regexMode;
     private PsiBuilder.Marker curPrefixStartMarker;
     private int curInfixStartPosition;
     private PsiBuilder.Marker termStartMarker;
@@ -39,6 +40,11 @@ public class OPP {
 
     public OPP(PsiBuilder builder) {
         this.builder = builder;
+        this.regexMode = false;
+    }
+
+    public void regexMode() {
+        regexMode = true;
     }
 
     public void startExpr() {
@@ -252,7 +258,7 @@ public class OPP {
             right.startMarker.drop();
             left.endMarker.drop();
             PsiBuilder.Marker infixMarker = left.startMarker;
-            infixMarker.doneBefore(Perl6OPPElementTypes.INFIX_APPLICATION, right.endMarker);
+            infixMarker.doneBefore(regexMode ? Perl6OPPElementTypes.REGEX_INFIX_APPLICATION : Perl6OPPElementTypes.INFIX_APPLICATION, right.endMarker);
             Term composite = new Term();
             composite.startMarker = infixMarker.precede();
             composite.endMarker = right.endMarker;
@@ -269,7 +275,7 @@ public class OPP {
             left.endMarker.drop();
             right.startMarker.drop();
             PsiBuilder.Marker infixMarker = left.startMarker;
-            infixMarker.doneBefore(Perl6OPPElementTypes.INFIX_APPLICATION, right.endMarker);
+            infixMarker.doneBefore(regexMode ? Perl6OPPElementTypes.REGEX_INFIX_APPLICATION : Perl6OPPElementTypes.INFIX_APPLICATION, right.endMarker);
             Term composite = new Term();
             composite.startMarker = infixMarker.precede();
             composite.endMarker = right.endMarker;
