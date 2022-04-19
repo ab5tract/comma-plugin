@@ -158,10 +158,10 @@ public class CurrentGrammar {
         String supportCode = getSupportCode();
         if (supportCode == null)
             return null;
-        return content + ";\n" +
-               supportCode.replace("__GRAMMAR_LIVE_PREVIEW_GRAMMAR_NAME__", grammarName) +
+        return content.replaceFirst("(our|my)?\\s+grammar\\s+" + grammarName, "\\$GLOBAL::__GLP = $0") + ";\n" +
+               supportCode +
                "\ntry { " +
-               grammarName +
+               "$GLOBAL::__GLP" +
                ".parse(slurp(Q[[[" +
                inputFile.getAbsolutePath() +
                "]]])); CATCH { default { $error = $_ } } }\n";

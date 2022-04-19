@@ -2,7 +2,7 @@
 
 my $cur-node;
 my $error;
-for __GRAMMAR_LIVE_PREVIEW_GRAMMAR_NAME__.^methods.grep({ try Regex.ACCEPTS($_) }) {
+for $GLOBAL::__GLP.^methods.grep({ try Regex.ACCEPTS($_) }) {
     my $name = .name;
     .wrap: -> |args {
         my $prev-node = $cur-node;
