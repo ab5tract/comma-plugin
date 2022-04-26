@@ -53,6 +53,8 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
             case "c":
                 myPackageKind = "class";
                 break;
+            default:
+                myPackageKind = "";
         }
         myName = name;
         myType = type;
