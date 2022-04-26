@@ -1,0 +1,8 @@
+<?.website a href="<.website>">Click to visit</?>
+<!.website span>No website</!>
+<ul>
+  <@foo li><$_></@>
+</ul>
+<ul>
+  <@foo : $p li><$p></@>
+</ul>
