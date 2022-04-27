@@ -187,13 +187,15 @@ grammar MAIN {
             || <.deref>
             || <.variable> [<.dot> <.deref>?]?
             ]
-            <.hws>?
             [
+                <?before [\h* ':']>
+                <.hws>?
                 <.start-token('COLON')>
                 ':'
                 <.end-token('COLON')>
-                <.hws>?
                 [
+                    <?before [\h* '$']>
+                    <.hws>?
                     <.start-element('PARAMETER')>
                     <.start-token('VARIABLE_NAME')>
                     '$' <.identifier>?
@@ -201,6 +203,7 @@ grammar MAIN {
                     <.end-element('PARAMETER')>
                 ]?
             ]?
+            [ <.hws> <.structural-tag>? ]?
             [
                 <.tgt>
                 <.sequence-element-group>
@@ -228,6 +231,7 @@ grammar MAIN {
             || <.variable>
             ]
             [
+                [ <.hws> <.structural-tag>? ]?
                 <.tgt>
                 <.sequence-element-group>
                 [
@@ -240,6 +244,12 @@ grammar MAIN {
             ]?
         ]?
         <.end-element('CONDITION')>
+    }
+
+    token structural-tag {
+        <.literal-tag-name>
+        <.ws>
+        [<.literal-tag-attribute> <.ws> || <.sigil-tag> <.ws>]*
     }
 
     token block {
