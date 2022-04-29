@@ -348,6 +348,12 @@
     <configurationType implementation="edument.perl6idea.testing.Perl6CommunityTestConfigurationType"/>
     <configurationType implementation="edument.perl6idea.cro.run.Perl6CommunityCroRunConfigurationType"/>
     <lang.refactoringSupport language="Perl6" implementationClass="edument.perl6idea.refactoring.Perl6CommunityRefactoringSupportProvider"/>
+    <indexPatternBuilder implementation="edument.perl6idea.editor.RakuIndexPatternBuilder" />
+    <todoIndexer filetype="Raku Script" implementationClass="edument.perl6idea.editor.RakuTodoIndexer"/>
+    <todoIndexer filetype="Raku Module" implementationClass="edument.perl6idea.editor.RakuTodoIndexer"/>
+    <todoIndexer filetype="Raku Test" implementationClass="edument.perl6idea.editor.RakuTodoIndexer"/>
+    <todoIndexer filetype="Raku Pod" implementationClass="edument.perl6idea.editor.RakuTodoIndexer"/>
+    <todoIndexer filetype="Cro Template" implementationClass="edument.perl6idea.editor.CroTemplateTodoIndexer"/>
   </extensions>
 
   <actions>

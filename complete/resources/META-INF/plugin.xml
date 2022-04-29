@@ -47,7 +47,7 @@
   <idea-version since-build="145.0"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
+   on how to target different products -->
   <depends>com.intellij.modules.lang</depends>
 
   <extensionPoints>
@@ -183,7 +183,7 @@
     <projectExtension implementation="edument.perl6idea.event.SdkChangeListener"/>
     <lang.inspectionSuppressor language="Perl6" implementationClass="edument.perl6idea.inspection.Perl6InspectionSuppressor"/>
     <moduleConfigurationEditorProvider implementation="edument.perl6idea.project.structure.module.Perl6ModuleConfigurationEditorProvider"
-                                       order="FIRST"/>
+      order="FIRST"/>
 
     <fileType name="Cro Template" language="CroTemplate" implementationClass="edument.perl6idea.cro.template.CroTemplateFileType"
               fieldName="INSTANCE" extensions="crotmp"/>
@@ -352,6 +352,12 @@
                     serviceInterface="edument.perl6idea.coverage.Perl6CoverageDataManager"/>
     <projectService serviceImplementation="edument.perl6idea.profiler.Perl6ProfileDataManagerImpl"
                     serviceInterface="edument.perl6idea.profiler.Perl6ProfileDataManager"/>
+    <indexPatternBuilder implementation="edument.perl6idea.editor.RakuIndexPatternBuilder" />
+    <todoIndexer filetype="Raku Script" implementationClass="edument.perl6idea.editor.RakuTodoIndexer"/>
+    <todoIndexer filetype="Raku Module" implementationClass="edument.perl6idea.editor.RakuTodoIndexer"/>
+    <todoIndexer filetype="Raku Test" implementationClass="edument.perl6idea.editor.RakuTodoIndexer"/>
+    <todoIndexer filetype="Raku Pod" implementationClass="edument.perl6idea.editor.RakuTodoIndexer"/>
+    <todoIndexer filetype="Cro Template" implementationClass="edument.perl6idea.editor.CroTemplateTodoIndexer"/>
   </extensions>
 
   <actions>
@@ -431,7 +437,7 @@
     <action id="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction" class="edument.perl6idea.actions.LoadProfilerSQLFromDiskAction"
             text="Import Raku Profile SQL..."
             description="Imports a profiler report from an SQL data file">
-      <add-to-group group-id="RunMenu"  anchor="after" relative-to-action="edument.perl6idea.actions.LoadProfileResultsAction"/>
+      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="edument.perl6idea.actions.LoadProfileResultsAction"/>
     </action>
   </actions>
 
