@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class RakuIndexPatternBuilder implements IndexPatternBuilder {
-    public static final TokenSet RAKU_COMMENT_BIT_SET = TokenSet.create(Perl6TokenTypes.COMMENT, CroTemplateTokenTypes.COMMENT);
+    public static final TokenSet RAKU_COMMENT_TOKEN_SET = TokenSet.create(Perl6TokenTypes.COMMENT, CroTemplateTokenTypes.COMMENT);
 
     @Override
     public @Nullable Lexer getIndexingLexer(@NotNull PsiFile file) {
@@ -31,7 +31,7 @@ public class RakuIndexPatternBuilder implements IndexPatternBuilder {
     @Override
     public @Nullable TokenSet getCommentTokenSet(@NotNull PsiFile file) {
         if (file instanceof Perl6File || file instanceof CroTemplateFile) {
-            return RAKU_COMMENT_BIT_SET;
+            return RAKU_COMMENT_TOKEN_SET;
         }
         return null;
     }

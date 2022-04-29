@@ -26,7 +26,7 @@ public class RakuTodoIndexer extends LexerBasedTodoIndexer implements IdAndToDoS
         public void advance() {
             @Nullable IElementType tokenType = myDelegate.getTokenType();
             if (tokenType == Perl6TokenTypes.COMMENT)
-              advanceTodoItemCountsInToken();
+                advanceTodoItemCountsInToken();
             myDelegate.advance();
         }
     }
