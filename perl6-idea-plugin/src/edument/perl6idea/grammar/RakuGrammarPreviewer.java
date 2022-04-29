@@ -39,6 +39,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
@@ -81,6 +82,7 @@ public class RakuGrammarPreviewer extends JPanel {
     private Editor myInputDataEditor;
     private Tree myParseTree;
     private JLabel myStatusLabel;
+    private JLabel myCancelLink;
     private JPanel myMainPanel;
     private JBSplitter mySplitter;
     private CurrentGrammar current;
@@ -122,6 +124,19 @@ public class RakuGrammarPreviewer extends JPanel {
         myStatusLabel = new JLabel();
         myStatusLabel.setText("Waiting for input...");
         myStatusLabel.setForeground(JBColor.DARK_GRAY);
+
+        myCancelLink = new JLabel();
+        myCancelLink.setText("<html><u>Cancel</u></html>");
+        myCancelLink.setForeground(JBColor.BLUE);
+        myCancelLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        myCancelLink.setVisible(false);
+        myCancelLink.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (current != null)
+                    current.cancel();
+            }
+        });
 
         myParseTree = getParseTree();
         myParseTree.setBorder(BorderFactory.createEmptyBorder());
@@ -166,8 +181,9 @@ public class RakuGrammarPreviewer extends JPanel {
 
         JPanel resultsArea = new JPanel();
         resultsArea.setLayout(new MigLayout("fill, insets 0"));
-        resultsArea.add(myStatusLabel, "wrap, w 100%");
-        resultsArea.add(decorator.createPanel(), "w 100%, h 100%");
+        resultsArea.add(myStatusLabel, "push");
+        resultsArea.add(myCancelLink, "push, al right, wrap");
+        resultsArea.add(decorator.createPanel(), "span 2, w 100%, h 100%");
 
         mySplitter = new JBSplitter(true);
         mySplitter.setProportion(0.3f);
@@ -414,6 +430,7 @@ public class RakuGrammarPreviewer extends JPanel {
     private void startedProcessing() {
         myStatusLabel.setText("Collecting results...");
         myStatusLabel.setForeground(JBColor.YELLOW);
+        myCancelLink.setVisible(true);
         clearHighwaterHighlight();
         clearFailHighlight();
     }
@@ -429,6 +446,7 @@ public class RakuGrammarPreviewer extends JPanel {
         }
 
         // Update status.
+        myCancelLink.setVisible(false);
         String errorMessage = null;
         if (modelData.getError() != null) {
             errorMessage = "Error: " + modelData.getError();
