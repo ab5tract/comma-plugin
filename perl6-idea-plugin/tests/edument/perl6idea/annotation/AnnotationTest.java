@@ -891,6 +891,13 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testUnusedUnitRoutineParameter() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+              "unit sub MAIN(Str :o(:$out-dir) = 'src');\n" +
+              "say $out-dir;");
+        myFixture.checkHighlighting();
+    }
+
     public void testUnusedBlockParameter() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
               "my &foo = -> $a, <weak_warning descr=\"Unused parameter\">$b</weak_warning> { $a }; say foo(1, 2);");

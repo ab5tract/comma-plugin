@@ -1908,6 +1908,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.declareDynamicVariable("$*LEFTSIGIL", "");
                 this.declareDynamicVariable("$*IN_META", "");
                 this.declareDynamicVariable("$*IN_REDUCE", 0);
+                this.declareDynamicVariable("$*IN_UNIT", 0);
                 this.scopePush();
                 this.setArgs();
                 this.state = 1;
@@ -16335,6 +16336,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
+                this.declareDynamicVariable("$*IN_UNIT", 0);
                 this.startToken(Perl6TokenTypes.SCOPE_DECLARATOR);
                 this.bsFailMark(9);
                 this.bsMark(1);
@@ -16448,6 +16450,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
+                this.assignDynamicVariable("$*IN_UNIT", 1);
                 this.state = 9;
                 continue;
 
@@ -17793,7 +17796,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
             case 18:
                 this.assignDynamicVariable("$*IN_DECL", "");
-                this.bsFailMark(23);
+                this.bsFailMark(31);
                 this.bsMark(20);
                 this.setArgs();
                 this.state = 19;
@@ -17809,8 +17812,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(23);
-                this.state = 23;
+                this.bsCommit(31);
+                this.state = 31;
                 continue;
 
             case 20:
@@ -17829,15 +17832,86 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.bsCommit(23);
-                this.state = 23;
+                this.bsCommit(31);
+                this.state = 31;
                 continue;
 
             case 22:
+                this.bsMark(30);
+                if (!(this.isValueTruthy(this.findDynamicVariable("$*IN_UNIT")))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.startToken(Perl6TokenTypes.STATEMENT_TERMINATOR);
+                if (!(this.literal(";"))) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
                 this.state = 23;
-                continue;
+                return -3;
 
             case 23:
+                this.bsMark(26);
+                this.state = 24;
+                break;
+            case 24:
+                this.setArgs();
+                this.state = 25;
+                return 18;
+
+            case 25:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(26);
+                this.state = 26;
+                continue;
+
+            case 26:
+                this.bsMark(29);
+                this.state = 27;
+                break;
+            case 27:
+                this.setArgs();
+                this.state = 28;
+                return 47;
+
+            case 28:
+                if (this.lastResult.isFailed()) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                } else {
+                    this.pos = this.lastResult.getPos();
+                }
+                this.bsCommit(29);
+                this.state = 29;
+                continue;
+
+            case 29:
+                this.bsCommit(31);
+                this.state = 31;
+                continue;
+
+            case 30:
+                this.state = 31;
+                continue;
+
+            case 31:
                 this.scopePop();
                 return -1;
 
