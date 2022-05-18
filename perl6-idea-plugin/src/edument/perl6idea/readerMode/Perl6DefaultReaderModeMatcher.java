@@ -3,6 +3,7 @@ package edument.perl6idea.readerMode;
 import com.intellij.codeInsight.actions.ReaderModeMatcher;
 import com.intellij.codeInsight.actions.ReaderModeProvider;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -15,6 +16,7 @@ import edument.perl6idea.filetypes.Perl6TestFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class Perl6DefaultReaderModeMatcher implements ReaderModeMatcher {
     @Nullable
     @Override

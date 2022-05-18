@@ -92,10 +92,10 @@
     <typedHandler implementation="edument.perl6idea.editor.SigilCompletionAutoPopupHandler"/>
     <typedHandler implementation="edument.perl6idea.editor.UnicodeReplacementHandler"/>
     <backspaceHandlerDelegate implementation="edument.perl6idea.editor.BackspaceUnicodeHandler"/>
-    <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultPerl6.xml"/>
-    <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaPerl6.xml"/>
-    <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultCroTemplate.xml"/>
-    <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaCroTemplate.xml"/>
+    <additionalTextAttributes scheme="Default" file="../colorSchemes/DefaultPerl6.xml"/>
+    <additionalTextAttributes scheme="Darcula" file="/colorSchemes/DarculaPerl6.xml"/>
+    <additionalTextAttributes scheme="Default" file="/colorSchemes/DefaultCroTemplate.xml"/>
+    <additionalTextAttributes scheme="Darcula" file="/colorSchemes/DarculaCroTemplate.xml"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.NullRegexAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredVariableAnnotator"/>
     <annotator language="Perl6" implementationClass="edument.perl6idea.annotation.UndeclaredOrDeprecatedRoutineAnnotator"/>
@@ -314,9 +314,9 @@
     <projectService serviceImplementation="edument.perl6idea.pm.RakuPackageManagerManager"/>
     <projectService serviceImplementation="edument.perl6idea.language.RakuLanguageVersionService"/>
     <fileEditorProvider implementation="edument.perl6idea.readerMode.Perl6ModuleEditorProvider"/>
-    <defaultLiveTemplates file="/liveTemplates/Cro-HTTP-Client.xml"/>
-    <defaultLiveTemplates file="/liveTemplates/Cro-WebApp.xml"/>
-    <defaultLiveTemplates file="/liveTemplates/Red.xml"/>
+    <!--<defaultLiveTemplates file="/liveTemplates/Cro-HTTP-Client.xml"/>-->
+    <!--<defaultLiveTemplates file="/liveTemplates/Cro-WebApp.xml"/>-->
+    <!--<defaultLiveTemplates file="/liveTemplates/Red.xml"/>-->
     <liveTemplateContext implementation="edument.perl6idea.liveTemplates.RakuContext"/>
     <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.CroClientVar"/>
     <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.RakuSuggestVariableName"/>

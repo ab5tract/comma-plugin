@@ -1,6 +1,7 @@
 package edument.perl6idea;
 
 import com.intellij.lang.parameterInfo.*;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+@InternalIgnoreDependencyViolation
 public class Perl6ParameterInfoHandler implements ParameterInfoHandler<P6CodeBlockCall, Perl6RoutineDecl> {
     @Nullable
     @Override

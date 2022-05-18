@@ -3,12 +3,14 @@ package edument.perl6idea.testing;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import edument.perl6idea.Perl6Icons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class Perl6CommunityTestConfigurationType extends ConfigurationTypeBase implements DumbAware {
     private static final String PERL6_TEST_CONFIGURATION_ID = "PERL6_TEST_CONFIGURATION";
     private final ConfigurationFactory myFactory = new Perl6ConfigurationFactory(this);

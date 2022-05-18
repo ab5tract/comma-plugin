@@ -2,6 +2,7 @@ package edument.perl6idea.services;
 
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.components.*;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -25,6 +26,7 @@ import java.util.Map;
  */
 @Service
 @State(name = "Raku.Backup.Sdk", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
+@InternalIgnoreDependencyViolation
 public class Perl6BackupSDKService implements PersistentStateComponent<Perl6BackupSDKService.State> {
     private final Project myProject;
     State myState = new State();

@@ -1,10 +1,12 @@
 package edument.perl6idea.psi.stub.index;
 
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.stubs.StringStubIndexExtension;
 import com.intellij.psi.stubs.StubIndexKey;
 import edument.perl6idea.psi.Perl6Constant;
 import org.jetbrains.annotations.NotNull;
 
+@InternalIgnoreDependencyViolation
 public class Perl6AllConstantsStubIndex extends StringStubIndexExtension<Perl6Constant> {
     private static final int INDEX_VERSION = 3;
     private static final Perl6AllConstantsStubIndex instance = new Perl6AllConstantsStubIndex();

@@ -3,6 +3,7 @@ package edument.perl6idea.highlighter;
 import com.intellij.codeInsight.PsiEquivalenceUtil;
 import com.intellij.codeInsight.daemon.impl.*;
 import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.util.Pair;
@@ -20,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@InternalIgnoreDependencyViolation
 public class RakuHighlightVisitor extends RakuElementVisitor implements HighlightVisitor {
     private HighlightInfoHolder myHolder;
     private final Map<String, List<Perl6PsiElement>> ourScopedPackagesPool = new THashMap<>();

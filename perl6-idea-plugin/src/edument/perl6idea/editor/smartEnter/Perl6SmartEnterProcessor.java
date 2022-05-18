@@ -10,6 +10,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
 import com.intellij.openapi.editor.actionSystem.EditorActionManager;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
@@ -26,6 +27,7 @@ import java.util.concurrent.TimeoutException;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
+@InternalIgnoreDependencyViolation
 public class Perl6SmartEnterProcessor extends SmartEnterProcessor {
     private static final Logger LOG = Logger.getInstance(Perl6SmartEnterProcessor.class);
 

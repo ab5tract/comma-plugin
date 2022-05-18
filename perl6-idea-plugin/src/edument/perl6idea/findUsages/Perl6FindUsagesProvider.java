@@ -3,6 +3,7 @@ package edument.perl6idea.findUsages;
 import com.intellij.lang.HelpID;
 import com.intellij.lang.cacheBuilder.WordsScanner;
 import com.intellij.lang.findUsages.FindUsagesProvider;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import edument.perl6idea.parsing.Perl6WordsScanner;
@@ -10,6 +11,7 @@ import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class Perl6FindUsagesProvider implements FindUsagesProvider {
     @Nullable
     @Override

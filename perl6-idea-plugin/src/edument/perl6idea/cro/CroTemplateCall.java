@@ -2,6 +2,7 @@ package edument.perl6idea.cro;
 
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsSafe;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@InternalIgnoreDependencyViolation
 public class CroTemplateCall extends Perl6FrameworkCall {
     @Override
     public String getFrameworkName() {

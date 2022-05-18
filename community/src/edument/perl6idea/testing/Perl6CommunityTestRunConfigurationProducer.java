@@ -4,6 +4,7 @@ import com.intellij.execution.Location;
 import com.intellij.execution.actions.ConfigurationContext;
 import com.intellij.execution.actions.LazyRunConfigurationProducer;
 import com.intellij.execution.configurations.ConfigurationFactory;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.roots.ContentEntry;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicReference;
 
+@InternalIgnoreDependencyViolation
 public class Perl6CommunityTestRunConfigurationProducer extends LazyRunConfigurationProducer<Perl6TestRunConfiguration> {
     @NotNull
     @Override

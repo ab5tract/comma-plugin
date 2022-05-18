@@ -1,5 +1,6 @@
 package edument.perl6idea.project.structure.module;
 
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleConfigurationEditor;
 import com.intellij.openapi.module.ModuleType;
@@ -12,6 +13,7 @@ import edument.perl6idea.module.Perl6ModuleType;
 import java.util.ArrayList;
 import java.util.List;
 
+@InternalIgnoreDependencyViolation
 public class Perl6ModuleConfigurationEditorProvider implements ModuleConfigurationEditorProvider {
     @Override
     public ModuleConfigurationEditor[] createEditors(ModuleConfigurationState state) {

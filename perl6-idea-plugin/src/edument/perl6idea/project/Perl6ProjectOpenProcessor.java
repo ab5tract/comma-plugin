@@ -1,5 +1,6 @@
 package edument.perl6idea.project;
 
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
+@InternalIgnoreDependencyViolation
 public class Perl6ProjectOpenProcessor extends ProjectOpenProcessor {
     @Override
     public @NotNull @Nls String getName() {

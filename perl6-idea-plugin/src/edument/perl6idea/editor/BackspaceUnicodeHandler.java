@@ -3,6 +3,7 @@ package edument.perl6idea.editor;
 import com.intellij.codeInsight.editorActions.BackspaceHandlerDelegate;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+@InternalIgnoreDependencyViolation
 public class BackspaceUnicodeHandler extends BackspaceHandlerDelegate {
     @Nullable
     private String stringToInsert = null;

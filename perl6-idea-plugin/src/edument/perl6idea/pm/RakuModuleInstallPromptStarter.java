@@ -4,6 +4,7 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
@@ -23,6 +24,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@InternalIgnoreDependencyViolation
 public class RakuModuleInstallPromptStarter implements StartupActivity.Background {
     private static final Logger LOG = Logger.getInstance(RakuModuleInstallPromptStarter.class);
 

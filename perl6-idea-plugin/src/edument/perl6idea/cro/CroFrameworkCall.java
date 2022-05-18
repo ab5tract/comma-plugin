@@ -2,6 +2,7 @@ package edument.perl6idea.cro;
 
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.IndexSink;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.util.*;
 
+@InternalIgnoreDependencyViolation
 public class CroFrameworkCall extends Perl6FrameworkCall {
     private static final Set<String> ROUTE_VERBS;
 

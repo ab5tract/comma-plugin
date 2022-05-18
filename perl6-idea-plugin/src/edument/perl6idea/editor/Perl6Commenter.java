@@ -2,6 +2,7 @@ package edument.perl6idea.editor;
 
 import com.intellij.lang.Commenter;
 import com.intellij.lang.CustomUncommenter;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.util.Couple;
 import com.intellij.openapi.util.TextRange;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@InternalIgnoreDependencyViolation
 public class Perl6Commenter implements Commenter, CustomUncommenter {
     @Nullable
     @Override

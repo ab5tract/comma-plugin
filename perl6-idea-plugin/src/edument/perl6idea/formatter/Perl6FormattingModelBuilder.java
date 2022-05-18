@@ -5,6 +5,7 @@ import com.intellij.formatting.FormattingModel;
 import com.intellij.formatting.FormattingModelBuilder;
 import com.intellij.formatting.Spacing;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
@@ -24,6 +25,7 @@ import java.util.function.BiFunction;
 import static edument.perl6idea.parsing.Perl6ElementTypes.SEMI_LIST;
 import static edument.perl6idea.parsing.Perl6TokenTypes.*;
 
+@InternalIgnoreDependencyViolation
 public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
     private static final TokenSet STATEMENTS = TokenSet.create(Perl6ElementTypes.STATEMENT, Perl6ElementTypes.COMMENT,
                                                                Perl6ElementTypes.HEREDOC);

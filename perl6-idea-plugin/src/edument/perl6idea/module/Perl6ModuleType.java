@@ -3,6 +3,7 @@ package edument.perl6idea.module;
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.ide.util.projectWizard.SettingsStep;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
 import com.intellij.openapi.projectRoots.SdkTypeId;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+@InternalIgnoreDependencyViolation
 public class Perl6ModuleType extends ModuleType<Perl6ModuleBuilder> {
     public static final String ID = "PERL6_MODULE_TYPE";
 

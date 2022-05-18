@@ -1,6 +1,7 @@
 package edument.perl6idea.rename;
 
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.refactoring.rename.RenameDialog;
@@ -10,6 +11,7 @@ import edument.perl6idea.psi.Perl6PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class Perl6PsiElementProcessor extends RenamePsiElementProcessor {
     @Override
     public boolean canProcessElement(@NotNull PsiElement element) {

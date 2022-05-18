@@ -1,6 +1,7 @@
 package edument.perl6idea.cro.template;
 
 import com.intellij.lang.parameterInfo.*;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.StringJoiner;
 
+@InternalIgnoreDependencyViolation
 public class CroTemplateParameterInfoHandler implements ParameterInfoHandler<CroTemplateCall, CroTemplateSub> {
     @Nullable
     @Override

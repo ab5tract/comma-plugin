@@ -4,6 +4,7 @@ import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.highlighter.HighlighterIterator;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.Pair;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@InternalIgnoreDependencyViolation
 public class UnicodeReplacementHandler extends TypedHandlerDelegate {
     public static final Key<Pair<Pair<Integer, Integer>, String>> UNICODE_REPLACEMENT_POS = Key.create("perl6.unicodeReplacementPos");
 

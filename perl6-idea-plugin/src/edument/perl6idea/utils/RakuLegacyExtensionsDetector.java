@@ -1,3 +1,4 @@
+
 package edument.perl6idea.utils;
 
 import com.intellij.notification.Notification;
@@ -5,6 +6,7 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+@InternalIgnoreDependencyViolation
 public class RakuLegacyExtensionsDetector implements StartupActivity.Background {
     @Override
     public void runActivity(@NotNull Project project) {

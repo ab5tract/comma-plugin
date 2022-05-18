@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.event.VisibleAreaEvent;
 import com.intellij.openapi.editor.event.VisibleAreaListener;
 import com.intellij.openapi.editor.impl.EditorImpl;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorPolicy;
 import com.intellij.openapi.fileEditor.FileEditorProvider;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
+@InternalIgnoreDependencyViolation
 public class Perl6ModuleEditorProvider implements FileEditorProvider, DumbAware {
     private static final String EDITOR_TYPE_ID = "perl6-module";
 

@@ -2,12 +2,14 @@ package edument.perl6idea.editor;
 
 import com.intellij.lang.BracePair;
 import com.intellij.lang.PairedBraceMatcher;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class Perl6BraceMatcher implements PairedBraceMatcher {
     @Override
     public BracePair @NotNull [] getPairs() {

@@ -2,6 +2,7 @@ package edument.perl6idea.contribution;
 
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.ArrayUtil;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+@InternalIgnoreDependencyViolation
 public class Perl6SymbolNameContributor implements ChooseByNameContributor {
     @Override
     public String @NotNull [] getNames(Project project, boolean includeNonProjectItems) {
