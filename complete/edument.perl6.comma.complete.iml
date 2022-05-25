@@ -21,16 +21,6 @@
     <orderEntry type="module" module-name="intellij.platform.execution.impl" />
     <orderEntry type="module" module-name="intellij.platform.core.ui" />
     <orderEntry type="module-library">
-      <library name="com.github.luben:zstd-jni:1.4.0-1" type="repository">
-        <properties maven-id="com.github.luben:zstd-jni:1.4.0-1" />
-        <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/com/github/luben/zstd-jni/1.4.0-1/zstd-jni-1.4.0-1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="org.json:json:20190722" type="repository">
         <properties maven-id="org.json:json:20190722" />
         <CLASSES>
@@ -62,5 +52,6 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="library" name="github.luben.zstd.jni" level="project" />
   </component>
 </module>

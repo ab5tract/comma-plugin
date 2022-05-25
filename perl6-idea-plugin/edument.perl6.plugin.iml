@@ -83,5 +83,6 @@
     <orderEntry type="module" module-name="intellij.platform.codeStyle.impl" />
     <orderEntry type="module" module-name="intellij.idea.community.build.tasks" />
     <orderEntry type="module" module-name="intellij.platform.remoteServers.impl" scope="RUNTIME" />
+    <orderEntry type="library" scope="PROVIDED" name="github.luben.zstd.jni" level="project" />
   </component>
 </module>
