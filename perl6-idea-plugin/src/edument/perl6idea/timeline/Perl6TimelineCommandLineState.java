@@ -40,6 +40,12 @@ public class Perl6TimelineCommandLineState extends Perl6RunCommandLineState {
         cmd.withEnvironment("LOG_TIMELINE_SERVER", "127.0.0.1:" + port);
     }
 
+    @Override
+    protected void populateRunCommand() throws ExecutionException {
+        command.add("-MLog::Timeline");
+        super.populateRunCommand();
+    }
+
     public TimelineClient getTimelineClient() {
         return timelineClient;
     }
