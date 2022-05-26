@@ -20,16 +20,6 @@
     <orderEntry type="module" module-name="intellij.markdown" />
     <orderEntry type="module" module-name="intellij.platform.execution.impl" />
     <orderEntry type="module" module-name="intellij.platform.core.ui" />
-    <orderEntry type="module-library">
-      <library name="org.json:json:20190722" type="repository">
-        <properties maven-id="org.json:json:20190722" />
-        <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/org/json/json/20190722/json-20190722.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module" module-name="intellij.platform.ide" />
     <orderEntry type="module-library">
       <library>
@@ -53,5 +43,15 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="github.luben.zstd.jni" level="project" />
+    <orderEntry type="library" name="io.airlift.aircompressor" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/json/json/20170516/json-20170516.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
