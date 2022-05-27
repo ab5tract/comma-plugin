@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 @InternalIgnoreDependencyViolation
 public class RakuContext extends TemplateContextType {
     protected RakuContext() {
-        super("RAKUSTMT", "Raku Statemnt");
+        super("RAKUSTMT", "Raku statement");
     }
 
     @Override
