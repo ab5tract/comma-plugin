@@ -190,7 +190,8 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
     @Nullable
     private String calculateModuleName(String path) {
         for (String modulePath : modulePaths) {
-            Matcher m = Pattern.compile(String.format("%s/(.+).(rakumod|pm6)", modulePath)).matcher(path);
+            // FIXME this is still dangerous even with \ escaped
+            Matcher m = Pattern.compile(String.format("%s/(.+).(rakumod|pm6)", modulePath.replaceAll("\\\\", "\\\\\\\\"))).matcher(path);
             if (m.matches()) {
                 return m.group(1)
                     .replaceAll("/", "::")
