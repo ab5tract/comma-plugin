@@ -65,11 +65,11 @@ TODO: restore
 
 #### How to run tests
 
-While in the `comma-build` directory.
-* `ant test`
+While in the `comma-build` directory:
 
-Or one can execute either `ant test-complete` and `ant test-community` to run dedicated set of tests.
-`ant test` target runs `test-complete` and `test-community` sequentially.
+* `./complete-tests.cmd .. edument.perl6.comma.build CommaCompleteRunTestsBuildTarget`
+* `./community-tests.cmd .. edument.perl6.comma.build CommaCommunityRunTestsBuildTarget`
+
 The `test-complete` target consists of tests that are common for both editions and dedicated ones. The same is true for `test-community`.
 
 ### How to update version
