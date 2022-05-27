@@ -8,6 +8,7 @@ grammar MAIN {
         :my $*LEFTSIGIL = '';
         :my $*IN_META = '';
         :my $*IN_REDUCE = 0;
+        :my $*IN_UNIT = 0;
         <.scope-push>
         <.statementlist>
         [
@@ -1871,9 +1872,13 @@ grammar MAIN {
     }
 
     token scope_declarator {
+        :my $*IN_UNIT = 0;
         <.start-element('SCOPED_DECLARATION')>
         <.start-token('SCOPE_DECLARATOR')>
-        [ 'my' || 'our' || 'has' || 'HAS' || 'augment' || 'anon' || 'state' || 'supersede' || 'unit' ]
+        [
+        'my' || 'our' || 'has' || 'HAS' || 'augment' || 'anon' || 'state' || 'supersede' ||
+        'unit' { $*IN_UNIT = 1 }
+        ]
         <.end_keyword>
         <.end-token('SCOPE_DECLARATOR')>
         <.ws>
@@ -2031,6 +2036,12 @@ grammar MAIN {
         [
         || <.onlystar>
         || <.blockoid>
+        || <?{ $*IN_UNIT }>
+           <.start-token('STATEMENT_TERMINATOR')>
+           ';'
+           <.end-token('STATEMENT_TERMINATOR')>
+           <.ws>?
+           <.statementlist>?
         # Allow for body not written yet
         || <?>
         ]
