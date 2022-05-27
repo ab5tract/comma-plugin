@@ -38,6 +38,7 @@ public class Perl6TimelineCommandLineState extends Perl6RunCommandLineState {
     protected void setEnvironment(GeneralCommandLine cmd) {
         super.setEnvironment(cmd);
         cmd.withEnvironment("LOG_TIMELINE_SERVER", "127.0.0.1:" + port);
+        cmd.withEnvironment("LOG_TIMELINE_RAKU_EVENTS", "file,thread,socket,process,start,await");
     }
 
     @Override
