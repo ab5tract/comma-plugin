@@ -3,11 +3,13 @@ package edument.perl6idea.inspection;
 import com.intellij.codeInspection.InspectionSuppressor;
 import com.intellij.codeInspection.NonAsciiCharactersInspection;
 import com.intellij.codeInspection.SuppressQuickFix;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.Perl6PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class Perl6InspectionSuppressor implements InspectionSuppressor {
     @Override
     public boolean isSuppressedFor(@NotNull PsiElement element, @NotNull String toolId) {

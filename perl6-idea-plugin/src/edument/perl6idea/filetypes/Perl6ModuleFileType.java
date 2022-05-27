@@ -1,5 +1,6 @@
 package edument.perl6idea.filetypes;
 
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.Perl6Icons;
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+@InternalIgnoreDependencyViolation
 public class Perl6ModuleFileType extends LanguageFileType implements RakuMultiExtensionFileType {
     public static final Perl6ModuleFileType INSTANCE = new Perl6ModuleFileType();
 

@@ -1,6 +1,7 @@
 package edument.perl6idea.editor;
 
 import com.intellij.lexer.Lexer;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.search.IndexPatternBuilder;
 import com.intellij.psi.tree.IElementType;
@@ -14,6 +15,7 @@ import edument.perl6idea.psi.Perl6File;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class RakuIndexPatternBuilder implements IndexPatternBuilder {
     public static final TokenSet RAKU_COMMENT_TOKEN_SET = TokenSet.create(Perl6TokenTypes.COMMENT, CroTemplateTokenTypes.COMMENT);
 

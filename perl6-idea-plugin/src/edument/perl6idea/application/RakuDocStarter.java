@@ -5,6 +5,7 @@ import com.intellij.ide.impl.ProjectUtil;
 import com.intellij.openapi.application.ApplicationStarter;
 import com.intellij.openapi.application.ex.ApplicationInfoEx;
 import com.intellij.openapi.application.impl.ApplicationInfoImpl;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -30,6 +31,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
+@InternalIgnoreDependencyViolation
 public class RakuDocStarter implements ApplicationStarter {
     public static final String RAKU_DOC_COMMAND_NAME = "raku-doc";
 

@@ -1,5 +1,6 @@
 package edument.perl6idea.heapsnapshot.ui;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.AnimatedIcon;
@@ -95,65 +96,81 @@ public class HeapSnapshotBrowserTab extends JPanel {
         Component loadingIcon = new JBLabel("Loading", AnimatedIcon.Default.INSTANCE, SwingConstants.LEFT);
         panel.add(loadingIcon);
         panel.updateUI();
-        JSplitPane split = null;
 
-        try {
-            SnapshotData data = snapshotCollection.getSnapshotData(index);
-            currentData = data;
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            try {
+                SnapshotData data = snapshotCollection.getSnapshotData(index);
+                currentData = data;
 
-            TabData typeToObjects = computeTypeOrFrameMap(data, SnapshotData.KIND_OBJECT);
-            TabData typeToTypes = computeTypeOrFrameMap(data, SnapshotData.KIND_TYPE_OBJECT);
-            TabData staticToFrames = computeTypeOrFrameMap(data, SnapshotData.KIND_FRAME);
+                TabData typeToObjects = computeTypeOrFrameMap(data, SnapshotData.KIND_OBJECT);
+                TabData typeToTypes = computeTypeOrFrameMap(data, SnapshotData.KIND_TYPE_OBJECT);
+                TabData staticToFrames = computeTypeOrFrameMap(data, SnapshotData.KIND_FRAME);
 
-            // Bottom part: Current object
-            // (instanced first because needed in a callback)
-            JPanel currentObjectPanel = new JPanel(new MigLayout("wrap 1", "[grow,fill]", ""));
-            currentObjectPanel.setBorder(JBUI.Borders.empty());
-            // The callback when you select an actual object
-            IntConsumer selectObject = (int i) -> renderCurrentObject(data, currentObjectPanel, i);
-            // Render the empty text tag for now
-            selectObject.accept(-1);
+                ApplicationManager.getApplication().invokeAndWait(() -> {
+                    JSplitPane split = null;
+                    try {
+                        // Bottom part: Current object
+                        // (instanced first because needed in a callback)
+                        JPanel currentObjectPanel = new JPanel(new MigLayout("wrap 1", "[grow,fill]", ""));
+                        currentObjectPanel.setBorder(JBUI.Borders.empty());
+                        // The callback when you select an actual object
+                        IntConsumer selectObject = (int i) -> renderCurrentObject(data, currentObjectPanel, i);
+                        // Render the empty text tag for now
+                        selectObject.accept(-1);
 
-            // Top part: Locating objects
-            JPanel objectLocationPanel = new JPanel(new MigLayout("", "[grow,fill]", ""));
-            objectLocationPanel.setBorder(JBUI.Borders.empty());
+                        // Top part: Locating objects
+                        JPanel objectLocationPanel = new JPanel(new MigLayout("", "[grow,fill]", ""));
+                        objectLocationPanel.setBorder(JBUI.Borders.empty());
 
-            JBTabbedPane locationTabs = new JBTabbedPane();
-            locationTabs.setPreferredSize(new Dimension(400, 200));
-            JPanel currentObjectLocations = new JPanel(new MigLayout("", "[grow,fill]", ""));
-            currentObjectLocations.setBorder(JBUI.Borders.empty());
+                        JBTabbedPane locationTabs = new JBTabbedPane();
+                        locationTabs.setPreferredSize(new Dimension(400, 200));
+                        JPanel currentObjectLocations = new JPanel(new MigLayout("", "[grow,fill]", ""));
+                        currentObjectLocations.setBorder(JBUI.Borders.empty());
 
-            // The function when you select an object location
-            BiConsumer<TabData, SnapshotData.TypeOrFrameIndex> renderer = (TabData tabData, SnapshotData.TypeOrFrameIndex i) -> {
-                renderCurrentObjectLocations(currentObjectLocations, selectObject, tabData.map.getOrDefault(i, null));
-            };
-            // Render the empty text tag for now
-            renderCurrentObjectLocations(currentObjectLocations, selectObject, Collections.emptyList());
+                        // The function when you select an object location
+                        BiConsumer<TabData, SnapshotData.TypeOrFrameIndex> renderer =
+                                (TabData tabData, SnapshotData.TypeOrFrameIndex i) -> {
+                                    renderCurrentObjectLocations(currentObjectLocations, selectObject, tabData.map.getOrDefault(i, null));
+                                };
+                        // Render the empty text tag for now
+                        renderCurrentObjectLocations(currentObjectLocations, selectObject, Collections.emptyList());
 
-            locationTabs.addTab("Objects", renderLocationTab(typeToObjects, renderer));
-            locationTabs.addTab("Types", renderLocationTab(typeToTypes, renderer));
-            locationTabs.addTab("Frames", renderLocationTab(staticToFrames, renderer));
+                        locationTabs.addTab("Objects", renderLocationTab(typeToObjects, renderer));
+                        locationTabs.addTab("Types", renderLocationTab(typeToTypes, renderer));
+                        locationTabs.addTab("Frames", renderLocationTab(staticToFrames, renderer));
 
-            objectLocationPanel.add(locationTabs, "grow");
-            objectLocationPanel.add(currentObjectLocations, "grow");
-
-            split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-            split.setBorder(JBUI.Borders.empty());
-            split.setTopComponent(objectLocationPanel);
-            split.setBottomComponent(currentObjectPanel);
-            panel.add(split, "grow, push");
-        }
-        catch (Exception e) {
-            LOG.error(e);
-            panel.add(new JLabel("Unable to load the requested snapshot: " + e.getMessage()));
-            panel.updateUI();
-        }
-        finally {
-            panel.remove(loadingIcon);
-            panel.updateUI();
-            if (split != null)
-                split.setDividerLocation(0.5);
-        }
+                        objectLocationPanel.add(locationTabs, "grow");
+                        objectLocationPanel.add(currentObjectLocations, "grow");
+                        split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+                        split.setBorder(JBUI.Borders.empty());
+                        split.setTopComponent(objectLocationPanel);
+                        split.setBottomComponent(currentObjectPanel);
+                        panel.add(split, "grow, push");
+                    }
+                    catch (Exception e) {
+                        LOG.error(e);
+                        panel.add(new JLabel("Unable to load the requested snapshot: " + e.getMessage()));
+                        panel.updateUI();
+                    }
+                    finally {
+                        panel.remove(loadingIcon);
+                        panel.updateUI();
+                        if (split != null) {
+                            split.setDividerLocation(0.5);
+                        }
+                    }
+                });
+            }
+            catch (Exception e) {
+                LOG.error(e);
+                ApplicationManager.getApplication().invokeAndWait(() -> {
+                    panel.add(new JLabel("Unable to load the requested snapshot: " + e.getMessage()));
+                    panel.updateUI();
+                    panel.remove(loadingIcon);
+                    panel.updateUI();
+                });
+            }
+        });
     }
 
     private static final String[] LOCATION_COLUMNS = new String[]{

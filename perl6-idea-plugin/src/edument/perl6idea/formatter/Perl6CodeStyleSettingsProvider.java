@@ -5,11 +5,13 @@ import com.intellij.application.options.CodeStyleAbstractPanel;
 import com.intellij.application.options.IndentOptionsEditor;
 import com.intellij.application.options.SmartIndentOptionsEditor;
 import com.intellij.lang.Language;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.codeStyle.*;
 import edument.perl6idea.Perl6Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
     private static final String INDENT_SAMPLE = "sub foobar($one,\n" +
                                                 "        $two,\n" +

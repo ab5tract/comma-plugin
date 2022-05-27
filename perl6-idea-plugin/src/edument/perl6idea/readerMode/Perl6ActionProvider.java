@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.impl.ActionButtonWithText;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.editor.markup.InspectionWidgetActionProvider;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+@InternalIgnoreDependencyViolation
 public class Perl6ActionProvider implements InspectionWidgetActionProvider {
     public static final Key<Perl6ReaderModeState> RAKU_EDITOR_MODE_STATE = new Key<>("perl6.module.view.state.key");
 

@@ -5,6 +5,7 @@ import com.intellij.execution.Executor;
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
@@ -15,6 +16,7 @@ import edument.perl6idea.profiler.run.Perl6ImportRunner;
 import edument.perl6idea.run.Perl6ProfileExecutor;
 import org.jetbrains.annotations.NotNull;
 
+@InternalIgnoreDependencyViolation
 public class LoadProfilerSQLFromDiskAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

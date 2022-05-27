@@ -1,5 +1,6 @@
 package edument.perl6idea.debugger;
 
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.xdebugger.breakpoints.XLineBreakpoint;
@@ -11,6 +12,7 @@ import edument.perl6idea.filetypes.Perl6TestFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class Perl6LineBreakpointType extends XLineBreakpointType<Perl6LineBreakpointProperties> {
     public Perl6LineBreakpointType() {
         super("perl6LineBreakpoint", "Perl6 Line Breakpoint");

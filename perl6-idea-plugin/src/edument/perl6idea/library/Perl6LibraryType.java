@@ -1,5 +1,6 @@
 package edument.perl6idea.library;
 
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.libraries.DummyLibraryProperties;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+@InternalIgnoreDependencyViolation
 public class Perl6LibraryType extends LibraryType<DummyLibraryProperties> {
     public static final PersistentLibraryKind<DummyLibraryProperties> LIBRARY_KIND = new PersistentLibraryKind<>("perl6") {
         @NotNull

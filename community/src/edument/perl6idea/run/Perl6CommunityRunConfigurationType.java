@@ -8,6 +8,7 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.executors.DefaultDebugExecutor;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.debugger.Perl6DebugCommandLineState;
@@ -16,6 +17,7 @@ import edument.perl6idea.timeline.Perl6TimelineExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class Perl6CommunityRunConfigurationType extends ConfigurationTypeBase {
     protected static final String PERL6_RUN_CONFIGURATION_ID = "PERL6_RUN_CONFIGURATION";
 

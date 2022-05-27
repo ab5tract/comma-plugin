@@ -86,7 +86,7 @@ public class CommaProjectUtil {
             if (projectBuilder == null || !projectBuilder.isUpdate()) {
                 String name = wizard.getProjectName();
                 if (projectBuilder == null) {
-                    newProject = projectManager.newProject(projectFile, OpenProjectTask.newProject().withProjectName(name));
+                    newProject = projectManager.newProject(projectFile, OpenProjectTask.build().asNewProject().withProjectName(name));
                 }
                 else {
                     newProject = projectBuilder.createProject(name, projectFilePath);
@@ -140,7 +140,9 @@ public class CommaProjectUtil {
 
             if (newProject != projectToClose) {
                 ProjectUtil.updateLastProjectLocation(projectFile);
-                ProjectManagerEx.getInstanceEx().openProject(projectDir, OpenProjectTask.withCreatedProject(newProject).withProjectName(projectFile.getFileName().toString()));
+              OpenProjectTask options =
+                OpenProjectTask.build().withProject(newProject).withProjectName(projectFile.getFileName().toString());
+              ProjectManagerEx.getInstanceEx().openProject(projectDir, options);
             }
 
             if (!ApplicationManager.getApplication().isUnitTestMode()) {

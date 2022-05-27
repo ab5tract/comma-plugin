@@ -1,11 +1,13 @@
 package edument.perl6idea.findUsages;
 
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiElement;
 import com.intellij.usages.impl.rules.UsageType;
 import com.intellij.usages.impl.rules.UsageTypeProvider;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class Perl6UsageTypeProvider implements UsageTypeProvider {
     public static final UsageType SUBROUTINE_CALL_USAGE = new UsageType(() -> "Subroutine call usage");
     public static final UsageType METHOD_CALL_USAGE = new UsageType(() -> "Method call usage");

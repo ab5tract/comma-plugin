@@ -2,6 +2,7 @@ package edument.perl6idea.pod;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.ElementPatternCondition;
 import com.intellij.psi.PsiElement;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import static edument.perl6idea.parsing.Perl6TokenTypes.POD_FINISH_TEXT;
 import static edument.perl6idea.parsing.Perl6TokenTypes.POD_TYPENAME;
 
+@InternalIgnoreDependencyViolation
 public class PodCompletionContributor extends CompletionContributor {
     public static final String[] POD_ABBREV = new String[]{
         "pod", "item", "table", "head1", "head2", "head3", "head4", "code", "para", "defn"

@@ -1,5 +1,6 @@
 package edument.perl6idea.utils;
 
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -8,6 +9,7 @@ import edument.perl6idea.event.ModuleMetaChangeListener;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import org.jetbrains.annotations.NotNull;
 
+@InternalIgnoreDependencyViolation
 public class Perl6ModuleListStarter implements StartupActivity.Background {
     @Override
     public void runActivity(@NotNull Project project) {

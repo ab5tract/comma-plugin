@@ -7,6 +7,7 @@ import com.intellij.openapi.diagnostic.ErrorReportSubmitter;
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.diagnostic.SubmittedReportInfo;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.util.Consumer;
 import com.intellij.util.ExceptionUtil;
@@ -37,6 +38,7 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
+@InternalIgnoreDependencyViolation
 public class Perl6ErrorReportSubmitter extends ErrorReportSubmitter {
     private static final String URL = "https://commaide.com/api/error-reports";
 

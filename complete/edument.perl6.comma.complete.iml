@@ -20,26 +20,6 @@
     <orderEntry type="module" module-name="intellij.markdown" />
     <orderEntry type="module" module-name="intellij.platform.execution.impl" />
     <orderEntry type="module" module-name="intellij.platform.core.ui" />
-    <orderEntry type="module-library">
-      <library name="com.github.luben:zstd-jni:1.4.0-1" type="repository">
-        <properties maven-id="com.github.luben:zstd-jni:1.4.0-1" />
-        <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/com/github/luben/zstd-jni/1.4.0-1/zstd-jni-1.4.0-1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="org.json:json:20190722" type="repository">
-        <properties maven-id="org.json:json:20190722" />
-        <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/org/json/json/20190722/json-20190722.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module" module-name="intellij.platform.ide" />
     <orderEntry type="module-library">
       <library>
@@ -60,6 +40,16 @@
         <SOURCES>
           <root url="jar://$MAVEN_REPOSITORY$/commons-lang/commons-lang/2.6/commons-lang-2.6-sources.jar!/" />
         </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="io.airlift.aircompressor" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/json/json/20170516/json-20170516.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
   </component>

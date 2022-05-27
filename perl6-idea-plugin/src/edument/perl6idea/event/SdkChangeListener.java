@@ -1,6 +1,7 @@
 package edument.perl6idea.event;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
@@ -12,6 +13,7 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class SdkChangeListener extends ProjectExtension {
     private final Project myProject;
 

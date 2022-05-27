@@ -1,6 +1,7 @@
 package edument.perl6idea.editor;
 
 import com.intellij.codeInspection.SuppressionUtil;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiElement;
 import com.intellij.spellchecker.inspections.CommentSplitter;
 import com.intellij.spellchecker.tokenizer.SpellcheckingStrategy;
@@ -9,6 +10,7 @@ import com.intellij.spellchecker.tokenizer.Tokenizer;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import org.jetbrains.annotations.NotNull;
 
+@InternalIgnoreDependencyViolation
 public class Perl6SpellCheckingStrategy extends SpellcheckingStrategy {
     private final Tokenizer<?> perl6CommentTokenizer = new Tokenizer<>() {
         @Override

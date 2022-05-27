@@ -1,5 +1,6 @@
 package edument.perl6idea.cro.template.editor;
 
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.spellchecker.inspections.CommentSplitter;
@@ -9,6 +10,7 @@ import com.intellij.spellchecker.tokenizer.Tokenizer;
 import edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes;
 import org.jetbrains.annotations.NotNull;
 
+@InternalIgnoreDependencyViolation
 public class CroTemplateSpellCheckingStrategy extends SpellcheckingStrategy {
     private final Tokenizer<?> tokenizer = new Tokenizer<>() {
         @Override

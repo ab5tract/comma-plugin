@@ -4,6 +4,7 @@ import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
 import com.intellij.navigation.GotoRelatedItem;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.NotNullFunction;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+@InternalIgnoreDependencyViolation
 public class Perl6LineMarkerProvider extends RelatedItemLineMarkerProvider {
     private static final NotNullFunction<PsiElement, Collection<? extends GotoRelatedItem>> PERL6_GOTO_RELATED_ITEM_PROVIDER =
         dom -> Collections.singletonList(new GotoRelatedItem(dom, "Raku"));

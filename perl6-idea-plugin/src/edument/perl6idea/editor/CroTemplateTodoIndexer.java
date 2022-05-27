@@ -1,6 +1,7 @@
 package edument.perl6idea.editor;
 
 import com.intellij.lexer.Lexer;
+import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.impl.cache.impl.BaseFilterLexer;
 import com.intellij.psi.impl.cache.impl.IdAndToDoScannerBasedOnFilterLexer;
 import com.intellij.psi.impl.cache.impl.OccurrenceConsumer;
@@ -11,6 +12,7 @@ import edument.perl6idea.cro.template.parsing.CroTemplateTokenTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@InternalIgnoreDependencyViolation
 public class CroTemplateTodoIndexer extends LexerBasedTodoIndexer implements IdAndToDoScannerBasedOnFilterLexer {
     @Override
     public @NotNull Lexer createLexer(@NotNull OccurrenceConsumer consumer) {
