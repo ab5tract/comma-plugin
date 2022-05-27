@@ -298,8 +298,8 @@ public class HeapSnapshotCollection {
 
         short sizePerEntry = readShort(f);
         /* Blocks start with their size, but since that requires seeking backwards after writing,
-        * or buffering a load up front, they sometimes end up 0; we rely on the toc instead, since
-        * that is always written afterwards. */
+         * or buffering a load up front, they sometimes end up 0; we rely on the toc instead, since
+         * that is always written afterwards. */
         Long size = readLong(f);
 
         byte[] wholeBlock = new byte[Math.toIntExact(toc.end - f.getFilePointer())];
@@ -309,62 +309,63 @@ public class HeapSnapshotCollection {
         inputBuffer.put(wholeBlock);
         inputBuffer.flip();
 
-      /* we make a very rough estimation that the result will be around
-       * 2x as big as the input. It's often better than that, haven't done any
-       * measurement of this yet. */
-      ByteBuffer resultBuffer = ByteBuffer.allocateDirect((wholeBlock.length >> 3) << 4);
+        /* we make a very rough estimation that the result will be around
+         * 2x as big as the input. It's often better than that, haven't done any
+         * measurement of this yet. */
+        ByteBuffer resultBuffer = ByteBuffer.allocateDirect((wholeBlock.length >> 3) << 4);
 
-      ZstdDecompressor decompressor = new ZstdDecompressor();
-      while (true) {
-        try {
-          decompressor.decompress(inputBuffer, resultBuffer);
-          break;
+        ZstdDecompressor decompressor = new ZstdDecompressor();
+        while (true) {
+            try {
+                decompressor.decompress(inputBuffer, resultBuffer);
+                break;
+            }
+            catch (MalformedInputException | IllegalArgumentException e) {
+                if (e.getMessage().contains("too small") || e.getMessage().contains("limit")) {
+                    resultBuffer = ByteBuffer.allocateDirect(resultBuffer.limit() * 2);
+                }
+                else {
+                    throw e;
+                }
+            }
         }
-        catch (MalformedInputException | IllegalArgumentException e) {
-          if (e.getMessage().contains("too small") || e.getMessage().contains("limit")) {
-            resultBuffer = ByteBuffer.allocateDirect(resultBuffer.limit() * 2);
-          } else {
-            throw e;
-          }
+        resultBuffer.flip();
+        resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+        Buffer castedBuffer;
+        if (sizePerEntry == 8) {
+            castedBuffer = resultBuffer.asLongBuffer();
         }
-      }
-      resultBuffer.flip();
-      resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        else if (sizePerEntry == 4) {
+            castedBuffer = resultBuffer.asIntBuffer();
+        }
+        else if (sizePerEntry == 2) {
+            castedBuffer = resultBuffer.asShortBuffer();
+        }
+        else {
+            castedBuffer = resultBuffer.asReadOnlyBuffer();
+        }
 
-      Buffer castedBuffer;
-      if (sizePerEntry == 8) {
-        castedBuffer = resultBuffer.asLongBuffer();
-      }
-      else if (sizePerEntry == 4) {
-        castedBuffer = resultBuffer.asIntBuffer();
-      }
-      else if (sizePerEntry == 2) {
-        castedBuffer = resultBuffer.asShortBuffer();
-      }
-      else {
-        castedBuffer = resultBuffer.asReadOnlyBuffer();
-      }
-
-      if (castedBuffer instanceof LongBuffer) {
-        long[] castedFinalResult = new long[castedBuffer.limit()];
-        ((LongBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
-        return castedFinalResult;
-      }
-      else if (castedBuffer instanceof IntBuffer) {
-        int[] castedFinalResult = new int[castedBuffer.limit()];
-        ((IntBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
-        return castedFinalResult;
-      }
-      else if (castedBuffer instanceof ShortBuffer) {
-        short[] castedFinalResult = new short[castedBuffer.limit()];
-        ((ShortBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
-        return castedFinalResult;
-      }
-      else {
-        byte[] castedFinalResult = new byte[castedBuffer.limit()];
-        ((ByteBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
-        return castedFinalResult;
-      }
+        if (castedBuffer instanceof LongBuffer) {
+            long[] castedFinalResult = new long[castedBuffer.limit()];
+            ((LongBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
+            return castedFinalResult;
+        }
+        else if (castedBuffer instanceof IntBuffer) {
+            int[] castedFinalResult = new int[castedBuffer.limit()];
+            ((IntBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
+            return castedFinalResult;
+        }
+        else if (castedBuffer instanceof ShortBuffer) {
+            short[] castedFinalResult = new short[castedBuffer.limit()];
+            ((ShortBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
+            return castedFinalResult;
+        }
+        else {
+            byte[] castedFinalResult = new byte[castedBuffer.limit()];
+            ((ByteBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
+            return castedFinalResult;
+        }
     }
 
     static void readIntoStringHeap(RandomAccessFile f, TocEntry toc, List<String> strings) throws IOException {
