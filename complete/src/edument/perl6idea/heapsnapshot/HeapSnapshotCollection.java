@@ -332,38 +332,28 @@ public class HeapSnapshotCollection {
         resultBuffer.flip();
         resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-        Buffer castedBuffer;
         if (sizePerEntry == 8) {
-            castedBuffer = resultBuffer.asLongBuffer();
+            LongBuffer castedBuffer = resultBuffer.asLongBuffer();
+            long[] castedFinalResult = new long[castedBuffer.limit()];
+            castedBuffer.get(castedFinalResult, 0, castedBuffer.limit());
+            return castedFinalResult;
         }
         else if (sizePerEntry == 4) {
-            castedBuffer = resultBuffer.asIntBuffer();
+            IntBuffer castedBuffer = resultBuffer.asIntBuffer();
+            int[] castedFinalResult = new int[castedBuffer.limit()];
+            castedBuffer.get(castedFinalResult, 0, castedBuffer.limit());
+            return castedFinalResult;
         }
         else if (sizePerEntry == 2) {
-            castedBuffer = resultBuffer.asShortBuffer();
-        }
-        else {
-            castedBuffer = resultBuffer.asReadOnlyBuffer();
-        }
-
-        if (castedBuffer instanceof LongBuffer) {
-            long[] castedFinalResult = new long[castedBuffer.limit()];
-            ((LongBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
-            return castedFinalResult;
-        }
-        else if (castedBuffer instanceof IntBuffer) {
-            int[] castedFinalResult = new int[castedBuffer.limit()];
-            ((IntBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
-            return castedFinalResult;
-        }
-        else if (castedBuffer instanceof ShortBuffer) {
+            ShortBuffer castedBuffer = resultBuffer.asShortBuffer();
             short[] castedFinalResult = new short[castedBuffer.limit()];
-            ((ShortBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
+            castedBuffer.get(castedFinalResult, 0, castedBuffer.limit());
             return castedFinalResult;
         }
         else {
+            ByteBuffer castedBuffer = resultBuffer.asReadOnlyBuffer();
             byte[] castedFinalResult = new byte[castedBuffer.limit()];
-            ((ByteBuffer)castedBuffer).get(castedFinalResult, 0, castedBuffer.limit());
+            castedBuffer.get(castedFinalResult, 0, castedBuffer.limit());
             return castedFinalResult;
         }
     }
