@@ -309,43 +309,41 @@ public class HeapSnapshotCollection {
         inputBuffer.put(wholeBlock);
         inputBuffer.flip();
 
-        Buffer castedBuffer;
+      /* we make a very rough estimation that the result will be around
+       * 2x as big as the input. It's often better than that, haven't done any
+       * measurement of this yet. */
+      ByteBuffer resultBuffer = ByteBuffer.allocateDirect((wholeBlock.length >> 3) << 4);
+      resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
-            ByteBuffer resultBuffer = ByteBuffer.allocateDirect((wholeBlock.length >> 3) << 4);
-            resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
-
-            /* we make a very rough estimation that the result will be around
-             * 2x as big as the input. It's often better than that, haven't done any
-             * measurement of this yet. */
-            if (sizePerEntry == 8) {
-                castedBuffer = resultBuffer.asLongBuffer();
-            }
-            else if (sizePerEntry == 4) {
-                castedBuffer = resultBuffer.asIntBuffer();
-            }
-            else if (sizePerEntry == 2) {
-                castedBuffer = resultBuffer.asShortBuffer();
-            }
-            else {
-                castedBuffer = resultBuffer.asReadOnlyBuffer();
-            }
-
-          ZstdDecompressor decompressor = new ZstdDecompressor();
+      ZstdDecompressor decompressor = new ZstdDecompressor();
       while (true) {
         try {
           decompressor.decompress(inputBuffer, resultBuffer);
           break;
         }
-        catch (MalformedInputException e) {
-          if (e.getMessage().contains("too small")) {
+        catch (MalformedInputException | IllegalArgumentException e) {
+          if (e.getMessage().contains("too small") || e.getMessage().contains("limit")) {
             resultBuffer = ByteBuffer.allocateDirect(resultBuffer.limit() * 2);
           } else {
             throw e;
           }
         }
       }
-
       resultBuffer.flip();
+
+      Buffer castedBuffer;
+      if (sizePerEntry == 8) {
+        castedBuffer = resultBuffer.asLongBuffer();
+      }
+      else if (sizePerEntry == 4) {
+        castedBuffer = resultBuffer.asIntBuffer();
+      }
+      else if (sizePerEntry == 2) {
+        castedBuffer = resultBuffer.asShortBuffer();
+      }
+      else {
+        castedBuffer = resultBuffer.asReadOnlyBuffer();
+      }
 
       if (castedBuffer instanceof LongBuffer) {
         long[] castedFinalResult = new long[castedBuffer.limit()];
