@@ -32,12 +32,12 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Comma has been ported to work on Apple Silicon, and from this release on two DMG images will be available for Mac: one for Intel, one for Apple Silicon</li>
-<li>The grammar preview feature now supports lexically scoped grammars</li>
-<li>Grammar preview can now be cancelled, offering a better experience in the case one writes rules that fail to terminate</li>
-<li>The upcoming structured tags syntax in the Cro template language is recognized and appropriatey highlighted by Comma</li>
-<li>Make comments with <code>todo</code> and <code>fixme</code> markers in Raku and the Cro template language files recognized in the TODO tool window</li>
-<li>Fix an occasional exception in the does vs. is annotation</li>
+<li>Migrate to version 2022.1 of the IntelliJ platform, thus bringing in numerous fixes and changes and making the plugin support the latest IntelliJ release</li>
+<li>Make the Timeline view request Raku-level events and always load Log::Timeline even if the application does not explicitly use it; in combination with installing Log::Timeline version 0.5 or better this means one can now see the times taken by start blocks, await statements, when files are open, when async sockets are listening and connected, and more for any Raku program without needing to annotate it</li>
+<li>Fix updating the META6.json file automatically on Windows</li>
+<li>Make reading of heap snapshot files more efficient</li>
+<li>Fix display of loading indicator for heap snapshots, so the UI is not frozen while they load</li>
+<li>Fix a bug where Comma did not recognize usages of parameters on unit subroutines</li>
 </ul>
   ]]>
   </change-notes>
