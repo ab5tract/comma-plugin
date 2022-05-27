@@ -42,7 +42,6 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="github.luben.zstd.jni" level="project" />
     <orderEntry type="library" name="io.airlift.aircompressor" level="project" />
     <orderEntry type="module-library">
       <library>
