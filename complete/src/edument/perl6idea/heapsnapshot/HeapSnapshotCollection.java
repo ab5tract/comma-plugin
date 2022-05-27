@@ -313,7 +313,6 @@ public class HeapSnapshotCollection {
        * 2x as big as the input. It's often better than that, haven't done any
        * measurement of this yet. */
       ByteBuffer resultBuffer = ByteBuffer.allocateDirect((wholeBlock.length >> 3) << 4);
-      resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
       ZstdDecompressor decompressor = new ZstdDecompressor();
       while (true) {
@@ -330,6 +329,7 @@ public class HeapSnapshotCollection {
         }
       }
       resultBuffer.flip();
+      resultBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
       Buffer castedBuffer;
       if (sizePerEntry == 8) {
