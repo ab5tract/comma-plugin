@@ -202,7 +202,7 @@ public class CurrentGrammar {
         String supportCode = getSupportCode();
         if (supportCode == null)
             return null;
-        return content.replaceFirst("(our|my)?\\s+grammar\\s+" + grammarName, "\\$GLOBAL::__GLP = $0") + ";\n" +
+        return content.replaceFirst("((our|my)\\s+)?grammar\\s+" + grammarName, "\\$GLOBAL::__GLP = $0") + ";\n" +
                supportCode +
                "\ntry { " +
                "$GLOBAL::__GLP" +
