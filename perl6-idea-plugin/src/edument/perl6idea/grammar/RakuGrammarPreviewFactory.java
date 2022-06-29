@@ -1,31 +1,16 @@
 package edument.perl6idea.grammar;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import edument.perl6idea.Perl6Icons;
-import edument.perl6idea.module.Perl6ModuleType;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public class RakuGrammarPreviewFactory implements ToolWindowFactory {
     public static final String PREVIEW_WINDOW_ID = "Raku Grammar Preview";
-
-    @Override
-    public boolean shouldBeAvailable(@NotNull Project project) {
-        Module[] modules = ModuleManager.getInstance(project).getModules();
-        for (Module module : modules) {
-            if (Objects.equals(Perl6ModuleType.ID, module.getModuleTypeName()))
-                return true;
-        }
-        return false;
-    }
 
     @Override
     public void init(ToolWindow window) {
