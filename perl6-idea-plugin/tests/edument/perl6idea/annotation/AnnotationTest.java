@@ -162,6 +162,11 @@ public class AnnotationTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
     }
 
+    public void testNoUndeclaredPrivateMethodAnnotationInRoleAsItMayBeDeclaredInTheClass() {
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role Foo { method bar { self!bar } }");
+        myFixture.checkHighlighting();
+    }
+
     public void testUndeclaredAttributeAnnotator() {
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "role A { has $!a; }; class B does A { method b { say <error descr=\"Attribute $!b is used, but not declared\">$!b</error>; } }");
         myFixture.checkHighlighting();
