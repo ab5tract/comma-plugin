@@ -90,7 +90,7 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
     @Override
     public Perl6Variable[] getVariables() {
         Perl6Variable var = PsiTreeUtil.findChildOfType(this, Perl6Variable.class);
-        return var == null ? new Perl6Variable[0] : new Perl6Variable[] {var};
+        return var == null ? new Perl6Variable[0] : new Perl6Variable[]{var};
     }
 
     @Override
@@ -139,6 +139,11 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
         if (quant != null && quant.getText().equals("*") && getVariableName().startsWith("%"))
             return true;
         return findChildByClass(Perl6NamedParameterImpl.class) != null;
+    }
+
+    @Override
+    public @Nullable Perl6WhereConstraint getWhereConstraint() {
+        return findChildByClass(Perl6WhereConstraint.class);
     }
 
     @Override
@@ -272,6 +277,17 @@ public class Perl6ParameterImpl extends ASTWrapperPsiElement implements Perl6Par
 
         if (Perl6Variable.getSigil(other.getVariableName()) != Perl6Variable.getSigil(getVariableName()))
             return false;
+
+        // if there is a where clause, check it by text
+        Perl6WhereConstraint selfWhere = getWhereConstraint();
+        Perl6WhereConstraint otherWhere = other.getWhereConstraint();
+        if (otherWhere != null ^ selfWhere != null) {
+            return false;
+        }
+        else if (otherWhere != null) {
+            if (!selfWhere.getText().equals(otherWhere.getText()))
+                return false;
+        }
 
         Perl6Type selfType = inferType();
         Perl6Type otherType = other.inferType();

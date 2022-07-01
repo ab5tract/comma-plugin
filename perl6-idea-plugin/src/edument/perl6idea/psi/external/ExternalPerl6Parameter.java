@@ -7,6 +7,7 @@ import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.Perl6Parameter;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.Perl6Variable;
+import edument.perl6idea.psi.Perl6WhereConstraint;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6UnresolvedType;
@@ -86,6 +87,11 @@ public class ExternalPerl6Parameter extends Perl6ExternalPsiElement implements P
     @Override
     public boolean isNamed() {
         return myName.startsWith("*%") || myName.startsWith(":");
+    }
+
+    @Override
+    public Perl6WhereConstraint getWhereConstraint() {
+        return null;
     }
 
     @Override
