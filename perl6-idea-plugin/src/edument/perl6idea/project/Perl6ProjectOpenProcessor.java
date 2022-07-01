@@ -1,5 +1,8 @@
 package edument.perl6idea.project;
 
+import com.intellij.ide.impl.OpenProjectTask;
+import com.intellij.ide.impl.ProjectUtil;
+import com.intellij.ide.impl.ProjectUtilCore;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
@@ -34,23 +37,36 @@ public class Perl6ProjectOpenProcessor extends ProjectOpenProcessor {
     }
 
     @Override
-    public @Nullable Project doOpenProject(@NotNull VirtualFile virtualFile,
+    public @Nullable Project doOpenProject(@NotNull VirtualFile projectFile,
                                            @Nullable Project projectToClose,
                                            boolean forceOpenInNewFrame) {
-        VirtualFile projectDirectory = virtualFile.isDirectory() ? virtualFile : virtualFile.getParent();
+        VirtualFile projectDirectory = projectFile.isDirectory() ? projectFile : projectFile.getParent();
         Path nioPath = projectDirectory.toNioPath();
-        Project newProject;
-        String name = nioPath.getFileName().toString();
-        Perl6ProjectBuilder projectBuilder = new Perl6ProjectBuilder(null);
-        projectBuilder.setFileToImport(nioPath.toString());
-        newProject = projectBuilder.createProject(name, nioPath.toString());
-        if (newProject == null) {
-            return null;
-        } else {
-            projectBuilder.commit(newProject, null, ModulesProvider.EMPTY_MODULES_PROVIDER);
-            ProjectManagerEx.getInstanceEx().openProject(newProject);
-            return newProject;
+
+        boolean isValidIdeaProject = ProjectUtilCore.isValidProjectPath(projectDirectory.toNioPath());
+        OpenProjectTask options = new OpenProjectTask()
+            .withBeforeOpenCallback(project -> {
+                ProjectUtil.updateLastProjectLocation(projectDirectory.toNioPath());
+                return true;
+            })
+            .withProjectToClose(projectToClose)
+            .withForceOpenInNewFrame(true);
+        if (!isValidIdeaProject) {
+            options = options.asNewProject();
         }
+        return ProjectManagerEx.getInstanceEx().openProject(nioPath, options);
+    }
+
+    @Override
+    public void importProjectAfterwards(@NotNull Project project, @NotNull VirtualFile file) {
+        Perl6ProjectBuilder projectBuilder = new Perl6ProjectBuilder(null);
+        projectBuilder.setFileToImport(file.toString());
+        projectBuilder.commit(project);
+    }
+
+    @Override
+    public boolean canImportProjectAfterwards() {
+        return true;
     }
 
     @Override
