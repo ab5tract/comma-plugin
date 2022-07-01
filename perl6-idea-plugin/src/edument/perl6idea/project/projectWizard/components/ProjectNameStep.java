@@ -2,6 +2,7 @@
 package edument.perl6idea.project.projectWizard.components;
 
 import com.intellij.ide.IdeBundle;
+import com.intellij.ide.IdeCoreBundle;
 import com.intellij.ide.highlighter.ModuleFileType;
 import com.intellij.ide.highlighter.ProjectFileType;
 import com.intellij.ide.util.projectWizard.*;
@@ -123,8 +124,8 @@ public class ProjectNameStep extends ModuleWizardStep {
         final File projectFile = new File(path);
         if (projectFile.exists()) {
             final String title = myWizardContext.isCreatingNewProject()
-                                 ? IdeBundle.message("title.new.project")
-                                 : IdeBundle.message("title.add.module");
+                                 ? IdeCoreBundle.message("title.new.project")
+                                 : IdeCoreBundle.message("title.add.module");
             final String message = myWizardContext.isCreatingNewProject() && myWizardContext.getProjectStorageFormat() == DIRECTORY_BASED
                                    ? String.format("%s folder already exists in %s.\nIts content may be overwritten.\nContinue?",
                                                    Project.DIRECTORY_STORE_FOLDER, projectFile.getParentFile().getAbsolutePath())
