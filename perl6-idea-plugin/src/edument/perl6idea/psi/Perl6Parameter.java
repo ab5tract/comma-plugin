@@ -13,6 +13,9 @@ public interface Perl6Parameter extends Perl6PsiElement, Perl6PsiDeclaration, Pe
     PsiElement getInitializer();
     boolean isPositional();
     boolean isNamed();
+    @Nullable
+    Perl6WhereConstraint getWhereConstraint();
+    @Nullable
     Perl6PsiElement getValueConstraint();
     boolean isSlurpy();
     boolean isRequired();

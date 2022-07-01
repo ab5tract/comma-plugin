@@ -23,6 +23,10 @@ public class RakuHighlightTest extends CommaFixtureTestCase {
                                   "multi trait_mod:<is>(Parameter:D $param, :$header! --> Nil) is export { $param does Header; $header; };\n" +
                                   "multi <error descr=\"Re-declaration of trait_mod:<is> from aaa.raku:1\">trait_mod:<is></error>(Parameter:D $param, :$header! --> Nil) is export { $param does Header; $header; };");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE,
+                                  "multi sub format(&fn where *.signature.params == 1) { \"one param\"; fn() }\n" +
+                                  "multi sub format(&fn where *.signature.params == 2) { \"two params\"; fn(); }");
+        myFixture.checkHighlighting();
     }
 
     public void testDuplicatedMethods() {
