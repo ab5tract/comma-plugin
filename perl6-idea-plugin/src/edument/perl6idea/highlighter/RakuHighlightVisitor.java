@@ -24,7 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @InternalIgnoreDependencyViolation
 public class RakuHighlightVisitor extends RakuElementVisitor implements HighlightVisitor {
     private HighlightInfoHolder myHolder;
-    private final Map<String, List<Perl6PsiElement>> ourScopedPackagesPool = new THashMap<>();
+    private final Map<String, List<Perl6PsiElement>> ourScopedPackagesPool = new HashMap<>();
+    private PsiFile myFile;
 
     @Override
     public boolean suitableForFile(@NotNull PsiFile file) {
@@ -43,6 +44,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                            @NotNull Runnable highlight) {
         try {
             myHolder = holder;
+            myFile = file;
             if (updateWholeFile) {
                 ProgressIndicator progress = ProgressManager.getInstance().getProgressIndicator();
                 if (progress == null) throw new IllegalStateException("Must be run under progress");
@@ -189,7 +191,8 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                         if (newParams.length == oldParams.length && role.getTextOffset() != decl.getTextOffset()) {
                             marked.set(true);
                             myHolder.add(getDuplicateHighlightInfo(
-                                role, range, ((Perl6PackageDecl)redecl).getGlobalName(), HighlightInfoType.ERROR));
+                                role, redecl, range,
+                                ((Perl6PackageDecl)redecl).getGlobalName(), HighlightInfoType.ERROR));
                             break;
                         }
                     }
@@ -205,7 +208,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 minRedecl.ifPresent(packageDecl -> {
                     marked.set(true);
                     myHolder.add(
-                        getDuplicateHighlightInfo(packageDecl, range, ((Perl6PsiDeclaration)packageDecl).getGlobalName(),
+                        getDuplicateHighlightInfo(packageDecl, redecl, range, ((Perl6PsiDeclaration)packageDecl).getGlobalName(),
                                                   HighlightInfoType.ERROR));
                 });
             }
@@ -246,7 +249,8 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                     }
                     if (textRange != null)
                         infoHolder
-                            .add(getDuplicateHighlightInfo((Perl6PsiElement)oldAndNewHolders.first, textRange, name, HighlightInfoType.ERROR));
+                            .add(getDuplicateHighlightInfo((Perl6PsiElement)oldAndNewHolders.first,
+                                                           (PsiElement)holder, textRange, name, HighlightInfoType.ERROR));
                 }
             }
             v.add(holder);
@@ -350,7 +354,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                         }
                     }
                     myHolder
-                        .add(getDuplicateHighlightInfo(originalDecl, finalRange, varName,
+                        .add(getDuplicateHighlightInfo(originalDecl, variables[finalI], finalRange, varName,
                                                        varName.contains("!") ? HighlightInfoType.ERROR : HighlightInfoType.WARNING));
                 }
                 v.add(variables[finalI]);
@@ -359,10 +363,13 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
         }
     }
 
-    private static HighlightInfo getDuplicateHighlightInfo(Perl6PsiElement originalDecl,
+    private HighlightInfo getDuplicateHighlightInfo(Perl6PsiElement originalDecl,
+                                                           PsiElement currentDecl,
                                                            TextRange range,
                                                            String name, HighlightInfoType infoType) {
         if (!originalDecl.isValid())
+            return null;
+        if (!currentDecl.getContainingFile().equals(myFile))
             return null;
         PsiFile containingFile = originalDecl.getContainingFile();
         String previousPos = containingFile.getName() +
