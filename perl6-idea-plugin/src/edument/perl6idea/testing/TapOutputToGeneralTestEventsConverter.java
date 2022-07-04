@@ -138,11 +138,14 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             }
 
             if (result instanceof TestResult) {
-                processSingleTest((TestResult)result, (stdOut.length() == 0) ? null : stdOut.toString() + "\n");
+                processSingleTest((TestResult)result, (stdOut.length() == 0) ? null : stdOut + "\n");
                 stdOut = new StringJoiner("\n");
             }
             else if (result instanceof Text) {
                 stdOut.add(((Text)result).getValue());
+            }
+            else if (result instanceof Comment) {
+                stdOut.add("# " + ((Comment)result).getText());
             }
         }
 
@@ -150,8 +153,8 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
          * `saveLastTest` can be null or not, depending on if there are any tests at all
          * `stdOut` can be empty or not, depending on if there is an output before last test
          * If we have no tests at all, but all `stdOut`, then create a dummy one and post it
-         * If we have last test and it is a last element in `results` array, just send it with possible `stdOut`
-         * If we have last test and it is not a last element, collect all output lines after it and send
+         * If we have last test, it is a last element in `results` array, just send it with possible `stdOut`
+         * If we have last test, it is not a last element, collect all output lines after it and send
          */
 
         if (savedLastTest == null && stdOut.length() != 0) {
@@ -166,6 +169,8 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
                 TapElement result = results.get(i);
                 if (result instanceof Text)
                     stdOut.add(((Text)results.get(i)).getValue());
+                else if (result instanceof Comment)
+                    stdOut.add("# " + ((Comment)results.get(i)).getText());
             }
         }
         if (savedLastTest != null)
