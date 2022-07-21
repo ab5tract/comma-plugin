@@ -8,6 +8,7 @@ import com.intellij.execution.process.KillableColoredProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import edument.perl6idea.cro.run.Perl6CroRunConfigurationBase;
 import edument.perl6idea.sdk.Perl6SdkType;
 import edument.perl6idea.utils.Perl6CommandLine;
 import edument.perl6idea.utils.Perl6ScriptRunner;
@@ -81,6 +82,10 @@ public class Perl6RunCommandLineState extends CommandLineState {
 
     protected void setEnvironment(GeneralCommandLine cmd) {
         cmd.withEnvironment(((Perl6RunConfiguration)runConfiguration).getEnvs());
+        if (runConfiguration instanceof Perl6CroRunConfigurationBase &&
+            ((Perl6CroRunConfigurationBase)runConfiguration).getCroDevMode()) {
+            cmd.withEnvironment("CRO_DEV", "1");
+        }
     }
 
     protected void setListeners(KillableColoredProcessHandler handler) {}

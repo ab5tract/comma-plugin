@@ -91,7 +91,7 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
     }
 
     @NotNull
-    private JComponent getMainTab() {
+    protected JComponent getMainTab() {
         FileChooserDescriptor chooserDescriptor = new FileChooserDescriptor(
                 true, false,
                 false, false,
@@ -136,7 +136,7 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
     }
 
     @NotNull
-    private JComponent getDebugTab() {
+    protected JComponent getDebugTab() {
         JPanel panel = new JPanel();
         panel.setLayout(new VerticalFlowLayout(VerticalFlowLayout.TOP, 0, 5, true, false));
         myDebugPort = new JTextField(String.valueOf(9999)) {
