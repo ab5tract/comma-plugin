@@ -6,6 +6,7 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.openapi.util.text.Strings;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Element;
@@ -14,11 +15,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 abstract public class Perl6RunConfiguration extends LocatableConfigurationBase implements CommonProgramRunConfigurationParameters,
-                                                                                 Perl6DebuggableConfiguration {
+                                                                                          Perl6DebuggableConfiguration {
     private static final String SCRIPT_PATH = "SCRIPT_PATH";
     private static final String SCRIPT_ARGS = "SCRIPT_ARGS";
     private static final String WORKING_DIRECTORY = "WORKING_DIRECTORY";
@@ -37,7 +39,8 @@ abstract public class Perl6RunConfiguration extends LocatableConfigurationBase i
     private String interpreterParameters;
     private boolean myStartSuspended;
     private int myDebugPort;
-    private String myLogTimelineEvents;
+    // default value on creation, later overwritten if we initialize from a saved configuration
+    private String myLogTimelineEvents = Strings.join(Arrays.asList("await", "file", "process", "socket", "start"), ";");
 
     public Perl6RunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory, String name) {
         super(project, factory, name);
@@ -77,12 +80,13 @@ abstract public class Perl6RunConfiguration extends LocatableConfigurationBase i
         Element debugPortElem = element.getChild(DEBUG_PORT);
         Element startSuspendedElem = element.getChild(START_SUSPENDED);
         Element logTimelineEvents = element.getChild(LOG_TIMELINE_EVENTS);
-        if (scriptPathElem == null    || scriptArgsElem == null ||
+        if (scriptPathElem == null || scriptArgsElem == null ||
             workDirectoryElem == null || envVarsElem == null ||
-            passEnvElem == null       || perl6ParamsElem == null ||
-            debugPortElem == null     || startSuspendedElem == null) {
+            passEnvElem == null || perl6ParamsElem == null ||
+            debugPortElem == null || startSuspendedElem == null) {
             throw new InvalidDataException();
-        } else {
+        }
+        else {
             scriptPath = scriptPathElem.getText();
             scriptArgs = scriptArgsElem.getText();
             workingDirectory = workDirectoryElem.getText();
@@ -94,8 +98,9 @@ abstract public class Perl6RunConfiguration extends LocatableConfigurationBase i
             myDebugPort = Integer.valueOf(debugPortElem.getText());
             myStartSuspended = Boolean.valueOf(startSuspendedElem.getText());
             if (logTimelineEvents == null) {
-                myLogTimelineEvents = ""; // no events by default
-            } else {
+                myLogTimelineEvents = Strings.join(Arrays.asList("await", "file", "process", "socket", "start"), ";");
+            }
+            else {
                 myLogTimelineEvents = logTimelineEvents.getText();
             }
         }
