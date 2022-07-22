@@ -1,6 +1,7 @@
 package edument.perl6idea.run;
 
 import com.intellij.execution.ui.CommonProgramParametersPanel;
+import com.intellij.openapi.editor.impl.SelectionModelImpl;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
@@ -12,28 +13,32 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.PanelWithAnchor;
 import com.intellij.ui.RawCommandLineEditor;
+import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration> {
+    private static final String[] LOG_TIMELINE_EVENT_TYPES = {"await", "file", "process", "socket", "start", "thread"};
     private final Project myProject;
     private TextFieldWithBrowseButton fileField;
     private CommonProgramParametersPanel myParams;
     private JTextField myDebugPort;
     private JCheckBox toStartSuspended;
     private RawCommandLineEditor myPerl6ParametersPanel;
+    private JBList<String> myLogTimelineOptions;
 
     Perl6RunSettingsEditor(Project project) {
         super();
@@ -45,21 +50,31 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
         fileField.setText(conf.getScriptPath());
         if (conf.getDebugPort() == 0) {
             myDebugPort.setText(String.valueOf(9999));
-        } else {
+        }
+        else {
             myDebugPort.setText(String.valueOf(conf.getDebugPort()));
         }
         toStartSuspended.setSelected(conf.isStartSuspended());
         if (conf.getInterpreterParameters() == null) {
             myPerl6ParametersPanel.setText("");
-        } else {
+        }
+        else {
             myPerl6ParametersPanel.setText(conf.getInterpreterParameters());
         }
         myParams.reset(conf);
         if (conf.getWorkingDirectory() == null) {
             myParams.setWorkingDirectory(myProject.getBasePath());
-        } else {
+        }
+        else {
             myParams.setWorkingDirectory(conf.getWorkingDirectory());
         }
+        String events = conf.getLogTimelineEvents();
+        List<Integer> indexes = new ArrayList<>();
+        for (int i = 0; i < LOG_TIMELINE_EVENT_TYPES.length; i++) {
+            if (events.contains(LOG_TIMELINE_EVENT_TYPES[i]))
+                indexes.add(i);
+        }
+        myLogTimelineOptions.setSelectedIndices(indexes.stream().mapToInt(i->i).toArray());
     }
 
     @Override
@@ -68,15 +83,27 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
         VirtualFile file = LocalFileSystem.getInstance().findFileByPath(fileLine);
         if (file == null || !file.exists()) {
             throw new ConfigurationException("Main script path is incorrect");
-        } else if (Objects.equals(fileLine, "")) {
+        }
+        else if (Objects.equals(fileLine, "")) {
             throw new ConfigurationException("Main script path is absent");
-        } else  {
+        }
+        else {
             conf.setScriptPath(fileLine);
         }
         conf.setDebugPort(Integer.parseInt(myDebugPort.getText()));
         conf.setStartSuspended(toStartSuspended.isSelected());
         conf.setInterpreterParameters(myPerl6ParametersPanel.getText());
         myParams.applyTo(conf);
+        // Log::Timeline event types
+        int[] event_indexes = myLogTimelineOptions.getSelectedIndices();
+        StringJoiner eventTypeString = new StringJoiner(";");
+        for (int i = 0; i < LOG_TIMELINE_EVENT_TYPES.length; i++) {
+            int finalI = i;
+            if (Arrays.stream(event_indexes).anyMatch(el -> el == finalI)) {
+                eventTypeString.add(LOG_TIMELINE_EVENT_TYPES[i]);
+            }
+        }
+        conf.setLogTimelineEvents(eventTypeString.toString());
     }
 
     @NotNull
@@ -93,13 +120,15 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
     @NotNull
     protected JComponent getMainTab() {
         FileChooserDescriptor chooserDescriptor = new FileChooserDescriptor(
-                true, false,
-                false, false,
-                false, false) {
+            true, false,
+            false, false,
+            false, false) {
             @Override
             public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
-                return file.isDirectory() || file.getExtension() == null
-                        || Arrays.asList("pm6", "pl6", "p6", "t", "rakumod", "raku", "rakutest", "rakudoc", "").contains(file.getExtension());
+                return file.isDirectory() ||
+                       file.getExtension() == null
+                       ||
+                       Arrays.asList("pm6", "pl6", "p6", "t", "rakumod", "raku", "rakutest", "rakudoc", "").contains(file.getExtension());
             }
         };
         myParams = new CommonProgramParametersPanel() {
@@ -110,14 +139,20 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
             protected void addComponents() {
                 fileField = new TextFieldWithBrowseButton();
                 fileField.addBrowseFolderListener("Select Script", null, myProject,
-                chooserDescriptor);
+                                                  chooserDescriptor);
                 myFileComponent = LabeledComponent.create(fileField, "Script", BorderLayout.WEST);
                 add(myFileComponent);
                 super.addComponents();
-                Perl6RunSettingsEditor.this.myPerl6ParametersPanel = new RawCommandLineEditor();
+                myPerl6ParametersPanel = new RawCommandLineEditor();
                 myPerl6ParametersComponent =
-                  LabeledComponent.create(Perl6RunSettingsEditor.this.myPerl6ParametersPanel, "Raku parameters", BorderLayout.WEST);
+                    LabeledComponent.create(myPerl6ParametersPanel, "Raku parameters", BorderLayout.WEST);
                 add(myPerl6ParametersComponent);
+                myLogTimelineOptions = new JBList<>(LOG_TIMELINE_EVENT_TYPES);
+                DefaultListSelectionModel selectionModel = new DefaultListSelectionModel();
+                myLogTimelineOptions.setSelectionModel(selectionModel);
+                LabeledComponent<?> logTimelineComponent = LabeledComponent.create(
+                    myLogTimelineOptions, "Log::Timeline events", BorderLayout.WEST);
+                add(logTimelineComponent);
             }
 
             @Override
@@ -127,7 +162,7 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
                 components.addAll(Arrays.asList(super.getComponents()));
                 components.add(myPerl6ParametersComponent);
                 myAnchor = UIUtil.mergeComponentsWithAnchor(
-                  components.toArray(new PanelWithAnchor[components.size()]));
+                    components.toArray(new PanelWithAnchor[components.size()]));
             }
         };
         myParams.setProgramParametersLabel("Script parameters:");
@@ -153,7 +188,8 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
                             if (newValue < 65536) {
                                 super.insertString(offs, str, a);
                             }
-                        } catch (NumberFormatException ignored) {
+                        }
+                        catch (NumberFormatException ignored) {
                         }
                     }
                 };
