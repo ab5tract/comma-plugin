@@ -5,6 +5,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import edument.perl6idea.run.Perl6RunCommandLineState;
+import edument.perl6idea.run.Perl6RunConfiguration;
 import edument.perl6idea.timeline.client.TimelineClient;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,7 +39,12 @@ public class Perl6TimelineCommandLineState extends Perl6RunCommandLineState {
     protected void setEnvironment(GeneralCommandLine cmd) {
         super.setEnvironment(cmd);
         cmd.withEnvironment("LOG_TIMELINE_SERVER", "127.0.0.1:" + port);
-        cmd.withEnvironment("LOG_TIMELINE_RAKU_EVENTS", "file,thread,socket,process,start,await");
+        if (runConfiguration instanceof Perl6RunConfiguration) {
+            String allowedEvents = ((Perl6RunConfiguration)runConfiguration).getLogTimelineEvents();
+            if (!allowedEvents.isEmpty()) {
+                cmd.withEnvironment("LOG_TIMELINE_RAKU_EVENTS", allowedEvents);
+            }
+        }
     }
 
     @Override
