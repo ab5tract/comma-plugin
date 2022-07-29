@@ -148,6 +148,40 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
                     LabeledComponent.create(myPerl6ParametersPanel, "Raku parameters", BorderLayout.WEST);
                 add(myPerl6ParametersComponent);
                 myLogTimelineOptions = new JBList<>(LOG_TIMELINE_EVENT_TYPES);
+                myLogTimelineOptions.setCellRenderer(new ListCellRenderer<>() {
+                    private final ListCellRenderer<Object> renderer = new DefaultListCellRenderer();
+
+                    @Override
+                    public Component getListCellRendererComponent(JList<? extends String> list,
+                                                                  String value,
+                                                                  int index,
+                                                                  boolean isSelected,
+                                                                  boolean cellHasFocus) {
+                        String text;
+                        switch (value) {
+                            case "await":
+                                text = "Outstanding await expressions";
+                                break;
+                            case "file":
+                                text = "File I/O";
+                                break;
+                            case "process":
+                                text = "Process Spawning";
+                                break;
+                            case "socket":
+                                text = "Sockets";
+                                break;
+                            case "start":
+                                text = "Scheduled/running start blocks";
+                                break;
+                            case "thread":
+                            default:
+                                text = "Threads";
+                                break;
+                        }
+                        return renderer.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
+                    }
+                });
                 DefaultListSelectionModel selectionModel = new DefaultListSelectionModel();
                 myLogTimelineOptions.setSelectionModel(selectionModel);
                 LabeledComponent<?> logTimelineComponent = LabeledComponent.create(
