@@ -21,6 +21,8 @@ public class RakuAttributeSelectionPanel extends AbstractMemberSelectionPanel<Pe
             RakuAttributeSelectionTable.Perl6AttributeInfoModel(myTable);
         myTable.setMemberInfoModel(model);
         myTable.setModel(model);
+        // Make checkbox column small, instead of it taking 50% of the width
+        myTable.getColumnModel().getColumn(0).setMaxWidth(50);
         JScrollPane scrollPane = ScrollPaneFactory.createScrollPane(myTable);
         add(SeparatorFactory.createSeparator(title, myTable), BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
