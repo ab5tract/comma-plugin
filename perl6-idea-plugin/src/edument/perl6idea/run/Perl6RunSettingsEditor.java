@@ -96,7 +96,7 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
         myParams.applyTo(conf);
         // Log::Timeline event types
         int[] event_indexes = myLogTimelineOptions.getSelectedIndices();
-        StringJoiner eventTypeString = new StringJoiner(";");
+        StringJoiner eventTypeString = new StringJoiner(",");
         for (int i = 0; i < LOG_TIMELINE_EVENT_TYPES.length; i++) {
             int finalI = i;
             if (Arrays.stream(event_indexes).anyMatch(el -> el == finalI)) {
