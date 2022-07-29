@@ -200,7 +200,7 @@ abstract public class Perl6RunConfiguration extends LocatableConfigurationBase i
         myStartSuspended = startSuspended;
     }
 
-    protected String getLogTimelineEvents() {
+    public String getLogTimelineEvents() {
         return myLogTimelineEvents != null ? myLogTimelineEvents : "";
     }
 

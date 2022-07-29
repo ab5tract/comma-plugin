@@ -86,12 +86,6 @@ public class Perl6RunCommandLineState extends CommandLineState {
             ((Perl6CroRunConfigurationBase)runConfiguration).getCroDevMode()) {
             cmd.withEnvironment("CRO_DEV", "1");
         }
-        if (runConfiguration instanceof Perl6RunConfiguration) {
-            String allowedEvents = ((Perl6RunConfiguration)runConfiguration).getLogTimelineEvents();
-            if (!allowedEvents.isEmpty()) {
-                cmd.withEnvironment("LOG_TIMELINE_RAKU_EVENTS", allowedEvents);
-            }
-        }
     }
 
     protected void setListeners(KillableColoredProcessHandler handler) {}
