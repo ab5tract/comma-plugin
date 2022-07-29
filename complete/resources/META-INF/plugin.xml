@@ -439,6 +439,15 @@
             description="Imports a profiler report from an SQL data file">
       <add-to-group group-id="RunMenu" anchor="after" relative-to-action="edument.perl6idea.actions.LoadProfileResultsAction"/>
     </action>
+
+    <action id="edument.perl6idea.actions.ExtractParentClassAction" class="edument.perl6idea.actions.ExtractParentClassAction"
+            text="Extract Parent Class..." description="Extract a parent class with selected attributes and methods">
+      <add-to-group group-id="IntroduceActionsGroup" anchor="after" relative-to-action="Perl6Plugin.ExtractRegex"/>
+    </action>
+    <action id="edument.perl6idea.actions.ExtractRoleClassAction" class="edument.perl6idea.actions.ExtractRoleClassAction"
+            text="Extract Role..." description="Extract a role with selected attributes and methods">
+      <add-to-group group-id="IntroduceActionsGroup" anchor="after" relative-to-action="edument.perl6idea.actions.ExtractParentClassAction"/>
+    </action>
   </actions>
 
   <module-components>

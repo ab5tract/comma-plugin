@@ -60,4 +60,8 @@ public class CompletePerl6ElementFactory extends Perl6ElementFactory {
                              data.type.name().toLowerCase(),
                              data.name, data.signature, atoms);
     }
+
+    public static Perl6PackageDecl createPackage(Project project, String packageType, String name) {
+        return produceElement(project, String.format("%s %s {}", packageType, name), Perl6PackageDecl.class);
+    }
 }

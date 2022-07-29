@@ -15,7 +15,6 @@ import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.parsing.Perl6ElementTypes;
-import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -131,6 +130,11 @@ public class Perl6FormattingModelBuilder implements FormattingModelBuilder {
                    ? SINGLE_SPACE_SPACING
                    : (before || after ? CONSTANT_EMPTY_SPACING : null);
         });
+
+        // No excessive whitespace around trait
+        rules.add((left, right) -> right.getNode().getElementType() == Perl6ElementTypes.TRAIT ||
+                                   left.getNode().getElementType() == Perl6ElementTypes.TRAIT
+                                   ? SINGLE_SPACE_SPACING : null);
 
         // Prefix operators
         rules.add((left, right) -> left.getNode().getElementType() == Perl6ElementTypes.PREFIX && !left.getNode().getText().trim().matches("^[a-zA-Z]*$")
