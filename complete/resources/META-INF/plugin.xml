@@ -32,13 +32,9 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Fix a bug involving the Grammar Preview tool window failing to open</li>
-<li>Fix a bug in the Grammar Preview when there was a class declaration immediately preceding the grammar</li>
-<li>Fix a bug where sometimes opening a project via the &quot;Open&quot; menu was not working</li>
-<li>Fix a bug where re-declarations in included modules were causing odd warnings to appear in the current file</li>
-<li>Fix a bug where two subroutines with a different where clause were considered to have a re-declaration</li>
-<li>Do not annotate calls to undeclared private methods in roles, as they can be provided by consumer classes</li>
-<li>Do not hide test file output starting with &#39;#&#39;</li>
+<li>Introduce a basic version of the &quot;Extract Parent Class&quot; and &quot;Extract Role&quot; refactorings; these will gain further features in future releases</li>
+<li>In a Cro Run Configuration, the <code>CRO_DEV</code> environment variable is now set by default (it can be turned off if desired). This enables live reload of Cro templates during development, and in the future further Cro development-time features</li>
+<li>Run Configurations now support configuring what Raku events will be logged in Timeline View, so for example one can choose to only see socket and file events</li>
 </ul>
   ]]>
   </change-notes>
