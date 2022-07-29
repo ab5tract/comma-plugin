@@ -51,7 +51,7 @@ public class RakuAttributeSelectionTable extends AbstractMemberSelectionTable<Pe
             // which looks like the original idea, but the method is marked as static
             // and cannot be overridden so useless
             if (column == DISPLAY_NAME_COLUMN) {
-                return "Attribute";
+                return "Declaration";
             }
             return super.getColumnName(column);
         }

@@ -109,7 +109,7 @@ public class RakuExtractPackageDialog extends ExtractSuperBaseDialog<Perl6Packag
 
     @Override
     protected String getClassNameLabelText() {
-        return isRole ? "Parent class name:" : "Role name:";
+        return isRole ? "Role name:" : "Parent class name:";
     }
 
     @Override
@@ -142,7 +142,7 @@ public class RakuExtractPackageDialog extends ExtractSuperBaseDialog<Perl6Packag
     protected @Nullable JComponent createCenterPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         RakuAttributeSelectionPanel
-            attributeSelectionPanel = new RakuAttributeSelectionPanel("Attributes to form " + (isRole ? "role" : "parent class"),
+            attributeSelectionPanel = new RakuAttributeSelectionPanel("Declarations to form " + (isRole ? "role" : "parent class"),
                                                                       myMemberInfos);
         panel.add(attributeSelectionPanel, BorderLayout.CENTER);
         return panel;

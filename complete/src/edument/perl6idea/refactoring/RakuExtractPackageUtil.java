@@ -1,8 +1,11 @@
 package edument.perl6idea.refactoring;
 
 import com.intellij.codeInsight.PsiEquivalenceUtil;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiParserFacade;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
@@ -18,9 +21,9 @@ public class RakuExtractPackageUtil {
     public static boolean extractPackage(@NotNull Project project,
                                          Perl6PackageDecl aPackage,
                                          String name,
-                                         boolean role,
+                                         boolean isRole,
                                          Collection<RakuAttributeInfo> attributes) {
-        Perl6PackageDecl newPackageDecl = CompletePerl6ElementFactory.createPackage(project, role ? "role" : "class", name);
+        Perl6PackageDecl newPackageDecl = CompletePerl6ElementFactory.createPackage(project, isRole ? "role" : "class", name);
 
         Perl6StatementList newPackageList = PsiTreeUtil.findChildOfType(newPackageDecl, Perl6StatementList.class);
         Perl6StatementList list = PsiTreeUtil.findChildOfType(aPackage, Perl6StatementList.class);
@@ -56,17 +59,37 @@ public class RakuExtractPackageUtil {
             }
         }
 
+        // delete old statements
         statementsToDelete.forEach(PsiElement::delete);
 
+        // prepare newly created package node for insertion
         PsiElement formattedElement = CodeStyleManager.getInstance(project).reformat(newPackageDecl);
         PsiElement packageStatement = aPackage.getParent();
         PsiElement newPackageStatement = packageStatement.copy();
         newPackageStatement.deleteChildRange(newPackageStatement.getFirstChild(), newPackageStatement.getFirstChild());
         newPackageStatement.add(formattedElement);
 
+        // insert the node
         PsiElement line = Perl6ElementFactory.createNewLine(project);
         line = packageStatement.getParent().addBefore(line, packageStatement);
         packageStatement.getParent().addBefore(newPackageStatement, line);
+
+        // update original package
+        PsiElement newTrait = isRole
+                              ? Perl6ElementFactory.createTrait(project, "does", name)
+                              : Perl6ElementFactory.createTrait(project, "is", name);
+
+        // insert trait to establish composition/inheritance
+        Perl6Blockoid blockoid = PsiTreeUtil.findChildOfType(aPackage, Perl6Blockoid.class);
+        assert blockoid != null;
+        newTrait = blockoid.getParent().addBefore(newTrait, blockoid);
+        PsiElement ws = PsiParserFacade.SERVICE.getInstance(project).createWhiteSpaceFromText(" ");
+        blockoid.getParent().addBefore(ws, newTrait);
+        Document document = PsiDocumentManager.getInstance(project).getDocument(aPackage.getContainingFile());
+        if (document != null) {
+            PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(document);
+            CodeStyleManager.getInstance(project).reformat(aPackage);
+        }
 
         return true;
     }
@@ -83,21 +106,6 @@ public class RakuExtractPackageUtil {
                     return Objects.equals(decl.getScope(), "has");
                 }
                 return false;
-            })
-            .filter(decl -> {
-                if (isRole) {
-                    return true;
-                }
-                // private things are not allowed for parent classes for now
-                if (decl instanceof Perl6VariableDecl) {
-                    Perl6Variable[] variables = ((Perl6VariableDecl)decl).getVariables();
-                    for (Perl6Variable variable : variables) {
-                        if (Perl6Variable.getTwigil(variable.getVariableName()) == '!')
-                            return false;
-                    }
-                    return true;
-                }
-                return !((Perl6RoutineDecl)decl).isPrivate();
             })
             .map(decl -> {
                 return new RakuAttributeInfo(decl);

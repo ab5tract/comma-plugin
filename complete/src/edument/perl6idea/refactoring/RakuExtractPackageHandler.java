@@ -50,7 +50,7 @@ public class RakuExtractPackageHandler implements RefactoringActionHandler {
         List<RakuAttributeInfo> members = RakuExtractPackageUtil.getAllMemberInfo(myPackage, isRole);
         RakuExtractPackageDialog dialog = new RakuExtractPackageDialog(
             project, myPackage, members, isRole,
-            "Extract " + (isRole ? "role" : "parent class"));
+            "Extract " + (isRole ? "Role" : "Parent Class"));
         if (!dialog.showAndGet()) {
             return;
         }
