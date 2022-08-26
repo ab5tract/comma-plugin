@@ -239,11 +239,78 @@ grammar MAIN {
                     <.tlt>
                     <.tclose>
                     <.cond-sigil>
-                    <.tgt>?
+                    [
+                        <.tgt>
+                        [
+                            <?before [<.ws> '<!?']>
+                            <.ws>
+                            <.elsif>
+                        ]*
+                        [
+                            <?before [<.ws> '<!' ['>' || \h]]>
+                            <.ws>
+                            <.else>
+                        ]?
+                    ]?
                 ]?
             ]?
         ]?
         <.end-element('CONDITION')>
+    }
+
+    token elsif {
+        <?before '<!?'>
+        <.start-element('ELSIF')>
+        <.tlt>
+        <.start-token('TEMPLATE_TAG_COND_SIGIL')>
+        '!?'
+        <.end-token('TEMPLATE_TAG_COND_SIGIL')>
+        [
+            [
+            || <.dot> <.deref>?
+            || <.block>
+            || <.variable>
+            ]
+            [
+                [ <.hws> <.structural-tag>? ]?
+                <.tgt>
+                <.sequence-element-group>
+                [
+                    <?before '</?'>
+                    <.tlt>
+                    <.tclose>
+                    <.start-token('TEMPLATE_TAG_COND_SIGIL')>
+                    '?'
+                    <.end-token('TEMPLATE_TAG_COND_SIGIL')>
+                    <.tgt>?
+                ]?
+            ]?
+        ]?
+        <.end-element('ELSIF')>
+    }
+
+    token else {
+        <?before ['<!' ['>' || \h]]>
+        <.start-element('ELSE')>
+        <.tlt>
+        <.start-token('TEMPLATE_TAG_COND_SIGIL')>
+        '!'
+        <.end-token('TEMPLATE_TAG_COND_SIGIL')>
+        [
+            [ <.hws> <.structural-tag>? ]?
+            <.tgt>
+            <.sequence-element-group>
+            [
+                <?before '</!'>
+                <.tlt>
+                <.tclose>
+                <.start-token('TEMPLATE_TAG_COND_SIGIL')>
+                '!'
+                <.end-token('TEMPLATE_TAG_COND_SIGIL')>
+                <.tgt>?
+            ]?
+        ]?
+        <.end-element('ELSE')>
     }
 
     token structural-tag {

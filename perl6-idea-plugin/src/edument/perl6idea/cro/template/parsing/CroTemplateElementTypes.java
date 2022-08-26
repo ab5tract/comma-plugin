@@ -23,6 +23,8 @@ public interface CroTemplateElementTypes {
     IElementType DEREF_HASH_LITERAL = new CroTemplateElementType("DEREF_HASH_LITERAL");
     IElementType DEREF_METHOD = new CroTemplateElementType("DEREF_METHOD");
     IElementType DEREF_SMART = new CroTemplateElementType("DEREF_SMART");
+    IElementType ELSE = new CroTemplateElementType("ELSE");
+    IElementType ELSIF = new CroTemplateElementType("ELSIF");
     IElementType INFIX = new CroTemplateElementType("INFIX");
     IElementType INT_LITERAL = new CroTemplateElementType("INT_LITERAL");
     IElementType ITERATION = new CroTemplateElementType("ITERATION");
