@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @InternalIgnoreDependencyViolation
 public class RakuModuleInstallPromptStarter implements StartupActivity.Background {
@@ -42,13 +43,12 @@ public class RakuModuleInstallPromptStarter implements StartupActivity.Backgroun
             Perl6MetaDataComponent metadata = module.getService(Perl6MetaDataComponent.class);
             Set<String> dependencies = metadata.getAllDependencies();
             try {
-                // FIXME this is a very simplistic compare to avoid parsing Raku dep spec with :auth, :var etc,
-                // this should be fixed into something smarter and more general eventually
-                Set<String> installedDists = currentPM.getInstalledDistributions(project);
-                for (String dep : dependencies) {
-                    boolean hasDep = installedDists.stream().anyMatch(id -> id.equals(dep) || id.startsWith(dep + ":"));
+                Set<RakuDependencySpec> installedDists = currentPM.getInstalledDistributions(project)
+                    .stream().map(s -> new RakuDependencySpec(s)).collect(Collectors.toSet());
+                for (String depFromMeta : dependencies) {
+                    boolean hasDep = installedDists.stream().anyMatch(idFromPM -> idFromPM.equals(new RakuDependencySpec(depFromMeta)));
                     if (!hasDep)
-                        unavailableDeps.add(dep);
+                        unavailableDeps.add(depFromMeta);
                 }
             }
             catch (ExecutionException e) {
