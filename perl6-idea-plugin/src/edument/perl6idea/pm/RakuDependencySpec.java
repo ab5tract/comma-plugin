@@ -60,7 +60,6 @@ public class RakuDependencySpec {
         // name must be equal
         // check suffixes from obj, if they are present
         if (obj instanceof RakuDependencySpec) {
-            // name must be equal
             if (!((RakuDependencySpec)obj).myName.equals(myName))
                 return false;
             Map<String, String> dependencySuffixes = ((RakuDependencySpec)obj).getParts();
