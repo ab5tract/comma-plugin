@@ -1,5 +1,8 @@
 package edument.perl6idea.actions;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -53,8 +56,10 @@ public class UpdateExtensionsAction extends AnAction {
         Module @NotNull [] modules = ModuleManager.getInstance(project).getModules();
 
         Map<String, List<File>> filesToUpdate = collectFilesWithLegacyNames(modules);
-        if (filesToUpdate.isEmpty())
+        if (filesToUpdate.isEmpty()) {
+            Notifications.Bus.notify(new Notification("Raku Messages", "No legacy extensions detected", NotificationType.INFORMATION));
             return;
+        }
 
         new RakuChooseExtensionsToUpdateDialog(project, filesToUpdate).show();
     }
