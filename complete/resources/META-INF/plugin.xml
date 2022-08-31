@@ -32,9 +32,10 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Introduce a basic version of the &quot;Extract Parent Class&quot; and &quot;Extract Role&quot; refactorings; these will gain further features in future releases</li>
-<li>In a Cro Run Configuration, the <code>CRO_DEV</code> environment variable is now set by default (it can be turned off if desired). This enables live reload of Cro templates during development, and in the future further Cro development-time features</li>
-<li>Run Configurations now support configuring what Raku events will be logged in Timeline View, so for example one can choose to only see socket and file events</li>
+<li>Parse and highlight new Cro template language elsif/else syntax</li>
+<li>Better handle module name suffixes such as &#39;auth&#39; or &#39;ver&#39;; this fixes false negatives of not prompting to install a distribution that is not installed</li>
+<li>Fix a bug when a distribution metadata editor showed the data in the editor as changed even after clicking &quot;Apply&quot;</li>
+<li>Add a notification saying there are no legacy extensions in the project if the extension updater action was used in such a situation</li>
 </ul>
   ]]>
   </change-notes>
