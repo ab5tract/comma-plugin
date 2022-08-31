@@ -76,7 +76,7 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
     private JTextField myDescriptionField;
     private JTextField myAuthField;
     private TextFieldWithAutoCompletion<String> myLicenseField;
-    private final Map<String, String> myMeta = new HashMap<>();
+    private Map<String, String> myMeta = new HashMap<>();
     private static final String[] keys = new String[]{
         "name", "version", "auth", "description", "license", "source", "authors"
     };
@@ -270,6 +270,7 @@ public class ModuleMetaEditor implements ModuleConfigurationEditor {
         if (!myEmptyFields.isEmpty())
             throw new ConfigurationException("Empty fields: " + String.join(", ", ArrayUtil.toStringArray(myEmptyFields)));
         try {
+            myMeta = gatherFields();
             saveFields();
         }
         catch (IOException e) {
