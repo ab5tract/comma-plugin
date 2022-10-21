@@ -25,11 +25,11 @@ grammar MAIN {
     }
 
     token comment-tag {
-        <.start-element('COMMENT')>
-        <.start-token('COMMENT')>
+        <.start-element('HTML_COMMENT')>
+        <.start-token('HTML_COMMENT')>
         '<!--' [\w+ || \s+ || <!before '-->'> .]* '-->'?
-        <.end-token('COMMENT')>
-        <.end-element('COMMENT')>
+        <.end-token('HTML_COMMENT')>
+        <.end-element('HTML_COMMENT')>
     }
 
     token sequence-element-literal-text {
@@ -531,11 +531,9 @@ grammar MAIN {
 
     token sigil-tag-comment {
         <?before '<#>'>
-        <.start-element('COMMENT')>
         <.start-token('COMMENT')>
         '<#>' [\w+ || \s+ || <!before '</#>'> .]* '</#>'?
         <.end-token('COMMENT')>
-        <.end-element('COMMENT')>
     }
 
     token module-name {

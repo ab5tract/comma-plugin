@@ -120,8 +120,8 @@ public class CroTemplateParserDefinition implements ParserDefinition {
             return new CroTemplateInfixImpl(node);
         if (type == CroTemplateElementTypes.PARENTHESIZED_EXPRESSION)
             return new CroTemplateParenthesizedExpressionImpl(node);
-        if (type == CroTemplateElementTypes.COMMENT)
-            return new CroTemplateCommentImpl(node);
+        if (type == CroTemplateElementTypes.HTML_COMMENT)
+            return new CroTemplateHtmlCommentImpl(node);
         return null;
     }
 

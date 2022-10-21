@@ -600,7 +600,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
             switch (this.state) {
             case 0:
                 this.checkArgs(0);
-                this.startToken(CroTemplateTokenTypes.COMMENT);
+                this.startToken(CroTemplateTokenTypes.HTML_COMMENT);
                 if (!(this.literal("<!--"))) {
                     if (this.backtrack()) {
                         continue;

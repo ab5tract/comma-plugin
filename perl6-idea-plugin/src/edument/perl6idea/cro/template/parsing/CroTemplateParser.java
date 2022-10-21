@@ -404,12 +404,12 @@ public class CroTemplateParser implements PsiParser {
         opp = null;
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
-        if ((builder.getTokenType()) == CroTemplateTokenTypes.COMMENT) {
+        if ((builder.getTokenType()) == CroTemplateTokenTypes.HTML_COMMENT) {
             builder.advanceLexer();
         } else {
             return false;
         }
-        marker1.done(CroTemplateElementTypes.COMMENT);
+        marker1.done(CroTemplateElementTypes.HTML_COMMENT);
         return true;
     }
 
@@ -2545,14 +2545,11 @@ public class CroTemplateParser implements PsiParser {
     private boolean sigiltagcomment_54(PsiBuilder builder) {
         OPP opp;
         opp = null;
-        PsiBuilder.Marker marker1;
-        marker1 = builder.mark();
         if ((builder.getTokenType()) == CroTemplateTokenTypes.COMMENT) {
             builder.advanceLexer();
         } else {
             return false;
         }
-        marker1.done(CroTemplateElementTypes.COMMENT);
         return true;
     }
 
