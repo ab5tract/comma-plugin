@@ -44,17 +44,17 @@ public class Perl6ProjectOpenProcessor extends ProjectOpenProcessor {
         Path nioPath = projectDirectory.toNioPath();
 
         boolean isValidIdeaProject = ProjectUtilCore.isValidProjectPath(projectDirectory.toNioPath());
-        OpenProjectTask options = new OpenProjectTask()
-            .withBeforeOpenCallback(project -> {
-                ProjectUtil.updateLastProjectLocation(projectDirectory.toNioPath());
-                return true;
-            })
-            .withProjectToClose(projectToClose)
-            .withForceOpenInNewFrame(true);
-        if (!isValidIdeaProject) {
-            options = options.asNewProject();
-        }
-        return ProjectManagerEx.getInstanceEx().openProject(nioPath, options);
+        //OpenProjectTask options = new OpenProjectTask()
+        //    .withBeforeOpenCallback(project -> {
+        //        ProjectUtil.updateLastProjectLocation(projectDirectory.toNioPath());
+        //        return true;
+        //    })
+        //    .withProjectToClose(projectToClose)
+        //    .withForceOpenInNewFrame(true);
+        //if (!isValidIdeaProject) {
+        //    options = options.asNewProject();
+        //}
+        return ProjectManagerEx.getInstanceEx().openProject(nioPath, null);
     }
 
     @Override
