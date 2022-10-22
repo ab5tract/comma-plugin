@@ -20,6 +20,7 @@ public interface CroTemplateTokenTypes {
     IElementType DEFAULT_PARAMETER_SYNTAX = new CroTemplateElementType("DEFAULT_PARAMETER_SYNTAX");
     IElementType DOT = new CroTemplateElementType("DOT");
     IElementType END_OF_EXPR = new CroTemplateElementType("END_OF_EXPR");
+    IElementType HTML_COMMENT = new CroTemplateElementType("HTML_COMMENT");
     IElementType IDENTIFER = new CroTemplateElementType("IDENTIFER");
     IElementType INFIX = new CroTemplateElementType("INFIX");
     IElementType INT_LITERAL = new CroTemplateElementType("INT_LITERAL");

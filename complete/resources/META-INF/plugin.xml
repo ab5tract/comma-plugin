@@ -86,6 +86,7 @@
     <declarationRangeHandler key="edument.perl6idea.psi.Perl6RoutineDecl"
                              implementationClass="edument.perl6idea.structureView.RoutineDeclarationRangeHandler"/>
     <lang.commenter language="Perl6" implementationClass="edument.perl6idea.editor.Perl6Commenter"/>
+    <lang.commenter language="CroTemplate" implementationClass="edument.perl6idea.cro.template.editor.CroTemplateCommenter"/>
     <lang.foldingBuilder language="Perl6" implementationClass="edument.perl6idea.editor.Perl6FoldingBuilder"/>
     <typedHandler implementation="edument.perl6idea.editor.SigilCompletionAutoPopupHandler"/>
     <typedHandler implementation="edument.perl6idea.editor.UnicodeReplacementHandler"/>

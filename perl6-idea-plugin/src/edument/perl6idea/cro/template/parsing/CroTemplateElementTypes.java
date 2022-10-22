@@ -16,7 +16,6 @@ public interface CroTemplateElementTypes {
     IElementType BODY = new CroTemplateElementType("BODY");
     IElementType BOOL_LITERAL = new CroTemplateElementType("BOOL_LITERAL");
     IElementType CALL = new CroTemplateElementType("CALL");
-    IElementType COMMENT = new CroTemplateElementType("COMMENT");
     IElementType CONDITION = new CroTemplateElementType("CONDITION");
     IElementType DEREF_ARRAY = new CroTemplateElementType("DEREF_ARRAY");
     IElementType DEREF_HASH = new CroTemplateElementType("DEREF_HASH");
@@ -25,6 +24,7 @@ public interface CroTemplateElementTypes {
     IElementType DEREF_SMART = new CroTemplateElementType("DEREF_SMART");
     IElementType ELSE = new CroTemplateElementType("ELSE");
     IElementType ELSIF = new CroTemplateElementType("ELSIF");
+    IElementType HTML_COMMENT = new CroTemplateElementType("HTML_COMMENT");
     IElementType INFIX = new CroTemplateElementType("INFIX");
     IElementType INT_LITERAL = new CroTemplateElementType("INT_LITERAL");
     IElementType ITERATION = new CroTemplateElementType("ITERATION");
