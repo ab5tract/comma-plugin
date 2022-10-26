@@ -1,0 +1,11 @@
+<templateSet group="Raku">
+  <template name="Custom ｢ ｣ brackets"
+            value="｢$LITERAL$｣"
+            description="Insert string literal in special regexp result brackets"
+            toReformat="true">
+    <variable name="LITERAL" defaultValue="&quot;&quot;" alwaysStopAt="true"/>
+    <context>
+      <option name="RAKUSTMT" value="true"/>
+    </context>
+  </template>
+</templateSet>
