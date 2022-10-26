@@ -36,22 +36,13 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Migrate to version 2022.1 of the IntelliJ platform, thus bringing in numerous fixes and changes and making the plugin support the latest IntelliJ release</li>
-<li>Introduce a basic version of the &quot;Extract Parent Class&quot; and &quot;Extract Role&quot; refactorings; these will gain further features in future releases</li>
-<li>In a Cro Run Configuration, the <code>CRO_DEV</code> environment variable is now set by default (it can be turned off if desired). This enables live reload of Cro templates during development, and in the future further Cro development-time features</li>
-<li>Make the Timeline view request Raku-level events and always load Log::Timeline even if the application does not explicitly use it; in combination with installing Log::Timeline version 0.5 or better this means one can now see the times taken by start blocks, await statements, when files are open, when async sockets are listening and connected, and more for any Raku program without needing to annotate it</li>
-<li>Run Configurations now support configuring what Raku events will be logged in Timeline View, so for example one can choose to only see socket and file events</li>
-<li>Do not annotate calls to undeclared private methods in roles, as they can be provided by consumer classes</li>
-<li>Do not hide test file output starting with &#39;#&#39;</li>
-<li>Make reading of heap snapshot files more efficient</li>
-<li>Fix a bug involving the Grammar Preview tool window failing to open</li>
-<li>Fix a bug in the Grammar Preview when there was a class declaration immediately preceding the grammar</li>
-<li>Fix a bug where sometimes opening a project via the &quot;Open&quot; menu was not working</li>
-<li>Fix a bug where re-declarations in included modules were causing odd warnings to appear in the current file</li>
-<li>Fix a bug where two subroutines with a different where clause were considered to have a re-declaration</li>
-<li>Fix updating the META6.json file automatically on Windows</li>
-<li>Fix display of loading indicator for heap snapshots, so the UI is not frozen while they load</li>
-<li>Fix a bug where Comma did not recognize usages of parameters on unit subroutines</li>
+<li>Support latest Cro template syntax introduced in 0.8.8 release</li>
+<li>Parse and highlight new Cro template language elsif/else syntax</li>
+<li>Better handle module name suffixes such as &#39;auth&#39; or &#39;ver&#39;; this fixes false negatives of not prompting to install a distribution that is not installed</li>
+<li>Add Live Template to insert &#39;｢ ｣&#39; string quotes</li>
+<li>Add a notification saying there are no legacy extensions in the project if the extension updater action was used in such a situation</li>
+<li>Fix an exception occurring on an attempt to call Surround With between two statement</li>
+<li>Fix a bug when a distribution metadata editor showed the data in the editor as changed even after clicking &quot;Apply&quot;</li>
 </ul>
   ]]></change-notes>
 
