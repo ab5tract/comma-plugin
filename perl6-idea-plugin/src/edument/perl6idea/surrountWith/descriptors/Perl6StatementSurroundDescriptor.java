@@ -1,5 +1,6 @@
 package edument.perl6idea.surrountWith.descriptors;
 
+import com.intellij.codeInsight.PsiEquivalenceUtil;
 import com.intellij.lang.surroundWith.SurroundDescriptor;
 import com.intellij.lang.surroundWith.Surrounder;
 import com.intellij.psi.PsiElement;
@@ -51,8 +52,12 @@ public class Perl6StatementSurroundDescriptor implements SurroundDescriptor {
             return PsiElement.EMPTY_ARRAY;
 
         // If we ended up with numerous statements, surround them
-        if (!start.equals(end)) {
-            return PsiTreeUtil.getElementsOfRange(start, end).toArray(PsiElement.EMPTY_ARRAY);
+        if (!PsiEquivalenceUtil.areElementsEquivalent(start, end)) {
+            try {
+                return PsiTreeUtil.getElementsOfRange(start, end).toArray(PsiElement.EMPTY_ARRAY);
+            } catch (IllegalArgumentException e) {
+                return PsiElement.EMPTY_ARRAY;
+            }
         }
 
         // If we ended up with a single statement appearing to be selected,
