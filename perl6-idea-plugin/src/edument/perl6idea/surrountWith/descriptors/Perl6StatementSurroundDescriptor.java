@@ -31,7 +31,8 @@ public class Perl6StatementSurroundDescriptor implements SurroundDescriptor {
         new Perl6HashSurrounder(true),
         new Perl6ArraySurrounder(true),
         new Perl6ArrayContextSurrounder(true),
-        new Perl6HashContextSurrounder(true)
+        new Perl6HashContextSurrounder(true)//,
+        //new Perl6CustomBracketsSurrounder()
     };
 
     @Override
