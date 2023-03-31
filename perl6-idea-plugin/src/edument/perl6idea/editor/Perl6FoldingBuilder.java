@@ -27,9 +27,10 @@ public class Perl6FoldingBuilder extends FoldingBuilderEx implements DumbAware {
         List<Perl6PsiElement> podBlocksSeparated = PsiTreeUtil.getChildrenOfTypeAsList(list, PodBlockAbbreviated.class);
         List<Perl6PsiElement> singleBlocks = PsiTreeUtil.getChildrenOfTypeAsList(list, PodBlockDelimited.class);
         for (Perl6PsiElement block : singleBlocks) {
+            int endOffset = block.getTextOffset() + block.getText().stripTrailing().length();
             descriptors.add(new FoldingDescriptor(block.getNode(),
                                                   new TextRange(block.getTextOffset(),
-                                                                block.getTextOffset() + block.getTextLength()),
+                                                                endOffset),
                                                   FoldingGroup.newGroup("pod-single")));
         }
         for (int i = 0; i < podBlocksSeparated.size(); i += 2) {
