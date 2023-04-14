@@ -413,7 +413,7 @@ grammar MAIN {
                  || <?{$*POD_CODE_BLOCK eq 'output'}> 'output'
                  ]
                  >>
-               ]>
+               ] || $>
             ]
             <.start-token('POD_HAVE_CONTENT')> <?> <.end-token('POD_HAVE_CONTENT')>
             [

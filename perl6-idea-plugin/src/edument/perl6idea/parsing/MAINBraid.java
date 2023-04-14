@@ -43956,6 +43956,8 @@ public class MAINBraid extends Cursor<MAINBraid> {
         while (true) {
             switch (this.state) {
             case 0:
+                this.bsFailMark(8);
+                this.bsMark(7);
                 this.setArgs();
                 this.state = 1;
                 return 42;
@@ -44062,6 +44064,22 @@ public class MAINBraid extends Cursor<MAINBraid> {
                         return -2;
                     }
                 }
+                this.bsCommit(8);
+                this.state = 8;
+                continue;
+
+            case 7:
+                if (!(this.endOfString())) {
+                    if (this.backtrack()) {
+                        continue;
+                    } else {
+                        return -2;
+                    }
+                }
+                this.state = 8;
+                continue;
+
+            case 8:
                 return -1;
 
             }
