@@ -35,6 +35,7 @@ public class CroTemplateSyntaxHighlighter extends SyntaxHighlighterBase {
         ATTRIBUTES.put(CroTemplateTokenTypes.TEMPLATE_TAG_CALL_SIGIL, CroTemplateHighlighter.TEMPLATE_TAG);
         ATTRIBUTES.put(CroTemplateTokenTypes.TEMPLATE_TAG_APPLY_SIGIL, CroTemplateHighlighter.TEMPLATE_TAG);
         ATTRIBUTES.put(CroTemplateTokenTypes.TEMPLATE_TAG_COND_SIGIL, CroTemplateHighlighter.TEMPLATE_TAG);
+        ATTRIBUTES.put(CroTemplateTokenTypes.TEMPLATE_TAG_ELSE_SIGIL, CroTemplateHighlighter.TEMPLATE_TAG);
         ATTRIBUTES.put(CroTemplateTokenTypes.TEMPLATE_TAG_DECL_SIGIL, CroTemplateHighlighter.TEMPLATE_TAG);
         ATTRIBUTES.put(CroTemplateTokenTypes.TEMPLATE_TAG_ITER_SIGIL, CroTemplateHighlighter.TEMPLATE_TAG);
         ATTRIBUTES.put(CroTemplateTokenTypes.DECL_OPENER, CroTemplateHighlighter.DECLARATION);
