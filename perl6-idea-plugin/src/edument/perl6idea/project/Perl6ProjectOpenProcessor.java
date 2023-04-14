@@ -46,7 +46,10 @@ public class Perl6ProjectOpenProcessor extends ProjectOpenProcessor {
         boolean isValidIdeaProject = ProjectUtilCore.isValidProjectPath(projectDirectory.toNioPath());
         OpenProjectTask options = new OpenProjectTask(
           true, projectToClose, !isValidIdeaProject, isValidIdeaProject);
-        return ProjectManagerEx.getInstanceEx().openProject(nioPath, options);
+        Project project = ProjectManagerEx.getInstanceEx().openProject(nioPath, options);
+        if (project != null)
+            importProjectAfterwards(project, projectFile);
+        return project;
     }
 
     @Override
