@@ -32,6 +32,8 @@ public interface Perl6TokenTypes {
     IElementType CONSTANT_ANON = new Perl6ElementType("CONSTANT_ANON");
     IElementType CONSTANT_MISSING_INITIALIZER = new Perl6ElementType("CONSTANT_MISSING_INITIALIZER");
     IElementType CONTEXTUALIZER = new Perl6ElementType("CONTEXTUALIZER");
+    IElementType CONTEXTUALIZER_CLOSE = new Perl6ElementType("CONTEXTUALIZER_CLOSE");
+    IElementType CONTEXTUALIZER_OPEN = new Perl6ElementType("CONTEXTUALIZER_OPEN");
     IElementType DOTTY_NEXT_TERM = new Perl6ElementType("DOTTY_NEXT_TERM");
     IElementType EAT_TERMINATOR_HAS_HEREDOC = new Perl6ElementType("EAT_TERMINATOR_HAS_HEREDOC");
     IElementType EMPTY_STATEMENT = new Perl6ElementType("EMPTY_STATEMENT");

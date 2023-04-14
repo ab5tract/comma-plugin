@@ -16273,7 +16273,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 return -3;
 
             case 7:
-                this.startToken(Perl6TokenTypes.CONTEXTUALIZER);
+                this.startToken(Perl6TokenTypes.CONTEXTUALIZER_OPEN);
                 if (!(this.literal("("))) {
                     if (this.backtrack()) {
                         continue;
@@ -16303,7 +16303,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 this.state = 10;
                 break;
             case 10:
-                this.startToken(Perl6TokenTypes.CONTEXTUALIZER);
+                this.startToken(Perl6TokenTypes.CONTEXTUALIZER_CLOSE);
                 if (!(this.literal(")"))) {
                     if (this.backtrack()) {
                         continue;
