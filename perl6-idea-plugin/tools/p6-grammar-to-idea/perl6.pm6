@@ -1858,14 +1858,14 @@ grammar MAIN {
         || <.start-token('CONTEXTUALIZER')>
            <.sigil>
            <.end-token('CONTEXTUALIZER')>
-           <.start-token('CONTEXTUALIZER')>
+           <.start-token('CONTEXTUALIZER_OPEN')>
            '('
-           <.end-token('CONTEXTUALIZER')>
+           <.end-token('CONTEXTUALIZER_OPEN')>
            <.semilist>
            [
-               <.start-token('CONTEXTUALIZER')>
+               <.start-token('CONTEXTUALIZER_CLOSE')>
                ')'
-               <.end-token('CONTEXTUALIZER')>
+               <.end-token('CONTEXTUALIZER_CLOSE')>
            ]?
         ]
         <.end-element('CONTEXTUALIZER')>

@@ -11,6 +11,7 @@ import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.ui.jcef.JBCefBrowserBase;
+import com.intellij.ui.jcef.JBCefClient;
 import com.intellij.ui.jcef.JBCefJSQuery;
 import com.intellij.ui.jcef.JCEFHtmlPanel;
 import edument.perl6idea.editor.podPreview.HtmlStringResourceHandler;
@@ -55,6 +56,7 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
         this.moduleViewEditor = moduleViewEditor;
         String previewUrl = previewOf.getUrl();
         htmlPanel = new JCEFHtmlPanel(previewUrl);
+        htmlPanel.getJBCefClient().setProperty(JBCefClient.Properties.JS_QUERY_POOL_SIZE, 256);
         htmlPanel.getJBCefClient().addRequestHandler(new CefRequestHandlerAdapter() {
             @Override
             public CefResourceRequestHandler getResourceRequestHandler(CefBrowser browser,

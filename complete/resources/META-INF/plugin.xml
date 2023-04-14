@@ -1,6 +1,6 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <id>edument.perl6-idea-plugin</id>
-  <version>2022.10.0</version>
+  <version>2023.03.0</version>
   <name>Comma Complete Edition (Raku Language Support)</name>
   <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
 
@@ -32,9 +32,8 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Support latest Cro template syntax introduced in 0.8.8 release</li>
-<li>Add Live Template to insert &#39;｢ ｣&#39; string quotes</li>
-<li>Fix an exception occurring on an attempt to call Surround With between two statement</li>
+<li>Migrate to version 2022.3 of the IntelliJ platform, thus bringing in numerous fixes and changes and making the plugin support the more recent IntelliJ release</li>
+<li>Introduce basic support of folding for Pod blocks</li>
 </ul>
   ]]>
   </change-notes>

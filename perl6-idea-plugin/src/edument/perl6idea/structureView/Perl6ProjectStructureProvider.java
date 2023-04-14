@@ -1,6 +1,5 @@
 package edument.perl6idea.structureView;
 
-import com.intellij.ide.favoritesTreeView.FavoritesRootNode;
 import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.TreeStructureProvider;
 import com.intellij.ide.projectView.ViewSettings;
@@ -20,8 +19,8 @@ public class Perl6ProjectStructureProvider implements TreeStructureProvider {
     public Collection<AbstractTreeNode<?>> modify(@NotNull AbstractTreeNode<?> parent,
                                                @NotNull Collection<AbstractTreeNode<?>> children,
                                                ViewSettings settings) {
-        if (parent instanceof FavoritesRootNode)
-            return children;
+        //if (parent instanceof FavoritesRootNode)
+        //    return children;
         ArrayList<AbstractTreeNode<?>> list = new ArrayList<>(children);
 
         // Remove .precomp directories

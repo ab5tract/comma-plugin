@@ -2961,7 +2961,7 @@ public class Perl6Parser implements PsiParser {
     private boolean contextualizer_33_quant_1(PsiBuilder builder, OPP opp) {
         String tt2;
         tt2 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.CONTEXTUALIZER) && (tt2.equals(")"))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.CONTEXTUALIZER_CLOSE) && (tt2.equals(")"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -2977,7 +2977,7 @@ public class Perl6Parser implements PsiParser {
         }
         String tt1;
         tt1 = builder.getTokenText();
-        if (((builder.getTokenType()) == Perl6TokenTypes.CONTEXTUALIZER) && (tt1.equals("("))) {
+        if (((builder.getTokenType()) == Perl6TokenTypes.CONTEXTUALIZER_OPEN) && (tt1.equals("("))) {
             builder.advanceLexer();
         } else {
             return false;

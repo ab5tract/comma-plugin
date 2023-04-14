@@ -17,6 +17,7 @@ public class Perl6BraceMatcher implements PairedBraceMatcher {
                 new BracePair(Perl6TokenTypes.BLOCK_CURLY_BRACKET_OPEN, Perl6TokenTypes.BLOCK_CURLY_BRACKET_CLOSE, true),
                 new BracePair(Perl6TokenTypes.STRING_LITERAL_QUOTE_OPEN, Perl6TokenTypes.STRING_LITERAL_QUOTE_CLOSE, false),
                 new BracePair(Perl6TokenTypes.PARENTHESES_OPEN, Perl6TokenTypes.PARENTHESES_CLOSE, false),
+                new BracePair(Perl6TokenTypes.CONTEXTUALIZER_OPEN, Perl6TokenTypes.CONTEXTUALIZER_CLOSE, false),
                 new BracePair(Perl6TokenTypes.SIGNATURE_BRACKET_OPEN, Perl6TokenTypes.SIGNATURE_BRACKET_CLOSE, false),
                 new BracePair(Perl6TokenTypes.TYPE_COERCION_PARENTHESES_OPEN, Perl6TokenTypes.TYPE_COERCION_PARENTHESES_CLOSE, false),
                 new BracePair(Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_OPEN, Perl6TokenTypes.REGEX_CAPTURE_PARENTHESES_CLOSE, false),

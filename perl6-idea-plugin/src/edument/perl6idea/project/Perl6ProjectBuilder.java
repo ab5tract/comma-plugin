@@ -22,9 +22,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import edument.perl6idea.Perl6Icons;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.module.Perl6ModuleType;
-import edument.perl6idea.pm.RakuPackageManager;
 import edument.perl6idea.pm.RakuPackageManagerManager;
-import edument.perl6idea.pm.ui.RakuPackageManagerConfigurable;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,7 +80,7 @@ public class Perl6ProjectBuilder extends ProjectBuilder {
                 final LocalFileSystem lfs = LocalFileSystem.getInstance();
                 String metaParentDirectory = Paths.get(getFileToImport()).toString();
                 String path = FileUtil.toSystemIndependentName(metaParentDirectory);
-                VirtualFile contentRoot = lfs.findFileByPath(path);
+                VirtualFile contentRoot = lfs.findFileByPath(path.substring(5));
                 if (contentRoot == null) return;
                 ModifiableModuleModel modelToPatch = model != null ? model : ModuleManager.getInstance(project).getModifiableModel();
                 String moduleName = myContext == null ? project.getName() : myContext.getProjectName();
@@ -131,7 +129,7 @@ public class Perl6ProjectBuilder extends ProjectBuilder {
         return result;
     }
 
-    private static void addSourceDirectory(String name, VirtualFile contentRoot, ContentEntry entry, boolean isTest) {
+  private static void addSourceDirectory(String name, VirtualFile contentRoot, ContentEntry entry, boolean isTest) {
         VirtualFile child = contentRoot.findChild(name);
         if (child != null && isEqualOrAncestor(entry.getUrl(), child.getUrl())) {
             entry.addSourceFolder(child, isTest);
