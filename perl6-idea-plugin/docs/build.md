@@ -11,11 +11,11 @@ of the platform used (see above for the current version).
 Do the following steps inside a work-related directory, for example, `comma`.
 * `git clone https://github.com/edumentab/intellij-community.git`
 * `cd intellij-community`
-* `git checkout comma-221.5591.52`
+* `git checkout comma-223.4884`
 * Run the `getPlugins.sh` script
 * `git clone https://github.com/edumentab/perl6-idea-plugin.git comma-build` (so the structure is `intellij-community/comma-build`)
 * Make sure revisions of android-related repos are fresh enough for the IDEA checkout:
-  * `cd android; git checkout idea/212.212.3724`
+  * `cd android; git checkout 223.4884`
   * `cd ..`
 * Start IDEA instance, open existing project from `intellij-community` directory. Make sure you are using correct IDEA version.
 * An `Unregistered VCS root detected` for `comma-bulid` will appear - let IDEA add this root.
@@ -23,19 +23,18 @@ Do the following steps inside a work-related directory, for example, `comma`.
 
 #### SDK
 
-SDK for the project is `corretto-11.0.12`, you can download it in the `SDKs` tab
-of the Project Settings.
+SDK for the project is `jbr-17`, you can download it from https://github.com/JetBrains/JetBrainsRuntime/releases
 
 #### How to build a plugin
 
-While in the `comma-build` directory.
-* `./community-plugin ..` or `./complete-plugin ..` for the Community version or Complete version.
+While in the `intellij-community` directory.
+* `./comma-build/complete-plugin.cmd -Dintellij.build.use.compiled.classes=false -Dintellij.build.target.os=linux`
 * The plugin will be placed in `../out/commaCT/artifacts/CT-plugins/` and `out/commaCP/artifacts/CP-plugins/` directory depending on the version built (CT or CP).
 
 #### How to build a standalone Comma
 
-While in the `comma-build` directory.
-* `./community-build ..` or `./complete-build ..` for the Community version or Complete version.
+While in the `intellij-community` directory.
+* `./comma-build/complete-build.cmd -Dintellij.build.use.compiled.classes=false -Dintellij.build.target.os=linux`
 * Built images will be in `../out/comma/artifacts` directory.
 
 #### How to run Comma from IDEA Run Configuration for testing features during development
@@ -65,12 +64,7 @@ TODO: restore
 
 #### How to run tests
 
-While in the `comma-build` directory:
-
-* `./complete-tests.cmd .. edument.perl6.comma.build CommaCompleteRunTestsBuildTarget`
-* `./community-tests.cmd .. edument.perl6.comma.build CommaCommunityRunTestsBuildTarget`
-
-The `test-complete` target consists of tests that are common for both editions and dedicated ones. The same is true for `test-community`.
+TODO: restore
 
 ### How to update version
 
