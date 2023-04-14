@@ -24,26 +24,42 @@ public class Perl6FoldingBuilder extends FoldingBuilderEx implements DumbAware {
         List<FoldingDescriptor> descriptors = new ArrayList<>();
         getLevelFolding(root, recursionLevel, descriptors);
         Perl6StatementList list = PsiTreeUtil.getChildOfType(root, Perl6StatementList.class);
-        List<Perl6PsiElement> podBlocksSeparated = PsiTreeUtil.getChildrenOfTypeAsList(list, PodBlockAbbreviated.class);
+
+        // For individual delimited blocks, fold each one.
         List<Perl6PsiElement> singleBlocks = PsiTreeUtil.getChildrenOfTypeAsList(list, PodBlockDelimited.class);
         for (Perl6PsiElement block : singleBlocks) {
+            String firstLine = block.getText().lines().findFirst().orElse("=pod");
             int endOffset = block.getTextOffset() + block.getText().stripTrailing().length();
             descriptors.add(new FoldingDescriptor(block.getNode(),
-                                                  new TextRange(block.getTextOffset(),
-                                                                endOffset),
-                                                  FoldingGroup.newGroup("pod-single")));
+                                                  new TextRange(block.getTextOffset(), endOffset),
+                                                  FoldingGroup.newGroup("pod-delimited"),
+                                                  firstLine));
         }
-        for (int i = 0; i < podBlocksSeparated.size(); i += 2) {
-            if (podBlocksSeparated.size() % 2 != 0 && i + 1 == podBlocksSeparated.size()) {
-                break;
-            }
-            Perl6PsiElement startBlock = podBlocksSeparated.get(i);
-            Perl6PsiElement endBlock = podBlocksSeparated.get(i + 1);
-            int size = endBlock.getText().stripTrailing().length();
-            descriptors.add(new FoldingDescriptor(startBlock.getNode(),
-                                                  new TextRange(startBlock.getTextOffset(),
-                                                                endBlock.getTextOffset() + size),
-                                                  FoldingGroup.newGroup("pod-joined")));
+
+        // For paragraph and delimited floating blocks, find sequences of them.
+        List<Perl6PsiElement> podSeparated = PsiTreeUtil.getChildrenOfAnyType(list, PodBlockAbbreviated.class, PodBlockParagraph.class);
+        List<List<Perl6PsiElement>> podGroups = new ArrayList<>(podSeparated.size());
+        Perl6PsiElement lastPod = null;
+        for (Perl6PsiElement pod : podSeparated) {
+            // See if it should go in a new group, which is the case if it's not immediately
+            // after the last element we saw.
+            boolean newGroup = pod.getPrevSibling() != lastPod;
+            lastPod = pod;
+
+            // Add to group or create new group.
+            if (newGroup)
+                podGroups.add(new ArrayList<>());
+            podGroups.get(podGroups.size() - 1).add(pod);
+        }
+        for (List<Perl6PsiElement> group : podGroups) {
+            Perl6PsiElement first = group.get(0);
+            Perl6PsiElement last = group.get(group.size() - 1);
+            String firstLine = first.getText().lines().findFirst().orElse("=pod");
+            int endOffset = last.getTextOffset() + last.getText().stripTrailing().length();
+            descriptors.add(new FoldingDescriptor(first.getNode(),
+                                                  new TextRange(first.getTextOffset(), endOffset),
+                                                  FoldingGroup.newGroup("pod-abbreviated"),
+                                                  firstLine));
         }
         return descriptors.toArray(FoldingDescriptor.EMPTY);
     }
