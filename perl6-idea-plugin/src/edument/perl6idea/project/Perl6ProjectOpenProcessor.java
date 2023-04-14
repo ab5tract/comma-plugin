@@ -25,10 +25,10 @@ public class Perl6ProjectOpenProcessor extends ProjectOpenProcessor {
     @Override
     public boolean canOpenProject(@NotNull VirtualFile file) {
         if (file.isDirectory()) {
-            if (file.findChild("META6.json") != null) {
+            if (file.toNioPath().resolve("META6.json").toFile().exists()) {
                 return true;
             }
-            if (file.findChild("META.info") != null) {
+            if (file.toNioPath().resolve("META.info").toFile().exists()) {
                 return true;
             }
         }
@@ -44,17 +44,9 @@ public class Perl6ProjectOpenProcessor extends ProjectOpenProcessor {
         Path nioPath = projectDirectory.toNioPath();
 
         boolean isValidIdeaProject = ProjectUtilCore.isValidProjectPath(projectDirectory.toNioPath());
-        //OpenProjectTask options = new OpenProjectTask()
-        //    .withBeforeOpenCallback(project -> {
-        //        ProjectUtil.updateLastProjectLocation(projectDirectory.toNioPath());
-        //        return true;
-        //    })
-        //    .withProjectToClose(projectToClose)
-        //    .withForceOpenInNewFrame(true);
-        //if (!isValidIdeaProject) {
-        //    options = options.asNewProject();
-        //}
-        return ProjectManagerEx.getInstanceEx().openProject(nioPath, null);
+        OpenProjectTask options = new OpenProjectTask(
+          true, projectToClose, !isValidIdeaProject, isValidIdeaProject);
+        return ProjectManagerEx.getInstanceEx().openProject(nioPath, options);
     }
 
     @Override
