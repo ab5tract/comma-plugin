@@ -38,6 +38,7 @@
 <ul>
 <li>Migrate to version 2022.3 of the IntelliJ platform, thus bringing in numerous fixes and changes and making the plugin support the more recent IntelliJ release</li>
 <li>Introduce basic support of folding for Pod blocks</li>
+<li>Brace matching for contextualizers with parentheses</li>
 </ul>
   ]]></change-notes>
 
