@@ -51,6 +51,7 @@ public interface CroTemplateTokenTypes {
     IElementType TEMPLATE_TAG_CLOSE = new CroTemplateElementType("TEMPLATE_TAG_CLOSE");
     IElementType TEMPLATE_TAG_COND_SIGIL = new CroTemplateElementType("TEMPLATE_TAG_COND_SIGIL");
     IElementType TEMPLATE_TAG_DECL_SIGIL = new CroTemplateElementType("TEMPLATE_TAG_DECL_SIGIL");
+    IElementType TEMPLATE_TAG_ELSE_SIGIL = new CroTemplateElementType("TEMPLATE_TAG_ELSE_SIGIL");
     IElementType TEMPLATE_TAG_ITER_SIGIL = new CroTemplateElementType("TEMPLATE_TAG_ITER_SIGIL");
     IElementType TEMPLATE_TAG_OPEN = new CroTemplateElementType("TEMPLATE_TAG_OPEN");
     IElementType TEMPLATE_TAG_SLASH = new CroTemplateElementType("TEMPLATE_TAG_SLASH");

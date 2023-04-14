@@ -3189,7 +3189,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.startToken(CroTemplateTokenTypes.TEMPLATE_TAG_COND_SIGIL);
+                this.startToken(CroTemplateTokenTypes.TEMPLATE_TAG_ELSE_SIGIL);
                 if (!(this.literal("!"))) {
                     if (this.backtrack()) {
                         continue;
@@ -3318,7 +3318,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 } else {
                     this.pos = this.lastResult.getPos();
                 }
-                this.startToken(CroTemplateTokenTypes.TEMPLATE_TAG_COND_SIGIL);
+                this.startToken(CroTemplateTokenTypes.TEMPLATE_TAG_ELSE_SIGIL);
                 if (!(this.literal("!"))) {
                     if (this.backtrack()) {
                         continue;

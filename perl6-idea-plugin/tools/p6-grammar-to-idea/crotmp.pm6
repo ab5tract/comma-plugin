@@ -296,9 +296,9 @@ grammar MAIN {
         <?before ['<!' ['>' || \h]]>
         <.start-element('ELSE')>
         <.tlt>
-        <.start-token('TEMPLATE_TAG_COND_SIGIL')>
+        <.start-token('TEMPLATE_TAG_ELSE_SIGIL')>
         '!'
-        <.end-token('TEMPLATE_TAG_COND_SIGIL')>
+        <.end-token('TEMPLATE_TAG_ELSE_SIGIL')>
         [
             [ <.hws> <.structural-tag>? ]?
             <.tgt>
@@ -307,9 +307,9 @@ grammar MAIN {
                 <?before '</!'>
                 <.tlt>
                 <.tclose>
-                <.start-token('TEMPLATE_TAG_COND_SIGIL')>
+                <.start-token('TEMPLATE_TAG_ELSE_SIGIL')>
                 '!'
-                <.end-token('TEMPLATE_TAG_COND_SIGIL')>
+                <.end-token('TEMPLATE_TAG_ELSE_SIGIL')>
                 <.tgt>?
             ]?
         ]?

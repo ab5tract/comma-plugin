@@ -807,7 +807,7 @@ public class CroTemplateParser implements PsiParser {
         }
         String tt2;
         tt2 = builder.getTokenText();
-        if (((builder.getTokenType()) == CroTemplateTokenTypes.TEMPLATE_TAG_COND_SIGIL) && (tt2.equals("!"))) {
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.TEMPLATE_TAG_ELSE_SIGIL) && (tt2.equals("!"))) {
             builder.advanceLexer();
         } else {
             return false;
@@ -856,7 +856,7 @@ public class CroTemplateParser implements PsiParser {
         }
         String tt1;
         tt1 = builder.getTokenText();
-        if (((builder.getTokenType()) == CroTemplateTokenTypes.TEMPLATE_TAG_COND_SIGIL) && (tt1.equals("!"))) {
+        if (((builder.getTokenType()) == CroTemplateTokenTypes.TEMPLATE_TAG_ELSE_SIGIL) && (tt1.equals("!"))) {
             builder.advanceLexer();
         } else {
             return false;
