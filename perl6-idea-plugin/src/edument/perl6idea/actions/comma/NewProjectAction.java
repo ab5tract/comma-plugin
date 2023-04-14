@@ -1,6 +1,7 @@
 package edument.perl6idea.actions.comma;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAware;
@@ -25,5 +26,10 @@ public class NewProjectAction extends AnAction implements DumbAware {
 
         String actionText = NewWelcomeScreen.isNewWelcomeScreen(e) ? "Create New Project" : "Project...";
         e.getPresentation().setText(actionText);
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
     }
 }
