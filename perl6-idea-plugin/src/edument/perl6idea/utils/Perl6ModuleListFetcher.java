@@ -88,7 +88,12 @@ public class Perl6ModuleListFetcher {
                 Object localDepends = module.get("depends");
                 if (localDepends instanceof JSONArray) {
                     for (Object depend : (JSONArray)localDepends) {
-                        provides.addAll(getProvidesByModule(project, (String)depend, seen));
+                        if (depend instanceof String) {
+                            provides.addAll(getProvidesByModule(project, (String)depend, seen));
+                        }
+                        else if (depend instanceof JSONObject) {
+                           // XXX Ignore JSON-based dependencies for now, is there a fixed format in Raku already?
+                        }
                     }
                 }
             }
