@@ -350,6 +350,7 @@
     <todoIndexer filetype="Raku Test" implementationClass="edument.perl6idea.editor.RakuTodoIndexer"/>
     <todoIndexer filetype="Raku Pod" implementationClass="edument.perl6idea.editor.RakuTodoIndexer"/>
     <todoIndexer filetype="Cro Template" implementationClass="edument.perl6idea.editor.CroTemplateTodoIndexer"/>
+    <codeInsight.daemonBoundCodeVisionProvider implementation="edument.perl6idea.codeInsights.RakuReferencesCodeVisionProvider"/>
   </extensions>
 
   <actions>
