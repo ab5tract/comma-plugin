@@ -160,7 +160,7 @@ public class RakuDocStarter implements ApplicationStarter {
             if (psiFile instanceof Perl6File) {
                 String htmlForModule = ((Perl6File)psiFile).renderPod();
                 Path path = outputPath.resolve(relativeFilePathString).resolveSibling(psiFile.getName().replaceFirst("[.][^.]+$", "") + ".html");
-                messageOutput.info(path.toString() + "\n");
+                messageOutput.info(path + "\n");
                 path.getParent().toFile().mkdirs();
                 try {
                     Files.writeString(path, htmlForModule);

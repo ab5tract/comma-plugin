@@ -96,7 +96,7 @@ public class ProfileCompareDialog extends DialogWrapper {
     /* Comparator class that tries to recover the int value from the presented value.
     * Also tries to extract the int value from a comparison column, i.e. "+3 (+0.3%)" */
     private static class StringToIntComparator implements Comparator<String> {
-        private static Pattern INT_PATTERN = Pattern.compile("^[+-]?[\\d,.]+");
+        private static final Pattern INT_PATTERN = Pattern.compile("^[+-]?[\\d,.]+");
 
         @Override
         public int compare(String left, String right) {

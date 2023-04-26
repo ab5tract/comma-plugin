@@ -46,11 +46,11 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private final Project project;
     private static final Pattern indexMatcher = Pattern.compile("^([^\\t]+)\\t(.+)");
     private static final Pattern lineMatcher = Pattern.compile("^HIT {2}(.+?)(?: \\(.+\\))? {2}(\\d+)");
-    private Set<Perl6CoverageSuite> coverageSuites = new HashSet<>();
+    private final Set<Perl6CoverageSuite> coverageSuites = new HashSet<>();
     private Perl6CoverageSuite currentSuite;
-    private ConcurrentMap<Editor, Perl6CoverageSourceAnnotator> editorAnnotators =
+    private final ConcurrentMap<Editor, Perl6CoverageSourceAnnotator> editorAnnotators =
         new ConcurrentHashMap<>();
-    private ConcurrentMap<String, CoverageStatistics> fileCoverageStatsCache
+    private final ConcurrentMap<String, CoverageStatistics> fileCoverageStatsCache
             = new ConcurrentHashMap<>();
 
     public Perl6CoverageDataManagerImpl(@NotNull Project project) {

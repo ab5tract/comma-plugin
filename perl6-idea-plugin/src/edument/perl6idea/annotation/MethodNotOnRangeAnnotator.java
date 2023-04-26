@@ -12,8 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class MethodNotOnRangeAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder holder) {
-        if (psiElement instanceof Perl6PrefixApplication) {
-            Perl6PrefixApplication prefixApp = (Perl6PrefixApplication)psiElement;
+        if (psiElement instanceof Perl6PrefixApplication prefixApp) {
             PsiElement maybePrefix = prefixApp.getFirstChild();
             if (!(maybePrefix instanceof Perl6Prefix))
                 return;

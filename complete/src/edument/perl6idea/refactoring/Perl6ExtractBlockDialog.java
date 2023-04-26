@@ -25,14 +25,14 @@ public abstract class Perl6ExtractBlockDialog extends RefactoringDialog {
     public static final String[] KIND_OPTIONS = {"", "proto", "multi", "only"};
     public static final int LEXICAL_SCOPE_COLUMN_INDEX = 3;
     public static final int PASSED_AS_PARAMETER_COLUMN_INDEX = 2;
-    private JTextField myNameField;
-    private JComboBox<String> myScopeField;
-    private JComboBox<String> myKindField;
-    private JTextField myReturnTypeField;
-    private MethodSignatureComponent mySignature;
+    private final JTextField myNameField;
+    private final JComboBox<String> myScopeField;
+    private final JComboBox<String> myKindField;
+    private final JTextField myReturnTypeField;
+    private final MethodSignatureComponent mySignature;
     private String myCodeBlockType;
-    private boolean myIsPrivate;
-    private Perl6VariableData[] myInputVariables;
+    private final boolean myIsPrivate;
+    private final Perl6VariableData[] myInputVariables;
 
     protected Perl6ExtractBlockDialog(Project project, String title, Perl6CodeBlockType codeBlockType, Perl6VariableData[] myInputVariables) {
         super(project, true);

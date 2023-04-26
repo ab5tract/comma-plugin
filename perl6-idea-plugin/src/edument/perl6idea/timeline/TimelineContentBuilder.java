@@ -32,9 +32,8 @@ public class TimelineContentBuilder extends CustomConsoleRunTab {
 
     @Override
     protected void addCustomTab(Object clientObject) throws ExecutionException {
-        if (!(clientObject instanceof TimelineClient))
+        if (!(clientObject instanceof TimelineClient client))
             throw new ExecutionException("Expected TimelineClient, got " + clientObject.getClass() + " instead");
-        TimelineClient client = (TimelineClient)clientObject;
         TimelineView timeline = new TimelineView();
         Content content = myUi.createContent(TIMELINE_CONTENT_ID, timeline, "Timeline", null, null);
         content.setPreferredFocusableComponent(timeline);

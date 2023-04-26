@@ -30,10 +30,10 @@ public abstract class Perl6ExtractRegexDialog extends RefactoringDialog {
     private final Perl6VariableData[] myInputVariables;
     private final PsiElement[] myAtoms;
     private final boolean myLexical;
-    private JTextField myNameField;
-    private JComboBox<String> myTypeField;
-    private JCheckBox myCaptureCheckField;
-    private MethodSignatureComponent mySignature;
+    private final JTextField myNameField;
+    private final JComboBox<String> myTypeField;
+    private final JCheckBox myCaptureCheckField;
+    private final MethodSignatureComponent mySignature;
 
     protected Perl6ExtractRegexDialog(@NotNull Project project,
                                       Perl6VariableData[] inputVariables,

@@ -13,7 +13,7 @@ import java.awt.*;
 import java.io.File;
 
 public class ProfilerView extends JPanel {
-    private Project myProject;
+    private final Project myProject;
     private JComponent myView;
 
     public ProfilerView(Project project) {

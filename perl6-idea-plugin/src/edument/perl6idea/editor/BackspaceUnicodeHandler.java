@@ -32,7 +32,7 @@ public class BackspaceUnicodeHandler extends BackspaceHandlerDelegate {
     public void beforeCharDeleted(char c, @NotNull PsiFile file, @NotNull Editor editor) {
         Pair<Pair<Integer, Integer>, String> lastReplacement = editor.getUserData(UnicodeReplacementHandler.UNICODE_REPLACEMENT_POS);
         if (lastReplacement != null && editor.getCaretModel().getOffset() - 1 == lastReplacement.first.first) {
-            IElementType curToken = ((EditorEx)editor).getHighlighter()
+            IElementType curToken = editor.getHighlighter()
                 .createIterator(editor.getCaretModel().getOffset() - 1).getTokenType();
             if (curToken == Perl6TokenTypes.INFIX || curToken == Perl6TokenTypes.METAOP)
                 stringToInsert = lastReplacement.second;

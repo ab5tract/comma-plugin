@@ -282,8 +282,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
 
             mySelectedConfigurable = toSelect;
 
-            if (toSelect instanceof MasterDetailsComponent) {
-                final MasterDetailsComponent master = (MasterDetailsComponent)toSelect;
+            if (toSelect instanceof final MasterDetailsComponent master) {
                 if (myUiState.sideProportion > 0) {
                     master.getSplitter().setProportion(myUiState.sideProportion);
                 }

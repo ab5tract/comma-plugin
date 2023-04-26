@@ -57,9 +57,8 @@ public class Perl6ScopedDeclStubElementType extends IStubElementType<Perl6Scoped
     public boolean shouldCreateStub(ASTNode node) {
         PsiElement element = node.getPsi();
         // Scope is either `has` for attribute or `our`, but with `is export` trait
-        if (!(element instanceof Perl6ScopedDecl)) return false;
+        if (!(element instanceof Perl6ScopedDecl scopedDecl)) return false;
 
-        Perl6ScopedDecl scopedDecl = (Perl6ScopedDecl) element;
         if (scopedDecl.getScope().equals("has")) return true;
         if (!scopedDecl.getScope().equals("our")) return false;
         Perl6PsiDeclaration childDeclaration = PsiTreeUtil.getChildOfType(scopedDecl, Perl6PsiDeclaration.class);

@@ -22,7 +22,7 @@ import java.io.RandomAccessFile;
 public class Perl6LoadHeapSnapshotFileTask extends Task.Backgroundable {
     public static final Logger LOG = Logger.getInstance(Perl6LoadHeapSnapshotFileTask.class);
     private final HeapSnapshotView heapSnapshotView;
-    private File heapSnapshotFile;
+    private final File heapSnapshotFile;
     private HeapSnapshotCollection snapshotCollection;
 
     public Perl6LoadHeapSnapshotFileTask(Project project, String data, boolean canBeCancelled,

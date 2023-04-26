@@ -58,8 +58,7 @@ public class Perl6StructureViewElement implements StructureViewTreeElement {
             return;
 
         // See if this element is a DSL call.
-        if (search instanceof Perl6SubCall) {
-            Perl6SubCall call = (Perl6SubCall)search;
+        if (search instanceof Perl6SubCall call) {
             for (Perl6FrameworkCall ext : extensions) {
                 if (ext.isApplicable(call)) {
                     ItemPresentation presentation = ext.getStructureViewPresentation(call, ext.getFrameworkData(call));

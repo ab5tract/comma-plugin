@@ -109,8 +109,7 @@ public class Perl6ModuleViewEditor extends UserDataHolderBase implements TextEdi
 
     @Override
     public void setState(@NotNull FileEditorState state) {
-        if (state instanceof Perl6ModuleEditorState) {
-            Perl6ModuleEditorState compositeState = (Perl6ModuleEditorState)state;
+        if (state instanceof Perl6ModuleEditorState compositeState) {
             if (compositeState.getEditorState() != null) {
                 myEditor.setState(compositeState.getEditorState());
             }

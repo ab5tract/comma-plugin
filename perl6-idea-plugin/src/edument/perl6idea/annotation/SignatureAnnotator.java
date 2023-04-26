@@ -22,8 +22,7 @@ public class SignatureAnnotator implements Annotator {
         boolean isFirst = true;
 
         for (PsiElement psiElement : params) {
-            if (!(psiElement instanceof Perl6Parameter)) continue;
-            Perl6Parameter parameter = (Perl6Parameter)psiElement;
+            if (!(psiElement instanceof Perl6Parameter parameter)) continue;
 
             if (isFirst) {
                 state = parameter.isPositional() ? SignatureState.POSITIONAL :

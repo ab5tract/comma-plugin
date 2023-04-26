@@ -53,8 +53,4 @@ public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorat
             return new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.RED);
         return new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.YELLOW);
     }
-
-    @Override
-    public void decorate(PackageDependenciesNode node, ColoredTreeCellRenderer cellRenderer) {
-    }
 }

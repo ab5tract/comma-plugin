@@ -21,9 +21,8 @@ import java.util.Objects;
 public class MissingRoleMethodAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6PackageDecl)) return;
+        if (!(element instanceof Perl6PackageDecl packageDecl)) return;
 
-        Perl6PackageDecl packageDecl = (Perl6PackageDecl)element;
         if (!packageDecl.getPackageKind().equals("class")) return;
 
         List<Perl6Trait> traits = packageDecl.getTraits();
@@ -35,13 +34,11 @@ public class MissingRoleMethodAnnotator implements Annotator {
 
         List<Perl6PsiDeclaration> declarations = packageDecl.getDeclarations();
         for (Perl6PsiDeclaration decl : declarations) {
-            if (decl instanceof Perl6RoutineDecl) {
-                Perl6RoutineDecl routineDecl = (Perl6RoutineDecl)decl;
+            if (decl instanceof Perl6RoutineDecl routineDecl) {
                 if (routineDecl.getRoutineKind().equals("method")) {
                     methodsToImplement.remove(routineDecl.getRoutineName());
                 }
-            } else if (decl instanceof Perl6VariableDecl) {
-                Perl6VariableDecl variableDecl = (Perl6VariableDecl)decl;
+            } else if (decl instanceof Perl6VariableDecl variableDecl) {
                 if (!Objects.equals(variableDecl.getScope(), "has"))
                     continue;
                 String[] names = variableDecl.getVariableNames();
@@ -89,8 +86,7 @@ public class MissingRoleMethodAnnotator implements Annotator {
                 if (!(roleDeclaration instanceof Perl6PackageDecl)) continue;
                 List<Perl6PsiDeclaration> declarations = ((Perl6PackageDecl)roleDeclaration).getDeclarations();
                 for (Perl6PsiDeclaration maybeMethod : declarations) {
-                    if (!(maybeMethod instanceof Perl6RoutineDecl)) continue;
-                    Perl6RoutineDecl method = (Perl6RoutineDecl)maybeMethod;
+                    if (!(maybeMethod instanceof Perl6RoutineDecl method)) continue;
                     if (!method.getRoutineKind().equals("method") || method.getParent() instanceof Perl6MultiDecl) continue;
                     if (method.isStubbed()) {
                         // If method is not indexed or we saw it, and it was not closer to root class than current stub,

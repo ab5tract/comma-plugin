@@ -38,7 +38,7 @@ public class ProfileCompareGCs extends ProfileCompareDataProvider {
         new ProfileCompareProcessor.ProfileCompareColumn("Avg Promoted Bytes", "promoted_bytes")
     );
 
-    private static String[] METRICS = new String[]{
+    private static final String[] METRICS = new String[]{
         "total_time",
         "avg_time",
         "retained_bytes",

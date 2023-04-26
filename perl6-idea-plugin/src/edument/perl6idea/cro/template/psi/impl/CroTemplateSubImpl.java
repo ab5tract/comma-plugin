@@ -30,7 +30,7 @@ public class CroTemplateSubImpl extends StubBasedPsiElementBase<CroTemplateSubSt
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + getNode().getElementType().toString() + ")";
+        return getClass().getSimpleName() + "(" + getNode().getElementType() + ")";
     }
 
     @Override

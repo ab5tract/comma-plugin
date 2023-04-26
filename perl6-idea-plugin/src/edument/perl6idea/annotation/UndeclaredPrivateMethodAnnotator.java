@@ -17,9 +17,8 @@ import org.jetbrains.annotations.NotNull;
 public class UndeclaredPrivateMethodAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6MethodCall))
+        if (!(element instanceof final Perl6MethodCall call))
             return;
-        final Perl6MethodCall call = (Perl6MethodCall)element;
         String methodName = call.getCallName();
         PsiElement caller = call.getPrevSibling();
 

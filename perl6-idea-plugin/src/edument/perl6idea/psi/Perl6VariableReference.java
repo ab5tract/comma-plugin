@@ -196,8 +196,7 @@ public class Perl6VariableReference extends PsiReferenceBase.Poly<Perl6Variable>
     }
 
     private static boolean derefAndCollectRegexVars(PsiElement arg, List<PsiNamedElement> elemsToReturn) {
-        if (arg instanceof Perl6Variable) {
-            Perl6Variable regexVar = (Perl6Variable)arg;
+        if (arg instanceof Perl6Variable regexVar) {
             PsiReference ref = regexVar.getReference();
             assert ref != null;
             PsiElement resolve = ref.resolve();

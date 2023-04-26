@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
 public abstract class Perl6ParameterTableModel extends AbstractTableModel implements EditableModel {
-    private String[] columns = {"Name", "Type", "Pass as Parameter", "Available Lexically"};
+    private final String[] columns = {"Name", "Type", "Pass as Parameter", "Available Lexically"};
     private final Perl6VariableData[] myVars;
     protected final JTable myTable;
 

@@ -418,15 +418,13 @@ public class TimelineChart extends JPanel {
             double endTime = Math.min(startTime + tickInterval * numTicks, timeline.getEndTime());
             boolean darken = true;
             for (Logged item : loggedItems) {
-                if (item instanceof Event) {
-                    Event event = (Event)item;
+                if (item instanceof Event event) {
                     if (event.getWhen() >= startTime && event.getWhen() < endTime) {
                         setColor(g, darken, item);
                         renderEvent(g, startingX, event.getWhen(), event);
                     }
                 }
-                else if (item instanceof Task) {
-                    Task task = (Task)item;
+                else if (item instanceof Task task) {
                     if (task.getStart() < endTime && task.getEnd() >= startTime) {
                         double boundedStart = Math.max(startTime, task.getStart());
                         double boundedEnd = Math.min(endTime, task.getEnd());

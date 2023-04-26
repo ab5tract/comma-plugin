@@ -145,7 +145,7 @@ public class Perl6ElementFactory {
         String baseFilled = String.format("%s %s(%s)", type, nameToUse, signature);
         StringJoiner bodyJoiner = new StringJoiner("");
         contents.forEach(bodyJoiner::add);
-        return String.format("%s {\n%s\n}", baseFilled, bodyJoiner.toString());
+        return String.format("%s {\n%s\n}", baseFilled, bodyJoiner);
     }
 
 
@@ -175,7 +175,7 @@ public class Perl6ElementFactory {
     private static String getInfixApplicationText(String infix, List<PsiElement> parts) {
         StringJoiner infixJoiner = new StringJoiner(infix);
         parts.stream().map(PsiElement::getText).forEach(infixJoiner::add);
-        return infixJoiner.toString() + ";";
+        return infixJoiner + ";";
     }
 
     public static Perl6Signature createRoutineSignature(Project project, List<Perl6Parameter> parameters) {
@@ -185,7 +185,7 @@ public class Perl6ElementFactory {
     private static String createRoutineSignatureText(List<Perl6Parameter> parameters) {
         StringJoiner signature = new StringJoiner(", ");
         parameters.stream().map(PsiElement::getText).forEach(signature::add);
-        return "sub foo(" + signature.toString() + ") {}";
+        return "sub foo(" + signature + ") {}";
     }
 
     public static PsiElement createMethodCallOperator(Project project, boolean isPrivate) {

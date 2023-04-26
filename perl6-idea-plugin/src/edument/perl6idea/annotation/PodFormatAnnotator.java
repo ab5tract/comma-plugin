@@ -11,8 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class PodFormatAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-        if (psiElement instanceof PodFormatted) {
-            PodFormatted formatted = (PodFormatted)psiElement;
+        if (psiElement instanceof PodFormatted formatted) {
             String formatCode = formatted.getFormatCode();
             switch (formatCode) {
                 case "B": {

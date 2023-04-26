@@ -18,11 +18,10 @@ public class UndeclaredAttributeAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         // Filter out anything except attribute usages.
-        if (!(element instanceof Perl6Variable))
+        if (!(element instanceof final Perl6Variable variable))
             return;
         if (element.getParent() instanceof Perl6VariableDecl || element.getParent() instanceof Perl6ParameterVariable)
             return;
-        final Perl6Variable variable = (Perl6Variable)element;
         String variableName = variable.getVariableName();
         if (variableName == null || variableName.length() <= 2 || Perl6Variable.getTwigil(variable.getText()) != '!')
             return;

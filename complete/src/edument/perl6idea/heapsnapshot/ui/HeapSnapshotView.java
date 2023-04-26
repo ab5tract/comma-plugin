@@ -11,7 +11,7 @@ import java.awt.*;
 import java.io.File;
 
 public class HeapSnapshotView extends JPanel {
-    private Project myProject;
+    private final Project myProject;
     private JComponent myView;
 
     public HeapSnapshotView(Project project) {

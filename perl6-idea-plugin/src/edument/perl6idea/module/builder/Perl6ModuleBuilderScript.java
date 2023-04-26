@@ -38,7 +38,7 @@ public class Perl6ModuleBuilderScript implements Perl6ModuleBuilderGeneric {
                                     RakuLanguageVersion languageVersion) {
         List<String> lines = new ArrayList<>(Collections.singletonList("#!/usr/bin/env raku"));
         if (languageVersion != null)
-            lines.addAll(List.of(String.format("use v%s;", languageVersion)));
+            lines.add(String.format("use v%s;", languageVersion));
         if (shouldFill)
             lines.addAll(Arrays.asList("", "", "sub MAIN() { }"));
         Path path = moduleLibraryPath.resolve(scriptName);

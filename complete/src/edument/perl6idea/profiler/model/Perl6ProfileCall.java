@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Perl6ProfileCall {
-    public static Pattern CALL_MODULE_PATTERN = Pattern.compile("\\((.+)\\)$");
+    public static final Pattern CALL_MODULE_PATTERN = Pattern.compile("\\((.+)\\)$");
 
     private final int id;
     private final int routineID;

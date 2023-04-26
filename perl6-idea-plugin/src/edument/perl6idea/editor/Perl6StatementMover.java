@@ -29,8 +29,7 @@ public class Perl6StatementMover extends StatementUpDownMover {
     @Override
     public void beforeMove(@NotNull Editor editor, @NotNull MoveInfo info, boolean down) {
         this.down = down;
-        if (editor.getProject() == null || !(editor instanceof EditorEx)) return;
-        EditorEx editorEx = (EditorEx) editor;
+        if (editor.getProject() == null || !(editor instanceof EditorEx editorEx)) return;
         final PsiFile psiFile = PsiManager.getInstance(editor.getProject()).findFile(editorEx.getVirtualFile());
         assert psiFile != null;
 

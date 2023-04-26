@@ -38,8 +38,7 @@ public class TimelineTooltip extends JPanel {
 
         // Time information.
         cons.gridwidth = 1;
-        if (logged instanceof Task) {
-            Task task = (Task)logged;
+        if (logged instanceof Task task) {
 
             JLabel start = new JLabel("Start");
             start.setFont(defaultFont);

@@ -15,9 +15,8 @@ public class GrepFirstAnnotation implements Annotator {
         if (!(element instanceof Perl6PostfixApplication))
             return;
 
-        if (!(((Perl6PostfixApplication)element).getOperand() instanceof Perl6PostfixApplication))
+        if (!(((Perl6PostfixApplication)element).getOperand() instanceof Perl6PostfixApplication innerApplication))
             return;
-        Perl6PostfixApplication innerApplication = (Perl6PostfixApplication)((Perl6PostfixApplication)element).getOperand();
         Perl6MethodCall grepCall;
         if (innerApplication != null && innerApplication.getPostfix() instanceof Perl6MethodCall &&
             ((Perl6MethodCall)innerApplication.getPostfix()).getCallName().equals(".grep")) {

@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class RakuDependencySpec {
     private final String myName;
-    private Map<String, String> myPairs = new HashMap<>();
+    private final Map<String, String> myPairs = new HashMap<>();
     private final Pattern[] LITERAL_PATTERNS = new Pattern[]{Pattern.compile("(\\w+)<([^>]+)>"), // <7.5.1>
         Pattern.compile("(\\w+)\\(([^)]+)\\)"), // (1) or ('1')
         Pattern.compile("(\\d+)(\\w+)")  // :2api

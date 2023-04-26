@@ -83,7 +83,7 @@ public class UnicodeReplacementHandler extends TypedHandlerDelegate {
                     continue;
                 if (text.substring(start, offset).equals(m.ascii)) {
                     // Text matches, but what about token type?
-                    HighlighterIterator iterator = ((EditorEx)editor).getHighlighter().createIterator(start);
+                    HighlighterIterator iterator = editor.getHighlighter().createIterator(start);
                     IElementType curToken = iterator.getTokenType();
                     if (curToken == Perl6TokenTypes.INFIX) {
                         if (m.ascii.equals(">>") || m.ascii.equals("<<"))

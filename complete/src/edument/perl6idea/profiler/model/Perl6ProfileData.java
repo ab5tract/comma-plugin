@@ -91,7 +91,7 @@ public class Perl6ProfileData {
         }
         assert sqlDataFilePath != null;
         try (Statement statement = connection.createStatement();
-             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(sqlDataFilePath), StandardCharsets.UTF_8));
+             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(sqlDataFilePath), StandardCharsets.UTF_8))
         ) {
             for (String line; (line = reader.readLine()) != null;) {
                 statement.executeUpdate(line);

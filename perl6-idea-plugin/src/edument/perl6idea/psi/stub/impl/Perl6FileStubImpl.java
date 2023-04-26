@@ -40,8 +40,7 @@ public class Perl6FileStubImpl extends PsiFileStubImpl<Perl6File> implements Per
         while (!toTry.isEmpty()) {
             Stub current = toTry.remove(0);
             for (Stub child : current.getChildrenStubs()) {
-                if (child instanceof Perl6DeclStub) {
-                    Perl6DeclStub<?> declStub = (Perl6DeclStub<?>)child;
+                if (child instanceof Perl6DeclStub<?> declStub) {
                     if (declStub.isExported())
                         exports.add(declStub.getPsi());
                 }

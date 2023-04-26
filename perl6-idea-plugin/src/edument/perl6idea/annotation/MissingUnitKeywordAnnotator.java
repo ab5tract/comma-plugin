@@ -20,9 +20,8 @@ public class MissingUnitKeywordAnnotator implements Annotator {
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof Perl6ScopedDecl) {
             PsiElement[] nodes = element.getChildren();
-            if (nodes.length == 0 || !(nodes[0] instanceof Perl6PackageDecl))
+            if (nodes.length == 0 || !(nodes[0] instanceof Perl6PackageDecl perl6PackageDecl))
                 return;
-            Perl6PackageDecl perl6PackageDecl = (Perl6PackageDecl)nodes[0];
             /* Let's check for a unit declared thing with blockoid */
             Perl6ScopedDecl scopedDeclarator = (Perl6ScopedDecl)perl6PackageDecl.getParent();
 

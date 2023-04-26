@@ -104,8 +104,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         Perl6RoutineDeclStub stub = getStub();
         if (stub != null)
             for (StubElement<?> s : stub.getChildrenStubs()) {
-                if (!(s instanceof Perl6TraitStub)) continue;
-                Perl6TraitStub traitStub = (Perl6TraitStub)s;
+                if (!(s instanceof Perl6TraitStub traitStub)) continue;
                 String modifier = traitStub.getTraitModifier();
                 if (modifier.equals("returns") ||
                     modifier.equals("of"))
@@ -125,8 +124,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         Perl6RoutineDeclStub stub = getStub();
         if (stub != null)
             for (StubElement<?> s : stub.getChildrenStubs()) {
-                if (!(s instanceof Perl6TraitStub)) continue;
-                Perl6TraitStub traitStub = (Perl6TraitStub)s;
+                if (!(s instanceof Perl6TraitStub traitStub)) continue;
                 String modifier = traitStub.getTraitModifier();
                 if (modifier.equals("is") && "DEPRECATED".equals(((Perl6TraitStub)s).getTraitName()))
                     return true;

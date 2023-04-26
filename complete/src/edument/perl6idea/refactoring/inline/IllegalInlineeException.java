@@ -3,8 +3,8 @@ package edument.perl6idea.refactoring.inline;
 import com.intellij.psi.PsiElement;
 
 public class IllegalInlineeException extends Exception {
-    private PsiElement myElement;
-    private String myMessage;
+    private final PsiElement myElement;
+    private final String myMessage;
 
     public IllegalInlineeException(PsiElement element, String message) {
         myElement = element;

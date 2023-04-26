@@ -1,8 +1,8 @@
 package edument.perl6idea.coverage;
 
 public class CoverageStatistics {
-    private int coveredLines;
-    private int coverableLines;
+    private final int coveredLines;
+    private final int coverableLines;
 
     public CoverageStatistics(int coveredLines, int coverableLines) {
         this.coveredLines = coveredLines;

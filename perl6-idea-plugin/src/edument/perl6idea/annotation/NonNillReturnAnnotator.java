@@ -17,10 +17,9 @@ import java.util.Objects;
 public class NonNillReturnAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6SubCall))
+        if (!(element instanceof Perl6SubCall call))
             return;
 
-        Perl6SubCall call = (Perl6SubCall)element;
         if (!Objects.equals(call.getCallName(), "return"))
             return;
 
