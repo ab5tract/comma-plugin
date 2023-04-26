@@ -170,13 +170,11 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         final String PORT_VARIABLE = convertToEnvName(conf.moduleName) + "_PORT";
         final String DOCKER_IMAGE = conf.websocketSupport ? "cro-http-websocket:0.8.0" : "cro-http:0.8.0";
         List<String> templateContent = Perl6Utils.getResourceAsLines(resourcePath);
-        for (int i = 0; i < templateContent.size(); i++) {
-            templateContent.set(i, templateContent.get(i)
-                .replaceAll("\\$\\$HOST_VARIABLE\\$\\$", HOST_VARIABLE)
-                .replaceAll("\\$\\$PORT_VARIABLE\\$\\$", PORT_VARIABLE)
-                .replaceAll("\\$\\$DOCKER_IMAGE\\$\\$", DOCKER_IMAGE)
-                .replaceAll("\\$\\$MODULE_NAME\\$\\$", conf.moduleName));
-        }
+        templateContent.replaceAll(s -> s
+            .replaceAll("\\$\\$HOST_VARIABLE\\$\\$", HOST_VARIABLE)
+            .replaceAll("\\$\\$PORT_VARIABLE\\$\\$", PORT_VARIABLE)
+            .replaceAll("\\$\\$DOCKER_IMAGE\\$\\$", DOCKER_IMAGE)
+            .replaceAll("\\$\\$MODULE_NAME\\$\\$", conf.moduleName));
         return templateContent;
     }
 

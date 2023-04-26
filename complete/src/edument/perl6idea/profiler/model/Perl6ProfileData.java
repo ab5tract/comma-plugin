@@ -255,17 +255,18 @@ public class Perl6ProfileData {
     public List<Perl6ProfileGCPanel.GCData> getGC() {
         List<Perl6ProfileGCPanel.GCData> gcList = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
-            String GC_DATA_QUERY_STATEMENT = "SELECT\n" +
-                                             "    MAX(time) AS max_time,\n" +
-                                             "    MIN(start_time) AS earliest_start_time,\n" +
-                                             "    TOTAL(retained_bytes) AS retained_bytes,\n" +
-                                             "    TOTAL(cleared_bytes) AS cleared_bytes,\n" +
-                                             "    TOTAL(promoted_bytes) AS promoted_bytes,\n" +
-                                             "    group_concat(thread_id, \",\") AS participants,\n" +
-                                             "    full\n" +
-                                             "FROM gcs\n" +
-                                             "GROUP BY sequence_num\n" +
-                                             ";";
+            String GC_DATA_QUERY_STATEMENT = """
+                SELECT
+                    MAX(time) AS max_time,
+                    MIN(start_time) AS earliest_start_time,
+                    TOTAL(retained_bytes) AS retained_bytes,
+                    TOTAL(cleared_bytes) AS cleared_bytes,
+                    TOTAL(promoted_bytes) AS promoted_bytes,
+                    group_concat(thread_id, ",") AS participants,
+                    full
+                FROM gcs
+                GROUP BY sequence_num
+                ;""";
             ResultSet gcs = statement
                 .executeQuery(GC_DATA_QUERY_STATEMENT);
             while (gcs.next()) {
@@ -285,14 +286,13 @@ public class Perl6ProfileData {
     public List<Perl6ProfileAllocationsPanel.AllocationData> getAllocatedTypes() {
         List<Perl6ProfileAllocationsPanel.AllocationData> data = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
-            String allocatedTypesQuery = "SELECT\n" +
-                                             "t.id, t.name, json_extract(t.extra_info, '$.managed_size') AS managed_size," +
-                                             "json_extract(t.extra_info, '$.managed_size') * TOTAL(a.count) AS total_bytes," +
-                                             "TOTAL(a.count) AS count, TOTAL(a.replaced) AS optimized\n" +
-                                             "FROM allocations a INNER JOIN types t ON a.type_id == t.id\n" +
-                                             "GROUP BY t.id\n" +
-                                             "ORDER BY json_extract(t.extra_info, '$.managed_size') * total(a.count) DESC\n" +
-                                             ";";
+            String allocatedTypesQuery = """
+                SELECT
+                t.id, t.name, json_extract(t.extra_info, '$.managed_size') AS managed_size,json_extract(t.extra_info, '$.managed_size') * TOTAL(a.count) AS total_bytes,TOTAL(a.count) AS count, TOTAL(a.replaced) AS optimized
+                FROM allocations a INNER JOIN types t ON a.type_id == t.id
+                GROUP BY t.id
+                ORDER BY json_extract(t.extra_info, '$.managed_size') * total(a.count) DESC
+                ;""";
             ResultSet allocs = statement.executeQuery(allocatedTypesQuery);
             while (allocs.next()) {
                 data.add(new Perl6ProfileAllocationsPanel.AllocationData(
@@ -312,19 +312,21 @@ public class Perl6ProfileData {
         List<Perl6ProfileAllocationsPanel.AllocatedTypeDetails> data = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
             String GC_DATA_QUERY_STATEMENT = String.format(
-                "SELECT\n" +
-                "routines.name, routines.file, routines.line,\n" +
-                "COUNT(calls.id) as sitecount, TOTAL(calls.entries) as entries,\n" +
-                "TOTAL(calls.jit_entries) as jit_entries,\n" +
-                "json_extract(types.extra_info, '$.managed_size')\n, total(allocations.count) as allocs,\n" +
-                "TOTAL(allocations.replaced) AS optimized\n" +
-                "FROM routines INNER JOIN allocations on allocations.call_id == calls.id\n" +
-                "INNER JOIN calls ON calls.routine_id = routines.id\n" +
-                "INNER JOIN types ON types.id == allocations.type_id\n" +
-                "WHERE allocations.type_id = %s\n" +
-                "GROUP BY routines.id, allocations.type_id\n" +
-                "ORDER BY allocs DESC\n" +
-                ";", type_id);
+                """
+                    SELECT
+                    routines.name, routines.file, routines.line,
+                    COUNT(calls.id) as sitecount, TOTAL(calls.entries) as entries,
+                    TOTAL(calls.jit_entries) as jit_entries,
+                    json_extract(types.extra_info, '$.managed_size')
+                    , total(allocations.count) as allocs,
+                    TOTAL(allocations.replaced) AS optimized
+                    FROM routines INNER JOIN allocations on allocations.call_id == calls.id
+                    INNER JOIN calls ON calls.routine_id = routines.id
+                    INNER JOIN types ON types.id == allocations.type_id
+                    WHERE allocations.type_id = %s
+                    GROUP BY routines.id, allocations.type_id
+                    ORDER BY allocs DESC
+                    ;""", type_id);
             ResultSet calls = statement.executeQuery(GC_DATA_QUERY_STATEMENT);
             while (calls.next()) {
                 data.add(new Perl6ProfileAllocationsPanel.AllocatedTypeDetails(
@@ -366,15 +368,16 @@ public class Perl6ProfileData {
                 // data.threads = overviewData.getInt("threads");
                 // data.speshTime = overviewData.getInt("spesh_time");
             //}
-            String CALLS_STATEMENT = "select\n" +
-                                     "    total(entries) as entries_total,\n" +
-                                     "    total(spesh_entries) as spesh_entries_total,\n" +
-                                     "    total(jit_entries) as jit_entries_total,\n" +
-                                     "    total(inlined_entries) as inlined_entries_total,\n" +
-                                     "    total(deopt_one) as deopt_one_total,\n" +
-                                     "    total(deopt_all) as deopt_all_total,\n" +
-                                     "    total(osr) as osr_total\n" +
-                                     "from calls;";
+            String CALLS_STATEMENT = """
+                select
+                    total(entries) as entries_total,
+                    total(spesh_entries) as spesh_entries_total,
+                    total(jit_entries) as jit_entries_total,
+                    total(inlined_entries) as inlined_entries_total,
+                    total(deopt_one) as deopt_one_total,
+                    total(deopt_all) as deopt_all_total,
+                    total(osr) as osr_total
+                from calls;""";
             ResultSet overviewCallData = statement.executeQuery(CALLS_STATEMENT);
             if (overviewCallData.next()) {
                 data.spesh = overviewCallData.getInt("spesh_entries_total");
@@ -385,25 +388,25 @@ public class Perl6ProfileData {
                 data.globalDeopt = overviewCallData.getInt("deopt_all_total");
                 data.OSR = overviewCallData.getInt("osr_total");
             }
-            String GC_STATEMENT = "select\n" +
-                                  "    avg(case when full == 0 then latest_end - earliest end) as avg_minor_time,\n" +
-                                  "    min(case when full == 0 then latest_end - earliest end) as min_minor_time,\n" +
-                                  "    max(case when full == 0 then latest_end - earliest end) as max_minor_time,\n" +
-                                  "    avg(case when full == 1 then latest_end - earliest end) as avg_major_time,\n" +
-                                  "    min(case when full == 1 then latest_end - earliest end) as min_major_time,\n" +
-                                  "    max(case when full == 1 then latest_end - earliest end) as max_major_time,\n" +
-                                  "    total(case when full == 0 then latest_end - earliest end) as total_minor,\n" +
-                                  "    total(case when full == 1 then latest_end - earliest end) as total_major,\n" +
-                                  "    total(latest_end - earliest) as total," +
-                                  "    count(DISTINCT sequence_num) as gc_total,\n" +
-                                  "    count(DISTINCT (case when full then sequence_num end)) as full_gc_total\n" +
-                                  "    from (select\n" +
-                                  "            min(start_time) as earliest,\n" +
-                                  "            max(start_time + time) as latest_end,\n" +
-                                  "            full, sequence_num\n" +
-                                  "        from gcs\n" +
-                                  "            group by sequence_num\n" +
-                                  "            order by sequence_num asc)";
+            String GC_STATEMENT = """
+                select
+                    avg(case when full == 0 then latest_end - earliest end) as avg_minor_time,
+                    min(case when full == 0 then latest_end - earliest end) as min_minor_time,
+                    max(case when full == 0 then latest_end - earliest end) as max_minor_time,
+                    avg(case when full == 1 then latest_end - earliest end) as avg_major_time,
+                    min(case when full == 1 then latest_end - earliest end) as min_major_time,
+                    max(case when full == 1 then latest_end - earliest end) as max_major_time,
+                    total(case when full == 0 then latest_end - earliest end) as total_minor,
+                    total(case when full == 1 then latest_end - earliest end) as total_major,
+                    total(latest_end - earliest) as total,    count(DISTINCT sequence_num) as gc_total,
+                    count(DISTINCT (case when full then sequence_num end)) as full_gc_total
+                    from (select
+                            min(start_time) as earliest,
+                            max(start_time + time) as latest_end,
+                            full, sequence_num
+                        from gcs
+                            group by sequence_num
+                            order by sequence_num asc)""";
             ResultSet gcCallData = statement.executeQuery(GC_STATEMENT);
             if (gcCallData.next()) {
                 data.gcTotalTime = gcCallData.getInt("total") / 1000f;
@@ -418,10 +421,11 @@ public class Perl6ProfileData {
                 data.maxMajorTime = gcCallData.getInt("max_major_time");
                 data.avgMajorTime = gcCallData.getInt("avg_major_time");
             }
-            String ALLOCS_STATEMENT = "select\n" +
-                                      "    total(a.jit + a.spesh + a.count) as allocated,\n" +
-                                      "    total(a.replaced) as replaced\n" +
-                                      "from allocations a;";
+            String ALLOCS_STATEMENT = """
+                select
+                    total(a.jit + a.spesh + a.count) as allocated,
+                    total(a.replaced) as replaced
+                from allocations a;""";
             ResultSet overviewAllocsData = statement.executeQuery(ALLOCS_STATEMENT);
             if (overviewAllocsData.next()) {
                 data.allocated = overviewCallData.getInt("allocated");

@@ -83,7 +83,7 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
 
     private static boolean hasStateVariables(Perl6RoutineDecl routine) {
         PsiElementProcessor.CollectElements<PsiElement> processor =
-            new PsiElementProcessor.CollectElements<PsiElement>() {
+            new PsiElementProcessor.CollectElements<>() {
                 @Override
                 public boolean execute(@NotNull PsiElement each) {
                     if (each instanceof Perl6VariableDecl) {
@@ -125,7 +125,7 @@ public class Perl6InlineCallActionHandler extends Perl6InlineActionHandler {
 
     private static Collection<PsiElement> collectReturns(Perl6RoutineDecl routine) {
         PsiElementProcessor.CollectElements<PsiElement> processor =
-            new PsiElementProcessor.CollectElements<PsiElement>() {
+            new PsiElementProcessor.CollectElements<>() {
                 @Override
                 public boolean execute(@NotNull PsiElement each) {
                     if (each instanceof Perl6SubCall) {

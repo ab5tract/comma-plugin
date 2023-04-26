@@ -85,7 +85,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
         myProjectTypeList.setModel(new CollectionListModel<>(groups));
         myProjectTypeList.setSelectionModel(new SingleSelectionModel());
         myProjectTypeList.addListSelectionListener(__ -> updateSelection());
-        myProjectTypeList.setCellRenderer(new GroupedItemsListRenderer<>(new ListItemDescriptorAdapter<TemplatesGroup>() {
+        myProjectTypeList.setCellRenderer(new GroupedItemsListRenderer<>(new ListItemDescriptorAdapter<>() {
             @Nullable
             @Override
             public String getTextFor(TemplatesGroup value) {

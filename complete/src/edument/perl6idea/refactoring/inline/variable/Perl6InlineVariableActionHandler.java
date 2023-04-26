@@ -91,10 +91,9 @@ public class Perl6InlineVariableActionHandler extends Perl6InlineActionHandler {
 
     private static boolean checkIfVariableIsLeftValue(PsiElement usageElement) {
         PsiElement refParent = usageElement == null ? null : usageElement.getParent();
-        if (!(refParent instanceof Perl6InfixApplication))
+        if (!(refParent instanceof Perl6InfixApplication application))
             return false;
 
-        Perl6InfixApplication application = (Perl6InfixApplication)refParent;
         PsiElement[] operands = application.getOperands();
         if (operands.length < 2 || !application.getOperator().equals("="))
             return false;

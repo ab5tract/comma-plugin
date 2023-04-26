@@ -32,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -68,7 +69,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     @Override
     public void addSuiteFromIndexFile(File index, Perl6CoverageTestRunningState state) {
         Perl6CoverageSuite suite = createSuite(state);
-        try (BufferedReader br = new BufferedReader(new FileReader(index))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(index, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 Matcher matcher = indexMatcher.matcher(line);
@@ -120,7 +121,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     }
 
     private Map<String,Set<Integer>> parseCoverageFile(File data) {
-        try (BufferedReader br = new BufferedReader(new FileReader(data))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(data, StandardCharsets.UTF_8))) {
             Map<String, Set<Integer>> covered = new HashMap<>();
             String line;
             while ((line = br.readLine()) != null) {

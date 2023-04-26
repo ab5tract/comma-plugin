@@ -13,72 +13,77 @@ import org.jetbrains.annotations.Nullable;
 
 @InternalIgnoreDependencyViolation
 public class Perl6CodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
-    private static final String INDENT_SAMPLE = "sub foobar($one,\n" +
-                                                "        $two,\n" +
-                                                "        $three) {\n" +
-                                                "    my $x = 0;\n" +
-                                                "    my $y = 0;\n    \n" +
-                                                "    my $t = '';\n" +
-                                                "    A: while $x++ < 2 {\n" +
-                                                "        $t ~= \"A$x\";\n" +
-                                                "        B: while $y++ < 2 {\n" +
-                                                "            $t ~= \"B$y\";\n" +
-                                                "            redo A if $y++ ==\n" +
-                                                "                    1;\n" +
-                                                "            last A\n" +
-                                                "        }\n" +
-                                                "    }\n" +
-                                                "    say $t;\n" +
-                                                "    " +
-                                                "    # OUTPUT: «A1B1A1A2»\n" +
-                                                "}\n";
-    private static final String BRACES_SAMPLE ="say 123412341234 + 1234123412342;\n" +
-                                               "\n" +
-                                               "\n" +
-                                               "class Foo {\n" +
-                                               "  method foo($aaa1, $aaa1, $aaa1) {\n" +
-                                               "    if True { say \"One-liner\" }\n" +
-                                               "    else {}\n" +
-                                               "\n" +
-                                               "    for ^42 {\n" +
-                                               "      LAST { say \"LAST\" }\n" +
-                                               "    }\n" +
-                                               "  }\n" +
-                                               "\n" +
-                                               "  method answer is copy is copy is copy {\n" +
-                                               "    -> {}\n" +
-                                               "  }\n" +
-                                               "  method empty {}\n" +
-                                               "\n" +
-                                               "  class Empty {}\n" +
-                                               "}\n" +
-                                               "\n" +
-                                               "grammar Bar {\n" +
-                                               "  token a {}\n" +
-                                               "  token long {\n" +
-                                               "    \\w \\w \\w \\w\n" +
-                                               "  }\n" +
-                                               "}\n" +
-                                               "\n" +
-                                               "Foo.a-very-long-method-name(4242,4242).a-very-long-method-name(42424242);\n" +
-                                               "\n" +
-                                               "my $abc = [12341234, 12342134, 12342134];";
-    private static final String SPACING_SAMPLE = "my @a = 1, 2, 3, n => 42;\n" +
-                                                 "\n" +
-                                                 "my $bind := 'bind';\n" +
-                                                 "\n" +
-                                                 "1 + (2 * 3) / 4;\n" +
-                                                 "\n" +
-                                                 "@a.grep(* ~~ Int).grep(*.is-prime);\n" +
-                                                 "\n" +
-                                                 "for @a -> $item {\n" +
-                                                 "    $item.Str ~~ / (a && b) || [c d* e ** 42] /\n" +
-                                                 "}\n" +
-                                                 "\n" +
-                                                 "say $bind.comb(2);\n" +
-                                                 "\n" +
-                                                 "my $array = [1, !True];\n" +
-                                                 "my $hash = {:a, :b};\n";
+    private static final String INDENT_SAMPLE = """
+        sub foobar($one,
+                $two,
+                $three) {
+            my $x = 0;
+            my $y = 0;
+           \s
+            my $t = '';
+            A: while $x++ < 2 {
+                $t ~= "A$x";
+                B: while $y++ < 2 {
+                    $t ~= "B$y";
+                    redo A if $y++ ==
+                            1;
+                    last A
+                }
+            }
+            say $t;
+                # OUTPUT: «A1B1A1A2»
+        }
+        """;
+    private static final String BRACES_SAMPLE = """
+        say 123412341234 + 1234123412342;
+
+
+        class Foo {
+          method foo($aaa1, $aaa1, $aaa1) {
+            if True { say "One-liner" }
+            else {}
+
+            for ^42 {
+              LAST { say "LAST" }
+            }
+          }
+
+          method answer is copy is copy is copy {
+            -> {}
+          }
+          method empty {}
+
+          class Empty {}
+        }
+
+        grammar Bar {
+          token a {}
+          token long {
+            \\w \\w \\w \\w
+          }
+        }
+
+        Foo.a-very-long-method-name(4242,4242).a-very-long-method-name(42424242);
+
+        my $abc = [12341234, 12342134, 12342134];""";
+    private static final String SPACING_SAMPLE = """
+        my @a = 1, 2, 3, n => 42;
+
+        my $bind := 'bind';
+
+        1 + (2 * 3) / 4;
+
+        @a.grep(* ~~ Int).grep(*.is-prime);
+
+        for @a -> $item {
+            $item.Str ~~ / (a && b) || [c d* e ** 42] /
+        }
+
+        say $bind.comb(2);
+
+        my $array = [1, !True];
+        my $hash = {:a, :b};
+        """;
 
     @Nullable
     @Override

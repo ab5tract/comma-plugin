@@ -85,13 +85,15 @@ abstract public class Perl6InlineActionHandler extends InlineActionHandler {
 
     private static void checkSelfUsages(Perl6PsiElement codeToInline, PsiReference reference) throws IllegalInlineeException {
         PsiElementProcessor.CollectElements<PsiElement> processor =
-            new PsiElementProcessor.CollectElements<PsiElement>() {
+            new PsiElementProcessor.CollectElements<>() {
                 @Override
                 public boolean execute(@NotNull PsiElement each) {
-                    if (each instanceof Perl6Self)
+                    if (each instanceof Perl6Self) {
                         return super.execute(each);
-                    else if (each instanceof Perl6PackageDecl)
+                    }
+                    else if (each instanceof Perl6PackageDecl) {
                         return false;
+                    }
                     return true;
                 }
             };

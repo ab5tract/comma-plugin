@@ -138,7 +138,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             performActionOnElement(operation);
             return true;
         } else if (expressions.size() > 1) {
-            IntroduceTargetChooser.showChooser(editor, expressions, new Pass<PsiElement>() {
+            IntroduceTargetChooser.showChooser(editor, expressions, new Pass<>() {
                 @Override
                 public void pass(PsiElement element) {
                     operation.setElement(element);
@@ -173,7 +173,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             if (operation.isReplaceAll() != null) {
                 performScopeSelectionAndIntroduce(operation);
             } else {
-                OccurrencesChooser.simpleChooser(editor).showChooser(operation.getElement(), operation.getOccurrences(), new Pass<OccurrencesChooser.ReplaceChoice>() {
+                OccurrencesChooser.simpleChooser(editor).showChooser(operation.getElement(), operation.getOccurrences(), new Pass<>() {
                     @Override
                     public void pass(OccurrencesChooser.ReplaceChoice replaceChoice) {
                         operation.setReplaceAll(replaceChoice == OccurrencesChooser.ReplaceChoice.ALL);
@@ -268,13 +268,13 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         });
 
         IntroduceTargetChooser.showChooser(operation.getEditor(),
-                scopes, new Pass<Perl6PsiScope>() {
-                    @Override
-                    public void pass(Perl6PsiScope scope) {
-                        operation.setAnchor(anchorByScope.get(scope));
-                        performInplaceIntroduce(operation);
-                    }
-                }, Perl6BlockRenderer::renderBlock, "Scope");
+                scopes, new Pass<>() {
+                @Override
+                public void pass(Perl6PsiScope scope) {
+                    operation.setAnchor(anchorByScope.get(scope));
+                    performInplaceIntroduce(operation);
+                }
+            }, Perl6BlockRenderer::renderBlock, "Scope");
     }
 
     private void performInplaceIntroduce(IntroduceOperation operation) {
