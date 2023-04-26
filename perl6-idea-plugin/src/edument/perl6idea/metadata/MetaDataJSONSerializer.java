@@ -31,7 +31,7 @@ class MetaDataJSONSerializer {
         // There could be fields we don't know about,
         // gather them too
         Set<String> customKeys = new HashSet<>(meta.keySet());
-        customKeys.removeAll(Arrays.asList(fieldsOrder));
+        Arrays.asList(fieldsOrder).forEach(customKeys::remove);
         for (String unknownField : customKeys) {
             orderedMetaFieldsMap.put(unknownField, processField(meta.get(unknownField)));
         }

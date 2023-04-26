@@ -487,9 +487,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
     private boolean checkSelfUsage(PsiElement[] statements, Perl6StatementList parentToCreateAt) {
         boolean selfPresence = Arrays.stream(statements)
-                .flatMap(el -> getUsages(el, Perl6Self.class, Perl6PackageDecl.class).stream())
-                .map(el -> (Perl6Self)el)
-                .count() != 0;
+            .flatMap(el -> getUsages(el, Perl6Self.class, Perl6PackageDecl.class).stream())
+            .map(el -> (Perl6Self)el).findAny().isPresent();
         if (!selfPresence) return false;
         // If self is present, we have to check if we are extracting stuff into new method of the same class
         // If we are extracting into a sub, just short-circuit as we always pass $self there

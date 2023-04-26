@@ -344,14 +344,14 @@ public class Perl6ProfileData {
     public Perl6ProfileOverviewData getOverviewData() {
         Perl6ProfileOverviewData data = new Perl6ProfileOverviewData();
         try (Statement statement = connection.createStatement()) {
-            String OVERVIEW_STATEMENT = String.format(
-                "select\n" +
-                "    total_time,\n" +
-                "    first_entry_time,\n" +
-                "    root_node,\n" +
-                "    spesh_time as spesh_time\n" +
-                "from profile\n" +
-                "order by thread_id asc;");
+            String OVERVIEW_STATEMENT = """
+                select
+                    total_time,
+                    first_entry_time,
+                    root_node,
+                    spesh_time as spesh_time
+                from profile
+                order by thread_id asc;""";
             ResultSet overviewData = statement.executeQuery(OVERVIEW_STATEMENT);
             data.totalTime = 0;
             while (overviewData.next()) {

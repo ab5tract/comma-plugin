@@ -196,7 +196,7 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
                 components.addAll(Arrays.asList(super.getComponents()));
                 components.add(myPerl6ParametersComponent);
                 myAnchor = UIUtil.mergeComponentsWithAnchor(
-                    components.toArray(new PanelWithAnchor[components.size()]));
+                    components.toArray(new PanelWithAnchor[0]));
             }
         };
         myParams.setProgramParametersLabel("Script parameters:");
