@@ -316,8 +316,8 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         int totalCovered = 0;
         int totalCoverable = 0;
         for (CoverageStatistics stats : allStatistics) {
-            totalCovered += stats.getCoveredLines();
-            totalCoverable += stats.getCoverableLines();
+            totalCovered += stats.coveredLines();
+            totalCoverable += stats.coverableLines();
         }
         return new CoverageStatistics(totalCovered, totalCoverable);
     }

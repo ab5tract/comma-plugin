@@ -265,26 +265,14 @@ public class HeapSnapshotBrowserTab extends JPanel {
         locationsPanel.updateUI();
     }
 
-    private static class TabData {
-        public final HashMap<SnapshotData.TypeOrFrameIndex, List<Integer>> map;
-        public final HashMap<SnapshotData.TypeOrFrameIndex, Integer> sizeByType;
-        public final HashMap<SnapshotData.TypeOrFrameIndex, Integer> unmanagedSizeByType;
-        public final int kind;
-
-        private TabData(HashMap<SnapshotData.TypeOrFrameIndex, List<Integer>> map,
-                        HashMap<SnapshotData.TypeOrFrameIndex, Integer> sizeByType,
-                        HashMap<SnapshotData.TypeOrFrameIndex, Integer> unmanagedSizeByType,
-                        int kind) {
-            this.map = map;
-            this.sizeByType = sizeByType;
-            this.unmanagedSizeByType = unmanagedSizeByType;
-            this.kind = kind;
-        }
+    private record TabData(HashMap<SnapshotData.TypeOrFrameIndex, List<Integer>> map,
+                           HashMap<SnapshotData.TypeOrFrameIndex, Integer> sizeByType,
+                           HashMap<SnapshotData.TypeOrFrameIndex, Integer> unmanagedSizeByType, int kind) {
 
         public boolean isType() {
-            return kind == SnapshotData.KIND_TYPE_OBJECT;
+                return kind == SnapshotData.KIND_TYPE_OBJECT;
+            }
         }
-    }
 
     private TabData computeTypeOrFrameMap(SnapshotData data, int kind) {
         HashMap<SnapshotData.TypeOrFrameIndex, List<Integer>> map = new HashMap<>();

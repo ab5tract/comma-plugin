@@ -32,10 +32,10 @@ public class TimelineView extends JPanel {
 
     private void setupScrollHandling() {
         chart.setVisibleLanesChangedHandler(updated -> {
-            if (scrollbar.getMaximum() != updated.getTotalLanes() -1 ||
-                    scrollbar.getModel().getExtent() != updated.getLanesInView())
-                scrollbar.setValues(updated.getFirstLaneInView(), updated.getLanesInView(),
-                        0, updated.getTotalLanes() - 1);
+            if (scrollbar.getMaximum() != updated.totalLanes() - 1 ||
+                    scrollbar.getModel().getExtent() != updated.lanesInView())
+                scrollbar.setValues(updated.firstLaneInView(), updated.lanesInView(),
+                                    0, updated.totalLanes() - 1);
         });
         scrollbar.addAdjustmentListener(e -> chart.setFirstLaneInView(e.getValue()));
     }

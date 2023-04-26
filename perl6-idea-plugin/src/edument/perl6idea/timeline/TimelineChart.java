@@ -82,43 +82,21 @@ public class TimelineChart extends JPanel {
     private Consumer<? super VisibleLanesChanged> visibleLanesChangedHandler;
 
     // Information about a rendered area on the chart, for handling tooltips and expansions.
-    private static class VisibleLogged {
-        private final Rectangle area;
-        private final Logged logged;
-
-        VisibleLogged(Rectangle area, Logged logged) {
-            this.area = area;
-            this.logged = logged;
-        }
+        private record VisibleLogged(Rectangle area, Logged logged) {
 
         public boolean contains(Point p) {
-            return area.contains(p);
+                return area.contains(p);
+            }
         }
-
-        public Logged getLogged() {
-            return logged;
-        }
-    }
     private final List<VisibleLogged> visibleLoggeds = new ArrayList<>();
 
     // Information about a label, so we can detect clicks on those.
-    private static class VisibleLabel {
-        private final Rectangle area;
-        private final String key;
-
-        VisibleLabel(Rectangle area, String key) {
-            this.area = area;
-            this.key = key;
-        }
+        private record VisibleLabel(Rectangle area, String key) {
 
         public boolean contains(Point point) {
-            return area.contains(point);
+                return area.contains(point);
+            }
         }
-
-        public String getKey() {
-            return key;
-        }
-    }
     private final List<VisibleLabel> visibleLabels = new ArrayList<>();
 
     // Expansion status of each item, keyed on the path to the item.
@@ -202,7 +180,7 @@ public class TimelineChart extends JPanel {
                 if (e.getButton() == MouseEvent.BUTTON1 && !graphArea.contains(point)) {
                     for (VisibleLabel label : visibleLabels) {
                         if (label.contains(point)) {
-                            String key = label.getKey();
+                            String key = label.key();
                             Boolean current = expanded.get(key);
                             expanded.put(key, current == null || !current);
                             repaint();
@@ -247,7 +225,7 @@ public class TimelineChart extends JPanel {
                 if (graphArea.contains(point)) {
                     for (VisibleLogged visible : visibleLoggeds) {
                         if (visible.contains(point)) {
-                            if (visible.getLogged() != currentTooltipLogged) {
+                            if (visible.logged() != currentTooltipLogged) {
                                 closeActiveTooltip();
                                 showTooltip(point, visible);
                             }
@@ -259,7 +237,7 @@ public class TimelineChart extends JPanel {
             }
 
             private void showTooltip(Point point, VisibleLogged visible) {
-                currentTooltipLogged = visible.getLogged();
+                currentTooltipLogged = visible.logged();
                 JBPopup popup = JBPopupFactory.getInstance()
                           .createComponentPopupBuilder(new TimelineTooltip(currentTooltipLogged), null)
                           .setFocusOwners(new Component[] { TimelineChart.this })

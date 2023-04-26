@@ -38,6 +38,6 @@ public class Perl6ExecutionStack extends XExecutionStack {
     }
 
     public int getThreadId() {
-        return thread.getThreadId();
+        return thread.threadId();
     }
 }

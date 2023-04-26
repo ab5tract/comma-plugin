@@ -110,17 +110,7 @@ public class Perl6ReplOutputHandler extends OSProcessHandler {
         }
     }
 
-    private static class CompileError {
-        public final int line;
-        public final String pre;
-        public final String post;
-        public final String message;
-        private CompileError(int line, String pre, String post, String message) {
-            this.line = line;
-            this.pre = pre;
-            this.post = post;
-            this.message = message;
-        }
+    private record CompileError(int line, String pre, String post, String message) {
     }
 
     private void emitError() {

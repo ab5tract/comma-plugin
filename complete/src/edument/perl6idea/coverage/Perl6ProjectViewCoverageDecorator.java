@@ -38,7 +38,7 @@ public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorat
     }
 
     private static void addCoverageStatistics(PresentationData data, CoverageStatistics stats) {
-        data.addText(" (" + stats.getCoveredLines() + " / " + stats.getCoverableLines() +
+        data.addText(" (" + stats.coveredLines() + " / " + stats.coverableLines() +
                      " statements; ", SimpleTextAttributes.GRAY_ATTRIBUTES);
         data.addText(stats.percent() + "%)", percentAttributes(stats));
         data.addText(")", SimpleTextAttributes.GRAY_ATTRIBUTES);

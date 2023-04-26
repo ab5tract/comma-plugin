@@ -124,15 +124,6 @@ public class CallArityIssuesAnnotator implements Annotator {
     // if we found a fitting candidate we bail out, where
     // an exception about AnnotationBuilder can bite us.
     // Use a wrapper to avoid this...
-    private static class AnnotationBuilderWrap {
-        private final Perl6Signature signature;
-        public final TextRange range;
-        public final String text;
-
-        private AnnotationBuilderWrap(Perl6Signature signature, TextRange range, String text) {
-            this.signature = signature;
-            this.range = range;
-            this.text = text;
-        }
+    private record AnnotationBuilderWrap(Perl6Signature signature, TextRange range, String text) {
     }
 }

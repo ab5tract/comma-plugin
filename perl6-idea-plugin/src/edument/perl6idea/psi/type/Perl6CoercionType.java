@@ -1,21 +1,6 @@
 package edument.perl6idea.psi.type;
 
-public class Perl6CoercionType implements Perl6Type {
-    private final Perl6Type targetType;
-    private final Perl6Type sourceType;
-
-    public Perl6CoercionType(Perl6Type targetType, Perl6Type sourceType) {
-        this.targetType = targetType;
-        this.sourceType = sourceType;
-    }
-
-    public Perl6Type getTargetType() {
-        return targetType;
-    }
-
-    public Perl6Type getSourceType() {
-        return sourceType;
-    }
+public record Perl6CoercionType(Perl6Type targetType, Perl6Type sourceType) implements Perl6Type {
 
     @Override
     public String getName() {
