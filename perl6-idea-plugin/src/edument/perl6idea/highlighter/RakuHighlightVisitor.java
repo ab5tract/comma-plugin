@@ -106,6 +106,8 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 if (decl instanceof Perl6Parameter) {
                     if (PsiTreeUtil.getParentOfType(decl, Perl6VariableDecl.class, Perl6RoutineDecl.class) instanceof Perl6VariableDecl)
                         continue;
+                    if (PsiTreeUtil.getParentOfType(decl, Perl6PointyBlock.class, Perl6RoutineDecl.class) instanceof Perl6PointyBlock)
+                        continue;
                 }
                 visitVariableDecl(
                     duplicateVariablesPool, ((Perl6VariableSource)decl).getVariables(),
