@@ -21,7 +21,6 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.JBUI;
 import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import edument.perl6idea.utils.Perl6ModuleListFetcher;
-import gnu.trove.TIntArrayList;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,10 +29,8 @@ import javax.swing.*;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -133,12 +130,12 @@ public class Perl6DependenciesPanelImpl extends JPanel {
         myModel.clear();
         myModel.init();
         myModel.fireTableDataChanged();
-        TIntArrayList newSelection = new TIntArrayList();
+        List<Integer> newSelection = new ArrayList<>();
         for (int i = 0; i < myModel.getRowCount(); i++) {
             if (oldSelection.contains(getItemAt(i)))
                 newSelection.add(i);
         }
-        TableUtil.selectRows(myEntryTable, newSelection.toNativeArray());
+        TableUtil.selectRows(myEntryTable, newSelection.stream().mapToInt(i->i).toArray());
     }
 
     public void rootsChanged() {

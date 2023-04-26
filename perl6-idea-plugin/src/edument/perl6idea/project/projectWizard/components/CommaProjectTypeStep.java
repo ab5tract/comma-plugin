@@ -37,7 +37,6 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import edument.perl6idea.project.projectWizard.*;
 import edument.perl6idea.project.projectWizard.categories.TemplateBasedCategory;
-import gnu.trove.THashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -63,7 +62,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
     private final ModulesProvider myModulesProvider;
     private final ModuleBuilder.ModuleConfigurationUpdater myConfigurationUpdater;
     private final Map<ProjectTemplate, ModuleBuilder> myBuilders = FactoryMap.create(key -> (ModuleBuilder)key.createModuleBuilder());
-    private final Map<String, ModuleWizardStep> myCustomSteps = new THashMap<>();
+    private final Map<String, ModuleWizardStep> myCustomSteps = new HashMap<>();
     private final MultiMap<TemplatesGroup, ProjectTemplate> myTemplatesMap;
     private JPanel myPanel;
     private JPanel myOptionsPanel;

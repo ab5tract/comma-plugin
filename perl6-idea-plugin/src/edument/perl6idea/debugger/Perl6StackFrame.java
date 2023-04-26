@@ -30,7 +30,7 @@ public class Perl6StackFrame extends XStackFrame {
     public Perl6StackFrame(Project project, Perl6StackFrameDescriptor frame, Perl6ExecutionStack stack) {
         myFrameDescriptor = frame;
         myDebugThread = stack.getSuspendContext().getDebugThread();
-        myVirtualFile = NullableLazyValue.createValue(() -> {
+        myVirtualFile = NullableLazyValue.lazyNullable(() -> {
             String localFilePath = myFrameDescriptor.getFile().getPath();
             final VirtualFile[] file = {null};
             if (localFilePath.startsWith("site#")) {

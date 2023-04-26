@@ -323,7 +323,7 @@
     <defaultLiveTemplates file="/liveTemplates/Cro-WebApp.xml"/>
     <defaultLiveTemplates file="/liveTemplates/Red.xml"/>
     <defaultLiveTemplates file="/liveTemplates/Raku.xml"/>
-    <liveTemplateContext implementation="edument.perl6idea.liveTemplates.RakuContext"/>
+    <liveTemplateContext contextId="RAKUSTMT" implementation="edument.perl6idea.liveTemplates.RakuContext"/>
     <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.CroClientVar"/>
     <liveTemplateMacro implementation="edument.perl6idea.liveTemplates.RakuSuggestVariableName"/>
     <liveTemplateOptionalProcessor implementation="edument.perl6idea.liveTemplates.AddUseProcessor"/>

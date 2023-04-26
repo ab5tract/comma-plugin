@@ -297,7 +297,7 @@ public class Perl6ElementFactory {
     }
 
     public static PsiElement createNewLine(Project project) {
-        return PsiParserFacade.SERVICE.getInstance(project).createWhiteSpaceFromText("\n");
+        return PsiParserFacade.getInstance(project).createWhiteSpaceFromText("\n");
     }
 
     public static Perl6Do createDoStatement(Project project) {

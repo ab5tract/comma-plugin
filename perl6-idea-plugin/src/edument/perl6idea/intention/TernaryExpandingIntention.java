@@ -48,7 +48,7 @@ public class TernaryExpandingIntention extends PsiElementBaseIntentionAction imp
         else {
             PsiElement newline = newIf.getChildren()[1].getNextSibling();
             if (newline.getText().equals("\n"))
-                newline.replace(PsiParserFacade.SERVICE.getInstance(project).createWhiteSpaceFromText(" "));
+                newline.replace(PsiParserFacade.getInstance(project).createWhiteSpaceFromText(" "));
             Perl6Statement doWrapper = Perl6ElementFactory.createStatementFromText(project, "do " + newIf.getText());
             infix.replace(doWrapper.getFirstChild());
         }
