@@ -42,7 +42,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Perl6ProfileRoutinesPanel extends JPanel {
     public static final Logger LOG = Logger.getInstance(Perl6ProfileRoutinesPanel.class);

@@ -12,7 +12,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.highlighter.RakuElementVisitor;
-import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.pod.*;
 import edument.perl6idea.psi.*;

@@ -5,7 +5,6 @@ import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6PsiDeclaration;
 
 import java.util.List;
-import java.util.Map;
 
 public interface Perl6FileStub extends PsiFileStub<Perl6File> {
     /* The name, inferred from path, that a `use` statement would be followed by

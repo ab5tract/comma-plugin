@@ -8,7 +8,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.ResolveResult;
-import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;

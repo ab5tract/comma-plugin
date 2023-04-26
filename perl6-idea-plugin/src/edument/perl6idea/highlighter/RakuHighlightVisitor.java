@@ -15,7 +15,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.*;
-import gnu.trove.THashMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

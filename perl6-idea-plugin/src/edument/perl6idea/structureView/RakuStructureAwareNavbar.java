@@ -1,6 +1,5 @@
 package edument.perl6idea.structureView;
 
-import com.intellij.ide.navigationToolbar.NavBarModelExtension;
 import com.intellij.ide.navigationToolbar.StructureAwareNavBarModelExtension;
 import com.intellij.lang.Language;
 import com.intellij.openapi.project.Project;

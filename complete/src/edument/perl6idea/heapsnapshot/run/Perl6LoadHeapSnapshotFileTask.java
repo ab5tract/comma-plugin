@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 
 public class Perl6LoadHeapSnapshotFileTask extends Task.Backgroundable {

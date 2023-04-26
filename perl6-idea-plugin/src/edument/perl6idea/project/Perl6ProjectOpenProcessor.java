@@ -1,12 +1,10 @@
 package edument.perl6idea.project;
 
 import com.intellij.ide.impl.OpenProjectTask;
-import com.intellij.ide.impl.ProjectUtil;
 import com.intellij.ide.impl.ProjectUtilCore;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
-import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.projectImport.ProjectOpenProcessor;
 import org.jetbrains.annotations.Nls;

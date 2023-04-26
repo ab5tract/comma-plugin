@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.STRING_LITERAL;
 import static edument.perl6idea.parsing.Perl6TokenTypes.PAIR_KEY;

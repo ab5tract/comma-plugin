@@ -4,8 +4,6 @@ import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.ProjectViewNodeDecorator;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.packageDependencies.ui.PackageDependenciesNode;
-import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;

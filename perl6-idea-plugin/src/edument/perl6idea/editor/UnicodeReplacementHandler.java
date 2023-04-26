@@ -2,7 +2,6 @@ package edument.perl6idea.editor;
 
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.highlighter.HighlighterIterator;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;

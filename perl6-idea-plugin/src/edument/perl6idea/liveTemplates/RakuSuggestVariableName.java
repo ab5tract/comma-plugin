@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class RakuSuggestVariableName extends MacroBase {
   public RakuSuggestVariableName() {

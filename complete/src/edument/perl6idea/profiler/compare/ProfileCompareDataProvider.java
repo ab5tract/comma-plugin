@@ -1,7 +1,6 @@
 package edument.perl6idea.profiler.compare;
 
 import com.intellij.openapi.diagnostic.Logger;
-import edument.perl6idea.profiler.ProfileResultsChooserDialog;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -6,7 +6,6 @@ import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import edument.perl6idea.psi.Perl6MethodCall;
-import edument.perl6idea.psi.Perl6SubCall;
 import edument.perl6idea.psi.Perl6SubCallName;
 import edument.perl6idea.psi.external.ExternalPerl6RoutineDecl;
 import org.jetbrains.annotations.NotNull;

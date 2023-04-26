@@ -1,7 +1,6 @@
 package edument.perl6idea.readerMode;
 
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
-import com.intellij.codeHighlighting.HighlightingPass;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -15,7 +14,6 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.JBSplitter;
 import com.intellij.util.ui.JBUI;
-import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.structureView.Perl6StructureViewBuilder;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;

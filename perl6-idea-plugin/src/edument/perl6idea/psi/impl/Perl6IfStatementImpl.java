@@ -8,11 +8,7 @@ import edument.perl6idea.psi.Perl6IfStatement;
 import edument.perl6idea.psi.Perl6PointyBlock;
 import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.type.Perl6Type;
-import edument.perl6idea.utils.Perl6PsiUtil;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.STATEMENT_CONTROL;
 

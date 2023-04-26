@@ -5,7 +5,6 @@ import com.intellij.icons.AllIcons;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.wm.ToolWindowId;
-import edument.perl6idea.Perl6Icons;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

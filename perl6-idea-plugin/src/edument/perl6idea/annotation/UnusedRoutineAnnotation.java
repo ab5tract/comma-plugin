@@ -15,7 +15,6 @@ import edument.perl6idea.annotation.fix.RemoveUnusedRoutineFix;
 import edument.perl6idea.annotation.fix.MakeSubroutineExportedFix;
 import edument.perl6idea.highlighter.Perl6Highlighter;
 import edument.perl6idea.psi.*;
-import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

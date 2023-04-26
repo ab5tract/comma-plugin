@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Perl6FileStubImpl extends PsiFileStubImpl<Perl6File> implements Perl6FileStub {
     private final String compilationUnitName;
