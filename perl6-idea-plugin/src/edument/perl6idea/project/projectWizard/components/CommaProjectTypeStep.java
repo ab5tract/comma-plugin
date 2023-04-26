@@ -375,7 +375,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
 
     @Nullable
     private ProjectTemplate getSelectedTemplate() {
-        return myCurrentCard == TEMPLATES_CARD ? myTemplatesList.getSelectedTemplate() : null;
+        return Objects.equals(myCurrentCard, TEMPLATES_CARD) ? myTemplatesList.getSelectedTemplate() : null;
     }
 
     private ModuleBuilder getSelectedBuilder() {
@@ -387,7 +387,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
     }
 
     public Collection<ProjectTemplate> getAvailableTemplates() {
-        if (myCurrentCard != FRAMEWORKS_CARD) {
+        if (!Objects.equals(myCurrentCard, FRAMEWORKS_CARD)) {
             return Collections.emptyList();
         }
         else {

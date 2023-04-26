@@ -58,9 +58,9 @@ public class Perl6ProfileModulesPanel extends JPanel {
     }
 
     private static class ProfilerModuleItem {
-        public String name;
-        float inclusive;
-        float exclusive;
+        public final String name;
+        final float inclusive;
+        final float exclusive;
 
         ProfilerModuleItem(String name, Integer inclusive, Integer exclusive) {
             this.name = name;

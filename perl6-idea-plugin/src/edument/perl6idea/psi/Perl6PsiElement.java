@@ -130,17 +130,17 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
                 return null;
             if (current instanceof Perl6RoutineDecl) {
                 String scope = ((Perl6RoutineDecl)current).getScope();
-                if (scope != null && scope.equals("has"))
+                if (scope.equals("has"))
                     foundSelfProvider = true;
             }
             else if (current instanceof Perl6RegexDecl) {
                 String scope = ((Perl6RegexDecl)current).getScope();
-                if (scope != null && scope.equals("has"))
+                if (scope.equals("has"))
                     foundSelfProvider = true;
             }
             else if (current instanceof Perl6VariableDecl) {
                 String scope = ((Perl6VariableDecl)current).getScope();
-                if (scope != null && scope.equals("has"))
+                if (scope.equals("has"))
                     foundSelfProvider = true;
             }
         }

@@ -310,7 +310,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         List<CoverageStatistics> allStatistics = allSourceFiles.stream()
                 .map(f -> coverageForFile(f))
                 .filter(s -> s != null)
-                 .collect(Collectors.toList());
+                 .toList();
         if (allStatistics.isEmpty())
             return null;
         int totalCovered = 0;

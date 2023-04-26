@@ -386,7 +386,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
             boolean isDuplicate = false;
             for (Perl6Variable each : deduplicatedVars) {
-                if (each.getVariableName().equals(name)) {
+                if (Objects.equals(each.getVariableName(), name)) {
                     PsiReference eachRef = each.getReference();
                     assert eachRef != null;
                     PsiElement eachDecl = eachRef.resolve();

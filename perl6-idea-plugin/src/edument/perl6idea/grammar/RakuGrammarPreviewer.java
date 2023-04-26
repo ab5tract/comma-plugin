@@ -364,7 +364,7 @@ public class RakuGrammarPreviewer extends JPanel {
                     append(node.getName(), capturedAttrs);
                 }
                 else {
-                    List<String> aliases = ContainerUtil.filter(captureNames, n -> n != node.getName());
+                    List<String> aliases = ContainerUtil.filter(captureNames, n -> !Objects.equals(n, node.getName()));
                     append(node.getName(), aliases.size() == captureNames.size() ? anonAttrs : capturedAttrs);
                     append(" (");
                     boolean first = true;

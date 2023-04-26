@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -217,15 +218,19 @@ public class Perl6ModuleListFetcher {
 
     @Nullable
     private static String doRequest(String url) {
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(url);
-        try {
-            HttpResponse response = client.execute(httpGet);
-            if (response.getStatusLine().getStatusCode() != 200) return null;
-            if (response.getEntity() == null) return null;
-            return EntityUtils.toString(response.getEntity());
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpGet httpGet = new HttpGet(url);
+            try {
+                HttpResponse response = client.execute(httpGet);
+                if (response.getStatusLine().getStatusCode() != 200) return null;
+                if (response.getEntity() == null) return null;
+                return EntityUtils.toString(response.getEntity());
+            }
+            catch (Exception e) {
+                return null;
+            }
         }
-        catch (Exception e) {
+        catch (IOException e) {
             return null;
         }
     }

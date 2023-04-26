@@ -95,7 +95,7 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
     }
 
     private static class Perl6ProfileAllocationsTableModel implements TableModel, Perl6ProfileModelWithRatio {
-        List<AllocationData> allocsData;
+        final List<AllocationData> allocsData;
 
         Perl6ProfileAllocationsTableModel(List<AllocationData> allocsData) {
             this.allocsData = allocsData;
@@ -174,7 +174,7 @@ public class Perl6ProfileAllocationsPanel extends JPanel {
     }
 
     private static class Perl6ProfileTypeDetailsTableModel implements TableModel, Perl6ProfileModelWithRatio {
-        List<AllocatedTypeDetails> typeDetailsList;
+        final List<AllocatedTypeDetails> typeDetailsList;
 
         Perl6ProfileTypeDetailsTableModel(List<AllocatedTypeDetails> list) {
             typeDetailsList = list;

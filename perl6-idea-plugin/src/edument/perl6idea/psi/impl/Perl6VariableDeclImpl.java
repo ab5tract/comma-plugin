@@ -456,8 +456,6 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public void collectPodAndDocumentables(PodDomBuildingContext context) {
         // Only document attributes.
         String scope = getScope();
-        if (scope == null)
-            return;
         if (!(scope.equals("has") || scope.equals("HAS")))
             return;
 

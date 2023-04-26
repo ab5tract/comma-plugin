@@ -15,8 +15,8 @@ public class Perl6ProfileModel extends AbstractTableModel implements Perl6Profil
         Arrays.asList("Name", "File", "Inclusive (μs)", "Entries")
     );
     protected final String myBaseProjectPath;
-    protected int inclusiveSum;
-    protected List<Perl6ProfileCall> nodes;
+    protected final int inclusiveSum;
+    protected final List<Perl6ProfileCall> nodes;
     protected boolean showRealFileNames = false;
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 

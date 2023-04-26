@@ -91,7 +91,7 @@ public class Perl6ProfileRoutinesPanel extends JPanel {
             ContentEntry[] entries = ModuleRootManager.getInstance(module).getContentEntries();
             myModuleBasePaths.addAll(Arrays.stream(entries).map(
                 e -> e.getFile() != null ? e.getFile().getPath() : null
-            ).filter(s -> s != null).collect(Collectors.toList()));
+            ).filter(s -> s != null).toList());
 
             String name = module.getModuleTypeName();
             if (name == null || !name.equals(Perl6ModuleType.getInstance().getId()))

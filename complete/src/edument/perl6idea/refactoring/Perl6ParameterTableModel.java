@@ -71,12 +71,10 @@ public abstract class Perl6ParameterTableModel extends AbstractTableModel implem
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        switch (columnIndex) {
-            case 0:
-            case 1: return String.class;
-            case 2: return Boolean.class;
-            default: return String.class;
+        if (columnIndex == 2) {
+            return Boolean.class;
         }
+        return String.class;
     }
 
     @Override
