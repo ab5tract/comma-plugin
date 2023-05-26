@@ -1,7 +1,6 @@
 package edument.perl6idea.run;
 
 import com.intellij.execution.ui.CommonProgramParametersPanel;
-import com.intellij.openapi.editor.impl.SelectionModelImpl;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
@@ -19,9 +18,6 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -196,7 +192,7 @@ public class Perl6RunSettingsEditor extends SettingsEditor<Perl6RunConfiguration
                 components.addAll(Arrays.asList(super.getComponents()));
                 components.add(myPerl6ParametersComponent);
                 myAnchor = UIUtil.mergeComponentsWithAnchor(
-                    components.toArray(new PanelWithAnchor[components.size()]));
+                    components.toArray(new PanelWithAnchor[0]));
             }
         };
         myParams.setProgramParametersLabel("Script parameters:");

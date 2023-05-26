@@ -8,7 +8,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiPolyVariantReference;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.ResolveResult;
-import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.type.Perl6Type;
 import edument.perl6idea.psi.type.Perl6Untyped;
@@ -125,15 +124,6 @@ public class CallArityIssuesAnnotator implements Annotator {
     // if we found a fitting candidate we bail out, where
     // an exception about AnnotationBuilder can bite us.
     // Use a wrapper to avoid this...
-    private static class AnnotationBuilderWrap {
-        private final Perl6Signature signature;
-        public final TextRange range;
-        public final String text;
-
-        private AnnotationBuilderWrap(Perl6Signature signature, TextRange range, String text) {
-            this.signature = signature;
-            this.range = range;
-            this.text = text;
-        }
+    private record AnnotationBuilderWrap(Perl6Signature signature, TextRange range, String text) {
     }
 }

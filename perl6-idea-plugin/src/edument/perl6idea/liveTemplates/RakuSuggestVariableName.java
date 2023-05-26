@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class RakuSuggestVariableName extends MacroBase {
   public RakuSuggestVariableName() {
@@ -46,7 +45,7 @@ public class RakuSuggestVariableName extends MacroBase {
       .filter(v -> !(temporaryTextRange.contains(v.getTextRange()) && file.equals(v.getContainingFile())))
       .map(p -> ((Perl6VariableDecl)p).getName())
       .filter(Objects::nonNull)
-      .collect(Collectors.toList());
+      .toList();
     for (int i = 0; i < 500; i++) {
       String potentialName = name + (i == 0 ? "" : i);
       if (!names.contains(potentialName)) {

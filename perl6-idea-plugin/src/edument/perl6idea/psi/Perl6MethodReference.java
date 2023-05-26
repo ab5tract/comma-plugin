@@ -135,8 +135,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             return new CallInfo(Perl6Untyped.INSTANCE, name);
         }
 
-        if (prev instanceof Perl6PsiElement) {
-            Perl6PsiElement element = (Perl6PsiElement) prev;
+        if (prev instanceof Perl6PsiElement element) {
             Perl6Type type = element.inferType();
             return new CallInfo(type, name);
         }
@@ -188,8 +187,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             Perl6PackageDecl decl;
             if (psiDeclaration instanceof Perl6PackageDecl) {
                 return getMethodsFromPsiType(callInfo, isSingle, (Perl6PackageDecl)psiDeclaration, callInfo.isTrustNeeded());
-            } else if (psiDeclaration instanceof Perl6Subset) {
-                Perl6Subset subset = (Perl6Subset)psiDeclaration;
+            } else if (psiDeclaration instanceof Perl6Subset subset) {
                 // Get original type of subset
                 decl = subset.getSubsetBaseType();
                 if (decl == null) {
@@ -229,11 +227,10 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             new Perl6SingleResolutionSymbolCollector(typeName, Perl6SymbolKind.TypeOrConstant);
         element.applyExternalSymbolCollector(externalPackageCollector);
         Perl6Symbol type = externalPackageCollector.getResult();
-        if (type == null || !(type.getPsi() instanceof Perl6PackageDecl))
+        if (type == null || !(type.getPsi() instanceof Perl6PackageDecl packageDecl))
             return MuAnyMethods(element, null);
 
         Perl6VariantsSymbolCollector methodsCollector = new Perl6VariantsSymbolCollector(Perl6SymbolKind.Method);
-        Perl6PackageDecl packageDecl = (Perl6PackageDecl)type.getPsi();
         packageDecl.contributeMOPSymbols(methodsCollector, new MOPSymbolsAllowed(true, true, true, true));
         return prioritizeResults(methodsCollector.getVariants());
     }
@@ -245,8 +242,7 @@ public class Perl6MethodReference extends PsiReferenceBase.Poly<Perl6MethodCall>
             if (s.getPsi() instanceof Perl6RoutineDecl) {
                 item = item.withTypeText(((Perl6RoutineDecl)s.getPsi()).summarySignature());
                 item = strikeoutDeprecated(item, s.getPsi());
-            } else if (s.getPsi() instanceof Perl6VariableDecl) {
-                Perl6VariableDecl variableDecl = (Perl6VariableDecl)s.getPsi();
+            } else if (s.getPsi() instanceof Perl6VariableDecl variableDecl) {
                 Perl6Type type = variableDecl.inferType();
                 item = item.withTypeText("(attribute) " + type.getName());
             }

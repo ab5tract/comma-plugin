@@ -263,7 +263,7 @@ public class Perl6ProfileCallGraph extends JPanel {
     }
 
     private static Color getComplimentaryColor(Color color) {
-        double y = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
+        double y = (299f * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
         return y >= 128 ? Color.BLACK : Color.WHITE;
     }
 

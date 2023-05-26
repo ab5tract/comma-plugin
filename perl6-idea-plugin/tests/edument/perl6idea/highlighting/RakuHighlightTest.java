@@ -90,6 +90,8 @@ public class RakuHighlightTest extends CommaFixtureTestCase {
         myFixture.checkHighlighting();
         myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "\nmy my <weak_warning descr=\"Unused variable\">&y</weak_warning>;\n<warning descr=\"Re-declaration of &y from aaa.raku:2\">sub y() {}</warning>;");
         myFixture.checkHighlighting();
+        myFixture.configureByText(Perl6ScriptFileType.INSTANCE, "with -> (Int() $v) { say $v; }\n");
+        myFixture.checkHighlighting();
     }
 
     public void testDuplicateAttributes() {

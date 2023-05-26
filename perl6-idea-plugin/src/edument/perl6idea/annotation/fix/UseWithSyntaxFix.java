@@ -41,10 +41,9 @@ public class UseWithSyntaxFix implements IntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
         // Cannot happen with correct annotator beign a caller
-        if (!(conditional.condition instanceof Perl6PostfixApplication))
+        if (!(conditional.condition instanceof Perl6PostfixApplication inner))
             return;
 
-        Perl6PostfixApplication inner = (Perl6PostfixApplication) conditional.condition;
         // Firstly, delete the `.defined` call
         inner.getLastChild().delete();
 

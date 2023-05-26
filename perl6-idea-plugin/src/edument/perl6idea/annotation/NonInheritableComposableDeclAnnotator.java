@@ -13,8 +13,7 @@ import java.util.List;
 public class NonInheritableComposableDeclAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6PackageDecl)) return;
-        Perl6PackageDecl decl = (Perl6PackageDecl)element;
+        if (!(element instanceof Perl6PackageDecl decl)) return;
         String kind = decl.getPackageKind();
         if (!kind.equals("package") && !kind.equals("module")) return;
 

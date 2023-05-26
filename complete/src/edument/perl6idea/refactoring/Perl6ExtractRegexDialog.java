@@ -21,6 +21,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static edument.perl6idea.refactoring.Perl6ExtractBlockDialog.LEXICAL_SCOPE_COLUMN_INDEX;
@@ -30,10 +31,10 @@ public abstract class Perl6ExtractRegexDialog extends RefactoringDialog {
     private final Perl6VariableData[] myInputVariables;
     private final PsiElement[] myAtoms;
     private final boolean myLexical;
-    private JTextField myNameField;
-    private JComboBox<String> myTypeField;
-    private JCheckBox myCaptureCheckField;
-    private MethodSignatureComponent mySignature;
+    private final JTextField myNameField;
+    private final JComboBox<String> myTypeField;
+    private final JCheckBox myCaptureCheckField;
+    private final MethodSignatureComponent mySignature;
 
     protected Perl6ExtractRegexDialog(@NotNull Project project,
                                       Perl6VariableData[] inputVariables,
@@ -45,7 +46,7 @@ public abstract class Perl6ExtractRegexDialog extends RefactoringDialog {
         myAtoms = atoms;
         myNameField = new JTextField();
         myTypeField = new ComboBox<>(new String[]{"token", "regex", "rule"});
-        myTypeField.setSelectedItem(parentType.name().toLowerCase());
+        myTypeField.setSelectedItem(parentType.name().toLowerCase(Locale.ROOT));
         myCaptureCheckField = new JBCheckBox();
         mySignature = new MethodSignatureComponent("", project, Perl6ScriptFileType.INSTANCE);
         mySignature.setMinimumSize(new Dimension(500, 160));
@@ -174,7 +175,7 @@ public abstract class Perl6ExtractRegexDialog extends RefactoringDialog {
         String items = Arrays.stream(myAtoms).map(p -> p.getText()).collect(Collectors.joining(" "));
         String baseFormat = "%s%s %s%s { %s }";
         return String.format(
-            baseFormat, myLexical ? "my " : "", getType().name().toLowerCase(),
+            baseFormat, myLexical ? "my " : "", getType().name().toLowerCase(Locale.ROOT),
             getNewRegexName(), getSignatureParameterBlock(), items);
     }
 

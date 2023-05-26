@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Perl6CoverageCommandLineState extends Perl6RunCommandLineState {
-    private File coverageDir;
+    private final File coverageDir;
 
     public Perl6CoverageCommandLineState(ExecutionEnvironment environment) throws ExecutionException {
         super(environment);

@@ -197,8 +197,7 @@ public class RakuGrammarPreviewer extends JPanel {
             Object node = selectedNodes[0].getUserObject();
             if (node instanceof ParseResultsModel.Node) {
                 Object selectedGrammar = myGrammarComboBox.getSelectedItem();
-                if (selectedGrammar instanceof Perl6PackageDecl) {
-                    Perl6PackageDecl grammar = (Perl6PackageDecl)selectedGrammar;
+                if (selectedGrammar instanceof Perl6PackageDecl grammar) {
                     if (grammar.isValid()) {
                         Collection<Perl6RegexDecl> decls = PsiTreeUtil.findChildrenOfType(grammar, Perl6RegexDecl.class);
                         String name = ((ParseResultsModel.Node)node).getName();
@@ -344,8 +343,7 @@ public class RakuGrammarPreviewer extends JPanel {
             public void customizeCellRenderer(@NotNull JTree tree, Object value,
                     boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
                 DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)value;
-                if (treeNode.getUserObject() instanceof ParseResultsModel.Node) {
-                    ParseResultsModel.Node node = (ParseResultsModel.Node)treeNode.getUserObject();
+                if (treeNode.getUserObject() instanceof ParseResultsModel.Node node) {
                     if (node.isSuccessful()) {
                         appendNode(node, NODE_TEXT_ATTRS, CAPTURED_NODE_TEXT_ATTRS);
                     }
@@ -366,7 +364,7 @@ public class RakuGrammarPreviewer extends JPanel {
                     append(node.getName(), capturedAttrs);
                 }
                 else {
-                    List<String> aliases = ContainerUtil.filter(captureNames, n -> n != node.getName());
+                    List<String> aliases = ContainerUtil.filter(captureNames, n -> !Objects.equals(n, node.getName()));
                     append(node.getName(), aliases.size() == captureNames.size() ? anonAttrs : capturedAttrs);
                     append(" (");
                     boolean first = true;
@@ -619,9 +617,8 @@ public class RakuGrammarPreviewer extends JPanel {
     // it.
     private boolean selectNodeCoveringOffset(DefaultMutableTreeNode treeNode, int offset, boolean visitUnsuccessful) {
         Object maybeNode = treeNode.getUserObject();
-        if (maybeNode instanceof ParseResultsModel.Node) {
+        if (maybeNode instanceof ParseResultsModel.Node node) {
             // See if this node covers.
-            ParseResultsModel.Node node = (ParseResultsModel.Node)maybeNode;
             boolean covers = false;
             if (node.isSuccessful()) {
                 if (offset >= node.getStart() && offset <= node.getEnd()) {

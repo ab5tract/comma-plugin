@@ -2,7 +2,6 @@ package edument.perl6idea.editor;
 
 import com.intellij.codeInsight.editorActions.BackspaceHandlerDelegate;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiFile;
@@ -32,7 +31,7 @@ public class BackspaceUnicodeHandler extends BackspaceHandlerDelegate {
     public void beforeCharDeleted(char c, @NotNull PsiFile file, @NotNull Editor editor) {
         Pair<Pair<Integer, Integer>, String> lastReplacement = editor.getUserData(UnicodeReplacementHandler.UNICODE_REPLACEMENT_POS);
         if (lastReplacement != null && editor.getCaretModel().getOffset() - 1 == lastReplacement.first.first) {
-            IElementType curToken = ((EditorEx)editor).getHighlighter()
+            IElementType curToken = editor.getHighlighter()
                 .createIterator(editor.getCaretModel().getOffset() - 1).getTokenType();
             if (curToken == Perl6TokenTypes.INFIX || curToken == Perl6TokenTypes.METAOP)
                 stringToInsert = lastReplacement.second;

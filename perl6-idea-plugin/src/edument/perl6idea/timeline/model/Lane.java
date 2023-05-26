@@ -31,8 +31,7 @@ public class Lane {
                 if (((Event)check).getWhen() == entry.getWhen())
                     return true;
             }
-            else if (check instanceof Task) {
-                Task checkTask = (Task)check;
+            else if (check instanceof Task checkTask) {
                 if (entry.getWhen() >= checkTask.getStart() && entry.getWhen() < checkTask.getEnd())
                     return true;
             }
@@ -47,8 +46,7 @@ public class Lane {
                 if (when >= entry.getStart() && when < entry.getEnd())
                     return true;
             }
-            else if (check instanceof Task) {
-                Task checkTask = (Task)check;
+            else if (check instanceof Task checkTask) {
                 double intersectionLower = Math.max(entry.getStart(), checkTask.getStart());
                 double intersectionUpper = Math.min(entry.getEnd(), checkTask.getEnd());
                 if (intersectionLower <= intersectionUpper)

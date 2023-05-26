@@ -197,7 +197,7 @@ public class UpdateExtensionsAction extends AnAction {
                 joiner.add("Could not rename those files:<br>");
                 for (Pair<Path, String> pair : filesToShow)
                     joiner.add(pair.first + " -> " + pair.second);
-                return new JBLabel("<html>" + joiner.toString() + "</html>");
+                return new JBLabel("<html>" + joiner + "</html>");
             }
         }
     }

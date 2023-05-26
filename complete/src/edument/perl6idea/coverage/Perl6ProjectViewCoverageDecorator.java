@@ -4,8 +4,6 @@ import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.ProjectViewNodeDecorator;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.packageDependencies.ui.PackageDependenciesNode;
-import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
@@ -40,7 +38,7 @@ public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorat
     }
 
     private static void addCoverageStatistics(PresentationData data, CoverageStatistics stats) {
-        data.addText(" (" + stats.getCoveredLines() + " / " + stats.getCoverableLines() +
+        data.addText(" (" + stats.coveredLines() + " / " + stats.coverableLines() +
                      " statements; ", SimpleTextAttributes.GRAY_ATTRIBUTES);
         data.addText(stats.percent() + "%)", percentAttributes(stats));
         data.addText(")", SimpleTextAttributes.GRAY_ATTRIBUTES);
@@ -52,9 +50,5 @@ public class Perl6ProjectViewCoverageDecorator implements ProjectViewNodeDecorat
         if (stats.isPoor())
             return new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.RED);
         return new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.YELLOW);
-    }
-
-    @Override
-    public void decorate(PackageDependenciesNode node, ColoredTreeCellRenderer cellRenderer) {
     }
 }

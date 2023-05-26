@@ -17,7 +17,6 @@ import edument.perl6idea.metadata.Perl6MetaDataComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.event.HyperlinkEvent;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

@@ -15,7 +15,6 @@ import edument.perl6idea.annotation.fix.RemoveUnusedRoutineFix;
 import edument.perl6idea.annotation.fix.MakeSubroutineExportedFix;
 import edument.perl6idea.highlighter.Perl6Highlighter;
 import edument.perl6idea.psi.*;
-import edument.perl6idea.psi.symbols.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -25,9 +24,8 @@ public class UnusedRoutineAnnotation implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6RoutineDecl))
+        if (!(element instanceof Perl6RoutineDecl routine))
             return;
-        Perl6RoutineDecl routine = (Perl6RoutineDecl)element;
         if (routine.getRoutineKind().equals("method") && routine.isPrivate()) {
             // Private routines should be used within the enclosing package, so long
             // as it's not a role.

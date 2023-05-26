@@ -8,8 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Perl6ProfileResultsPanel extends JPanel {
-    private Project myProject;
-    private Perl6ProfileData myProfileData;
+    private final Project myProject;
+    private final Perl6ProfileData myProfileData;
 
     public Perl6ProfileResultsPanel(Project project,
                                     Perl6ProfileData profileData) {

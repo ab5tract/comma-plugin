@@ -7,6 +7,7 @@ import edument.perl6idea.parsing.OPP;
 
 public class CroTemplateParser implements PsiParser {
 
+    @Override
     public ASTNode parse(IElementType root, PsiBuilder builder) {
         PsiBuilder.Marker rootMarker;
         rootMarker = builder.mark();
@@ -33,7 +34,7 @@ public class CroTemplateParser implements PsiParser {
         OPP opp;
         opp = null;
         while (true) {
-            PsiBuilder.Marker quantMarker1;;
+            PsiBuilder.Marker quantMarker1;
             quantMarker1 = builder.mark();
             if (this.TOP_1_quant_1(builder, opp)) {
                 quantMarker1.drop();
@@ -123,7 +124,7 @@ public class CroTemplateParser implements PsiParser {
 
     private boolean arglist_3_quant_5(PsiBuilder builder, OPP opp) {
         while (true) {
-            PsiBuilder.Marker quantMarker3;;
+            PsiBuilder.Marker quantMarker3;
             quantMarker3 = builder.mark();
             if (this.arglist_3_quant_2(builder, opp)) {
                 quantMarker3.drop();
@@ -285,7 +286,7 @@ public class CroTemplateParser implements PsiParser {
             altMarker8.drop();
         } else {
             altMarker8.rollbackTo();
-            PsiBuilder.Marker altMarker1;;
+            PsiBuilder.Marker altMarker1;
             altMarker1 = builder.mark();
             if (this.argument_4_alt_1(builder, opp)) {
                 altMarker1.drop();
@@ -465,7 +466,7 @@ public class CroTemplateParser implements PsiParser {
             return false;
         }
         while (true) {
-            PsiBuilder.Marker quantMarker2;;
+            PsiBuilder.Marker quantMarker2;
             quantMarker2 = builder.mark();
             if (this.deref_13_quant_2(builder, opp)) {
                 quantMarker2.drop();
@@ -521,25 +522,25 @@ public class CroTemplateParser implements PsiParser {
             altMarker5.drop();
         } else {
             altMarker5.rollbackTo();
-            PsiBuilder.Marker altMarker4;;
+            PsiBuilder.Marker altMarker4;
             altMarker4 = builder.mark();
             if (this.derefitem_14_alt_4(builder, opp)) {
                 altMarker4.drop();
             } else {
                 altMarker4.rollbackTo();
-                PsiBuilder.Marker altMarker3;;
+                PsiBuilder.Marker altMarker3;
                 altMarker3 = builder.mark();
                 if (this.derefitem_14_alt_3(builder, opp)) {
                     altMarker3.drop();
                 } else {
                     altMarker3.rollbackTo();
-                    PsiBuilder.Marker altMarker2;;
+                    PsiBuilder.Marker altMarker2;
                     altMarker2 = builder.mark();
                     if (this.derefitem_14_alt_2(builder, opp)) {
                         altMarker2.drop();
                     } else {
                         altMarker2.rollbackTo();
-                        PsiBuilder.Marker altMarker1;;
+                        PsiBuilder.Marker altMarker1;
                         altMarker1 = builder.mark();
                         if (this.derefitem_14_alt_1(builder, opp)) {
                             altMarker1.drop();
@@ -990,13 +991,13 @@ public class CroTemplateParser implements PsiParser {
             altMarker5.drop();
         } else {
             altMarker5.rollbackTo();
-            PsiBuilder.Marker altMarker3;;
+            PsiBuilder.Marker altMarker3;
             altMarker3 = builder.mark();
             if (this.elsif_23_alt_2(builder, opp)) {
                 altMarker3.drop();
             } else {
                 altMarker3.rollbackTo();
-                PsiBuilder.Marker altMarker2;;
+                PsiBuilder.Marker altMarker2;
                 altMarker2 = builder.mark();
                 if (this.elsif_23_alt_1(builder, opp)) {
                     altMarker2.drop();
@@ -1111,7 +1112,7 @@ public class CroTemplateParser implements PsiParser {
         opp.startPostfixes();
         opp.endPostfixes();
         while (true) {
-            PsiBuilder.Marker quantMarker3;;
+            PsiBuilder.Marker quantMarker3;
             quantMarker3 = builder.mark();
             if (this.expression_24_quant_3(builder, opp)) {
                 quantMarker3.drop();
@@ -1127,7 +1128,7 @@ public class CroTemplateParser implements PsiParser {
             altMarker5.drop();
         } else {
             altMarker5.rollbackTo();
-            PsiBuilder.Marker altMarker4;;
+            PsiBuilder.Marker altMarker4;
             altMarker4 = builder.mark();
             if (this.expression_24_alt_4(builder, opp)) {
                 altMarker4.drop();
@@ -1184,7 +1185,7 @@ public class CroTemplateParser implements PsiParser {
             altMarker2.drop();
         } else {
             altMarker2.rollbackTo();
-            PsiBuilder.Marker altMarker1;;
+            PsiBuilder.Marker altMarker1;
             altMarker1 = builder.mark();
             if (this.ident_27_alt_1(builder, opp)) {
                 altMarker1.drop();
@@ -1194,7 +1195,7 @@ public class CroTemplateParser implements PsiParser {
             }
         }
         while (true) {
-            PsiBuilder.Marker quantMarker3;;
+            PsiBuilder.Marker quantMarker3;
             quantMarker3 = builder.mark();
             if (this.ident_27_quant_3(builder, opp)) {
                 quantMarker3.drop();
@@ -1220,7 +1221,7 @@ public class CroTemplateParser implements PsiParser {
             return false;
         }
         while (true) {
-            PsiBuilder.Marker quantMarker1;;
+            PsiBuilder.Marker quantMarker1;
             quantMarker1 = builder.mark();
             if (this.identifier_28_quant_1(builder, opp)) {
                 quantMarker1.drop();
@@ -1377,13 +1378,13 @@ public class CroTemplateParser implements PsiParser {
             altMarker4.drop();
         } else {
             altMarker4.rollbackTo();
-            PsiBuilder.Marker altMarker3;;
+            PsiBuilder.Marker altMarker3;
             altMarker3 = builder.mark();
             if (this.literaltagattributevalue_34_alt_3(builder, opp)) {
                 altMarker3.drop();
             } else {
                 altMarker3.rollbackTo();
-                PsiBuilder.Marker altMarker2;;
+                PsiBuilder.Marker altMarker2;
                 altMarker2 = builder.mark();
                 if (this.literaltagattributevalue_34_alt_2(builder, opp)) {
                     altMarker2.drop();
@@ -1416,7 +1417,7 @@ public class CroTemplateParser implements PsiParser {
             return false;
         }
         while (true) {
-            PsiBuilder.Marker quantMarker5;;
+            PsiBuilder.Marker quantMarker5;
             quantMarker5 = builder.mark();
             if (this.literaltagattributevalue_34_quant_5(builder, opp)) {
                 quantMarker5.drop();
@@ -1469,13 +1470,13 @@ public class CroTemplateParser implements PsiParser {
             altMarker10.drop();
         } else {
             altMarker10.rollbackTo();
-            PsiBuilder.Marker altMarker9;;
+            PsiBuilder.Marker altMarker9;
             altMarker9 = builder.mark();
             if (this.literaltagattributevalue_34_alt_9(builder, opp)) {
                 altMarker9.drop();
             } else {
                 altMarker9.rollbackTo();
-                PsiBuilder.Marker altMarker8;;
+                PsiBuilder.Marker altMarker8;
                 altMarker8 = builder.mark();
                 if (this.literaltagattributevalue_34_alt_8(builder, opp)) {
                     altMarker8.drop();
@@ -1508,7 +1509,7 @@ public class CroTemplateParser implements PsiParser {
             return false;
         }
         while (true) {
-            PsiBuilder.Marker quantMarker11;;
+            PsiBuilder.Marker quantMarker11;
             quantMarker11 = builder.mark();
             if (this.literaltagattributevalue_34_quant_11(builder, opp)) {
                 quantMarker11.drop();
@@ -1536,13 +1537,13 @@ public class CroTemplateParser implements PsiParser {
             altMarker13.drop();
         } else {
             altMarker13.rollbackTo();
-            PsiBuilder.Marker altMarker7;;
+            PsiBuilder.Marker altMarker7;
             altMarker7 = builder.mark();
             if (this.literaltagattributevalue_34_alt_7(builder, opp)) {
                 altMarker7.drop();
             } else {
                 altMarker7.rollbackTo();
-                PsiBuilder.Marker altMarker1;;
+                PsiBuilder.Marker altMarker1;
                 altMarker1 = builder.mark();
                 if (this.literaltagattributevalue_34_alt_1(builder, opp)) {
                     altMarker1.drop();
@@ -1690,7 +1691,7 @@ public class CroTemplateParser implements PsiParser {
             altMarker4.drop();
         } else {
             altMarker4.rollbackTo();
-            PsiBuilder.Marker altMarker2;;
+            PsiBuilder.Marker altMarker2;
             altMarker2 = builder.mark();
             if (this.parameter_40_alt_1(builder, opp)) {
                 altMarker2.drop();
@@ -1833,25 +1834,25 @@ public class CroTemplateParser implements PsiParser {
             altMarker5.drop();
         } else {
             altMarker5.rollbackTo();
-            PsiBuilder.Marker altMarker4;;
+            PsiBuilder.Marker altMarker4;
             altMarker4 = builder.mark();
             if (this.sequenceelement_44_alt_4(builder, opp)) {
                 altMarker4.drop();
             } else {
                 altMarker4.rollbackTo();
-                PsiBuilder.Marker altMarker3;;
+                PsiBuilder.Marker altMarker3;
                 altMarker3 = builder.mark();
                 if (this.sequenceelement_44_alt_3(builder, opp)) {
                     altMarker3.drop();
                 } else {
                     altMarker3.rollbackTo();
-                    PsiBuilder.Marker altMarker2;;
+                    PsiBuilder.Marker altMarker2;
                     altMarker2 = builder.mark();
                     if (this.sequenceelement_44_alt_2(builder, opp)) {
                         altMarker2.drop();
                     } else {
                         altMarker2.rollbackTo();
-                        PsiBuilder.Marker altMarker1;;
+                        PsiBuilder.Marker altMarker1;
                         altMarker1 = builder.mark();
                         if (this.sequenceelement_44_alt_1(builder, opp)) {
                             altMarker1.drop();
@@ -1879,7 +1880,7 @@ public class CroTemplateParser implements PsiParser {
         PsiBuilder.Marker marker1;
         marker1 = builder.mark();
         while (true) {
-            PsiBuilder.Marker quantMarker2;;
+            PsiBuilder.Marker quantMarker2;
             quantMarker2 = builder.mark();
             if (this.sequenceelementgroup_45_quant_1(builder, opp)) {
                 quantMarker2.drop();
@@ -1976,7 +1977,7 @@ public class CroTemplateParser implements PsiParser {
             altMarker3.drop();
         } else {
             altMarker3.rollbackTo();
-            PsiBuilder.Marker altMarker2;;
+            PsiBuilder.Marker altMarker2;
             altMarker2 = builder.mark();
             if (this.sequenceelementliteralopentag_47_alt_1(builder, opp)) {
                 altMarker2.drop();
@@ -2003,7 +2004,7 @@ public class CroTemplateParser implements PsiParser {
             return false;
         }
         while (true) {
-            PsiBuilder.Marker quantMarker4;;
+            PsiBuilder.Marker quantMarker4;
             quantMarker4 = builder.mark();
             if (this.sequenceelementliteralopentag_47_quant_3(builder, opp)) {
                 quantMarker4.drop();
@@ -2073,13 +2074,13 @@ public class CroTemplateParser implements PsiParser {
             altMarker3.drop();
         } else {
             altMarker3.rollbackTo();
-            PsiBuilder.Marker altMarker2;;
+            PsiBuilder.Marker altMarker2;
             altMarker2 = builder.mark();
             if (this.sigil_49_alt_2(builder, opp)) {
                 altMarker2.drop();
             } else {
                 altMarker2.rollbackTo();
-                PsiBuilder.Marker altMarker1;;
+                PsiBuilder.Marker altMarker1;
                 altMarker1 = builder.mark();
                 if (this.sigil_49_alt_1(builder, opp)) {
                     altMarker1.drop();
@@ -2192,73 +2193,73 @@ public class CroTemplateParser implements PsiParser {
             altMarker13.drop();
         } else {
             altMarker13.rollbackTo();
-            PsiBuilder.Marker altMarker12;;
+            PsiBuilder.Marker altMarker12;
             altMarker12 = builder.mark();
             if (this.sigiltag_50_alt_12(builder, opp)) {
                 altMarker12.drop();
             } else {
                 altMarker12.rollbackTo();
-                PsiBuilder.Marker altMarker11;;
+                PsiBuilder.Marker altMarker11;
                 altMarker11 = builder.mark();
                 if (this.sigiltag_50_alt_11(builder, opp)) {
                     altMarker11.drop();
                 } else {
                     altMarker11.rollbackTo();
-                    PsiBuilder.Marker altMarker10;;
+                    PsiBuilder.Marker altMarker10;
                     altMarker10 = builder.mark();
                     if (this.sigiltag_50_alt_10(builder, opp)) {
                         altMarker10.drop();
                     } else {
                         altMarker10.rollbackTo();
-                        PsiBuilder.Marker altMarker9;;
+                        PsiBuilder.Marker altMarker9;
                         altMarker9 = builder.mark();
                         if (this.sigiltag_50_alt_9(builder, opp)) {
                             altMarker9.drop();
                         } else {
                             altMarker9.rollbackTo();
-                            PsiBuilder.Marker altMarker8;;
+                            PsiBuilder.Marker altMarker8;
                             altMarker8 = builder.mark();
                             if (this.sigiltag_50_alt_8(builder, opp)) {
                                 altMarker8.drop();
                             } else {
                                 altMarker8.rollbackTo();
-                                PsiBuilder.Marker altMarker7;;
+                                PsiBuilder.Marker altMarker7;
                                 altMarker7 = builder.mark();
                                 if (this.sigiltag_50_alt_7(builder, opp)) {
                                     altMarker7.drop();
                                 } else {
                                     altMarker7.rollbackTo();
-                                    PsiBuilder.Marker altMarker6;;
+                                    PsiBuilder.Marker altMarker6;
                                     altMarker6 = builder.mark();
                                     if (this.sigiltag_50_alt_6(builder, opp)) {
                                         altMarker6.drop();
                                     } else {
                                         altMarker6.rollbackTo();
-                                        PsiBuilder.Marker altMarker5;;
+                                        PsiBuilder.Marker altMarker5;
                                         altMarker5 = builder.mark();
                                         if (this.sigiltag_50_alt_5(builder, opp)) {
                                             altMarker5.drop();
                                         } else {
                                             altMarker5.rollbackTo();
-                                            PsiBuilder.Marker altMarker4;;
+                                            PsiBuilder.Marker altMarker4;
                                             altMarker4 = builder.mark();
                                             if (this.sigiltag_50_alt_4(builder, opp)) {
                                                 altMarker4.drop();
                                             } else {
                                                 altMarker4.rollbackTo();
-                                                PsiBuilder.Marker altMarker3;;
+                                                PsiBuilder.Marker altMarker3;
                                                 altMarker3 = builder.mark();
                                                 if (this.sigiltag_50_alt_3(builder, opp)) {
                                                     altMarker3.drop();
                                                 } else {
                                                     altMarker3.rollbackTo();
-                                                    PsiBuilder.Marker altMarker2;;
+                                                    PsiBuilder.Marker altMarker2;
                                                     altMarker2 = builder.mark();
                                                     if (this.sigiltag_50_alt_2(builder, opp)) {
                                                         altMarker2.drop();
                                                     } else {
                                                         altMarker2.rollbackTo();
-                                                        PsiBuilder.Marker altMarker1;;
+                                                        PsiBuilder.Marker altMarker1;
                                                         altMarker1 = builder.mark();
                                                         if (this.sigiltag_50_alt_1(builder, opp)) {
                                                             altMarker1.drop();
@@ -2634,7 +2635,7 @@ public class CroTemplateParser implements PsiParser {
             return false;
         }
         while (true) {
-            PsiBuilder.Marker quantMarker8;;
+            PsiBuilder.Marker quantMarker8;
             quantMarker8 = builder.mark();
             if (this.sigiltagcondition_55_quant_7(builder, opp)) {
                 quantMarker8.drop();
@@ -2704,13 +2705,13 @@ public class CroTemplateParser implements PsiParser {
             altMarker5.drop();
         } else {
             altMarker5.rollbackTo();
-            PsiBuilder.Marker altMarker3;;
+            PsiBuilder.Marker altMarker3;
             altMarker3 = builder.mark();
             if (this.sigiltagcondition_55_alt_2(builder, opp)) {
                 altMarker3.drop();
             } else {
                 altMarker3.rollbackTo();
-                PsiBuilder.Marker altMarker2;;
+                PsiBuilder.Marker altMarker2;
                 altMarker2 = builder.mark();
                 if (this.sigiltagcondition_55_alt_1(builder, opp)) {
                     altMarker2.drop();
@@ -2945,13 +2946,13 @@ public class CroTemplateParser implements PsiParser {
             altMarker7.drop();
         } else {
             altMarker7.rollbackTo();
-            PsiBuilder.Marker altMarker5;;
+            PsiBuilder.Marker altMarker5;
             altMarker5 = builder.mark();
             if (this.sigiltagiteration_56_alt_4(builder, opp)) {
                 altMarker5.drop();
             } else {
                 altMarker5.rollbackTo();
-                PsiBuilder.Marker altMarker4;;
+                PsiBuilder.Marker altMarker4;
                 altMarker4 = builder.mark();
                 if (this.sigiltagiteration_56_alt_3(builder, opp)) {
                     altMarker4.drop();
@@ -3690,7 +3691,7 @@ public class CroTemplateParser implements PsiParser {
             altMarker3.drop();
         } else {
             altMarker3.rollbackTo();
-            PsiBuilder.Marker altMarker2;;
+            PsiBuilder.Marker altMarker2;
             altMarker2 = builder.mark();
             if (this.sigiltaguse_62_alt_1(builder, opp)) {
                 altMarker2.drop();
@@ -3876,7 +3877,7 @@ public class CroTemplateParser implements PsiParser {
 
     private boolean signature_64_quant_5(PsiBuilder builder, OPP opp) {
         while (true) {
-            PsiBuilder.Marker quantMarker3;;
+            PsiBuilder.Marker quantMarker3;
             quantMarker3 = builder.mark();
             if (this.signature_64_quant_2(builder, opp)) {
                 quantMarker3.drop();
@@ -4001,7 +4002,7 @@ public class CroTemplateParser implements PsiParser {
             altMarker2.drop();
         } else {
             altMarker2.rollbackTo();
-            PsiBuilder.Marker altMarker1;;
+            PsiBuilder.Marker altMarker1;
             altMarker1 = builder.mark();
             if (this.structuraltag_66_alt_1(builder, opp)) {
                 altMarker1.drop();
@@ -4023,7 +4024,7 @@ public class CroTemplateParser implements PsiParser {
             return false;
         }
         while (true) {
-            PsiBuilder.Marker quantMarker3;;
+            PsiBuilder.Marker quantMarker3;
             quantMarker3 = builder.mark();
             if (this.structuraltag_66_quant_3(builder, opp)) {
                 quantMarker3.drop();
@@ -4113,43 +4114,43 @@ public class CroTemplateParser implements PsiParser {
             altMarker8.drop();
         } else {
             altMarker8.rollbackTo();
-            PsiBuilder.Marker altMarker7;;
+            PsiBuilder.Marker altMarker7;
             altMarker7 = builder.mark();
             if (this.term_68_alt_7(builder, opp)) {
                 altMarker7.drop();
             } else {
                 altMarker7.rollbackTo();
-                PsiBuilder.Marker altMarker6;;
+                PsiBuilder.Marker altMarker6;
                 altMarker6 = builder.mark();
                 if (this.term_68_alt_6(builder, opp)) {
                     altMarker6.drop();
                 } else {
                     altMarker6.rollbackTo();
-                    PsiBuilder.Marker altMarker5;;
+                    PsiBuilder.Marker altMarker5;
                     altMarker5 = builder.mark();
                     if (this.term_68_alt_5(builder, opp)) {
                         altMarker5.drop();
                     } else {
                         altMarker5.rollbackTo();
-                        PsiBuilder.Marker altMarker4;;
+                        PsiBuilder.Marker altMarker4;
                         altMarker4 = builder.mark();
                         if (this.term_68_alt_4(builder, opp)) {
                             altMarker4.drop();
                         } else {
                             altMarker4.rollbackTo();
-                            PsiBuilder.Marker altMarker3;;
+                            PsiBuilder.Marker altMarker3;
                             altMarker3 = builder.mark();
                             if (this.term_68_alt_3(builder, opp)) {
                                 altMarker3.drop();
                             } else {
                                 altMarker3.rollbackTo();
-                                PsiBuilder.Marker altMarker2;;
+                                PsiBuilder.Marker altMarker2;
                                 altMarker2 = builder.mark();
                                 if (this.term_68_alt_2(builder, opp)) {
                                     altMarker2.drop();
                                 } else {
                                     altMarker2.rollbackTo();
-                                    PsiBuilder.Marker altMarker1;;
+                                    PsiBuilder.Marker altMarker1;
                                     altMarker1 = builder.mark();
                                     if (this.term_68_alt_1(builder, opp)) {
                                         altMarker1.drop();
@@ -4257,7 +4258,7 @@ public class CroTemplateParser implements PsiParser {
             altMarker2.drop();
         } else {
             altMarker2.rollbackTo();
-            PsiBuilder.Marker altMarker1;;
+            PsiBuilder.Marker altMarker1;
             altMarker1 = builder.mark();
             if (this.ws_72_alt_1(builder, opp)) {
                 altMarker1.drop();

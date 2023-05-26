@@ -15,8 +15,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 public class Perl6RegexCallReference extends PsiReferenceBase<Perl6RegexCall> {
     private static final String[] PREDEFINED_METHODS = new String[]{"after", "digit", "before", "space", "ww", "upper", "wb", "cntrl", "ws", "graph", "xdigit", "ident", "lower", "punct", "print", "alnum", "alpha"};
 
@@ -59,7 +57,7 @@ public class Perl6RegexCallReference extends PsiReferenceBase<Perl6RegexCall> {
                     // Filter out external symbols for regex-calls
                     .filter(symbol -> !symbol.isExternal() )
                     // Delete first `.`, as we already have one in method (e.g. `.alpha`)
-                    .map(sym -> sym.getName().substring(1)).collect(toList()));
+                    .map(sym -> sym.getName().substring(1)).toList());
         }
         result.addAll(Arrays.asList(PREDEFINED_METHODS));
         return result.toArray();

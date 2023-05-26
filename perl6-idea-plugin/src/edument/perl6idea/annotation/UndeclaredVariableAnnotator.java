@@ -18,13 +18,12 @@ public class UndeclaredVariableAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         // Make sure we've got a sensible looking variable to check.
-        if (!(element instanceof Perl6Variable))
+        if (!(element instanceof final Perl6Variable variable))
             return;
         if (element.getParent() instanceof Perl6RegexVariable)
             return;
         if (element.getParent() instanceof Perl6VariableDecl)
             return;
-        final Perl6Variable variable = (Perl6Variable)element;
         String variableName = variable.getVariableName();
         if (variableName == null)
             return;

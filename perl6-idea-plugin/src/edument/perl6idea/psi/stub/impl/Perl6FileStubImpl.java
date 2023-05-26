@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Perl6FileStubImpl extends PsiFileStubImpl<Perl6File> implements Perl6FileStub {
     private final String compilationUnitName;
@@ -40,8 +39,7 @@ public class Perl6FileStubImpl extends PsiFileStubImpl<Perl6File> implements Per
         while (!toTry.isEmpty()) {
             Stub current = toTry.remove(0);
             for (Stub child : current.getChildrenStubs()) {
-                if (child instanceof Perl6DeclStub) {
-                    Perl6DeclStub<?> declStub = (Perl6DeclStub<?>)child;
+                if (child instanceof Perl6DeclStub<?> declStub) {
                     if (declStub.isExported())
                         exports.add(declStub.getPsi());
                 }

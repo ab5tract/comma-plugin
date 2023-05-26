@@ -48,9 +48,7 @@ public class Perl6ExternalNamesParser {
     public Perl6ExternalNamesParser parse() {
         try {
             for (Object object : myJson) {
-                if (!(object instanceof JSONObject)) continue;
-
-                JSONObject j = (JSONObject)object;
+                if (!(object instanceof JSONObject j)) continue;
 
                 switch (j.getString("k")) {
                     case "n": {
@@ -131,8 +129,7 @@ public class Perl6ExternalNamesParser {
         List<Perl6RoutineDecl> routines = new ArrayList<>();
         if (j.has("m") && j.get("m") instanceof JSONArray)
             for (Object routine : j.getJSONArray("m"))
-                if (routine instanceof JSONObject) {
-                    JSONObject routineJson = (JSONObject)routine;
+                if (routine instanceof JSONObject routineJson) {
                     int isMulti = routineJson.getInt("m");
                     String deprecationMessage = routineJson.has("x") ? routineJson.getString("x") : null;
                     JSONObject signature = routineJson.getJSONObject("s");

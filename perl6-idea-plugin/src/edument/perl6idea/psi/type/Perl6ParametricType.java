@@ -40,9 +40,8 @@ public class Perl6ParametricType implements Perl6Type {
     }
 
     public boolean equals(Object other) {
-        if (!(other instanceof Perl6ParametricType))
+        if (!(other instanceof Perl6ParametricType otherType))
             return false;
-        Perl6ParametricType otherType = (Perl6ParametricType)other;
         if (!otherType.genericType.equals(genericType))
             return false;
         if (otherType.arguments.length != arguments.length)

@@ -12,9 +12,8 @@ import org.jetbrains.annotations.NotNull;
 public class UselessMethodDeclarationAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (element instanceof Perl6RoutineDecl) {
+        if (element instanceof Perl6RoutineDecl routine) {
             // Check that we've got a method.
-            Perl6RoutineDecl routine = (Perl6RoutineDecl) element;
             String kind = routine.getRoutineKind();
             if (!kind.equals("method") && !kind.equals("submethod"))
                 return;

@@ -98,7 +98,7 @@ public class Perl6DebugThread extends Thread {
                     }
                     int activeThreadIndex = 0;
                     for (int i = 0; i < threads.length; i++) {
-                        if (threads[i].getThreadId() == bpn.getThread()) {
+                        if (threads[i].threadId() == bpn.getThread()) {
                             activeThreadIndex = i;
                             break;
                         }
@@ -125,7 +125,7 @@ public class Perl6DebugThread extends Thread {
                     }
                     int activeThreadIndex = 0;
                     for (int i = 0; i < threads.length; i++) {
-                        if (threads[i].getThreadId() == scn.getThread()) {
+                        if (threads[i].threadId() == scn.getThread()) {
                             activeThreadIndex = i;
                             break;
                         }

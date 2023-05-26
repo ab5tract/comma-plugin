@@ -16,7 +16,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.highlighter.RakuElementVisitor;
-import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.pod.PodDomClassyDeclarator;
 import edument.perl6idea.psi.*;
@@ -183,8 +182,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         Perl6PackageDeclStub stub = getStub();
         if (stub != null) {
             for (StubElement<?> nestedStub : stub.getChildrenStubs()) {
-                if (nestedStub instanceof Perl6RoutineDeclStub) {
-                    Perl6RoutineDeclStub declStub = (Perl6RoutineDeclStub)nestedStub;
+                if (nestedStub instanceof Perl6RoutineDeclStub declStub) {
                     if (declStub.isPrivate() && !symbolsAllowed.privateMethodsVisible)
                         continue;
                     if (declStub.getRoutineKind().equals("submethod") && !symbolsAllowed.submethodsVisible)
@@ -192,20 +190,17 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                     declStub.getPsi().contributeMOPSymbols(collector, symbolsAllowed);
                     if (collector.isSatisfied()) return;
                 }
-                else if (nestedStub instanceof Perl6ScopedDeclStub) {
-                    Perl6ScopedDeclStub scopedVar = (Perl6ScopedDeclStub)nestedStub;
+                else if (nestedStub instanceof Perl6ScopedDeclStub scopedVar) {
                     List<StubElement> stubsUnderScoped = scopedVar.getChildrenStubs();
                     for (StubElement<?> var : stubsUnderScoped) {
-                        if (var instanceof Perl6VariableDeclStub) {
-                            Perl6VariableDeclStub declStub = (Perl6VariableDeclStub)var;
+                        if (var instanceof Perl6VariableDeclStub declStub) {
                             if (!declStub.getScope().equals("has"))
                                 continue;
                             declStub.getPsi().contributeMOPSymbols(collector, symbolsAllowed);
                             if (collector.isSatisfied()) return;
                         }
                     }
-                } else if (nestedStub instanceof Perl6RegexDeclStub) {
-                    Perl6RegexDeclStub declStub = (Perl6RegexDeclStub)nestedStub;
+                } else if (nestedStub instanceof Perl6RegexDeclStub declStub) {
                     declStub.getPsi().contributeMOPSymbols(collector, symbolsAllowed);
                     if (collector.isSatisfied()) return;
                 }
@@ -217,8 +212,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (list == null) return;
         for (PsiElement child : list.getChildren()) {
             PsiElement firstChild = child.getFirstChild();
-            if (firstChild instanceof Perl6RoutineDecl) {
-                Perl6RoutineDecl decl = (Perl6RoutineDecl)firstChild;
+            if (firstChild instanceof Perl6RoutineDecl decl) {
                 decl.contributeMOPSymbols(collector, symbolsAllowed);
             }
             else if (firstChild instanceof Perl6MultiDecl) {
@@ -226,8 +220,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 if (maybeDecl != null)
                     maybeDecl.contributeMOPSymbols(collector, symbolsAllowed);
             }
-            else if (firstChild instanceof Perl6ScopedDecl) {
-                Perl6ScopedDecl decl = (Perl6ScopedDecl)firstChild;
+            else if (firstChild instanceof Perl6ScopedDecl decl) {
                 if (decl.getScope().equals("has")) {
                     Perl6VariableDecl varDecl = PsiTreeUtil.getChildOfType(decl, Perl6VariableDecl.class);
                     if (varDecl != null)
@@ -252,8 +245,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
         if (stub != null) {
             List<StubElement> children = stub.getChildrenStubs();
             for (StubElement<?> child : children) {
-                if (!(child instanceof Perl6TraitStub)) continue;
-                Perl6TraitStub traitStub = (Perl6TraitStub)child;
+                if (!(child instanceof Perl6TraitStub traitStub)) continue;
                 if (!traitStub.getTraitModifier().equals("does") && !traitStub.getTraitModifier().equals("is")) continue;
                 String name = traitStub.getTraitName();
                 Project project = getProject();
@@ -337,8 +329,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
                 new Perl6SingleResolutionSymbolCollector(typeName, Perl6SymbolKind.TypeOrConstant);
         applyExternalSymbolCollector(extCollector);
         Perl6Symbol collectorResult = extCollector.getResult();
-        if (collectorResult != null && collectorResult.getPsi() instanceof Perl6PackageDecl) {
-            Perl6PackageDecl externalPackage = (Perl6PackageDecl)collectorResult.getPsi();
+        if (collectorResult != null && collectorResult.getPsi() instanceof Perl6PackageDecl externalPackage) {
             externalPackage.contributeMOPSymbols(collector, symbolsAllowed);
         }
     }
@@ -365,8 +356,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             if (current == this) {
                 addChildren = true;
             }
-            else if (current instanceof Perl6PackageDecl) {
-                Perl6PackageDecl nested = (Perl6PackageDecl)current;
+            else if (current instanceof Perl6PackageDecl nested) {
                 if (nested.getScope().equals("our")) {
                     String nestedName = nested.getPackageName();
                     if (nestedName != null && !nestedName.isEmpty()) {
@@ -400,8 +390,7 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
             if (current == stub) {
                 addChildren = true;
             }
-            else if (current instanceof Perl6PackageDeclStub) {
-                Perl6PackageDeclStub nested = (Perl6PackageDeclStub)current;
+            else if (current instanceof Perl6PackageDeclStub nested) {
                 if (nested.getScope().equals("our")) {
                     String nestedName = nested.getTypeName();
                     if (nestedName != null && !nestedName.isEmpty()) {
@@ -480,9 +469,8 @@ public class Perl6PackageDeclImpl extends Perl6TypeStubBasedPsi<Perl6PackageDecl
 
         List<StubElement> children = stub.getChildrenStubs();
         for (StubElement<?> child : children) {
-            if (!(child instanceof Perl6TraitStub))
+            if (!(child instanceof Perl6TraitStub traitStub))
                 continue;
-            Perl6TraitStub traitStub = (Perl6TraitStub)child;
             if (traitStub.getTraitModifier().equals(mod) && traitStub.getTraitName().equals(name))
                 return traitStub.getPsi();
         }

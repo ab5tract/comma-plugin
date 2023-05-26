@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -121,9 +122,10 @@ public final class RakuPackageManagerManager implements PersistentStateComponent
             String[] strings = execNames.get(kind);
             for (String name : strings) {
                 for (String path : System.getenv("PATH").split(":")) {
-                    File file = Paths.get(path, name).toFile();
+                    Path pathWithName = Paths.get(path, name);
+                    File file = pathWithName.toFile();
                     if (file.exists() && file.canExecute()) {
-                        detected.add(new SuggestedItem(kind, Paths.get(path, name).toString()));
+                        detected.add(new SuggestedItem(kind, pathWithName.toString()));
                     }
                 }
             }

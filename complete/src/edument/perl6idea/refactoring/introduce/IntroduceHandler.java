@@ -11,7 +11,6 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.Pass;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
@@ -30,7 +29,6 @@ import edument.perl6idea.refactoring.Perl6NameSuggester;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;
 
@@ -140,7 +138,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             performActionOnElement(operation);
             return true;
         } else if (expressions.size() > 1) {
-            IntroduceTargetChooser.showChooser(editor, expressions, new Pass<PsiElement>() {
+            IntroduceTargetChooser.showChooser(editor, expressions, new Pass<>() {
                 @Override
                 public void pass(PsiElement element) {
                     operation.setElement(element);
@@ -175,7 +173,7 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
             if (operation.isReplaceAll() != null) {
                 performScopeSelectionAndIntroduce(operation);
             } else {
-                OccurrencesChooser.simpleChooser(editor).showChooser(operation.getElement(), operation.getOccurrences(), new Pass<OccurrencesChooser.ReplaceChoice>() {
+                OccurrencesChooser.simpleChooser(editor).showChooser(operation.getElement(), operation.getOccurrences(), new Pass<>() {
                     @Override
                     public void pass(OccurrencesChooser.ReplaceChoice replaceChoice) {
                         operation.setReplaceAll(replaceChoice == OccurrencesChooser.ReplaceChoice.ALL);
@@ -270,13 +268,13 @@ public abstract class IntroduceHandler implements RefactoringActionHandler {
         });
 
         IntroduceTargetChooser.showChooser(operation.getEditor(),
-                scopes, new Pass<Perl6PsiScope>() {
-                    @Override
-                    public void pass(Perl6PsiScope scope) {
-                        operation.setAnchor(anchorByScope.get(scope));
-                        performInplaceIntroduce(operation);
-                    }
-                }, Perl6BlockRenderer::renderBlock, "Scope");
+                scopes, new Pass<>() {
+                @Override
+                public void pass(Perl6PsiScope scope) {
+                    operation.setAnchor(anchorByScope.get(scope));
+                    performInplaceIntroduce(operation);
+                }
+            }, Perl6BlockRenderer::renderBlock, "Scope");
     }
 
     private void performInplaceIntroduce(IntroduceOperation operation) {

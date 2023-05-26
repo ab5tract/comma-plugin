@@ -253,8 +253,6 @@ public class HeapSnapshotCollection {
 
         for (TocEntry toc : tocs) {
             int[] o = (int[]) readCompressedDatablock(f, toc);
-            if (o == null)
-                return null;
 
             int offset = result.length;
             result = Arrays.copyOf(result, offset + o.length);

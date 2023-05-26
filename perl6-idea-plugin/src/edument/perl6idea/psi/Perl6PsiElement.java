@@ -5,11 +5,9 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.filetypes.Perl6ModuleFileType;
-import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.psi.effects.Effect;
 import edument.perl6idea.psi.effects.EffectCollection;
@@ -130,17 +128,17 @@ public interface Perl6PsiElement extends NavigatablePsiElement {
                 return null;
             if (current instanceof Perl6RoutineDecl) {
                 String scope = ((Perl6RoutineDecl)current).getScope();
-                if (scope != null && scope.equals("has"))
+                if (scope.equals("has"))
                     foundSelfProvider = true;
             }
             else if (current instanceof Perl6RegexDecl) {
                 String scope = ((Perl6RegexDecl)current).getScope();
-                if (scope != null && scope.equals("has"))
+                if (scope.equals("has"))
                     foundSelfProvider = true;
             }
             else if (current instanceof Perl6VariableDecl) {
                 String scope = ((Perl6VariableDecl)current).getScope();
-                if (scope != null && scope.equals("has"))
+                if (scope.equals("has"))
                     foundSelfProvider = true;
             }
         }

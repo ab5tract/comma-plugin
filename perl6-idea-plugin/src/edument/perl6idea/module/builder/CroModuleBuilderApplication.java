@@ -170,13 +170,11 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         final String PORT_VARIABLE = convertToEnvName(conf.moduleName) + "_PORT";
         final String DOCKER_IMAGE = conf.websocketSupport ? "cro-http-websocket:0.8.0" : "cro-http:0.8.0";
         List<String> templateContent = Perl6Utils.getResourceAsLines(resourcePath);
-        for (int i = 0; i < templateContent.size(); i++) {
-            templateContent.set(i, templateContent.get(i)
-                .replaceAll("\\$\\$HOST_VARIABLE\\$\\$", HOST_VARIABLE)
-                .replaceAll("\\$\\$PORT_VARIABLE\\$\\$", PORT_VARIABLE)
-                .replaceAll("\\$\\$DOCKER_IMAGE\\$\\$", DOCKER_IMAGE)
-                .replaceAll("\\$\\$MODULE_NAME\\$\\$", conf.moduleName));
-        }
+        templateContent.replaceAll(s -> s
+            .replaceAll("\\$\\$HOST_VARIABLE\\$\\$", HOST_VARIABLE)
+            .replaceAll("\\$\\$PORT_VARIABLE\\$\\$", PORT_VARIABLE)
+            .replaceAll("\\$\\$DOCKER_IMAGE\\$\\$", DOCKER_IMAGE)
+            .replaceAll("\\$\\$MODULE_NAME\\$\\$", conf.moduleName));
         return templateContent;
     }
 
@@ -196,15 +194,6 @@ public class CroModuleBuilderApplication implements Perl6ModuleBuilderGeneric {
         return !directoryName.isEmpty();
     }
 
-    public static class CroAppTemplateConfig {
-        public final String moduleName;
-        public final boolean websocketSupport;
-        public final boolean templatingSupport;
-
-        public CroAppTemplateConfig(String moduleName, boolean websocketSupport, boolean templatingSupport) {
-            this.moduleName = moduleName;
-            this.websocketSupport = websocketSupport;
-            this.templatingSupport = templatingSupport;
-        }
+    public record CroAppTemplateConfig(String moduleName, boolean websocketSupport, boolean templatingSupport) {
     }
 }

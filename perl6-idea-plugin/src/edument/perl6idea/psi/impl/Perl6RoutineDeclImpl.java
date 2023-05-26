@@ -12,7 +12,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.highlighter.RakuElementVisitor;
-import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.pod.*;
 import edument.perl6idea.psi.*;
@@ -104,8 +103,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         Perl6RoutineDeclStub stub = getStub();
         if (stub != null)
             for (StubElement<?> s : stub.getChildrenStubs()) {
-                if (!(s instanceof Perl6TraitStub)) continue;
-                Perl6TraitStub traitStub = (Perl6TraitStub)s;
+                if (!(s instanceof Perl6TraitStub traitStub)) continue;
                 String modifier = traitStub.getTraitModifier();
                 if (modifier.equals("returns") ||
                     modifier.equals("of"))
@@ -125,8 +123,7 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         Perl6RoutineDeclStub stub = getStub();
         if (stub != null)
             for (StubElement<?> s : stub.getChildrenStubs()) {
-                if (!(s instanceof Perl6TraitStub)) continue;
-                Perl6TraitStub traitStub = (Perl6TraitStub)s;
+                if (!(s instanceof Perl6TraitStub traitStub)) continue;
                 String modifier = traitStub.getTraitModifier();
                 if (modifier.equals("is") && "DEPRECATED".equals(((Perl6TraitStub)s).getTraitName()))
                     return true;

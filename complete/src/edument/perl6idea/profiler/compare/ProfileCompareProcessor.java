@@ -22,7 +22,7 @@ public class ProfileCompareProcessor {
     }
 
     static public class ProfileCompareResults {
-        private List<ProfileCompareTab> tabs = new ArrayList<>();
+        private final List<ProfileCompareTab> tabs = new ArrayList<>();
 
         public void addTab(ProfileCompareTab tab) {
             tabs.add(tab);

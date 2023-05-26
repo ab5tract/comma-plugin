@@ -5,7 +5,6 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.Perl6ExplicitSymbol;
@@ -16,9 +15,6 @@ import edument.perl6idea.psi.type.Perl6UnresolvedType;
 import edument.perl6idea.psi.type.Perl6Untyped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
-import java.util.List;
 
 import static edument.perl6idea.parsing.Perl6TokenTypes.PARAMETER_QUANTIFIER;
 import static edument.perl6idea.parsing.Perl6TokenTypes.UNV_WHITE_SPACE;

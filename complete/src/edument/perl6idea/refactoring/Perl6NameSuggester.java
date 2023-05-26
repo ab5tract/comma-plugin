@@ -34,7 +34,7 @@ public class Perl6NameSuggester {
   private static String getSigil(String type) {
     if (type.startsWith("Hash[") || type.startsWith("Map["))
       return "%";
-    if (Arrays.stream(atPrefixes).anyMatch(prefix -> type.startsWith(prefix)))
+    if (ContainerUtil.exists(atPrefixes, prefix -> type.startsWith(prefix)))
       return "@";
     return "$";
   }

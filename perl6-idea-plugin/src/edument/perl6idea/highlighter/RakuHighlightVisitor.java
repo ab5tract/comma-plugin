@@ -15,7 +15,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.psi.*;
 import edument.perl6idea.psi.symbols.*;
-import gnu.trove.THashMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -71,25 +70,24 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
 
     @Override
     public void visitScope(Perl6PsiScope element) {
-        Map<String, List<Perl6PsiElement>> duplicateClassesPool = new THashMap<>();
-        Map<String, List<Perl6SignatureHolder>> duplicateRoutinesPool = new THashMap<>();
-        Map<String, List<Perl6PsiElement>> duplicateVariablesPool = new THashMap<>();
+        Map<String, List<Perl6PsiElement>> duplicateClassesPool = new HashMap<>();
+        Map<String, List<Perl6SignatureHolder>> duplicateRoutinesPool = new HashMap<>();
+        Map<String, List<Perl6PsiElement>> duplicateVariablesPool = new HashMap<>();
         List<Perl6LexicalSymbolContributor> decls = element.getSymbolContributors();
         for (Perl6LexicalSymbolContributor contributor : decls) {
             if (contributor instanceof Perl6UseStatement) {
                 visitUseStatement(duplicateClassesPool, duplicateRoutinesPool, contributor);
             }
 
-            if (!(contributor instanceof Perl6PsiDeclaration))
+            if (!(contributor instanceof Perl6PsiDeclaration decl))
                 continue;
-            Perl6PsiDeclaration decl = (Perl6PsiDeclaration)contributor;
 
             if (decl instanceof Perl6RoutineDecl) {
                 if (((Perl6RoutineDecl)decl).getRoutineName() == null || decl.getNameIdentifier() == null)
                     return;
                 boolean wasReported = visitSignatureHolder(myHolder, (Perl6SignatureHolder)decl, ((Perl6RoutineDecl)decl).getRoutineName(),
                                                            duplicateRoutinesPool);
-                if (!wasReported && ((Perl6RoutineDecl)decl).isSub() && ((Perl6RoutineDecl)decl).getMultiness() == "only") {
+                if (!wasReported && ((Perl6RoutineDecl)decl).isSub() && Objects.equals(((Perl6RoutineDecl)decl).getMultiness(), "only")) {
                     // If a subroutine, expose `&foo` variable
                     TextRange textRange = new TextRange(((Perl6RoutineDecl)decl).getDeclaratorNode().getTextOffset(),
                                                         decl.getNameIdentifier().getTextRange().getEndOffset());
@@ -106,6 +104,8 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
             else if (decl instanceof Perl6VariableSource) {
                 if (decl instanceof Perl6Parameter) {
                     if (PsiTreeUtil.getParentOfType(decl, Perl6VariableDecl.class, Perl6RoutineDecl.class) instanceof Perl6VariableDecl)
+                        continue;
+                    if (PsiTreeUtil.getParentOfType(decl, Perl6PointyBlock.class, Perl6RoutineDecl.class) instanceof Perl6PointyBlock)
                         continue;
                 }
                 visitVariableDecl(
@@ -228,8 +228,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 Pair<Perl6SignatureHolder, Perl6SignatureHolder> oldAndNewHolders = isElementInPool(holder, v);
                 if (oldAndNewHolders != null) {
                     TextRange textRange = null;
-                    if (oldAndNewHolders.second instanceof Perl6RoutineDecl) {
-                        Perl6RoutineDecl decl = (Perl6RoutineDecl)oldAndNewHolders.second;
+                    if (oldAndNewHolders.second instanceof Perl6RoutineDecl decl) {
                         if (decl.getNameIdentifier() != null) {
                             PsiElement declaratorNode = decl.getDeclaratorNode();
                             if (declaratorNode != null)
@@ -241,8 +240,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                             }
                         }
                     }
-                    else if (oldAndNewHolders.second instanceof Perl6RegexDecl) {
-                        Perl6RegexDecl decl = (Perl6RegexDecl)oldAndNewHolders.second;
+                    else if (oldAndNewHolders.second instanceof Perl6RegexDecl decl) {
                         if (decl.getNameIdentifier() != null)
                             textRange = new TextRange(decl.getTextOffset(),
                                                       decl.getNameIdentifier().getTextRange().getEndOffset());

@@ -8,15 +8,12 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.source.tree.LeafElement;
 import edument.perl6idea.Perl6Language;
 import edument.perl6idea.psi.Perl6PsiElement;
-import edument.perl6idea.psi.Perl6Statement;
-import edument.perl6idea.psi.Perl6SubCall;
-import edument.perl6idea.psi.Perl6SubCallName;
 import org.jetbrains.annotations.NotNull;
 
 @InternalIgnoreDependencyViolation
 public class RakuContext extends TemplateContextType {
     protected RakuContext() {
-        super("RAKUSTMT", "Raku statement");
+        super("Raku statement");
     }
 
     @Override

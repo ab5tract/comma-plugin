@@ -108,9 +108,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         }
         if (myNode.getPsi() instanceof Perl6MethodCall && myNode.getText().startsWith(".") && myCustomSettings.METHOD_CALL_WRAP)
             return Wrap.createWrap(WrapType.NORMAL, false);
-        if (myNode.getTreeParent() != null && myNode.getTreeParent().getPsi() instanceof Perl6InfixApplication &&
+        if (myNode.getTreeParent() != null && myNode.getTreeParent().getPsi() instanceof Perl6InfixApplication application &&
             myNode.getElementType() != Perl6TokenTypes.NULL_TERM && myNode.getElementType() != Perl6ElementTypes.INFIX) {
-            Perl6InfixApplication application = (Perl6InfixApplication)myNode.getTreeParent().getPsi();
             PsiElement parent = PsiTreeUtil.getParentOfType(application, Perl6SubCall.class, Perl6MethodCall.class,
                                                             Perl6ArrayComposer.class, Perl6VariableDecl.class);
             if (application.getOperator().equals(",") && (parent instanceof Perl6SubCall || parent instanceof Perl6MethodCall))
@@ -132,10 +131,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
         } else if (type == ARRAY_COMPOSER && myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT) {
             return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN && child.getElementType() == ARRAY_COMPOSER_CLOSE, Alignment.createAlignment());
         } else if (type == INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof Perl6MethodCall)) {
-            if (!(node.getPsi() instanceof Perl6InfixApplication))
+            if (!(node.getPsi() instanceof Perl6InfixApplication infixApp))
                 return null;
-
-            Perl6InfixApplication infixApp = (Perl6InfixApplication)node.getPsi();
 
             if (infixApp.getOperator().equals("??"))
                 return null; // Do not align ?? !!, we'll just indent it
@@ -173,11 +170,8 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
     @Nullable
     @Override
     public Spacing getSpacing(@Nullable Block child1, @NotNull Block child2) {
-        if (!(child1 instanceof Perl6Block) || !(child2 instanceof Perl6Block))
+        if (!(child1 instanceof Perl6Block left) || !(child2 instanceof Perl6Block right))
             return null;
-
-        Perl6Block left = (Perl6Block) child1;
-        Perl6Block right = (Perl6Block) child2;
 
         if (right.getNode().getElementType() == Perl6ElementTypes.REGEX_SIGSPACE)
             return null;
@@ -220,8 +214,7 @@ class Perl6Block extends AbstractBlock implements BlockWithParent {
             if (myNode.getElementType() == PARENTHESES_CLOSE && myNode.getTreeParent().getPsi() instanceof Perl6Signature) {
                 return Indent.getSpaceIndent(1, true);
             }
-            else if (myNode.getElementType() == PARENTHESES_CLOSE && myNode.getTreeParent().getPsi() instanceof Perl6SubCall) {
-                Perl6SubCall subCall = (Perl6SubCall)myNode.getTreeParent().getPsi();
+            else if (myNode.getElementType() == PARENTHESES_CLOSE && myNode.getTreeParent().getPsi() instanceof Perl6SubCall subCall) {
                 if (subCall.getCallArguments().length != 0) {
                     PsiElement infix = subCall.getCallArguments()[0].getParent();
                     return Indent.getSpaceIndent(infix instanceof Perl6InfixApplication ? infix.getStartOffsetInParent() : 0, true);

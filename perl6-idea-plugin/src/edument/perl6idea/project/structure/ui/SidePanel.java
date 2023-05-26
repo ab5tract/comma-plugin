@@ -100,12 +100,12 @@ public class SidePanel extends JPanel {
                 layout();
                 myCountLabel.setText("");
                 final Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if (UIUtil.isClientPropertyTrue(list, ExpandableItemsHandler.EXPANDED_RENDERER)) {
+                if (ClientProperty.isTrue(list, ExpandableItemsHandler.EXPANDED_RENDERER)) {
                     Rectangle bounds = list.getCellBounds(index, index);
                     bounds.setSize((int)component.getPreferredSize().getWidth(), (int)bounds.getHeight());
                     AbstractExpandableItemsHandler.setRelativeBounds(component, bounds, myExtraPanel, myValidationParent);
                     myExtraPanel.setSize((int)myExtraPanel.getPreferredSize().getWidth(), myExtraPanel.getHeight());
-                    ComponentUtil.putClientProperty(myExtraPanel, ExpandableItemsHandler.USE_RENDERER_BOUNDS, true);
+                    ClientProperty.put(myExtraPanel, ExpandableItemsHandler.USE_RENDERER_BOUNDS, true);
                     return myExtraPanel;
                 }
                 return component;

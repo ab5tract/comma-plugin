@@ -124,7 +124,6 @@ public class SdkSettingsStep extends ModuleWizardStep {
       if (!(item instanceof JdkComboBox.ActualJdkComboBoxItem)) continue;
 
       Sdk jdk = item.getJdk();
-      if (jdk == null) continue;
 
       SdkTypeId jdkType = jdk.getSdkType();
       if (!sdkFilter.value(jdkType)) continue;

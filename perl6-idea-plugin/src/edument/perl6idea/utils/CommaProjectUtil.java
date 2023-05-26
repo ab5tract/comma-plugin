@@ -57,8 +57,9 @@ public class CommaProjectUtil {
 
     private static void doCreate(CommaAbstractProjectWizard wizard, Project projectToClose) throws IOException {
         String projectFilePath = wizard.getNewProjectFilePath();
+        Path file = Paths.get(projectFilePath);
         for (Project p : ProjectUtil.getOpenProjects()) {
-            if (ProjectUtil.isSameProject(Paths.get(projectFilePath), p)) {
+            if (ProjectUtil.isSameProject(file, p)) {
                 ProjectUtil.focusProjectWindow(p, false);
                 return;
             }
@@ -69,16 +70,15 @@ public class CommaProjectUtil {
 
         ProjectManagerEx projectManager = ProjectManagerEx.getInstanceEx();
         try {
-            Path projectFile = Paths.get(projectFilePath);
             Path projectDir;
             if (wizard.getStorageScheme() == StorageScheme.DEFAULT) {
-                projectDir = projectFile.getParent();
+                projectDir = file.getParent();
                 if (projectDir == null) {
                     throw new IOException("Cannot create project in '" + projectFilePath + "': no parent file exists");
                 }
             }
             else {
-                projectDir = projectFile;
+                projectDir = file;
             }
             Files.createDirectories(projectDir);
 
@@ -86,7 +86,7 @@ public class CommaProjectUtil {
             if (projectBuilder == null || !projectBuilder.isUpdate()) {
                 String name = wizard.getProjectName();
                 if (projectBuilder == null) {
-                    newProject = projectManager.newProject(projectFile, OpenProjectTask.build().asNewProject().withProjectName(name));
+                    newProject = projectManager.newProject(file, OpenProjectTask.build().asNewProject().withProjectName(name));
                 }
                 else {
                     newProject = projectBuilder.createProject(name, projectFilePath);
@@ -139,9 +139,9 @@ public class CommaProjectUtil {
             }
 
             if (newProject != projectToClose) {
-                ProjectUtil.updateLastProjectLocation(projectFile);
+                ProjectUtil.updateLastProjectLocation(file);
               OpenProjectTask options =
-                OpenProjectTask.build().withProject(newProject).withProjectName(projectFile.getFileName().toString());
+                OpenProjectTask.build().withProject(newProject).withProjectName(file.getFileName().toString());
               ProjectManagerEx.getInstanceEx().openProject(projectDir, options);
             }
 

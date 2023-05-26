@@ -5,6 +5,7 @@ import com.intellij.psi.PsiElement;
 import edument.perl6idea.psi.*;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class CompletePerl6ElementFactory extends Perl6ElementFactory {
@@ -57,7 +58,7 @@ public class CompletePerl6ElementFactory extends Perl6ElementFactory {
         String atoms = Arrays.stream(inner).map(p -> p.getText()).collect(Collectors.joining()).trim();
         return String.format("%s%s %s%s { %s }",
                              data.isLexical ? "my " : "",
-                             data.type.name().toLowerCase(),
+                             data.type.name().toLowerCase(Locale.ROOT),
                              data.name, data.signature, atoms);
     }
 

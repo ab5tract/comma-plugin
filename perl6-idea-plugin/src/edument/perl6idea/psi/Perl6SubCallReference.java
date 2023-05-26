@@ -67,8 +67,7 @@ public class Perl6SubCallReference extends PsiReferenceBase.Poly<Perl6SubCallNam
     @Override
     public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         PsiElement call = myElement.getParent();
-        if (call instanceof Perl6SubCall) {
-            Perl6SubCall subCall = (Perl6SubCall)call;
+        if (call instanceof Perl6SubCall subCall) {
             return subCall.setName(newElementName);
         }
         throw new IncorrectOperationException();

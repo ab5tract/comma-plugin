@@ -83,7 +83,7 @@ public class RakuExtractPackageUtil {
         Perl6Blockoid blockoid = PsiTreeUtil.findChildOfType(aPackage, Perl6Blockoid.class);
         assert blockoid != null;
         newTrait = blockoid.getParent().addBefore(newTrait, blockoid);
-        PsiElement ws = PsiParserFacade.SERVICE.getInstance(project).createWhiteSpaceFromText(" ");
+        PsiElement ws = PsiParserFacade.getInstance(project).createWhiteSpaceFromText(" ");
         blockoid.getParent().addBefore(ws, newTrait);
         Document document = PsiDocumentManager.getInstance(project).getDocument(aPackage.getContainingFile());
         if (document != null) {

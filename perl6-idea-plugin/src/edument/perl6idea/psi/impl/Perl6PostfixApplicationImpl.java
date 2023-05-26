@@ -20,9 +20,7 @@ public class Perl6PostfixApplicationImpl extends ASTWrapperPsiElement implements
         PsiElement first = getFirstChild();
         PsiElement last = getLastChild();
 
-        if (first instanceof Perl6TypeName && last instanceof Perl6MethodCall) {
-            Perl6MethodCall call = (Perl6MethodCall)last;
-            Perl6TypeName typeName = (Perl6TypeName)first;
+        if (first instanceof Perl6TypeName typeName && last instanceof Perl6MethodCall call) {
             return call.getCallName().equals(".new")
                    ? typeName.inferType()
                    : tryToCalculateMethodReturnType(call);

@@ -40,9 +40,8 @@ public class UnwrapPromiseAllOfIntention extends PsiElementBaseIntentionAction i
 
     private static Perl6PostfixApplication getAwaitPostfix(@NotNull PsiElement element) {
         PsiElement parent = element.getParent();
-        if (!(parent instanceof Perl6SubCallName))
+        if (!(parent instanceof Perl6SubCallName callNameElement))
             return null;
-        Perl6SubCallName callNameElement = (Perl6SubCallName)parent;
         String callName = callNameElement.getCallName();
         if (!callName.equals("await"))
             return null;

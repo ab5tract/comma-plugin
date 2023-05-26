@@ -8,7 +8,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleConfigurationEditor;
 import com.intellij.openapi.module.impl.ModuleConfigurationStateImpl;
-import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.*;
@@ -21,7 +20,6 @@ import com.intellij.ui.navigation.Place;
 import com.intellij.util.EventDispatcher;
 import com.intellij.util.containers.ContainerUtil;
 import edument.perl6idea.project.structure.ui.ModificationOfImportedModelWarningComponent;
-import gnu.trove.THashSet;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -370,7 +368,7 @@ public abstract class ModuleEditor implements Place.Navigator, Disposable {
 
     private class LibraryTableInvocationHandler implements InvocationHandler, ProxyDelegateAccessor {
         private final LibraryTable myDelegateTable;
-        @NonNls private final Set<String> myCheckedNames = new THashSet<>(Collections.singletonList("removeLibrary" /*,"createLibrary"*/));
+        @NonNls private final Set<String> myCheckedNames = new HashSet<>(Collections.singletonList("removeLibrary" /*,"createLibrary"*/));
 
         LibraryTableInvocationHandler(@NotNull LibraryTable table) {
             myDelegateTable = table;
@@ -390,8 +388,7 @@ public abstract class ModuleEditor implements Place.Navigator, Disposable {
                     return Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{LibraryTable.ModifiableModel.class},
                                                   new LibraryTableModelInvocationHandler((LibraryTable.ModifiableModel)result));
                 }
-                if (result instanceof Library[]) {
-                    Library[] libraries = (Library[])result;
+                if (result instanceof Library[] libraries) {
                     for (int idx = 0; idx < libraries.length; idx++) {
                         Library library = libraries[idx];
                         libraries[idx] =
@@ -487,8 +484,7 @@ public abstract class ModuleEditor implements Place.Navigator, Disposable {
             final boolean needUpdate = METHOD_COMMIT.equals(method.getName());
             try {
                 Object result = method.invoke(myDelegateModel, unwrapParams(params));
-                if (result instanceof Library[]) {
-                    Library[] libraries = (Library[])result;
+                if (result instanceof Library[] libraries) {
                     for (int idx = 0; idx < libraries.length; idx++) {
                         Library library = libraries[idx];
                         libraries[idx] =

@@ -5,7 +5,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.util.IncorrectOperationException;
 import edument.perl6idea.highlighter.RakuElementVisitor;
-import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.parsing.Perl6ElementTypes;
 import edument.perl6idea.parsing.Perl6TokenTypes;
 import edument.perl6idea.psi.*;

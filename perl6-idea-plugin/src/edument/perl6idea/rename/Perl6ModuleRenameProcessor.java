@@ -33,11 +33,10 @@ import java.util.List;
 public class Perl6ModuleRenameProcessor extends RenamePsiElementProcessor {
     @Override
     public boolean canProcessElement(@NotNull PsiElement element) {
-        if (!(element instanceof Perl6File)) return false;
+        if (!(element instanceof Perl6File file)) return false;
         // Process only module files, no scripts or tests
         if (!(FileTypeManager.getInstance().getFileTypeByFile(element.getContainingFile().getVirtualFile()) instanceof Perl6ModuleFileType))
             return false;
-        Perl6File file = (Perl6File)element;
         Module module = ModuleUtilCore.findModuleForFile(file);
         if (module == null) return false;
         VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots();

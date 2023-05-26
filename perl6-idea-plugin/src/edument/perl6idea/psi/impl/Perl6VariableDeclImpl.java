@@ -9,7 +9,6 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
-import edument.perl6idea.highlighter.RakuHighlightVisitor;
 import edument.perl6idea.pod.PodDomAttributeDeclarator;
 import edument.perl6idea.pod.PodDomBuildingContext;
 import edument.perl6idea.pod.PodDomClassyDeclarator;
@@ -237,7 +236,7 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
 
             PsiElement newDeclaration = Perl6ElementFactory.createVariableAssignment(
                 variable.getProject(),
-                String.format(shouldEnclose ? "(%s)" : "%s", signature.toString()),
+                String.format(shouldEnclose ? "(%s)" : "%s", signature),
                 getInitializer().getText(), false);
 
             Perl6Statement wholeStatement = PsiTreeUtil.getParentOfType(this, Perl6Statement.class);
@@ -456,8 +455,6 @@ public class Perl6VariableDeclImpl extends Perl6MemberStubBasedPsi<Perl6Variable
     public void collectPodAndDocumentables(PodDomBuildingContext context) {
         // Only document attributes.
         String scope = getScope();
-        if (scope == null)
-            return;
         if (!(scope.equals("has") || scope.equals("HAS")))
             return;
 

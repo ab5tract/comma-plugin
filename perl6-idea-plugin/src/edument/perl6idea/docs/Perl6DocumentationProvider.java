@@ -23,27 +23,22 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
             if (element.getText().length() < 50)
                 return Perl6Utils.escapeHTML(element.getText());
             return Perl6Utils.escapeHTML("constant " + ((Perl6Constant)element).getConstantName() + " = ...");
-        } else if (element instanceof Perl6Enum) {
-            Perl6Enum enumEl = (Perl6Enum)element;
+        } else if (element instanceof Perl6Enum enumEl) {
             return Perl6Utils.escapeHTML("enum " + enumEl.getEnumName() + " (" + String.join(", ", enumEl.getEnumValues()) + ")");
-        } else if (element instanceof Perl6PackageDecl) {
-            Perl6PackageDecl decl = (Perl6PackageDecl)element;
+        } else if (element instanceof Perl6PackageDecl decl) {
             Optional<String> traits = decl.getTraits().stream().map(t -> t.getTraitModifier() + " " + t.getTraitName()).reduce((s1, s2) -> s1 + " " + s2);
             return Perl6Utils.escapeHTML(String.format("%s %s%s", decl.getPackageKind(), decl.getPackageName(),
                                  traits.map(s -> " " + s).orElse("")));
-        } else if (element instanceof Perl6ParameterVariable) {
-            Perl6ParameterVariable decl = (Perl6ParameterVariable)element;
+        } else if (element instanceof Perl6ParameterVariable decl) {
             Perl6Parameter parameter = PsiTreeUtil.getParentOfType(decl, Perl6Parameter.class);
             if (parameter == null) return null;
             return Perl6Utils.escapeHTML(parameter.getText());
-        } else if (element instanceof Perl6RegexDecl) {
+        } else if (element instanceof Perl6RegexDecl decl) {
             String text = element.getText();
             if (text.length() < 50)
                 return text;
-            Perl6RegexDecl decl = (Perl6RegexDecl)element;
             return Perl6Utils.escapeHTML(String.format("%s %s { ... }", decl.getRegexKind(), decl.getRegexName()));
-        } else if (element instanceof Perl6RoutineDecl) {
-            Perl6RoutineDecl decl = (Perl6RoutineDecl)element;
+        } else if (element instanceof Perl6RoutineDecl decl) {
             String signature;
             if (decl instanceof Perl6ExternalPsiElement)
                 signature = "(" + decl.summarySignature() + ")";
@@ -54,8 +49,7 @@ public class Perl6DocumentationProvider implements DocumentationProvider {
             return Perl6Utils.escapeHTML(String.format("%s %s%s", decl.getRoutineKind(), decl.getRoutineName(), signature));
         } else if (element instanceof Perl6Subset) {
             return Perl6Utils.escapeHTML("subset " + ((Perl6Subset)element).getSubsetName() + " of " + ((Perl6Subset)element).getSubsetBaseTypeName());
-        } else if (element instanceof Perl6VariableDecl) {
-            Perl6VariableDecl decl = (Perl6VariableDecl)element;
+        } else if (element instanceof Perl6VariableDecl decl) {
             String name = String.join(", ", decl.getVariableNames());
             String scope = decl.getScope();
             PsiElement initializer = decl.getInitializer();

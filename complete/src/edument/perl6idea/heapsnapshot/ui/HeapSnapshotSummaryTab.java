@@ -19,7 +19,7 @@ import java.util.stream.LongStream;
 
 public class HeapSnapshotSummaryTab extends JPanel {
     private final HeapSnapshotCollection snapshotCollection;
-    private double[] indices;
+    private final double[] indices;
 
     public HeapSnapshotSummaryTab(HeapSnapshotCollection snapshotCollection) {
         super(new MigLayout("ins 0, wrap 1, fillx"));

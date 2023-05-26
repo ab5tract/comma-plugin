@@ -114,9 +114,9 @@ public class CallGraphTooltipUI extends JPanel {
 
     private static class CalleeTableModel extends AbstractTableModel {
         public static final String[] CALLEE_TABLE_COLUMNS = new String[]{"Callee", "Entries", "Inlined %", "Time"};
-        private List<Perl6ProfileCall> myCallees;
+        private final List<Perl6ProfileCall> myCallees;
 
-        public CalleeTableModel(List<Perl6ProfileCall> list) {
+        CalleeTableModel(List<Perl6ProfileCall> list) {
             myCallees = list;
         }
 

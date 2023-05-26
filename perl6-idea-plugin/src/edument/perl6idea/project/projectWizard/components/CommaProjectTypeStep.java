@@ -37,7 +37,6 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import edument.perl6idea.project.projectWizard.*;
 import edument.perl6idea.project.projectWizard.categories.TemplateBasedCategory;
-import gnu.trove.THashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -63,7 +62,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
     private final ModulesProvider myModulesProvider;
     private final ModuleBuilder.ModuleConfigurationUpdater myConfigurationUpdater;
     private final Map<ProjectTemplate, ModuleBuilder> myBuilders = FactoryMap.create(key -> (ModuleBuilder)key.createModuleBuilder());
-    private final Map<String, ModuleWizardStep> myCustomSteps = new THashMap<>();
+    private final Map<String, ModuleWizardStep> myCustomSteps = new HashMap<>();
     private final MultiMap<TemplatesGroup, ProjectTemplate> myTemplatesMap;
     private JPanel myPanel;
     private JPanel myOptionsPanel;
@@ -86,7 +85,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
         myProjectTypeList.setModel(new CollectionListModel<>(groups));
         myProjectTypeList.setSelectionModel(new SingleSelectionModel());
         myProjectTypeList.addListSelectionListener(__ -> updateSelection());
-        myProjectTypeList.setCellRenderer(new GroupedItemsListRenderer<>(new ListItemDescriptorAdapter<TemplatesGroup>() {
+        myProjectTypeList.setCellRenderer(new GroupedItemsListRenderer<>(new ListItemDescriptorAdapter<>() {
             @Nullable
             @Override
             public String getTextFor(TemplatesGroup value) {
@@ -376,7 +375,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
 
     @Nullable
     private ProjectTemplate getSelectedTemplate() {
-        return myCurrentCard == TEMPLATES_CARD ? myTemplatesList.getSelectedTemplate() : null;
+        return Objects.equals(myCurrentCard, TEMPLATES_CARD) ? myTemplatesList.getSelectedTemplate() : null;
     }
 
     private ModuleBuilder getSelectedBuilder() {
@@ -388,7 +387,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
     }
 
     public Collection<ProjectTemplate> getAvailableTemplates() {
-        if (myCurrentCard != FRAMEWORKS_CARD) {
+        if (!Objects.equals(myCurrentCard, FRAMEWORKS_CARD)) {
             return Collections.emptyList();
         }
         else {

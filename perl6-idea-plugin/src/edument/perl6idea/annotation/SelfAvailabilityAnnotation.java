@@ -76,7 +76,7 @@ public class SelfAvailabilityAnnotation implements Annotator {
             }
             else if (possibleSelfProvider instanceof Perl6VariableDecl) {
                 String scope = possibleSelfProvider.getScope();
-                if (scope != null && (scope.equals("has") || scope.equals("HAS")))
+                if (scope.equals("has") || scope.equals("HAS"))
                     return Availability.PARTIAL;
                 // Could just be a variable decl in a context that provides a self, so
                 // keep searching.

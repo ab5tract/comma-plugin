@@ -55,24 +55,26 @@ public class CroTemplateColorSettingsPage implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDemoText() {
-        return "<:macro layout($title)>\n" +
-               "  <html>\n" +
-               "    <head><title><$title></title></head>\n" +
-               "    <body>\n" +
-               "      <:body>\n" +
-               "    </body>\n" +
-               "  </html>\n" +
-               "</:>\n" +
-               "<:sub heading($text)>\n" +
-               "  <h1><$text></h1>\n" +
-               "</:>\n" +
-               "\n" +
-               "<|layout('Cro')>\n" +
-               "  <&heading('Reasons Cro is awesome')>\n" +
-               "  <@reasons>\n" +
-               "    <p><.number>: <.explanation></p>\n" +
-               "  </@>\n" +
-               "</|>\n";
+        return """
+            <:macro layout($title)>
+              <html>
+                <head><title><$title></title></head>
+                <body>
+                  <:body>
+                </body>
+              </html>
+            </:>
+            <:sub heading($text)>
+              <h1><$text></h1>
+            </:>
+
+            <|layout('Cro')>
+              <&heading('Reasons Cro is awesome')>
+              <@reasons>
+                <p><.number>: <.explanation></p>
+              </@>
+            </|>
+            """;
     }
 
     @Nullable

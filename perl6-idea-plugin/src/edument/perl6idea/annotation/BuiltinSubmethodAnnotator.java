@@ -17,10 +17,9 @@ public class BuiltinSubmethodAnnotator implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6RoutineDecl))
+        if (!(element instanceof Perl6RoutineDecl routineDecl))
             return;
 
-        Perl6RoutineDecl routineDecl = (Perl6RoutineDecl)element;
         String name = routineDecl.getRoutineName();
         if (!SHOULD_BE_SUBMETHOD_NAMES.contains(name))
             return;

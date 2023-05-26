@@ -21,7 +21,7 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
     private List<Perl6RoutineDecl> myRoutines = new ArrayList<>();
     private List<Perl6VariableDecl> myAttributes = new ArrayList<>();
     private List<String> myMRO = new ArrayList<>();
-    private String myPackageKind;
+    private final String myPackageKind;
     private String myName;
     private final Set<String> myGettersPool = new HashSet<>();
     private Perl6PackageDecl myMetaClass;
@@ -173,8 +173,7 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
         }
         for (String mroParent : myMRO) {
             Perl6Symbol parent = resolveLexicalSymbol(Perl6SymbolKind.TypeOrConstant, mroParent);
-            if (parent != null && parent.getPsi() instanceof Perl6PackageDecl) {
-                Perl6PackageDecl decl = (Perl6PackageDecl)parent.getPsi();
+            if (parent != null && parent.getPsi() instanceof Perl6PackageDecl decl) {
                 decl.contributeMOPSymbols(collector, symbolsAllowed);
             }
         }

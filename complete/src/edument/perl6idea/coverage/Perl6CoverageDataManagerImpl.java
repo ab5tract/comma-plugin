@@ -32,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -39,18 +40,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Service
 public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     private final Project project;
     private static final Pattern indexMatcher = Pattern.compile("^([^\\t]+)\\t(.+)");
     private static final Pattern lineMatcher = Pattern.compile("^HIT {2}(.+?)(?: \\(.+\\))? {2}(\\d+)");
-    private Set<Perl6CoverageSuite> coverageSuites = new HashSet<>();
+    private final Set<Perl6CoverageSuite> coverageSuites = new HashSet<>();
     private Perl6CoverageSuite currentSuite;
-    private ConcurrentMap<Editor, Perl6CoverageSourceAnnotator> editorAnnotators =
+    private final ConcurrentMap<Editor, Perl6CoverageSourceAnnotator> editorAnnotators =
         new ConcurrentHashMap<>();
-    private ConcurrentMap<String, CoverageStatistics> fileCoverageStatsCache
+    private final ConcurrentMap<String, CoverageStatistics> fileCoverageStatsCache
             = new ConcurrentHashMap<>();
 
     public Perl6CoverageDataManagerImpl(@NotNull Project project) {
@@ -69,7 +69,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     @Override
     public void addSuiteFromIndexFile(File index, Perl6CoverageTestRunningState state) {
         Perl6CoverageSuite suite = createSuite(state);
-        try (BufferedReader br = new BufferedReader(new FileReader(index))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(index, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 Matcher matcher = indexMatcher.matcher(line);
@@ -121,7 +121,7 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
     }
 
     private Map<String,Set<Integer>> parseCoverageFile(File data) {
-        try (BufferedReader br = new BufferedReader(new FileReader(data))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(data, StandardCharsets.UTF_8))) {
             Map<String, Set<Integer>> covered = new HashMap<>();
             String line;
             while ((line = br.readLine()) != null) {
@@ -310,14 +310,14 @@ public class Perl6CoverageDataManagerImpl extends Perl6CoverageDataManager {
         List<CoverageStatistics> allStatistics = allSourceFiles.stream()
                 .map(f -> coverageForFile(f))
                 .filter(s -> s != null)
-                 .collect(Collectors.toList());
+                 .toList();
         if (allStatistics.isEmpty())
             return null;
         int totalCovered = 0;
         int totalCoverable = 0;
         for (CoverageStatistics stats : allStatistics) {
-            totalCovered += stats.getCoveredLines();
-            totalCoverable += stats.getCoverableLines();
+            totalCovered += stats.coveredLines();
+            totalCoverable += stats.coverableLines();
         }
         return new CoverageStatistics(totalCovered, totalCoverable);
     }

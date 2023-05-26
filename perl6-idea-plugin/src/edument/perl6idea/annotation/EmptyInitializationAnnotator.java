@@ -11,10 +11,9 @@ import org.jetbrains.annotations.NotNull;
 public class EmptyInitializationAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6VariableDecl))
+        if (!(element instanceof Perl6VariableDecl decl))
             return;
 
-        Perl6VariableDecl decl = (Perl6VariableDecl)element;
         String[] names = decl.getVariableNames();
         if (names.length != 1)
             return;

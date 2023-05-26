@@ -74,7 +74,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
             invokeWithScope(project, editor, myScopes.get(0), elementsToExtract);
         }
         else {
-            IntroduceTargetChooser.showChooser(editor, myScopes, new Pass<Perl6StatementList>() {
+            IntroduceTargetChooser.showChooser(editor, myScopes, new Pass<>() {
                 @Override
                 public void pass(Perl6StatementList scope) {
                     invokeWithScope(project, editor, scope, elementsToExtract);
@@ -211,7 +211,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
     protected PsiElement[] getExpressionsFromSelection(PsiFile file, Editor editor, @NotNull PsiElement commonParent, PsiElement fullStatementBackup) {
         if (commonParent instanceof P6Extractable) {
             List<PsiElement> targets = getExpressionTargets(commonParent);
-            IntroduceTargetChooser.showChooser(editor, targets, new Pass<PsiElement>() {
+            IntroduceTargetChooser.showChooser(editor, targets, new Pass<>() {
                 @Override
                 public void pass(PsiElement element) {
                     isExpr = !(element instanceof Perl6Statement);
@@ -386,7 +386,7 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
             boolean isDuplicate = false;
             for (Perl6Variable each : deduplicatedVars) {
-                if (each.getVariableName().equals(name)) {
+                if (Objects.equals(each.getVariableName(), name)) {
                     PsiReference eachRef = each.getReference();
                     assert eachRef != null;
                     PsiElement eachDecl = eachRef.resolve();
@@ -487,9 +487,8 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
 
     private boolean checkSelfUsage(PsiElement[] statements, Perl6StatementList parentToCreateAt) {
         boolean selfPresence = Arrays.stream(statements)
-                .flatMap(el -> getUsages(el, Perl6Self.class, Perl6PackageDecl.class).stream())
-                .map(el -> (Perl6Self)el)
-                .count() != 0;
+            .flatMap(el -> getUsages(el, Perl6Self.class, Perl6PackageDecl.class).stream())
+            .map(el -> (Perl6Self)el).findAny().isPresent();
         if (!selfPresence) return false;
         // If self is present, we have to check if we are extracting stuff into new method of the same class
         // If we are extracting into a sub, just short-circuit as we always pass $self there
@@ -539,12 +538,13 @@ public class Perl6ExtractCodeBlockHandler implements RefactoringActionHandler, C
         if (statement == null) return ContainerUtil.emptyList();
 
         PsiElementProcessor.CollectElements<PsiElement> processor =
-            new PsiElementProcessor.CollectElements<PsiElement>() {
+            new PsiElementProcessor.CollectElements<>() {
                 @Override
                 public boolean execute(@NotNull PsiElement each) {
                     if (usageClazz.isInstance(each)) {
                         return super.execute(each);
-                    } else if (declClazz.isInstance(each)) {
+                    }
+                    else if (declClazz.isInstance(each)) {
                         return false;
                     }
                     return true;

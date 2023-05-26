@@ -3,6 +3,7 @@ import edument.perl6idea.parsing.Cursor;
 
 public class MAINBraid extends Cursor<MAINBraid> {
 
+    @Override
     public int runRule() {
         int result;
         switch (this.ruleNumber) {
@@ -8717,65 +8718,64 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_0() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("-->"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_1() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (this.lookahead(74)) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (this.lookahead(75)) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_2() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("/"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -8806,24 +8806,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_4() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (this.lookahead(77)) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -8854,51 +8854,48 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_6() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<."))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_7() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<$"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_8() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<@"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -8979,65 +8976,64 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_11() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</@"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_12() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("?!"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_13() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("?!"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -9131,34 +9127,32 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_16() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<!?"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_17() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</?"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -9207,272 +9201,256 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_19() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</!"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_20() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<&"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_21() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<:sub"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_22() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</:"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_23() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<:macro"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_24() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</:"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_25() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<:body"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_26() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<:part"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_27() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</:"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_28() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<:use"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_29() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<:separator"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_30() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</:"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_31() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<#>"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_32() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</#>"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_33() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<|"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_34() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("</|"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -9593,17 +9571,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_38() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.endOfString())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -9639,6 +9616,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
         }
     }
 
+    @Override
     public MAINBraid createInstance() {
         return new MAINBraid();
     }

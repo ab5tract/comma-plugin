@@ -113,8 +113,7 @@ public abstract class CommaAbstractProjectWizard extends AbstractWizard<ModuleWi
     @Nullable
     public ProjectBuilder getBuilder(Project project) {
         final ProjectBuilder builder = getProjectBuilder();
-        if (builder instanceof ModuleBuilder) {
-            final ModuleBuilder moduleBuilder = (ModuleBuilder)builder;
+        if (builder instanceof final ModuleBuilder moduleBuilder) {
             if (moduleBuilder.getName() == null) {
                 moduleBuilder.setName(getProjectName());
             }

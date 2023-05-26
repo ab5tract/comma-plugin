@@ -58,9 +58,9 @@ public class Perl6ProfileModulesPanel extends JPanel {
     }
 
     private static class ProfilerModuleItem {
-        public String name;
-        float inclusive;
-        float exclusive;
+        public final String name;
+        final float inclusive;
+        final float exclusive;
 
         ProfilerModuleItem(String name, Integer inclusive, Integer exclusive) {
             this.name = name;
@@ -91,12 +91,10 @@ public class Perl6ProfileModulesPanel extends JPanel {
 
         @Override
         public String getColumnName(int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                    return "Module";
-                default:
-                    return "Exclusive time";
+            if (columnIndex == 0) {
+                return "Module";
             }
+            return "Exclusive time";
         }
 
         @Override
@@ -113,10 +111,10 @@ public class Perl6ProfileModulesPanel extends JPanel {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 0: return myData.get(rowIndex).name;
-                default: return myData.get(rowIndex).exclusive;
+            if (columnIndex == 0) {
+                return myData.get(rowIndex).name;
             }
+            return myData.get(rowIndex).exclusive;
         }
 
         @Override

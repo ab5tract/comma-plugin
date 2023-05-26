@@ -27,7 +27,7 @@ public class ProfileCompareTypes extends ProfileCompareDataProvider {
         results.addTab(new ProfileCompareTab("Deallocations", TAB_DEALLOCS, this, ByNameCompareFormatter.SINGLE_NAME));
     }
 
-    private static String[] METRICS = new String[]{
+    private static final String[] METRICS = new String[]{
         "spesh",
         "jit",
         "count",

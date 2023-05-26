@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class UndeclaredOrDeprecatedRoutineAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof Perl6SubCallName))
+        if (!(element instanceof final Perl6SubCallName call))
             return;
 
         // Only do the analysis if the core setting symbols are available.
@@ -25,7 +25,6 @@ public class UndeclaredOrDeprecatedRoutineAnnotator implements Annotator {
             return;
 
         // Resolve the reference.
-        final Perl6SubCallName call = (Perl6SubCallName)element;
         String subName = call.getCallName();
         if (subName.equals("::"))
             return;

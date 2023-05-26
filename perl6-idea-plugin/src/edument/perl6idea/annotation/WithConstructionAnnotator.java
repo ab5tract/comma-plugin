@@ -23,11 +23,9 @@ public class WithConstructionAnnotator implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
-        if (!(psiElement instanceof P6Conditional)) {
+        if (!(psiElement instanceof P6Conditional conditional)) {
             return;
         }
-
-        P6Conditional conditional = (P6Conditional)psiElement;
 
         for (Perl6ConditionalBranch branch : conditional.getBranches()) {
             if (terms.contains(branch.term.getText()) && checkIfReplaceable((branch.condition))) {

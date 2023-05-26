@@ -219,10 +219,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     if (((Perl6VariableDeclStub)current).isExported() || ((Perl6VariableDeclStub)current).getScope().equals("our"))
                         ((Perl6VariableDeclStub)current).getPsi().contributeLexicalSymbols(collector);
                 }
-                else if (current instanceof Perl6PackageDeclStub) {
+                else if (current instanceof Perl6PackageDeclStub nested) {
                     if (((Perl6PackageDeclStub)current).getPackageKind().equals("module"))
                         addChildren = true;
-                    Perl6PackageDeclStub nested = (Perl6PackageDeclStub)current;
                     String scope = nested.getScope();
                     if (scope.equals("our") || scope.equals("unit")) {
                         String topName = nested.getTypeName();
@@ -247,12 +246,10 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     if (((Perl6SubsetStub)current).isExported() || ((Perl6SubsetStub)current).getScope().equals("our"))
                         collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, ((Perl6SubsetStub)current).getPsi()));
                 }
-                else if (current instanceof Perl6UseStatementStub) {
-                    Perl6UseStatementStub use = (Perl6UseStatementStub)current;
+                else if (current instanceof Perl6UseStatementStub use) {
                     contributeTransitive(collector, seen, "use", use.getModuleName());
                 }
-                else if (current instanceof Perl6NeedStatementStub) {
-                    Perl6NeedStatementStub need = (Perl6NeedStatementStub)current;
+                else if (current instanceof Perl6NeedStatementStub need) {
                     for (String name : need.getModuleNames())
                         contributeTransitive(collector, seen, "need", name);
                 }
@@ -278,10 +275,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     if (((Perl6VariableDecl)current).isExported() || ((Perl6VariableDecl)current).getScope().equals("our"))
                         ((Perl6VariableDecl)current).contributeLexicalSymbols(collector);
                 }
-                else if (current instanceof Perl6PackageDecl) {
+                else if (current instanceof Perl6PackageDecl nested) {
                     if (((Perl6PackageDecl)current).getPackageKind().equals("module"))
                         addChildren = true;
-                    Perl6PackageDecl nested = (Perl6PackageDecl)current;
                     String scope = nested.getScope();
                     if (scope.equals("our") || scope.equals("unit")) {
                         String topName = nested.getName();
@@ -297,8 +293,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     if (((Perl6RoutineDecl)current).isExported() || ((Perl6RoutineDecl)current).getScope().equals("our"))
                         ((Perl6RoutineDecl)current).contributeLexicalSymbols(collector);
                 }
-                else if (current instanceof Perl6Enum) {
-                    Perl6Enum perl6Enum = (Perl6Enum)current;
+                else if (current instanceof Perl6Enum perl6Enum) {
                     String scope = perl6Enum.getScope();
                     if (scope.equals("our")) {
                         perl6Enum.contributeLexicalSymbols(collector);
@@ -308,12 +303,10 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     if (((Perl6Subset)current).isExported() || ((Perl6Subset)current).getScope().equals("our"))
                         collector.offerSymbol(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, (PsiNamedElement)current));
                 }
-                else if (current instanceof Perl6UseStatement) {
-                    Perl6UseStatement use = (Perl6UseStatement)current;
+                else if (current instanceof Perl6UseStatement use) {
                     contributeTransitive(collector, seen, "use", use.getModuleName());
                 }
-                else if (current instanceof Perl6NeedStatement) {
-                    Perl6NeedStatement need = (Perl6NeedStatement)current;
+                else if (current instanceof Perl6NeedStatement need) {
                     for (String name : need.getModuleNames())
                         contributeTransitive(collector, seen, "need", name);
                 }

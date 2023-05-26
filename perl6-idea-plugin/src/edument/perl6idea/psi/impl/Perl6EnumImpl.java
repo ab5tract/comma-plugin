@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static edument.perl6idea.parsing.Perl6ElementTypes.STRING_LITERAL;
 import static edument.perl6idea.parsing.Perl6TokenTypes.PAIR_KEY;
@@ -52,7 +51,7 @@ public class Perl6EnumImpl extends Perl6TypeStubBasedPsi<Perl6EnumStub> implemen
                 return values;
             text = text.substring(1, text.length()-1);
             String[] result = text.split("\\s+");
-            values.addAll(Arrays.stream(result).filter(s -> !s.isEmpty()).collect(Collectors.toList()));
+            values.addAll(Arrays.stream(result).filter(s -> !s.isEmpty()).toList());
             return values;
         }
         PsiElement semilist = PsiTreeUtil.findChildOfType(this, Perl6SemiList.class);

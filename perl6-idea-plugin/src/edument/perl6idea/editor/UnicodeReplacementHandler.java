@@ -2,7 +2,6 @@ package edument.perl6idea.editor;
 
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.highlighter.HighlighterIterator;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
@@ -83,7 +82,7 @@ public class UnicodeReplacementHandler extends TypedHandlerDelegate {
                     continue;
                 if (text.substring(start, offset).equals(m.ascii)) {
                     // Text matches, but what about token type?
-                    HighlighterIterator iterator = ((EditorEx)editor).getHighlighter().createIterator(start);
+                    HighlighterIterator iterator = editor.getHighlighter().createIterator(start);
                     IElementType curToken = iterator.getTokenType();
                     if (curToken == Perl6TokenTypes.INFIX) {
                         if (m.ascii.equals(">>") || m.ascii.equals("<<"))

@@ -20,7 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Perl6CoverageTestRunningState extends Perl6TestRunningState {
-    private File coverageDir;
+    private final File coverageDir;
 
     public Perl6CoverageTestRunningState(ExecutionEnvironment environment) throws ExecutionException {
         super(environment);

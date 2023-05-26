@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Perl6HeapSnapshotResultsPanel extends JPanel {
-    private Project project;
+    private final Project project;
 
     public Perl6HeapSnapshotResultsPanel(Project project, HeapSnapshotCollection snapshotCollection) {
         super(new BorderLayout());

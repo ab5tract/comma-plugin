@@ -5,8 +5,7 @@ import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.codeInsight.lookup.LookupManager;
 import com.intellij.codeInsight.lookup.impl.LookupImpl;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorModificationUtil;
-import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.editor.EditorModificationUtilEx;
 import com.intellij.openapi.editor.highlighter.HighlighterIterator;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.project.Project;
@@ -48,7 +47,7 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
         LookupImpl lookup = (LookupImpl) LookupManager.getActiveLookup(editor);
         if (lookup != null) {
             if (editor.getSelectionModel().hasSelection()) {
-                lookup.performGuardedChange(() -> EditorModificationUtil.deleteSelectedText(editor));
+                lookup.performGuardedChange(() -> EditorModificationUtilEx.deleteSelectedText(editor));
             }
             return Result.STOP;
         }
@@ -74,7 +73,7 @@ public class SigilCompletionAutoPopupHandler extends TypedHandlerDelegate {
         int start = editor.getCaretModel().getOffset() - 1;
         if (start < 0)
             return null;
-        HighlighterIterator iterator = ((EditorEx)editor).getHighlighter().createIterator(start);
+        HighlighterIterator iterator = editor.getHighlighter().createIterator(start);
         return iterator.getTokenType();
     }
 }

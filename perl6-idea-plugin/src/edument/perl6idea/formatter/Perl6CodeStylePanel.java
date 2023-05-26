@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.highlighter.EditorHighlighter;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeEditorHighlighterProviders;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import edument.perl6idea.Perl6Language;

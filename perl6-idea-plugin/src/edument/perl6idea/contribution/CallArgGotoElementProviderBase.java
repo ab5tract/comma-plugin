@@ -38,12 +38,10 @@ abstract public class CallArgGotoElementProviderBase extends GotoRelatedProvider
             return Collections.emptyList();
 
         ResolveResult @NotNull [] realRoutine = ((PsiReferenceBase.Poly<?>)ref).multiResolve(true);
-        if (realRoutine.length != 0) {
-            for (ResolveResult result : realRoutine) {
-                if (result.getElement() != null && result.getElement().getParent() instanceof ExternalPerl6File &&
-                    ((ExternalPerl6File)result.getElement().getParent()).getName().startsWith("Cro::WebApp::Template")) {
-                    return getFiles((Perl6StrLiteral)psiElement);
-                }
+        for (ResolveResult result : realRoutine) {
+            if (result.getElement() != null && result.getElement().getParent() instanceof ExternalPerl6File &&
+                ((ExternalPerl6File)result.getElement().getParent()).getName().startsWith("Cro::WebApp::Template")) {
+                return getFiles((Perl6StrLiteral)psiElement);
             }
         }
         return Collections.emptyList();

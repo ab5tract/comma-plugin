@@ -7,7 +7,7 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
 public abstract class Perl6ParameterTableModel extends AbstractTableModel implements EditableModel {
-    private String[] columns = {"Name", "Type", "Pass as Parameter", "Available Lexically"};
+    private final String[] columns = {"Name", "Type", "Pass as Parameter", "Available Lexically"};
     private final Perl6VariableData[] myVars;
     protected final JTable myTable;
 
@@ -71,12 +71,10 @@ public abstract class Perl6ParameterTableModel extends AbstractTableModel implem
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        switch (columnIndex) {
-            case 0:
-            case 1: return String.class;
-            case 2: return Boolean.class;
-            default: return String.class;
+        if (columnIndex == 2) {
+            return Boolean.class;
         }
+        return String.class;
     }
 
     @Override

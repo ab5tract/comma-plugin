@@ -83,7 +83,7 @@ public class DependenciesTableModel extends ListTableModel<Perl6DependencyTableI
     }
 
     public boolean isModified() {
-        return !(myInitialSet.containsAll(getItems()) && getItems().containsAll(myInitialSet));
+        return !(myInitialSet.containsAll(getItems()) && new HashSet<>(getItems()).containsAll(myInitialSet));
     }
 
     private static class Perl6DependencyTableItemColumnInfo extends ColumnInfo<Perl6DependencyTableItem, Perl6DependencyTableItem> {

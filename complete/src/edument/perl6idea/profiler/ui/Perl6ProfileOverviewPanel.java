@@ -23,10 +23,11 @@ public class Perl6ProfileOverviewPanel {
         textPane.setContentType("text/html");
         JScrollPane scrollPane = new JBScrollPane(textPane);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        String style = "<head><style>body {\n" +
-                       "\tfont-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"; }\n" +
-                       "p { margin: -6px; }\n" +
-                       "</style></head>";
+        String style = """
+            <head><style>body {
+            \tfont-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; }
+            p { margin: -6px; }
+            </style></head>""";
         textPane.setText("<html>" + style + generateStartText()
                          + generateGCText() + generateCallText() + generateOptText() + "</html>");
         textPane.setContentType("text/html");

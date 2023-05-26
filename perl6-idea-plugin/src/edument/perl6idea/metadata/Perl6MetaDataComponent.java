@@ -247,8 +247,7 @@ public class Perl6MetaDataComponent {
     private void addDependsInternal(String key, String name) {
         if (myMeta == null || !myMeta.has(key)) return;
         Object depends = myMeta.has(key) ? myMeta.get(key) : new JSONArray();
-        if (!(depends instanceof JSONArray)) return;
-        JSONArray dependsArray = (JSONArray)depends;
+        if (!(depends instanceof JSONArray dependsArray)) return;
         if (dependsArray.toList().contains(name))
             return;
         dependsArray.put(name);
@@ -281,8 +280,7 @@ public class Perl6MetaDataComponent {
         if (myMeta == null) return new ArrayList<>();
         if (!myMeta.has(key)) return new ArrayList<>();
         Object depends = myMeta.get(key);
-        if (!(depends instanceof JSONArray)) return new ArrayList<>();
-        JSONArray dependsArray = (JSONArray)depends;
+        if (!(depends instanceof JSONArray dependsArray)) return new ArrayList<>();
         List<String> result = new ArrayList<>();
         if (normalize)
             dependsArray.toList().forEach(o -> result.add(normalizeDepends((String)o)));

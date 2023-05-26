@@ -17,7 +17,7 @@ import java.io.OutputStream;
 import java.nio.file.Paths;
 
 public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
-    static Logger LOG = Logger.getInstance(Perl6ProfileCommandLineState.class);
+    static final Logger LOG = Logger.getInstance(Perl6ProfileCommandLineState.class);
     @Nullable
     private Perl6ProfileData profileData = null;
     @Nullable

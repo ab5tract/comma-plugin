@@ -3,8 +3,6 @@ package edument.perl6idea.project.structure;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.application.AccessToken;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -282,8 +280,7 @@ public class Perl6ProjectStructureConfigurable extends BaseConfigurable implemen
 
             mySelectedConfigurable = toSelect;
 
-            if (toSelect instanceof MasterDetailsComponent) {
-                final MasterDetailsComponent master = (MasterDetailsComponent)toSelect;
+            if (toSelect instanceof final MasterDetailsComponent master) {
                 if (myUiState.sideProportion > 0) {
                     master.getSplitter().setProportion(myUiState.sideProportion);
                 }

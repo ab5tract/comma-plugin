@@ -184,7 +184,7 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
         StringJoiner joiner = new StringJoiner("::");
         for (Path part : subPath)
             joiner.add(part.toString());
-        return joiner.toString() + "::";
+        return joiner + "::";
     }
 
     @Nullable

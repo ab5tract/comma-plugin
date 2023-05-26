@@ -30,7 +30,6 @@ import edument.perl6idea.actions.comma.ImportModuleAction;
 import edument.perl6idea.project.projectWizard.CommaAbstractProjectWizard;
 import edument.perl6idea.project.projectWizard.CommaNewProjectWizard;
 import edument.perl6idea.project.structure.ui.HeaderHidingTabbedModuleEditor;
-import gnu.trove.THashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -280,7 +279,7 @@ public class Perl6ModulesConfigurator implements ModulesProvider, ModuleEditor.C
             moduleEditor.canApply();
         }
 
-        final Map<Sdk, Sdk> modifiedToOriginalMap = new THashMap<>();
+        final Map<Sdk, Sdk> modifiedToOriginalMap = new HashMap<>();
         final ProjectSdksModel projectJdksModel = Perl6ProjectStructureConfigurable.getInstance(myProject).getProjectSdksModel();
         for (Map.Entry<Sdk, Sdk> entry : projectJdksModel.getProjectSdks().entrySet()) {
             modifiedToOriginalMap.put(entry.getValue(), entry.getKey());

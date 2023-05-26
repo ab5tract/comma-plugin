@@ -3,6 +3,7 @@ import edument.perl6idea.parsing.Cursor;
 
 public class MAINBraid extends Cursor<MAINBraid> {
 
+    @Override
     public int runRule() {
         int result;
         switch (this.ruleNumber) {
@@ -2071,18 +2072,17 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int _2_apostrophe() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 this.checkArgs(0);
                 if (!(this.inCharList("'-"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -2597,25 +2597,25 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int _12_end_keyword() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 this.checkArgs(0);
                 if (!(this.rightWordBoundary())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (this.lookahead(260)) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -22236,43 +22236,42 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int _149_sigil() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 this.checkArgs(0);
                 if (!(this.inCharList("$@%&"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int _150_twigil() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 this.checkArgs(0);
                 if (!(this.inCharList(".!^:*?=~"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.lookahead(450))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -27556,8 +27555,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int _190_has_delimiter() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 this.checkArgs(0);
                 this.declareDynamicVariable("$*STARTER", "");
                 this.declareDynamicVariable("$*STOPPER", "");
@@ -27565,12 +27563,12 @@ public class MAINBraid extends Cursor<MAINBraid> {
                 if (!(this.peekDelimiters())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -29854,18 +29852,17 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int _203_starter() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 this.checkArgs(0);
                 if (!(this.interpolate("$*STARTER"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -43124,34 +43121,32 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_2() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.spaceChar())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_3() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("#"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -43264,11 +43259,9 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_6() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 this.marker("endstmt");
                 return -1;
-
             }
         }
     }
@@ -43336,28 +43329,25 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_8() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 this.marker("endstmt");
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_9() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.ww())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -43461,96 +43451,96 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_12() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("#|"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.opener())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_13() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("#|"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.spaceChar())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_14() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("#="))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.spaceChar())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_15() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("#="))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.opener())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -44088,41 +44078,41 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_25() {
         while (true) {
-            switch (this.state) {
-            case 0:
-                if (!(this.inCharList("\u0009 \u00A0\u1680\u180E\u2002\u2003\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000"))) {
+            if (this.state == 0) {
+                if (!(this.inCharList(
+                    "\u0009 \u00A0\u1680\u180E\u2002\u2003\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_26() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("<\u00AB"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -44285,41 +44275,41 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_30() {
         while (true) {
-            switch (this.state) {
-            case 0:
-                if (!(this.inCharList("\u0009 \u00A0\u1680\u180E\u2002\u2003\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000"))) {
+            if (this.state == 0) {
+                if (!(this.inCharList(
+                    "\u0009 \u00A0\u1680\u180E\u2002\u2003\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_31() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("<\u00AB"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -44377,41 +44367,40 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_33() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("ABCDEFGHIJKLMNOPQRSTUVWXYZ"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("<\u00AB"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_34() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("LX"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -44473,68 +44462,65 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_36() {
         while (true) {
-            switch (this.state) {
-            case 0:
-                if (!(this.inCharList("\u0009 \u00A0\u1680\u180E\u2002\u2003\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000"))) {
+            if (this.state == 0) {
+                if (!(this.inCharList(
+                    "\u0009 \u00A0\u1680\u180E\u2002\u2003\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_37() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("code"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_38() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("input"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_39() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("output"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -44743,17 +44729,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_45() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(")]}"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -44917,17 +44902,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_50() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.marked("endstmt"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -45090,17 +45074,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_54() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(";"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -45131,41 +45114,40 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_56() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.startOfLine())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.literal("="))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_57() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(";"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -45234,17 +45216,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_60() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.marked("endstmt"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -45397,51 +45378,48 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_64() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("{"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_65() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(";)]}"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_66() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -45537,17 +45515,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_69() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.marked("endstmt"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -46084,24 +46061,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_85() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("need"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("-'"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -46139,24 +46116,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_87() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("import"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("-'"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -46194,24 +46171,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_89() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("no"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("-'"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -46249,24 +46226,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_91() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("use"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("-'"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -46304,24 +46281,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_93() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("require"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("-'"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -47072,17 +47049,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_117() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("{"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -47330,34 +47306,32 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_123() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("\\("))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_124() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("\\("))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -47488,24 +47462,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_129() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("\u2205"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (this.lookahead(389)) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -47933,24 +47907,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_139() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(":"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.inCharList("[{<\u00AB("))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -47981,68 +47955,64 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_141() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("$"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_142() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("@"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_143() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("%"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_144() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("&"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -48311,28 +48281,25 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_151() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("([{"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_152() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 this.marker("baresigil");
                 return -1;
-
             }
         }
     }
@@ -48370,17 +48337,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_154() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("[{"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -48788,17 +48754,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_161() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.notSpaceChar())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -49230,41 +49195,40 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_168() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("["))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_169() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(":"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.notSpaceChar())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -49804,17 +49768,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_186() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("<(\u00AB"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -49954,17 +49917,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_191() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.wordChar())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -50071,34 +50033,32 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_195() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("{"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_196() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(";"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -50181,17 +50141,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_199() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("-\u2212+"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -51186,34 +51145,32 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_215() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("!"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_216() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.interpolate("$*STARTER"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -51244,136 +51201,128 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_218() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("#"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_219() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(".."))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_220() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("s"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_221() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("a"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_222() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("h"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_223() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("f"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_224() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("c"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_225() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("b"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -51860,72 +51809,72 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_238() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(":to"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.rightWordBoundary())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_239() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(":qq"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.rightWordBoundary())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_240() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(":q"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.rightWordBoundary())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -52125,17 +52074,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_246() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("("))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -52166,17 +52114,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_248() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("$"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -52207,17 +52154,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_250() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("@"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -52262,17 +52208,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_252() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("%"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -52317,17 +52262,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_254() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("&"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -52372,126 +52316,120 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_256() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("\\"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_257() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("\\"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_258() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("\\"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_259() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("\\"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.literal("q"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_260() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("\\"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_261() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("\\"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_262() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("{"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -52592,68 +52530,64 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_265() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.bracketEnding())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_266() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("([{<"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_267() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("\"'"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_268() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("{"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -52743,17 +52677,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_271() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.endOfString())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -52957,51 +52890,48 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_278() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_279() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("??"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_280() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("!!"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -53223,17 +53153,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_284() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("("))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -53280,24 +53209,24 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_286() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("."))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.notWordChar())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -53335,41 +53264,40 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_288() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("."))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.lookahead(548))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_289() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("[{<"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -53438,51 +53366,48 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_291() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("!"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_292() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("$@&"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_293() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("'\""))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -53558,34 +53483,32 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_295() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("\""))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_296() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("("))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -53720,17 +53643,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_301() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("!"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -53802,17 +53724,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_303() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("!!"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -53923,136 +53844,128 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_307() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<<"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_308() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("<"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_309() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(">>"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_310() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_311() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<<"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_312() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("<"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_313() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(">>"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_314() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -54090,34 +54003,32 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_316() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(">>"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_317() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -54162,58 +54073,56 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_319() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("!"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_320() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("!="))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (this.lookahead(580)) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_321() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("="))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -54567,41 +54476,40 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_331() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(")}]"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_332() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.notInCharList(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -54753,17 +54661,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_338() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList(":"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -54831,34 +54738,32 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_340() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("{"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_341() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(":"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -55041,116 +54946,112 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_345() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("\\"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.anyChar())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_346() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal("<"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 if (!(this.spaceChar())) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_347() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("\uFF62"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_348() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("'\u2018\u201A"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_349() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("\"\u201C\u201E"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_350() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("{"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -55265,34 +55166,32 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_352() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_353() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -55323,51 +55222,48 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_355() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_356() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("{"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
 
     private int ___lookahead_357() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.inCharList("&"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -55398,17 +55294,16 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     private int ___lookahead_359() {
         while (true) {
-            switch (this.state) {
-            case 0:
+            if (this.state == 0) {
                 if (!(this.literal(">"))) {
                     if (this.backtrack()) {
                         continue;
-                    } else {
+                    }
+                    else {
                         return -2;
                     }
                 }
                 return -1;
-
             }
         }
     }
@@ -55830,6 +55725,7 @@ public class MAINBraid extends Cursor<MAINBraid> {
         }
     }
 
+    @Override
     public MAINBraid createInstance() {
         return new MAINBraid();
     }
