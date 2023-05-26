@@ -85,42 +85,7 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
         myProjectTypeList.setModel(new CollectionListModel<>(groups));
         myProjectTypeList.setSelectionModel(new SingleSelectionModel());
         myProjectTypeList.addListSelectionListener(__ -> updateSelection());
-        myProjectTypeList.setCellRenderer(new GroupedItemsListRenderer<>(new ListItemDescriptorAdapter<>() {
-            @Nullable
-            @Override
-            public String getTextFor(TemplatesGroup value) {
-                return value.getName();
-            }
-
-            @Nullable
-            @Override
-            public String getTooltipFor(TemplatesGroup value) {
-                return value.getDescription();
-            }
-
-            @Nullable
-            @Override
-            public Icon getIconFor(TemplatesGroup value) {
-                return value.getIcon();
-            }
-
-            @Override
-            public boolean hasSeparatorAboveOf(TemplatesGroup value) {
-                int index = groups.indexOf(value);
-                if (index < 1) return false;
-                TemplatesGroup upper = groups.get(index - 1);
-                if (upper.getParentGroup() == null && value.getParentGroup() == null) return true;
-                return !Objects.equals(upper.getParentGroup(), value.getParentGroup()) &&
-                       !Objects.equals(upper.getName(), value.getParentGroup());
-            }
-        }) {
-            @Override
-            protected JComponent createItemComponent() {
-                JComponent component = super.createItemComponent();
-                myTextLabel.setBorder(JBUI.Borders.empty(3));
-                return component;
-            }
-        });
+        myProjectTypeList.setCellRenderer(new TemplatesGroupGroupedItemsListRenderer(groups));
 
         new ListSpeedSearch<>(myProjectTypeList) {
             @Override
@@ -609,4 +574,45 @@ public class CommaProjectTypeStep extends ModuleWizardStep implements SettingsSt
             ((StatisticsAwareModuleWizardStep)step).addCustomFeatureUsageData(eventId, data);
         }
     }
+
+  private static class TemplatesGroupGroupedItemsListRenderer extends GroupedItemsListRenderer<TemplatesGroup> {
+    public TemplatesGroupGroupedItemsListRenderer(java.util.List<TemplatesGroup> groups) {
+      super(new ListItemDescriptorAdapter<>() {
+        @Nullable
+        @Override
+        public String getTextFor(TemplatesGroup value) {
+          return value.getName();
+        }
+
+        @Nullable
+        @Override
+        public String getTooltipFor(TemplatesGroup value) {
+          return value.getDescription();
+        }
+
+        @Nullable
+        @Override
+        public Icon getIconFor(TemplatesGroup value) {
+          return value.getIcon();
+        }
+
+        @Override
+        public boolean hasSeparatorAboveOf(TemplatesGroup value) {
+          int index = groups.indexOf(value);
+          if (index < 1) return false;
+          TemplatesGroup upper = groups.get(index - 1);
+          if (upper.getParentGroup() == null && value.getParentGroup() == null) return true;
+          return !Objects.equals(upper.getParentGroup(), value.getParentGroup()) &&
+                 !Objects.equals(upper.getName(), value.getParentGroup());
+        }
+      });
+    }
+
+    @Override
+    protected JComponent createItemComponent() {
+        JComponent component = super.createItemComponent();
+        myTextLabel.setBorder(JBUI.Borders.empty(3));
+        return component;
+    }
+  }
 }

@@ -41,31 +41,7 @@ public class ProjectTemplateList extends JPanel {
         add(myPanel, BorderLayout.CENTER);
 
         GroupedItemsListRenderer<ProjectTemplate> renderer =
-            new GroupedItemsListRenderer<>(new ListItemDescriptorAdapter<>() {
-                @NotNull
-                @Override
-                public String getTextFor(ProjectTemplate value) {
-                    return value.getName();
-                }
-
-                @Nullable
-                @Override
-                public Icon getIconFor(ProjectTemplate value) {
-                    return value.getIcon();
-                }
-            }) {
-
-                @Override
-                protected void customizeComponent(JList<? extends ProjectTemplate> list, ProjectTemplate value, boolean isSelected) {
-                    super.customizeComponent(list, value, isSelected);
-                    Icon icon = myTextLabel.getIcon();
-                    if (icon != null && myTextLabel.getDisabledIcon() == icon) {
-                        myTextLabel.setDisabledIcon(IconLoader.getDisabledIcon(icon));
-                    }
-                    myTextLabel.setEnabled(myList.isEnabled());
-                    myTextLabel.setBorder(JBUI.Borders.empty(3));
-                }
-            };
+          new ItemsListRendererImpl();
         myList.setCellRenderer(renderer);
         myList.getSelectionModel().addListSelectionListener(__ -> updateSelection());
 
@@ -156,4 +132,34 @@ public class ProjectTemplateList extends JPanel {
 
         return false;
     }
+
+  private class ItemsListRendererImpl extends GroupedItemsListRenderer<ProjectTemplate> {
+
+    public ItemsListRendererImpl() {
+      super(new ListItemDescriptorAdapter<>() {
+        @NotNull
+        @Override
+        public String getTextFor(ProjectTemplate value) {
+          return value.getName();
+        }
+
+        @Nullable
+        @Override
+        public Icon getIconFor(ProjectTemplate value) {
+          return value.getIcon();
+        }
+      });
+    }
+
+    @Override
+    protected void customizeComponent(JList<? extends ProjectTemplate> list, ProjectTemplate value, boolean isSelected) {
+        super.customizeComponent(list, value, isSelected);
+        Icon icon = myTextLabel.getIcon();
+        if (icon != null && myTextLabel.getDisabledIcon() == icon) {
+            myTextLabel.setDisabledIcon(IconLoader.getDisabledIcon(icon));
+        }
+        myTextLabel.setEnabled(myList.isEnabled());
+        myTextLabel.setBorder(JBUI.Borders.empty(3));
+    }
+  }
 }
