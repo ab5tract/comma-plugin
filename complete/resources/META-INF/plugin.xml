@@ -32,13 +32,11 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Migrate to version 2022.3 of the IntelliJ platform, thus bringing in numerous fixes and changes and making the plugin support the more recent IntelliJ release</li>
-<li>Introduce support of folding for Pod blocks</li>
-<li>Brace matching for contextualizers with parentheses</li>
-<li>Fix a bug with Cro template parsing related to "else"	syntax</li>
-<li>Fix a	bug with parsing the `=for code` paragraph in Pod code</li>
-<li>Fix a	rare case of a UI freeze</li>
-<li>Fix an exception when processing dependencies described using JSON rather than a string</li>
+<li>Implement inline &#39;Usage&#39; counter indication for Raku routines and packages (classes, grammars etc.)</li>
+<li>The &#39;git blame&#39; annotations in the code editor gutter are now available</li>
+<li>The breadcrumbs navigation for files and code structures is now available</li>
+<li>Fix false positive case in variable redeclaration annotation, happening in pointy blocks</li>
+<li>Internal code cleanup</li>
 </ul>
   ]]>
   </change-notes>
