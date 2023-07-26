@@ -112,6 +112,7 @@ public class Perl6DebugThread extends Thread {
             else if (event.getEventType() == EventType.StepCompleted) {
                 Perl6DebugThread thread = this;
                 ConcurrencyUtil.newSingleThreadExecutor(DEBUG_THREAD_NAME).execute(() -> {
+                    boolean needsStep = false;
                     StepCompletedNotification scn = (StepCompletedNotification)event;
                     Perl6ThreadDescriptor[] threads;
                     try {
@@ -119,6 +120,13 @@ public class Perl6DebugThread extends Thread {
                         // get the thread list.
                         client.suspend().get();
                         threads = getThreads();
+                        // Skip dispatcher inner calls
+                        if (threads.length > 0) {
+                            Perl6StackFrameDescriptor[] frames = threads[0].stackFrames();
+                            if (frames.length > 0 && frames[0].getFile().getPath().contains("dispatchers.nqp")) {
+                                needsStep = true;
+                            }
+                        }
                     }
                     catch (Exception e) {
                         throw new RuntimeException(e);
@@ -133,6 +141,10 @@ public class Perl6DebugThread extends Thread {
                     Perl6DebugEventStop reachedEvent = new Perl6DebugEventStop(threads,
                             activeThreadIndex, mySession, thread);
                     myExecutor.execute(reachedEvent);
+                    if (needsStep) {
+                      // Needs a step, does step over!
+                      mySession.stepOver(false);
+                    }
                 });
             }
             else {
