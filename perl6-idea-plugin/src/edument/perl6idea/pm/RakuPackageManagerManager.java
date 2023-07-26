@@ -99,18 +99,11 @@ public final class RakuPackageManagerManager implements PersistentStateComponent
     }
 
     public static RakuPackageManager parsePM(@NotNull String kind, @NotNull String location) {
-        RakuPackageManager pm;
-        switch (RakuPackageManagerKind.valueOf(kind.toUpperCase(Locale.ENGLISH))) {
-            case ZEF:
-                pm = new RakuZefPM(location);
-                break;
-            case PAKKU:
-                pm = new RakuPakkuPM(location);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown kind of Package Manager");
-        }
-        return pm;
+        return switch (RakuPackageManagerKind.valueOf(kind.toUpperCase(Locale.ENGLISH))) {
+            case ZEF -> new RakuZefPM(location);
+            case PAKKU -> new RakuPakkuPM(location);
+            default -> throw new IllegalArgumentException("Unknown kind of Package Manager");
+        };
     }
 
     public static void detectPMs(List<SuggestedItem> detected) {

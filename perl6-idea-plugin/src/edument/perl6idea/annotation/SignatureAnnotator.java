@@ -37,18 +37,9 @@ public class SignatureAnnotator implements Annotator {
                 !parameter.isExplicitlyOptional() && !parameter.isSlurpy()) {
                 String message = "";
                 switch (state) {
-                    case NAMED: {
-                        message = "Cannot put positional parameter %s after a named parameter";
-                        break;
-                    }
-                    case OPTIONAL: {
-                        message = "Cannot put positional parameter %s after an optional parameter";
-                        break;
-                    }
-                    case VARIADIC: {
-                        message = "Cannot put positional parameter %s after a variadic parameter";
-                        break;
-                    }
+                    case NAMED -> message = "Cannot put positional parameter %s after a named parameter";
+                    case OPTIONAL -> message = "Cannot put positional parameter %s after an optional parameter";
+                    case VARIADIC -> message = "Cannot put positional parameter %s after a variadic parameter";
                 }
                 holder.newAnnotation(HighlightSeverity.ERROR, String.format(message, parameter.getVariableName()))
                     .range(parameter).create();

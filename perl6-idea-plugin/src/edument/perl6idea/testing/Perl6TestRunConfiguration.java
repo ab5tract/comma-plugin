@@ -223,13 +223,12 @@ abstract public class Perl6TestRunConfiguration extends RunConfigurationBase<Run
 
     @Override
     public @Nullable String suggestedName() {
-        switch (getTestKind()) {
-            case ALL: return "Test project";
-            case MODULE: return "Test module " + getModuleName();
-            case DIRECTORY: return "Test directory " + Paths.get(getDirectoryPath()).getFileName();
-            case FILE: return "Test " + Paths.get(getFilePath()).getFileName();
-        }
-        return null;
+        return switch (getTestKind()) {
+            case ALL -> "Test project";
+            case MODULE -> "Test module " + getModuleName();
+            case DIRECTORY -> "Test directory " + Paths.get(getDirectoryPath()).getFileName();
+            case FILE -> "Test " + Paths.get(getFilePath()).getFileName();
+        };
     }
 
     @Override

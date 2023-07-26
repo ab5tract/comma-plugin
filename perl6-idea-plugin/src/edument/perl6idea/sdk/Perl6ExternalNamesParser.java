@@ -51,23 +51,19 @@ public class Perl6ExternalNamesParser {
                 if (!(object instanceof JSONObject j)) continue;
 
                 switch (j.getString("k")) {
-                    case "n": {
+                    case "n" -> {
                         Perl6PackageDecl psi = new ExternalPerl6PackageDecl(
                             myProject, myFile, "", j.getString("n"), j.getString("t"), "");
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
-                        break;
                     }
-                    case "v": {
+                    case "v" -> {
                         ExternalPerl6VariableDecl decl = new ExternalPerl6VariableDecl(
                             myProject, myFile, j.getString("n"), "our", j.getString("t"));
                         if (j.has("d"))
                             decl.setDocs(j.getString("d"));
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Variable, decl));
-                        break;
                     }
-                    case "m":
-                    case "s":
-                    case "r": {
+                    case "m", "s", "r" -> {
                         int isMulti = j.getInt("m");
                         String deprecationMessage = j.has("x") ? j.getString("x") : null;
                         ExternalPerl6RoutineDecl psi = new ExternalPerl6RoutineDecl(
@@ -79,27 +75,23 @@ public class Perl6ExternalNamesParser {
                         if (j.has("rakudo"))
                             psi.setImplementationDetail(true);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.Routine, psi));
-                        break;
                     }
-                    case "e":
-                    case "ss": {
-                        ExternalPerl6PackageDecl psi = new ExternalPerl6PackageDecl(myProject, myFile, "c", j.getString("n"), j.getString("t"), "A");
+                    case "e", "ss" -> {
+                        ExternalPerl6PackageDecl psi =
+                            new ExternalPerl6PackageDecl(myProject, myFile, "c", j.getString("n"), j.getString("t"), "A");
                         if (j.has("d"))
                             psi.setDocs(j.getString("d"));
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
-                        break;
                     }
-                    case "mm": {
+                    case "mm" -> {
                         ExternalPerl6PackageDecl psi = parsePackageDeclaration(j, new ArrayList<>());
                         // Add to a metamodel cache to apply to users
                         metamodelCache.put(j.getString("key"), psi);
                         psi.setName(j.getString("key"));
                         externalClasses.put(psi.getName(), psi);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
-                        break;
                     }
-                    case "c":
-                    case "ro": {
+                    case "c", "ro" -> {
                         List<String> mro = ContainerUtil.map(j.getJSONArray("mro").toList(), item -> Objects.toString(item, null));
                         ExternalPerl6PackageDecl psi = parsePackageDeclaration(j, mro);
                         Perl6PackageDecl metamodel = metamodelCache.getOrDefault(psi.getPackageKind(), null);
@@ -107,7 +99,6 @@ public class Perl6ExternalNamesParser {
                             psi.setMetaClass(metamodel);
                         externalClasses.put(psi.getName(), psi);
                         result.add(new Perl6ExplicitSymbol(Perl6SymbolKind.TypeOrConstant, psi));
-                        break;
                     }
                 }
             }
