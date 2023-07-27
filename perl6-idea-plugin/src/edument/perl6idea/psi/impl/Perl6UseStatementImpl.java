@@ -6,22 +6,26 @@ import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StubIndex;
+import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.util.SlowOperations;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6ModuleName;
+import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.Perl6UseStatement;
+import edument.perl6idea.psi.external.ExternalPerl6File;
 import edument.perl6idea.psi.stub.Perl6UseStatementStub;
 import edument.perl6idea.psi.stub.Perl6UseStatementStubElementType;
 import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
+import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
+import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseStatementStub> implements Perl6UseStatement {
     public Perl6UseStatementImpl(@NotNull ASTNode node) {
@@ -47,6 +51,7 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                 if (found.size() > 0) {
                     Perl6File file = found.iterator().next();
                     file.contributeGlobals(collector, new HashSet<>());
+                    contributeEXPORT(collector, file);
                     Set<String> seen = new HashSet<>();
                     seen.add(name);
                     file.contributeGlobals(collector, seen);
@@ -68,6 +73,24 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                     }
                 }
             });
+        }
+    }
+
+    private void contributeEXPORT(Perl6SymbolCollector collector, Perl6File file) {
+        if (file.getFirstChild() instanceof Perl6PsiElement) {
+            Perl6Symbol symbol = ((Perl6PsiElement)file.getFirstChild()).resolveLexicalSymbol(Perl6SymbolKind.Routine, "EXPORT");
+            // If we have a custom EXPORT, try to evaluate the file
+            if (symbol != null) {
+                LightVirtualFile dummy = new LightVirtualFile(file.getName());
+                ExternalPerl6File perl6File = new ExternalPerl6File(getProject(), dummy);
+                String invocation = "use " + file.getEnclosingPerl6ModuleName();
+                List<Perl6Symbol> symbols = Perl6SdkType.loadModuleSymbols(getProject(), perl6File, file.getName(),
+                                                                           invocation,
+                                                                           new HashMap<>(), true);
+                for (Perl6Symbol perl6Symbol : symbols) {
+                    collector.offerSymbol(perl6Symbol);
+                }
+            }
         }
     }
 
