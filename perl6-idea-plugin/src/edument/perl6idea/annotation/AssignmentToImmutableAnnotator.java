@@ -16,7 +16,8 @@ public class AssignmentToImmutableAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof Perl6InfixApplication && ((Perl6InfixApplication)element).isAssignish()) {
-            checkAssignable(((Perl6InfixApplication)element).getOperands()[0], element, holder);
+            if (((Perl6InfixApplication)element).getOperands().length > 0)
+                checkAssignable(((Perl6InfixApplication)element).getOperands()[0], element, holder);
         }
         else if (element instanceof Perl6PrefixApplication && ((Perl6PrefixApplication)element).isAssignish()) {
             checkAssignable(((Perl6PrefixApplication)element).getOperand(), element, holder);
