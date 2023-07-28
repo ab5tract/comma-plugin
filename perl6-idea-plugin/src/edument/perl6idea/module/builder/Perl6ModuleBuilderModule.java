@@ -93,43 +93,29 @@ public class Perl6ModuleBuilderModule implements Perl6ModuleBuilderGeneric {
                                                     boolean isUnitScoped) {
         if (isUnitScoped) {
             String declText = String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name);
-            switch (type) {
-                case "Class":
-                case "Role":
-                case "Grammar":
-                case "Module":
-                    return Arrays.asList(declText, "");
-                case "Monitor":
-                    return Arrays.asList(
-                      "use OO::Monitors;", "",
-                      declText, "");
-                case "Model":
-                    return Arrays.asList(
-                      "use Red;", "",
-                      declText, "");
-                default:
-                    return Collections.singletonList("");
-            }
+            return switch (type) {
+                case "Class", "Role", "Grammar", "Module" -> Arrays.asList(declText, "");
+                case "Monitor" -> Arrays.asList(
+                    "use OO::Monitors;", "",
+                    declText, "");
+                case "Model" -> Arrays.asList(
+                    "use Red;", "",
+                    declText, "");
+                default -> Collections.singletonList("");
+            };
         }
         else {
             String declText = String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name);
-            switch (type) {
-                case "Class":
-                case "Role":
-                case "Grammar":
-                case "Module":
-                    return Arrays.asList(declText, "", "}");
-                case "Monitor":
-                    return Arrays.asList(
-                      "use OO::Monitors;", "",
-                      declText, "", "}");
-                case "Model":
-                    return Arrays.asList(
-                      "use Red;", "",
-                      declText, "", "}");
-                default:
-                    return Collections.singletonList("");
-            }
+            return switch (type) {
+                case "Class", "Role", "Grammar", "Module" -> Arrays.asList(declText, "", "}");
+                case "Monitor" -> Arrays.asList(
+                    "use OO::Monitors;", "",
+                    declText, "", "}");
+                case "Model" -> Arrays.asList(
+                    "use Red;", "",
+                    declText, "", "}");
+                default -> Collections.singletonList("");
+            };
         }
     }
 

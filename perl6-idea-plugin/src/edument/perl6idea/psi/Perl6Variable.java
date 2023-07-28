@@ -27,28 +27,28 @@ public interface Perl6Variable extends Perl6PsiElement, PsiNameIdentifierOwner, 
     static char getSigil(@Nullable String text) {
         if (text == null || text.length() < 1)
             return ' ';
-        switch (text.charAt(0)) {
-            case '$': return '$';
-            case '@': return '@';
-            case '%': return '%';
-            case '&': return '&';
-            default:  return ' ';
-        }
+        return switch (text.charAt(0)) {
+            case '$' -> '$';
+            case '@' -> '@';
+            case '%' -> '%';
+            case '&' -> '&';
+            default -> ' ';
+        };
     }
 
     static char getTwigil(@Nullable String text) {
         if (text == null || text.length() < 2) return ' ';
-        switch (text.charAt(1)) {
-            case '*': return '*';
-            case '?': return '?';
-            case '!': return '!';
-            case '^': return '^';
-            case ':': return ':';
-            case '=': return '=';
-            case '~': return '~';
-            case '.': return '.';
-            default:  return ' ';
-        }
+        return switch (text.charAt(1)) {
+            case '*' -> '*';
+            case '?' -> '?';
+            case '!' -> '!';
+            case '^' -> '^';
+            case ':' -> ':';
+            case '=' -> '=';
+            case '~' -> '~';
+            case '.' -> '.';
+            default -> ' ';
+        };
     }
 
     boolean isCaptureVariable();

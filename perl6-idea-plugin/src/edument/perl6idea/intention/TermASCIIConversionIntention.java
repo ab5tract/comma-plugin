@@ -27,13 +27,12 @@ public class TermASCIIConversionIntention extends TermConversionIntention {
         int offset = editor.getCaretModel().getOffset();
         PsiElement elementUnderCaret = file.findElementAt(offset);
         assert elementUnderCaret != null;
-        String replacement;
-        switch (classifyOperation(project, editor, file)) {
-            case TO_ASCII_SET: replacement = "set()"; break;
-            case TO_ASCII_PI: replacement = "pi"; break;
-            case TO_ASCII_TAU: replacement = "tau"; break;
-            default: throw new AssertionError();
-        }
+        String replacement = switch (classifyOperation(project, editor, file)) {
+            case TO_ASCII_SET -> "set()";
+            case TO_ASCII_PI -> "pi";
+            case TO_ASCII_TAU -> "tau";
+            default -> throw new AssertionError();
+        };
         TextRange elementRange = elementUnderCaret.getTextRange();
         editor.getDocument().replaceString(elementRange.getStartOffset(), elementRange.getEndOffset(), replacement);
     }

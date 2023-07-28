@@ -45,18 +45,12 @@ public class Perl6Icons {
                                                       Objects.requireNonNull(ReflectionUtil.getGrandCallerClass()));
 
     public static Icon iconForPackageDeclarator(String declarator) {
-        switch (declarator) {
-            case "module":
-                return MODULE;
-            case "class":
-            case "monitor":
-                return CLASS;
-            case "role":
-                return ROLE;
-            case "grammar":
-                return GRAMMAR;
-            default:
-                return PACKAGE;
-        }
+        return switch (declarator) {
+            case "module" -> MODULE;
+            case "class", "monitor" -> CLASS;
+            case "role" -> ROLE;
+            case "grammar" -> GRAMMAR;
+            default -> PACKAGE;
+        };
     }
 }

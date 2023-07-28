@@ -16,13 +16,11 @@ public enum RakuTestKind {
     }
 
     public String baseString() {
-        switch (this) {
-            case FILE: return "FILE";
-            case DIRECTORY: return "DIRECTORY";
-            case MODULE: return "MODULE";
-            case ALL: return "ALL";
-            default:
-                throw new IllegalStateException("Unexpected value: " + this);
-        }
+        return switch (this) {
+            case FILE -> "FILE";
+            case DIRECTORY -> "DIRECTORY";
+            case MODULE -> "MODULE";
+            case ALL -> "ALL";
+        };
     }
 }
