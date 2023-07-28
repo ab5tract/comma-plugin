@@ -6,26 +6,22 @@ import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.StubIndex;
-import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.util.SlowOperations;
 import edument.perl6idea.psi.Perl6File;
 import edument.perl6idea.psi.Perl6ModuleName;
-import edument.perl6idea.psi.Perl6PsiElement;
 import edument.perl6idea.psi.Perl6UseStatement;
-import edument.perl6idea.psi.external.ExternalPerl6File;
 import edument.perl6idea.psi.stub.Perl6UseStatementStub;
 import edument.perl6idea.psi.stub.Perl6UseStatementStubElementType;
 import edument.perl6idea.psi.stub.index.Perl6StubIndexKeys;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
-import edument.perl6idea.psi.symbols.Perl6SingleResolutionSymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6Symbol;
 import edument.perl6idea.psi.symbols.Perl6SymbolCollector;
-import edument.perl6idea.psi.symbols.Perl6SymbolKind;
 import edument.perl6idea.sdk.Perl6SdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseStatementStub> implements Perl6UseStatement {
     public Perl6UseStatementImpl(@NotNull ASTNode node) {
