@@ -51,7 +51,6 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                 if (found.size() > 0) {
                     Perl6File file = found.iterator().next();
                     file.contributeGlobals(collector, new HashSet<>());
-                    contributeEXPORT(collector, file);
                     Set<String> seen = new HashSet<>();
                     seen.add(name);
                     file.contributeGlobals(collector, seen);
@@ -73,24 +72,6 @@ public class Perl6UseStatementImpl extends StubBasedPsiElementBase<Perl6UseState
                     }
                 }
             });
-        }
-    }
-
-    private void contributeEXPORT(Perl6SymbolCollector collector, Perl6File file) {
-        if (file.getFirstChild() instanceof Perl6PsiElement) {
-            Perl6Symbol symbol = ((Perl6PsiElement)file.getFirstChild()).resolveLexicalSymbol(Perl6SymbolKind.Routine, "EXPORT");
-            // If we have a custom EXPORT, try to evaluate the file
-            if (symbol != null) {
-                LightVirtualFile dummy = new LightVirtualFile(file.getName());
-                ExternalPerl6File perl6File = new ExternalPerl6File(getProject(), dummy);
-                String invocation = "use " + file.getEnclosingPerl6ModuleName();
-                List<Perl6Symbol> symbols = Perl6SdkType.loadModuleSymbols(getProject(), perl6File, file.getName(),
-                                                                           invocation,
-                                                                           new HashMap<>(), true);
-                for (Perl6Symbol perl6Symbol : symbols) {
-                    collector.offerSymbol(perl6Symbol);
-                }
-            }
         }
     }
 

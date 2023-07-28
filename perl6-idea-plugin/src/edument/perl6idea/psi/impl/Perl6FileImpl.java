@@ -12,6 +12,7 @@ import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ArrayUtil;
@@ -24,6 +25,7 @@ import edument.perl6idea.pod.PodDomDeclarator;
 import edument.perl6idea.pod.PodDomNode;
 import edument.perl6idea.pod.PodRenderingContext;
 import edument.perl6idea.psi.*;
+import edument.perl6idea.psi.external.ExternalPerl6File;
 import edument.perl6idea.psi.stub.*;
 import edument.perl6idea.psi.stub.index.ProjectModulesStubIndex;
 import edument.perl6idea.psi.symbols.*;
@@ -93,6 +95,13 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
         VARIABLE_SYMBOLS.put("$*COLLATION", Perl6SettingTypeId.Collation);
         VARIABLE_SYMBOLS.put("$*TOLERANCE", Perl6SettingTypeId.Num);
         VARIABLE_SYMBOLS.put("$*DEFAULT-READ-ELEMS", Perl6SettingTypeId.Int);
+    }
+
+    // We may use CacheValue/CachedValueManager mechanism, but a field is easier to try
+    private List<Perl6Symbol> EXPORT_CACHE = null;
+
+    public void dropExportCache() {
+        EXPORT_CACHE = null;
     }
 
     private static final RakuMultiExtensionFileType[] RAKU_FILE_TYPES = new RakuMultiExtensionFileType[] {
@@ -290,8 +299,28 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     }
                 }
                 else if (current instanceof Perl6RoutineDecl) {
+                    // Maybe contribute sub EXPORT
                     if (((Perl6RoutineDecl)current).isExported() || ((Perl6RoutineDecl)current).getScope().equals("our"))
                         ((Perl6RoutineDecl)current).contributeLexicalSymbols(collector);
+                    if (Objects.equals(current.getName(), "EXPORT")) {
+                        if (EXPORT_CACHE != null) {
+                            for (Perl6Symbol symbol : EXPORT_CACHE) {
+                                collector.offerSymbol(symbol);
+                            }
+                        }
+                        else {
+                            LightVirtualFile dummy = new LightVirtualFile(getName());
+                            ExternalPerl6File perl6File = new ExternalPerl6File(getProject(), dummy);
+                            String invocation = "use " + getEnclosingPerl6ModuleName();
+                            List<Perl6Symbol> symbols = Perl6SdkType.loadModuleSymbols(getProject(), perl6File, getName(),
+                                                                                       invocation,
+                                                                                       new HashMap<>(), true);
+                            EXPORT_CACHE = symbols;
+                            for (Perl6Symbol perl6Symbol : symbols) {
+                                collector.offerSymbol(perl6Symbol);
+                            }
+                        }
+                    }
                 }
                 else if (current instanceof Perl6Enum perl6Enum) {
                     String scope = perl6Enum.getScope();
