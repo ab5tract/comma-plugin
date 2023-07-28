@@ -42,6 +42,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Perl6FileImpl extends PsiFileBase implements Perl6File {
     public static final Map<String, Perl6SettingTypeId> VARIABLE_SYMBOLS = new HashMap<>();
@@ -99,6 +100,7 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
 
     // We may use CacheValue/CachedValueManager mechanism, but a field is easier to try
     private List<Perl6Symbol> EXPORT_CACHE = null;
+    private AtomicBoolean is_calculating_export = new AtomicBoolean();
 
     public void dropExportCache() {
         EXPORT_CACHE = null;
@@ -303,23 +305,9 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                     if (((Perl6RoutineDecl)current).isExported() || ((Perl6RoutineDecl)current).getScope().equals("our"))
                         ((Perl6RoutineDecl)current).contributeLexicalSymbols(collector);
                     if (Objects.equals(current.getName(), "EXPORT")) {
-                        if (EXPORT_CACHE != null) {
-                            for (Perl6Symbol symbol : EXPORT_CACHE) {
-                                collector.offerSymbol(symbol);
-                            }
-                        }
-                        else {
-                            LightVirtualFile dummy = new LightVirtualFile(getName());
-                            ExternalPerl6File perl6File = new ExternalPerl6File(getProject(), dummy);
-                            String invocation = "use " + getEnclosingPerl6ModuleName();
-                            List<Perl6Symbol> symbols = Perl6SdkType.loadModuleSymbols(getProject(), perl6File, getName(),
-                                                                                       invocation,
-                                                                                       new HashMap<>(), true);
-                            EXPORT_CACHE = symbols;
-                            for (Perl6Symbol perl6Symbol : symbols) {
-                                collector.offerSymbol(perl6Symbol);
-                            }
-                        }
+                        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+                            contributeSymbolsFromEXPORT(collector);
+                        });
                     }
                 }
                 else if (current instanceof Perl6Enum perl6Enum) {
@@ -347,6 +335,29 @@ public class Perl6FileImpl extends PsiFileBase implements Perl6File {
                         if (e instanceof Perl6PsiElement)
                             visit.add((Perl6PsiElement)e);
             }
+        }
+    }
+
+    private void contributeSymbolsFromEXPORT(Perl6SymbolCollector collector) {
+        if (is_calculating_export.compareAndSet(false, true)) {
+            if (EXPORT_CACHE != null) {
+                for (Perl6Symbol symbol : EXPORT_CACHE) {
+                    collector.offerSymbol(symbol);
+                }
+            }
+            else {
+                LightVirtualFile dummy = new LightVirtualFile(getName());
+                ExternalPerl6File perl6File = new ExternalPerl6File(getProject(), dummy);
+                String invocation = "use " + getEnclosingPerl6ModuleName();
+                List<Perl6Symbol> symbols = Perl6SdkType.loadModuleSymbols(getProject(), perl6File, getName(),
+                                                                           invocation,
+                                                                           new HashMap<>(), true);
+                EXPORT_CACHE = symbols;
+                for (Perl6Symbol perl6Symbol : symbols) {
+                    collector.offerSymbol(perl6Symbol);
+                }
+            }
+            is_calculating_export.set(false);
         }
     }
 
