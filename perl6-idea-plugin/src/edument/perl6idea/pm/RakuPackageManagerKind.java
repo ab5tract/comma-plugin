@@ -4,10 +4,13 @@ public enum RakuPackageManagerKind {
     EMPTY, ZEF, PAKKU;
 
     public String getName() {
-        return switch (this) {
-            case ZEF -> "zef";
-            case PAKKU -> "Pakku";
-            default -> "...";
-        };
+        switch (this) {
+            case ZEF:
+                return "zef";
+            case PAKKU:
+                return "Pakku";
+            default:
+                return "...";
+        }
     }
 }

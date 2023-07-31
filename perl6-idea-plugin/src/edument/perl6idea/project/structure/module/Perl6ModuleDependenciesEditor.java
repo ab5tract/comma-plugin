@@ -54,9 +54,12 @@ public class Perl6ModuleDependenciesEditor extends ModuleElementsEditor implemen
         List<String> buildDepends = new ArrayList<>();
         for (Perl6DependencyTableItem item : myPanel.getModel().getItems()) {
             switch (item.getScope()) {
-                case DEPENDS -> depends.add(item.getEntry());
-                case TEST_DEPENDS -> testDepends.add(item.getEntry());
-                case BUILD_DEPENDS -> buildDepends.add(item.getEntry());
+                case DEPENDS:
+                    depends.add(item.getEntry()); break;
+                case TEST_DEPENDS:
+                    testDepends.add(item.getEntry()); break;
+                case BUILD_DEPENDS:
+                    buildDepends.add(item.getEntry()); break;
             }
         }
         metaData.setDepends(depends);

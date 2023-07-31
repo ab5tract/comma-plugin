@@ -47,9 +47,14 @@ public class ExternalPerl6PackageDecl extends Perl6ExternalPsiElement implements
         myProject = project;
         myParent = file;
         switch (kind) {
-            case "ro" -> myPackageKind = "role";
-            case "c" -> myPackageKind = "class";
-            default -> myPackageKind = "";
+            case "ro":
+                myPackageKind = "role";
+                break;
+            case "c":
+                myPackageKind = "class";
+                break;
+            default:
+                myPackageKind = "";
         }
         myName = name;
         myType = type;

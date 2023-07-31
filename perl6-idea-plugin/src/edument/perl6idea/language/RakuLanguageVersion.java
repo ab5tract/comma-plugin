@@ -4,9 +4,13 @@ public enum RakuLanguageVersion {
     C, D;
 
     public String toString() {
-        return switch (this) {
-            case C -> "6.c";
-            case D -> "6.d";
-        };
+        switch (this) {
+            case C:
+                return "6.c";
+            case D:
+                return "6.d";
+            default:
+                return "";
+        }
     }
 }

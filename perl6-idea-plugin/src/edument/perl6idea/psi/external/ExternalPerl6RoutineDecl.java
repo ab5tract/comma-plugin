@@ -50,11 +50,14 @@ public class ExternalPerl6RoutineDecl extends Perl6ExternalPsiElement implements
 
     @Override
     public String getRoutineKind() {
-        return switch (myKind) {
-            case "m" -> "method";
-            case "sm" -> "submethod";
-            default -> "sub";
-        };
+        switch (myKind) {
+            case "m":
+                return "method";
+            case "sm":
+                return "submethod";
+            default:
+                return "sub";
+        }
     }
 
     @Override

@@ -89,10 +89,15 @@ public class Perl6ModuleViewEditor extends UserDataHolderBase implements TextEdi
     public @Nullable JComponent getPreferredFocusedComponent() {
         if (myState == null)
             myState = Perl6ReaderModeState.CODE;
-        return switch (myState) {
-            case SPLIT, CODE -> myEditor.getPreferredFocusedComponent();
-            case DOCS -> myViewer.getPreferredFocusedComponent();
-        };
+        switch (myState) {
+            case SPLIT:
+            case CODE:
+                return myEditor.getPreferredFocusedComponent();
+            case DOCS:
+                return myViewer.getPreferredFocusedComponent();
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     @Override

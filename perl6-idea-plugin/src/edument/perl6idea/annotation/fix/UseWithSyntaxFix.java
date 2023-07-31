@@ -40,7 +40,7 @@ public class UseWithSyntaxFix implements IntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
-        // Cannot happen with correct annotator being a caller
+        // Cannot happen with correct annotator beign a caller
         if (!(conditional.condition instanceof Perl6PostfixApplication inner))
             return;
 
@@ -56,11 +56,12 @@ public class UseWithSyntaxFix implements IntentionAction {
     }
 
     private static String getReplacer(@NotNull String text) {
-        return switch (text) {
-            case "if" -> "with";
-            case "elsif" -> "orwith";
-            case "unless", default -> "without";
-        };
+        switch(text) {
+            case "if": return "with";
+            case "elsif": return "orwith";
+            case "unless":
+            default: return "without";
+        }
     }
 
     @Override

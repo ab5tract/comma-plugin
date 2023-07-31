@@ -250,20 +250,26 @@ public class Perl6DebugThread extends Thread {
     private Perl6ValueDescriptor convertDescriptor(String k, Lexical v) {
         Perl6ValueDescriptor descriptor;
         switch (v.getKind()) {
-            case INT -> descriptor = new Perl6NativeValueDescriptor(k, "int",
-                                                                    String.valueOf(((IntValue)v).getValue()));
-            case NUM -> descriptor = new Perl6NativeValueDescriptor(k, "num",
-                                                                    String.valueOf(((NumValue)v).getValue()));
-            case STR -> descriptor = new Perl6NativeValueDescriptor(k, "str",
-                                                                    String.valueOf(((StrValue)v).getValue()));
-            default -> {
+            case INT:
+                descriptor = new Perl6NativeValueDescriptor(k, "int",
+                        String.valueOf(((IntValue) v).getValue()));
+                break;
+            case NUM:
+                descriptor = new Perl6NativeValueDescriptor(k, "num",
+                        String.valueOf(((NumValue) v).getValue()));
+                break;
+            case STR:
+                descriptor = new Perl6NativeValueDescriptor(k, "str",
+                        String.valueOf(((StrValue) v).getValue()));
+                break;
+            default:
                 ObjValue ov = (ObjValue)v;
                 String type = ov.getType();
                 boolean concrete = ov.isConcrete();
                 int handle = ov.getHandle();
                 descriptor = new Perl6ObjectValueDescriptor(k, type, concrete, handle,
-                                                            presentableDescriptionForType(ov, true));
-            }
+                        presentableDescriptionForType(ov, true));
+                break;
         }
         return descriptor;
     }
@@ -443,10 +449,10 @@ public class Perl6DebugThread extends Thread {
                                 presentableDescriptionForType((ObjValue)statusAttrs.get("PromiseStatus").get("$!key"), false);
                             if (statusString != null) {
                                 switch (statusString) {
-                                    case "Planned" -> {
+                                    case "Planned":
                                         return "Promise.new (not yet kept or broken)";
-                                    }
-                                    case "Kept", "Broken" -> {
+                                    case "Kept":
+                                    case "Broken": {
                                         String nested = presentableDescriptionForType((ObjValue)result, false);
                                         if (nested == null)
                                             nested = defaultObjectRepresentation((ObjValue)result);

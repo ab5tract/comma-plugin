@@ -70,13 +70,19 @@ public class DuplicateConditionAnnotator implements Annotator {
     }
 
     private static String normalize(String prefix) {
-        return switch (prefix) {
-            case "if", "elsif" -> "if";
-            case "with", "orwith" -> "with";
-            case "without" -> "without";
-            case "unless" -> "unless";
-            default -> "";
-        };
+        switch (prefix) {
+            case "if":
+            case "elsif":
+                return "if";
+            case "with":
+            case "orwith":
+                return "with";
+            case "without":
+                return "without";
+            case "unless":
+                return "unless";
+        }
+        return "";
     }
 
     private static String normalize(PsiElement condition) {

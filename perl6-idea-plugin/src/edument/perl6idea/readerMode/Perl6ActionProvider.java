@@ -72,11 +72,20 @@ public class Perl6ActionProvider implements InspectionWidgetActionProvider {
                                               (currentState == null && myState != Perl6ReaderModeState.CODE ||
                                               currentState != null && currentState != myState));
             presentation.setText(myState.toString());
-            String descriptionText = switch (myState) {
-                case CODE -> "Display default editor view presenting Raku source code";
-                case DOCS -> "Display special editor view presenting rendered module documentation";
-                case SPLIT -> "Display special editor view presenting both Raku source code and rendered module documentation";
-            };
+            String descriptionText;
+            switch (myState) {
+                case CODE:
+                    descriptionText = "Display default editor view presenting Raku source code";
+                    break;
+                case DOCS:
+                    descriptionText = "Display special editor view presenting rendered module documentation";
+                    break;
+                case SPLIT:
+                    descriptionText = "Display special editor view presenting both Raku source code and rendered module documentation";
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + myState);
+            }
             presentation.setDescription(descriptionText);
         }
 
