@@ -32,11 +32,10 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Implement inline &#39;Usage&#39; counter indication for Raku routines and packages (classes, grammars etc.)</li>
-<li>The &#39;git blame&#39; annotations in the code editor gutter are now available</li>
-<li>The breadcrumbs navigation for files and code structures is now available</li>
-<li>Fix false positive case in variable redeclaration annotation, happening in pointy blocks</li>
-<li>Internal code cleanup</li>
+<li>Improve debugger interface to skip internal dispatcher frames on Step In/Step Over actions</li>
+<li>Symbols provided an the <code>sub EXPORT</code> mechanism in the current project can now be auto-completed</li>
+<li>Fix an exception in an annotator</li>
+<li>Fix an exception appearing on Windows</li>
 </ul>
   ]]>
   </change-notes>

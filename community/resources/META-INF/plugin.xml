@@ -36,13 +36,10 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Migrate to version 2022.3 of the IntelliJ platform, thus bringing in numerous fixes and changes and making the plugin support the more recent IntelliJ release</li>
-<li>Introduce support of folding for Pod blocks</li>
-<li>Brace matching for contextualizers with parentheses</li>
-<li>Fix a bug with Cro template parsing related to "else"	syntax</li>
-<li>Fix a	bug with parsing the `=for code` paragraph in Pod code</li>
-<li>Fix a	rare case of a UI freeze</li>
-<li>Fix an exception when processing dependencies described using JSON rather than a string</li>
+<li>Improve debugger interface to skip internal dispatcher frames on Step In/Step Over actions</li>
+<li>Symbols provided an the <code>sub EXPORT</code> mechanism in the current project can now be auto-completed</li>
+<li>Fix an exception in an annotator</li>
+<li>Fix an exception appearing on Windows</li>
 </ul>
   ]]></change-notes>
 
