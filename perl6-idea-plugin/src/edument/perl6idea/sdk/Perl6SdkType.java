@@ -472,7 +472,7 @@ public class Perl6SdkType extends SdkType {
                                                       Map<String, String> symbolCache) {
         LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
         ExternalPerl6File perl6File = new ExternalPerl6File(project, dummy);
-        List<Perl6Symbol> symbols = loadModuleSymbols(project, perl6File, name, invocation, symbolCache);
+        List<Perl6Symbol> symbols = loadModuleSymbols(project, perl6File, name, invocation, symbolCache, false);
         perl6File.setSymbols(symbols);
         return perl6File;
     }
@@ -490,10 +490,11 @@ public class Perl6SdkType extends SdkType {
         }
     }
 
-    private static List<Perl6Symbol> loadModuleSymbols(Project project,
+    public static List<Perl6Symbol> loadModuleSymbols(Project project,
                                                        Perl6File perl6File,
                                                        String name, String invocation,
-                                                       Map<String, String> symbolCache) {
+                                                       Map<String, String> symbolCache,
+                                                       boolean addLib) {
         if (invocation.equals("use nqp")) {
             return getNQPSymbols(project, perl6File);
         }
@@ -511,6 +512,9 @@ public class Perl6SdkType extends SdkType {
         try {
             Perl6CommandLine cmd = new Perl6CommandLine(project);
             cmd.setWorkDirectory(project.getBasePath());
+            if (addLib) {
+                cmd.addParameter("-Ilib");
+            }
             cmd.addParameters(moduleSymbols.getPath(), invocation);
             String text = String.join("\n", cmd.executeAndRead(moduleSymbols));
             JSONArray symbols;

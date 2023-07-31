@@ -3,6 +3,7 @@ package edument.perl6idea.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.meta.PsiMetaData;
 import com.intellij.psi.meta.PsiMetaOwner;
 import com.intellij.psi.stubs.IStubElementType;
@@ -413,5 +414,17 @@ public class Perl6RoutineDeclImpl extends Perl6MemberStubBasedPsi<Perl6RoutineDe
         } else {
             super.accept(visitor);
         }
+    }
+
+    @Override
+    public void subtreeChanged() {
+        // Drop the possible EXPORT cache from the file if we edit EXPORT routine
+        if (Objects.equals(getName(), "EXPORT")) {
+            @NotNull PsiFile file = getContainingFile();
+            if (file instanceof Perl6FileImpl) {
+                ((Perl6FileImpl)file).dropExportCache();
+            }
+        }
+        super.subtreeChanged();
     }
 }
