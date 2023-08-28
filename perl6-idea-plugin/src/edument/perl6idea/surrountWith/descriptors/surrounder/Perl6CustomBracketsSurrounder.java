@@ -2,14 +2,16 @@ package edument.perl6idea.surrountWith.descriptors.surrounder;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import edument.perl6idea.psi.Perl6ElementFactory;
+import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6StrLiteral;
 
 import java.util.Arrays;
 
 public class Perl6CustomBracketsSurrounder extends Perl6StringQuotesSurrounder<Perl6StrLiteral> {
-    public Perl6CustomBracketsSurrounder() {
-        super();
+    public Perl6CustomBracketsSurrounder(boolean isStatement) {
+        super(isStatement);
     }
 
     @Override
@@ -18,14 +20,16 @@ public class Perl6CustomBracketsSurrounder extends Perl6StringQuotesSurrounder<P
     }
 
     @Override
-    protected void insertStatements(Perl6StrLiteral surrounder, PsiElement[] statements) {
+    protected PsiElement insertStatements(Perl6StrLiteral surrounder, PsiElement[] statements) {
         if (statements.length == 1) {
             String textToWrap = "｢" + statements[0].getText() + "｣";
-            statements[0].replace(Perl6ElementFactory.createStatementFromText(surrounder.getProject(), textToWrap));
+            Perl6Statement statementToInsert = Perl6ElementFactory.createStatementFromText(surrounder.getProject(), textToWrap);
+            Perl6StrLiteral literalToInsert = PsiTreeUtil.findChildOfType(statementToInsert, Perl6StrLiteral.class);
+            if (literalToInsert != null) {
+                surrounder = (Perl6StrLiteral)surrounder.replace(literalToInsert);
+            }
         }
-
-        System.out.print(surrounder.getText());
-        System.out.print(Arrays.toString(statements));
+        return surrounder;
     }
 
     @Override

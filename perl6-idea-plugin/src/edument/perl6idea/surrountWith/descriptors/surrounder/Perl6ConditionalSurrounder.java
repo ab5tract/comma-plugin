@@ -10,7 +10,7 @@ public abstract class Perl6ConditionalSurrounder<T extends P6Conditional> extend
     }
 
     @Override
-    protected void insertStatements(T surrounder, PsiElement[] statements) {
+    protected PsiElement insertStatements(T surrounder, PsiElement[] statements) {
         Perl6ConditionalBranch[] branches = surrounder.getBranches();
         for (Perl6ConditionalBranch branch : branches) {
             Perl6StatementList list = PsiTreeUtil.findChildOfType(branch.block, Perl6StatementList.class);
@@ -20,6 +20,7 @@ public abstract class Perl6ConditionalSurrounder<T extends P6Conditional> extend
                 list.add(Perl6ElementFactory.createNewLine(list.getProject()));
             }
         }
+        return null;
     }
 
     @Override

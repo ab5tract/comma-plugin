@@ -40,7 +40,7 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
 
     protected abstract T createElement(Project project);
 
-    protected abstract void insertStatements(T surrounder, PsiElement[] statements);
+    protected abstract PsiElement insertStatements(T surrounder, PsiElement[] statements);
 
     /** Returns an anchor element that will be deleted and
      * caret will be placed at its start position.
@@ -80,7 +80,10 @@ public abstract class Perl6Surrounder<T extends PsiElement> implements Surrounde
 
         // Insert statements to surround into surrounder
         PsiElement[] elementsToInsert = prepareSurroundedStatements(project, statements);
-        insertStatements(surrounder, elementsToInsert);
+        PsiElement newSurrounder = insertStatements(surrounder, elementsToInsert);
+        if (newSurrounder != null) {
+            surrounder = (T)newSurrounder;
+        }
 
         if (myIsStatement) {
             // Obtain list of statements and add the new one
