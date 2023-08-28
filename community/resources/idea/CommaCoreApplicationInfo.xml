@@ -3,7 +3,7 @@
            xsi:schemaLocation="http://jetbrains.org/intellij/schema/application-info http://jetbrains.org/intellij/schema/ApplicationInfo.xsd">
   <version major="2023" minor="07" micro="0" eap="false"/>
   <company name="Edument Central Europe s.r.o." url="https://www.edument.se" copyrightStart="2010"/>
-  <build number="CT-223.4884.2" date="20230731" majorReleaseDate="20230419"/>
+  <build number="CT-223.4884.3" date="20230731" majorReleaseDate="20230419"/>
   <logo url="/comma_core_logo.png" textcolor="000000" progressColor="000000" progressY="278" progressHeight="3"/>
   <about url="/comma_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="000000"
          copyrightForeground="000000" linkColor="000000"/>
