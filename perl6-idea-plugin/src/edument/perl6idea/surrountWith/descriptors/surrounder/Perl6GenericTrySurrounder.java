@@ -23,14 +23,15 @@ public abstract class Perl6GenericTrySurrounder<T extends P6Control> extends Per
     }
 
     @Override
-    protected void insertStatements(T surrounder, PsiElement[] statements) {
+    protected PsiElement insertStatements(T surrounder, PsiElement[] statements) {
         Perl6CatchStatement catchStatement = PsiTreeUtil.findChildOfType(surrounder, Perl6CatchStatement.class);
         Perl6StatementList statementList = PsiTreeUtil.findChildOfType(surrounder, Perl6StatementList.class);
         if (statementList == null || catchStatement == null)
-            return;
+            return null;
         for (PsiElement statement : statements) {
             statementList.addBefore(statement, catchStatement);
         }
+        return null;
     }
 
     @Override

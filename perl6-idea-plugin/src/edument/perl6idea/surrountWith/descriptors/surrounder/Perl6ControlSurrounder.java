@@ -9,8 +9,9 @@ public abstract class Perl6ControlSurrounder<T extends P6Control> extends Perl6S
     }
 
     @Override
-    protected void insertStatements(T surrounder, PsiElement[] statements) {
+    protected PsiElement insertStatements(T surrounder, PsiElement[] statements) {
         surrounder.addStatements(statements);
+        return null;
     }
 
     @Override

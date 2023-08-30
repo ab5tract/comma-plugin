@@ -18,13 +18,14 @@ public class Perl6ArraySurrounder extends Perl6Surrounder<Perl6ArrayComposer> {
     }
 
     @Override
-    protected void insertStatements(Perl6ArrayComposer surrounder, PsiElement[] statements) {
+    protected PsiElement insertStatements(Perl6ArrayComposer surrounder, PsiElement[] statements) {
         Perl6SemiList semiList = PsiTreeUtil.getChildOfType(surrounder, Perl6SemiList.class);
         if (semiList != null) {
             semiList.add(Perl6ElementFactory.createNewLine(semiList.getProject()));
             for (PsiElement statement : statements) semiList.add(statement.copy());
             semiList.add(Perl6ElementFactory.createNewLine(semiList.getProject()));
         }
+        return null;
     }
 
     @Override

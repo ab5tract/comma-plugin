@@ -11,13 +11,14 @@ public abstract class Perl6ContextualizerSurrounder<T extends PsiElement> extend
     }
 
     @Override
-    protected void insertStatements(T surrounder, PsiElement[] statements) {
+    protected PsiElement insertStatements(T surrounder, PsiElement[] statements) {
         Perl6SemiList semiList = PsiTreeUtil.getChildOfType(surrounder, Perl6SemiList.class);
         if (semiList != null) {
             semiList.add(Perl6ElementFactory.createNewLine(semiList.getProject()));
             for (PsiElement statement : statements) semiList.add(statement.copy());
             semiList.add(Perl6ElementFactory.createNewLine(semiList.getProject()));
         }
+        return null;
     }
 
     @Override
