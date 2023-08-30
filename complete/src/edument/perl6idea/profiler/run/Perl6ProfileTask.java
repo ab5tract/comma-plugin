@@ -24,7 +24,7 @@ import java.util.Date;
 public class Perl6ProfileTask extends Task.Backgroundable {
     private final ProfilerView myProfilerView;
     private File sqlDataFile;
-    private Perl6ProfileData myProfileData;
+    private Perl6ProfileData[] myProfileData;
     private boolean myHasToRemoveTheFile;
 
     public Perl6ProfileTask(Project project,
@@ -38,7 +38,7 @@ public class Perl6ProfileTask extends Task.Backgroundable {
         myHasToRemoveTheFile = hasToRemoveTheFile;
     }
 
-    public Perl6ProfileTask(Project project, String title, boolean canBeCancelled, Perl6ProfileData data, ProfilerView view) {
+    public Perl6ProfileTask(Project project, String title, boolean canBeCancelled, Perl6ProfileData[] data, ProfilerView view) {
         super(project, title, canBeCancelled);
         myProfileData = data;
         myProfilerView = view;
@@ -47,9 +47,11 @@ public class Perl6ProfileTask extends Task.Backgroundable {
     @Override
     public void onCancel() {
         // FIXME anything smarter regarding resources handling will be nice here
-        if (myProfileData != null) {
-            myProfileData.cancel();
-            myProfileData = null;
+        if (myProfileData.length > 0) {
+            for (Perl6ProfileData profile : myProfileData) {
+                profile.cancel();
+            }
+            myProfileData = new Perl6ProfileData[0];
         }
         if (sqlDataFile != null && myHasToRemoveTheFile) {
             sqlDataFile.delete();
@@ -71,10 +73,13 @@ public class Perl6ProfileTask extends Task.Backgroundable {
             indicator.setText("Creating a database...");
             indicator.setFraction(0.1);
             indicator.checkCanceled();
-            myProfileData = myProfileData == null ? new Perl6ProfileData(myProject, createProfileName(), sqlDataFile, myHasToRemoveTheFile) : myProfileData;
+            myProfileData = myProfileData == null ? new Perl6ProfileData[]{
+                new Perl6ProfileData(myProject, createProfileName(), sqlDataFile, myHasToRemoveTheFile)} : myProfileData;
             indicator.setText("Loading profiler data into the database...");
             indicator.setFraction(0.2);
-            myProfileData.initialize();
+            for (Perl6ProfileData profile : myProfileData) {
+                profile.initialize();
+            }
             indicator.setText("Profile data processing is finished");
             indicator.setFraction(1);
             ApplicationManager.getApplication().invokeLater(() -> {

@@ -18,8 +18,7 @@ import java.nio.file.Paths;
 
 public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
     static final Logger LOG = Logger.getInstance(Perl6ProfileCommandLineState.class);
-    @Nullable
-    private Perl6ProfileData profileData = null;
+    private Perl6ProfileData[] profileData = new Perl6ProfileData[0];
     @Nullable
     private VirtualFile resultsFile;
     @Nullable
@@ -35,7 +34,7 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
         this.tempFile = Paths.get(resultsFile.getPath()).toFile();
     }
 
-    public Perl6ProfileCommandLineState(ExecutionEnvironment environment, @NotNull Perl6ProfileData profileData) {
+    public Perl6ProfileCommandLineState(ExecutionEnvironment environment, Perl6ProfileData[] profileData) {
         super(environment);
         this.profileData = profileData;
     }
@@ -93,12 +92,11 @@ public class Perl6ProfileCommandLineState extends Perl6RunCommandLineState {
         return resultsFile != null;
     }
 
-    @Nullable
-    public Perl6ProfileData getProfilerResultData() {
+    public Perl6ProfileData[] getProfilerResultData() {
         return profileData;
     }
 
     public boolean hasData() {
-        return profileData != null;
+        return profileData.length > 0;
     }
 }
