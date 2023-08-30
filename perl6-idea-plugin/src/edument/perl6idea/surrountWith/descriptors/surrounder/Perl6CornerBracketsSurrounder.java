@@ -7,10 +7,8 @@ import edument.perl6idea.psi.Perl6ElementFactory;
 import edument.perl6idea.psi.Perl6Statement;
 import edument.perl6idea.psi.Perl6StrLiteral;
 
-import java.util.Arrays;
-
-public class Perl6CustomBracketsSurrounder extends Perl6StringQuotesSurrounder<Perl6StrLiteral> {
-    public Perl6CustomBracketsSurrounder(boolean isStatement) {
+public class Perl6CornerBracketsSurrounder extends Perl6StringQuotesSurrounder<Perl6StrLiteral> {
+    public Perl6CornerBracketsSurrounder(boolean isStatement) {
         super(isStatement);
     }
 
