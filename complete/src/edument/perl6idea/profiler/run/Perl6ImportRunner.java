@@ -12,19 +12,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.List;
 
 public class Perl6ImportRunner implements RunProfile {
     @Nullable
     private VirtualFile file;
-    @Nullable
-    private Perl6ProfileData data;
+    private Perl6ProfileData[] data;
 
     public Perl6ImportRunner(@NotNull VirtualFile file) {
         this.file = file;
     }
 
-    public Perl6ImportRunner(@NotNull Perl6ProfileData data) {
-        this.data = data;
+    public Perl6ImportRunner(@NotNull List<Perl6ProfileData> data) {
+        this.data = data.toArray(new Perl6ProfileData[0]);
     }
 
     @Override

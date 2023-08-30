@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ProfileResultsChooserDialog extends DialogWrapper {
     private final static Logger LOG = Logger.getInstance(ProfileResultsChooserDialog.class);
@@ -68,8 +69,12 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        Perl6ProfileData data = myProfilesTableModel.getItem(myProfilesTable.getSelectedRow());
-        if (data == null)
+        int[] selectedRows = myProfilesTable.getSelectedRows();
+        List<Perl6ProfileData> data = new ArrayList<>();
+        for (int rowIndex : selectedRows) {
+            data.add(myProfilesTableModel.getItem(rowIndex));
+        }
+        if (data.size() == 0 || data.size() > 2)
             return;
         Perl6ImportRunner profile = new Perl6ImportRunner(data);
         Executor executor = new Perl6ProfileExecutor();
@@ -94,8 +99,8 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
 
     @Override
     protected @Nullable ValidationInfo doValidate() {
-        if (myProfilesTable.getSelectedRowCount() != 1)
-            return new ValidationInfo("Only one profiler result must be selected to display");
+        if (myProfilesTable.getSelectedRowCount() > 2 || myProfilesTable.getSelectedRowCount() == 0)
+            return new ValidationInfo("One or two profiler results must be selected to display");
         return super.doValidate();
     }
 
@@ -113,7 +118,7 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
     protected @Nullable JComponent createCenterPanel() {
         JPanel result = new JPanel(new MigLayout());
         result.add(new JLabel("<html>The last 10 profiles are retained by default.<br>Double-click on a profile to name it.<br>" +
-                              "Hold Ctrl to select two profiles to compare.<br>" +
+                              "Hold Ctrl to select two or more profiles to compare.<br>" +
                               "Named profiles will never be deleted automatically.</html>"),
                    "wrap");
         JScrollPane pane = new JBScrollPane(myProfilesTable);

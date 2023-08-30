@@ -38,7 +38,7 @@ public class ProfilerView extends JPanel {
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }
 
-    public void updateResultsFromData(Perl6ProfileData data) {
+    public void updateResultsFromData(Perl6ProfileData[] data) {
         Task.Backgroundable task = new Perl6ProfileTask(myProject, "Processing Profiling Data", true, data, this);
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }

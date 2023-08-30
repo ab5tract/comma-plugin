@@ -6,47 +6,43 @@ import edument.perl6idea.profiler.model.Perl6ProfileData;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Perl6ProfileResultsPanel extends JPanel {
     private final Project myProject;
-    private final Perl6ProfileData myProfileData;
+    private final Perl6ProfileData[] myProfileSnapshots;
 
     public Perl6ProfileResultsPanel(Project project,
-                                    Perl6ProfileData profileData) {
+                                    Perl6ProfileData[] profileSnapshots) {
         super(new BorderLayout());
         myProject = project;
-        myProfileData = profileData;
-        JBTabbedPane tabbedPaneWrapper = new JBTabbedPane();
-        tabbedPaneWrapper.addTab("Overview", getOverviewTab());
-        tabbedPaneWrapper.addTab("Routines", getRoutinesTab());
-        tabbedPaneWrapper.addTab("Call Graph", getCallGraphTab());
-        tabbedPaneWrapper.addTab("Modules", getModulesTab());
-        tabbedPaneWrapper.addTab("GC", getGCTab());
-        tabbedPaneWrapper.addTab("Allocations", getAllocationsTab());
-        add(tabbedPaneWrapper, BorderLayout.CENTER);
+        myProfileSnapshots = profileSnapshots;
+
+        init();
     }
 
-    private Component getOverviewTab() {
-        return new Perl6ProfileOverviewPanel(myProfileData).getPanel();
-    }
+    private void init() {
+        JBTabbedPane profileDataTabs = new JBTabbedPane();
+        List<JBTabbedPane> profileViewsTabs = new ArrayList<>();
 
-    private Component getRoutinesTab() {
-        return new Perl6ProfileRoutinesPanel(myProject, myProfileData).getPanel();
-    }
+        for (Perl6ProfileData profileData : myProfileSnapshots) {
+            JBTabbedPane tabs = new JBTabbedPane();
+            tabs.addTab("Overview", new Perl6ProfileOverviewPanel(profileData).getPanel());
+            tabs.addTab("Routines", new Perl6ProfileRoutinesPanel(myProject, profileData).getPanel());
+            tabs.addTab("Call Graph", new Perl6ProfileCallGraphPanel(myProject, profileData));
+            tabs.addTab("Modules", new Perl6ProfileModulesPanel(profileData));
+            tabs.addTab("GC", new Perl6ProfileGCPanel(profileData));
+            tabs.addTab("Allocations", new Perl6ProfileAllocationsPanel(profileData).getPanel());
+            profileDataTabs.addTab(profileData.getName(), tabs);
+            profileViewsTabs.add(tabs);
+        }
 
-    private Component getCallGraphTab() {
-        return new Perl6ProfileCallGraphPanel(myProject, myProfileData);
-    }
+        if (myProfileSnapshots.length == 1)
+            add(profileViewsTabs.get(0), BorderLayout.CENTER);
+        else {
+            add(profileDataTabs, BorderLayout.CENTER);
+        }
 
-    private Component getModulesTab() {
-        return new Perl6ProfileModulesPanel(myProfileData);
-    }
-
-    private Component getGCTab() {
-        return new Perl6ProfileGCPanel(myProfileData);
-    }
-
-    private Component getAllocationsTab() {
-        return new Perl6ProfileAllocationsPanel(myProfileData).getPanel();
     }
 }
