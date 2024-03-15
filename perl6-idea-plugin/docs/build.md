@@ -2,7 +2,7 @@
 
 #### Preparation
 
-Currently, Comma is based upon 221 Intellij revision/branch.
+Currently, Comma is based upon 223 Intellij revision/branch.
 Raku Comma plugin supports versions starting revision 221 (2022.1.1).
 
 To develop Comma, version of IDEA you use **must** correspond to version
@@ -53,18 +53,6 @@ While in the `intellij-community` directory.
   - Shorten command line: `@argfiles`
 
 * Run the configuration.
-
-#### How to build on OSX
-
-TODO: write
-
-#### How to run Raku Plugin from IDEA Run Configuration for testing
-
-TODO: restore
-
-#### How to run tests
-
-TODO: restore
 
 ### How to update version
 
