@@ -18,6 +18,5 @@ piecemeal from this repository. A plugin-only approach has a far simpler build s
 is found here. See [this tutorial](https://plugins.jetbrains.com/docs/intellij/custom-language-support-tutorial.html)
 for some pointers.
 
-We make no pretences that we're the publication of this repository meaningfully "open
-sources" Comma. It's a source dump that can serve as a seed for an open source Raku plugin
+Note that this repository is basically a source dump that can serve as a seed for an open source Raku plugin
 for IntelliJ platform IDEs. We wish anybody attempting that the best of luck!
