@@ -1,0 +1,48 @@
+package org.raku.utils;
+
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
+import org.raku.metadata.RakuMetaDataComponent;
+import org.raku.psi.*;
+import org.raku.psi.RakuPsiScope;
+import org.raku.psi.RakuStatementList;
+
+public class RakuUseUtils {
+    public static boolean usesModule(PsiElement element, String expected) {
+        RakuPsiScope scope = PsiTreeUtil.getParentOfType(element, RakuPsiScope.class);
+        int elementTextOffset = element.getTextOffset();
+        while (scope != null) {
+            RakuStatementList list = PsiTreeUtil.findChildOfType(scope, RakuStatementList.class);
+            if (list == null) break;
+            RakuStatement[] stats = PsiTreeUtil.getChildrenOfType(list, RakuStatement.class);
+            if (stats == null) stats = new RakuStatement[0];
+            for (RakuStatement statement : stats) {
+                if (statement.getTextOffset() > elementTextOffset) break;
+                for (PsiElement child : statement.getChildren()) {
+                    if (!(child instanceof RakuUseStatement)) continue;
+                    String moduleName = ((RakuUseStatement)child).getModuleName();
+                    if (expected.equals(moduleName)) {
+                        return true;
+                    }
+                }
+            }
+            scope = PsiTreeUtil.getParentOfType(scope, RakuPsiScope.class);
+        }
+
+        return false;
+    }
+
+    public static void addUse(Editor editor, PsiFile file, String useName, String moduleName) {
+        editor.getDocument().insertString(0, "use " + useName + ";\n");
+        Module module = ModuleUtilCore.findModuleForFile(file);
+        assert module != null;
+        RakuMetaDataComponent metaData = module.getService(RakuMetaDataComponent.class);
+        if (!metaData.getDepends(true).contains(moduleName)) {
+            metaData.addDepends(moduleName);
+        }
+    }
+}

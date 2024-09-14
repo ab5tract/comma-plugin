@@ -2,11 +2,16 @@
 .idea/tasks.xml
 .idea/vcs.xml
 .idea/kotlinc.xml
+.intellijPlatform/
 out/
 
 # Gradle things
 .gradle
 .sandbox/
-perl6-idea-plugin/build/
-perl6-idea-plugin/.idea/
-perl6-idea-plugin/perl6-idea-plugin.iml
+raku-idea-plugin/build/
+raku-idea-plugin/.idea/
+raku-idea-plugin/raku-idea-plugin.iml
+
+build/
+.intellijPlatform/self-update.lock
+gradle/

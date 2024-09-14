@@ -1,0 +1,24 @@
+<component xmlns="http://jetbrains.org/intellij/schema/application-info"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://jetbrains.org/intellij/schema/application-info http://jetbrains.org/intellij/schema/ApplicationInfo.xsd">
+  <version major="2023" minor="08" micro="0" eap="false"/>
+  <company name="Edument Central Europe s.r.o." url="https://www.edument.se" copyrightStart="2010"/>
+  <build number="COMMA-__BUILD__" date="20240909" majorReleaseDate="20240909"/>
+  <logo url="/comma_core_logo.png" />
+  <!--<logo url="/comma_core_logo.png" textcolor="000000" progressColor="000000" progressX="114" progressY="278" progressHeight="3"/>-->
+  <!--<about url="/comma_core_about.png" logoX="540" logoY="300" logoW="100" logoH="100" foreground="000000"-->
+  <!--       copyrightForeground="000000" linkColor="000000"/>-->
+  <icon svg-small="/CommaCore.svg" svg="/CommaCore.svg"  />
+  <!--<package code="CP"/>-->
+  <names product="Comma" edition="Complete Edition" script="comma" motto="Curated development experiences"/>
+
+  <welcome-screen logo-url="/CommaCoreWelcomeScreen.png"/>
+
+  <plugins url="https://plugins.jetbrains.com/"/>
+  <update-urls check="https://commaide.com/updates/updates.xml"/>
+
+  <help webhelp-url="https://commaide.com/docs"/>
+  <documentation url="https://commaide.com/docs"/>
+  <support url="https://commaide.com/subscriber/feedback"/>
+  <feedback url="https://commaide.com/subscriber/feedback"/>
+</component>

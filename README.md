@@ -1,22 +1,16 @@
-# Comma Source Dump
+# Comma
+## The Raku IDE plugin for IntellIj IDEA
 
-Following Comma development being [discontinued](https://commaide.com/discontinued),
-it was promised that the source code of Comma would be made available to the Raku
-community, to give anybody who wishes a shot at carrying it forward as an open source
-project. This repository contains that source.
+This is a continuation of the work done by the fine folks at Edument[^discontinuation] to build and support
+an IDE for Raku. The standalone mode is off the table for the moment, but running as a plugin
+in `IntelliJ IDEA` is fully supported.
 
-There were a small number of custom patches to the IntelliJ platform source that have
-been made available in another repository, [`intellij-ide-fork`](https://github.com/Raku/intellij-ide-fork).
-See the [build doc in here](https://github.com/Raku/intellij-ide-plugin/tree/master/perl6-idea-plugin/docs)
-for information on how `intellij-ide-fork` is used relative to this repository.
+It is now built with `Gradle IntelliJ Platform Plugin 2.0`.
 
-Given the relatively complex build toolchain and cost of keeping up with new versions
-of the IDE platform, the most effective way forward for somebody interested in carrying
-this forward would be to maintain a plugin only. Probably it's also going to be
-easiest to do that by creating an entirely new plugin project, and bringing the code in
-piecemeal from this repository. A plugin-only approach has a far simpler build setup than
-is found here. See [this tutorial](https://plugins.jetbrains.com/docs/intellij/custom-language-support-tutorial.html)
-for some pointers.
+To build, simply:
+1) Clone this repo, open it in IntelliJ IDEA (version `2024.02` or later),
+2) Adjust `build.gradle.kts` such that `jetbrainsRuntime` reflects your OS and CPU architecture.
+3) Select `buildPlugin` or `runIde` from the Gradle target options.
+4) Enjoy! And please report any issues you have to the issue tracker here.
 
-Note that this repository is basically a source dump that can serve as a seed for an open source Raku plugin
-for IntelliJ platform IDEs. We wish anybody attempting that the best of luck!
+[^discontinuation]: Read the [discontinuation](https://commaide.com/discontinued) announcement.
