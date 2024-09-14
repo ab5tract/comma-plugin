@@ -67,6 +67,6 @@ dependencies {
 
 tasks {
     instrumentCode {
-        formsDirs = files("src/main/org/raku/project/projectWizard/components")
+        formsDirs = files("src/main/org/raku/comma/project/projectWizard/components")
     }
 }
