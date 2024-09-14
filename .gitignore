@@ -5,6 +5,8 @@
 .intellijPlatform/
 out/
 
+.kotlin/
+
 # Gradle things
 .gradle
 .sandbox/
