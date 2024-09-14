@@ -106,6 +106,8 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
           case SdkListItem.NoneSdkItem noneSdkItem -> new NoneJdkComboBoxItem();
           case SdkListItem.ProjectSdkItem projectSdkItem -> new ProjectJdkComboBoxItem();
           case SdkListItem.ActionItem actionItem -> new ActionJdkComboBoxItem(actionItem);
+          case SdkListItem.SdkReferenceItem referenceItem -> new ReferenceJdkComboBoxItem(referenceItem);
+          case SdkListItem.SuggestedItem suggestedItem -> new SuggestedJdkComboBoxItem(suggestedItem);
           case SdkItem sdkItem -> new ActualJdkInnerItem(sdkItem);
           default -> new InnerJdkComboBoxItem(item);
       };
@@ -328,27 +330,18 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
   private interface SelectableComboBoxItem { }
 
   public abstract static class JdkComboBoxItem {
-    @Nullable
-    public Sdk getJdk() {
+    @Nullable public Sdk getJdk() {
       return null;
     }
-
-    @Nullable
-    public String getSdkName() {
+    @Nullable public String getSdkName() {
       return null;
     }
   }
 
   private static class InnerJdkComboBoxItem extends JdkComboBoxItem implements InnerComboBoxItem {
     private final SdkListItem myItem;
-
-    private InnerJdkComboBoxItem(@NotNull SdkListItem item) {
-      myItem = item;
-    }
-
-    @NotNull
-    @Override
-    public SdkListItem getItem() {
+    private InnerJdkComboBoxItem(@NotNull SdkListItem item) { myItem = item; }
+    @NotNull @Override public SdkListItem getItem() {
       return myItem;
     }
 
@@ -360,8 +353,8 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
       return myItem.equals(item.myItem);
     }
 
-    @Override
-    public int hashCode() {
+    @Override public @NotNull String toString() { return myItem.getClass().toString(); }
+    @Override public int hashCode() {
       return Objects.hash(myItem);
     }
   }
@@ -374,36 +367,25 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
       myItem = item;
     }
 
-    @NotNull
-    @Override
-    public SdkListItem getItem() {
+    @NotNull @Override public SdkListItem getItem() {
       return myItem;
     }
   }
 
+  public static class ReferenceJdkComboBoxItem extends JdkComboBoxItem implements InnerComboBoxItem {
+    private final SdkListItem.SdkReferenceItem myItem;
+    public ReferenceJdkComboBoxItem(SdkListItem.SdkReferenceItem item) { myItem = item; }
+    @Override public @NotNull SdkListItem getItem() { return myItem; }
+    @Override public @NotNull String toString() { return myItem.name; }
+  }
+
   public static class ActualJdkComboBoxItem extends JdkComboBoxItem implements SelectableComboBoxItem {
     private final Sdk myJdk;
-
-    public ActualJdkComboBoxItem(@NotNull Sdk jdk) {
-      myJdk = jdk;
-    }
-
-    @Override
-    public String toString() {
-      return myJdk.getName();
-    }
-
-    @NotNull
-    @Override
-    public Sdk getJdk() {
-      return myJdk;
-    }
-
-    @Nullable
-    @Override
-    public String getSdkName() {
-      return myJdk.getName();
-    }
+    public ActualJdkComboBoxItem(@NotNull Sdk jdk) { myJdk = jdk; }
+    @Override public String toString() { return myJdk.getName(); }
+    @NotNull @Override public Sdk getJdk() { return myJdk; }
+    @Nullable @Override public String getSdkName() { return myJdk.getName(); }
+    @Override public int hashCode() { return Objects.hash(myJdk); }
 
     @Override
     public boolean equals(Object o) {
@@ -411,11 +393,6 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
       if (o == null || getClass() != o.getClass()) return false;
       ActualJdkComboBoxItem item = (ActualJdkComboBoxItem)o;
       return myJdk.equals(item.myJdk);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(myJdk);
     }
   }
 
@@ -438,41 +415,24 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
   }
 
   public static class NoneJdkComboBoxItem extends JdkComboBoxItem implements InnerComboBoxItem, SelectableComboBoxItem {
-    @NotNull
-    @Override
-    public SdkListItem getItem() {
-      return new SdkListItem.NoneSdkItem();
-    }
-
-    public String toString() {
-      return "<None>";
-    }
-
-    @Override
-    public int hashCode() {
-      return 42;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      return obj instanceof NoneJdkComboBoxItem;
-    }
+    @NotNull @Override public SdkListItem getItem() { return new SdkListItem.NoneSdkItem(); }
+    public String toString() { return "<None>"; }
+    @Override public int hashCode() { return 42; }
+    @Override public boolean equals(Object obj) { return obj instanceof NoneJdkComboBoxItem; }
   }
 
   public static class ActionJdkComboBoxItem extends JdkComboBoxItem implements InnerComboBoxItem, SelectableComboBoxItem {
     private final SdkListItem.ActionItem myItem;
-
     public ActionJdkComboBoxItem(SdkListItem.ActionItem item) { myItem = item; }
+    @Override public @NotNull SdkListItem getItem() { return myItem; }
+    @Override public @NotNull String toString() { return myItem.toString(); }
+  }
 
-    @Override
-    public @NotNull SdkListItem getItem() {
-      return myItem;
-    }
-
-    @Override
-    public @NotNull String toString() {
-      return myItem.toString();
-    }
+  public static class SuggestedJdkComboBoxItem extends JdkComboBoxItem implements InnerComboBoxItem, SelectableComboBoxItem {
+    private final SdkListItem.SuggestedItem myItem;
+    public SuggestedJdkComboBoxItem(SdkListItem.SuggestedItem item) { myItem = item; }
+    @Override public @NotNull SdkListItem getItem() { return myItem; }
+    @Override public @NotNull String toString() { return "%s %s".formatted(myItem.sdkType.getName(), myItem.version); }
   }
 
   /**
