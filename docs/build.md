@@ -49,7 +49,7 @@ While in the `intellij-community` directory.
   - Main class: `com.intellij.idea.Main` (type `Main` in Search by Name and select needed)
   - VM options: `-ea  -Xmx192m -Didea.is.internal=true -Didea.platform.prefix=CommaCore -Didea.paths.selector=Comma`
   - The working directory: `intellij-community/bin`
-  - Classpath of module: `edument.rakuidea.comma.complete` or `edument.rakuidea.comma.community` depending on the edition you want to run
+  - Classpath of module: `edument.raku.comma.complete` or `edument.raku.comma.community` depending on the edition you want to run
   - Shorten command line: `@argfiles`
 
 * Run the configuration.

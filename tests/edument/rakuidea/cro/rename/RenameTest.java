@@ -6,7 +6,7 @@ import edument.rakuidea.cro.template.CroTemplateFileType;
 public class RenameTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "rakuidea-idea-plugin/testData/ctl-rename";
+        return "testData/ctl-rename";
     }
 
     private void doTest(int offset, String newName, String result) {

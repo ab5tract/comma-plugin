@@ -34,7 +34,7 @@ public class RakuProjectStructureProvider implements TreeStructureProvider {
             AbstractTreeNode<?> node = list.get(i);
             if (node instanceof PsiDirectoryNode) {
                 VirtualFile file = ((PsiDirectoryNode)node).getVirtualFile();
-                if (file != null && file.getUrl().startsWith("rakuidea:///"))
+                if (file != null && file.getUrl().startsWith("raku:///"))
                     list.set(i, new RakuLibraryPsiDirectoryNode(parent.getProject(), node, settings));
             }
         }

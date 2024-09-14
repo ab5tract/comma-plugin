@@ -56,7 +56,7 @@ public class RakuModuleBuilderApplication implements RakuModuleBuilderGeneric {
                                        RakuLanguageVersion languageVersion) {
         Path entryPath = moduleLibraryPath.resolve(entryPoitnName);
         List<String> lines = Arrays.asList(
-            "#!/usr/bin/env rakuidea",
+            "#!/usr/bin/env raku",
             languageVersion != null ? String.format("use v%s;", languageVersion) : "",
             String.format("use %s;", moduleName)
         );

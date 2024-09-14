@@ -34,7 +34,7 @@ public class NewScriptDialog extends DialogWrapper {
         String newScriptName = scriptNameField.getText();
         boolean isCorrectScriptName = newScriptName.matches(Patterns.SCRIPT_PATTERN);
         if (!isCorrectScriptName)
-            return new ValidationInfo("Incorrect script name (examples: `main`, `main.rakuidea`, `main.p6`)", scriptNameField);
+            return new ValidationInfo("Incorrect script name (examples: `main`, `main.raku`, `main.p6`)", scriptNameField);
         if (Paths.get(myParentPath, newScriptName).toFile().exists())
             return new ValidationInfo("File " + newScriptName + " already exists", scriptNameField);
         return null;

@@ -68,7 +68,7 @@ public class RakuFoldingBuilder extends FoldingBuilderEx implements DumbAware {
         Collection<RakuBlockoid> blocks = PsiTreeUtil.findChildrenOfType(root, RakuBlockoid.class);
         for (final RakuBlockoid block : blocks) {
             descriptors.add(new FoldingDescriptor(block.getNode(),
-                                                  block.getTextRange(), FoldingGroup.newGroup("rakuidea-" + recursionLevel)));
+                                                  block.getTextRange(), FoldingGroup.newGroup("raku-" + recursionLevel)));
             getLevelFolding(block, recursionLevel + 1, descriptors);
         }
     }

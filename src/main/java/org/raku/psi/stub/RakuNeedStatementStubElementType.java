@@ -31,7 +31,7 @@ public class RakuNeedStatementStubElementType extends IStubElementType<RakuNeedS
     @NotNull
     @Override
     public String getExternalId() {
-        return "rakuidea.stub.needStatement";
+        return "raku.stub.needStatement";
     }
 
     @Override

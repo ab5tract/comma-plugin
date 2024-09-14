@@ -36,7 +36,7 @@ public class RakuEnumStubElementType extends IStubElementType<RakuEnumStub, Raku
     @NotNull
     @Override
     public String getExternalId() {
-        return "rakuidea.stub.enum";
+        return "raku.stub.enum";
     }
 
     @Override

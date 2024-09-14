@@ -32,7 +32,7 @@ public class RakuProfileDataManagerImpl implements RakuProfileDataManager, Persi
         myProject = project;
         VirtualFile wsFile = myProject.getWorkspaceFile();
         if (wsFile != null && wsFile.exists()) {
-            profileStoragePath = wsFile.toNioPath().resolveSibling("rakuidea-profiles");
+            profileStoragePath = wsFile.toNioPath().resolveSibling("raku-profiles");
             try {
                 Files.createDirectories(profileStoragePath);
             }

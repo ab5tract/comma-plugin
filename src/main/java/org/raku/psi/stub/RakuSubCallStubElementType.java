@@ -43,7 +43,7 @@ public class RakuSubCallStubElementType extends IStubElementType<RakuSubCallStub
     @NotNull
     @Override
     public String getExternalId() {
-        return "rakuidea.stub.subcall";
+        return "raku.stub.subcall";
     }
 
     @Override

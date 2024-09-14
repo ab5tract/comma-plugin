@@ -14,7 +14,7 @@ public abstract class CroTemplateParsingTestCase extends ParsingTestCase {
 
     @Override
     protected String getTestDataPath() {
-        return "rakuidea-idea-plugin/testData/cro-template-parsing";
+        return "testData/cro-template-parsing";
     }
 
     @Override

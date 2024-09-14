@@ -12,7 +12,7 @@ import java.util.List;
 public class RakuSmartEnterTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "rakuidea-idea-plugin/testData/smartEnter";
+        return "testData/smartEnter";
     }
 
     public void doTest() {

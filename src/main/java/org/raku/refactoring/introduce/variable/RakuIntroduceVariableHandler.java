@@ -48,6 +48,6 @@ public class RakuIntroduceVariableHandler extends IntroduceHandler {
 
     @Override
     protected String getRefactoringId() {
-        return "refactoring.rakuidea.introduce.variable";
+        return "refactoring.raku.introduce.variable";
     }
 }

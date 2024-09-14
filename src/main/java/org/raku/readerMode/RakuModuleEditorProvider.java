@@ -33,7 +33,7 @@ import java.awt.*;
 
 @InternalIgnoreDependencyViolation
 public class RakuModuleEditorProvider implements FileEditorProvider, DumbAware {
-    private static final String EDITOR_TYPE_ID = "rakuidea-module";
+    private static final String EDITOR_TYPE_ID = "rakui-module";
 
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile file) {

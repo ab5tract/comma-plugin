@@ -35,7 +35,7 @@ public class RakuRoutineDeclStubElementType extends IStubElementType<RakuRoutine
     @NotNull
     @Override
     public String getExternalId() {
-        return "rakuidea.stub.routineDeclaration";
+        return "raku.stub.routineDeclaration";
     }
 
     @Override

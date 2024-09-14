@@ -8,16 +8,13 @@ import org.raku.annotation.fix.UseExecutableDynamicVariableFix;
 import org.raku.psi.RakuStrLiteral;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class RakuExecutableStringAnnotator implements Annotator {
-    private static final Set<String> aliases = new HashSet<>();
+    private final Set<String> aliases;
 
-    static {
-        aliases.add("rakuidea");
-        aliases.add("perl6");
-        aliases.add("rakudo");
+    public RakuExecutableStringAnnotator() {
+        aliases = Set.of("raku", "perl6", "rakudo");
     }
 
     @Override

@@ -31,7 +31,7 @@ import java.util.Map;
 
 @InternalIgnoreDependencyViolation
 public class RakuDocStarter implements ApplicationStarter {
-    public static final String RAKU_DOC_COMMAND_NAME = "rakuidea-doc";
+    public static final String RAKU_DOC_COMMAND_NAME = "raku-doc";
 
     // TODO: Deal with nonsensical advice in super-class for replacing deprecation
     @Override
@@ -43,14 +43,14 @@ public class RakuDocStarter implements ApplicationStarter {
     @Override
     public void main(@NotNull List<String> args) {
         @SuppressWarnings("UseOfSystemOutOrSystemErr")
-        // comma rakuidea-doc directory
+        // comma raku-doc directory
         MessageOutput messageOutput = new MessageOutput(
             new PrintWriter(System.out, false, StandardCharsets.UTF_8),
             new PrintWriter(System.err, false, StandardCharsets.UTF_8));
 
         String outputPrefix = null;
 
-        // If only "rakuidea-doc" argument
+        // If only "raku-doc" argument
         if (args.size() < 2) {
             showUsageInfo(messageOutput);
         }
@@ -176,7 +176,7 @@ public class RakuDocStarter implements ApplicationStarter {
     }
 
     private static void showUsageInfo(MessageOutput messageOutput) {
-        messageOutput.info("Usage: rakuidea-doc [-o|--output outputPath] [-h|--help] path1 path2...\n");
+        messageOutput.info("Usage: raku-doc [-o|--output outputPath] [-h|--help] path1 path2...\n");
         messageOutput.info("  -h|--help       Show a help message and exit.\n");
         messageOutput.info("  -o|--output     A path for the output directory (created if does not exist).\n");
         messageOutput.info("  path<n>         A path to a project directory.\n");

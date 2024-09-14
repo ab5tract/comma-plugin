@@ -253,7 +253,7 @@ public class RakuSdkType extends SdkType {
             return cache.setting = makeSettingSymbols(project, settingJson);
         }
 
-        File coreSymbols = RakuUtils.getResourceAsFile("symbols/rakuidea-core-symbols.p6");
+        File coreSymbols = RakuUtils.getResourceAsFile("symbols/raku-core-symbols.p6");
         File coreDocs = RakuUtils.getResourceAsFile("docs/core.json");
         String perl6path = getSdkHomeByProject(project);
 
@@ -497,7 +497,7 @@ public class RakuSdkType extends SdkType {
         }
 
         String homePath = getSdkHomeByProject(project);
-        File moduleSymbols = RakuUtils.getResourceAsFile("symbols/rakuidea-module-symbols.p6");
+        File moduleSymbols = RakuUtils.getResourceAsFile("symbols/raku-module-symbols.p6");
         if (homePath == null) {
             LOG.info(new ExecutionException("SDK path is not set"));
             return new ArrayList<>();

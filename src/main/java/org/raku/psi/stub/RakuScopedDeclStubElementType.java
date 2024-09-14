@@ -34,7 +34,7 @@ public class RakuScopedDeclStubElementType extends IStubElementType<RakuScopedDe
     @NotNull
     @Override
     public String getExternalId() {
-        return "rakuidea.stub.scopedDecl";
+        return "raku.stub.scopedDecl";
     }
 
     @Override

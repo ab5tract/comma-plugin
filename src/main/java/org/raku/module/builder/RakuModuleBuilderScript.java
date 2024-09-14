@@ -36,7 +36,7 @@ public class RakuModuleBuilderScript implements RakuModuleBuilderGeneric {
                                     String scriptName,
                                     boolean shouldFill,
                                     RakuLanguageVersion languageVersion) {
-        List<String> lines = new ArrayList<>(Collections.singletonList("#!/usr/bin/env rakuidea"));
+        List<String> lines = new ArrayList<>(Collections.singletonList("#!/usr/bin/env raku"));
         if (languageVersion != null) {
             lines.add(String.format("use v%s;", languageVersion));
         }

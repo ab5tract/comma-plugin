@@ -35,7 +35,7 @@ public class RakuVariableDeclStubElementType extends IStubElementType<RakuVariab
     @NotNull
     @Override
     public String getExternalId() {
-        return "rakuidea.stub.variableDeclaration";
+        return "raku.stub.variableDeclaration";
     }
 
     @Override

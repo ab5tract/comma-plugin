@@ -13,7 +13,7 @@ import java.util.List;
 public class DocumentationTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "rakuidea-idea-plugin/testData/docs";
+        return "testData/docs";
     }
 
     private void testGeneratedDoc(String result) {

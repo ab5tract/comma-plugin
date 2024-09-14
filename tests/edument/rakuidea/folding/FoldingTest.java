@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 public class FoldingTest extends CommaFixtureTestCase {
     @Override
     protected String getTestDataPath() {
-        return "rakuidea-idea-plugin/testData/folding";
+        return "testData/folding";
     }
 
     public void testFolding() {

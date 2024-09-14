@@ -40,7 +40,7 @@ public class RakuScriptFileType extends LanguageFileType implements RakuMultiExt
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "rakuidea";
+        return "raku";
     }
 
     @Nullable
@@ -62,6 +62,6 @@ public class RakuScriptFileType extends LanguageFileType implements RakuMultiExt
 
     @Override
     public String[] getExtensions() {
-        return new String[]{"p6", "pl6", "rakuidea"};
+        return new String[]{"p6", "pl6", "raku"};
     }
 }

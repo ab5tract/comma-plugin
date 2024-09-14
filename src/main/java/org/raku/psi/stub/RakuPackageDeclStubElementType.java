@@ -36,7 +36,7 @@ public class RakuPackageDeclStubElementType extends IStubElementType<RakuPackage
     @NotNull
     @Override
     public String getExternalId() {
-        return "rakuidea.stub.packageDeclaration";
+        return "raku.stub.packageDeclaration";
     }
 
     @Override

@@ -6,6 +6,6 @@ import com.intellij.openapi.fileTypes.impl.HashBangFileTypeDetector;
 @InternalIgnoreDependencyViolation
 public class Perl6FileShebangTypeDetector extends HashBangFileTypeDetector {
     public Perl6FileShebangTypeDetector() {
-        super(RakuScriptFileType.INSTANCE, "rakuidea");
+        super(RakuScriptFileType.INSTANCE, "raku");
     }
 }

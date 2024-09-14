@@ -90,7 +90,7 @@ public class RakuTestRunningState extends CommandLineState {
             cmd = new RakuCommandLine(myProject);
         else
             cmd = new RakuScriptRunner(myProject);
-        myScriptFile = RakuUtils.getResourceAsFile("testing/rakuidea-test-harness.p6");
+        myScriptFile = RakuUtils.getResourceAsFile("testing/raku-test-harness.p6");
         if (myScriptFile == null)
             throw new ExecutionException("Bundled resources are corrupted");
 

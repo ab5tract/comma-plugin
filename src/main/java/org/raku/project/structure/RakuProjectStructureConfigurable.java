@@ -325,9 +325,9 @@ public class RakuProjectStructureConfigurable extends BaseConfigurable implement
     public void disposeUIResources() {
         if (!myUiInitialized) return;
         final PropertiesComponent propertiesComponent = PropertiesComponent.getInstance(myProject);
-        propertiesComponent.setValue("rakuidea.project.structure.last.edited", myUiState.lastEditedConfigurable);
-        propertiesComponent.setValue("rakuidea.project.structure.proportion", String.valueOf(myUiState.proportion));
-        propertiesComponent.setValue("rakuidea.project.structure.side.proportion", String.valueOf(myUiState.sideProportion));
+        propertiesComponent.setValue("raku.project.structure.last.edited", myUiState.lastEditedConfigurable);
+        propertiesComponent.setValue("raku.project.structure.proportion", String.valueOf(myUiState.proportion));
+        propertiesComponent.setValue("raku.project.structure.side.proportion", String.valueOf(myUiState.sideProportion));
 
         myUiState.proportion = mySplitter.getProportion();
         saveSideProportion();

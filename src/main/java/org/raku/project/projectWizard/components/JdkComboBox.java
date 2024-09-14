@@ -4,7 +4,6 @@ package org.raku.project.projectWizard.components;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ui.configuration.*;
 import com.intellij.openapi.roots.ui.configuration.SdkListItem.SdkItem;
@@ -30,44 +29,6 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
   @Nullable private JButton mySetUpButton;
 
   /**
-   * @deprecated since {@link #setSetupButton} methods are deprecated, use the
-   * more specific constructor to pass all parameters
-   */
-  @Deprecated
-  public JdkComboBox(@NotNull final ProjectSdksModel jdkModel) {
-    this(jdkModel, null);
-  }
-
-  /**
-   * @deprecated since {@link #setSetupButton} methods are deprecated, use the
-   * more specific constructor to pass all parameters
-   */
-  @Deprecated
-  public JdkComboBox(@NotNull final ProjectSdksModel jdkModel,
-                     @Nullable Condition<? super SdkTypeId> filter) {
-    this(jdkModel, filter, getSdkFilter(filter), filter, false);
-  }
-
-  /**
-   * @deprecated since {@link #setSetupButton} methods are deprecated, use the
-   * more specific constructor to pass all parameters
-   *
-   * The {@param addSuggestedItems} is ignored (it was not actively used) and
-   * it is no longer possible to have {@link SuggestedJdkItem} as a selected
-   * item of that ComboBox. The implementation will take care about turning a
-   * suggested SDKs into {@link Sdk}s
-   */
-  @Deprecated
-  @SuppressWarnings("unused")
-  public JdkComboBox(@NotNull final ProjectSdksModel jdkModel,
-                     @Nullable Condition<? super SdkTypeId> sdkTypeFilter,
-                     @Nullable Condition<? super Sdk> filter,
-                     @Nullable Condition<? super SdkTypeId> creationFilter,
-                     boolean addSuggestedItems) {
-    this(null, jdkModel, sdkTypeFilter, filter, creationFilter, null);
-  }
-
-  /**
    * Creates new Sdk selector combobox
    * @param project current project (if any)
    * @param sdkModel the sdks model
@@ -88,7 +49,6 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
         onNewSdkAdded.consume(sdk);
       }
     };
-//    setRenderer(new SdkListPresenter(() -> ((JdkComboBoxModel)this.getModel()).myInnerModel).forType(JdkComboBox::unwrapItem));
     reloadModel();
   }
 
@@ -433,47 +393,5 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
     public SuggestedJdkComboBoxItem(SdkListItem.SuggestedItem item) { myItem = item; }
     @Override public @NotNull SdkListItem getItem() { return myItem; }
     @Override public @NotNull String toString() { return "%s %s".formatted(myItem.sdkType.getName(), myItem.version); }
-  }
-
-  /**
-   * @deprecated this type is never visible from the {@link #getSelectedItem()} method,
-   * it is kept here for binary compatibility
-   */
-  @Deprecated
-  public static class SuggestedJdkItem extends JdkComboBoxItem {
-    private final SdkType mySdkType;
-    private final String myPath;
-
-    SuggestedJdkItem(@NotNull SdkType sdkType, @NotNull String path) {
-      mySdkType = sdkType;
-      myPath = path;
-    }
-
-    @NotNull
-    public SdkType getSdkType() {
-      return mySdkType;
-    }
-
-    @NotNull
-    public String getPath() {
-      return myPath;
-    }
-
-    @Override
-    public String toString() {
-      return myPath;
-    }
-  }
-
-  /**
-   * @deprecated Use the {@link JdkComboBox} API to manage shown items,
-   * this call is ignored
-   */
-  @Override
-  @Deprecated
-  @SuppressWarnings("deprecation")
-  public void insertItemAt(JdkComboBoxItem item, int index) {
-    super.addItem(item);
-    processFirstItem(item);
   }
 }

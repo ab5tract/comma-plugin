@@ -59,6 +59,6 @@ public class RakuReferencesCodeVisionProvider extends ReferencesCodeVisionProvid
     @NotNull
     @Override
     public String getId() {
-        return "rakuidea.references";
+        return "raku.references";
     }
 }

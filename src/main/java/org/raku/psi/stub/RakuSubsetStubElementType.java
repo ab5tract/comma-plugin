@@ -31,7 +31,7 @@ public class RakuSubsetStubElementType extends IStubElementType<RakuSubsetStub, 
     @NotNull
     @Override
     public String getExternalId() {
-        return "rakuidea.stub.subset";
+        return "raku.stub.subset";
     }
 
     @Override

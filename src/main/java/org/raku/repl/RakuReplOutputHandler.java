@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RakuReplOutputHandler extends OSProcessHandler {
-    private static final Key<ConsoleViewContentType> SORRY_HEADER = Key.create("rakuidea.repl.out.sorryHeader");
-    private static final Key<ConsoleViewContentType> PRE_CODE = Key.create("rakuidea.repl.out.preCode");
-    private static final Key<ConsoleViewContentType> EJECT_MARKER = Key.create("rakuidea.repl.out.ejectMarker");
-    private static final Key<ConsoleViewContentType> POST_CODE = Key.create("rakuidea.repl.out.postCode");
+    private static final Key<ConsoleViewContentType> SORRY_HEADER = Key.create("raku.repl.out.sorryHeader");
+    private static final Key<ConsoleViewContentType> PRE_CODE = Key.create("raku.repl.out.preCode");
+    private static final Key<ConsoleViewContentType> EJECT_MARKER = Key.create("raku.repl.out.ejectMarker");
+    private static final Key<ConsoleViewContentType> POST_CODE = Key.create("raku.repl.out.postCode");
 
     static {
         TextAttributesKey sorryHeaderAttrsKey = TextAttributesKey.createTempTextAttributesKey(

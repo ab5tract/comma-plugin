@@ -34,7 +34,7 @@ import java.util.Locale;
 
 public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
     private static final String FILE_SCHEME = "file://";
-    private static final String EXTERNAL_SCHEME = "rakuidea://";
+    private static final String EXTERNAL_SCHEME = "raku://";
 
     private final JCEFHtmlPanel htmlPanel;
     private final Project project;

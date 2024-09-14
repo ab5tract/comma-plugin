@@ -17,7 +17,7 @@ import javax.swing.*;
 
 @InternalIgnoreDependencyViolation
 public class RakuLibraryType extends LibraryType<DummyLibraryProperties> {
-    public static final PersistentLibraryKind<DummyLibraryProperties> LIBRARY_KIND = new PersistentLibraryKind<>("rakuidea") {
+    public static final PersistentLibraryKind<DummyLibraryProperties> LIBRARY_KIND = new PersistentLibraryKind<>("raku") {
         @NotNull
         @Override
         public DummyLibraryProperties createDefaultProperties() {

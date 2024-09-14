@@ -135,9 +135,9 @@ public class RakuCommandLine extends GeneralCommandLine {
             command.add("--debug-port=" + debugPort);
             command.add("--debug-suspend");
             command.add("--libpath=" + Paths.get(prefix, "share", "nqp", "lib"));
-            command.add("--libpath=" + Paths.get(prefix, "share", "rakuidea", "lib"));
-            command.add("--libpath=" + Paths.get(prefix, "share", "rakuidea", "runtime"));
-            command.add(Paths.get(prefix, "share", "rakuidea", "runtime", "rakuidea.moarvm").toString());
+            command.add("--libpath=" + Paths.get(prefix, "share", "raku", "lib"));
+            command.add("--libpath=" + Paths.get(prefix, "share", "raku", "runtime"));
+            command.add(Paths.get(prefix, "share", "raku", "runtime", "raku.moarvm").toString());
         }
         return command;
     }

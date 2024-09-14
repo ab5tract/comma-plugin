@@ -20,7 +20,7 @@ public class RakuSurroundWithTest extends CommaFixtureTestCase {
     @NotNull
     @Override
     protected String getTestDataPath() {
-        return "rakuidea-idea-plugin/testData/surroundWith";
+        return "testData/surroundWith";
     }
 
     public void testIfSurround() {

@@ -14,7 +14,7 @@ public class RakuIntroduceConstantHandler extends IntroduceHandler {
 
     @Override
     protected String getHelpId() {
-        return  "refactoring.rakuidea.introduce.constant";
+        return  "refactoring.raku.introduce.constant";
     }
 
     @Override

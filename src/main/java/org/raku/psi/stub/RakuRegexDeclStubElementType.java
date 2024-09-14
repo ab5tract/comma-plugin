@@ -31,7 +31,7 @@ public class RakuRegexDeclStubElementType extends IStubElementType<RakuRegexDecl
     @NotNull
     @Override
     public String getExternalId() {
-        return "rakuidea.stub.regexDeclaration";
+        return "raku.stub.regexDeclaration";
     }
 
     @Override
