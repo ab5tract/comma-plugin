@@ -34,8 +34,7 @@ intellijPlatform {
     pluginConfiguration {
         id = "comma"
         name = "Raku Comma"
-        version = "1.0.0"
-        description = "It's an awesome plugin!"
+        version = "2.0"
     }
 
     pluginVerification {

@@ -1,6 +1,5 @@
 package org.raku.run;
 
-import com.intellij.coverage.CoverageExecutor;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -57,11 +56,14 @@ public class RakuCompleteRunConfigurationType extends ConfigurationTypeBase {
         @Nullable
         @Override
         public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
+            if (executor.getClass().getSimpleName().equals("CoverageExecutor")) {
+                return new RakuCoverageCommandLineState(environment);
+            }
+
             return switch (executor) {
                 case DefaultDebugExecutor x     -> new RakuDebugCommandLineState(environment);
                 case RakuProfileExecutor x      -> new RakuProfileCommandLineState(environment);
                 case RakuHeapSnapshotExecutor x -> new RakuHeapSnapshotCommandLineState(environment);
-                case CoverageExecutor x         -> new RakuCoverageCommandLineState(environment);
                 case RakuTimelineExecutor x     -> new RakuTimelineCommandLineState(environment);
                 default                         -> new RakuRunCommandLineState(environment);
             };

@@ -123,8 +123,14 @@ abstract public class RakuRunConfiguration extends LocatableConfigurationBase im
 
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
-        if (scriptPath == null  || ! Paths.get(scriptPath).toFile().exists()) {
-            throw new RuntimeConfigurationError("Path to main script must be specified");
+        if (scriptPath == null) throw new RuntimeConfigurationError("Path to main script must be specified");
+
+        if (! Paths.get(scriptPath).toFile().exists()) {
+            String workingDir = getWorkingDirectory();
+            String checkPath = workingDir != null
+                                    ? Paths.get(workingDir, scriptPath).toString()
+                                    : scriptPath;
+            if (!Paths.get(checkPath).toFile().exists()) throw new RuntimeConfigurationError("Path to main script is not valid");
         }
     }
 

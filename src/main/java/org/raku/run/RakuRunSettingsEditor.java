@@ -33,7 +33,7 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
     private CommonProgramParametersPanel myParams;
     private JTextField myDebugPort;
     private JCheckBox toStartSuspended;
-    private RawCommandLineEditor myPerl6ParametersPanel;
+    private RawCommandLineEditor myRakuParametersPanel;
     private JBList<String> myLogTimelineOptions;
 
     RakuRunSettingsEditor(Project project) {
@@ -52,10 +52,10 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
         }
         toStartSuspended.setSelected(conf.isStartSuspended());
         if (conf.getInterpreterParameters() == null) {
-            myPerl6ParametersPanel.setText("");
+            myRakuParametersPanel.setText("");
         }
         else {
-            myPerl6ParametersPanel.setText(conf.getInterpreterParameters());
+            myRakuParametersPanel.setText(conf.getInterpreterParameters());
         }
         myParams.reset(conf);
         if (conf.getWorkingDirectory() == null) {
@@ -76,19 +76,25 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
     @Override
     protected void applyEditorTo(@NotNull RakuRunConfiguration conf) throws ConfigurationException {
         String fileLine = fileField.getText();
-        VirtualFile file = LocalFileSystem.getInstance().findFileByPath(fileLine);
-        if (file == null || !file.exists()) {
-            throw new ConfigurationException("Main script path is incorrect");
+        if (Objects.equals(fileLine, "")) throw new ConfigurationException("Main script path is absent");
+
+        String workingDir = myParams.getWorkingDirectoryAccessor().getText();
+        if (workingDir.endsWith("/")) {
+            workingDir = workingDir.substring(0, workingDir.length() - 1);
         }
-        else if (Objects.equals(fileLine, "")) {
-            throw new ConfigurationException("Main script path is absent");
-        }
-        else {
+
+        VirtualFile file = LocalFileSystem.getInstance().findFileByPath(workingDir + "/" + fileLine);
+        if (file == null || ! file.exists()) {
+            VirtualFile revisedPath = LocalFileSystem.getInstance().findFileByPath(workingDir + "/" + fileLine);
+            if (revisedPath == null || ! revisedPath.exists()) {
+                throw new ConfigurationException("Main script path is incorrect");
+            }
+        } else {
             conf.setScriptPath(fileLine);
         }
         conf.setDebugPort(Integer.parseInt(myDebugPort.getText()));
         conf.setStartSuspended(toStartSuspended.isSelected());
-        conf.setInterpreterParameters(myPerl6ParametersPanel.getText());
+        conf.setInterpreterParameters(myRakuParametersPanel.getText());
         myParams.applyTo(conf);
         // Log::Timeline event types
         int[] event_indexes = myLogTimelineOptions.getSelectedIndices();
@@ -139,9 +145,9 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
                 myFileComponent = LabeledComponent.create(fileField, "Script", BorderLayout.WEST);
                 add(myFileComponent);
                 super.addComponents();
-                myPerl6ParametersPanel = new RawCommandLineEditor();
+                myRakuParametersPanel = new RawCommandLineEditor();
                 myPerl6ParametersComponent =
-                    LabeledComponent.create(myPerl6ParametersPanel, "Raku parameters", BorderLayout.WEST);
+                    LabeledComponent.create(myRakuParametersPanel, "Raku parameters", BorderLayout.WEST);
                 add(myPerl6ParametersComponent);
                 myLogTimelineOptions = new JBList<>(LOG_TIMELINE_EVENT_TYPES);
                 myLogTimelineOptions.setCellRenderer(new ListCellRenderer<>() {
