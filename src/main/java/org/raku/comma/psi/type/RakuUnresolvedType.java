@@ -13,8 +13,9 @@ public class RakuUnresolvedType implements RakuType {
     }
 
     public boolean equals(Object other) {
-        if (other instanceof RakuType)
-            return ((RakuType)other).getName().equals(getName());
+        if (other instanceof RakuType) {
+            return ((RakuType) other).getName().equals(getName());
+        }
         return false;
     }
 }

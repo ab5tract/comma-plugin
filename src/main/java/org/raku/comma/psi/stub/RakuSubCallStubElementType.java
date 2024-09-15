@@ -78,11 +78,14 @@ public class RakuSubCallStubElementType extends IStubElementType<RakuSubCallStub
         for (RakuFrameworkCall ext : extensions) {
             String prefix = ext.getFrameworkName();
             Map<String, String> frameworkData = new HashMap<>();
-            for (Map.Entry<String, String> entry : allFrameworkData.entrySet())
-                if (entry.getKey().startsWith(prefix + "."))
+            for (Map.Entry<String, String> entry : allFrameworkData.entrySet()) {
+                if (entry.getKey().startsWith(prefix + ".")) {
                     frameworkData.put(entry.getKey().substring(prefix.length() + 1), entry.getValue());
-            if (!frameworkData.isEmpty())
+                }
+            }
+            if (! frameworkData.isEmpty()) {
                 ext.indexStub(stub, frameworkData, sink);
+            }
         }
     }
 }
