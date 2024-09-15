@@ -15,8 +15,7 @@ public interface RakuSignature extends RakuPsiElement {
         List<PsiElement> arguments = Arrays.asList(argsArray);
         List<RakuParameter> parameters = Arrays.asList(getParameters());
 
-        if (parameters.size() == 0 && arguments.size() == 0)
-            return new SignatureCompareResult(true);
+        if (parameters.isEmpty() && arguments.isEmpty()) return new SignatureCompareResult(true);
 
         // Resulting data
         SignatureCompareResult result = new SignatureCompareResult(true);
@@ -90,28 +89,31 @@ public interface RakuSignature extends RakuPsiElement {
         // If we iterated over all parameters, but there are still arguments left,
         // disallow matching and mark them as errors
         // Check surplus named arguments, but methods allow them
-        if (!isMethodCall) {
-            seen.forEach(key -> namedArgs.remove(key));
-            if (!namedArgs.isEmpty())
+        if (! isMethodCall) {
+            seen.forEach(namedArgs::remove);
+            if (! namedArgs.isEmpty()) {
                 failMatch(result, namedArgs.keySet().stream().map(n -> new Pair<>(arguments.indexOf(namedArgs.get(n)), MatchFailureReason.SURPLUS_NAMED)).toArray(Pair[]::new));
+            }
         }
 
         // Check surplus positional arguments
         List<PsiElement> positionalLeftovers = positionalArgs.subList(posArgIndex, positionalArgs.size());
-        if (positionalLeftovers.size() != 0)
+        if (! positionalLeftovers.isEmpty()) {
             failMatch(result, positionalLeftovers.stream().map(n -> new Pair<>(arguments.indexOf(n), MatchFailureReason.TOO_MANY_ARGS)).toArray(Pair[]::new));
-
+        }
         return result;
     }
 
     default String prepareParamName(String variableName) {
         int start = 0, end = 0;
+        if (variableName.length() <= 1) return variableName;
         for (int i = 0; i < variableName.length(); i++) {
             if (variableName.charAt(i) == ':' ||
                 variableName.charAt(i) == '$' ||
                 variableName.charAt(i) == '@' ||
                 variableName.charAt(i) == '%' ||
-                variableName.charAt(i) == '&') {
+                variableName.charAt(i) == '&')
+            {
                 start = i + 1;
             }
             else if (variableName.charAt(i) == '?' || variableName.charAt(i) == '!') {
@@ -127,9 +129,11 @@ public interface RakuSignature extends RakuPsiElement {
 
     default int eatPositionalSlurpy(List<PsiElement> arguments,
                                            SignatureCompareResult result,
-                                           List<PsiElement> positionalArgs, int posArgIndex, int parameterIndex) {
-        for (PsiElement rest : positionalArgs.subList(posArgIndex, positionalArgs.size()))
+                                           List<PsiElement> positionalArgs, int posArgIndex, int parameterIndex)
+    {
+        for (PsiElement rest : positionalArgs.subList(posArgIndex, positionalArgs.size())) {
             result.setParameterIndexOfArg(arguments.indexOf(rest), parameterIndex);
+        }
         result.setNextParameter(parameterIndex);
         return positionalArgs.size();
     }
@@ -138,17 +142,20 @@ public interface RakuSignature extends RakuPsiElement {
                                        SignatureCompareResult result,
                                        Map<String, PsiElement> namedArgs,
                                        Set<String> seen, int parameterIndex) {
-        for (String rest : namedArgs.keySet())
-            if (!seen.contains(rest))
+        for (String rest : namedArgs.keySet()) {
+            if (!seen.contains(rest)) {
                 result.setParameterIndexOfArg(arguments.indexOf(namedArgs.get(rest)), parameterIndex);
+            }
+        }
         seen.addAll(namedArgs.keySet());
         result.setNextParameter(parameterIndex);
     }
 
     default void failMatch(SignatureCompareResult result, Pair<Integer, MatchFailureReason>... failures) {
         result.setAccepted(false);
-        for (Pair<Integer, MatchFailureReason> failure : failures)
+        for (Pair<Integer, MatchFailureReason> failure : failures) {
             result.setFailureForArg(failure.getFirst(), failure.getSecond());
+        }
     }
 
     default void categorizeArguments(List<PsiElement> arguments, List<PsiElement> positionalArgs, Map<String, PsiElement> namedArgs) {
