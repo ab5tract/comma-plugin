@@ -140,9 +140,9 @@ public class CommaProjectUtil {
 
             if (newProject != null) {
                 ProjectUtil.updateLastProjectLocation(file);
-              OpenProjectTask options =
-                OpenProjectTask.build().withProject(newProject).withProjectName(file.getFileName().toString());
-              ProjectManagerEx.getInstanceEx().openProject(projectDir, options);
+                OpenProjectTask options =
+                    OpenProjectTask.build().withProject(newProject).withProjectName(file.getFileName().toString());
+                ProjectManagerEx.getInstanceEx().openProject(projectDir, options);
             }
 
             if (!ApplicationManager.getApplication().isUnitTestMode()) {

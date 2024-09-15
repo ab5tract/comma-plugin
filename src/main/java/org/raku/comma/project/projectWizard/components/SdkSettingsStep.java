@@ -48,7 +48,7 @@ public class SdkSettingsStep extends ModuleWizardStep {
                          @NotNull Condition<? super SdkTypeId> sdkTypeIdFilter,
                          @Nullable Condition<? super Sdk> sdkFilter) {
     this(settingsStep.getContext(), moduleBuilder, sdkTypeIdFilter, sdkFilter);
-    if (!isEmpty()) {
+    if (! isEmpty()) {
       settingsStep.addSettingsField(getSdkFieldLabel(settingsStep.getContext().getProject()), myJdkPanel);
     }
   }

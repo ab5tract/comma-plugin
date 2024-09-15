@@ -6,7 +6,6 @@ public class RakuHighlighterLexer extends RakuLexer {
         // Skip over zero-width tokens, which break various lexer-based features,
         // such as brace matching in some cases.
         super.advance();
-        while (getTokenType() != null && getTokenStart() == getTokenEnd())
-            super.advance();
+        while (getTokenType() != null && getTokenStart() == getTokenEnd()) super.advance();
     }
 }

@@ -89,10 +89,10 @@ class CommaProjectSettingsStep(private val myWizardContext: WizardContext) : Mod
     @Throws(ConfigurationException::class)
     override fun validate(): Boolean {
         if (myWizardContext.isCreatingNewProject) {
-            if (!myNamePathComponent.validateNameAndPath(myWizardContext, myFormatPanel.isDefault)) return false
+            if (! myNamePathComponent.validateNameAndPath(myWizardContext, myFormatPanel.isDefault)) return false
         }
 
-        if (!myModuleNameLocationComponent!!.validate()) return false
+        if (! myModuleNameLocationComponent!!.validate()) return false
 
         if (settingsStep != null) {
             return settingsStep!!.validate()
