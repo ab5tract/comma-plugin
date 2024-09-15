@@ -19,16 +19,6 @@ import java.util.Objects;
 
 public class UndeclaredAttributeAnnotator implements Annotator {
 
-    // TODO: Replace this with a project-level setting or something else more robust
-    private Boolean PROJECT_IS_RAKUDO = null;
-
-    private boolean isProjectRakudo() {
-        if (PROJECT_IS_RAKUDO == null) {
-            PROJECT_IS_RAKUDO = Objects.requireNonNull(ProjectManager.getInstance().getOpenProjects()[0].getBasePath()).endsWith("rakudo");
-        }
-        return PROJECT_IS_RAKUDO;
-    }
-
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         // Filter out anything except attribute usages.
@@ -57,5 +47,14 @@ public class UndeclaredAttributeAnnotator implements Annotator {
             holder.newAnnotation(HighlightSeverity.ERROR, String.format("Attribute %s is used, but not declared", variableName))
                   .range(element).create();
         }
+    }
+
+    // TODO: Replace this with a project-level setting or something else more robust
+    private Boolean PROJECT_IS_RAKUDO = null;
+    private boolean isProjectRakudo() {
+        if (PROJECT_IS_RAKUDO == null) {
+            PROJECT_IS_RAKUDO = Objects.requireNonNull(ProjectManager.getInstance().getOpenProjects()[0].getBasePath()).endsWith("rakudo");
+        }
+        return PROJECT_IS_RAKUDO;
     }
 }

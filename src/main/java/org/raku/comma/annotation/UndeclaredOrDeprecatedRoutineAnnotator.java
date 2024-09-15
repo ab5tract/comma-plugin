@@ -34,8 +34,8 @@ public class UndeclaredOrDeprecatedRoutineAnnotator implements Annotator {
         if (results.length == 0) {
             AnnotationBuilder annBuilder = holder.newAnnotation(HighlightSeverity.ERROR,
                                                                 String.format("Subroutine %s is not declared", subName))
-                                                                        .withFix(new StubMissingSubroutineFix())
-                                                                        .range(element);
+                                                                      .withFix(new StubMissingSubroutineFix())
+                                                                      .range(element);
             if (subName.equals("const") &&
                 (PsiTreeUtil.skipWhitespacesForward(call) instanceof RakuVariable ||
                  PsiTreeUtil.skipWhitespacesForward(call) instanceof RakuInfixApplication)) {

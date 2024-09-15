@@ -27,7 +27,7 @@ public class BuiltinSubmethodAnnotator implements Annotator {
         if (routineDecl.getRoutineKind().equals("method"))
             holder.newAnnotation(HighlightSeverity.WARNING,
                                  String.format("%s should be declared as a submethod", name))
-                .withFix(new MakeSubmethodFix(routineDecl))
-                .range(routineDecl.getDeclaratorNode()).create();
+                                       .withFix(new MakeSubmethodFix(routineDecl))
+                                       .range(routineDecl.getDeclaratorNode()).create();
     }
 }

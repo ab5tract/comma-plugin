@@ -6,6 +6,7 @@ import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
@@ -368,17 +369,26 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                                                     PsiElement currentDecl,
                                                     TextRange range,
                                                     String name, HighlightInfoType infoType) {
-        if (!originalDecl.isValid())
-            return null;
-        if (!currentDecl.getContainingFile().equals(myFile))
-            return null;
+        if (! originalDecl.isValid()) return null;
+        if (! currentDecl.getContainingFile().equals(myFile)) return null;
+        if (isProjectRakudo()) return null;
+
         PsiFile containingFile = originalDecl.getContainingFile();
         String previousPos = containingFile.getName() +
                              ":" +
                              (StringUtil.offsetToLineNumber(containingFile.getText(), originalDecl.getTextOffset()) + 1);
         return HighlightInfo.newHighlightInfo(infoType)
-            .range(range)
-            .descriptionAndTooltip(String.format("Re-declaration of %s from %s", name, previousPos))
-            .create();
+                            .range(range)
+                            .descriptionAndTooltip(String.format("Re-declaration of %s from %s", name, previousPos))
+                            .create();
+    }
+
+    // TODO: Replace this with a project-level setting or something else more robust
+    private Boolean PROJECT_IS_RAKUDO = null;
+    private boolean isProjectRakudo() {
+        if (PROJECT_IS_RAKUDO == null) {
+            PROJECT_IS_RAKUDO = Objects.requireNonNull(ProjectManager.getInstance().getOpenProjects()[0].getBasePath()).endsWith("rakudo");
+        }
+        return PROJECT_IS_RAKUDO;
     }
 }

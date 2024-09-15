@@ -72,7 +72,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
                 // Straight resolution failure
                 holder.newAnnotation(HighlightSeverity.ERROR,
                                      String.format("Variable %s is not declared", variableName))
-                    .range(element).create();
+                                           .range(element).create();
             }
         }
         else {
@@ -81,7 +81,7 @@ public class UndeclaredVariableAnnotator implements Annotator {
                 if (psi != null && psi.getContainingFile() == variable.getContainingFile() && psi.getTextOffset() > variable.getTextOffset())
                     holder.newAnnotation(HighlightSeverity.ERROR,
                                          String.format("Variable %s is not declared in this scope yet", variableName))
-                        .range(element).create();
+                                               .range(element).create();
             }
         }
     }
