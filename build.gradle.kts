@@ -20,7 +20,6 @@ repositories {
 
     intellijPlatform {
         defaultRepositories()
-        jetbrainsRuntime()
     }
 }
 
@@ -49,8 +48,6 @@ dependencies {
         intellijIdeaCommunity("2024.2")
 
         bundledPlugin("com.intellij.java")
-
-        jetbrainsRuntime("21.0.3", "osx", "aarch64")
 
         pluginVerifier()
         zipSigner()
