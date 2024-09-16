@@ -2,14 +2,17 @@ package org.raku.comma.project.structure;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.projectView.impl.ModuleGroupingTreeHelper;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleGrouper;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.NullableComputable;
 import com.intellij.ui.navigation.Place;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+//TODO: Fix this so that's a proper service
 public class RakuModuleStructureConfigurable extends RakuStructureConfigurable implements Place.Navigator {
     private final ModuleManager myModuleManager;
     private final List<RemoveConfigurableHandler<?>> myRemoveHandlers;
@@ -152,6 +156,7 @@ public class RakuModuleStructureConfigurable extends RakuStructureConfigurable i
     }
 
     public static RakuModuleStructureConfigurable getInstance(Project project) {
+        // TODO: Fix this
         return project.getService(RakuModuleStructureConfigurable.class);
     }
 
@@ -166,6 +171,11 @@ public class RakuModuleStructureConfigurable extends RakuStructureConfigurable i
         @Override
         public void actionPerformed(@NotNull final AnActionEvent e) {
             addModule(myImport);
+        }
+
+        @Override
+        public @NotNull ActionUpdateThread getActionUpdateThread() {
+            return ActionUpdateThread.EDT;
         }
     }
 

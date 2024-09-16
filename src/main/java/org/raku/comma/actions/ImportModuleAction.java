@@ -3,6 +3,7 @@ package org.raku.comma.actions;
 import com.intellij.ide.impl.ProjectUtil;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ProjectBuilder;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -124,5 +125,10 @@ public class ImportModuleAction extends AnAction {
         return dialogParent == null
                ? new CommaAddModuleWizard(project, path, provider)
                : new CommaAddModuleWizard(project, dialogParent, path, provider);
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
     }
 }

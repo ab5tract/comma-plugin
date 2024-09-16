@@ -96,4 +96,9 @@ public class NewCroTemplateAction extends AnAction {
         RakuUtils.writeCodeToPath(testPath, new ArrayList<>());
         return testPath.toString();
     }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
+    }
 }

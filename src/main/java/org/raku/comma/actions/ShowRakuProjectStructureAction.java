@@ -1,5 +1,6 @@
 package org.raku.comma.actions;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.Configurable;
@@ -33,5 +34,10 @@ public class ShowRakuProjectStructureAction extends AnAction {
         } else {
             new ShowSecondarySdkSetter().actionPerformed(e);
         }
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
     }
 }

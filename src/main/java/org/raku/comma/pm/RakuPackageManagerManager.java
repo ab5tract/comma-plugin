@@ -29,8 +29,9 @@ public final class RakuPackageManagerManager implements PersistentStateComponent
         }
 
         Element pmListElement = new Element("pmList");
-        for (RakuPackageManager manager : pmList)
+        for (RakuPackageManager manager : pmList) {
             pmListElement.addContent(formPMElement(manager));
+        }
         el.addContent(pmListElement);
 
         return el;
@@ -45,8 +46,9 @@ public final class RakuPackageManagerManager implements PersistentStateComponent
         }
         RakuPackageManager newPM = parsePM(location.getName(), location.getPath());
         pmList.add(newPM);
-        if (setAsCurrent)
+        if (setAsCurrent) {
             currentPM = newPM;
+        }
     }
 
     public void setPM(RakuPackageManager pm) {
@@ -81,17 +83,16 @@ public final class RakuPackageManagerManager implements PersistentStateComponent
             if (elem.getName().equals("current")) {
                 String kind = elem.getAttributeValue("kind");
                 String location = elem.getAttributeValue("location");
-                if (kind != null && location != null)
+                if (kind != null && location != null) {
                     currentPM = parsePM(kind, location);
-            }
-            else if (elem.getName().equals("pmList")) {
+                }
+            } else if (elem.getName().equals("pmList")) {
                 for (Element pmInstance : elem.getChildren()) {
                     String kind = pmInstance.getAttributeValue("kind");
                     String location = pmInstance.getAttributeValue("location");
                     if (kind != null && location != null) {
                         RakuPackageManager manager = parsePM(kind, location);
-                        if (manager != null)
-                            pmList.add(manager);
+                        pmList.add(manager);
                     }
                 }
             }
@@ -100,9 +101,9 @@ public final class RakuPackageManagerManager implements PersistentStateComponent
 
     public static RakuPackageManager parsePM(@NotNull String kind, @NotNull String location) {
         RakuPackageManager pm = switch (RakuPackageManagerKind.valueOf(kind.toUpperCase(Locale.ENGLISH))) {
-            case ZEF    -> new RakuZefPM(location);
-            case PAKKU  -> new RakuPakkuPM(location);
-            default     -> throw new IllegalArgumentException("Unknown kind of Package Manager");
+            case ZEF -> new RakuZefPM(location);
+            case PAKKU -> new RakuPakkuPM(location);
+            default -> throw new IllegalArgumentException("Unknown kind of Package Manager");
         };
         return pm;
     }

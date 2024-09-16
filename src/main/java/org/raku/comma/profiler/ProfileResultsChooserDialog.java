@@ -158,6 +158,11 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
         public void update(@NotNull AnActionEvent e) {
             e.getPresentation().setEnabled(myProfilesTable.getSelectedRowCount() != 0);
         }
+
+        @Override
+        public @NotNull ActionUpdateThread getActionUpdateThread() {
+            return ActionUpdateThread.EDT;
+        }
     }
 
     private class CompareSelectedAction extends AnAction {
@@ -178,6 +183,11 @@ public class ProfileResultsChooserDialog extends DialogWrapper {
         @Override
         public void update(@NotNull AnActionEvent e) {
             e.getPresentation().setEnabled(myProfilesTable.getSelectedRows().length == 2);
+        }
+
+        @Override
+        public @NotNull ActionUpdateThread getActionUpdateThread() {
+            return ActionUpdateThread.EDT;
         }
     }
 }

@@ -54,4 +54,10 @@ public abstract class NewRakuFileAction<T extends DialogWrapper> extends AnActio
 
     @NotNull
     abstract protected T getDialog(Project project, String filePath);
+
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.EDT;
+    }
 }
