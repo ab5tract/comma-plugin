@@ -3,6 +3,8 @@ package org.raku.comma.project.structure;
 import com.intellij.openapi.module.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.StructureConfigurableContext;
+import com.intellij.openapi.roots.ui.configuration.projectRoot.daemon.ModuleProjectStructureElement;
 import com.intellij.openapi.ui.NamedConfigurable;
 import com.intellij.openapi.util.ActionCallback;
 import com.intellij.openapi.util.Comparing;
@@ -26,12 +28,14 @@ public class RakuModuleConfigurable extends NamedConfigurable<Module> implements
     public RakuModuleConfigurable(RakuModulesConfigurator modulesConfigurator,
                                   @NotNull Module module,
                                   Runnable updateTree,
-                                  ModuleGrouper moduleGrouper) {
+                                  ModuleGrouper moduleGrouper)
+    {
         super(true, updateTree);
         myModule = module;
         myModuleGrouper = moduleGrouper;
         myConfigurator = modulesConfigurator;
         myModuleName = myConfigurator.getModuleModel().getActualName(myModule);
+        // TODO: Address RakuModuleStructureConfigurable being totally broken
         //myContext = RakuModuleStructureConfigurable.getInstance(myModule.getProject()).getContext();
         //myProjectStructureElement = new ModuleProjectStructureElement(myContext, myModule);
     }

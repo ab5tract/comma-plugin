@@ -147,8 +147,8 @@ public class RakuModuleStructureConfigurable extends RakuStructureConfigurable i
     public Module getModule(final String moduleName) {
         if (moduleName == null) return null;
         return myContext != null && myContext.myModulesConfigurator != null
-               ? myContext.myModulesConfigurator.getModule(moduleName)
-               : myModuleManager.findModuleByName(moduleName);
+                           ? myContext.myModulesConfigurator.getModule(moduleName)
+                           : myModuleManager.findModuleByName(moduleName);
     }
 
     public RakuStructureConfigurableContext getContext() {
@@ -157,7 +157,8 @@ public class RakuModuleStructureConfigurable extends RakuStructureConfigurable i
 
     public static RakuModuleStructureConfigurable getInstance(Project project) {
         // TODO: Fix this
-        return project.getService(RakuModuleStructureConfigurable.class);
+        // return project.getService(RakuModuleStructureConfigurable.class);
+        return null;
     }
 
     private class AddModuleAction extends AnAction implements DumbAware {

@@ -39,7 +39,7 @@ public class RakuWordsScanner extends VersionedWordsScanner {
             if (myIdentifierTokenSet.contains(type)) {
                 String text = myLexer.getTokenText();
                 if (type == RakuTokenTypes.VARIABLE) {
-                    if (text.length() > 1) {
+                    if (! text.isEmpty()) {
                         String sigilLess = text.substring(Character.isLetter(text.charAt(1)) ? 1 : 2);
                         if (indexByDash(processor, occurrence, sigilLess)) return;
                     }
@@ -102,7 +102,7 @@ public class RakuWordsScanner extends VersionedWordsScanner {
                                         final WordOccurrence.Kind kind,
                                         @NotNull WordOccurrence occurrence
     ) {
-        // This code seems strange but it is more effective as Character.isJavaIdentifier_xxx_ is quite costly operation due to unicode
+        // This code seems strange, but it is more effective as Character.isJavaIdentifier_xxx_ is quite costly operation due to unicode
         int index = from;
 
         ScanWordsLoop:

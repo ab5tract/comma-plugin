@@ -35,10 +35,6 @@ public class ShowSecondarySdkSetter extends AnAction {
         if (e.getProject() == null) {
             e.getPresentation().setEnabledAndVisible(false);
         }
-        BuildNumber build = ApplicationInfo.getInstance().getBuild();
-        if ("CP".equals(build.getProductCode()) ||
-            "CT".equals(build.getProductCode()))
-            e.getPresentation().setEnabledAndVisible(false);
     }
 
     static class SecondarySdkSelector extends DialogWrapper {
@@ -81,8 +77,9 @@ public class ShowSecondarySdkSetter extends AnAction {
         protected void doOKAction() {
             RakuBackupSDKService service = myProject.getService(RakuBackupSDKService.class);
             Sdk sdk = mySdkCheckbox.getSelectedJdk();
-            if (sdk != null)
+            if (sdk != null) {
                 service.setProjectSdkPath(myProject.getProjectFilePath(), sdk.getHomePath());
+            }
             super.doOKAction();
         }
     }

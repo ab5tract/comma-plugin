@@ -2,6 +2,7 @@
 package org.raku.comma.project.structure;
 
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -53,7 +54,7 @@ public class UIRootConfigurationAccessor extends RootConfigurationAccessor {
     @Override
     public Module getModule(final Module module, final String moduleName) {
         if (module == null) {
-            return RakuModuleStructureConfigurable.getInstance(myProject).getModule(moduleName);
+            return ModuleManager.getInstance(myProject).findModuleByName(moduleName);
         }
         return module;
     }

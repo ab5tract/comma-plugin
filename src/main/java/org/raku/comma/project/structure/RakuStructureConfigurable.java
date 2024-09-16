@@ -25,7 +25,10 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public abstract class RakuStructureConfigurable extends MasterDetailsComponent
-  implements SearchableConfigurable, Disposable, Place.Navigator {
+                                                implements SearchableConfigurable,
+                                                           Disposable,
+                                                           Place.Navigator
+{
     protected final Project myProject;
     protected boolean myWasTreeInitialized;
     protected boolean myUiDisposed;

@@ -34,18 +34,18 @@ public class RakuUtils {
         File tempFile;
         try {
             tempFile = FileUtil.createTempFile("comma", ".tmp");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             LOG.error(e);
             return null;
         }
 
         try (
-          InputStream in = RakuUtils.class.getClassLoader().getResourceAsStream(resourcePath);
-          FileOutputStream out = new FileOutputStream(tempFile)
+                InputStream in = RakuUtils.class.getClassLoader().getResourceAsStream(resourcePath);
+                FileOutputStream out = new FileOutputStream(tempFile)
         ) {
-            if (in != null)
+            if (in != null) {
                 in.transferTo(out);
+            }
         } catch (IOException e) {
             LOG.error(e);
         }
@@ -55,13 +55,12 @@ public class RakuUtils {
     public static List<String> getResourceAsLines(String filepath) {
         List<String> lines = new ArrayList<>();
         try (
-          InputStream resourceFileStream = RakuUtils.class.getClassLoader().getResourceAsStream(filepath);
-          BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(resourceFileStream), StandardCharsets.UTF_8))
+                InputStream resourceFileStream = RakuUtils.class.getClassLoader().getResourceAsStream(filepath);
+                BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(resourceFileStream), StandardCharsets.UTF_8))
         ) {
             while (inputStreamReader.ready())
                 lines.add(inputStreamReader.readLine());
-        }
-        catch (IOException|NullPointerException e) {
+        } catch (IOException | NullPointerException e) {
             LOG.error(e);
         }
         return lines;
@@ -75,7 +74,7 @@ public class RakuUtils {
         String text = new StringBuilder(String.valueOf(originalText)).reverse().toString();
         StringBuilder builder = new StringBuilder(text.length() + text.length() / each + 1);
         int index = 0;
-        while (index < text.length())  {
+        while (index < text.length()) {
             builder.append(text, index, Math.min(index + 3, text.length()));
             index += each;
 
@@ -90,17 +89,16 @@ public class RakuUtils {
     }
 
     public static String escapeHTML(String str) {
-        return str.chars().mapToObj(c -> c > 127 || "\"'<>&".indexOf(c) != -1 ?
-                                         "&" + htmlReplace(c) + ";" : String.valueOf((char) c)).collect(Collectors.joining());
+        return str.chars().mapToObj(
+                c -> (c > 127 || "\"'<>&".indexOf(c) != -1)
+                                ? "&" + htmlReplace(c) + ";"
+                                : String.valueOf((char) c)).collect(Collectors.joining());
     }
 
     private static String htmlReplace(int c) {
-        if (c == 62)
-            return "gt";
-        if (c == 60)
-            return "lt";
-        if (c == 38)
-            return "amp";
+        if (c == 62) return "gt";
+        if (c == 60) return "lt";
+        if (c == 38) return "amp";
         return String.valueOf(c);
     }
 }

@@ -22,11 +22,11 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.raku.comma.RakuIcons;
 import org.raku.comma.metadata.RakuMetaDataComponent;
 import org.raku.comma.module.RakuModuleType;
-import org.raku.comma.pm.IgnoreObsoletePackageManagerSettings;
 import org.raku.comma.pm.RakuPackageManagerManager;
 import org.raku.comma.sdk.RakuSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.services.RakuBackupSDKService;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -113,8 +113,7 @@ public class RakuProjectBuilder extends ProjectBuilder {
                     RakuMetaDataComponent component = firstModule.getService(RakuMetaDataComponent.class);
                     component.triggerMetaBuild(metaFile);
                 }
-                // Ignore
-                IgnoreObsoletePackageManagerSettings managerSettings = project.getService(IgnoreObsoletePackageManagerSettings.class);
+
                 // Detect and set PM from path
                 RakuPackageManagerManager manager = project.getService(RakuPackageManagerManager.class);
                 if (manager != null) {

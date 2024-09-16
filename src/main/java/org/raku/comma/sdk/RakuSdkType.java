@@ -143,8 +143,8 @@ public class RakuSdkType extends SdkType {
     public static String getSdkHomeByProject(@NotNull Project project) {
         Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
         return sdk != null && sdk.getSdkType() instanceof RakuSdkType
-               ? sdk.getHomePath()
-               : secondarySDKHome(project);
+                   ? sdk.getHomePath()
+                   : secondarySDKHome(project);
     }
 
     public static String secondarySDKHome(@NotNull Project project) {
@@ -250,7 +250,8 @@ public class RakuSdkType extends SdkType {
             return cache.setting;
         }
         if (settingJson != null) {
-            return cache.setting = makeSettingSymbols(project, settingJson);
+            cache.setting = makeSettingSymbols(project, settingJson);
+            return cache.setting;
         }
 
         File coreSymbols = RakuUtils.getResourceAsFile("symbols/raku-core-symbols.p6");
@@ -259,10 +260,10 @@ public class RakuSdkType extends SdkType {
 
         if (perl6path == null || coreSymbols == null || coreDocs == null) {
             String errorMessage = perl6path == null
-                                  ? "getCoreSettingFile is called without Raku SDK set, using fallback"
-                                  : coreSymbols == null
-                                    ? "getCoreSettingFile is called with corrupted resources bundle, using fallback"
-                                    : "getCoreSettingFile is called with corrupted resources bundle";
+                                              ? "getCoreSettingFile is called without Raku SDK set, using fallback"
+                                              : coreSymbols == null
+                                                            ? "getCoreSettingFile is called with corrupted resources bundle, using fallback"
+                                                            : "getCoreSettingFile is called with corrupted resources bundle";
             reactToSDKIssue(project, errorMessage);
             return getFallback(project);
         }
@@ -280,8 +281,8 @@ public class RakuSdkType extends SdkType {
                             coreSymbols.delete();
                             coreDocs.delete();
                         }
-                        catch (Exception ignored) {
-                        }
+                        catch (Exception ignored) {}
+
                         if (settingLines.isEmpty()) {
                             reactToSDKIssue(project, "getCoreSettingFile got no symbols from Raku, using fallback");
                             getFallback(project);
