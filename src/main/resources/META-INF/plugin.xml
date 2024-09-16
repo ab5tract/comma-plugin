@@ -88,8 +88,8 @@
     <typedHandler implementation="org.raku.comma.editor.SigilCompletionAutoPopupHandler"/>
     <typedHandler implementation="org.raku.comma.editor.UnicodeReplacementHandler"/>
     <backspaceHandlerDelegate implementation="org.raku.comma.editor.BackspaceUnicodeHandler"/>
-    <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultRaku.xml"/>
-    <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaRaku.xml"/>
+    <additionalTextAttributes scheme="Default" file="colorSchemes/RakuDefault.xml"/>
+    <additionalTextAttributes scheme="Darcula" file="colorSchemes/RakuDarcula.xml"/>
     <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultCroTemplate.xml"/>
     <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaCroTemplate.xml"/>
     <annotator language="Raku" implementationClass="org.raku.comma.annotation.NullRegexAnnotator"/>
