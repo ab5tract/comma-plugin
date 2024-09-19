@@ -141,7 +141,7 @@ public class NamePathComponent extends JPanel {
 
     boolean shouldPromptCreation = isPathChangedByUser();
     String message = String.format("The %s directory\n", context.getPresentationName());
-    if (!CommaProjectWizardUtil.createDirectoryIfNotExists(message, projectDirectoryPath, shouldPromptCreation)) {
+    if (CommaProjectWizardUtil.createDirectoryIfNotExists(message, projectDirectoryPath, shouldPromptCreation)) {
       return false;
     }
 

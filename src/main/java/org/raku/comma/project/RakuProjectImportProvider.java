@@ -26,10 +26,8 @@ public class RakuProjectImportProvider {
 
     public boolean canImportFromFile(VirtualFile file) {
         if (file.isDirectory()) {
-            if (file.findChild("META6.json") != null)
-                return true;
-            if (file.findChild("META.info") != null)
-                return true;
+            if (file.findChild("META6.json") != null) return true;
+            if (file.findChild("META.info")  != null) return true;
         }
         String fileName = file.getName();
         return fileName.equals("META6.json") || fileName.equals("META.info");
@@ -42,7 +40,7 @@ public class RakuProjectImportProvider {
           new ProjectNameStep(context),
           new SdkSettingsStep(context, new RakuModuleBuilder(), condition, null) {
               @Override
-              public JComponent getComponent() {
+              public @NotNull JComponent getComponent() {
                   JComponent oldPanel = super.getComponent();
                   JPanel newPanel = new JPanel(new MigLayout());
                   newPanel.add(new JLabel("Select a Raku compiler to use"), "wrap 20");

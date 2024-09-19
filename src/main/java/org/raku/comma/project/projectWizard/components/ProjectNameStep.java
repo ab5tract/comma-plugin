@@ -32,7 +32,10 @@ public class ProjectNameStep extends ModuleWizardStep {
 
     public ProjectNameStep(WizardContext wizardContext) {
         myWizardContext = wizardContext;
-        myNamePathComponent = new NamePathComponent(myWizardContext.isCreatingNewProject() ? "Project name:" : "Module name:",
+        String projectOrModule = myWizardContext.isCreatingNewProject()
+                                                    ? "Project name:"
+                                                    : "Module name:";
+        myNamePathComponent = new NamePathComponent(projectOrModule,
                                                     String.format("%s file location:", StringUtil.capitalize(myWizardContext.getPresentationName())),
                                                     String.format("Select %s file directory", myWizardContext.getPresentationName()),
                                                     String.format("%s file will be stored in this directory", myWizardContext.getPresentationName()));
@@ -40,7 +43,7 @@ public class ProjectNameStep extends ModuleWizardStep {
         myPanel.setBorder(BorderFactory.createEtchedBorder());
 
         String appName = ApplicationNamesInfo.getInstance().getFullProductName();
-        myPanel.add(new JLabel(String.format("Please enter a name to create a new %s %s.", appName, wizardContext.getPresentationName())),
+        myPanel.add(new JLabel("Please enter a name to create a new %s %s.".formatted(appName, wizardContext.getPresentationName())),
                     new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1.0, 0.0, GridBagConstraints.NORTHWEST,
                                            GridBagConstraints.HORIZONTAL,
                                            JBInsets.create(8, 10), 0, 0));
@@ -74,7 +77,7 @@ public class ProjectNameStep extends ModuleWizardStep {
         if (name == null) {
             List<String> components = StringUtil.split(FileUtil.toSystemIndependentName(myWizardContext.getProjectFileDirectory()), "/");
             if (!components.isEmpty()) {
-                name = components.get(components.size() - 1);
+                name = components.getLast();
             }
         }
         myNamePathComponent.setNameValue(name);
@@ -98,38 +101,39 @@ public class ProjectNameStep extends ModuleWizardStep {
     @Override
     public boolean validate() throws ConfigurationException {
         String name = myNamePathComponent.getNameValue();
-        if (name.length() == 0) {
+        if (name.isEmpty()) {
             ApplicationNamesInfo info = ApplicationNamesInfo.getInstance();
-            throw new ConfigurationException(
-                String.format("Enter a file name to create a new %s %s", info.getFullProductName(), myWizardContext.getPresentationName()));
+            String exceptionText = "Enter a file name to create a new %s %s"
+                                        .formatted(info.getFullProductName(), myWizardContext.getPresentationName());
+            throw new ConfigurationException(exceptionText);
         }
 
         final String projectFileDirectory = getProjectFileDirectory();
-        if (projectFileDirectory.length() == 0) {
-            throw new ConfigurationException(
-                String.format("Enter %s file location", myWizardContext.getPresentationName()));
+        if (projectFileDirectory.isEmpty()) {
+            throw new ConfigurationException("Enter %s file location".formatted(myWizardContext.getPresentationName()));
         }
 
         final boolean shouldPromptCreation = myNamePathComponent.isPathChangedByUser();
-        String prefix = String.format("The %s directory", myWizardContext.getPresentationName());
-        if (!CommaProjectWizardUtil.createDirectoryIfNotExists(prefix, projectFileDirectory, shouldPromptCreation)) {
+        String prefix = "The %s directory".formatted(myWizardContext.getPresentationName());
+        if (CommaProjectWizardUtil.createDirectoryIfNotExists(prefix, projectFileDirectory, shouldPromptCreation)) {
             return false;
         }
 
         boolean shouldContinue = true;
 
         final String path = myWizardContext.isCreatingNewProject() && myWizardContext.getProjectStorageFormat() == DIRECTORY_BASED
-                            ? getProjectFileDirectory() + "/" + Project.DIRECTORY_STORE_FOLDER : getProjectFilePath();
+                                ? "%s/%s".formatted(getProjectFileDirectory(), Project.DIRECTORY_STORE_FOLDER)
+                                : getProjectFilePath();
         final File projectFile = new File(path);
         if (projectFile.exists()) {
             final String title = myWizardContext.isCreatingNewProject()
                                  ? IdeCoreBundle.message("title.new.project")
                                  : IdeCoreBundle.message("title.add.module");
             final String message = myWizardContext.isCreatingNewProject() && myWizardContext.getProjectStorageFormat() == DIRECTORY_BASED
-                                   ? String.format("%s folder already exists in %s.\nIts content may be overwritten.\nContinue?",
-                                                   Project.DIRECTORY_STORE_FOLDER, projectFile.getParentFile().getAbsolutePath())
-                                   : String.format("The %s file \n%s\nalready exists.\nWould you like to overwrite it?",
-                                                   myWizardContext.getPresentationName(), projectFile.getAbsolutePath());
+                                 ? "%s folder already exists in %s.\nIts content may be overwritten.\nContinue?"
+                                        .formatted(Project.DIRECTORY_STORE_FOLDER, projectFile.getParentFile().getAbsolutePath())
+                                 : "The %s file \n%s\nalready exists.\nWould you like to overwrite it?"
+                                        .formatted(myWizardContext.getPresentationName(), projectFile.getAbsolutePath());
             int answer = Messages.showYesNoDialog(message, title, Messages.getQuestionIcon());
             shouldContinue = answer == Messages.YES;
         }
@@ -139,8 +143,10 @@ public class ProjectNameStep extends ModuleWizardStep {
 
     @NonNls
     public String getProjectFilePath() {
-        return getProjectFileDirectory() + "/" + myNamePathComponent.getNameValue()/*myTfProjectName.getText().trim()*/ +
-               (myWizardContext.getProject() == null ? ProjectFileType.DOT_DEFAULT_EXTENSION : ModuleFileType.DOT_DEFAULT_EXTENSION);
+        String suffix = (myWizardContext.getProject() == null)
+                            ? ProjectFileType.DOT_DEFAULT_EXTENSION
+                            : ModuleFileType.DOT_DEFAULT_EXTENSION;
+        return getProjectFileDirectory() + "/" + myNamePathComponent.getNameValue() + suffix;
     }
 
     public String getProjectFileDirectory() {

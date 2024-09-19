@@ -73,14 +73,15 @@ public class UpdateExtensionsAction extends AnAction {
             for (VirtualFile root : ModuleRootManager.getInstance(module).getSourceRoots()) {
                 if (root.isDirectory()) {
                     @NotNull List<File> files = FileUtil.findFilesByMask(
-                        FULL_LEGACY_EXTENSION_PATTERN,
-                        root.toNioPath().toFile());
+                            FULL_LEGACY_EXTENSION_PATTERN,
+                            root.toNioPath().toFile());
                     for (File file : files) {
                         Matcher matcher = FULL_LEGACY_EXTENSION_PATTERN.matcher(file.getName());
                         if (matcher.matches()) {
                             filesToUpdate.compute(matcher.group(1), (f, list) -> {
-                                if (list == null)
+                                if (list == null) {
                                     list = new ArrayList<>();
+                                }
                                 list.add(file);
                                 return list;
                             });
@@ -118,35 +119,35 @@ public class UpdateExtensionsAction extends AnAction {
         protected @Nullable JComponent createCenterPanel() {
             JPanel panel = new JPanel(new MigLayout());
             myModel = new ListTableModel<>(
-                new ColumnInfo[]{
-                    new ColumnInfo<StringItem, Boolean>("Update") {
-                        @Override
-                        public Boolean valueOf(StringItem item) {
-                            return item.isSelected;
-                        }
+                    new ColumnInfo[]{
+                            new ColumnInfo<StringItem, Boolean>("Update") {
+                                @Override
+                                public Boolean valueOf(StringItem item) {
+                                    return item.isSelected;
+                                }
 
-                        @Override
-                        public boolean isCellEditable(StringItem item) {
-                            return true;
-                        }
+                                @Override
+                                public boolean isCellEditable(StringItem item) {
+                                    return true;
+                                }
 
-                        @Override
-                        public Class<?> getColumnClass() {
-                            return Boolean.class;
-                        }
+                                @Override
+                                public Class<?> getColumnClass() {
+                                    return Boolean.class;
+                                }
 
-                        @Override
-                        public void setValue(StringItem item, Boolean value) {
-                            item.isSelected = value;
-                        }
-                    },
-                    new ColumnInfo<StringItem, String>("Name") {
-                        @Override
-                        public @Nullable String valueOf(StringItem item) {
-                            return String.format(".%s -> .%s", item.ext, nonLegacyExts.get(item.ext));
-                        }
-                    }
-                }, this.exts
+                                @Override
+                                public void setValue(StringItem item, Boolean value) {
+                                    item.isSelected = value;
+                                }
+                            },
+                            new ColumnInfo<StringItem, String>("Name") {
+                                @Override
+                                public @Nullable String valueOf(StringItem item) {
+                                    return String.format(".%s -> .%s", item.ext, nonLegacyExts.get(item.ext));
+                                }
+                            }
+                    }, this.exts
             );
             myTable = new JBTable(myModel);
             panel.setMinimumSize(new Dimension(400, 300));
@@ -159,7 +160,7 @@ public class UpdateExtensionsAction extends AnAction {
             List<Pair<Path, String>> failedToProcess = new ArrayList<>();
             WriteCommandAction.runWriteCommandAction(myProject, "Renaming...", null, () -> {
                 for (int i = 0; i < myTable.getRowCount(); i++) {
-                    if (myTable.getValueAt(i, 0) instanceof Boolean && ((Boolean)myTable.getValueAt(i, 0)).booleanValue()) {
+                    if (myTable.getValueAt(i, 0) instanceof Boolean && ((Boolean) myTable.getValueAt(i, 0)).booleanValue()) {
                         String ext = myModel.getItem(i).ext;
                         List<File> files = filesToUpdate.get(ext);
                         for (File file : files) {
@@ -169,8 +170,7 @@ public class UpdateExtensionsAction extends AnAction {
                                 VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(file);
                                 if (vf != null)
                                     vf.rename(this, newName);
-                            }
-                            catch (IOException e) {
+                            } catch (IOException e) {
                                 failedToProcess.add(Pair.create(target, newName));
                             }
                         }

@@ -31,22 +31,22 @@ public class CommaProjectWizardUtil {
                     .showOkCancelDialog(message, "Directory Does Not Exist", "OK", "Cancel",
                                         Messages.getQuestionIcon());
                 if (answer != Messages.OK) {
-                    return false;
+                    return true;
                 }
             }
 
             if (!FileUtil.createDirectory(dir)) {
                 Messages
                     .showErrorDialog(IdeBundle.message("error.failed.to.create.directory", dir.getPath()), CommonBundle.getErrorTitle());
-                return false;
+                return true;
             }
         }
 
         if (SystemInfo.isUnix && !dir.canWrite()) {
             Messages.showErrorDialog("Directory " + dir.getPath() + " is read-only", CommonBundle.getErrorTitle());
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 }

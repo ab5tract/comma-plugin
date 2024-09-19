@@ -1,22 +1,21 @@
 package org.raku.comma.project.structure;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModel;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
-import com.intellij.openapi.util.Comparing;
 import org.raku.comma.project.projectWizard.components.JdkComboBox;
 import org.raku.comma.sdk.RakuSdkType;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.services.RakuBackupSDKService;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class RakuProjectSdkConfigurable implements UnnamedConfigurable {
     private final Project myProject;
@@ -28,8 +27,7 @@ public class RakuProjectSdkConfigurable implements UnnamedConfigurable {
         public void sdkAdded(@NotNull Sdk sdk) {
             try {
                 myJdksModel.apply(null, true);
-            }
-            catch (ConfigurationException e) {
+            } catch (ConfigurationException e) {
                 throw new RuntimeException(e);
             }
             reloadModel();
@@ -68,14 +66,22 @@ public class RakuProjectSdkConfigurable implements UnnamedConfigurable {
         if (myJdkPanel == null) {
             myJdkPanel = new JPanel(new MigLayout("", "left", "top"));
             myCbProjectJdk = new JdkComboBox(myProject, myJdksModel,
-                                             (sdkType) -> sdkType instanceof RakuSdkType,
-                                             JdkComboBox.getSdkFilter((sdkType) -> sdkType instanceof RakuSdkType),
-                                             (sdkType) -> sdkType instanceof RakuSdkType,
-                                             (foo) -> {});
-            myCbProjectJdk.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    myJdksModel.setProjectSdk(myCbProjectJdk.getSelectedJdk());
+                    (sdkType) -> sdkType instanceof RakuSdkType,
+                    JdkComboBox.getSdkFilter((sdkType) -> sdkType instanceof RakuSdkType),
+                    (sdkType) -> sdkType instanceof RakuSdkType,
+                    (foo) -> {
+                    }
+            );
+            myCbProjectJdk.addActionListener(event -> {
+                var service = myProject.getService(RakuBackupSDKService.class);
+                String sdkHome = Objects.requireNonNull(myCbProjectJdk.getSelectedJdk()).getHomePath();
+                assert sdkHome != null;
+                PropertiesComponent properties = PropertiesComponent.getInstance(myProject);
+                if (RakuSdkType.getInstance().isValidSdkHome(sdkHome)) {
+                    service.setProjectSdkPath(myProject, sdkHome);
+                    properties.setValue("raku.sdk.selected", sdkHome);
+                } else {
+                    throw new RuntimeException("Invalid SDK in location '%s'".formatted(sdkHome));
                 }
             });
             final String text = "<html><b>Project SDK:</b><br>This SDK is default for all project modules.</html>";
@@ -86,36 +92,40 @@ public class RakuProjectSdkConfigurable implements UnnamedConfigurable {
     }
 
     private void reloadModel() {
-        final Sdk projectJdk = myJdksModel.getProjectSdk();
-        if (myCbProjectJdk != null) myCbProjectJdk.reloadModel();
-        final String sdkName = projectJdk == null ? ProjectRootManager.getInstance(myProject).getProjectSdkName() : projectJdk.getName();
-        if (sdkName != null) {
-            final Sdk jdk = myJdksModel.findSdk(sdkName);
-            if (jdk != null) {
-                myCbProjectJdk.setSelectedJdk(jdk);
+        var service = myProject.getService(RakuBackupSDKService.class);
+        final String rakuSdkHome = service.getProjectSdkPath(myProject);
+        final String rakuSdkName = RakuSdkType.suggestSdkName(rakuSdkHome);
+
+        if (rakuSdkName != null) {
+            final Sdk rakuSdk = myJdksModel.findSdk(rakuSdkName);
+            if (rakuSdk != null) {
+                service.setProjectSdkPath(myProject, rakuSdk.getHomePath());
             } else {
-                myCbProjectJdk.setInvalidJdk(sdkName);
+                myCbProjectJdk.setInvalidJdk(rakuSdkName);
             }
-        } else
+        } else {
             myCbProjectJdk.setSelectedJdk(null);
+        }
     }
 
     @Override
     public boolean isModified() {
-        final Sdk projectSdk = ProjectRootManager.getInstance(myProject).getProjectSdk();
-        return !Comparing.equal(projectSdk, getSelectedProjectJdk());
+        final String projectRakuSdkHome = myProject.getService(RakuBackupSDKService.class).getProjectSdkPath(myProject);
+        return ! projectRakuSdkHome.equals(Objects.requireNonNull(getSelectedProjectJdk()).getHomePath());
     }
 
     @Override
     public void apply() {
-        ProjectRootManager.getInstance(myProject).setProjectSdk(getSelectedProjectJdk());
+        String sdkHome = Objects.requireNonNull(getSelectedProjectJdk()).getHomePath();
+        myProject.getService(RakuBackupSDKService.class)
+                 .setProjectSdkPath(myProject, sdkHome);
     }
 
     @Override
     public void reset() {
         reloadModel();
 
-        final String sdkName = ProjectRootManager.getInstance(myProject).getProjectSdkName();
+        final String sdkName = myProject.getService(RakuBackupSDKService.class).getProjectSdkName(myProject);
         if (sdkName != null) {
             final Sdk jdk = myJdksModel.findSdk(sdkName);
             if (jdk != null) {

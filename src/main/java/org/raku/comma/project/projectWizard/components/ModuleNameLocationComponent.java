@@ -230,13 +230,10 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
             throw new ConfigurationException("Enter a module name");
         }
 
-        if (!CommaProjectWizardUtil.createDirectoryIfNotExists("The module file directory\n", moduleFileDirectory,
-                                                               myImlLocationChangedByUser)) {
+        if (CommaProjectWizardUtil.createDirectoryIfNotExists("The module file directory\n", moduleFileDirectory, myImlLocationChangedByUser)) {
             return false;
         }
-        if (!CommaProjectWizardUtil
-            .createDirectoryIfNotExists("The module content root.\n", myModuleContentRoot.getText(),
-                                        myContentRootChangedByUser)) {
+        if (CommaProjectWizardUtil.createDirectoryIfNotExists("The module content root.\n", myModuleContentRoot.getText(), myContentRootChangedByUser)) {
             return false;
         }
 

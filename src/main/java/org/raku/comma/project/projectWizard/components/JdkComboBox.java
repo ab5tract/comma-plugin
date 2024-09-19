@@ -183,7 +183,7 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
     }
 
     if (anObject == null) {
-      SdkListModel innerModel = ((JdkComboBoxModel)getModel()).myInnerModel;
+      SdkListModel innerModel = ((JdkComboBoxModel) getModel()).myInnerModel;
       SdkListItem candidate = innerModel.findProjectSdkItem();
       if (candidate == null) {
         candidate = innerModel.findNoneSdkItem();
@@ -200,16 +200,16 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
       // it is a chance we have a cloned SDK instance from the model here, or an original one
       // reload model is needed to make sure we see all instances
       myModel.reloadSdks();
-      ((JdkComboBoxModel)getModel()).trySelectSdk((Sdk)anObject);
+      ((JdkComboBoxModel) getModel()).trySelectSdk((Sdk)anObject);
       return;
     }
 
     if (anObject instanceof InnerComboBoxItem) {
-      SdkListItem item = ((InnerComboBoxItem)anObject).getItem();
+      SdkListItem item = ((InnerComboBoxItem) anObject).getItem();
       if (myModel.executeAction(this, item, newItem -> {
         setSelectedItem(newItem);
         if (newItem instanceof SdkItem) {
-          myOnNewSdkAdded.consume(((SdkItem)newItem).sdk);
+          myOnNewSdkAdded.consume(((SdkItem) newItem).sdk);
         }
       })) return;
     }

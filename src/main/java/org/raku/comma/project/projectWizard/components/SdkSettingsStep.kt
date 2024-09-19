@@ -33,9 +33,9 @@ open class SdkSettingsStep(
     sdkTypeIdFilter: Condition<in SdkTypeId?>,
     sdkFilter: Condition<in Sdk?>?
 ) : ModuleWizardStep() {
-    protected val myJdkComboBox: JdkComboBox
-    protected val myWizardContext: WizardContext
-    protected val myModel: ProjectSdksModel
+    private val myJdkComboBox: JdkComboBox
+    private val myWizardContext: WizardContext
+    private val myModel: ProjectSdksModel
     private val myModuleBuilder: ModuleBuilder
     private val myJdkPanel: JPanel
 
@@ -46,7 +46,7 @@ open class SdkSettingsStep(
         sdkTypeIdFilter: Condition<in SdkTypeId?>,
         sdkFilter: Condition<in Sdk?>? = null
     ) : this(settingsStep.context, moduleBuilder, sdkTypeIdFilter, sdkFilter) {
-        if (!isEmpty) {
+        if (! isEmpty) {
             settingsStep.addSettingsField(getSdkFieldLabel(settingsStep.context.project), myJdkPanel)
         }
     }

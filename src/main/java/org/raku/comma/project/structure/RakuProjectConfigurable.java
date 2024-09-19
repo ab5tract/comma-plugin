@@ -105,7 +105,7 @@ public class RakuProjectConfigurable extends NamedConfigurable<Project> implemen
     @Override
     public void apply() throws ConfigurationException {
         if (myProjectName != null && StringUtil.isEmptyOrSpaces(myProjectName.getText())) {
-            throw new ConfigurationException("Please, specify project name!");
+            throw new ConfigurationException("Please specify project name");
         }
         ApplicationManager.getApplication().runWriteAction(() -> {
             myProjectSdkConfigurable.apply();

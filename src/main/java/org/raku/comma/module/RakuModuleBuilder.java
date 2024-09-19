@@ -76,8 +76,8 @@ public class RakuModuleBuilder extends ModuleBuilder {
     private Path addSourceRoot(ContentEntry contentEntry, Pair<String, String> sourcePathPair) {
         Path sourcePath = Paths.get(sourcePathPair.first, sourcePathPair.second);
         File directory = sourcePath.toFile();
-        if (!directory.exists() && !directory.mkdirs()) {
-            throw new IllegalStateException("Could not create directory: " + directory);
+        if (!(directory.exists() || directory.mkdirs())) {
+            throw new IllegalStateException("Could not find or create directory: " + directory);
         }
         if (myBuilder.shouldBeMarkedAsRoot(sourcePathPair.second)) {
             VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(sourcePath.toFile());
@@ -95,13 +95,14 @@ public class RakuModuleBuilder extends ModuleBuilder {
         typeToBuilderPairs.put(RakuProjectType.RAKU_APPLICATION, RakuModuleBuilderApplication.class);
         typeToBuilderPairs.put(RakuProjectType.CRO_WEB_APPLICATION, CroModuleBuilderApplication.class);
         Class<?> currentTypeBuilder = typeToBuilderPairs.get(myModuleType);
-        if (currentTypeBuilder.isInstance(myBuilder))
-            return;
+
+        if (currentTypeBuilder.isInstance(myBuilder)) return;
+
         try {
             Constructor<?> constructor = currentTypeBuilder.getConstructor();
-            myBuilder = (RakuModuleBuilderGeneric)constructor.newInstance();
-        }
-        catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            myBuilder = (RakuModuleBuilderGeneric) constructor.newInstance();
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException e) {
             LOG.error("Could not update builder", e);
         }
     }
@@ -110,8 +111,9 @@ public class RakuModuleBuilder extends ModuleBuilder {
     @Override
     public List<Module> commit(@NotNull Project project, ModifiableModuleModel model, ModulesProvider modulesProvider) {
         List<Module> modules = super.commit(project, model, modulesProvider);
-        if (model != null)
+        if (model != null) {
             WriteAction.run(model::commit);
+        }
         if (modules != null) {
             for (Module module : modules) {
                 module.getService(RakuMetaDataComponent.class).triggerMetaBuild();
@@ -138,7 +140,7 @@ public class RakuModuleBuilder extends ModuleBuilder {
 
     @Override
     public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull ModulesProvider modulesProvider) {
-        return new ModuleWizardStep[]{ new RakuModuleWizardStep(this) };
+        return new ModuleWizardStep[]{new RakuModuleWizardStep(this)};
     }
 
     @Nullable

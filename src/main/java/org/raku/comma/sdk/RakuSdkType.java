@@ -175,8 +175,7 @@ public class RakuSdkType extends SdkType {
     @Override
     public String getVersionString(@NotNull String path) {
         String binPath = findRakuInSdkHome(path);
-        if (binPath == null)
-            return null;
+        if (binPath == null) return null;
         String[] command = {binPath, "-e", "say $*PERL.compiler.version"};
         String line = null;
         ProcessBuilder processBuilder = new ProcessBuilder(command);
@@ -187,8 +186,7 @@ public class RakuSdkType extends SdkType {
                 InputStreamReader in = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
                 BufferedReader processOutputReader = new BufferedReader(in)) {
                 line = processOutputReader.readLine();
-                if (process.waitFor() != 0)
-                    return null;
+                if (process.waitFor() != 0) return null;
             }
         }
         catch (IOException | InterruptedException e) {
@@ -204,6 +202,32 @@ public class RakuSdkType extends SdkType {
         if (version == null) {
             return "Unknown at " + sdkHome;
         }
+        return "Raku " + version;
+    }
+
+    public static String suggestSdkName(@NotNull String sdkHome)  {
+        String binPath = findRakuInSdkHome(sdkHome);
+        if (binPath == null) return null;
+        String[] command = {binPath, "-e", "say $*RAKU.compiler.version"};
+        String version = null;
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+
+        try {
+            Process process = processBuilder.start();
+            try (InputStreamReader in = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
+                 BufferedReader processOutputReader = new BufferedReader(in))
+            {
+                version = processOutputReader.readLine();
+                if (process.waitFor() != 0) return null;
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (version == null) {
+            throw new RuntimeException("Unknown Raku SDK at " + sdkHome);
+        }
+
         return "Raku " + version;
     }
 

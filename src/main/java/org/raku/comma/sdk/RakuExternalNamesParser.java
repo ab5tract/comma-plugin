@@ -53,13 +53,13 @@ public class RakuExternalNamesParser {
                 switch (j.getString("k")) {
                     case "n": {
                         RakuPackageDecl psi = new ExternalRakuPackageDecl(
-                            myProject, myFile, "", j.getString("n"), j.getString("t"), "");
+                                myProject, myFile, "", j.getString("n"), j.getString("t"), "");
                         result.add(new RakuExplicitSymbol(RakuSymbolKind.TypeOrConstant, psi));
                         break;
                     }
                     case "v": {
                         ExternalRakuVariableDecl decl = new ExternalRakuVariableDecl(
-                            myProject, myFile, j.getString("n"), "our", j.getString("t"));
+                                myProject, myFile, j.getString("n"), "our", j.getString("t"));
                         if (j.has("d"))
                             decl.setDocs(j.getString("d"));
                         result.add(new RakuExplicitSymbol(RakuSymbolKind.Variable, decl));
@@ -71,9 +71,9 @@ public class RakuExternalNamesParser {
                         int isMulti = j.getInt("m");
                         String deprecationMessage = j.has("x") ? j.getString("x") : null;
                         ExternalRakuRoutineDecl psi = new ExternalRakuRoutineDecl(
-                            myProject, myFile, j.getString("k"), j.getString("k").equals("m") ? "has" : "our",
-                            j.getString("n"), isMulti == 0 ? "only" : "multi",
-                            deprecationMessage, j.getJSONObject("s"), j.has("p"));
+                                myProject, myFile, j.getString("k"), j.getString("k").equals("m") ? "has" : "our",
+                                j.getString("n"), isMulti == 0 ? "only" : "multi",
+                                deprecationMessage, j.getJSONObject("s"), j.has("p"));
                         if (j.has("d"))
                             psi.setDocs(j.getString("d"));
                         if (j.has("rakudo"))
@@ -84,7 +84,7 @@ public class RakuExternalNamesParser {
                     case "e":
                     case "ss": {
                         ExternalRakuPackageDecl
-                          psi = new ExternalRakuPackageDecl(myProject, myFile, "c", j.getString("n"), j.getString("t"), "A");
+                                psi = new ExternalRakuPackageDecl(myProject, myFile, "c", j.getString("n"), j.getString("t"), "A");
                         if (j.has("d"))
                             psi.setDocs(j.getString("d"));
                         result.add(new RakuExplicitSymbol(RakuSymbolKind.TypeOrConstant, psi));
@@ -121,11 +121,12 @@ public class RakuExternalNamesParser {
     @NotNull
     private ExternalRakuPackageDecl parsePackageDeclaration(JSONObject j, List<String> mro) {
         ExternalRakuPackageDecl psi = new ExternalRakuPackageDecl(
-          myProject, myFile, j.getString("k"),
-          j.getString("n"), j.getString("t"), j.getString("b"),
-          new ArrayList<>(), new ArrayList<>(), mro, null);
-        if (j.has("d"))
+                myProject, myFile, j.getString("k"),
+                j.getString("n"), j.getString("t"), j.getString("b"),
+                new ArrayList<>(), new ArrayList<>(), mro, null);
+        if (j.has("d")) {
             psi.setDocs(j.getString("d"));
+        }
 
         List<RakuRoutineDecl> routines = new ArrayList<>();
         if (j.has("m") && j.get("m") instanceof JSONArray)
@@ -135,14 +136,16 @@ public class RakuExternalNamesParser {
                     String deprecationMessage = routineJson.has("x") ? routineJson.getString("x") : null;
                     JSONObject signature = routineJson.getJSONObject("s");
                     ExternalRakuRoutineDecl routineDecl = new ExternalRakuRoutineDecl(
-                        myProject, psi,
-                        routineJson.getString("k"), "has",
-                        routineJson.getString("n"), isMulti == 0 ? "only" : "multi",
-                        deprecationMessage, signature, routineJson.has("p"));
-                    if (routineJson.has("d"))
+                            myProject, psi,
+                            routineJson.getString("k"), "has",
+                            routineJson.getString("n"), isMulti == 0 ? "only" : "multi",
+                            deprecationMessage, signature, routineJson.has("p"));
+                    if (routineJson.has("d")) {
                         routineDecl.setDocs(routineJson.getString("d"));
-                    if (routineJson.has("rakudo"))
+                    }
+                    if (routineJson.has("rakudo")) {
                         routineDecl.setImplementationDetail(true);
+                    }
                     routines.add(routineDecl);
                 }
 
@@ -151,10 +154,10 @@ public class RakuExternalNamesParser {
             for (Object attribute : j.getJSONArray("a"))
                 if (attribute instanceof JSONObject) {
                     ExternalRakuVariableDecl attributeDecl = new ExternalRakuVariableDecl(
-                        myProject, psi, ((JSONObject)attribute).getString("n"),
-                        "has", ((JSONObject)attribute).getString("t"));
-                    if (((JSONObject)attribute).has("d"))
-                        attributeDecl.setDocs(((JSONObject)attribute).getString("d"));
+                            myProject, psi, ((JSONObject) attribute).getString("n"),
+                            "has", ((JSONObject) attribute).getString("t"));
+                    if (((JSONObject) attribute).has("d"))
+                        attributeDecl.setDocs(((JSONObject) attribute).getString("d"));
                     attrs.add(attributeDecl);
                 }
 

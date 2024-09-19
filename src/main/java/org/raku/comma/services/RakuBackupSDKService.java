@@ -24,7 +24,7 @@ import java.util.Map;
  * for a project. This service maintains state of this SDK and can be used to set/obtain
  * such "secondary" SDK for Raku parts.
  */
-@Service(Service.Level.PROJECT)
+@Service({ Service.Level.PROJECT })
 @State(name = "Raku.Backup.Sdk", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
 @InternalIgnoreDependencyViolation
 public final class RakuBackupSDKService implements PersistentStateComponent<RakuBackupSDKService.State> {
@@ -44,6 +44,11 @@ public final class RakuBackupSDKService implements PersistentStateComponent<Raku
     @Override
     public void loadState(@NotNull State state) {
         myState = state;
+    }
+
+    public void setProjectSdkPath(Project project, String sdkPath) {
+        setProjectSdkPath(project.getProjectFilePath(), sdkPath);
+        project.save();
     }
 
     public void setProjectSdkPath(String projectFilePath, String sdkPath) {
@@ -70,8 +75,16 @@ public final class RakuBackupSDKService implements PersistentStateComponent<Raku
         }
     }
 
+    public String getProjectSdkPath(Project project) {
+        return getProjectSdkPath(project.getProjectFilePath());
+    }
+
     public String getProjectSdkPath(String projectFilePath) {
         return myState.projectSdkPaths.get(projectFilePath);
+    }
+
+    public String getProjectSdkName(Project project) {
+        return RakuSdkType.suggestSdkName(getProjectSdkPath(project));
     }
 
     public static class State {

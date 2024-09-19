@@ -25,6 +25,7 @@ import com.intellij.util.ui.UIUtil;
 import org.raku.comma.project.projectWizard.CommaAbstractProjectWizard;
 import org.raku.comma.project.projectWizard.CommaNewProjectWizard;
 import org.jetbrains.annotations.NotNull;
+import org.raku.comma.services.RakuBackupSDKService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -157,7 +158,9 @@ public class CommaProjectUtil {
     }
 
     public static void applySdkToProject(@NotNull Project project, @NotNull Sdk jdk) {
-        ProjectRootManagerEx rootManager = ProjectRootManagerEx.getInstanceEx(project);
-        rootManager.setProjectSdk(jdk);
+        var service = project.getService(RakuBackupSDKService.class);
+        service.setProjectSdkPath(project, jdk.getHomePath());
+//        ProjectRootManagerEx rootManager = ProjectRootManagerEx.getInstanceEx(project);
+//        rootManager.setProjectSdk(jdk);
     }
 }

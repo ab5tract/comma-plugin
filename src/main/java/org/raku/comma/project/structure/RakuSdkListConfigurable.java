@@ -8,6 +8,7 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModel;
 import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl;
@@ -21,6 +22,7 @@ import org.raku.comma.sdk.RakuSdkType;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.services.RakuBackupSDKService;
 
 import javax.swing.tree.TreePath;
 import java.util.*;
@@ -46,7 +48,7 @@ public final class RakuSdkListConfigurable extends RakuStructureConfigurable {
         private void updateName() {
             final TreePath path = myTree.getSelectionPath();
             if (path != null) {
-                final NamedConfigurable<?> configurable = ((MyNode)path.getLastPathComponent()).getConfigurable();
+                final NamedConfigurable<?> configurable = ((MyNode) path.getLastPathComponent()).getConfigurable();
                 if (configurable instanceof RakuSdkConfigurable) {
                     configurable.updateName();
                 }
@@ -70,15 +72,15 @@ public final class RakuSdkListConfigurable extends RakuStructureConfigurable {
         final Map<Sdk, Sdk> sdks = myJdksTreeModel.getProjectSdks();
         for (Sdk sdk : sdks.keySet()) {
             RakuSdkConfigurable configurable =
-                new RakuSdkConfigurable((ProjectJdkImpl)sdks.get(sdk), myJdksTreeModel, TREE_UPDATER, myHistory,
-                                        myProject);
+                    new RakuSdkConfigurable((ProjectJdkImpl) sdks.get(sdk), myJdksTreeModel, TREE_UPDATER, myHistory,
+                            myProject);
             addNode(new MyNode(configurable), myRoot);
         }
     }
 
     public void addSdkNode(final Sdk sdk, final boolean selectInTree) {
-        if (! myUiDisposed) {
-            addNode(new MyNode(new RakuSdkConfigurable((ProjectJdkImpl)sdk, myJdksTreeModel, TREE_UPDATER, myHistory, myProject)), myRoot);
+        if (!myUiDisposed) {
+            addNode(new MyNode(new RakuSdkConfigurable((ProjectJdkImpl) sdk, myJdksTreeModel, TREE_UPDATER, myHistory, myProject)), myRoot);
             if (selectInTree) {
                 selectNodeInTree(MasterDetailsComponent.findNodeByObject(myRoot, sdk));
             }
@@ -125,7 +127,7 @@ public final class RakuSdkListConfigurable extends RakuStructureConfigurable {
     public void apply() throws ConfigurationException {
         boolean modifiedJdks = false;
         for (int i = 0; i < myRoot.getChildCount(); i++) {
-            final NamedConfigurable<?> configurable = ((MyNode)myRoot.getChildAt(i)).getConfigurable();
+            final NamedConfigurable<?> configurable = ((MyNode) myRoot.getChildAt(i)).getConfigurable();
             if (configurable.isModified()) {
                 configurable.apply();
                 modifiedJdks = true;
@@ -133,7 +135,13 @@ public final class RakuSdkListConfigurable extends RakuStructureConfigurable {
         }
 
         if (myJdksTreeModel.isModified() || modifiedJdks) myJdksTreeModel.apply(this);
-        myJdksTreeModel.setProjectSdk(ProjectRootManager.getInstance(myProject).getProjectSdk());
+        var sdkPath = myProject.getService(RakuBackupSDKService.class)
+                               .getProjectSdkPath(myProject.getProjectFilePath());
+        ProjectJdkTable.getInstance().getSdksOfType(RakuSdkType.getInstance()).stream()
+                .filter(findSdk -> Objects.equals(findSdk.getHomePath(), sdkPath))
+                .findFirst()
+                .ifPresent(myJdksTreeModel::setProjectSdk);
+
     }
 
     @Override
@@ -155,8 +163,9 @@ public final class RakuSdkListConfigurable extends RakuStructureConfigurable {
         @Override
         public boolean remove(@NotNull List<?> sdks) {
             for (Object sdk : sdks) {
-                if (sdk instanceof Sdk)
-                    myJdksTreeModel.removeSdk((Sdk)sdk);
+                if (sdk instanceof Sdk) {
+                    myJdksTreeModel.removeSdk((Sdk) sdk);
+                }
             }
             return true;
         }
@@ -181,18 +190,20 @@ public final class RakuSdkListConfigurable extends RakuStructureConfigurable {
         }
 
         @Override
-        public @NotNull ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.EDT; }
+        public @NotNull ActionUpdateThread getActionUpdateThread() {
+            return ActionUpdateThread.EDT;
+        }
 
         @Override
         public void actionPerformed(@NotNull AnActionEvent e) {
             SdkPopupFactory
-                .newBuilder()
-                .withProject(myProject)
-                .withProjectSdksModel(myJdksTreeModel)
-                .withSdkTypeFilter((sdkType) -> sdkType instanceof RakuSdkType)
-                .withSdkFilter(sdk -> false)
-                .buildPopup()
-                .showPopup(e);
+                    .newBuilder()
+                    .withProject(myProject)
+                    .withProjectSdksModel(myJdksTreeModel)
+                    .withSdkTypeFilter((sdkType) -> sdkType instanceof RakuSdkType)
+                    .withSdkFilter(sdk -> false)
+                    .buildPopup()
+                    .showPopup(e);
         }
     }
 }

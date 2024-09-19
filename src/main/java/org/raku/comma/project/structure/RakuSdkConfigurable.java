@@ -25,7 +25,8 @@ public class RakuSdkConfigurable extends NamedConfigurable<Sdk> implements Place
                                @NotNull ProjectSdksModel model,
                                Runnable updateTree,
                                History history,
-                               Project project) {
+                               Project project)
+    {
         super(true, updateTree);
         myProjectJdk = projectJdk;
         mySdkEditor = createSdkEditor(project, model, history, myProjectJdk);
@@ -35,7 +36,8 @@ public class RakuSdkConfigurable extends NamedConfigurable<Sdk> implements Place
     protected RakuSdkEditor createSdkEditor(@NotNull Project project,
                                             @NotNull ProjectSdksModel sdksModel,
                                             @NotNull History history,
-                                            @NotNull ProjectJdkImpl projectJdk) {
+                                            @NotNull ProjectJdkImpl projectJdk)
+    {
         return new RakuSdkEditor(project, sdksModel, history, projectJdk);
     }
 

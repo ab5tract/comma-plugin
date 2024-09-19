@@ -46,8 +46,7 @@ public final class RakuProjectModelSync {
                             if (moduleOfMetaDep != null && ModuleRootManager.getInstance(module).isDependsOn(moduleOfMetaDep)) {
                                 entriesPresentInMETA.add(moduleOfMetaDep.getName());
                                 removeDuplicateEntries(model, moduleOfMetaDep.getName());
-                            }
-                            else if (moduleOfMetaDep != null) {
+                            } else if (moduleOfMetaDep != null) {
                                 OrderEntry entry = model.addModuleOrderEntry(moduleOfMetaDep);
                                 entriesPresentInMETA.add(entry.getPresentableName());
                             }
@@ -59,7 +58,7 @@ public final class RakuProjectModelSync {
                             entriesPresentInMETA.add(metaDep);
                             if (maybeLibrary == null) {
                                 // otherwise create and mark
-                                LibraryEx library = (LibraryEx)model.getModuleLibraryTable().createLibrary(metaDep);
+                                LibraryEx library = (LibraryEx) model.getModuleLibraryTable().createLibrary(metaDep);
                                 LibraryEx.ModifiableModelEx libraryModel = library.getModifiableModel();
                                 String url = String.format("raku://%d:%s!/", sdk.getName().hashCode(), metaDep);
                                 libraryModel.setKind(RakuLibraryType.LIBRARY_KIND);
@@ -68,8 +67,7 @@ public final class RakuProjectModelSync {
                                 assert entry != null : library;
                                 entry.setScope(DependencyScope.COMPILE);
                                 WriteAction.run(libraryModel::commit);
-                            }
-                            else {
+                            } else {
                                 removeDuplicateEntries(model, maybeLibrary.getName());
                             }
                         }
@@ -104,13 +102,14 @@ public final class RakuProjectModelSync {
                                                      Set<String> metaDependencies,
                                                      Set<String> extendedDeps) {
         Sdk sdk = ModuleRootManager.getInstance(module).getSdk();
-        if (sdk == null || !(sdk.getSdkType() instanceof RakuSdkType))
+        if (sdk == null || !(sdk.getSdkType() instanceof RakuSdkType)) {
             sdk = ProjectRootManager.getInstance(module.getProject()).getProjectSdk();
+        }
         if (sdk == null || !(sdk.getSdkType() instanceof RakuSdkType)) {
             RakuBackupSDKService backupSDK = module.getProject().getService(RakuBackupSDKService.class);
             String homePath = backupSDK.getProjectSdkPath(module.getProject().getProjectFilePath());
-            if (homePath == null)
-                return null;
+
+            if (homePath == null) return null;
             for (Sdk tempSdk : ProjectJdkTable.getInstance().getSdksOfType(RakuSdkType.getInstance())) {
                 if (Objects.equals(tempSdk.getHomePath(), homePath)) {
                     sdk = tempSdk;
@@ -118,9 +117,11 @@ public final class RakuProjectModelSync {
                 }
             }
         }
-        if (sdk != null)
-            for (String dep : metaDependencies)
+        if (sdk != null) {
+            for (String dep : metaDependencies) {
                 extendedDeps.addAll(collectDependenciesOfModule(module.getProject(), dep, sdk));
+            }
+        }
         return sdk;
     }
 
@@ -128,17 +129,23 @@ public final class RakuProjectModelSync {
         boolean seen = false;
         for (OrderEntry entry : model.getOrderEntries()) {
             if (entry.getPresentableName().equals(name)) {
-                if (seen) model.removeOrderEntry(entry);
-                else seen = true;
+                if (seen) {
+                    model.removeOrderEntry(entry);
+                } else {
+                    seen = true;
+                }
             }
         }
     }
 
     private static void removeOrderEntriesNotInMETA(ModifiableRootModel model, Set<String> presentInMeta) {
-        for (OrderEntry entry : model.getOrderEntries())
-            if (entry.isValid() && !entry.getPresentableName().contains("Module source"))
-                if (!(presentInMeta.contains(entry.getPresentableName())))
+        for (OrderEntry entry : model.getOrderEntries()) {
+            if (entry.isValid() && !entry.getPresentableName().contains("Module source")) {
+                if (!(presentInMeta.contains(entry.getPresentableName()))) {
                     model.removeOrderEntry(entry);
+                }
+            }
+        }
     }
 
     private static List<String> collectDependenciesOfModule(Project project, String metaDep, Sdk sdk) {
@@ -150,8 +157,7 @@ public final class RakuProjectModelSync {
             depsCollectorScript.addParameter(locateScript.getAbsolutePath());
             depsCollectorScript.addParameter(metaDep);
             return depsCollectorScript.executeAndRead(locateScript);
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             RakuSdkType.getInstance().reactToSDKIssue(project, "Cannot use current Raku SDK");
             return new ArrayList<>();
         }

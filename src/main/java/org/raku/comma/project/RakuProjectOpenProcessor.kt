@@ -2,15 +2,13 @@ package org.raku.comma.project
 
 import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.ide.impl.ProjectUtilCore
-import com.intellij.openapi.application.EDT
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.projectImport.ProjectOpenProcessor
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.jetbrains.annotations.Nls
+import kotlin.coroutines.CoroutineContext
 
 class RakuProjectOpenProcessor : ProjectOpenProcessor() {
     override val name: @Nls String
@@ -43,6 +41,12 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
         )
         val project = ProjectManagerEx.getInstanceEx().openProject(nioPath, options)
         if (project != null) {
+
+            var iniialized = false
+            while (! iniialized) {
+                iniialized = project.isInitialized
+            }
+
             runBlocking {
                 importProjectAfterwardsAsync(project, virtualFile)
             }
@@ -51,11 +55,9 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
     }
 
     override suspend fun importProjectAfterwardsAsync(project: Project, file: VirtualFile) {
-        withContext(Dispatchers.EDT) {
-            val projectBuilder = RakuProjectBuilder(null)
-            projectBuilder.fileToImport = file.toString()
-            projectBuilder.commit(project)
-        }
+        val projectBuilder = RakuProjectBuilder(null)
+        projectBuilder.fileToImport = file.toString()
+        projectBuilder.commit(project, null, null)
     }
 
     override fun canImportProjectAfterwards(): Boolean {

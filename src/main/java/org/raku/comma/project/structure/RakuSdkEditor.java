@@ -28,6 +28,8 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.services.RakuBackupSDKService;
+import org.raku.comma.utils.CommaProjectUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -147,16 +149,17 @@ public class RakuSdkEditor implements Configurable, Place.Navigator {
         setHomePathValue(homePath.replace('/', File.separatorChar));
 
         final String newSdkName = suggestSdkName(homePath);
-        ((ProjectJdkImpl)mySdk).setName(newSdkName);
+        ((ProjectJdkImpl) mySdk).setName(newSdkName);
 
         try {
-            final Sdk dummySdk = (Sdk)mySdk.clone();
+            final Sdk dummySdk = mySdk.clone();
             SdkModificator sdkModificator = dummySdk.getSdkModificator();
             sdkModificator.setHomePath(homePath);
             sdkModificator.removeAllRoots();
             sdkModificator.commitChanges();
 
-            sdkType.setupSdkPaths(dummySdk, mySdkModel);
+//            sdkType.setupSdkPaths(dummySdk, mySdkModel);
+            CommaProjectUtil.applySdkToProject(myProject, mySdk);
 
             clearAllPaths();
             myVersionString = dummySdk.getVersionString();
