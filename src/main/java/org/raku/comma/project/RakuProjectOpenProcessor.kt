@@ -2,9 +2,6 @@ package org.raku.comma.project
 
 import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.ide.impl.ProjectUtilCore
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.util.io.FileUtil
@@ -14,8 +11,10 @@ import com.intellij.util.containers.stream
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.annotations.Nls
 import java.io.File
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
+import kotlin.collections.ArrayList
 
 class RakuProjectOpenProcessor : ProjectOpenProcessor() {
     override val name: @Nls String
@@ -42,7 +41,7 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
         val projectDirectory = if (virtualFile.isDirectory) virtualFile else virtualFile.parent
         val nioPath = projectDirectory.toNioPath()
 
-        removeOldCommaProjectFiles(projectDirectory)
+        removeOldCommaProjectFiles(nioPath)
 
         val isValidIdeaProject = ProjectUtilCore.isValidProjectPath(nioPath)
         val options = OpenProjectTask(
@@ -50,12 +49,6 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
         )
         val project = ProjectManagerEx.getInstanceEx().openProject(nioPath, options)
         if (project != null) {
-
-            var iniialized = false
-            while (!iniialized) {
-                iniialized = project.isInitialized
-            }
-
             runBlocking {
                 importProjectAfterwardsAsync(project, virtualFile)
             }
@@ -75,45 +68,40 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
     }
 
     // XXX: This feels like quite a messy hack... but it works.
-    private fun removeOldCommaProjectFiles(basePath: VirtualFile) {
-        val oldImls = basePath.toNioPath().toFile().listFiles().stream()
-                            .filter { file -> file.extension == "iml" }.toList()
+    private fun removeOldCommaProjectFiles(basePath: Path) {
+        val oldImls = basePath.toFile().listFiles().stream()
+                              .filter { file -> file.extension == "iml" }
+                              .toList()
 
-        if (oldImls.isEmpty() || oldImls.size > 1) return
+        if (oldImls.isEmpty()) return
 
-        val imlFile = oldImls.first();
-        val scanner: Scanner
-        try {
-            scanner = Scanner(imlFile)
-        } catch (ignored: Exception) {
-            return
-        }
-
-        var isOldComma = false
-        while (scanner.hasNextLine()) {
-            val lineFromFile = scanner.nextLine()
-            if (lineFromFile.contains("PERL6_MODULE_TYPE")) {
-                isOldComma = true
-                break
+        val isOldCommaImlFiles: MutableList<File> = ArrayList()
+        for (imlFile in oldImls) {
+            val scanner: Scanner
+            try {
+                scanner = Scanner(imlFile)
+            } catch (ignored: Exception) {
+                return
+            }
+            while (scanner.hasNextLine()) {
+                val lineFromFile = scanner.nextLine()
+                if (lineFromFile.contains("PERL6_MODULE_TYPE")) {
+                    isOldCommaImlFiles.add(imlFile)
+                    break
+                }
             }
         }
 
-        if (isOldComma) {
-            Notifications.Bus.notify(
-                Notification(
-                    "raku.messages",
-                    "Old-style Comma project found. Converting.",
-                    NotificationType.INFORMATION
-                )
-            )
+        if (isOldCommaImlFiles.isEmpty()) return
 
-            FileUtil.delete(imlFile)
+        for (isOldCommaImlFile in isOldCommaImlFiles) {
+            FileUtil.delete(isOldCommaImlFile)
+        }
 
-            val oldIdeaPath = Paths.get(basePath.toNioPath().toString(), ".idea").toString()
-            val oldIdeaDirectory = File(oldIdeaPath)
-            if (oldIdeaDirectory.exists() && oldIdeaDirectory.isDirectory) {
-                FileUtil.delete(oldIdeaDirectory)
-            }
+        val oldIdeaPath = Paths.get(basePath.toString(), ".idea").toString()
+        val oldIdeaDirectory = File(oldIdeaPath)
+        if (oldIdeaDirectory.exists() && oldIdeaDirectory.isDirectory) {
+            FileUtil.delete(oldIdeaDirectory)
         }
     }
 
