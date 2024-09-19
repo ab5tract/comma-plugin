@@ -199,7 +199,7 @@ open class SdkSettingsStep(
             //IDEA-98382 We should allow Next step if user has wrong SDK
             if (Messages.showDialog(
                     """
-                        ${e.message}
+                        $e
                         
                         Do you want to proceed?
                         """.trimIndent(),
