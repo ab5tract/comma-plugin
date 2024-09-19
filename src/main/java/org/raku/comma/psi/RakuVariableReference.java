@@ -35,8 +35,8 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
     public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         RakuVariable var = getElement();
         String name = var.getVariableName();
-        if (name == null)
-            return ResolveResult.EMPTY_ARRAY;
+        if (name == null) return ResolveResult.EMPTY_ARRAY;
+
         char twigil = RakuVariable.getTwigil(name);
         if (twigil == '!' || twigil == '.') {
             // Attribute; resolve through MOP.
@@ -44,23 +44,21 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
             if (enclosingPackage != null) {
                 RakuSingleResolutionSymbolCollector collector = new RakuSingleResolutionSymbolCollector(name, RakuSymbolKind.Variable);
                 enclosingPackage.contributeMOPSymbols(collector, new MOPSymbolsAllowed(
-                    true, true, true, enclosingPackage.getPackageKind().equals("role")));
+                        true, true, true, enclosingPackage.getPackageKind().equals("role")));
                 RakuSymbol symbol = collector.getResult();
                 if (symbol != null)
                     return new ResolveResult[]{new PsiElementResolveResult(symbol.getPsi())};
             }
-        }
-        else if (twigil == '*') {
+        } else if (twigil == '*') {
             if (DumbService.isDumb(getElement().getProject()))
                 return ResolveResult.EMPTY_ARRAY;
             Collection<RakuVariableDecl> decls =
-                StubIndex.getElements(RakuStubIndexKeys.DYNAMIC_VARIABLES, name, myElement.getProject(), GlobalSearchScope.allScope(
-                    myElement.getProject()), RakuVariableDecl.class);
+                    StubIndex.getElements(RakuStubIndexKeys.DYNAMIC_VARIABLES, name, myElement.getProject(), GlobalSearchScope.allScope(
+                            myElement.getProject()), RakuVariableDecl.class);
             if (decls.isEmpty())
                 return ResolveResult.EMPTY_ARRAY;
-            return ContainerUtil.map(decls, d -> new PsiElementResolveResult(d)).toArray(ResolveResult.EMPTY_ARRAY);
-        }
-        else {
+            return ContainerUtil.map(decls, PsiElementResolveResult::new).toArray(ResolveResult.EMPTY_ARRAY);
+        } else {
             // Lexical; resolve through lexpad.
             RakuSymbol symbol = var.resolveLexicalSymbol(RakuSymbolKind.Variable, name);
             if (symbol != null) {
@@ -71,25 +69,28 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
                     if (psi.getTextOffset() <= var.getTextOffset() || RakuVariable.getSigil(name) == '&')
                         return new ResolveResult[]{new PsiElementResolveResult(psi)};
                 }
-            }
-            else {
+            } else {
                 // Trying to resolve `(42 ~~ $foo)` is dangerous. If $foo is undeclared,
                 // we search for nearest regex (which is the application we are in) to obtain $0, $1 etc to maybe resolve there,
                 // so we get the var on the right of the smartmatch, this $foo, try to resolve its type, to do so we search
                 // for a declaration and infinite loop from there. Fix this by never trying to resolve right variable
                 // if there is no lexical.
                 RakuInfixApplication infix = PsiTreeUtil.getParentOfType(var, RakuInfixApplication.class);
-                if (infix != null && infix.getOperator().equals("~~") &&
-                    (PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var) ||
-                     PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var.getParent())))
+                if (infix != null
+                        && infix.getOperator().equals("~~")
+                        && (PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var)
+                        || PsiEquivalenceUtil.areElementsEquivalent(infix.getOperands()[1], var.getParent())))
+                {
                     return ResolveResult.EMPTY_ARRAY;
-
+                }
                 Collection<PsiNamedElement> regexDrivenVars = obtainRegexDrivenVars(var);
-                if (regexDrivenVars == null)
-                    return ResolveResult.EMPTY_ARRAY;
+
+                if (regexDrivenVars == null) return ResolveResult.EMPTY_ARRAY;
+
                 for (PsiNamedElement regexVar : regexDrivenVars) {
-                    if (Objects.equals(regexVar.getName(), name))
+                    if (Objects.equals(regexVar.getName(), name)) {
                         return new ResolveResult[]{new PsiElementResolveResult(regexVar)};
+                    }
                 }
             }
         }
@@ -103,39 +104,37 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
         if (enclosingPackage != null) {
             RakuVariantsSymbolCollector collector = new RakuVariantsSymbolCollector(RakuSymbolKind.Variable);
             enclosingPackage.contributeMOPSymbols(collector, new MOPSymbolsAllowed(
-                true, true, true, enclosingPackage.getPackageKind().equals("role")));
+                    true, true, true, enclosingPackage.getPackageKind().equals("role")));
             syms.addAll(collector.getVariants());
         }
         Collection<PsiNamedElement> regexDrivenVars = obtainRegexDrivenVars(getElement());
-        Collection<PsiNamedElement> elements = regexDrivenVars == null ? new ArrayList<>() : regexDrivenVars;
-        Collection<String> dynamicVariables =
-            StubIndex.getInstance().getAllKeys(RakuStubIndexKeys.DYNAMIC_VARIABLES, myElement.getProject());
+        Collection<PsiNamedElement> elements = regexDrivenVars == null
+                                               ? new ArrayList<>()
+                                               : regexDrivenVars;
+        Collection<String> dynamicVariables = StubIndex.getInstance().getAllKeys(RakuStubIndexKeys.DYNAMIC_VARIABLES,
+                                                                                 myElement.getProject());
         return Stream.concat(
-            Stream
-                .concat(syms.stream().filter(this::isDeclaredAfterCurrentPosition).map(sym -> sym.getName()),
-                        elements.stream()),
-            dynamicVariables.stream())
-            .toArray();
+                        Stream
+                                .concat(syms.stream().filter(this::isDeclaredAfterCurrentPosition).map(RakuSymbol::getName),
+                                        elements.stream()),
+                        dynamicVariables.stream())
+                .toArray();
     }
 
     private boolean isDeclaredAfterCurrentPosition(RakuSymbol symbol) {
         PsiElement psi = symbol.getPsi();
 
         // No PSI element or imported from another file is always fine.
-        if (psi == null)
-            return true;
-        if (psi.getContainingFile() != getElement().getContainingFile())
-            return true;
+        if (psi == null) return true;
+        if (psi.getContainingFile() != getElement().getContainingFile()) return true;
 
         // Declared in this file before the current location is fine.
-        if (psi.getTextOffset() < getElement().getTextOffset())
-            return true;
+        if (psi.getTextOffset() < getElement().getTextOffset()) return true;
 
         // Declared later, but routine or attribute is fine.
         String name = symbol.getName();
         if (name.length() >= 2) {
-            if (name.charAt(0) == '&')
-                return true;
+            if (name.charAt(0) == '&') return true;
             char twigil = name.charAt(1);
             return twigil == '!' || twigil == '.';
         }
@@ -153,15 +152,15 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
             RakuRegexDriver regex = PsiTreeUtil.getParentOfType(anchor, RakuQuoteRegex.class, RakuRegex.class);
             if (regex != null) {
                 return regex.collectRegexVariables();
-            }
-            else {
+            } else {
                 PsiElement call = PsiTreeUtil.getParentOfType(anchor, RakuMethodCall.class, RakuFile.class);
-                if (call instanceof RakuMethodCall && ((RakuMethodCall)call).getCallName().equals(".subst")) {
-                    PsiElement[] args = ((RakuMethodCall)call).getCallArguments();
+                if (call instanceof RakuMethodCall && ((RakuMethodCall) call).getCallName().equals(".subst")) {
+                    PsiElement[] args = ((RakuMethodCall) call).getCallArguments();
                     if (args.length >= 2) {
                         RakuType regexType = RakuSdkType.getInstance().getCoreSettingType(starter.getProject(), RakuSettingTypeId.Regex);
-                        if (((RakuPsiElement)args[0]).inferType().equals(regexType) &&
-                            PsiTreeUtil.isAncestor(args[1], starter, true)) {
+                        if (((RakuPsiElement) args[0]).inferType().equals(regexType) &&
+                                PsiTreeUtil.isAncestor(args[1], starter, true))
+                        {
                             List<PsiNamedElement> elemsToReturn = new ArrayList<>();
                             if (derefAndCollectRegexVars(args[0], elemsToReturn)) {
                                 return elemsToReturn;
@@ -179,18 +178,18 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
                             PsiElement rule = items.get(0).getElement();
                             if (rule instanceof RakuRegexDecl) {
                                 RakuRegexDriver driver = PsiTreeUtil.findChildOfType(rule, RakuRegex.class);
-                                return driver == null ? null : driver.collectRegexVariables();
+                                return driver == null
+                                       ? null
+                                       : driver.collectRegexVariables();
                             }
                         }
                     }
-                }
-                else {
+                } else {
                     return deduceRegexValuesFromStatement(anchor, starter);
                 }
             }
-        }
-        else if (anchor instanceof RakuRegexDriver) {
-            return ((RakuRegexDriver)anchor).collectRegexVariables();
+        } else if (anchor instanceof RakuRegexDriver) {
+            return ((RakuRegexDriver) anchor).collectRegexVariables();
         }
         return null;
     }
@@ -201,15 +200,14 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
             assert ref != null;
             PsiElement resolve = ref.resolve();
             if (resolve instanceof RakuVariableDecl) {
-                PsiElement init = ((RakuVariableDecl)resolve).getInitializer(regexVar);
+                PsiElement init = ((RakuVariableDecl) resolve).getInitializer(regexVar);
                 if (init instanceof RakuRegexDriver) {
-                    elemsToReturn.addAll(((RakuRegexDriver)init).collectRegexVariables());
+                    elemsToReturn.addAll(((RakuRegexDriver) init).collectRegexVariables());
                 }
                 return true;
             }
-        }
-        else if (arg instanceof RakuRegexDriver) {
-            elemsToReturn.addAll(((RakuRegexDriver)arg).collectRegexVariables());
+        } else if (arg instanceof RakuRegexDriver) {
+            elemsToReturn.addAll(((RakuRegexDriver) arg).collectRegexVariables());
             return true;
         }
         return false;
@@ -217,7 +215,8 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
 
     @Nullable
     private static Collection<PsiNamedElement> deduceRegexValuesFromStatement(PsiElement anchor,
-                                                                              RakuVariable starter) {
+                                                                              RakuVariable starter)
+    {
         PsiElement level = anchor;
         while (true) {
             level = PsiTreeUtil.getParentOfType(level, RakuFile.class, RakuRoutineDecl.class, RakuStatementList.class);
@@ -230,15 +229,14 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
                         return false;
                     }
                     if (each instanceof RakuInfixApplication) {
-                        return searchForRegexApplication((RakuInfixApplication)each);
-                    }
-                    else if (each instanceof RakuWhenStatement ||
-                             each instanceof RakuIfStatement ||
-                             each instanceof RakuUnlessStatement) {
-                        return searchForControlContextualizer((RakuControl)each);
-                    }
-                    else if (each instanceof RakuStatement) {
-                        return searchForSinkRegex((RakuStatement)each);
+                        return searchForRegexApplication((RakuInfixApplication) each);
+                    } else if (each instanceof RakuWhenStatement
+                            || each instanceof RakuIfStatement
+                            || each instanceof RakuUnlessStatement)
+                    {
+                        return searchForControlContextualizer((RakuControl) each);
+                    } else if (each instanceof RakuStatement) {
+                        return searchForSinkRegex((RakuStatement) each);
                     }
                     return true;
                 }
@@ -261,9 +259,10 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
                     if (app.getOperator().equals("~~")) {
                         PsiElement[] ops = app.getOperands();
                         if (ops.length == 2) {
-                            RakuType regexType =
-                                RakuSdkType.getInstance().getCoreSettingType(starter.getProject(), RakuSettingTypeId.Regex);
-                            if (ops[1] instanceof RakuPsiElement && ((RakuPsiElement)ops[1]).inferType().equals(regexType)) {
+                            RakuType regexType = RakuSdkType.getInstance()
+                                    .getCoreSettingType(starter.getProject(),
+                                                        RakuSettingTypeId.Regex);
+                            if (ops[1] instanceof RakuPsiElement && ((RakuPsiElement) ops[1]).inferType().equals(regexType)) {
                                 return super.execute(ops[1]);
                             }
                         }
@@ -279,14 +278,16 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
             // Might be null of top level
             RakuRoutineDecl anchorRoutineLevel = PsiTreeUtil.getParentOfType(anchor, RakuRoutineDecl.class);
             for (PsiElement infix : infixes) {
-                if (infix.getTextOffset() > starter.getTextOffset())
-                    break;
-                if (Objects.equals(PsiTreeUtil.getParentOfType(infix, RakuRoutineDecl.class), anchorRoutineLevel))
+                if (infix.getTextOffset() > starter.getTextOffset()) break;
+                if (Objects.equals(PsiTreeUtil.getParentOfType(infix, RakuRoutineDecl.class), anchorRoutineLevel)) {
                     curr = infix;
+                }
             }
             if (curr != null) {
                 List<PsiNamedElement> elemsToReturn = new ArrayList<>();
-                return derefAndCollectRegexVars(curr, elemsToReturn) ? elemsToReturn : null;
+                return derefAndCollectRegexVars(curr, elemsToReturn)
+                       ? elemsToReturn
+                       : null;
             }
         }
     }
