@@ -37,7 +37,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 import static com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor;
@@ -75,8 +74,16 @@ public class RakuProjectBuilder extends ProjectBuilder {
     }
 
     // XXX: This feels like quite a messy hack... but it works.
-    private void replacePerl6ModuleType(String imlPath) {
+    private void removeOldCommaProjectFile(Project project) {
+        String basePath = project.getBasePath();
+
+        if (basePath == null) return;
+
+        String imlPath = Paths.get(basePath + "/" + project.getName() + ".iml").toString();
         File imlFile = new File(imlPath);
+
+        if (! imlFile.exists()) return;
+
         Scanner scanner;
         try {
             scanner = new Scanner(imlFile);
@@ -84,28 +91,26 @@ public class RakuProjectBuilder extends ProjectBuilder {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
-        boolean isPerl6 = false;
+        boolean isOldComma = false;
         while (scanner.hasNextLine()) {
             String lineFromFile = scanner.nextLine();
             if (lineFromFile.contains("PERL6_MODULE_TYPE")) {
-                isPerl6 = true;
-                lineFromFile = lineFromFile.replace("PERL6_MODULE_TYPE", "RAKU_MODULE_TYPE");
+                isOldComma = true;
+                break;
             }
-            sb.append(lineFromFile).append("\n");
         }
 
-        boolean success = true;
-        if (isPerl6) {
-            Notifications.Bus.notify(new Notification("raku.messages", "Old-style Comma project found. Converting.", NotificationType.INFORMATION));
-            try {
-                FileUtil.writeToFile(imlFile, sb.toString());
-            } catch (Exception ignored) {
-                success = false;
-            }
+
+        if (isOldComma) {
+            Notifications.Bus.notify(new Notification("raku.messages",
+                                                      "Old-style Comma project found. Converting.",
+                                                      NotificationType.INFORMATION));
+
+            String oldModulesXmlPath = Paths.get(basePath, ".idea", "misc.xml").toString();
+            boolean success = FileUtil.delete(imlFile) && FileUtil.delete(new File(oldModulesXmlPath));
             String message = success
-                                ? "Conversion from old-style Comma project successful."
-                                : "Conversion from old-style Comma project failed. The project may fail to load or otherwise act strangely.";
+                             ? "Conversion from old-style Comma project successful."
+                             : "Conversion from old-style Comma project failed. The project may fail to load or otherwise act strangely.";
             Notifications.Bus.notify(new Notification("raku.messages", message, NotificationType.INFORMATION));
         }
     }
@@ -114,7 +119,8 @@ public class RakuProjectBuilder extends ProjectBuilder {
     @Override
     public List<Module> commit(@NotNull Project project,
                                ModifiableModuleModel model,
-                               ModulesProvider modulesProvider) {
+                               ModulesProvider modulesProvider)
+    {
         // XXX This builder could be used when importing project from Project Structure,
         // in this case `model` parameter is not null
         final List<Module> result = new ArrayList<>();
@@ -127,14 +133,16 @@ public class RakuProjectBuilder extends ProjectBuilder {
                 VirtualFile contentRoot = lfs.findFileByPath(path.substring(5));
                 if (contentRoot == null) return;
 
-                String imlFileName = project.getBasePath() + "/" + project.getName() + ".iml";
-                replacePerl6ModuleType(imlFileName);
+                removeOldCommaProjectFile(project);
+
+                String projectFilePath = project.getProjectFilePath();
+                if (projectFilePath == null) return;
 
                 ModifiableModuleModel modelToPatch = model != null
-                                ? model
-                                : ModuleManager.getInstance(project).getModifiableModel();
+                                                     ? model
+                                                     : ModuleManager.getInstance(project).getModifiableModel();
 
-                Module module = modelToPatch.newModule(imlFileName, RakuModuleType.getInstance().getId());
+                Module module = modelToPatch.newModule(projectFilePath, RakuModuleType.getInstance().getId());
                 result.add(module);
 
                 ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
@@ -179,9 +187,8 @@ public class RakuProjectBuilder extends ProjectBuilder {
                     }
                 }
 
+                project.scheduleSave();
             });
-
-            project.scheduleSave();
         } catch (Exception e) {
             LOG.info(e);
         }

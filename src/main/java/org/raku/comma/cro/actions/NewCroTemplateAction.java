@@ -32,7 +32,7 @@ public class NewCroTemplateAction extends AnAction {
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         final Object navigatable = CommonDataKeys.NAVIGATABLE.getData(dataContext);
         return project != null && (navigatable instanceof PsiDirectory ||
-                                   navigatable instanceof PsiFile);
+                navigatable instanceof PsiFile);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class NewCroTemplateAction extends AnAction {
             if (navigatable instanceof PsiDirectory)
                 templatePath = ((PsiDirectory) navigatable).getVirtualFile().getPath();
             else if (navigatable instanceof PsiFile) {
-                PsiDirectory parent = ((PsiFile)navigatable).getParent();
+                PsiDirectory parent = ((PsiFile) navigatable).getParent();
                 if (parent != null)
                     templatePath = parent.getVirtualFile().getPath();
             }
@@ -91,8 +91,9 @@ public class NewCroTemplateAction extends AnAction {
     public static String stubTemplate(Path testDirectoryPath, String fileName) {
         Path testPath = testDirectoryPath.resolve(fileName);
         // If no extension, add default `.crotmp`
-        if (!fileName.contains("."))
+        if (! fileName.contains(".")) {
             testPath = Paths.get(testDirectoryPath.toString(), fileName + "." + CroTemplateFileType.INSTANCE.getDefaultExtension());
+        }
         RakuUtils.writeCodeToPath(testPath, new ArrayList<>());
         return testPath.toString();
     }
