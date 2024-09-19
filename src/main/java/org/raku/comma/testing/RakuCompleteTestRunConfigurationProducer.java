@@ -17,11 +17,17 @@ import com.intellij.testFramework.LightVirtualFile;
 import org.raku.comma.psi.RakuFile;
 import org.jetbrains.annotations.NotNull;
 
+
+
 import java.util.Arrays;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurationProducer<RakuTestRunConfiguration> {
+
+    private final Set<String> validExtensions = Set.of("t", "t6", "rakutest");
+
     @NotNull
     @Override
     public ConfigurationFactory getConfigurationFactory() {
@@ -41,8 +47,8 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
             if (!(file instanceof RakuFile)) return false;
             final VirtualFile virtualFile = file.getVirtualFile();
             if (virtualFile == null
-                    || virtualFile instanceof LightVirtualFile
-                    || !Arrays.asList("t", "t6", "rakutest").contains(virtualFile.getExtension()))
+                || virtualFile instanceof LightVirtualFile
+                || !validExtensions.contains(virtualFile.getExtension()))
             {
                 return false;
             }
@@ -54,7 +60,7 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
             if (directory == null || !directory.isDirectory()) return false;
             AtomicReference<String> pathHolder = new AtomicReference<>();
             VfsUtilCore.processFilesRecursively(directory, file -> {
-                if (Arrays.asList("t", "t6", "rakutest").contains(file.getExtension())) {
+                if (! file.isDirectory() && validExtensions.contains(file.getExtension())) {
                     pathHolder.set(directory.getPath());
                     return false;
                 }
@@ -68,6 +74,7 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
         }
         Module module = ModuleUtilCore.findModuleForFile(fileToTest, context.getProject());
         if (module == null) return false;
+
         ContentEntry[] contentEntries = ModuleRootManager.getInstance(module).getContentEntries();
         if (contentEntries.length != 1 || contentEntries[0].getFile() == null) return false;
         configuration.setInterpreterArguments(calculateParameters(contentEntries[0]));
@@ -77,8 +84,7 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
 
     private static String calculateParameters(ContentEntry contentEntryToTest) {
         VirtualFile rakuModuleRoot = contentEntryToTest.getFile();
-        if (rakuModuleRoot == null)
-            return "";
+        if (rakuModuleRoot == null) return "";
         StringJoiner argsLine = new StringJoiner(" ");
         Arrays.stream(contentEntryToTest.getSourceFolders()).forEachOrdered((sourceFolder) -> {
             if (sourceFolder.isTestSource()) return;
@@ -106,8 +112,8 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
             if (!(file instanceof RakuFile)) return false;
             final VirtualFile virtualFile = file.getVirtualFile();
             if (virtualFile == null
-                    || virtualFile instanceof LightVirtualFile
-                    || !Arrays.asList("t", "t6", "rakutest").contains(virtualFile.getExtension()))
+                || virtualFile instanceof LightVirtualFile
+                || ! validExtensions.contains(virtualFile.getExtension()))
             {
                 return false;
             }
@@ -118,7 +124,7 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
                 return false;
             }
             VfsUtilCore.processFilesRecursively(directory, file -> {
-                if (Arrays.asList("t", "t6", "rakutest").contains(file.getExtension())) {
+                if (! file.isDirectory() && validExtensions.contains(file.getExtension())) {
                     fileToTest.set(directory);
                     return false;
                 }

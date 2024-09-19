@@ -47,6 +47,9 @@
     <xi:include href="/META-INF/meta/raku-common.xml" xpointer="xpointer(/idea-plugin/extensionPoints/*)"/>
   </extensionPoints>
 
+  <xi:include href="/META-INF/CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
+
 <!--  <extensions defaultExtensionNs="org.raku">-->
 <!--    <framework.type implementation="cro.org.raku.comma.CroFrameworkCall"/>-->
 <!--    <frameworkCall implementation="cro.org.raku.comma.CroTemplateCall"/>-->
@@ -179,8 +182,9 @@
     <moduleConfigurationEditorProvider implementation="org.raku.comma.project.structure.module.RakuModuleConfigurationEditorProvider"
       order="FIRST"/>
 
-    <fileType name="Cro Template" language="CroTemplate" implementationClass="org.raku.comma.cro.template.CroTemplateFileType"
-              fieldName="INSTANCE" extensions="crotmp"/>
+<!-- TODO: Figure out why the getActionUpdateThread() is ignored and we get exceptions about EDT_OLD -->
+<!--    <fileType name="Cro Template" language="CroTemplate" implementationClass="org.raku.comma.cro.template.CroTemplateFileType"-->
+<!--              fieldName="INSTANCE" extensions="crotmp"/>-->
     <lang.parserDefinition language="CroTemplate" implementationClass="org.raku.comma.cro.template.parsing.CroTemplateParserDefinition"/>
     <lang.syntaxHighlighterFactory language="CroTemplate"
                                    implementationClass="org.raku.comma.cro.template.highlighter.CroTemplateSyntaxHighlighterFactory"/>
@@ -481,6 +485,12 @@
             text="New Project..." description="Create a project">
       <add-to-group group-id="NewProjectOrModuleGroup" />
     </action>
+    <action id="org.raku.comma.actions.moduleRoot.MarkRakuTestsSourceRootAction"
+            class="org.raku.comma.actions.moduleRoot.MarkRakuTestsSourceRootAction" text="Raku Mark Tests Root"/>
+    <action id="org.raku.comma.actions.moduleRoot.MarkRakuSourceRootAction"
+            class="org.raku.comma.actions.moduleRoot.MarkRakuSourceRootAction" text="Mark Raku Source Root"/>
+    <action id="org.raku.comma.actions.moduleRoot.RakuUnmarkRootAction"
+            class="org.raku.comma.actions.moduleRoot.RakuUnmarkRootAction" text="Unmark Raku Root"/>
   </actions>
 
   <applicationListeners>

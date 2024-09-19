@@ -20,9 +20,9 @@ import java.util.ArrayList;
 
 public class NewCroTemplateAction extends AnAction {
     @Override
-    public void update(AnActionEvent e) {
-        final DataContext dataContext = e.getDataContext();
-        final Presentation presentation = e.getPresentation();
+    public void update(AnActionEvent event) {
+        final DataContext dataContext = event.getDataContext();
+        final Presentation presentation = event.getPresentation();
         final boolean enabled = isAvailable(dataContext);
         presentation.setVisible(enabled);
         presentation.setEnabled(enabled);
@@ -31,16 +31,16 @@ public class NewCroTemplateAction extends AnAction {
     private static boolean isAvailable(DataContext dataContext) {
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         final Object navigatable = CommonDataKeys.NAVIGATABLE.getData(dataContext);
-        return project != null && (navigatable instanceof PsiDirectory ||
-                navigatable instanceof PsiFile);
+        return project != null
+                && (navigatable instanceof PsiDirectory || navigatable instanceof PsiFile);
     }
 
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        Project project = e.getData(CommonDataKeys.PROJECT);
+    public void actionPerformed(@NotNull AnActionEvent event) {
+        Project project = event.getData(CommonDataKeys.PROJECT);
         if (project == null) return;
 
-        Object navigatable = e.getData(CommonDataKeys.NAVIGATABLE);
+        Object navigatable = event.getData(CommonDataKeys.NAVIGATABLE);
         String templatePath = null;
         if (navigatable != null) {
             if (navigatable instanceof PsiDirectory)
@@ -51,16 +51,16 @@ public class NewCroTemplateAction extends AnAction {
                     templatePath = parent.getVirtualFile().getPath();
             }
         }
-        if (templatePath == null)
-            return;
+        if (templatePath == null) return;
 
         String finalTemplatePath = templatePath;
         InputValidator validator = new InputValidator() {
             @Override
             public boolean checkInput(String inputString) {
                 String string = inputString;
-                if (string.indexOf('.') < 0)
+                if (string.indexOf('.') < 0) {
                     string += ".crotmp";
+                }
                 return !Paths.get(finalTemplatePath, string).toFile().exists() && inputString.matches(Patterns.CRO_TEMPLATE_PATTERN);
             }
 
@@ -75,11 +75,11 @@ public class NewCroTemplateAction extends AnAction {
                 "Cro Template name (type one without an extension to use a default '.crotmp'):",
                 "New Cro Template Name",
                 Messages.getQuestionIcon(), null, validator);
-        if (fileName == null)
-            return;
+        if (fileName == null) return;
 
-        if (fileName.indexOf('.') < 0)
+        if (fileName.indexOf('.') < 0) {
             fileName += ".crotmp";
+        }
 
         templatePath = stubTemplate(Paths.get(templatePath), fileName);
         VirtualFile testFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(templatePath);
@@ -91,7 +91,7 @@ public class NewCroTemplateAction extends AnAction {
     public static String stubTemplate(Path testDirectoryPath, String fileName) {
         Path testPath = testDirectoryPath.resolve(fileName);
         // If no extension, add default `.crotmp`
-        if (! fileName.contains(".")) {
+        if (!fileName.contains(".")) {
             testPath = Paths.get(testDirectoryPath.toString(), fileName + "." + CroTemplateFileType.INSTANCE.getDefaultExtension());
         }
         RakuUtils.writeCodeToPath(testPath, new ArrayList<>());

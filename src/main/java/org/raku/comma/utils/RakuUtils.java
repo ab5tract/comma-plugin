@@ -20,8 +20,9 @@ public class RakuUtils {
     public static void writeCodeToPath(Path codePath, List<String> lines) {
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
-                if (!codePath.getParent().toFile().exists())
+                if (!codePath.getParent().toFile().exists()) {
                     Files.createDirectories(codePath.getParent());
+                }
                 Files.write(codePath, lines, StandardCharsets.UTF_8);
             } catch (IOException e) {
                 LOG.error(e);
@@ -42,7 +43,8 @@ public class RakuUtils {
         try (
                 InputStream in = RakuUtils.class.getClassLoader().getResourceAsStream(resourcePath);
                 FileOutputStream out = new FileOutputStream(tempFile)
-        ) {
+        )
+        {
             if (in != null) {
                 in.transferTo(out);
             }
@@ -57,9 +59,11 @@ public class RakuUtils {
         try (
                 InputStream resourceFileStream = RakuUtils.class.getClassLoader().getResourceAsStream(filepath);
                 BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(resourceFileStream), StandardCharsets.UTF_8))
-        ) {
-            while (inputStreamReader.ready())
+        )
+        {
+            while (inputStreamReader.ready()) {
                 lines.add(inputStreamReader.readLine());
+            }
         } catch (IOException | NullPointerException e) {
             LOG.error(e);
         }
@@ -78,21 +82,24 @@ public class RakuUtils {
             builder.append(text, index, Math.min(index + 3, text.length()));
             index += each;
 
-            if (index < text.length())
+            if (index < text.length()) {
                 builder.append(delimiter);
+            }
         }
         return builder.reverse().toString();
     }
 
     public static String getNameExtension(@Nullable String filename) {
-        return filename != null && filename.contains(".") ? filename.substring(filename.lastIndexOf(".") + 1) : "";
+        return filename != null && filename.contains(".")
+               ? filename.substring(filename.lastIndexOf(".") + 1)
+               : "";
     }
 
     public static String escapeHTML(String str) {
         return str.chars().mapToObj(
                 c -> (c > 127 || "\"'<>&".indexOf(c) != -1)
-                                ? "&" + htmlReplace(c) + ";"
-                                : String.valueOf((char) c)).collect(Collectors.joining());
+                     ? "&" + htmlReplace(c) + ";"
+                     : String.valueOf((char) c)).collect(Collectors.joining());
     }
 
     private static String htmlReplace(int c) {

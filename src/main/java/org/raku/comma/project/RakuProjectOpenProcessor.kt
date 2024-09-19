@@ -60,7 +60,6 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
         val projectBuilder = RakuProjectBuilder(null)
         projectBuilder.fileToImport = file.toString()
         projectBuilder.commit(project, null, null)
-        project.save()
     }
 
     override fun canImportProjectAfterwards(): Boolean {

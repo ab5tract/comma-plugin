@@ -47,7 +47,7 @@ public class RakuTestRunningState extends CommandLineState {
 
     public RakuTestRunningState(ExecutionEnvironment environment) {
         super(environment);
-        runConfiguration = (RakuTestRunConfiguration)getEnvironment().getRunProfile();
+        runConfiguration = (RakuTestRunConfiguration) getEnvironment().getRunProfile();
         myProject = environment.getProject();
     }
 
@@ -61,8 +61,8 @@ public class RakuTestRunningState extends CommandLineState {
     }
 
     private ConsoleView createConsole() {
-        final RakuTestRunConfiguration runConfiguration = (RakuTestRunConfiguration)getEnvironment().getRunProfile();
-        final TestConsoleProperties testConsoleProperties = new Perl6TestConsoleProperties(runConfiguration, getEnvironment());
+        final RakuTestRunConfiguration runConfiguration = (RakuTestRunConfiguration) getEnvironment().getRunProfile();
+        final TestConsoleProperties testConsoleProperties = new RakuTestConsoleProperties(runConfiguration, getEnvironment());
         final ConsoleView consoleView = SMTestRunnerConnectionUtil.createConsole("Raku tests", testConsoleProperties);
         Disposer.register(getEnvironment(), consoleView);
         return consoleView;
@@ -86,21 +86,24 @@ public class RakuTestRunningState extends CommandLineState {
     protected GeneralCommandLine createCommandLine() throws ExecutionException {
         GeneralCommandLine cmd;
 
-        if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win"))
+        if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win")) {
             cmd = new RakuCommandLine(myProject);
-        else
+        } else {
             cmd = new RakuScriptRunner(myProject);
-        myScriptFile = RakuUtils.getResourceAsFile("testing/raku-test-harness.p6");
-        if (myScriptFile == null)
+        }
+        myScriptFile = RakuUtils.getResourceAsFile("testing/raku-test-harness.raku");
+        if (myScriptFile == null) {
             throw new ExecutionException("Bundled resources are corrupted");
-
+        }
         cmd.addParameter(myScriptFile.getAbsolutePath());
 
         fillTestHarnessArguments(cmd);
-        if (!cmd.getParametersList().getParametersString().contains("--path"))
+        if (!cmd.getParametersList().getParametersString().contains("--path")) {
             throw new ExecutionException("No test source roots in the project: is it properly configured?");
-        if (!runConfiguration.getTestPattern().isEmpty())
+        }
+        if (!runConfiguration.getTestPattern().isEmpty()) {
             cmd.addParameter("--pattern=" + runConfiguration.getTestPattern());
+        }
         cmd.setWorkDirectory(myProject.getBasePath());
 
         cmd.withEnvironment("TEST_JOBS", String.valueOf(runConfiguration.getParallelismDegree()));
@@ -112,41 +115,39 @@ public class RakuTestRunningState extends CommandLineState {
         // Depending on the target, we have to fill one or more data points
         // consisting of the path to test, current working directory and arguments
         switch (runConfiguration.getTestKind()) {
-            case ALL: {
+            case ALL -> {
                 Predicate<Module> modulesPredicate = m -> true;
                 populateTestDirectoriesByModules(myProject, cmd, modulesPredicate);
-                break;
             }
-            case MODULE: {
+            case MODULE -> {
                 Predicate<Module> modulesPredicate = m -> m.getName().equals(runConfiguration.getModuleName());
                 List<Module> modules = populateTestDirectoriesByModules(myProject, cmd, modulesPredicate);
-                if (modules.size() == 0)
-                    throw new ExecutionException(
-                        String.format("No module with name %s to run its tests", runConfiguration.getModuleName()));
-                break;
+                if (modules.isEmpty()) {
+                    throw new ExecutionException(String.format("No module with name %s to run its tests",
+                                                               runConfiguration.getModuleName()));
+                }
             }
-            case DIRECTORY:
-            case FILE: {
+            case DIRECTORY, FILE -> {
                 VirtualFile fileToTest = LocalFileSystem.getInstance().findFileByPath(
-                    runConfiguration.getTestKind() == RakuTestKind.DIRECTORY
-                    ? runConfiguration.getDirectoryPath()
-                    : runConfiguration.getFilePath()
+                        runConfiguration.getTestKind() == RakuTestKind.DIRECTORY
+                                                ? runConfiguration.getDirectoryPath()
+                                                : runConfiguration.getFilePath()
                 );
                 if (fileToTest == null) return;
                 Module module = ModuleUtilCore.findModuleForFile(fileToTest, myProject);
                 if (module == null) return;
                 ContentEntry[] contentEntries = ModuleRootManager.getInstance(module).getContentEntries();
                 addParametersForContentEntry(module, cmd, fileToTest, contentEntries);
-                break;
             }
         }
     }
 
     @NotNull
     private List<Module> populateTestDirectoriesByModules(Project project, GeneralCommandLine cmd,
-                                                          Predicate<Module> modulesPredicate) {
+                                                          Predicate<Module> modulesPredicate)
+    {
         List<Module> modules = Arrays.stream(ModuleManager.getInstance(project).getModules())
-            .filter(modulesPredicate).collect(Collectors.toList());
+                .filter(modulesPredicate).collect(Collectors.toList());
         for (Module module : modules) {
             ContentEntry[] contentEntries = ModuleRootManager.getInstance(module).getContentEntries();
             if (contentEntries.length != 1) {
@@ -179,14 +180,15 @@ public class RakuTestRunningState extends CommandLineState {
         cmd.addParameter("--args=" + runConfiguration.getInterpreterArguments());
     }
 
-    static class Perl6TestConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {
-        Perl6TestConsoleProperties(RunConfiguration runConfiguration, ExecutionEnvironment env) {
-            super(runConfiguration, "PERL6_TEST_CONFIGURATION", env.getExecutor());
+    static class RakuTestConsoleProperties extends SMTRunnerConsoleProperties implements SMCustomMessagesParsing {
+        RakuTestConsoleProperties(RunConfiguration runConfiguration, ExecutionEnvironment env) {
+            super(runConfiguration, RakuCompleteTestConfigurationType.RAKU_TEST_CONFIGURATION_ID, env.getExecutor());
         }
 
         @Override
         public OutputToGeneralTestEventsConverter createTestEventsConverter(@NotNull String testFrameworkName,
-                                                                            @NotNull TestConsoleProperties consoleProperties) {
+                                                                            @NotNull TestConsoleProperties consoleProperties)
+        {
             Project project = consoleProperties.getProject();
             List<String> bases = new ArrayList<>();
             for (Module module : ModuleManager.getInstance(project).getModules()) {

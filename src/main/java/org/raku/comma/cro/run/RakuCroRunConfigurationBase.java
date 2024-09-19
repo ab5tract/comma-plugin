@@ -26,7 +26,8 @@ public abstract class RakuCroRunConfigurationBase extends RakuRunConfiguration {
 
     public RakuCroRunConfigurationBase(@NotNull Project project,
                                        @NotNull ConfigurationFactory factory,
-                                       String name) {
+                                       String name)
+    {
         super(project, factory, name);
     }
 

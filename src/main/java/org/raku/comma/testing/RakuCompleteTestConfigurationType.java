@@ -14,12 +14,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class RakuCompleteTestConfigurationType extends ConfigurationTypeBase implements DumbAware {
-    private static final String PERL6_TEST_CONFIGURATION_ID = "PERL6_TEST_CONFIGURATION";
+    public static final String RAKU_TEST_CONFIGURATION_ID = "RAKU_TEST_CONFIGURATION";
     private final ConfigurationFactory myFactory = new RakuConfigurationFactory(this);
 
     protected RakuCompleteTestConfigurationType() {
-        super(PERL6_TEST_CONFIGURATION_ID, "Raku test",
-              "Run Raku tests", RakuIcons.CAMELIA);
+        super(RAKU_TEST_CONFIGURATION_ID, "Raku test", "Run Raku tests", RakuIcons.CAMELIA);
         addFactory(new RakuConfigurationFactory(this));
     }
 

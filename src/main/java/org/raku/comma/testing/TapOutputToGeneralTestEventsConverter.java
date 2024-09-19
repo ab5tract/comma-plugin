@@ -35,15 +35,19 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
     public TapOutputToGeneralTestEventsConverter(@NotNull String testFrameworkName,
                                                  @NotNull TestConsoleProperties consoleProperties,
-                                                 List<String> paths) {
+                                                 List<String> paths)
+    {
         super(testFrameworkName, consoleProperties);
         myConsumer = TapConsumerFactory.makeTap13YamlConsumer();
         myBasePaths = paths;
     }
 
     @Override
-    protected boolean processServiceMessages(String text, final Key outputType, final ServiceMessageVisitor visitor) throws ParseException {
-        if (visitor != null && myVisitor == null) {
+    protected boolean processServiceMessages(@NotNull String text,
+                                             final @NotNull Key outputType,
+                                             final @NotNull ServiceMessageVisitor visitor) throws ParseException
+    {
+        if (myVisitor == null) {
             myVisitor = visitor;
             String theMatrix = new ServiceMessageBuilder("enteredTheMatrix").toString();
             handleMessageSend(theMatrix);
@@ -51,16 +55,15 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
         if (outputType == ProcessOutputTypes.STDOUT || outputType == ProcessOutputTypes.STDERR) {
             if (text.startsWith(String.join(" ", TEST_HARNESS_PREFIX, FILE_COMMAND))) {
-                currentFile =
-                    text.substring(TEST_HARNESS_PREFIX.length() + FILE_COMMAND.length() + 2, text.length() - 1); // 2 == spaces length
-                if (!currentTap.isEmpty())
+                currentFile = text.substring(TEST_HARNESS_PREFIX.length() + FILE_COMMAND.length() + 2,
+                                             text.length() - 1); // 2 == spaces length
+                if (! currentTap.isEmpty()) {
                     processTapOutput();
-            }
-            else {
+                }
+            } else {
                 currentTap += text;
             }
-        }
-        else if (outputType == ProcessOutputTypes.SYSTEM && text.equals("\n")) {
+        } else if (outputType == ProcessOutputTypes.SYSTEM && text.equals("\n")) {
             // Last time.
             processTapOutput();
         }
@@ -71,15 +74,14 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         if (!currentTap.isEmpty()) {
             TestSet set;
             String testSuiteStarted = ServiceMessageBuilder
-                .testSuiteStarted(calculateSuiteName())
-                .addAttribute("locationHint", Paths.get(currentFile).toUri().toString()).toString();
+                    .testSuiteStarted(calculateSuiteName())
+                    .addAttribute("locationHint", Paths.get(currentFile).toUri().toString()).toString();
             handleMessageSend(testSuiteStarted);
             try {
                 set = myConsumer.load(currentTap);
                 processTestsCount(set);
                 processSingleSuite(set.getTapLines());
-            }
-            catch (TapConsumerException e) {
+            } catch (TapConsumerException e) {
                 processBreakage();
             }
             handleMessageSend(ServiceMessageBuilder.testSuiteFinished(calculateSuiteName()).toString());
@@ -101,7 +103,8 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         String name = "Test file died";
         handleMessageSend(ServiceMessageBuilder.testStarted(name).toString());
         String message = ServiceMessageBuilder.testFailed(name)
-            .addAttribute("message", String.format("%s", currentTap)).toString();
+                                              .addAttribute("message", String.format("%s", currentTap))
+                                              .toString();
         handleMessageSend(message);
         handleMessageSend(ServiceMessageBuilder.testFinished(name).toString());
     }
@@ -133,19 +136,19 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             TapElement result = results.get(i);
 
             if (i == lastTestIndex) {
-                savedLastTest = (TestResult)result;
+                savedLastTest = (TestResult) result;
                 break;
             }
 
             if (result instanceof TestResult) {
-                processSingleTest((TestResult)result, (stdOut.length() == 0) ? null : stdOut + "\n");
+                processSingleTest((TestResult) result, (stdOut.length() == 0)
+                                                               ? null
+                                                               : stdOut + "\n");
                 stdOut = new StringJoiner("\n");
-            }
-            else if (result instanceof Text) {
-                stdOut.add(((Text)result).getValue());
-            }
-            else if (result instanceof Comment) {
-                stdOut.add("# " + ((Comment)result).getText());
+            } else if (result instanceof Text) {
+                stdOut.add(((Text) result).getValue());
+            } else if (result instanceof Comment) {
+                stdOut.add("# " + ((Comment) result).getText());
             }
         }
 
@@ -167,19 +170,23 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             // last test is present && more output follows after it
             for (int i = lastTestIndex + 1, size = results.size(); i < size; i++) {
                 TapElement result = results.get(i);
-                if (result instanceof Text)
-                    stdOut.add(((Text)results.get(i)).getValue());
-                else if (result instanceof Comment)
-                    stdOut.add("# " + ((Comment)results.get(i)).getText());
+                if (result instanceof Text) {
+                    stdOut.add(((Text) results.get(i)).getValue());
+                } else if (result instanceof Comment) {
+                    stdOut.add("# " + ((Comment) results.get(i)).getText());
+                }
             }
         }
-        if (savedLastTest != null)
-            processSingleTest(savedLastTest, (stdOut.length() == 0) ? null : stdOut + "\n");
+        if (savedLastTest != null) {
+            processSingleTest(savedLastTest, (stdOut.length() == 0)
+                                             ? null
+                                             : stdOut + "\n");
+        }
     }
 
     private void processTestsCount(TestSet set) throws ParseException {
         String message = new ServiceMessageBuilder("testCount")
-            .addAttribute("count", String.valueOf(set.getNumberOfTestResults())).toString();
+                .addAttribute("count", String.valueOf(set.getNumberOfTestResults())).toString();
         handleMessageSend(message);
     }
 
@@ -193,8 +200,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
                 processSingleTest(sub, stdOut);
                 stdOut = null;
             }
-        }
-        else {
+        } else {
             handleMessageSend(ServiceMessageBuilder.testStarted(testName).toString());
             if (stdOut != null) {
                 ServiceMessageBuilder testStdOut = ServiceMessageBuilder.testStdOut(testName);
@@ -204,16 +210,22 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
         }
 
         //noinspection StatementWithEmptyBody
-        if (!hasSubtests && testResult.getStatus() == StatusValues.OK &&
-            testResult.getDirective() == null) {
-        }
-        else if (!hasSubtests && ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP) ||
-                                  (directive != null && directive.getDirectiveValue() == DirectiveValues.TODO))) {
+        if (!hasSubtests && (testResult.getStatus() == StatusValues.OK) && (testResult.getDirective() == null)) {
+            // Done nothing
+            var singleTestReport = "%s %s - %s".formatted(testResult.getTestNumber(),
+                                                          testResult.getTestNumber(),
+                                                          testResult.getDescription());
+            handleMessageSend(singleTestReport);
+        } else if (!hasSubtests && ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP)
+                || (directive != null && directive.getDirectiveValue() == DirectiveValues.TODO)))
+        {
             String testIgnored = ServiceMessageBuilder.testIgnored(testName)
-                .addAttribute("message", String.format("%s %s", testName, testResult.getDirective().getReason())).toString();
+                                                      .addAttribute("message",
+                                                                    String.format("%s %s", testName, testResult.getDirective()
+                                                                                                               .getReason()))
+                                                      .toString();
             handleMessageSend(testIgnored);
-        }
-        else if (!hasSubtests && testResult.getStatus() == StatusValues.NOT_OK) {
+        } else if (!hasSubtests && testResult.getStatus() == StatusValues.NOT_OK) {
             StringBuilder errorMessageBuilder = new StringBuilder(testResult.getDescription() + "\n");
             for (Comment comment : testResult.getComments()) {
                 errorMessageBuilder.append(comment.getText()).append("\n");
@@ -222,22 +234,22 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             String errorMessage = errorMessageBuilder.toString();
             String[] expectedAndActual = checkIfComparisonFailure(errorMessage);
 
-            ServiceMessageBuilder testFailed = ServiceMessageBuilder
-                .testFailed(testName)
-                .addAttribute("error", "true")
-                .addAttribute("message", errorMessage);
+            ServiceMessageBuilder testFailed = ServiceMessageBuilder.testFailed(testName)
+                                                                    .addAttribute("error", "true")
+                                                                    .addAttribute("message", errorMessage);
             if (expectedAndActual.length != 0) {
-                testFailed
-                    .addAttribute("type", "comparisonFailure")
-                    .addAttribute("expected", expectedAndActual[0])
-                    .addAttribute("actual", expectedAndActual[1]);
+                testFailed.addAttribute("type", "comparisonFailure")
+                          .addAttribute("expected", expectedAndActual[0])
+                          .addAttribute("actual", expectedAndActual[1]);
             }
             handleMessageSend(testFailed.toString());
         }
-        if (hasSubtests)
+
+        if (hasSubtests) {
             handleMessageSend(ServiceMessageBuilder.testSuiteFinished(testName).toString());
-        else
+        } else {
             handleMessageSend(ServiceMessageBuilder.testFinished(testName).toString());
+        }
     }
 
     private static String[] checkIfComparisonFailure(String message) {

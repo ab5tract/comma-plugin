@@ -182,14 +182,13 @@ public class RakuSdkType extends SdkType {
 
         try {
             Process process = processBuilder.start();
-            try (
-                InputStreamReader in = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
-                BufferedReader processOutputReader = new BufferedReader(in)) {
+            try (InputStreamReader in = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
+                 BufferedReader processOutputReader = new BufferedReader(in))
+            {
                 line = processOutputReader.readLine();
                 if (process.waitFor() != 0) return null;
             }
-        }
-        catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             reactToSDKIssue(null);
         }
         return line;
@@ -205,7 +204,7 @@ public class RakuSdkType extends SdkType {
         return "Raku " + version;
     }
 
-    public static String suggestSdkName(@NotNull String sdkHome)  {
+    public static String suggestSdkName(@NotNull String sdkHome) {
         String binPath = findRakuInSdkHome(sdkHome);
         if (binPath == null) return null;
         String[] command = {binPath, "-e", "say $*RAKU.compiler.version"};
@@ -259,8 +258,7 @@ public class RakuSdkType extends SdkType {
                 }
             }
             moarBuildConfig = buildConfig;
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             reactToSDKIssue(project);
             return null;
         }
@@ -278,12 +276,12 @@ public class RakuSdkType extends SdkType {
             return cache.setting;
         }
 
-        File coreSymbols = RakuUtils.getResourceAsFile("symbols/raku-core-symbols.p6");
+        File coreSymbols = RakuUtils.getResourceAsFile("symbols/raku-core-symbols.raku");
         File coreDocs = RakuUtils.getResourceAsFile("docs/core.json");
-        String perl6path = getSdkHomeByProject(project);
+        String rakuPath = getSdkHomeByProject(project);
 
-        if (perl6path == null || coreSymbols == null || coreDocs == null) {
-            String errorMessage = perl6path == null
+        if (rakuPath == null || coreSymbols == null || coreDocs == null) {
+            String errorMessage = rakuPath == null
                                               ? "getCoreSettingFile is called without Raku SDK set, using fallback"
                                               : coreSymbols == null
                                                             ? "getCoreSettingFile is called with corrupted resources bundle, using fallback"
@@ -304,34 +302,28 @@ public class RakuSdkType extends SdkType {
                         try {
                             coreSymbols.delete();
                             coreDocs.delete();
-                        }
-                        catch (Exception ignored) {}
+                        } catch (Exception ignored) {}
 
                         if (settingLines.isEmpty()) {
                             reactToSDKIssue(project, "getCoreSettingFile got no symbols from Raku, using fallback");
                             getFallback(project);
-                        }
-                        else {
+                        } else {
                             cache.setting = makeSettingSymbols(project, settingLines);
                         }
                         triggerCodeAnalysis(project);
-                    }
-                    catch (AssertionError e) {
+                    } catch (AssertionError e) {
                         // If the project was already disposed, do not die in a background thread
                     }
                 });
-            }
-            else {
+            } else {
                 try {
                     coreSymbols.delete();
                     coreDocs.delete();
-                }
-                catch (Exception ignored) {
+                } catch (Exception ignored) {
                 }
             }
             return new ExternalRakuFile(project, new LightVirtualFile("DUMMY"));
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             reactToSDKIssue(project);
             return getFallback(project);
         }
@@ -349,8 +341,9 @@ public class RakuSdkType extends SdkType {
                     RakuSymbol symbol = setting.resolveLexicalSymbol(RakuSymbolKind.TypeOrConstant, typeName);
                     if (symbol != null) {
                         PsiElement resolution = symbol.getPsi();
-                        if (resolution instanceof RakuPsiElement)
-                            typeCache.put(typeId, new RakuResolvedType(typeName, (RakuPsiElement)resolution));
+                        if (resolution instanceof RakuPsiElement) {
+                            typeCache.put(typeId, new RakuResolvedType(typeName, (RakuPsiElement) resolution));
+                        }
                     }
                 }
                 cache.settingTypeCache = typeCache;
@@ -361,8 +354,7 @@ public class RakuSdkType extends SdkType {
         Map<RakuSettingTypeId, RakuType> typeCache = cache.settingTypeCache;
         if (typeCache != null) {
             RakuType result = typeCache.get(type);
-            if (result != null)
-                return result;
+            if (result != null) return result;
         }
 
         // Return an unresolved type if all else fails.
@@ -380,8 +372,9 @@ public class RakuSdkType extends SdkType {
     public synchronized void reactToSDKIssue(@Nullable Project project, String message) {
         if (!sdkIssueNotified) {
             sdkIssueNotified = true;
-            Notification notification = NotificationGroupManager.getInstance().getNotificationGroup("raku.sdk.errors.group")
-                .createNotification(message, NotificationType.WARNING);
+            Notification notification = NotificationGroupManager.getInstance()
+                                                                .getNotificationGroup("raku.sdk.errors.group")
+                                                                .createNotification(message, NotificationType.WARNING);
             notification.addAction(new AnAction("Configure Raku SDK") {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
@@ -400,8 +393,9 @@ public class RakuSdkType extends SdkType {
             for (FileEditor editor : editors) {
                 if (editor != null && editor.getFile() != null) {
                     PsiFile psiFile = PsiManager.getInstance(project).findFile(editor.getFile());
-                    if (psiFile != null)
+                    if (psiFile != null) {
                         DaemonCodeAnalyzer.getInstance(project).restart(psiFile);
+                    }
                 }
             }
         });
@@ -418,8 +412,7 @@ public class RakuSdkType extends SdkType {
         try {
             ProjectSymbolCache cache = perProjectSymbolCache.computeIfAbsent(project.getName(), (key) -> new ProjectSymbolCache());
             return cache.setting = makeSettingSymbols(project, Files.readString(fallback.toPath()));
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             reactToSDKIssue(project);
             return new ExternalRakuFile(project, new LightVirtualFile(SETTING_FILE_NAME));
         }
@@ -429,8 +422,7 @@ public class RakuSdkType extends SdkType {
         try {
             settingJson = json;
             return makeSettingSymbols(project, new JSONArray(json));
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             reactToSDKIssue(project);
         }
         return new ExternalRakuFile(project, new LightVirtualFile(SETTING_FILE_NAME));
@@ -447,14 +439,20 @@ public class RakuSdkType extends SdkType {
 
     public RakuFile getPsiFileForModule(Project project, String name, String invocation) {
         ProjectSymbolCache cache = perProjectSymbolCache.computeIfAbsent(project.getName(), (key) -> new ProjectSymbolCache());
-        Map<String, RakuFile> fileCache = invocation.startsWith("use") ? cache.useNameFileCache : cache.needNameFileCache;
+        Map<String, RakuFile> fileCache = invocation.startsWith("use")
+                                          ? cache.useNameFileCache
+                                          : cache.needNameFileCache;
         // If we have anything in file cache, return it
         if (fileCache.containsKey(name))
             return fileCache.get(name);
 
         // if not, check if we have symbol cache, if yes, parse, save and return it
-        Map<String, String> symbolCache = invocation.startsWith("use") ? useNameSymbolCache : needNameSymbolCache;
-        Set<String> packagesStarted = invocation.startsWith("use") ? myUsePackagesStarted : myNeedPackagesStarted;
+        Map<String, String> symbolCache = invocation.startsWith("use")
+                                          ? useNameSymbolCache
+                                          : needNameSymbolCache;
+        Set<String> packagesStarted = invocation.startsWith("use")
+                                      ? myUsePackagesStarted
+                                      : myNeedPackagesStarted;
         if (symbolCache.containsKey(name)) {
             return fileCache.compute(name, (n, v) -> constructExternalPsiFile(project, n, new JSONArray(symbolCache.get(n))));
         }
@@ -467,8 +465,7 @@ public class RakuSdkType extends SdkType {
                     // if no symbol cache, compute as usual
                     fileCache.compute(name, (n, v) -> constructExternalPsiFile(project, n, invocation, symbolCache));
                     triggerCodeAnalysis(project);
-                }
-                catch (AssertionError e) {
+                } catch (AssertionError e) {
                     // If the project was already disposed, do not die in a background thread
                 }
             });
@@ -491,7 +488,8 @@ public class RakuSdkType extends SdkType {
     private static RakuFile constructExternalPsiFile(Project project,
                                                      String name,
                                                      String invocation,
-                                                     Map<String, String> symbolCache) {
+                                                     Map<String, String> symbolCache)
+    {
         LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
         ExternalRakuFile perl6File = new ExternalRakuFile(project, dummy);
         List<RakuSymbol> symbols = loadModuleSymbols(project, perl6File, name, invocation, symbolCache, false);
@@ -516,18 +514,18 @@ public class RakuSdkType extends SdkType {
                                                      RakuFile perl6File,
                                                      String name, String invocation,
                                                      Map<String, String> symbolCache,
-                                                     boolean addLib) {
+                                                     boolean addLib)
+    {
         if (invocation.equals("use nqp")) {
             return getNQPSymbols(project, perl6File);
         }
 
         String homePath = getSdkHomeByProject(project);
-        File moduleSymbols = RakuUtils.getResourceAsFile("symbols/raku-module-symbols.p6");
+        File moduleSymbols = RakuUtils.getResourceAsFile("symbols/raku-module-symbols.raku");
         if (homePath == null) {
             LOG.info(new ExecutionException("SDK path is not set"));
             return new ArrayList<>();
-        }
-        else if (moduleSymbols == null) {
+        } else if (moduleSymbols == null) {
             LOG.info(new ExecutionException("Necessary distribution file is missing"));
             return new ArrayList<>();
         }
@@ -543,13 +541,11 @@ public class RakuSdkType extends SdkType {
             try {
                 symbols = new JSONArray(text);
                 symbolCache.put(name, text);
-            }
-            catch (JSONException ex) {
+            } catch (JSONException ex) {
                 return new ArrayList<>();
             }
             return new RakuExternalNamesParser(project, perl6File, symbols).parse().result();
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             return new ArrayList<>();
         }
     }
@@ -559,14 +555,12 @@ public class RakuSdkType extends SdkType {
         File nqpSymbols = RakuUtils.getResourceAsFile("symbols/nqp.ops");
         if (nqpSymbols == null) {
             ops.add("[]");
-        }
-        else {
+        } else {
             Path nqpSymbolsPath = nqpSymbols.toPath();
             try {
                 ops = Files.readAllLines(nqpSymbolsPath);
                 nqpSymbols.delete();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 ops.add("[]");
             }
         }
@@ -577,12 +571,13 @@ public class RakuSdkType extends SdkType {
     public static void contributeParentSymbolsFromCore(@NotNull RakuSymbolCollector collector,
                                                        RakuFile coreSetting,
                                                        String parentName,
-                                                       MOPSymbolsAllowed allowed) {
-        RakuSingleResolutionSymbolCollector parentCollector =
-            new RakuSingleResolutionSymbolCollector(parentName, RakuSymbolKind.TypeOrConstant);
+                                                       MOPSymbolsAllowed allowed)
+    {
+        RakuSingleResolutionSymbolCollector parentCollector = new RakuSingleResolutionSymbolCollector(parentName,
+                                                                                                      RakuSymbolKind.TypeOrConstant);
         coreSetting.contributeGlobals(parentCollector, new HashSet<>());
         if (parentCollector.isSatisfied()) {
-            RakuPackageDecl decl = (RakuPackageDecl)parentCollector.getResult().getPsi();
+            RakuPackageDecl decl = (RakuPackageDecl) parentCollector.getResult().getPsi();
             decl.contributeMOPSymbols(collector, allowed);
         }
     }

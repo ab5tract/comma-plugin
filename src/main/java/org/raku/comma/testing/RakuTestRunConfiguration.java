@@ -67,8 +67,7 @@ abstract public class RakuTestRunConfiguration extends RunConfigurationBase<RunP
     }
 
     @Override
-    public void setStartSuspended(boolean startSuspended) {
-    }
+    public void setStartSuspended(boolean startSuspended) {}
 
     @Override
     public void readExternal(@NotNull Element element) throws InvalidDataException {
@@ -103,7 +102,7 @@ abstract public class RakuTestRunConfiguration extends RunConfigurationBase<RunP
 
         // Read generic options
         Element degree = element.getChild(PARALELLISM_DEGREE);
-        parallelismDegree = degree == null ? 1 : Integer.valueOf(degree.getText());
+        parallelismDegree = degree == null ? 1 : Integer.parseInt(degree.getText());
         Element envs = element.getChild(ENVS);
         if (envs != null) {
             for (Element envVar : envs.getChildren()) {
@@ -111,9 +110,9 @@ abstract public class RakuTestRunConfiguration extends RunConfigurationBase<RunP
             }
         }
         Element isPassParentEnv = element.getChild(PASS_PARENT_ENV);
-        passParentEnvs = isPassParentEnv == null || Boolean.valueOf(isPassParentEnv.getText());
+        passParentEnvs = isPassParentEnv == null || Boolean.parseBoolean(isPassParentEnv.getText());
         Element params = element.getChild(INTERPRETER_PARAMETERS);
-        interpreterArguments = params == null ? "-Ilib" : params.getText();
+        interpreterArguments = params == null ? "-I." : params.getText();
     }
 
     @Override
@@ -225,10 +224,10 @@ abstract public class RakuTestRunConfiguration extends RunConfigurationBase<RunP
     @Override
     public @Nullable String suggestedName() {
         return switch (getTestKind()) {
-            case ALL -> "Test Project";
-            case MODULE -> "Test module " + getModuleName();
-            case DIRECTORY -> "Test directory " + Paths.get(getDirectoryPath()).getFileName();
-            case FILE -> "Test " + Paths.get(getFilePath()).getFileName();
+            case ALL        -> "Test Project";
+            case MODULE     -> "Test module " + getModuleName();
+            case DIRECTORY  -> "Test directory " + Paths.get(getDirectoryPath()).getFileName();
+            case FILE       -> "Test " + Paths.get(getFilePath()).getFileName();
         };
     }
 

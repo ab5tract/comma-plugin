@@ -25,10 +25,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class RakuCompleteCroRunConfigurationType extends ConfigurationTypeBase {
-    protected static final String PERL6_CRO_RUN_CONFIGURATION_ID = "PERL6_CRO_RUN_CONFIGURATION";
+    protected static final String RAKU_CRO_RUN_CONFIGURATION_ID = "RKAU_CRO_RUN_CONFIGURATION";
 
     protected RakuCompleteCroRunConfigurationType() {
-        super(PERL6_CRO_RUN_CONFIGURATION_ID, "Cro Service", "Run Cro service", RakuIcons.CRO);
+        super(RAKU_CRO_RUN_CONFIGURATION_ID, "Cro Service", "Run Cro service", RakuIcons.CRO);
         addFactory(new ConfigurationFactory(this) {
             @Override
             public @NotNull String getId() {
@@ -45,7 +45,7 @@ public class RakuCompleteCroRunConfigurationType extends ConfigurationTypeBase {
 
     @NotNull
     public static RakuCompleteCroRunConfigurationType getInstance() {
-        return CONFIGURATION_TYPE_EP.findExtension(RakuCompleteCroRunConfigurationType.class);
+        return Objects.requireNonNull(CONFIGURATION_TYPE_EP.findExtension(RakuCompleteCroRunConfigurationType.class));
     }
 
     private static class RakuCroRunConfiguration extends RakuCroRunConfigurationBase {
