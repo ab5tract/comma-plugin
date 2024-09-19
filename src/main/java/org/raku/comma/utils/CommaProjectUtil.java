@@ -9,6 +9,7 @@ import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.components.StorageScheme;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -21,6 +22,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.psi.PsiElement;
 import com.intellij.util.ui.UIUtil;
 import org.raku.comma.project.projectWizard.CommaAbstractProjectWizard;
 import org.raku.comma.project.projectWizard.CommaNewProjectWizard;
@@ -162,5 +164,33 @@ public class CommaProjectUtil {
         service.setProjectSdkPath(project, jdk.getHomePath());
 //        ProjectRootManagerEx rootManager = ProjectRootManagerEx.getInstanceEx(project);
 //        rootManager.setProjectSdk(jdk);
+    }
+
+    // TODO: Replace this one day with PropertiesComponent or something else that fits?
+    // Because I think think that it would be a heavy thing to check for every element,
+    // but this actually turns PROJECT_IS_RAKUDO on for all projects whenever a rakduo project
+    // is enabled. Also, it should really be (or include) a PropertiesComponent aspect, instead
+    // of relying entirely on name/path.
+    private static Boolean PROJECT_IS_RAKUDO = null;
+    public static boolean isProjectRakudo(PsiElement element) {
+        if (PROJECT_IS_RAKUDO == null) {
+            var module = ModuleUtil.findModuleForPsiElement(element);
+            if (module != null) {
+                PROJECT_IS_RAKUDO = module.getProject().getName().equals("rakudo");
+
+                if (! PROJECT_IS_RAKUDO) {
+                    var basePath = module.getProject().getBasePath();
+                    if (basePath != null) {
+                        PROJECT_IS_RAKUDO = basePath.endsWith("/rakudo");
+                    }
+                }
+            }
+        }
+
+        if (PROJECT_IS_RAKUDO == null) {
+            PROJECT_IS_RAKUDO = false;
+        }
+
+        return PROJECT_IS_RAKUDO;
     }
 }

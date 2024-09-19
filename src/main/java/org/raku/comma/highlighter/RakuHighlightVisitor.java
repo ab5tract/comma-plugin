@@ -20,6 +20,7 @@ import org.raku.comma.psi.symbols.RakuSymbol;
 import org.raku.comma.psi.symbols.RakuSymbolKind;
 import org.raku.comma.psi.symbols.RakuVariantsSymbolCollector;
 import org.jetbrains.annotations.NotNull;
+import org.raku.comma.utils.CommaProjectUtil;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -371,7 +372,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                                                     String name, HighlightInfoType infoType) {
         if (! originalDecl.isValid()) return null;
         if (! currentDecl.getContainingFile().equals(myFile)) return null;
-        if (isProjectRakudo()) return null;
+        if (CommaProjectUtil.isProjectRakudo(currentDecl)) return null;
 
         PsiFile containingFile = originalDecl.getContainingFile();
         String previousPos = containingFile.getName() +
@@ -381,14 +382,5 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                             .range(range)
                             .descriptionAndTooltip(String.format("Re-declaration of %s from %s", name, previousPos))
                             .create();
-    }
-
-    // TODO: Replace this with a project-level setting or something else more robust
-    private Boolean PROJECT_IS_RAKUDO = null;
-    private boolean isProjectRakudo() {
-        if (PROJECT_IS_RAKUDO == null) {
-            PROJECT_IS_RAKUDO = Objects.requireNonNull(ProjectManager.getInstance().getOpenProjects()[0].getBasePath()).endsWith("rakudo");
-        }
-        return PROJECT_IS_RAKUDO;
     }
 }
