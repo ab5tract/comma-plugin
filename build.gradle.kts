@@ -31,7 +31,7 @@ java {
 
 intellijPlatform {
     pluginConfiguration {
-        id = "comma"
+        id = "org.raku.comma"
         name = "Comma for Raku"
         version = "2.0"
     }
