@@ -25,15 +25,13 @@ public class RakuScriptRunner extends PtyCommandLine {
     }
 
     protected RakuScriptRunner(@Nullable String sdkHome) throws ExecutionException {
-        if (sdkHome == null)
-            throw new ExecutionException("No SDK for project");
-        if (Paths.get(sdkHome).toFile().isFile())
+        if (sdkHome == null) throw new ExecutionException("No SDK for project");
+        if (Paths.get(sdkHome).toFile().isFile()) {
             setExePath(sdkHome);
-        else {
-            String perl6Binary = RakuSdkType.findRakuInSdkHome(sdkHome);
-            if (perl6Binary == null)
-                throw new ExecutionException("SDK is invalid");
-            setExePath(perl6Binary);
+        } else {
+            String rakuBinary = RakuSdkType.findRakuInSdkHome(sdkHome);
+            if (rakuBinary == null) throw new ExecutionException("SDK is invalid");
+            setExePath(rakuBinary);
         }
     }
 
@@ -65,8 +63,7 @@ public class RakuScriptRunner extends PtyCommandLine {
             homePath = sdk.getHomePath();
         }
 
-        if (versionString == null || homePath == null)
-            return null;
+        if (versionString == null || homePath == null) return null;
 
         if (VersionComparatorUtil.compare(versionString, "v2019.07") >= 0) {
             String rakuBinary = RakuSdkType.findRakuInSdkHome(homePath);

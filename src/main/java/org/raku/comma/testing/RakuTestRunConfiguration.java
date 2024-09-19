@@ -15,7 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-abstract public class RakuTestRunConfiguration extends RunConfigurationBase<RunProfileState> implements RakuDebuggableConfiguration, LocatableConfiguration {
+abstract public class RakuTestRunConfiguration extends RunConfigurationBase<RunProfileState>
+                                               implements RakuDebuggableConfiguration,
+                                                          LocatableConfiguration
+{
     // Kind and kind-specific fields
     private static final String TEST_KIND = "TEST_KIND";
     private RakuTestKind testKind;
@@ -77,22 +80,24 @@ abstract public class RakuTestRunConfiguration extends RunConfigurationBase<RunP
 
         // Read specific options
         switch (testKind) {
-            case ALL:
-                break;
-            case MODULE: {
+            case ALL -> {}
+            case MODULE -> {
                 Element module = element.getChild(MODULE);
-                moduleName = module == null ? "" : module.getText();
-                break;
+                moduleName = module == null
+                                 ? ""
+                                 : module.getText();
             }
-            case DIRECTORY: {
+            case DIRECTORY -> {
                 Element directory = element.getChild(DIRECTORY_PATH);
-                directoryPath = directory == null ? "" : directory.getText();
-                break;
+                directoryPath = directory == null
+                                    ? ""
+                                    : directory.getText();
             }
-            case FILE: {
+            case FILE -> {
                 Element file = element.getChild(FILE);
-                filePath = file == null ? "" : file.getText();
-                break;
+                filePath = file == null
+                               ? ""
+                               : file.getText();
             }
         }
 
@@ -120,19 +125,15 @@ abstract public class RakuTestRunConfiguration extends RunConfigurationBase<RunP
         element.addContent(new Element(TEST_KIND).setText(testKind.baseString()));
         // Write kind specific options
         switch (testKind) {
-            case ALL:
-                break;
-            case MODULE: {
+            case ALL -> {}
+            case MODULE -> {
                 element.addContent(new Element(MODULE).setText(moduleName));
-                break;
             }
-            case DIRECTORY: {
+            case DIRECTORY -> {
                 element.addContent(new Element(DIRECTORY_PATH).setText(directoryPath));
-                break;
             }
-            case FILE: {
+            case FILE -> {
                 element.addContent(new Element(FILE).setText(filePath));
-                break;
             }
         }
 
@@ -223,13 +224,12 @@ abstract public class RakuTestRunConfiguration extends RunConfigurationBase<RunP
 
     @Override
     public @Nullable String suggestedName() {
-        switch (getTestKind()) {
-            case ALL: return "Test project";
-            case MODULE: return "Test module " + getModuleName();
-            case DIRECTORY: return "Test directory " + Paths.get(getDirectoryPath()).getFileName();
-            case FILE: return "Test " + Paths.get(getFilePath()).getFileName();
-        }
-        return null;
+        return switch (getTestKind()) {
+            case ALL -> "Test Project";
+            case MODULE -> "Test module " + getModuleName();
+            case DIRECTORY -> "Test directory " + Paths.get(getDirectoryPath()).getFileName();
+            case FILE -> "Test " + Paths.get(getFilePath()).getFileName();
+        };
     }
 
     @Override

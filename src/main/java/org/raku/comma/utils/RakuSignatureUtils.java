@@ -9,46 +9,53 @@ import java.util.*;
 import static org.raku.comma.parsing.RakuTokenTypes.COLON_PAIR;
 import static org.raku.comma.parsing.RakuTokenTypes.UNV_WHITE_SPACE;
 
-/** Collection of things related to processing of signatures
- * and argument captures */
+/**
+ * Collection of things related to processing of signatures
+ * and argument captures
+ */
 public class RakuSignatureUtils {
 
     public static List<String> populateParameters(PsiElement[] children) {
         List<String> parameters = new ArrayList<>();
         for (PsiElement arg : children) {
-            if (arg instanceof PsiWhiteSpace ||
-                arg.getNode().getElementType() == UNV_WHITE_SPACE ||
-                arg instanceof RakuInfix) continue;
-            if (arg instanceof RakuVariable)
-                parameters.add(preprocessName(((RakuVariable)arg).getVariableName()));
-            else if (arg instanceof RakuPostfixApplication && arg.getLastChild() instanceof RakuMethodCall)
-                parameters.add("$" + ((RakuMethodCall)arg.getLastChild()).getCallName().substring(1));
-            else if (arg instanceof RakuSubCall && arg.getFirstChild() instanceof RakuSubCallName)
-                parameters.add("$" + ((RakuSubCallName)arg.getFirstChild()).getCallName());
-            else if (arg instanceof RakuFatArrow)
+            if (arg instanceof PsiWhiteSpace
+                    || arg.getNode().getElementType() == UNV_WHITE_SPACE
+                    || arg instanceof RakuInfix)
+            {
+                continue;
+            }
+            if (arg instanceof RakuVariable) {
+                parameters.add(preprocessName(((RakuVariable) arg).getVariableName()));
+            } else if (arg instanceof RakuPostfixApplication && arg.getLastChild() instanceof RakuMethodCall) {
+                parameters.add("$" + ((RakuMethodCall) arg.getLastChild()).getCallName().substring(1));
+            } else if (arg instanceof RakuSubCall && arg.getFirstChild() instanceof RakuSubCallName) {
+                parameters.add("$" + ((RakuSubCallName) arg.getFirstChild()).getCallName());
+            } else if (arg instanceof RakuFatArrow) {
                 parameters.add(":$" + arg.getFirstChild().getText());
-            else if (arg instanceof RakuArrayComposer || arg instanceof RakuParenthesizedExpr)
+            } else if (arg instanceof RakuArrayComposer || arg instanceof RakuParenthesizedExpr) {
                 parameters.add("@p");
-            else if (arg instanceof RakuColonPair)
+            } else if (arg instanceof RakuColonPair) {
                 parameters.add(processColonpair(arg));
-            else
+            } else {
                 parameters.add("$p");
+            }
         }
         return moveNamedsAfterPositionals(resolveConflicts(parameters));
     }
 
     private static String preprocessName(String name) {
-        return RakuVariable.getTwigil(name) == '!' ?
-               RakuVariable.getSigil(name) + name.substring(2) :
-               name;
+        return RakuVariable.getTwigil(name) == '!'
+               ? RakuVariable.getSigil(name) + name.substring(2)
+               : name;
     }
 
     private static String processColonpair(PsiElement arg) {
         String colonpair = arg.getText();
-        if (colonpair.startsWith(":$") ||
-            colonpair.startsWith(":@") ||
-            colonpair.startsWith(":%") ||
-            colonpair.startsWith(":&")) {
+        if (colonpair.startsWith(":$")
+            || colonpair.startsWith(":@")
+            || colonpair.startsWith(":%")
+            || colonpair.startsWith(":&"))
+        {
             if (colonpair.length() >= 3 && colonpair.charAt(2) != '<') {
                 return colonpair;
             } else {

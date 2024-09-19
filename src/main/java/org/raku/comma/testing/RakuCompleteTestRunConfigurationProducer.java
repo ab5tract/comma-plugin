@@ -31,7 +31,8 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
     @Override
     protected boolean setupConfigurationFromContext(@NotNull RakuTestRunConfiguration configuration,
                                                     @NotNull ConfigurationContext context,
-                                                    @NotNull Ref<PsiElement> sourceElement) {
+                                                    @NotNull Ref<PsiElement> sourceElement)
+    {
         final Location location = context.getLocation();
         if (location == null) return false;
         VirtualFile fileToTest;
@@ -39,16 +40,16 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
             final PsiFile file = location.getPsiElement().getContainingFile();
             if (!(file instanceof RakuFile)) return false;
             final VirtualFile virtualFile = file.getVirtualFile();
-            if (virtualFile == null ||
-                virtualFile instanceof LightVirtualFile ||
-                !Arrays.asList("t", "t6", "rakutest").contains(virtualFile.getExtension())) {
+            if (virtualFile == null
+                    || virtualFile instanceof LightVirtualFile
+                    || !Arrays.asList("t", "t6", "rakutest").contains(virtualFile.getExtension()))
+            {
                 return false;
             }
             configuration.setTestKind(RakuTestKind.FILE);
             configuration.setFilePath(virtualFile.getPath());
             fileToTest = virtualFile;
-        }
-        else {
+        } else {
             VirtualFile directory = location.getVirtualFile();
             if (directory == null || !directory.isDirectory()) return false;
             AtomicReference<String> pathHolder = new AtomicReference<>();
@@ -84,16 +85,18 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
             VirtualFile dir = sourceFolder.getFile();
             if (dir == null) return;
             String rootPath = rakuModuleRoot.getPath();
-            if (rootPath.length() != 0)
+            if (!rootPath.isEmpty()) {
                 argsLine.add("-I" + dir.getPath().substring(rootPath.length() + 1));
+            }
         });
         return argsLine.toString();
     }
 
     @Override
     public boolean isConfigurationFromContext(@NotNull RakuTestRunConfiguration configuration, @NotNull ConfigurationContext context) {
-        if (configuration.getTestKind() != RakuTestKind.FILE && configuration.getTestKind() != RakuTestKind.DIRECTORY)
+        if (configuration.getTestKind() != RakuTestKind.FILE && configuration.getTestKind() != RakuTestKind.DIRECTORY) {
             return false;
+        }
 
         final Location location = context.getLocation();
         if (location == null) return false;
@@ -102,14 +105,14 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
             final PsiFile file = location.getPsiElement().getContainingFile();
             if (!(file instanceof RakuFile)) return false;
             final VirtualFile virtualFile = file.getVirtualFile();
-            if (virtualFile == null ||
-                virtualFile instanceof LightVirtualFile ||
-                !Arrays.asList("t", "t6", "rakutest").contains(virtualFile.getExtension())) {
+            if (virtualFile == null
+                    || virtualFile instanceof LightVirtualFile
+                    || !Arrays.asList("t", "t6", "rakutest").contains(virtualFile.getExtension()))
+            {
                 return false;
             }
             fileToTest.set(virtualFile);
-        }
-        else {
+        } else {
             VirtualFile directory = location.getVirtualFile();
             if (directory == null || !directory.isDirectory()) {
                 return false;
