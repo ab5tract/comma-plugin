@@ -45,7 +45,8 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
     public boolean analyze(@NotNull PsiFile file,
                            boolean updateWholeFile,
                            @NotNull HighlightInfoHolder holder,
-                           @NotNull Runnable highlight) {
+                           @NotNull Runnable highlight)
+    {
         try {
             myHolder = holder;
             myFile = file;
@@ -54,12 +55,10 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 if (progress == null) throw new IllegalStateException("Must be run under progress");
                 highlight.run();
                 ProgressManager.checkCanceled();
-            }
-            else {
+            } else {
                 highlight.run();
             }
-        }
-        finally {
+        } finally {
             myHolder = null;
             ourScopedPackagesPool.clear();
         }
@@ -84,137 +83,159 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                 visitUseStatement(duplicateClassesPool, duplicateRoutinesPool, contributor);
             }
 
-            if (!(contributor instanceof RakuPsiDeclaration decl))
-                continue;
+            if (!(contributor instanceof RakuPsiDeclaration decl)) continue;
 
-            if (decl instanceof RakuRoutineDecl) {
-                if (((RakuRoutineDecl)decl).getRoutineName() == null || decl.getNameIdentifier() == null)
-                    return;
-                boolean wasReported = visitSignatureHolder(myHolder, (RakuSignatureHolder)decl, ((RakuRoutineDecl)decl).getRoutineName(),
-                                                           duplicateRoutinesPool);
-                if (!wasReported && ((RakuRoutineDecl)decl).isSub() && Objects.equals(((RakuRoutineDecl)decl).getMultiness(), "only")) {
-                    // If a subroutine, expose `&foo` variable
-                    TextRange textRange = new TextRange(((RakuRoutineDecl)decl).getDeclaratorNode().getTextOffset(),
-                                                        decl.getNameIdentifier().getTextRange().getEndOffset());
+            switch (decl) {
+                case RakuRoutineDecl rakuRoutineDecl -> {
+                    if (rakuRoutineDecl.getRoutineName() == null || decl.getNameIdentifier() == null) {
+                        return;
+                    }
+                    boolean wasReported = visitSignatureHolder(myHolder,
+                                                               (RakuSignatureHolder) decl,
+                                                               rakuRoutineDecl.getRoutineName(),
+                                                               duplicateRoutinesPool);
+                    if (!wasReported && rakuRoutineDecl.isSub() && Objects.equals(rakuRoutineDecl.getMultiness(), "only")) {
+                        // If a subroutine, expose `&foo` variable
+                        TextRange textRange = new TextRange(((RakuRoutineDecl) decl).getDeclaratorNode().getTextOffset(),
+                                                            decl.getNameIdentifier().getTextRange().getEndOffset());
+                        visitVariableDecl(
+                                duplicateVariablesPool, new RakuPsiElement[]{decl}, new String[]{"&" + ((RakuRoutineDecl) decl).getRoutineName()},
+                                new TextRange[]{textRange});
+                    }
+                }
+                case RakuRegexDecl rakuRegexDecl -> {
+                    if (decl.getName() == null || decl.getNameIdentifier() == null) return;
+                    visitSignatureHolder(myHolder, (RakuSignatureHolder) decl, decl.getName(), duplicateRoutinesPool);
+                }
+                case RakuVariableSource rakuVariableSource -> {
+                    if (decl instanceof RakuParameter) {
+                        if (PsiTreeUtil.getParentOfType(decl, RakuVariableDecl.class, RakuRoutineDecl.class) instanceof RakuVariableDecl) {
+                            continue;
+                        }
+                        if (PsiTreeUtil.getParentOfType(decl, RakuPointyBlock.class, RakuRoutineDecl.class) instanceof RakuPointyBlock) {
+                            continue;
+                        }
+                    }
                     visitVariableDecl(
-                      duplicateVariablesPool, new RakuPsiElement[]{decl}, new String[]{"&" + ((RakuRoutineDecl)decl).getRoutineName()},
-                      new TextRange[]{textRange});
+                            duplicateVariablesPool, rakuVariableSource.getVariables(),
+                            rakuVariableSource.getVariableNames(),
+                            ContainerUtil.map2Array(rakuVariableSource.getVariables(), TextRange.class, PsiElement::getTextRange)
+                    );
                 }
-            }
-            else if (decl instanceof RakuRegexDecl) {
-                if (decl.getName() == null || decl.getNameIdentifier() == null)
-                    return;
-                visitSignatureHolder(myHolder, (RakuSignatureHolder)decl, decl.getName(), duplicateRoutinesPool);
-            }
-            else if (decl instanceof RakuVariableSource) {
-                if (decl instanceof RakuParameter) {
-                    if (PsiTreeUtil.getParentOfType(decl, RakuVariableDecl.class, RakuRoutineDecl.class) instanceof RakuVariableDecl)
-                        continue;
-                    if (PsiTreeUtil.getParentOfType(decl, RakuPointyBlock.class, RakuRoutineDecl.class) instanceof RakuPointyBlock)
-                        continue;
+                case RakuPackageDecl rakuPackageDecl -> {
+                    if (decl.getGlobalName() != null && !rakuPackageDecl.isStubbed()) {
+                        boolean marked = false;
+                        if (decl.getScope().equals("our")) {
+                            marked = visitPackageDecl(decl, ourScopedPackagesPool, true);
+                        }
+                        visitPackageDecl(decl, duplicateClassesPool, !marked);
+                    }
                 }
-                visitVariableDecl(
-                    duplicateVariablesPool, ((RakuVariableSource)decl).getVariables(),
-                    ((RakuVariableSource)decl).getVariableNames(),
-                    ContainerUtil.map2Array(((RakuVariableSource)decl).getVariables(), TextRange.class, v -> v.getTextRange())
-                );
-            }
-            else if (decl instanceof RakuPackageDecl) {
-                if (decl.getGlobalName() != null && !((RakuPackageDecl)decl).isStubbed()) {
-                    boolean marked = false;
-                    if (decl.getScope().equals("our"))
-                        marked = visitPackageDecl(decl, ourScopedPackagesPool, true);
-                    visitPackageDecl(decl, duplicateClassesPool, !marked);
+                case RakuSubset rakuSubset -> {
+                    if (decl.getGlobalName() != null) {
+                        boolean marked = false;
+                        if (decl.getScope().equals("our")) {
+                            marked = visitPackageDecl(decl, ourScopedPackagesPool, true);
+                        }
+                        visitPackageDecl(decl, duplicateClassesPool, !marked);
+                    }
                 }
-            }
-            else if (decl instanceof RakuSubset) {
-                if (decl.getGlobalName() != null) {
-                    boolean marked = false;
-                    if (decl.getScope().equals("our"))
-                        marked = visitPackageDecl(decl, ourScopedPackagesPool, true);
-                    visitPackageDecl(decl, duplicateClassesPool, !marked);
-                }
+                default -> { }
             }
         }
     }
 
     private void visitUseStatement(Map<String, List<RakuPsiElement>> packagesPool,
                                    Map<String, List<RakuSignatureHolder>> routinesPool,
-                                   RakuLexicalSymbolContributor contributor) {
-        RakuVariantsSymbolCollector collector = new RakuVariantsSymbolCollector(
-          RakuSymbolKind.TypeOrConstant, RakuSymbolKind.Routine);
+                                   RakuLexicalSymbolContributor contributor)
+    {
+        RakuVariantsSymbolCollector collector = new RakuVariantsSymbolCollector(RakuSymbolKind.TypeOrConstant,
+                                                                                RakuSymbolKind.Routine);
         contributor.contributeLexicalSymbols(collector);
         for (RakuSymbol symbol : collector.getVariants()) {
             PsiElement psi = symbol.getPsi();
-            if (psi instanceof RakuPackageDecl && ((RakuPackageDecl)psi).getGlobalName() != null) {
-                visitPackageDecl((RakuPackageDecl)psi, packagesPool, false);
+            if (psi instanceof RakuPackageDecl && ((RakuPackageDecl) psi).getGlobalName() != null) {
+                visitPackageDecl((RakuPackageDecl) psi, packagesPool, false);
             } else if (psi instanceof RakuRoutineDecl) {
-                visitSignatureHolder(myHolder, (RakuSignatureHolder)psi, ((RakuRoutineDecl)psi).getRoutineName(), routinesPool);
+                visitSignatureHolder(myHolder,
+                                     (RakuSignatureHolder) psi,
+                                     ((RakuRoutineDecl) psi).getRoutineName(),
+                                     routinesPool);
             }
         }
     }
 
     private boolean visitPackageDecl(RakuPsiElement decl,
                                      Map<String, List<RakuPsiElement>> pool,
-                                     boolean shouldMark) {
-        List<RakuPsiElement> value = pool.compute(((RakuPsiDeclaration)decl).getGlobalName(), (k, v) -> {
+                                     boolean shouldMark)
+    {
+        List<RakuPsiElement> value = pool.compute(((RakuPsiDeclaration) decl).getGlobalName(), (k, v) -> {
             if (v == null) {
                 v = new ArrayList<>();
             }
             v.add(decl);
             return v;
         });
-        if (shouldMark && value.size() > 1)
+        if (shouldMark && value.size() > 1) {
             return markDuplicateValue(decl, value);
+        }
         return false;
     }
 
     private boolean markDuplicateValue(RakuPsiElement decl, List<RakuPsiElement> v) {
         AtomicBoolean marked = new AtomicBoolean(false);
         Optional<RakuPsiElement> maxRedecl = v.stream()
-            .filter(d -> d.getContainingFile().isEquivalentTo(decl.getContainingFile()))
-            .max(Comparator.comparingInt(PsiElement::getTextOffset));
-        if (maxRedecl.isEmpty())
+                .filter(d -> d.getContainingFile().isEquivalentTo(decl.getContainingFile()))
+                .max(Comparator.comparingInt(PsiElement::getTextOffset));
+        if (maxRedecl.isEmpty()) {
             maxRedecl = v.stream().max(Comparator.comparingInt(PsiElement::getTextOffset));
+        }
 
         maxRedecl.ifPresent(redecl -> {
-            if (redecl instanceof RakuPackageDecl &&
-                (((RakuPackageDecl)redecl).getPackageKeywordNode() == null || ((RakuPackageDecl)redecl).getNameIdentifier() == null) ||
-                redecl instanceof RakuSubset && ((RakuSubset)redecl).getNameIdentifier() == null)
+            if (redecl instanceof RakuPackageDecl
+                && (((RakuPackageDecl) redecl).getPackageKeywordNode() == null
+                || ((RakuPackageDecl) redecl).getNameIdentifier() == null)
+                || redecl instanceof RakuSubset
+                && ((RakuSubset) redecl).getNameIdentifier() == null)
+            {
                 return;
+            }
             TextRange range;
             //noinspection ConstantConditions
-            range = new TextRange(redecl.getTextOffset(),
-                                  ((RakuPsiDeclaration)redecl).getNameIdentifier().getTextRange().getEndOffset());
-            if (redecl instanceof RakuPackageDecl && ((RakuPackageDecl)redecl).getPackageKind().equals("role")) {
-                RakuParameter[] newParams =
-                  decl instanceof RakuPackageDecl ? ((RakuPackageDecl)decl).getSignature() : new RakuParameter[0];
+            range = new TextRange(redecl.getTextOffset(), ((RakuPsiDeclaration) redecl).getNameIdentifier().getTextRange().getEndOffset());
+            if (redecl instanceof RakuPackageDecl && ((RakuPackageDecl) redecl).getPackageKind().equals("role")) {
+                RakuParameter[] newParams = decl instanceof RakuPackageDecl
+                                            ? ((RakuPackageDecl) decl).getSignature()
+                                            : new RakuParameter[0];
                 for (RakuPsiElement role : v) {
                     if (role instanceof RakuPackageDecl) {
-                        RakuParameter[] oldParams = ((RakuPackageDecl)role).getSignature();
+                        RakuParameter[] oldParams = ((RakuPackageDecl) role).getSignature();
                         // Different numbers of args
                         if (newParams.length == oldParams.length && role.getTextOffset() != decl.getTextOffset()) {
                             marked.set(true);
-                            myHolder.add(getDuplicateHighlightInfo(
-                              role, redecl, range,
-                              ((RakuPackageDecl)redecl).getGlobalName(), HighlightInfoType.ERROR));
+                            myHolder.add(getDuplicateHighlightInfo(role,
+                                                                   redecl,
+                                                                   range,
+                                                                   ((RakuPackageDecl) redecl).getGlobalName(),
+                                                                   HighlightInfoType.ERROR));
                             break;
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 Optional<RakuPsiElement> minRedecl =
-                    v.stream()
-                        .filter(d -> !d.getContainingFile().isEquivalentTo(decl.getContainingFile()))
-                        .min(Comparator.comparingInt(PsiElement::getTextOffset));
+                        v.stream()
+                                .filter(d -> !d.getContainingFile().isEquivalentTo(decl.getContainingFile()))
+                                .min(Comparator.comparingInt(PsiElement::getTextOffset));
                 if (minRedecl.isEmpty())
                     minRedecl = v.stream().min(Comparator.comparingInt(PsiElement::getTextOffset));
                 minRedecl.ifPresent(packageDecl -> {
                     marked.set(true);
-                    myHolder.add(
-                        getDuplicateHighlightInfo(packageDecl, redecl, range, ((RakuPsiDeclaration)packageDecl).getGlobalName(),
-                                                  HighlightInfoType.ERROR));
+                    myHolder.add(getDuplicateHighlightInfo(packageDecl,
+                                                           redecl,
+                                                           range,
+                                                           ((RakuPsiDeclaration) packageDecl).getGlobalName(),
+                                                           HighlightInfoType.ERROR));
                 });
             }
         });
@@ -222,38 +243,39 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
     }
 
     protected boolean visitSignatureHolder(HighlightInfoHolder infoHolder, RakuSignatureHolder holder,
-                                           String name, Map<String, List<RakuSignatureHolder>> pool) {
-        if (name == null)
-            return false;
+                                           String name, Map<String, List<RakuSignatureHolder>> pool)
+    {
+        if (name == null) return false;
+
         return pool.compute(name, (k, v) -> {
             if (v == null) {
                 v = new ArrayList<>();
-            }
-            else {
+            } else {
                 Pair<RakuSignatureHolder, RakuSignatureHolder> oldAndNewHolders = isElementInPool(holder, v);
                 if (oldAndNewHolders != null) {
                     TextRange textRange = null;
                     if (oldAndNewHolders.second instanceof RakuRoutineDecl decl) {
                         if (decl.getNameIdentifier() != null) {
                             PsiElement declaratorNode = decl.getDeclaratorNode();
-                            if (declaratorNode != null)
+                            if (declaratorNode != null) {
                                 textRange = new TextRange(declaratorNode.getTextOffset(),
                                                           decl.getNameIdentifier().getTextRange().getEndOffset());
-                            else if (decl.getParent() instanceof RakuMultiDecl) {
+                            } else if (decl.getParent() instanceof RakuMultiDecl) {
                                 textRange = new TextRange(decl.getTextOffset(),
                                                           decl.getNameIdentifier().getTextRange().getEndOffset());
                             }
                         }
-                    }
-                    else if (oldAndNewHolders.second instanceof RakuRegexDecl decl) {
+                    } else if (oldAndNewHolders.second instanceof RakuRegexDecl decl) {
                         if (decl.getNameIdentifier() != null)
                             textRange = new TextRange(decl.getTextOffset(),
                                                       decl.getNameIdentifier().getTextRange().getEndOffset());
                     }
                     if (textRange != null)
-                        infoHolder
-                            .add(getDuplicateHighlightInfo((RakuPsiElement)oldAndNewHolders.first,
-                                                           (PsiElement)holder, textRange, name, HighlightInfoType.ERROR));
+                        infoHolder.add(getDuplicateHighlightInfo((RakuPsiElement) oldAndNewHolders.first,
+                                                                 (PsiElement) holder,
+                                                                 textRange,
+                                                                 name,
+                                                                 HighlightInfoType.ERROR));
                 }
             }
             v.add(holder);
@@ -262,35 +284,44 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
     }
 
     private static Pair<RakuSignatureHolder, RakuSignatureHolder> isElementInPool(RakuSignatureHolder holder, List<RakuSignatureHolder> v) {
-        String scope = holder instanceof RakuPsiDeclaration ? ((RakuPsiDeclaration)holder).getScope() : "";
+        String scope = holder instanceof RakuPsiDeclaration
+                       ? ((RakuPsiDeclaration) holder).getScope()
+                       : "";
 
         // For multi routines we need to compare signatures
-        RakuParameter[] paramsNew =
-            holder.getSignatureNode() == null ? new RakuParameter[0] : holder.getSignatureNode().getParameters();
-        RakuPsiScope newScope = PsiTreeUtil.getParentOfType((PsiElement)holder, RakuPsiScope.class);
+        RakuParameter[] paramsNew = holder.getSignatureNode() == null
+                                    ? new RakuParameter[0]
+                                    : holder.getSignatureNode().getParameters();
+        RakuPsiScope newScope = PsiTreeUtil.getParentOfType((PsiElement) holder, RakuPsiScope.class);
         List<RakuSignatureHolder> matchingDecls = new ArrayList<>();
         ROUTINES:
         for (RakuSignatureHolder checkedDecl : v) {
-            if (holder == checkedDecl)
-                continue;
-            String checkedDeclScope = checkedDecl instanceof RakuPsiDeclaration ? ((RakuPsiDeclaration)checkedDecl).getScope() : "";
-            if (!Objects.equals(checkedDeclScope, scope))
-                continue;
+            if (holder == checkedDecl) continue;
 
-            RakuPsiScope oldScope = PsiTreeUtil.getParentOfType((PsiElement)checkedDecl, RakuPsiScope.class);
-            if (newScope != null && oldScope != null &&
-                !(newScope instanceof RakuFile) && !(oldScope instanceof RakuFile) &&
-                !PsiEquivalenceUtil.areElementsEquivalent(newScope, oldScope))
-                continue;
+            String checkedDeclScope = checkedDecl instanceof RakuPsiDeclaration
+                                      ? ((RakuPsiDeclaration) checkedDecl).getScope()
+                                      : "";
 
-            if (!Objects.equals(holder.getMultiness(), checkedDecl.getMultiness()))
+            if (!Objects.equals(checkedDeclScope, scope)) continue;
+
+            RakuPsiScope oldScope = PsiTreeUtil.getParentOfType((PsiElement) checkedDecl, RakuPsiScope.class);
+            if (newScope != null
+                && oldScope != null
+                && !(newScope instanceof RakuFile)
+                && !(oldScope instanceof RakuFile)
+                && !PsiEquivalenceUtil.areElementsEquivalent(newScope, oldScope))
+            {
                 continue;
+            }
+
+            if (!Objects.equals(holder.getMultiness(), checkedDecl.getMultiness())) continue;
             if (Objects.equals(checkedDecl.getMultiness(), "only")) {
                 matchingDecls.add(checkedDecl);
                 continue;
             }
-            RakuParameter[] paramsKnown =
-                checkedDecl.getSignatureNode() == null ? new RakuParameter[0] : checkedDecl.getSignatureNode().getParameters();
+            RakuParameter[] paramsKnown = checkedDecl.getSignatureNode() == null
+                                          ? new RakuParameter[0]
+                                          : checkedDecl.getSignatureNode().getParameters();
             // No params == both are duplicates
             if (paramsKnown.length == 0 && paramsNew.length == 0) {
                 matchingDecls.add(checkedDecl);
@@ -314,12 +345,17 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
 
         if (!matchingDecls.isEmpty()) {
             matchingDecls.add(holder);
-            Optional<PsiElement> maybeMin = matchingDecls.stream().filter(d -> d instanceof PsiElement)
-                .map(d -> (PsiElement)d).min(Comparator.comparingInt(PsiElement::getTextOffset));
-            Optional<PsiElement> maybeMax = matchingDecls.stream().filter(d -> d instanceof PsiElement)
-                .map(d -> (PsiElement)d).max(Comparator.comparingInt(PsiElement::getTextOffset));
-            if (maybeMin.isPresent() && maybeMax.isPresent())
-                return Pair.create((RakuSignatureHolder) maybeMin.get(), (RakuSignatureHolder)maybeMax.get());
+            Optional<PsiElement> maybeMin = matchingDecls.stream()
+                    .filter(d -> d instanceof PsiElement)
+                    .map(d -> (PsiElement) d).min(Comparator.comparingInt(PsiElement::getTextOffset));
+
+            Optional<PsiElement> maybeMax = matchingDecls.stream()
+                    .filter(d -> d instanceof PsiElement)
+                    .map(d -> (PsiElement) d).max(Comparator.comparingInt(PsiElement::getTextOffset));
+
+            if (maybeMin.isPresent() && maybeMax.isPresent()) {
+                return Pair.create((RakuSignatureHolder) maybeMin.get(), (RakuSignatureHolder) maybeMax.get());
+            }
         }
         return null;
     }
@@ -327,7 +363,8 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
     public void visitVariableDecl(Map<String, List<RakuPsiElement>> pool,
                                   RakuPsiElement[] variables,
                                   String[] variableNames,
-                                  TextRange[] ranges) {
+                                  TextRange[] ranges)
+    {
         for (int i = 0; i < variables.length; i++) {
             String varName = variableNames[i];
             // Don't visit anonymous ones or dynamic
@@ -338,8 +375,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
             pool.compute(varName, (k, v) -> {
                 if (v == null) {
                     v = new ArrayList<>();
-                }
-                else {
+                } else {
                     TextRange finalRange = ranges[finalI];
                     RakuPsiElement originalDecl = variables[finalI];
                     for (RakuPsiElement decl : v) {
@@ -347,8 +383,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                             finalRange = decl.getTextRange();
                             originalDecl = decl;
                             break;
-                        }
-                        else {
+                        } else {
                             if (finalRange.getEndOffset() < decl.getTextRange().getEndOffset()) {
                                 finalRange = decl.getTextRange();
                             }
@@ -356,9 +391,13 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                                 originalDecl = decl;
                         }
                     }
-                    myHolder
-                        .add(getDuplicateHighlightInfo(originalDecl, variables[finalI], finalRange, varName,
-                                                       varName.contains("!") ? HighlightInfoType.ERROR : HighlightInfoType.WARNING));
+                    myHolder.add(getDuplicateHighlightInfo(originalDecl,
+                                                           variables[finalI],
+                                                           finalRange,
+                                                           varName,
+                                                           varName.contains("!")
+                                                               ? HighlightInfoType.ERROR
+                                                               : HighlightInfoType.WARNING));
                 }
                 v.add(variables[finalI]);
                 return v;
@@ -369,18 +408,19 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
     private HighlightInfo getDuplicateHighlightInfo(RakuPsiElement originalDecl,
                                                     PsiElement currentDecl,
                                                     TextRange range,
-                                                    String name, HighlightInfoType infoType) {
-        if (! originalDecl.isValid()) return null;
-        if (! currentDecl.getContainingFile().equals(myFile)) return null;
+                                                    String name, HighlightInfoType infoType)
+    {
+        if (!originalDecl.isValid()) return null;
+        if (!currentDecl.getContainingFile().equals(myFile)) return null;
         if (CommaProjectUtil.isProjectRakudo(currentDecl)) return null;
 
         PsiFile containingFile = originalDecl.getContainingFile();
-        String previousPos = containingFile.getName() +
-                             ":" +
-                             (StringUtil.offsetToLineNumber(containingFile.getText(), originalDecl.getTextOffset()) + 1);
+        String previousPos = "%s:%s".formatted(containingFile.getName(),
+                                               StringUtil.offsetToLineNumber(containingFile.getText(), originalDecl.getTextOffset()) + 1);
+
         return HighlightInfo.newHighlightInfo(infoType)
-                            .range(range)
-                            .descriptionAndTooltip(String.format("Re-declaration of %s from %s", name, previousPos))
-                            .create();
+                .range(range)
+                .descriptionAndTooltip(String.format("Re-declaration of %s from %s", name, previousPos))
+                .create();
     }
 }
