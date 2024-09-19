@@ -17,3 +17,5 @@ raku-idea-plugin/raku-idea-plugin.iml
 build/
 .intellijPlatform/self-update.lock
 gradle/
+gradlew
+gradlew.bat
