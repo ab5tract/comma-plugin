@@ -73,48 +73,6 @@ public class RakuProjectBuilder extends ProjectBuilder {
         return sdkType instanceof RakuSdkType;
     }
 
-    // XXX: This feels like quite a messy hack... but it works.
-    private void removeOldCommaProjectFile(Project project) {
-        String basePath = project.getBasePath();
-
-        if (basePath == null) return;
-
-        String imlPath = Paths.get(basePath + "/" + project.getName() + ".iml").toString();
-        File imlFile = new File(imlPath);
-
-        if (! imlFile.exists()) return;
-
-        Scanner scanner;
-        try {
-            scanner = new Scanner(imlFile);
-        } catch (Exception ignored) {
-            return;
-        }
-
-        boolean isOldComma = false;
-        while (scanner.hasNextLine()) {
-            String lineFromFile = scanner.nextLine();
-            if (lineFromFile.contains("PERL6_MODULE_TYPE")) {
-                isOldComma = true;
-                break;
-            }
-        }
-
-
-        if (isOldComma) {
-            Notifications.Bus.notify(new Notification("raku.messages",
-                                                      "Old-style Comma project found. Converting.",
-                                                      NotificationType.INFORMATION));
-
-            String oldModulesXmlPath = Paths.get(basePath, ".idea", "misc.xml").toString();
-            boolean success = FileUtil.delete(imlFile) && FileUtil.delete(new File(oldModulesXmlPath));
-            String message = success
-                             ? "Conversion from old-style Comma project successful."
-                             : "Conversion from old-style Comma project failed. The project may fail to load or otherwise act strangely.";
-            Notifications.Bus.notify(new Notification("raku.messages", message, NotificationType.INFORMATION));
-        }
-    }
-
     @Nullable
     @Override
     public List<Module> commit(@NotNull Project project,
@@ -132,8 +90,6 @@ public class RakuProjectBuilder extends ProjectBuilder {
                 String path = FileUtil.toSystemIndependentName(metaParentDirectory);
                 VirtualFile contentRoot = lfs.findFileByPath(path.substring(5));
                 if (contentRoot == null) return;
-
-                removeOldCommaProjectFile(project);
 
                 String projectFilePath = project.getProjectFilePath();
                 if (projectFilePath == null) return;
@@ -186,8 +142,6 @@ public class RakuProjectBuilder extends ProjectBuilder {
                         manager.setPM(list.getFirst().toPM());
                     }
                 }
-
-                project.scheduleSave();
             });
         } catch (Exception e) {
             LOG.info(e);
