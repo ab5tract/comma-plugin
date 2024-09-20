@@ -7,7 +7,9 @@ plugins {
     id("java")
     // Gradle IntelliJ Plugin
     id("org.jetbrains.intellij.platform") version "2.0.1"
-     id("org.jetbrains.grammarkit") version "2022.3.2.2"
+
+// TODO: Re-enable if we land on Grammar-Kit as the best option for NQP
+//    id("org.jetbrains.grammarkit") version "2022.3.2.2"
 
     kotlin("jvm") version "2.0.20"
 }
@@ -30,13 +32,14 @@ java {
     }
 }
 
-sourceSets {
-  main {
-    java {
-      srcDirs("src/main/gen")
-    }
-  }
-}
+// TODO: Re-enable if we land on Grammar-Kit as our best option for NQP
+//sourceSets {
+//  main {
+//    java {
+//      srcDirs("src/main/gen")
+//    }
+//  }
+//}
 
 intellijPlatform {
     pluginConfiguration {
