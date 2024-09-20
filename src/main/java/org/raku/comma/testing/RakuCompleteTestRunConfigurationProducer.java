@@ -85,17 +85,24 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
     private static String calculateParameters(ContentEntry contentEntryToTest) {
         VirtualFile rakuModuleRoot = contentEntryToTest.getFile();
         if (rakuModuleRoot == null) return "";
-        StringJoiner argsLine = new StringJoiner(" ");
-        Arrays.stream(contentEntryToTest.getSourceFolders()).forEachOrdered((sourceFolder) -> {
-            if (sourceFolder.isTestSource()) return;
-            VirtualFile dir = sourceFolder.getFile();
-            if (dir == null) return;
-            String rootPath = rakuModuleRoot.getPath();
-            if (!rootPath.isEmpty()) {
-                argsLine.add("-I" + dir.getPath().substring(rootPath.length() + 1));
-            }
-        });
-        return argsLine.toString();
+        // The recommendation is to always run with -I. and an up-to-date META6.json
+        // THe below code instead tries to include every (non-test-source) content entry,
+        // which sounds vaguely useful but also:
+        //      a) uncommon (almost all Raku code appears to use lib/ exclusively as a single source root)
+        //      b) should be fixable (or is already irrelevant) when using -I.
+        // But I've left it here just in case it turns out to be a useful artifact in the future.
+//        StringJoiner argsLine = new StringJoiner(" ");
+//        Arrays.stream(contentEntryToTest.getSourceFolders()).forEachOrdered((sourceFolder) -> {
+//            if (sourceFolder.isTestSource()) return;
+//            VirtualFile dir = sourceFolder.getFile();
+//            if (dir == null) return;
+//            String rootPath = rakuModuleRoot.getPath();
+//            if (!rootPath.isEmpty()) {
+//                argsLine.add("-I" + dir.getPath().substring(rootPath.length() + 1));
+//            }
+//        });
+
+        return "-I.";
     }
 
     @Override

@@ -114,7 +114,7 @@ public class CurrentGrammar {
                     // Run and get output.
                     RakuCommandLine cmd = new RakuCommandLine(project);
                     cmd.setWorkDirectory(project.getBasePath());
-                    cmd.addParameter("-Ilib");
+                    cmd.addParameter("-I.");
                     cmd.addParameter(tweakedGrammarAsFile.getAbsolutePath());
                     cancelled = false;
                     List<String> lines = executeAndRead(cmd, tweakedGrammarAsFile);

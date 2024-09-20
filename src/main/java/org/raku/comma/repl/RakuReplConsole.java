@@ -79,7 +79,7 @@ public class RakuReplConsole extends AbstractConsoleRunnerWithHistory<LanguageCo
         myReplBackendFile = RakuUtils.getResourceAsFile("repl/repl-backend.p6");
         commandLine = new RakuCommandLine(getProject());
         commandLine.setWorkDirectory(getProject().getBasePath());
-        commandLine.addParameter("-Ilib");
+        commandLine.addParameter("-I.");
         commandLine.addParameter(myReplBackendFile.getAbsolutePath());
         return commandLine.createProcess();
     }

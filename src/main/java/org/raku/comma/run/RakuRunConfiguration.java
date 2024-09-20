@@ -36,7 +36,7 @@ abstract public class RakuRunConfiguration extends LocatableConfigurationBase im
     private String workingDirectory;
     private Map<String, String> envVars = new HashMap<>();
     private boolean passParentEnvs;
-    private String interpreterParameters;
+    private String interpreterParameters = "-I.";
     private boolean myStartSuspended;
     private int myDebugPort;
     // default value on creation, later overwritten if we initialize from a saved configuration
@@ -80,13 +80,17 @@ abstract public class RakuRunConfiguration extends LocatableConfigurationBase im
         Element debugPortElem = element.getChild(DEBUG_PORT);
         Element startSuspendedElem = element.getChild(START_SUSPENDED);
         Element logTimelineEvents = element.getChild(LOG_TIMELINE_EVENTS);
-        if (scriptPathElem == null || scriptArgsElem == null ||
-            workDirectoryElem == null || envVarsElem == null ||
-            passEnvElem == null || rakuParamsElem == null ||
-            debugPortElem == null || startSuspendedElem == null) {
+        if (scriptPathElem == null
+            || scriptArgsElem == null
+            || workDirectoryElem == null
+            || envVarsElem == null
+            || passEnvElem == null
+            || rakuParamsElem == null
+            || debugPortElem == null
+            || startSuspendedElem == null)
+        {
             throw new InvalidDataException();
-        }
-        else {
+        } else {
             scriptPath = scriptPathElem.getText();
             scriptArgs = scriptArgsElem.getText();
             workingDirectory = workDirectoryElem.getText();
@@ -99,8 +103,7 @@ abstract public class RakuRunConfiguration extends LocatableConfigurationBase im
             myStartSuspended = Boolean.parseBoolean(startSuspendedElem.getText());
             if (logTimelineEvents == null) {
                 myLogTimelineEvents = Strings.join(Arrays.asList("await", "file", "process", "socket", "start"), ";");
-            }
-            else {
+            } else {
                 myLogTimelineEvents = logTimelineEvents.getText();
             }
         }

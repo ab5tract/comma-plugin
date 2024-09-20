@@ -66,8 +66,9 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
         String events = conf.getLogTimelineEvents();
         List<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < LOG_TIMELINE_EVENT_TYPES.length; i++) {
-            if (events.contains(LOG_TIMELINE_EVENT_TYPES[i]))
+            if (events.contains(LOG_TIMELINE_EVENT_TYPES[i])) {
                 indexes.add(i);
+            }
         }
         myLogTimelineOptions.setSelectedIndices(indexes.stream().mapToInt(i -> i).toArray());
     }
@@ -138,7 +139,7 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
             private LabeledComponent<?> myFileComponent;
             private LabeledComponent<RawCommandLineEditor> myRakuParametersComponent;
             private final Predicate<Component> panelPredicate = component -> component instanceof JComponent
-                                                                                && component instanceof PanelWithAnchor;
+                    && component instanceof PanelWithAnchor;
 
             @Override
             protected void addComponents() {

@@ -100,7 +100,7 @@ public abstract class RakuCroRunConfigurationBase extends RakuRunConfiguration {
                 }
             }
             setEnvs(environment);
-            setInterpreterParameters("-Ilib");
+            setInterpreterParameters("-I.");
         }
         catch (Exception ignore) {
             // Was not able to load a configuration from .cro.yml,

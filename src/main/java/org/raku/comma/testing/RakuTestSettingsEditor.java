@@ -34,7 +34,7 @@ import java.util.Objects;
 public class RakuTestSettingsEditor extends SettingsEditor<RakuTestRunConfiguration> {
     protected Project myProject;
     protected JTextField myDegreeField;
-    protected RawCommandLineEditor myPerl6ParametersPanel;
+    protected RawCommandLineEditor myRakuParametersPanel;
     protected EnvironmentVariablesComponent myEnvVariablesField;
     // Specific controls
     protected JComboBox<RakuTestKind> myKindField;
@@ -64,7 +64,7 @@ public class RakuTestSettingsEditor extends SettingsEditor<RakuTestRunConfigurat
         myDegreeField.setText(String.valueOf(configuration.getParallelismDegree()));
         myEnvVariablesField.setEnvs(configuration.getEnvs());
         myEnvVariablesField.setPassParentEnvs(configuration.isPassParentEnvs());
-        myPerl6ParametersPanel.setText(configuration.getInterpreterArguments());
+        myRakuParametersPanel.setText(configuration.getInterpreterArguments());
     }
 
     @Override
@@ -113,7 +113,7 @@ public class RakuTestSettingsEditor extends SettingsEditor<RakuTestRunConfigurat
         }
         configuration.setEnvs(myEnvVariablesField.getEnvs());
         configuration.setPassParentEnvs(myEnvVariablesField.isPassParentEnvs());
-        configuration.setInterpreterArguments(myPerl6ParametersPanel.getText());
+        configuration.setInterpreterArguments(myRakuParametersPanel.getText());
         configuration.setTestPattern(myFilePatternField.getText());
     }
 
@@ -174,7 +174,7 @@ public class RakuTestSettingsEditor extends SettingsEditor<RakuTestRunConfigurat
                 };
             }
         };
-        myPerl6ParametersPanel = new RawCommandLineEditor();
+        myRakuParametersPanel = new RawCommandLineEditor();
         myEnvVariablesField = new EnvironmentVariablesComponent();
 
         setupSpecificComponents(panel);
@@ -183,7 +183,7 @@ public class RakuTestSettingsEditor extends SettingsEditor<RakuTestRunConfigurat
         panel.add(new JLabel("Tests run in parallel"), "align label");
         panel.add(myDegreeField, "wrap, growx");
         panel.add(new JLabel("Raku parameters"), "align label");
-        panel.add(myPerl6ParametersPanel, "wrap, growx");
+        panel.add(myRakuParametersPanel, "wrap, growx");
         panel.add(new JLabel("Environment variables:"), "align label");
         panel.add(myEnvVariablesField.getComponent(), "growx");
 

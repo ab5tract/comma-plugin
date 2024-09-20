@@ -533,7 +533,7 @@ public class RakuSdkType extends SdkType {
             RakuCommandLine cmd = new RakuCommandLine(project);
             cmd.setWorkDirectory(project.getBasePath());
             if (addLib) {
-                cmd.addParameter("-Ilib");
+                cmd.addParameter("-I.");
             }
             cmd.addParameters(moduleSymbols.getPath(), invocation);
             String text = String.join("\n", cmd.executeAndRead(moduleSymbols));

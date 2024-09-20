@@ -40,7 +40,7 @@ abstract public class RakuTestRunConfiguration extends RunConfigurationBase<RunP
     private static final String PASS_PARENT_ENV = "PASS_PARENT_ENV";
     private boolean passParentEnvs = true;
     private static final String INTERPRETER_PARAMETERS = "INTERPRETER_PARAMETERS";
-    private String interpreterArguments = "-Ilib";
+    private String interpreterArguments = "-I.";
 
     public RakuTestRunConfiguration(@NotNull Project project, @NotNull ConfigurationFactory factory) {
         super(project, factory, "Raku test");
