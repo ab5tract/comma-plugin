@@ -1,6 +1,6 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
   <id>org.raku-idea-plugin</id>
-  <vendor email="info@commaide.com" url="https://commaide.com/">Edument Central Europe sro.</vendor>
+  <vendor email="info@commaide.com" url="https://commaide.com/">The Raku Community</vendor>
 
   <description><![CDATA[
 <p>
