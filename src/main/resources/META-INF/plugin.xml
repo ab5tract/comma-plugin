@@ -30,8 +30,12 @@
 
   <change-notes><![CDATA[
 <ul>
-<li>Support opening multiple profile results at a time (they are displayed as separate tabs)</li>
-<li>Extend the Surround With feature to include corner brackets</li>
+<li>Migrated to the latest IntelliJ version (2024.2)</li>
+<li>Many internal fixups related to the above that should improve plugin stability</li>
+<li>Run configurations now all default it <pre>-I.</pre> instead of <pre>-Ilib</pre></li>
+<li>Hacking on Rakudo source code more comfortable thanks to suppressed warnings for eg, usage of implementation details,
+ use of NQP where no <pre>use nqp</pre> is seen in scope, etc. (for best results at the moment,
+ open it as your only Raku project as the changes to annotations currently spill out to other (Raku) projects)</li>
 </ul>
   ]]>
   </change-notes>
