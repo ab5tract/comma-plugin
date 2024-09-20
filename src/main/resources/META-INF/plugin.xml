@@ -52,7 +52,7 @@
   </extensionPoints>
 
   <xi:include href="/META-INF/CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
-
+  <xi:include href="/META-INF/nqp.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
 <!--  <extensions defaultExtensionNs="org.raku">-->
 <!--    <framework.type implementation="cro.org.raku.comma.CroFrameworkCall"/>-->
@@ -60,6 +60,7 @@
 <!--  </extensions>-->
 
   <extensions defaultExtensionNs="com.intellij">
+
     <postFormatProcessor implementation="org.raku.comma.formatter.RakuFormatPostprocessor"/>
     <fileType name="Raku Script" language="Raku" implementationClass="org.raku.comma.filetypes.RakuScriptFileType" fieldName="INSTANCE"
               extensions="p6;pl6;raku"/>

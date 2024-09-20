@@ -76,7 +76,7 @@ public class RakuReplConsole extends AbstractConsoleRunnerWithHistory<LanguageCo
     @Nullable
     @Override
     protected Process createProcess() throws ExecutionException {
-        myReplBackendFile = RakuUtils.getResourceAsFile("repl/repl-backend.p6");
+        myReplBackendFile = RakuUtils.getResourceAsFile("repl/repl-backend.raku");
         commandLine = new RakuCommandLine(getProject());
         commandLine.setWorkDirectory(getProject().getBasePath());
         commandLine.addParameter("-I.");

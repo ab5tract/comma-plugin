@@ -1,0 +1,55 @@
+{
+  parserClass="org.raku.comma.nqp.parser.NqpParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Nqp"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.raku.comma.nqp.psi"
+  psiImplPackage="org.raku.comma.nqp.psi.impl"
+
+  elementTypeHolderClass="org.raku.comma.nqp.psi.NqpTypes"
+  elementTypeClass="org.raku.comma.nqp.psi.NqpElementType"
+  tokenTypeClass="org.raku.comma.nqp.psi.NqpTokenType"
+
+   tokens = [
+    OP_ASSIGN="="
+    OP_EQ="=="
+    OP_OR="|"
+    OP_OPT="?"
+    OP_AND="&"
+    OP_NOT="!"
+    SEMICOLON=";"
+    LEFT_BRACE="{"
+    RIGHT_BRACE="}"
+    LEFT_BRACKET="["
+    RIGHT_BRACKET="]"
+    LEFT_PAREN="("
+    RIGHT_PAREN=")"
+    EXTERNAL_START="<<"
+    EXTERNAL_END=">>"
+
+    space='regexp:\s+'
+    id="regexp:\w+"
+    string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\\"|\\\'|\\)*\")"
+    number="regexp:\d+"
+    line_comment="regexp://.*"
+    block_comment="regexp:/\*(.|\n)*\*/"
+  ]
+
+//  implements("rule|attr")="org.intellij.grammar.psi.BnfNamedElement"
+//  extends("rule|attr")="org.intellij.grammar.psi.impl.BnfNamedImpl"
+//  mixin("reference_or_token")="org.intellij.grammar.psi.impl.BnfRefOrTokenImpl"
+//  mixin("string_literal_expression")="org.intellij.grammar.psi.impl.BnfStringImpl"
+//  extends("paren_.*expression")=parenthesized
+}
+
+grammar ::= grammar-element *
+
+private grammar-element ::= !<<eof>> <expression> {
+
+}
+
+variable-declarator ::= "my" | "our"
+
+expression ::= <variable-declarator> SEMICOLON

@@ -1,0 +1,10 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
+    <extensions defaultExtensionNs="com.intellij">
+      <fileType
+          name="NQP"
+          implementationClass="org.raku.comma.nqp.NqpFileType"
+          fieldName="INSTANCE"
+          language="NQP"
+          extensions="nqp"/>
+    </extensions>
+</idea-plugin>

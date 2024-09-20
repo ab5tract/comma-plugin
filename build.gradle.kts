@@ -7,6 +7,7 @@ plugins {
     id("java")
     // Gradle IntelliJ Plugin
     id("org.jetbrains.intellij.platform") version "2.0.1"
+     id("org.jetbrains.grammarkit") version "2022.3.2.2"
 
     kotlin("jvm") version "2.0.20"
 }
@@ -27,6 +28,14 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
+}
+
+sourceSets {
+  main {
+    java {
+      srcDirs("src/main/gen")
+    }
+  }
 }
 
 intellijPlatform {
@@ -53,7 +62,7 @@ dependencies {
         zipSigner()
         instrumentationTools()
     }
-    implementation(kotlin("stdlib-jdk8"))
+//    implementation(kotlin("stdlib-jdk8"))
     implementation(files("libs/xchart-3.8.0.jar"))
     implementation(files("libs/moarvmremote.jar"))
     implementation("io.airlift:aircompressor:2.0.2")
