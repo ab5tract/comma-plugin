@@ -25,6 +25,8 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> {
     private static final String[] LOG_TIMELINE_EVENT_TYPES = {"await", "file", "process", "socket", "start", "thread"};
@@ -46,22 +48,19 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
         fileField.setText(conf.getScriptPath());
         if (conf.getDebugPort() == 0) {
             myDebugPort.setText(String.valueOf(9999));
-        }
-        else {
+        } else {
             myDebugPort.setText(String.valueOf(conf.getDebugPort()));
         }
         toStartSuspended.setSelected(conf.isStartSuspended());
         if (conf.getInterpreterParameters() == null) {
             myRakuParametersPanel.setText("");
-        }
-        else {
+        } else {
             myRakuParametersPanel.setText(conf.getInterpreterParameters());
         }
         myParams.reset(conf);
         if (conf.getWorkingDirectory() == null) {
             myParams.setWorkingDirectory(myProject.getBasePath());
-        }
-        else {
+        } else {
             myParams.setWorkingDirectory(conf.getWorkingDirectory());
         }
         String events = conf.getLogTimelineEvents();
@@ -70,7 +69,7 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
             if (events.contains(LOG_TIMELINE_EVENT_TYPES[i]))
                 indexes.add(i);
         }
-        myLogTimelineOptions.setSelectedIndices(indexes.stream().mapToInt(i->i).toArray());
+        myLogTimelineOptions.setSelectedIndices(indexes.stream().mapToInt(i -> i).toArray());
     }
 
     @Override
@@ -84,9 +83,9 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
         }
 
         VirtualFile file = LocalFileSystem.getInstance().findFileByPath(workingDir + "/" + fileLine);
-        if (file == null || ! file.exists()) {
+        if (file == null || !file.exists()) {
             VirtualFile revisedPath = LocalFileSystem.getInstance().findFileByPath(workingDir + "/" + fileLine);
-            if (revisedPath == null || ! revisedPath.exists()) {
+            if (revisedPath == null || !revisedPath.exists()) {
                 throw new ConfigurationException("Main script path is incorrect");
             }
         } else {
@@ -122,33 +121,40 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
     @NotNull
     protected JComponent getMainTab() {
         FileChooserDescriptor chooserDescriptor = new FileChooserDescriptor(
-            true, false,
-            false, false,
-            false, false) {
+                true, false,
+                false, false,
+                false, false)
+        {
             @Override
             public boolean isFileVisible(VirtualFile file, boolean showHiddenFiles) {
                 return file.isDirectory() ||
-                       file.getExtension() == null
-                       ||
-                       Arrays.asList("pm6", "pl6", "p6", "t", "rakumod", "raku", "rakutest", "rakudoc", "").contains(file.getExtension());
+                        file.getExtension() == null
+                        ||
+                        Arrays.asList("pm6", "pl6", "p6", "t", "rakumod", "raku", "rakutest", "rakudoc", "")
+                              .contains(file.getExtension());
             }
         };
         myParams = new CommonProgramParametersPanel() {
             private LabeledComponent<?> myFileComponent;
-            private LabeledComponent<RawCommandLineEditor> myPerl6ParametersComponent;
+            private LabeledComponent<RawCommandLineEditor> myRakuParametersComponent;
+            private final Predicate<Component> panelPredicate = component -> component instanceof JComponent
+                                                                                && component instanceof PanelWithAnchor;
 
             @Override
             protected void addComponents() {
                 fileField = new TextFieldWithBrowseButton();
-                fileField.addBrowseFolderListener("Select Script", null, myProject,
+                fileField.addBrowseFolderListener("Select Script",
+                                                  null,
+                                                  myProject,
                                                   chooserDescriptor);
                 myFileComponent = LabeledComponent.create(fileField, "Script", BorderLayout.WEST);
                 add(myFileComponent);
                 super.addComponents();
                 myRakuParametersPanel = new RawCommandLineEditor();
-                myPerl6ParametersComponent =
-                    LabeledComponent.create(myRakuParametersPanel, "Raku parameters", BorderLayout.WEST);
-                add(myPerl6ParametersComponent);
+                myRakuParametersComponent = LabeledComponent.create(myRakuParametersPanel,
+                                                                    "Raku parameters",
+                                                                    BorderLayout.WEST);
+                add(myRakuParametersComponent);
                 myLogTimelineOptions = new JBList<>(LOG_TIMELINE_EVENT_TYPES);
                 myLogTimelineOptions.setCellRenderer(new ListCellRenderer<>() {
                     private final ListCellRenderer<Object> renderer = new DefaultListCellRenderer();
@@ -158,47 +164,46 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
                                                                   String value,
                                                                   int index,
                                                                   boolean isSelected,
-                                                                  boolean cellHasFocus) {
-                        String text;
-                        switch (value) {
-                            case "await":
-                                text = "Outstanding await expressions";
-                                break;
-                            case "file":
-                                text = "File I/O";
-                                break;
-                            case "process":
-                                text = "Process Spawning";
-                                break;
-                            case "socket":
-                                text = "Sockets";
-                                break;
-                            case "start":
-                                text = "Scheduled/running start blocks";
-                                break;
-                            case "thread":
-                            default:
-                                text = "Threads";
-                                break;
-                        }
+                                                                  boolean cellHasFocus)
+                    {
+                        String text = switch (value) {
+                            case "await" -> "Outstanding await expressions";
+                            case "file" -> "File I/O";
+                            case "process" -> "Process Spawning";
+                            case "socket" -> "Sockets";
+                            case "start" -> "Scheduled/running start blocks";
+                            default -> "Threads";
+                        };
                         return renderer.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
                     }
                 });
                 DefaultListSelectionModel selectionModel = new DefaultListSelectionModel();
                 myLogTimelineOptions.setSelectionModel(selectionModel);
-                LabeledComponent<?> logTimelineComponent = LabeledComponent.create(
-                    myLogTimelineOptions, "Log::Timeline events", BorderLayout.WEST);
+                LabeledComponent<?> logTimelineComponent = LabeledComponent.create(myLogTimelineOptions,
+                                                                                   "Log::Timeline events",
+                                                                                   BorderLayout.WEST);
                 add(logTimelineComponent);
             }
 
             @Override
             protected void setupAnchor() {
-                List<Component> components = new ArrayList<>();
+                List<PanelWithAnchor> components = new ArrayList<>();
                 components.add(myFileComponent);
-                components.addAll(Arrays.asList(super.getComponents()));
-                components.add(myPerl6ParametersComponent);
-                myAnchor = UIUtil.mergeComponentsWithAnchor(
-                    components.toArray(new PanelWithAnchor[0]));
+                List<PanelWithAnchor> superPanels = Arrays.stream(super.getComponents())
+                                                          .filter(panelPredicate)
+                                                          .reduce(new ArrayList<>(),
+                                                                  (acc, component) -> {
+                                                                      acc.add((PanelWithAnchor) component);
+                                                                      return acc;
+                                                                  },
+                                                                  (overall, acc) -> {
+                                                                      overall.addAll(acc);
+                                                                      return overall;
+                                                                  });
+
+                components.addAll(superPanels);
+                components.add(myRakuParametersComponent);
+                myAnchor = UIUtil.mergeComponentsWithAnchor(components);
             }
         };
         myParams.setProgramParametersLabel("Script parameters:");
@@ -224,8 +229,7 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
                             if (newValue < 65536) {
                                 super.insertString(offs, str, a);
                             }
-                        }
-                        catch (NumberFormatException ignored) {
+                        } catch (NumberFormatException ignored) {
                         }
                     }
                 };
