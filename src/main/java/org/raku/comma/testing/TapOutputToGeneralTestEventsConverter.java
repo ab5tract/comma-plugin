@@ -57,7 +57,7 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             if (text.startsWith(String.join(" ", TEST_HARNESS_PREFIX, FILE_COMMAND))) {
                 currentFile = text.substring(TEST_HARNESS_PREFIX.length() + FILE_COMMAND.length() + 2,
                                              text.length() - 1); // 2 == spaces length
-                if (! currentTap.isEmpty()) {
+                if (!currentTap.isEmpty()) {
                     processTapOutput();
                 }
             } else {
@@ -142,8 +142,8 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
 
             if (result instanceof TestResult) {
                 processSingleTest((TestResult) result, (stdOut.length() == 0)
-                                                               ? null
-                                                               : stdOut + "\n");
+                                                       ? null
+                                                       : stdOut + "\n");
                 stdOut = new StringJoiner("\n");
             } else if (result instanceof Text) {
                 stdOut.add(((Text) result).getValue());
@@ -209,40 +209,38 @@ public class TapOutputToGeneralTestEventsConverter extends OutputToGeneralTestEv
             }
         }
 
-        //noinspection StatementWithEmptyBody
-        if (!hasSubtests && (testResult.getStatus() == StatusValues.OK) && (testResult.getDirective() == null)) {
-            // Done nothing
-            var singleTestReport = "%s %s - %s".formatted(testResult.getTestNumber(),
-                                                          testResult.getTestNumber(),
-                                                          testResult.getDescription());
-            handleMessageSend(singleTestReport);
-        } else if (!hasSubtests && ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP)
+        // If there is no subTests, the status was ok, and directive is null, then there is no message to send
+        // (without this, we never know when the tests have finished)
+        boolean needsToSendMessage = ! (!hasSubtests && (testResult.getStatus() == StatusValues.OK) && (testResult.getDirective() == null));
+        if (needsToSendMessage) {
+            if (!hasSubtests && ((directive != null && directive.getDirectiveValue() == DirectiveValues.SKIP)
                 || (directive != null && directive.getDirectiveValue() == DirectiveValues.TODO)))
-        {
-            String testIgnored = ServiceMessageBuilder.testIgnored(testName)
-                                                      .addAttribute("message",
-                                                                    String.format("%s %s", testName, testResult.getDirective()
-                                                                                                               .getReason()))
-                                                      .toString();
-            handleMessageSend(testIgnored);
-        } else if (!hasSubtests && testResult.getStatus() == StatusValues.NOT_OK) {
-            StringBuilder errorMessageBuilder = new StringBuilder(testResult.getDescription() + "\n");
-            for (Comment comment : testResult.getComments()) {
-                errorMessageBuilder.append(comment.getText()).append("\n");
-            }
+            {
+                String testIgnored = ServiceMessageBuilder.testIgnored(testName)
+                                                          .addAttribute("message",
+                                                                        String.format("%s %s", testName, testResult.getDirective()
+                                                                                                                   .getReason()))
+                                                          .toString();
+                handleMessageSend(testIgnored);
+            } else if (!hasSubtests && testResult.getStatus() == StatusValues.NOT_OK) {
+                StringBuilder errorMessageBuilder = new StringBuilder(testResult.getDescription() + "\n");
+                for (Comment comment : testResult.getComments()) {
+                    errorMessageBuilder.append(comment.getText()).append("\n");
+                }
 
-            String errorMessage = errorMessageBuilder.toString();
-            String[] expectedAndActual = checkIfComparisonFailure(errorMessage);
+                String errorMessage = errorMessageBuilder.toString();
+                String[] expectedAndActual = checkIfComparisonFailure(errorMessage);
 
-            ServiceMessageBuilder testFailed = ServiceMessageBuilder.testFailed(testName)
-                                                                    .addAttribute("error", "true")
-                                                                    .addAttribute("message", errorMessage);
-            if (expectedAndActual.length != 0) {
-                testFailed.addAttribute("type", "comparisonFailure")
-                          .addAttribute("expected", expectedAndActual[0])
-                          .addAttribute("actual", expectedAndActual[1]);
+                ServiceMessageBuilder testFailed = ServiceMessageBuilder.testFailed(testName)
+                                                                        .addAttribute("error", "true")
+                                                                        .addAttribute("message", errorMessage);
+                if (expectedAndActual.length != 0) {
+                    testFailed.addAttribute("type", "comparisonFailure")
+                              .addAttribute("expected", expectedAndActual[0])
+                              .addAttribute("actual", expectedAndActual[1]);
+                }
+                handleMessageSend(testFailed.toString());
             }
-            handleMessageSend(testFailed.toString());
         }
 
         if (hasSubtests) {
