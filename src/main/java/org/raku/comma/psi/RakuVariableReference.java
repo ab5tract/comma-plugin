@@ -2,6 +2,7 @@ package org.raku.comma.psi;
 
 import com.intellij.codeInsight.PsiEquivalenceUtil;
 import com.intellij.codeInsight.navigation.NavigationUtil;
+import com.intellij.ide.DataManager;
 import com.intellij.navigation.GotoRelatedItem;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.util.TextRange;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
@@ -173,16 +175,21 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
                 RakuSymbol result = collector.getResult();
                 if (result != null && !result.isImplicitlyDeclared()) {
                     if (result.getPsi() instanceof RakuParameterVariable) {
-                        List<GotoRelatedItem> items = NavigationUtil.collectRelatedItems(result.getPsi(), null);
-                        if (items.size() == 1) {
-                            PsiElement rule = items.get(0).getElement();
-                            if (rule instanceof RakuRegexDecl) {
-                                RakuRegexDriver driver = PsiTreeUtil.findChildOfType(rule, RakuRegex.class);
-                                return driver == null
-                                       ? null
-                                       : driver.collectRegexVariables();
+                        try {
+                            var dataContext = DataManager.getInstance().getDataContextFromFocusAsync().blockingGet(42, TimeUnit.MILLISECONDS);
+                            if (dataContext != null) {
+                                List<GotoRelatedItem> items = NavigationUtil.collectRelatedItems(result.getPsi(), dataContext);
+                                if (items.size() == 1) {
+                                    PsiElement rule = items.getFirst().getElement();
+                                    if (rule instanceof RakuRegexDecl) {
+                                        RakuRegexDriver driver = PsiTreeUtil.findChildOfType(rule, RakuRegex.class);
+                                        return driver == null
+                                               ? null
+                                               : driver.collectRegexVariables();
+                                    }
+                                }
                             }
-                        }
+                        } catch (Exception ignored) {}
                     }
                 } else {
                     return deduceRegexValuesFromStatement(anchor, starter);

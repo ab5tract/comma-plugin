@@ -4,6 +4,7 @@ import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.raku.comma.RakuLanguage;
 import org.raku.comma.nqp.support.NqpIcons;
 
 import javax.swing.*;
@@ -13,11 +14,16 @@ public class NqpFileType extends LanguageFileType {
   public static final NqpFileType INSTANCE = new NqpFileType();
 
     protected NqpFileType() {
-        super(NqpLanguage.INSTANCE);
+        super(RakuLanguage.getInstance());
     }
 
     @Override
     public @NonNls @NotNull String getName() {
+        return "NQP";
+    }
+
+    @Override
+    public @NonNls @NotNull String getDisplayName() {
         return "NQP";
     }
 

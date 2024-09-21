@@ -4,7 +4,7 @@
           name="NQP"
           implementationClass="org.raku.comma.nqp.NqpFileType"
           fieldName="INSTANCE"
-          language="NQP"
+          language="Raku"
           extensions="nqp"/>
     </extensions>
 </idea-plugin>
