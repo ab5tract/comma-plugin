@@ -384,6 +384,9 @@
     <codeInsight.daemonBoundCodeVisionProvider implementation="org.raku.comma.codeInsights.RakuReferencesCodeVisionProvider"/>
     <vcs.codeVisionLanguageContext language="Raku" implementationClass="org.raku.comma.codeInsights.RakuVcsCodeVisionLanguageContext"/>
     <navbar implementation="org.raku.comma.structureView.RakuStructureAwareNavbar"/>
+      <backgroundPostStartupActivity id="IsRakudoCoreAnnouncer"
+                                     implementation="org.raku.comma.services.IsRakudoCoreAnnouncer"
+                                     order="first"/>
   </extensions>
 
   <actions>

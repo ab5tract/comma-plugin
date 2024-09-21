@@ -30,6 +30,7 @@ import org.raku.comma.psi.type.RakuResolvedType;
 import org.raku.comma.psi.type.RakuType;
 import org.raku.comma.psi.type.RakuUnresolvedType;
 import org.raku.comma.services.RakuBackupSDKService;
+import org.raku.comma.utils.CommaProjectUtil;
 import org.raku.comma.utils.RakuCommandLine;
 import org.raku.comma.utils.RakuUtils;
 import org.jdom.Element;
@@ -149,7 +150,7 @@ public class RakuSdkType extends SdkType {
 
     public static String secondarySDKHome(@NotNull Project project) {
         RakuBackupSDKService service = project.getService(RakuBackupSDKService.class);
-        return service.getProjectSdkPath(project.getProjectFilePath());
+        return service.getProjectSdkPath(project);
     }
 
     @Override
@@ -443,8 +444,7 @@ public class RakuSdkType extends SdkType {
                                           ? cache.useNameFileCache
                                           : cache.needNameFileCache;
         // If we have anything in file cache, return it
-        if (fileCache.containsKey(name))
-            return fileCache.get(name);
+        if (fileCache.containsKey(name)) return fileCache.get(name);
 
         // if not, check if we have symbol cache, if yes, parse, save and return it
         Map<String, String> symbolCache = invocation.startsWith("use")
@@ -456,7 +456,6 @@ public class RakuSdkType extends SdkType {
         if (symbolCache.containsKey(name)) {
             return fileCache.compute(name, (n, v) -> constructExternalPsiFile(project, n, new JSONArray(symbolCache.get(n))));
         }
-
 
         if (!packagesStarted.contains(name)) {
             packagesStarted.add(name);
@@ -474,15 +473,15 @@ public class RakuSdkType extends SdkType {
     }
 
     private static RakuFile constructExternalPsiFile(Project project, String name, JSONArray externalsJSON) {
-        ExternalRakuFile perl6File = null;
+        ExternalRakuFile rakuFile = null;
         try {
             LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
-            perl6File = new ExternalRakuFile(project, dummy);
-            RakuExternalNamesParser parser = new RakuExternalNamesParser(project, perl6File, externalsJSON);
-            perl6File.setSymbols(parser.parse().result());
+            rakuFile = new ExternalRakuFile(project, dummy);
+            RakuExternalNamesParser parser = new RakuExternalNamesParser(project, rakuFile, externalsJSON);
+            rakuFile.setSymbols(parser.parse().result());
         } catch (AlreadyDisposedException ignored) {
         }
-        return perl6File;
+        return rakuFile;
     }
 
     private static RakuFile constructExternalPsiFile(Project project,
@@ -511,13 +510,13 @@ public class RakuSdkType extends SdkType {
     }
 
     public static List<RakuSymbol> loadModuleSymbols(Project project,
-                                                     RakuFile perl6File,
+                                                     RakuFile rakuFile,
                                                      String name, String invocation,
                                                      Map<String, String> symbolCache,
                                                      boolean addLib)
     {
-        if (invocation.equals("use nqp")) {
-            return getNQPSymbols(project, perl6File);
+        if (invocation.equals("use nqp") || CommaProjectUtil.isProjectRakudo(project)) {
+            return getNQPSymbols(project, rakuFile);
         }
 
         String homePath = getSdkHomeByProject(project);
@@ -544,7 +543,7 @@ public class RakuSdkType extends SdkType {
             } catch (JSONException ex) {
                 return new ArrayList<>();
             }
-            return new RakuExternalNamesParser(project, perl6File, symbols).parse().result();
+            return new RakuExternalNamesParser(project, rakuFile, symbols).parse().result();
         } catch (ExecutionException e) {
             return new ArrayList<>();
         }
