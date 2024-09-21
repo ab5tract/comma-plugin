@@ -17,6 +17,7 @@ import com.intellij.testFramework.LightVirtualFile;
 import org.raku.comma.psi.RakuFile;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,13 +39,13 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
         final Location location = context.getLocation();
         if (location == null) return false;
         VirtualFile fileToTest;
-        if (location.getPsiElement().getContainingFile() != null) {
-            final PsiFile file = location.getPsiElement().getContainingFile();
+        final PsiFile file = location.getPsiElement().getContainingFile();
+        if (file != null && ! file.isDirectory()) {
             if (!(file instanceof RakuFile)) return false;
             final VirtualFile virtualFile = file.getVirtualFile();
             if (virtualFile == null
                 || virtualFile instanceof LightVirtualFile
-                || !validExtensions.contains(virtualFile.getExtension()))
+                || (virtualFile.getExtension() != null && !validExtensions.contains(virtualFile.getExtension())))
             {
                 return false;
             }
@@ -55,8 +56,9 @@ public class RakuCompleteTestRunConfigurationProducer extends LazyRunConfigurati
             VirtualFile directory = location.getVirtualFile();
             if (directory == null || !directory.isDirectory()) return false;
             AtomicReference<String> pathHolder = new AtomicReference<>();
-            VfsUtilCore.processFilesRecursively(directory, file -> {
-                if (! file.isDirectory() && validExtensions.contains(file.getExtension())) {
+            VfsUtilCore.processFilesRecursively(directory, thisFile -> {
+                String extension = Objects.requireNonNullElse(thisFile.getExtension(), "");
+                if (! thisFile.isDirectory() && validExtensions.contains(extension)) {
                     pathHolder.set(directory.getPath());
                     return false;
                 }
