@@ -28,7 +28,6 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.raku.comma.services.RakuBackupSDKService;
 import org.raku.comma.utils.CommaProjectUtil;
 
 import javax.swing.*;

@@ -3,9 +3,6 @@ package org.raku.comma.project;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ProjectBuilder;
 import com.intellij.ide.util.projectWizard.WizardContext;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.*;
@@ -29,16 +26,13 @@ import org.raku.comma.pm.RakuPackageManagerManager;
 import org.raku.comma.sdk.RakuSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.raku.comma.services.RakuBackupSDKService;
-import org.raku.comma.utils.CommaProjectUtil;
+import org.raku.comma.services.RakuSDKService;
 
 import javax.swing.*;
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import static com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor;
 
@@ -116,8 +110,8 @@ public class RakuProjectBuilder extends ProjectBuilder {
                 if (sdkHome != null) {
                     Sdk sdk = ProjectJdkTable.getInstance().findJdk(sdkHome);
                     if (sdk != null) {
-                        var service = project.getService(RakuBackupSDKService.class);
-                        service.setProjectSdkPath(project, sdkHome);
+                        project.getService(RakuSDKService.class)
+                               .setProjectSdkPath(sdkHome);
                     } else {
                         throw new RuntimeException("Can't find Raku SDK for: " + sdkHome);
                     }

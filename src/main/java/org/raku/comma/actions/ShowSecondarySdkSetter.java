@@ -3,17 +3,15 @@ package org.raku.comma.actions;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.util.BuildNumber;
 import com.intellij.openapi.util.Condition;
 import org.raku.comma.project.projectWizard.components.JdkComboBox;
 import org.raku.comma.sdk.RakuSdkType;
-import org.raku.comma.services.RakuBackupSDKService;
+import org.raku.comma.services.RakuSDKService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,12 +20,12 @@ import java.util.Objects;
 
 public class ShowSecondarySdkSetter extends AnAction {
     @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        Project project = e.getProject();
+    public void actionPerformed(@NotNull AnActionEvent event) {
+        Project project = event.getProject();
         assert project != null;
-        RakuBackupSDKService service = project.getService(RakuBackupSDKService.class);
-        String currentSdk = service.getProjectSdkPath(project.getProjectFilePath());
-        new SecondarySdkSelector(project, currentSdk).showAndGet();
+        RakuSDKService service = project.getService(RakuSDKService.class);
+        String currentSdkPath = service.getProjectSdkPath();
+        new SecondarySdkSelector(project, currentSdkPath).showAndGet();
     }
 
     @Override
@@ -75,10 +73,10 @@ public class ShowSecondarySdkSetter extends AnAction {
 
         @Override
         protected void doOKAction() {
-            RakuBackupSDKService service = myProject.getService(RakuBackupSDKService.class);
+            RakuSDKService service = myProject.getService(RakuSDKService.class);
             Sdk sdk = mySdkCheckbox.getSelectedJdk();
-            if (sdk != null) {
-                service.setProjectSdkPath(myProject.getProjectFilePath(), sdk.getHomePath());
+            if (sdk != null && sdk.getHomePath() != null) {
+                service.setProjectSdkPath(sdk.getHomePath());
             }
             super.doOKAction();
         }

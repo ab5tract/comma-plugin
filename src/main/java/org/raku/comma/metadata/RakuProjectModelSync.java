@@ -15,7 +15,7 @@ import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.serviceContainer.AlreadyDisposedException;
 import org.raku.comma.library.RakuLibraryType;
 import org.raku.comma.sdk.RakuSdkType;
-import org.raku.comma.services.RakuBackupSDKService;
+import org.raku.comma.services.RakuSDKService;
 import org.raku.comma.utils.RakuCommandLine;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
@@ -106,12 +106,13 @@ public final class RakuProjectModelSync {
             sdk = ProjectRootManager.getInstance(module.getProject()).getProjectSdk();
         }
         if (sdk == null || !(sdk.getSdkType() instanceof RakuSdkType)) {
-            RakuBackupSDKService backupSDK = module.getProject().getService(RakuBackupSDKService.class);
-            String homePath = backupSDK.getProjectSdkPath(module.getProject().getProjectFilePath());
+            String sdkHomePath = module.getProject()
+                                       .getService(RakuSDKService.class)
+                                       .getProjectSdkPath();
 
-            if (homePath == null) return null;
+            if (sdkHomePath == null) return null;
             for (Sdk tempSdk : ProjectJdkTable.getInstance().getSdksOfType(RakuSdkType.getInstance())) {
-                if (Objects.equals(tempSdk.getHomePath(), homePath)) {
+                if (Objects.equals(tempSdk.getHomePath(), sdkHomePath)) {
                     sdk = tempSdk;
                     break;
                 }

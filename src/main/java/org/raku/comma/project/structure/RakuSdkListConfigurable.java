@@ -12,7 +12,6 @@ import com.intellij.openapi.projectRoots.ProjectJdkTable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModel;
 import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.SdkPopupFactory;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.MasterDetailsComponent;
@@ -22,7 +21,7 @@ import org.raku.comma.sdk.RakuSdkType;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.raku.comma.services.RakuBackupSDKService;
+import org.raku.comma.services.RakuSDKService;
 
 import javax.swing.tree.TreePath;
 import java.util.*;
@@ -135,8 +134,8 @@ public final class RakuSdkListConfigurable extends RakuStructureConfigurable {
         }
 
         if (myJdksTreeModel.isModified() || modifiedJdks) myJdksTreeModel.apply(this);
-        var sdkPath = myProject.getService(RakuBackupSDKService.class)
-                               .getProjectSdkPath(myProject.getProjectFilePath());
+        var sdkPath = myProject.getService(RakuSDKService.class)
+                               .getProjectSdkPath();
         ProjectJdkTable.getInstance().getSdksOfType(RakuSdkType.getInstance()).stream()
                 .filter(findSdk -> Objects.equals(findSdk.getHomePath(), sdkPath))
                 .findFirst()

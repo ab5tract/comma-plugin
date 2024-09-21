@@ -29,7 +29,7 @@ import org.raku.comma.psi.symbols.*;
 import org.raku.comma.psi.type.RakuResolvedType;
 import org.raku.comma.psi.type.RakuType;
 import org.raku.comma.psi.type.RakuUnresolvedType;
-import org.raku.comma.services.RakuBackupSDKService;
+import org.raku.comma.services.RakuSDKService;
 import org.raku.comma.utils.CommaProjectUtil;
 import org.raku.comma.utils.RakuCommandLine;
 import org.raku.comma.utils.RakuUtils;
@@ -149,8 +149,8 @@ public class RakuSdkType extends SdkType {
     }
 
     public static String secondarySDKHome(@NotNull Project project) {
-        RakuBackupSDKService service = project.getService(RakuBackupSDKService.class);
-        return service.getProjectSdkPath(project);
+        RakuSDKService service = project.getService(RakuSDKService.class);
+        return service.getProjectSdkPath();
     }
 
     @Override

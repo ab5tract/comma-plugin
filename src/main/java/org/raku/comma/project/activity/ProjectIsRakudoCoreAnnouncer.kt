@@ -1,4 +1,4 @@
-package org.raku.comma.services
+package org.raku.comma.project.activity
 
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType

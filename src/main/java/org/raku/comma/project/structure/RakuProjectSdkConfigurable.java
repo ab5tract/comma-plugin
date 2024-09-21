@@ -12,7 +12,7 @@ import org.raku.comma.sdk.RakuSdkType;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.raku.comma.services.RakuBackupSDKService;
+import org.raku.comma.services.RakuSDKService;
 
 import javax.swing.*;
 import java.util.Objects;
@@ -73,12 +73,12 @@ public class RakuProjectSdkConfigurable implements UnnamedConfigurable {
                     }
             );
             myCbProjectJdk.addActionListener(event -> {
-                var service = myProject.getService(RakuBackupSDKService.class);
                 String sdkHome = Objects.requireNonNull(myCbProjectJdk.getSelectedJdk()).getHomePath();
                 assert sdkHome != null;
                 PropertiesComponent properties = PropertiesComponent.getInstance(myProject);
                 if (RakuSdkType.getInstance().isValidSdkHome(sdkHome)) {
-                    service.setProjectSdkPath(myProject, sdkHome);
+                    myProject.getService(RakuSDKService.class)
+                             .setProjectSdkPath(sdkHome);
                     properties.setValue("raku.sdk.selected", sdkHome);
                 } else {
                     throw new RuntimeException("Invalid SDK in location '%s'".formatted(sdkHome));
@@ -92,16 +92,18 @@ public class RakuProjectSdkConfigurable implements UnnamedConfigurable {
     }
 
     private void reloadModel() {
-        var service = myProject.getService(RakuBackupSDKService.class);
-        final String rakuSdkHome = service.getProjectSdkPath(myProject);
-        final String rakuSdkName = RakuSdkType.suggestSdkName(rakuSdkHome);
+        var service = myProject.getService(RakuSDKService.class);
+        final String rakuSdkHome = service.getProjectSdkPath();
 
-        if (rakuSdkName != null) {
-            final Sdk rakuSdk = myJdksModel.findSdk(rakuSdkName);
-            if (rakuSdk != null) {
-                service.setProjectSdkPath(myProject, rakuSdk.getHomePath());
-            } else {
-                myCbProjectJdk.setInvalidJdk(rakuSdkName);
+        if (rakuSdkHome != null) {
+            final String rakuSdkName = RakuSdkType.suggestSdkName(rakuSdkHome);
+            if (rakuSdkName != null) {
+                final Sdk rakuSdk = myJdksModel.findSdk(rakuSdkName);
+                if (rakuSdk != null && rakuSdk.getHomePath() != null) {
+                    service.setProjectSdkPath(rakuSdk.getHomePath());
+                } else {
+                    myCbProjectJdk.setInvalidJdk(rakuSdkName);
+                }
             }
         } else {
             myCbProjectJdk.setSelectedJdk(null);
@@ -110,22 +112,25 @@ public class RakuProjectSdkConfigurable implements UnnamedConfigurable {
 
     @Override
     public boolean isModified() {
-        final String projectRakuSdkHome = myProject.getService(RakuBackupSDKService.class).getProjectSdkPath(myProject);
-        return ! projectRakuSdkHome.equals(Objects.requireNonNull(getSelectedProjectJdk()).getHomePath());
+        final String rakuSdkHome = myProject.getService(RakuSDKService.class)
+                                            .getProjectSdkPath();
+        return ! (rakuSdkHome != null && rakuSdkHome.equals(Objects.requireNonNull(getSelectedProjectJdk()).getHomePath()));
     }
 
     @Override
     public void apply() {
         String sdkHome = Objects.requireNonNull(getSelectedProjectJdk()).getHomePath();
-        myProject.getService(RakuBackupSDKService.class)
-                 .setProjectSdkPath(myProject, sdkHome);
+        if (sdkHome != null) {
+            myProject.getService(RakuSDKService.class)
+                     .setProjectSdkPath(sdkHome);
+        }
     }
 
     @Override
     public void reset() {
         reloadModel();
 
-        final String sdkName = myProject.getService(RakuBackupSDKService.class).getProjectSdkName(myProject);
+        final String sdkName = myProject.getService(RakuSDKService.class).getProjectSdkName();
         if (sdkName != null) {
             final Sdk jdk = myJdksModel.findSdk(sdkName);
             if (jdk != null) {

@@ -8,7 +8,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.util.text.VersionComparatorUtil;
 import org.raku.comma.sdk.RakuSdkType;
-import org.raku.comma.services.RakuBackupSDKService;
+import org.raku.comma.services.RakuSDKService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -103,8 +103,8 @@ public class RakuCommandLine extends GeneralCommandLine {
             homePath = sdk.getHomePath();
         }
         else {
-            RakuBackupSDKService backupSDKService = project.getService(RakuBackupSDKService.class);
-            String backupSDKPath = backupSDKService.getProjectSdkPath(project.getProjectFilePath());
+            RakuSDKService backupSDKService = project.getService(RakuSDKService.class);
+            String backupSDKPath = backupSDKService.getProjectSdkPath();
             if (backupSDKPath != null) {
                 versionString = RakuSdkType.getInstance().getVersionString(backupSDKPath);
                 homePath = backupSDKPath;

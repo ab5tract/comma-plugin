@@ -15,7 +15,7 @@ import com.intellij.openapi.roots.ProjectRootManager;
 import org.raku.comma.RakuIcons;
 import org.raku.comma.actions.ShowRakuProjectStructureAction;
 import org.raku.comma.sdk.RakuSdkType;
-import org.raku.comma.services.RakuBackupSDKService;
+import org.raku.comma.services.RakuSDKService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -73,7 +73,8 @@ public class RakuLaunchReplAction extends AnAction {
         if (sdk != null && sdk.getSdkType() instanceof RakuSdkType) {
             return sdk.getHomePath();
         } else {
-            return project.getService(RakuBackupSDKService.class).getProjectSdkPath(project.getProjectFilePath());
+            return project.getService(RakuSDKService.class)
+                          .getProjectSdkPath();
         }
     }
 }
