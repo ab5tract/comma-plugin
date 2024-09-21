@@ -25,7 +25,7 @@ import static org.raku.comma.parsing.RakuTokenTypes.UNV_WHITE_SPACE;
 public interface RakuPsiElement extends NavigatablePsiElement {
     /* Name-manages the enclosing file name into a module name, if possible.
      * Returns null if that's not possible or this doesn't seem to be a module. */
-    default String getEnclosingPerl6ModuleName() {
+    default String getEnclosingRakuModuleName() {
         // Make sure it's Raku module file, and trim the extension.
         VirtualFile file = getContainingFile().getVirtualFile();
         if (!(FileTypeManager.getInstance().getFileTypeByFile(file) instanceof RakuModuleFileType))
@@ -73,8 +73,9 @@ public interface RakuPsiElement extends NavigatablePsiElement {
         RakuPsiScope scope = PsiTreeUtil.getParentOfType(this, RakuPsiScope.class);
         while (scope != null) {
             // If we are at top level already, we need to contribute CORE external symbols too
-            if (scope instanceof RakuFile)
+            if (scope instanceof RakuFile) {
                 scope.contributeScopeSymbols(collector);
+            }
 
             RakuStatementList list = PsiTreeUtil.findChildOfType(scope, RakuStatementList.class);
             if (list == null) return;
@@ -100,12 +101,10 @@ public interface RakuPsiElement extends NavigatablePsiElement {
         while (scope != null) {
             for (RakuLexicalSymbolContributor cont : scope.getSymbolContributors()) {
                 cont.contributeLexicalSymbols(collector);
-                if (collector.isSatisfied())
-                    return;
+                if (collector.isSatisfied()) return;
             }
             scope.contributeScopeSymbols(collector);
-            if (collector.isSatisfied())
-                return;
+            if (collector.isSatisfied()) return;
             scope = PsiTreeUtil.getParentOfType(scope, RakuPsiScope.class);
         }
     }
@@ -148,28 +147,31 @@ public interface RakuPsiElement extends NavigatablePsiElement {
     @Nullable
     default PsiElement skipWhitespacesBackward() {
         PsiElement temp = getPrevSibling();
-        while (temp != null &&
-               (temp instanceof PsiWhiteSpace ||
-                temp.getNode().getElementType() == UNV_WHITE_SPACE))
+        while (temp != null
+            && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType() == UNV_WHITE_SPACE))
+        {
             temp = temp.getPrevSibling();
+        }
         return temp;
     }
 
     @Nullable
     default PsiElement skipWhitespacesForward() {
         PsiElement temp = getNextSibling();
-        while (temp != null &&
-               (temp instanceof PsiWhiteSpace ||
-                temp.getNode().getElementType() == UNV_WHITE_SPACE))
+        while (temp != null
+            && (temp instanceof PsiWhiteSpace || temp.getNode().getElementType() == UNV_WHITE_SPACE))
+        {
             temp = temp.getNextSibling();
+        }
         return temp;
     }
 
     default void collectPodAndDocumentables(PodDomBuildingContext context) {
         PsiElement child = getFirstChild();
         while (child != null) {
-            if (child instanceof RakuPsiElement)
-                ((RakuPsiElement)child).collectPodAndDocumentables(context);
+            if (child instanceof RakuPsiElement) {
+                ((RakuPsiElement) child).collectPodAndDocumentables(context);
+            }
             child = child.getNextSibling();
         }
     }

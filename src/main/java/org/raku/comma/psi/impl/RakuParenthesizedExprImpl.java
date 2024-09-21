@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.raku.comma.psi.RakuParenthesizedExpr;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class RakuParenthesizedExprImpl extends ASTWrapperPsiElement implements RakuParenthesizedExpr {
+public class RakuParenthesizedExprImpl extends RakuASTWrapperPsiElement implements RakuParenthesizedExpr {
     public RakuParenthesizedExprImpl(@NotNull ASTNode node) {
         super(node);
     }

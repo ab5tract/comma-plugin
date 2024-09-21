@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
@@ -11,7 +11,7 @@ import org.raku.comma.psi.RakuRegexCall;
 import org.raku.comma.psi.RakuRegexCallReference;
 import org.jetbrains.annotations.NotNull;
 
-public class RakuRegexCallImpl extends ASTWrapperPsiElement implements RakuRegexCall {
+public class RakuRegexCallImpl extends RakuASTWrapperPsiElement implements RakuRegexCall {
     public RakuRegexCallImpl(ASTNode node) {
         super(node);
     }

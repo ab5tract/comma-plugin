@@ -9,14 +9,11 @@ import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.components.StorageScheme;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.ex.ProjectRootManagerEx;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.ui.Messages;
@@ -28,8 +25,9 @@ import com.intellij.util.ui.UIUtil;
 import org.raku.comma.project.projectWizard.CommaAbstractProjectWizard;
 import org.raku.comma.project.projectWizard.CommaNewProjectWizard;
 import org.jetbrains.annotations.NotNull;
-import org.raku.comma.services.RakuBackupSDKService;
-import org.raku.comma.services.RakudoProjectDetectorService;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
+import org.raku.comma.services.RakuSDKService;
+import org.raku.comma.services.RakuProjectDetailsService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,7 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * A simper, Comma-exclusive re-imagination of NewProjectUtil.
+ * A simpler, Comma-exclusive re-imagination of NewProjectUtil.
  */
 public class CommaProjectUtil {
     private final static Logger LOG = Logger.getInstance(CommaProjectUtil.class);
@@ -108,7 +106,7 @@ public class CommaProjectUtil {
             Sdk sdk = wizard.getNewProjectSdk();
             if (sdk != null) {
                 CommandProcessor.getInstance().executeCommand(newProject, () -> ApplicationManager.getApplication()
-                    .runWriteAction(() -> applySdkToProject(newProject, sdk)), null, null);
+                    .runWriteAction(() -> applyRakuSdkToProject(newProject, sdk)), null, null);
             }
 
             if (projectBuilder != null) {
@@ -161,23 +159,19 @@ public class CommaProjectUtil {
         }
     }
 
-    public static void applySdkToProject(@NotNull Project project, @NotNull Sdk jdk) {
-        var service = project.getService(RakuBackupSDKService.class);
-        service.setProjectSdkPath(project, jdk.getHomePath());
-
-//        ProjectRootManagerEx rootManager = ProjectRootManagerEx.getInstanceEx(project);
-//        rootManager.setProjectSdk(jdk);
-    }
-
-    public static boolean isProjectRakudo(PsiElement element) {
-        var module = ModuleUtil.findModuleForPsiElement(element);
-        if (module != null) {
-            return isProjectRakudo(module.getProject());
+    public static void applyRakuSdkToProject(@NotNull Project project, @NotNull Sdk rakuSdk) {
+        if (rakuSdk.getHomePath() != null) {
+            var service = project.getService(RakuSDKService.class);
+            service.setProjectSdkPath(rakuSdk.getHomePath());
         }
-        return false;
     }
 
-    public static boolean isProjectRakudo(Project project) {
-        return project.getService(RakudoProjectDetectorService.class).isProjectRakudo();
+    public static boolean isRakudoCoreProject(PsiElement element) {
+       return (element instanceof RakuASTWrapperPsiElement)
+               && ((RakuASTWrapperPsiElement) element).isWithinRakudoCoreProject();
+    }
+
+    public static boolean isRakudoCoreProject(Project project) {
+        return project.getService(RakuProjectDetailsService.class).isProjectRakudoCore();
     }
 }

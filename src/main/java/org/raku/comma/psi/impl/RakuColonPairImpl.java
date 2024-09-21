@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static org.raku.comma.parsing.RakuTokenTypes.COLON_PAIR;
 
-public class RakuColonPairImpl extends ASTWrapperPsiElement implements RakuColonPair {
+public class RakuColonPairImpl extends RakuASTWrapperPsiElement implements RakuColonPair {
     public RakuColonPairImpl(@NotNull ASTNode node) {
         super(node);
     }

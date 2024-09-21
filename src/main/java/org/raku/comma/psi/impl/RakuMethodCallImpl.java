@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
@@ -19,7 +19,7 @@ import static org.raku.comma.parsing.RakuElementTypes.LONG_NAME;
 import static org.raku.comma.parsing.RakuTokenTypes.METHOD_CALL_NAME;
 import static org.raku.comma.parsing.RakuTokenTypes.METHOD_CALL_OPERATOR;
 
-public class RakuMethodCallImpl extends ASTWrapperPsiElement implements RakuMethodCall {
+public class RakuMethodCallImpl extends RakuASTWrapperPsiElement implements RakuMethodCall {
     public RakuMethodCallImpl(@NotNull ASTNode node) {
         super(node);
     }

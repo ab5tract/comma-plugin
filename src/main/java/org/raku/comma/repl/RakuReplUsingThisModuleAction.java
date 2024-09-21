@@ -13,7 +13,7 @@ public class RakuReplUsingThisModuleAction extends RakuLaunchReplAction {
         if (getSdkHome(e) != null) {
             PsiFile currentFile = e.getData(CommonDataKeys.PSI_FILE);
             available = currentFile instanceof RakuFile &&
-                        ((RakuFile)currentFile).getEnclosingPerl6ModuleName() != null;
+                        ((RakuFile)currentFile).getEnclosingRakuModuleName() != null;
         }
         e.getPresentation().setEnabledAndVisible(available);
     }
@@ -22,7 +22,7 @@ public class RakuReplUsingThisModuleAction extends RakuLaunchReplAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         PsiFile currentFile = e.getData(CommonDataKeys.PSI_FILE);
         if (currentFile instanceof RakuFile) {
-            String moduleName = ((RakuFile)currentFile).getEnclosingPerl6ModuleName();
+            String moduleName = ((RakuFile)currentFile).getEnclosingRakuModuleName();
             startRepl(e, moduleName);
         }
     }

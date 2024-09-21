@@ -385,7 +385,7 @@
     <vcs.codeVisionLanguageContext language="Raku" implementationClass="org.raku.comma.codeInsights.RakuVcsCodeVisionLanguageContext"/>
     <navbar implementation="org.raku.comma.structureView.RakuStructureAwareNavbar"/>
       <backgroundPostStartupActivity id="IsRakudoCoreAnnouncer"
-                                     implementation="org.raku.comma.services.IsRakudoCoreAnnouncer"
+                                     implementation="org.raku.comma.services.ProjectIsRakudoCoreAnnouncer"
                                      order="first"/>
   </extensions>
 

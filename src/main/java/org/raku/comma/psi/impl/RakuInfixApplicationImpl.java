@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 import static org.raku.comma.parsing.RakuElementTypes.NULL_TERM;
 
-public class RakuInfixApplicationImpl extends ASTWrapperPsiElement implements RakuInfixApplication {
+public class RakuInfixApplicationImpl extends RakuASTWrapperPsiElement implements RakuInfixApplication {
     public RakuInfixApplicationImpl(@NotNull ASTNode node) {
         super(node);
     }

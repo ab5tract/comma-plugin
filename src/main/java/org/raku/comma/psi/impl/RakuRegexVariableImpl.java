@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.LocalSearchScope;
@@ -11,7 +11,7 @@ import org.raku.comma.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RakuRegexVariableImpl extends ASTWrapperPsiElement implements RakuRegexVariable {
+public class RakuRegexVariableImpl extends RakuASTWrapperPsiElement implements RakuRegexVariable {
     public RakuRegexVariableImpl(@NotNull ASTNode node) {
         super(node);
     }

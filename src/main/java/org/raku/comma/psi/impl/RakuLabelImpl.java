@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
@@ -12,7 +12,7 @@ import org.raku.comma.psi.symbols.RakuSymbolKind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RakuLabelImpl extends ASTWrapperPsiElement implements RakuLabel {
+public class RakuLabelImpl extends RakuASTWrapperPsiElement implements RakuLabel {
     public RakuLabelImpl(@NotNull ASTNode node) {
         super(node);
     }

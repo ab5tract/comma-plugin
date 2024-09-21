@@ -1,13 +1,13 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.raku.comma.psi.RakuRegexAtom;
 import org.raku.comma.psi.RakuRegexQuantifier;
 import org.jetbrains.annotations.NotNull;
 
-public class RakuRegexAtomImpl extends ASTWrapperPsiElement implements RakuRegexAtom {
+public class RakuRegexAtomImpl extends RakuASTWrapperPsiElement implements RakuRegexAtom {
     public RakuRegexAtomImpl(@NotNull ASTNode node) {
         super(node);
     }

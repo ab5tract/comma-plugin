@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
@@ -11,7 +11,7 @@ import org.raku.comma.psi.RakuIsTraitReference;
 import org.raku.comma.psi.RakuLongName;
 import org.jetbrains.annotations.NotNull;
 
-public class RakuIsTraitNameImpl extends ASTWrapperPsiElement implements RakuIsTraitName {
+public class RakuIsTraitNameImpl extends RakuASTWrapperPsiElement implements RakuIsTraitName {
     public RakuIsTraitNameImpl(ASTNode node) {
         super(node);
     }

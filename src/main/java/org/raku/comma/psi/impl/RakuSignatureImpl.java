@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.util.ArrayUtil;
 import org.raku.comma.psi.RakuParameter;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RakuSignatureImpl extends ASTWrapperPsiElement implements RakuSignature {
+public class RakuSignatureImpl extends RakuASTWrapperPsiElement implements RakuSignature {
     public RakuSignatureImpl(@NotNull ASTNode node) {
         super(node);
     }

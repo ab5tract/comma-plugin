@@ -159,7 +159,7 @@ public class RakuSdkEditor implements Configurable, Place.Navigator {
             sdkModificator.commitChanges();
 
 //            sdkType.setupSdkPaths(dummySdk, mySdkModel);
-            CommaProjectUtil.applySdkToProject(myProject, mySdk);
+            CommaProjectUtil.applyRakuSdkToProject(myProject, mySdk);
 
             clearAllPaths();
             myVersionString = dummySdk.getVersionString();

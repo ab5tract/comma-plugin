@@ -515,7 +515,7 @@ public class RakuSdkType extends SdkType {
                                                      Map<String, String> symbolCache,
                                                      boolean addLib)
     {
-        if (invocation.equals("use nqp") || CommaProjectUtil.isProjectRakudo(project)) {
+        if (invocation.equals("use nqp") || CommaProjectUtil.isRakudoCoreProject(project)) {
             return getNQPSymbols(project, rakuFile);
         }
 

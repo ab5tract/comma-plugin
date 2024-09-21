@@ -1,12 +1,12 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import org.raku.comma.psi.RakuColonPair;
 import org.raku.comma.psi.RakuLongName;
 import org.jetbrains.annotations.NotNull;
 
-public class RakuLongNameImpl extends ASTWrapperPsiElement implements RakuLongName {
+public class RakuLongNameImpl extends RakuASTWrapperPsiElement implements RakuLongName {
     public RakuLongNameImpl(@NotNull ASTNode node) {
         super(node);
     }

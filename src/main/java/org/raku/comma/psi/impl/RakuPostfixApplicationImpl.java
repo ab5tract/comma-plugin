@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
@@ -10,7 +10,7 @@ import org.raku.comma.psi.type.RakuUntyped;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RakuPostfixApplicationImpl extends ASTWrapperPsiElement implements RakuPostfixApplication {
+public class RakuPostfixApplicationImpl extends RakuASTWrapperPsiElement implements RakuPostfixApplication {
     public RakuPostfixApplicationImpl(@NotNull ASTNode node) {
         super(node);
     }

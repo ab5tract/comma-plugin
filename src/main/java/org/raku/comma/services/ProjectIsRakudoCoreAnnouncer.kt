@@ -7,13 +7,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import org.raku.comma.utils.CommaProjectUtil
 
-class IsRakudoCoreAnnouncer : ProjectActivity {
+class ProjectIsRakudoCoreAnnouncer : ProjectActivity {
     override suspend fun execute(project: Project) {
-        if (CommaProjectUtil.isProjectRakudo(project)) {
+        if (CommaProjectUtil.isRakudoCoreProject(project)) {
             Notifications.Bus.notify(
                 Notification(
                     "raku.messages",
-                    "Project contains rakudo.git.\nuSpecial settings for core hacking enabled.",
+                    "Project contains rakudo.git. Special settings for core hacking enabled.",
                     NotificationType.INFORMATION
                 ),
                 project

@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import static org.raku.comma.parsing.RakuTokenTypes.PARAMETER_QUANTIFIER;
 import static org.raku.comma.parsing.RakuTokenTypes.UNV_WHITE_SPACE;
 
-public class RakuParameterImpl extends ASTWrapperPsiElement implements RakuParameter {
+public class RakuParameterImpl extends RakuASTWrapperPsiElement implements RakuParameter {
     public RakuParameterImpl(@NotNull ASTNode node) {
         super(node);
     }

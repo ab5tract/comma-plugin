@@ -68,7 +68,7 @@ public abstract class RakuMemberStubBasedPsi<T extends StubElement<?>> extends S
                         return encName == null ? "" : "lexical in " + encName;
                     }
                     case "our": {
-                        String name = getEnclosingPerl6ModuleName();
+                        String name = getEnclosingRakuModuleName();
                         return name == null ? "" : "global in " + name;
                     }
                     case "has": {
@@ -76,14 +76,14 @@ public abstract class RakuMemberStubBasedPsi<T extends StubElement<?>> extends S
                         return encName == null ? "" : "in " + encName;
                     }
                     default:
-                        return getEnclosingPerl6ModuleName();
+                        return getEnclosingRakuModuleName();
                 }
             }
 
             private String enclosingPackage() {
                 RakuPackageDecl pkg = getStubOrPsiParentOfType(RakuPackageDecl.class);
                 if (pkg == null) {
-                    String moduleName = getEnclosingPerl6ModuleName();
+                    String moduleName = getEnclosingRakuModuleName();
                     return moduleName == null ? getContainingFile().getVirtualFile().getName() : moduleName;
                 }
                 RakuPackageDeclStub stub = pkg.getStub();

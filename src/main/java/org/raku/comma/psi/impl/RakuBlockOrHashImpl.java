@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class RakuBlockOrHashImpl extends ASTWrapperPsiElement implements RakuBlockOrHash {
+public class RakuBlockOrHashImpl extends RakuASTWrapperPsiElement implements RakuBlockOrHash {
     public RakuBlockOrHashImpl(@NotNull ASTNode node) {
         super(node);
     }

@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.raku.comma.psi.RakuGivenStatement;
@@ -9,7 +9,7 @@ import org.raku.comma.psi.RakuPsiElement;
 import org.raku.comma.psi.type.RakuType;
 import org.jetbrains.annotations.NotNull;
 
-public class RakuGivenStatementImpl extends ASTWrapperPsiElement implements RakuGivenStatement {
+public class RakuGivenStatementImpl extends RakuASTWrapperPsiElement implements RakuGivenStatement {
     public RakuGivenStatementImpl(@NotNull ASTNode node) {
         super(node);
     }

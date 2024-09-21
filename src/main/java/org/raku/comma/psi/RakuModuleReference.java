@@ -65,7 +65,7 @@ public class RakuModuleReference extends PsiReferenceBase<RakuModuleName> {
     public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
         // Our RakuFile, so can calculate new path
         if (element instanceof RakuPsiElement) {
-            getElement().setName(((RakuPsiElement)element).getEnclosingPerl6ModuleName());
+            getElement().setName(((RakuPsiElement)element).getEnclosingRakuModuleName());
         }
         return element;
     }

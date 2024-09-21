@@ -142,7 +142,7 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
             builder.append("</header>\n");
         }
         else if (getFileType() instanceof RakuModuleFileType) {
-            String moduleName = getEnclosingPerl6ModuleName();
+            String moduleName = getEnclosingRakuModuleName();
             if (moduleName != null) {
                 builder.append("<header>\n<h1>");
                 builder.append(RakuUtils.escapeHTML(moduleName));
@@ -358,7 +358,7 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
             else {
                 LightVirtualFile dummy = new LightVirtualFile(getName());
                 ExternalRakuFile rakuFile = new ExternalRakuFile(getProject(), dummy);
-                String invocation = "use " + getEnclosingPerl6ModuleName();
+                String invocation = "use " + getEnclosingRakuModuleName();
                 List<RakuSymbol> symbols = RakuSdkType.loadModuleSymbols(getProject(),
                                                                          rakuFile,
                                                                          getName(),
@@ -429,7 +429,7 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
     @Nullable
     @Override
     public PsiMetaData getMetaData() {
-        String name = getEnclosingPerl6ModuleName();
+        String name = getEnclosingRakuModuleName();
         if (Objects.isNull(name)) {
             name = getName();
         }

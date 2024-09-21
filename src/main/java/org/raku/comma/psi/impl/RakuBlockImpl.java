@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
@@ -14,7 +14,7 @@ import org.raku.comma.psi.symbols.RakuSymbolCollector;
 import org.raku.comma.psi.symbols.RakuSymbolKind;
 import org.jetbrains.annotations.NotNull;
 
-public class RakuBlockImpl extends ASTWrapperPsiElement implements RakuBlock {
+public class RakuBlockImpl extends RakuASTWrapperPsiElement implements RakuBlock {
     public RakuBlockImpl(@NotNull ASTNode node) {
         super(node);
     }

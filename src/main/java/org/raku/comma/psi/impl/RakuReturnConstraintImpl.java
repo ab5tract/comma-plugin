@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import org.raku.comma.psi.RakuReturnConstraint;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static org.raku.comma.parsing.RakuElementTypes.TYPE_NAME;
 
-public class RakuReturnConstraintImpl extends ASTWrapperPsiElement implements RakuReturnConstraint {
+public class RakuReturnConstraintImpl extends RakuASTWrapperPsiElement implements RakuReturnConstraint {
     public RakuReturnConstraintImpl(@NotNull ASTNode node) {
         super(node);
     }

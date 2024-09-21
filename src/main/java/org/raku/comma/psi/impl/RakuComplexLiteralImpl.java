@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import org.raku.comma.psi.RakuComplexLiteral;
 import org.raku.comma.psi.effects.EffectCollection;
@@ -9,7 +9,7 @@ import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 
-public class RakuComplexLiteralImpl extends ASTWrapperPsiElement implements RakuComplexLiteral {
+public class RakuComplexLiteralImpl extends RakuASTWrapperPsiElement implements RakuComplexLiteral {
     public RakuComplexLiteralImpl(@NotNull ASTNode node) {
         super(node);
     }

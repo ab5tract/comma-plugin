@@ -1,13 +1,13 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import org.raku.comma.parsing.RakuTokenTypes;
 import org.raku.comma.psi.RakuMultiDecl;
 import org.jetbrains.annotations.NotNull;
 
-public class RakuMultiDeclImpl extends ASTWrapperPsiElement implements RakuMultiDecl {
+public class RakuMultiDeclImpl extends RakuASTWrapperPsiElement implements RakuMultiDecl {
     public RakuMultiDeclImpl(@NotNull ASTNode node) {
         super(node);
     }

@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
@@ -9,7 +9,7 @@ import org.raku.comma.psi.RakuSubCallName;
 import org.raku.comma.psi.RakuSubCallReference;
 import org.jetbrains.annotations.NotNull;
 
-public class RakuSubCallNameImpl extends ASTWrapperPsiElement implements RakuSubCallName {
+public class RakuSubCallNameImpl extends RakuASTWrapperPsiElement implements RakuSubCallName {
     public RakuSubCallNameImpl(@NotNull ASTNode node) {
         super(node);
     }

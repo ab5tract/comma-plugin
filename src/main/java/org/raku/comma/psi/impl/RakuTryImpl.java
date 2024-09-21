@@ -1,13 +1,13 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import org.raku.comma.psi.RakuTry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RakuTryImpl extends ASTWrapperPsiElement implements RakuTry {
+public class RakuTryImpl extends RakuASTWrapperPsiElement implements RakuTry {
     public RakuTryImpl(@NotNull ASTNode node) {
         super(node);
     }

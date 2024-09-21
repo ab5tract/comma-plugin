@@ -6,7 +6,6 @@ import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
@@ -412,7 +411,7 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
     {
         if (!originalDecl.isValid()) return null;
         if (!currentDecl.getContainingFile().equals(myFile)) return null;
-        if (CommaProjectUtil.isProjectRakudo(currentDecl)) return null;
+        if (CommaProjectUtil.isRakudoCoreProject(currentDecl)) return null;
 
         PsiFile containingFile = originalDecl.getContainingFile();
         String previousPos = "%s:%s".formatted(containingFile.getName(),

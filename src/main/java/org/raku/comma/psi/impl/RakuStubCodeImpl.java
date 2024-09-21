@@ -1,11 +1,11 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import org.raku.comma.psi.RakuStubCode;
 import org.jetbrains.annotations.NotNull;
 
-public class RakuStubCodeImpl extends ASTWrapperPsiElement implements RakuStubCode {
+public class RakuStubCodeImpl extends RakuASTWrapperPsiElement implements RakuStubCode {
     public RakuStubCodeImpl(@NotNull ASTNode node) {
         super(node);
     }

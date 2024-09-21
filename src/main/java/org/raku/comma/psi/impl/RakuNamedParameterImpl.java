@@ -1,6 +1,6 @@
 package org.raku.comma.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static org.raku.comma.parsing.RakuTokenTypes.NAMED_PARAMETER_NAME_ALIAS;
 
-public class RakuNamedParameterImpl extends ASTWrapperPsiElement implements RakuNamedParameter {
+public class RakuNamedParameterImpl extends RakuASTWrapperPsiElement implements RakuNamedParameter {
     public RakuNamedParameterImpl(@NotNull ASTNode node) {
         super(node);
     }

@@ -30,7 +30,7 @@ public class RakuRenameDialog extends RenameDialog {
     private static String getPerl6Name(PsiElement myPsiElement) {
         PsiUtilCore.ensureValid(myPsiElement);
         if (myPsiElement instanceof RakuFileImpl)
-            return ((RakuFileImpl)myPsiElement).getEnclosingPerl6ModuleName();
+            return ((RakuFileImpl)myPsiElement).getEnclosingRakuModuleName();
         else if (myPsiElement instanceof PsiNamedElement)
             return ((PsiNamedElement)myPsiElement).getName();
         else

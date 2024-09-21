@@ -131,7 +131,7 @@ public class CroFrameworkCall extends RakuFrameworkCall {
             @Nullable
             @Override
             public String getLocationString() {
-                return call.getEnclosingPerl6ModuleName();
+                return call.getEnclosingRakuModuleName();
             }
 
             @Override

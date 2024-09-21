@@ -12,11 +12,15 @@ import org.raku.comma.highlighter.RakuHighlighter;
 import org.raku.comma.psi.*;
 import org.raku.comma.sdk.RakuSdkType;
 import org.jetbrains.annotations.NotNull;
+import org.raku.comma.utils.CommaProjectUtil;
 
 public class UndeclaredOrDeprecatedRoutineAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (! (element instanceof final RakuSubCallName call)) return;
+        // TODO: It would be nice to have a more robust solution that takes into account
+        //  (for example) routines declared in the bootstrap, etc.
+        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
 
         // Only do the analysis if the core setting symbols are available.
         RakuFile setting = RakuSdkType.getInstance().getCoreSettingFile(element.getProject());
@@ -24,8 +28,7 @@ public class UndeclaredOrDeprecatedRoutineAnnotator implements Annotator {
 
         // Resolve the reference.
         String subName = call.getCallName();
-        // TODO: Have a proper NQP parsing solution
-        if (subName.equals("::") || subName.startsWith("nqp")) return;
+        if (subName.equals("::")) return;
         PsiReferenceBase.Poly<?> reference = (PsiReferenceBase.Poly<?>)call.getReference();
         if (reference == null) return;
         ResolveResult[] results = reference.multiResolve(false);

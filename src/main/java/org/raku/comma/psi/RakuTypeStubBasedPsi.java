@@ -23,8 +23,11 @@ import javax.swing.*;
 
 import static org.raku.comma.parsing.RakuTokenTypes.NAME;
 
-public abstract class RakuTypeStubBasedPsi<T extends StubElement<?> & RakuTypeStub<?>> extends StubBasedPsiElementBase<T>
-  implements RakuPsiDeclaration, RakuLexicalSymbolContributor {
+public abstract class RakuTypeStubBasedPsi<T extends StubElement<?> & RakuTypeStub<?>>
+                                                        extends StubBasedPsiElementBase<T>
+                                                        implements RakuPsiDeclaration,
+                                                                   RakuLexicalSymbolContributor
+{
     public RakuTypeStubBasedPsi(@NotNull T stub,
                                 @NotNull IStubElementType nodeType) {
         super(stub, nodeType);
@@ -88,7 +91,7 @@ public abstract class RakuTypeStubBasedPsi<T extends StubElement<?> & RakuTypeSt
             @Override
             public @NotNull String getLocationString() {
                 // Mangle file name into module name.
-                String moduleName = getEnclosingPerl6ModuleName();
+                String moduleName = getEnclosingRakuModuleName();
                 if (moduleName == null)
                     return "";
 
@@ -137,9 +140,11 @@ public abstract class RakuTypeStubBasedPsi<T extends StubElement<?> & RakuTypeSt
         if (!collector.isSatisfied()) {
             T stub = getStub();
             String globalName = stub == null ? getGlobalName() : stub.getGlobalName();
-            if (globalName != null)
+            if (globalName != null) {
                 collector.offerSymbol(new RakuExplicitAliasedSymbol(RakuSymbolKind.TypeOrConstant,
-                                                                    this, globalName));
+                                                                    this,
+                                                                    globalName));
+            }
         }
     }
 }
