@@ -78,20 +78,21 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
         String fileLine = fileField.getText();
         if (Objects.equals(fileLine, "")) throw new ConfigurationException("Main script path is absent");
 
-        String workingDir = myParams.getWorkingDirectoryAccessor().getText();
-        if (workingDir.endsWith("/")) {
-            workingDir = workingDir.substring(0, workingDir.length() - 1);
-        }
 
-        VirtualFile file = LocalFileSystem.getInstance().findFileByPath(workingDir + "/" + fileLine);
+        VirtualFile file = LocalFileSystem.getInstance().findFileByPath(fileLine);
         if (file == null || !file.exists()) {
-            VirtualFile revisedPath = LocalFileSystem.getInstance().findFileByPath(workingDir + "/" + fileLine);
-            if (revisedPath == null || !revisedPath.exists()) {
-                throw new ConfigurationException("Main script path is incorrect");
+            String workingDir = myParams.getWorkingDirectoryAccessor().getText();
+            if (workingDir.endsWith("/")) {
+                workingDir = workingDir.substring(0, workingDir.length() - 1);
             }
+            file = LocalFileSystem.getInstance().findFileByPath(workingDir + "/" + fileLine);
+        }
+        if (file == null || !file.exists()) {
+            throw new ConfigurationException("Main script path is incorrect");
         } else {
             conf.setScriptPath(fileLine);
         }
+
         conf.setDebugPort(Integer.parseInt(myDebugPort.getText()));
         conf.setStartSuspended(toStartSuspended.isSelected());
         conf.setInterpreterParameters(myRakuParametersPanel.getText());
@@ -138,8 +139,7 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
         myParams = new CommonProgramParametersPanel() {
             private LabeledComponent<?> myFileComponent;
             private LabeledComponent<RawCommandLineEditor> myRakuParametersComponent;
-            private final Predicate<Component> panelPredicate = component -> component instanceof JComponent
-                    && component instanceof PanelWithAnchor;
+            private Predicate<Component> panelPredicate;
 
             @Override
             protected void addComponents() {
@@ -183,6 +183,8 @@ public class RakuRunSettingsEditor extends SettingsEditor<RakuRunConfiguration> 
                 LabeledComponent<?> logTimelineComponent = LabeledComponent.create(myLogTimelineOptions,
                                                                                    "Log::Timeline events",
                                                                                    BorderLayout.WEST);
+
+                panelPredicate = component -> component instanceof JComponent && component instanceof PanelWithAnchor;
                 add(logTimelineComponent);
             }
 
