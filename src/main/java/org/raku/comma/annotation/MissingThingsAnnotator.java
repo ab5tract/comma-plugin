@@ -22,8 +22,8 @@ public class MissingThingsAnnotator implements Annotator {
     private static final TokenSet T_BLOCK_CLOSE = TokenSet.create(RakuTokenTypes.BLOCK_CURLY_BRACKET_CLOSE);
     private static final TokenSet T_RX_GROUP_OPEN = TokenSet.create(RakuTokenTypes.REGEX_GROUP_BRACKET_OPEN);
     private static final TokenSet T_RX_GROUP_CLOSE = TokenSet.create(RakuTokenTypes.REGEX_GROUP_BRACKET_CLOSE);
-    private static final TokenSet T_RX_ASS_OPEN = TokenSet.create(RakuTokenTypes.REGEX_ASSERTION_ANGLE_OPEN);
-    private static final TokenSet T_RX_ASS_CLOSE = TokenSet.create(RakuTokenTypes.REGEX_ASSERTION_ANGLE_CLOSE);
+    private static final TokenSet T_RX_ASSERT_OPEN = TokenSet.create(RakuTokenTypes.REGEX_ASSERTION_ANGLE_OPEN);
+    private static final TokenSet T_RX_ASSERT_CLOSE = TokenSet.create(RakuTokenTypes.REGEX_ASSERTION_ANGLE_CLOSE);
     private static final TokenSet T_RX_CAP_OPEN = TokenSet.create(RakuTokenTypes.REGEX_CAPTURE_PARENTHESES_OPEN);
     private static final TokenSet T_RX_CAP_CLOSE = TokenSet.create(RakuTokenTypes.REGEX_CAPTURE_PARENTHESES_CLOSE);
 
@@ -31,13 +31,14 @@ public class MissingThingsAnnotator implements Annotator {
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof ASTDelegatePsiElement)) return;
 
-        if (element instanceof RakuSubCall ||
-            element instanceof RakuMethodCall ||
-            element instanceof RakuParenthesizedExpr ||
-            element instanceof RakuLoopStatement ||
-            element instanceof RakuVariableDecl ||
-            element instanceof RakuSignature ||
-            element instanceof RakuCall) {
+        if (element instanceof RakuSubCall
+            || element instanceof RakuMethodCall
+            || element instanceof RakuParenthesizedExpr
+            || element instanceof RakuLoopStatement
+            || element instanceof RakuVariableDecl
+            || element instanceof RakuSignature
+            || element instanceof RakuCall)
+        {
             ASTNode[] opener = element.getNode().getChildren(T_PAREN_OPEN);
             ASTNode[] closer = element.getNode().getChildren(T_PAREN_CLOSE);
             if (opener.length > 0 && closer.length == 0)
@@ -68,8 +69,8 @@ public class MissingThingsAnnotator implements Annotator {
                 holder.newAnnotation(HighlightSeverity.ERROR, "Missing closing ]").range(opener[0]).create();
         }
         else if (element instanceof RakuRegexAssertion) {
-            ASTNode[] opener = element.getNode().getChildren(T_RX_ASS_OPEN);
-            ASTNode[] closer = element.getNode().getChildren(T_RX_ASS_CLOSE);
+            ASTNode[] opener = element.getNode().getChildren(T_RX_ASSERT_OPEN);
+            ASTNode[] closer = element.getNode().getChildren(T_RX_ASSERT_CLOSE);
             if (opener.length > 0 && closer.length == 0)
                 holder.newAnnotation(HighlightSeverity.ERROR, "Missing closing >").range(opener[0]).create();
         }

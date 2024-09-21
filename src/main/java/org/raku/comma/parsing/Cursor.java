@@ -148,20 +148,22 @@ public abstract class Cursor<TCursor extends Cursor> {
     public boolean backtrack() {
         if (backtrackStack == null)
             return false;
-        while (backtrackStack.size() > 0) {
+        while (! backtrackStack.isEmpty()) {
             int toPos = backtrackStack.get(backtrackStack.size() - 3);
             int toState = backtrackStack.get(backtrackStack.size() - 4);
             if (toPos < 0) {
                 /* Just remove this mark and continue backtracking. */
-                for (int i = 0; i < 4; i++)
-                    backtrackStack.remove(backtrackStack.size() - 1);
+                for (int i = 0; i < 4; i++) {
+                    backtrackStack.removeLast();
+                }
             }
             else {
                 /* Restore state and position, remove mark, and we're done. */
                 state = toState;
                 pos = toPos;
-                for (int i = 0; i < 4; i++)
-                    backtrackStack.remove(backtrackStack.size() - 1);
+                for (int i = 0; i < 4; i++) {
+                    backtrackStack.removeLast();
+                }
                 return true;
             }
         }

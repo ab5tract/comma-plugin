@@ -4,1894 +4,636 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     @Override
     public int runRule() {
-        int result;
-        switch (this.ruleNumber) {
-        case 0:
-            result = this._0_TOP();
-            break;
-        case 1:
-            result = this._1_bogus_end();
-            break;
-        case 2:
-            result = this._2_apostrophe();
-            break;
-        case 3:
-            result = this._3_ident();
-            break;
-        case 4:
-            result = this._4_identifier();
-            break;
-        case 5:
-            result = this._5_name();
-            break;
-        case 6:
-            result = this._6_morename();
-            break;
-        case 7:
-            result = this._7_defterm();
-            break;
-        case 8:
-            result = this._8_longname_colonpairs();
-            break;
-        case 9:
-            result = this._9_routine_name();
-            break;
-        case 10:
-            result = this._10_method_name();
-            break;
-        case 11:
-            result = this._11_module_name();
-            break;
-        case 12:
-            result = this._12_end_keyword();
-            break;
-        case 13:
-            result = this._13_end_prefix();
-            break;
-        case 14:
-            result = this._14_spacey();
-            break;
-        case 15:
-            result = this._15_kok();
-            break;
-        case 16:
-            result = this._16_tok();
-            break;
-        case 17:
-            result = this._17_ENDSTMT();
-            break;
-        case 18:
-            result = this._18_ws();
-            break;
-        case 19:
-            result = this._19_heredoc();
-            break;
-        case 20:
-            result = this._20_unsp();
-            break;
-        case 21:
-            result = this._21_vws();
-            break;
-        case 22:
-            result = this._22_unv();
-            break;
-        case 23:
-            result = this._23_comment();
-            break;
-        case 24:
-            result = this._24_pre_comment_multi();
-            break;
-        case 25:
-            result = this._25_pre_comment();
-            break;
-        case 26:
-            result = this._26_post_comment();
-            break;
-        case 27:
-            result = this._27_post_comment_multi();
-            break;
-        case 28:
-            result = this._28_multiline_comment();
-            break;
-        case 29:
-            result = this._29_multiline_comment_nibbler();
-            break;
-        case 30:
-            result = this._30_plain_comment();
-            break;
-        case 31:
-            result = this._31_pod_content_toplevel();
-            break;
-        case 32:
-            result = this._32_pod_block();
-            break;
-        case 33:
-            result = this._33_pod_block_finish();
-            break;
-        case 34:
-            result = this._34_pod_block_delimited();
-            break;
-        case 35:
-            result = this._35_pod_block_content();
-            break;
-        case 36:
-            result = this._36_pod_block_paragraph();
-            break;
-        case 37:
-            result = this._37_pod_para_content();
-            break;
-        case 38:
-            result = this._38_pod_block_abbreviated();
-            break;
-        case 39:
-            result = this._39_pod_formatting_code();
-            break;
-        case 40:
-            result = this._40_pod_formatted_text();
-            break;
-        case 41:
-            result = this._41_pod_newline();
-            break;
-        case 42:
-            result = this._42_pod_removed_whitespace();
-            break;
-        case 43:
-            result = this._43_pod_code_check();
-            break;
-        case 44:
-            result = this._44_pod_configuration();
-            break;
-        case 45:
-            result = this._45_vnum();
-            break;
-        case 46:
-            result = this._46_version();
-            break;
-        case 47:
-            result = this._47_statementlist();
-            break;
-        case 48:
-            result = this._48_semilist();
-            break;
-        case 49:
-            result = this._49_label();
-            break;
-        case 50:
-            result = this._50_statement();
-            break;
-        case 51:
-            result = this._51_bogus_statement();
-            break;
-        case 52:
-            result = this._52_eat_terminator();
-            break;
-        case 53:
-            result = this._53_xblock();
-            break;
-        case 54:
-            result = this._54_pblock();
-            break;
-        case 55:
-            result = this._55_lambda();
-            break;
-        case 56:
-            result = this._56_block();
-            break;
-        case 57:
-            result = this._57_terminator();
-            break;
-        case 58:
-            result = this._58_blockoid();
-            break;
-        case 59:
-            result = this._59_stdstopper();
-            break;
-        case 60:
-            result = this._60_statement_control();
-            break;
-        case 61:
-            result = this._61_statement_control_if();
-            break;
-        case 62:
-            result = this._62_statement_control_unless();
-            break;
-        case 63:
-            result = this._63_statement_control_without();
-            break;
-        case 64:
-            result = this._64_statement_control_while();
-            break;
-        case 65:
-            result = this._65_statement_control_until();
-            break;
-        case 66:
-            result = this._66_statement_control_repeat();
-            break;
-        case 67:
-            result = this._67_statement_control_for();
-            break;
-        case 68:
-            result = this._68_statement_control_whenever();
-            break;
-        case 69:
-            result = this._69_statement_control_loop();
-            break;
-        case 70:
-            result = this._70_statement_control_need();
-            break;
-        case 71:
-            result = this._71_statement_control_import();
-            break;
-        case 72:
-            result = this._72_statement_control_no();
-            break;
-        case 73:
-            result = this._73_statement_control_use();
-            break;
-        case 74:
-            result = this._74_statement_control_require();
-            break;
-        case 75:
-            result = this._75_statement_control_given();
-            break;
-        case 76:
-            result = this._76_statement_control_when();
-            break;
-        case 77:
-            result = this._77_statement_control_default();
-            break;
-        case 78:
-            result = this._78_statement_control_CATCH();
-            break;
-        case 79:
-            result = this._79_statement_control_CONTROL();
-            break;
-        case 80:
-            result = this._80_statement_control_QUIT();
-            break;
-        case 81:
-            result = this._81_statement_prefix();
-            break;
-        case 82:
-            result = this._82_phaser_name();
-            break;
-        case 83:
-            result = this._83_statement_prefix_DOC();
-            break;
-        case 84:
-            result = this._84_statement_prefix_phaser();
-            break;
-        case 85:
-            result = this._85_statement_prefix_race();
-            break;
-        case 86:
-            result = this._86_statement_prefix_hyper();
-            break;
-        case 87:
-            result = this._87_statement_prefix_lazy();
-            break;
-        case 88:
-            result = this._88_statement_prefix_eager();
-            break;
-        case 89:
-            result = this._89_statement_prefix_sink();
-            break;
-        case 90:
-            result = this._90_statement_prefix_try();
-            break;
-        case 91:
-            result = this._91_statement_prefix_quietly();
-            break;
-        case 92:
-            result = this._92_statement_prefix_gather();
-            break;
-        case 93:
-            result = this._93_statement_prefix_once();
-            break;
-        case 94:
-            result = this._94_statement_prefix_start();
-            break;
-        case 95:
-            result = this._95_statement_prefix_supply();
-            break;
-        case 96:
-            result = this._96_statement_prefix_react();
-            break;
-        case 97:
-            result = this._97_statement_prefix_do();
-            break;
-        case 98:
-            result = this._98_blorst();
-            break;
-        case 99:
-            result = this._99_statement_mod_cond_keyword();
-            break;
-        case 100:
-            result = this._100_statement_mod_cond();
-            break;
-        case 101:
-            result = this._101_statement_mod_loop_keyword();
-            break;
-        case 102:
-            result = this._102_statement_mod_loop();
-            break;
-        case 103:
-            result = this._103_term();
-            break;
-        case 104:
-            result = this._104_term_ident();
-            break;
-        case 105:
-            result = this._105_term_name();
-            break;
-        case 106:
-            result = this._106_term_self();
-            break;
-        case 107:
-            result = this._107_term_whatever();
-            break;
-        case 108:
-            result = this._108_term_hyperwhatever();
-            break;
-        case 109:
-            result = this._109_term_type_const();
-            break;
-        case 110:
-            result = this._110_term_now();
-            break;
-        case 111:
-            result = this._111_term_time();
-            break;
-        case 112:
-            result = this._112_term_empty_set();
-            break;
-        case 113:
-            result = this._113_term_rand();
-            break;
-        case 114:
-            result = this._114_term_stub_code();
-            break;
-        case 115:
-            result = this._115_term_onlystar();
-            break;
-        case 116:
-            result = this._116_fatarrow();
-            break;
-        case 117:
-            result = this._117_args();
-            break;
-        case 118:
-            result = this._118_colonpair();
-            break;
-        case 119:
-            result = this._119_coloncircumfix();
-            break;
-        case 120:
-            result = this._120_colonpair_variable();
-            break;
-        case 121:
-            result = this._121_semiarglist();
-            break;
-        case 122:
-            result = this._122_arglist();
-            break;
-        case 123:
-            result = this._123_variable();
-            break;
-        case 124:
-            result = this._124_contextualizer();
-            break;
-        case 125:
-            result = this._125_scope_declarator();
-            break;
-        case 126:
-            result = this._126_declarator();
-            break;
-        case 127:
-            result = this._127_multi_declarator();
-            break;
-        case 128:
-            result = this._128_variable_declarator();
-            break;
-        case 129:
-            result = this._129_routine_declarator();
-            break;
-        case 130:
-            result = this._130_routine_def();
-            break;
-        case 131:
-            result = this._131_method_def();
-            break;
-        case 132:
-            result = this._132_onlystar();
-            break;
-        case 133:
-            result = this._133_capterm();
-            break;
-        case 134:
-            result = this._134_param_sep();
-            break;
-        case 135:
-            result = this._135_signature();
-            break;
-        case 136:
-            result = this._136_parameter();
-            break;
-        case 137:
-            result = this._137_param_var();
-            break;
-        case 138:
-            result = this._138_param_term();
-            break;
-        case 139:
-            result = this._139_named_param();
-            break;
-        case 140:
-            result = this._140_default_value();
-            break;
-        case 141:
-            result = this._141_type_constraint();
-            break;
-        case 142:
-            result = this._142_post_constraint();
-            break;
-        case 143:
-            result = this._143_initializer();
-            break;
-        case 144:
-            result = this._144_trait();
-            break;
-        case 145:
-            result = this._145_trait_mod();
-            break;
-        case 146:
-            result = this._146_regex_declarator();
-            break;
-        case 147:
-            result = this._147_regex_def();
-            break;
-        case 148:
-            result = this._148_type_declarator();
-            break;
-        case 149:
-            result = this._149_sigil();
-            break;
-        case 150:
-            result = this._150_twigil();
-            break;
-        case 151:
-            result = this._151_package_declarator();
-            break;
-        case 152:
-            result = this._152_package_kind();
-            break;
-        case 153:
-            result = this._153_package_def();
-            break;
-        case 154:
-            result = this._154_desigilname();
-            break;
-        case 155:
-            result = this._155_value();
-            break;
-        case 156:
-            result = this._156_number();
-            break;
-        case 157:
-            result = this._157_numish();
-            break;
-        case 158:
-            result = this._158_dec_number();
-            break;
-        case 159:
-            result = this._159_escale();
-            break;
-        case 160:
-            result = this._160_sign();
-            break;
-        case 161:
-            result = this._161_rat_number();
-            break;
-        case 162:
-            result = this._162_bare_rat_number();
-            break;
-        case 163:
-            result = this._163_complex_number();
-            break;
-        case 164:
-            result = this._164_bare_complex_number();
-            break;
-        case 165:
-            result = this._165_signed_number();
-            break;
-        case 166:
-            result = this._166_rad_number();
-            break;
-        case 167:
-            result = this._167_rad_digits();
-            break;
-        case 168:
-            result = this._168_rad_digit();
-            break;
-        case 169:
-            result = this._169_radint();
-            break;
-        case 170:
-            result = this._170_integer();
-            break;
-        case 171:
-            result = this._171_signed_integer();
-            break;
-        case 172:
-            result = this._172_integer_lex();
-            break;
-        case 173:
-            result = this._173_decint();
-            break;
-        case 174:
-            result = this._174_hexint();
-            break;
-        case 175:
-            result = this._175_octint();
-            break;
-        case 176:
-            result = this._176_binint();
-            break;
-        case 177:
-            result = this._177_charname();
-            break;
-        case 178:
-            result = this._178_hexints();
-            break;
-        case 179:
-            result = this._179_octints();
-            break;
-        case 180:
-            result = this._180_charnames();
-            break;
-        case 181:
-            result = this._181_charspec();
-            break;
-        case 182:
-            result = this._182_typename();
-            break;
-        case 183:
-            result = this._183_quote();
-            break;
-        case 184:
-            result = this._184_quote_qlang();
-            break;
-        case 185:
-            result = this._185_quote_rxlang();
-            break;
-        case 186:
-            result = this._186_quote_tr();
-            break;
-        case 187:
-            result = this._187_quote_Q();
-            break;
-        case 188:
-            result = this._188_quote_q();
-            break;
-        case 189:
-            result = this._189_quote_qq();
-            break;
-        case 190:
-            result = this._190_has_delimiter();
-            break;
-        case 191:
-            result = this._191_quibble();
-            break;
-        case 192:
-            result = this._192_quibble_rx();
-            break;
-        case 193:
-            result = this._193_sibble();
-            break;
-        case 194:
-            result = this._194_tribble();
-            break;
-        case 195:
-            result = this._195_tribbler();
-            break;
-        case 196:
-            result = this._196_ccstate();
-            break;
-        case 197:
-            result = this._197_quote_mod_Q();
-            break;
-        case 198:
-            result = this._198_quote_mod();
-            break;
-        case 199:
-            result = this._199_quotepair_Q();
-            break;
-        case 200:
-            result = this._200_quotepair_rx();
-            break;
-        case 201:
-            result = this._201_quotepair();
-            break;
-        case 202:
-            result = this._202_quote_nibbler();
-            break;
-        case 203:
-            result = this._203_starter();
-            break;
-        case 204:
-            result = this._204_stopper();
-            break;
-        case 205:
-            result = this._205_quote_escape();
-            break;
-        case 206:
-            result = this._206_quote_quasi();
-            break;
-        case 207:
-            result = this._207_quote_interpolation_postfix();
-            break;
-        case 208:
-            result = this._208_interpolation_opener();
-            break;
-        case 209:
-            result = this._209_circumfix();
-            break;
-        case 210:
-            result = this._210_EXPR();
-            break;
-        case 211:
-            result = this._211_nextterm();
-            break;
-        case 212:
-            result = this._212_prefixish();
-            break;
-        case 213:
-            result = this._213_prefix();
-            break;
-        case 214:
-            result = this._214_postfixish();
-            break;
-        case 215:
-            result = this._215_postfixish_nometa();
-            break;
-        case 216:
-            result = this._216_postfix();
-            break;
-        case 217:
-            result = this._217_dotty();
-            break;
-        case 218:
-            result = this._218_dottyop();
-            break;
-        case 219:
-            result = this._219_privop();
-            break;
-        case 220:
-            result = this._220_methodop();
-            break;
-        case 221:
-            result = this._221_postcircumfix();
-            break;
-        case 222:
-            result = this._222_infixish();
-            break;
-        case 223:
-            result = this._223_infixish_non_assignment_meta();
-            break;
-        case 224:
-            result = this._224_infixstopper();
-            break;
-        case 225:
-            result = this._225_infix();
-            break;
-        case 226:
-            result = this._226_infix_prefix_meta_operator();
-            break;
-        case 227:
-            result = this._227_infix_circumfix_meta_operator();
-            break;
-        case 228:
-            result = this._228_termish();
-            break;
-        case 229:
-            result = this._229_term_reduce();
-            break;
-        case 230:
-            result = this._230_enter_regex_nibbler();
-            break;
-        case 231:
-            result = this._231_regex_nibbler_fresh_rx();
-            break;
-        case 232:
-            result = this._232_rxws();
-            break;
-        case 233:
-            result = this._233_regex_nibbler();
-            break;
-        case 234:
-            result = this._234_rxstopper();
-            break;
-        case 235:
-            result = this._235_rxinfixstopper();
-            break;
-        case 236:
-            result = this._236_termseq();
-            break;
-        case 237:
-            result = this._237_rxtermish();
-            break;
-        case 238:
-            result = this._238_SIGOK();
-            break;
-        case 239:
-            result = this._239_sigmaybe();
-            break;
-        case 240:
-            result = this._240_normspace();
-            break;
-        case 241:
-            result = this._241_quantified_atom();
-            break;
-        case 242:
-            result = this._242_separator();
-            break;
-        case 243:
-            result = this._243_atom();
-            break;
-        case 244:
-            result = this._244_quantifier();
-            break;
-        case 245:
-            result = this._245_rxcodeblock();
-            break;
-        case 246:
-            result = this._246_backmod();
-            break;
-        case 247:
-            result = this._247_metachar();
-            break;
-        case 248:
-            result = this._248_rxQ();
-            break;
-        case 249:
-            result = this._249_rxq();
-            break;
-        case 250:
-            result = this._250_rxqq();
-            break;
-        case 251:
-            result = this._251_rxqw();
-            break;
-        case 252:
-            result = this._252_backslash();
-            break;
-        case 253:
-            result = this._253_assertion();
-            break;
-        case 254:
-            result = this._254_rxarglist();
-            break;
-        case 255:
-            result = this._255_cclass_elem();
-            break;
-        case 256:
-            result = this._256_cclass_backslash();
-            break;
-        case 257:
-            result = this._257_mod_internal();
-            break;
-        case 258:
-            result = this._258_mod_ident();
-            break;
-        case 259:
-            result = this.___lookahead_0();
-            break;
-        case 260:
-            result = this.___lookahead_1();
-            break;
-        case 261:
-            result = this.___lookahead_2();
-            break;
-        case 262:
-            result = this.___lookahead_3();
-            break;
-        case 263:
-            result = this.___lookahead_4();
-            break;
-        case 264:
-            result = this.___lookahead_5();
-            break;
-        case 265:
-            result = this.___lookahead_6();
-            break;
-        case 266:
-            result = this.___lookahead_7();
-            break;
-        case 267:
-            result = this.___lookahead_8();
-            break;
-        case 268:
-            result = this.___lookahead_9();
-            break;
-        case 269:
-            result = this.___lookahead_10();
-            break;
-        case 270:
-            result = this.___lookahead_11();
-            break;
-        case 271:
-            result = this.___lookahead_12();
-            break;
-        case 272:
-            result = this.___lookahead_13();
-            break;
-        case 273:
-            result = this.___lookahead_14();
-            break;
-        case 274:
-            result = this.___lookahead_15();
-            break;
-        case 275:
-            result = this.___lookahead_16();
-            break;
-        case 276:
-            result = this.___lookahead_17();
-            break;
-        case 277:
-            result = this.___lookahead_18();
-            break;
-        case 278:
-            result = this.___lookahead_19();
-            break;
-        case 279:
-            result = this.___lookahead_20();
-            break;
-        case 280:
-            result = this.___lookahead_21();
-            break;
-        case 281:
-            result = this.___lookahead_22();
-            break;
-        case 282:
-            result = this.___lookahead_23();
-            break;
-        case 283:
-            result = this.___lookahead_24();
-            break;
-        case 284:
-            result = this.___lookahead_25();
-            break;
-        case 285:
-            result = this.___lookahead_26();
-            break;
-        case 286:
-            result = this.___lookahead_27();
-            break;
-        case 287:
-            result = this.___lookahead_28();
-            break;
-        case 288:
-            result = this.___lookahead_29();
-            break;
-        case 289:
-            result = this.___lookahead_30();
-            break;
-        case 290:
-            result = this.___lookahead_31();
-            break;
-        case 291:
-            result = this.___lookahead_32();
-            break;
-        case 292:
-            result = this.___lookahead_33();
-            break;
-        case 293:
-            result = this.___lookahead_34();
-            break;
-        case 294:
-            result = this.___lookahead_35();
-            break;
-        case 295:
-            result = this.___lookahead_36();
-            break;
-        case 296:
-            result = this.___lookahead_37();
-            break;
-        case 297:
-            result = this.___lookahead_38();
-            break;
-        case 298:
-            result = this.___lookahead_39();
-            break;
-        case 299:
-            result = this.___lookahead_40();
-            break;
-        case 300:
-            result = this.___lookahead_41();
-            break;
-        case 301:
-            result = this.___lookahead_42();
-            break;
-        case 302:
-            result = this.___lookahead_43();
-            break;
-        case 303:
-            result = this.___lookahead_44();
-            break;
-        case 304:
-            result = this.___lookahead_45();
-            break;
-        case 305:
-            result = this.___lookahead_46();
-            break;
-        case 306:
-            result = this.___lookahead_47();
-            break;
-        case 307:
-            result = this.___lookahead_48();
-            break;
-        case 308:
-            result = this.___lookahead_49();
-            break;
-        case 309:
-            result = this.___lookahead_50();
-            break;
-        case 310:
-            result = this.___lookahead_51();
-            break;
-        case 311:
-            result = this.___lookahead_52();
-            break;
-        case 312:
-            result = this.___lookahead_53();
-            break;
-        case 313:
-            result = this.___lookahead_54();
-            break;
-        case 314:
-            result = this.___lookahead_55();
-            break;
-        case 315:
-            result = this.___lookahead_56();
-            break;
-        case 316:
-            result = this.___lookahead_57();
-            break;
-        case 317:
-            result = this.___lookahead_58();
-            break;
-        case 318:
-            result = this.___lookahead_59();
-            break;
-        case 319:
-            result = this.___lookahead_60();
-            break;
-        case 320:
-            result = this.___lookahead_61();
-            break;
-        case 321:
-            result = this.___lookahead_62();
-            break;
-        case 322:
-            result = this.___lookahead_63();
-            break;
-        case 323:
-            result = this.___lookahead_64();
-            break;
-        case 324:
-            result = this.___lookahead_65();
-            break;
-        case 325:
-            result = this.___lookahead_66();
-            break;
-        case 326:
-            result = this.___lookahead_67();
-            break;
-        case 327:
-            result = this.___lookahead_68();
-            break;
-        case 328:
-            result = this.___lookahead_69();
-            break;
-        case 329:
-            result = this.___lookahead_70();
-            break;
-        case 330:
-            result = this.___lookahead_71();
-            break;
-        case 331:
-            result = this.___lookahead_72();
-            break;
-        case 332:
-            result = this.___lookahead_73();
-            break;
-        case 333:
-            result = this.___lookahead_74();
-            break;
-        case 334:
-            result = this.___lookahead_75();
-            break;
-        case 335:
-            result = this.___lookahead_76();
-            break;
-        case 336:
-            result = this.___lookahead_77();
-            break;
-        case 337:
-            result = this.___lookahead_78();
-            break;
-        case 338:
-            result = this.___lookahead_79();
-            break;
-        case 339:
-            result = this.___lookahead_80();
-            break;
-        case 340:
-            result = this.___lookahead_81();
-            break;
-        case 341:
-            result = this.___lookahead_82();
-            break;
-        case 342:
-            result = this.___lookahead_83();
-            break;
-        case 343:
-            result = this.___lookahead_84();
-            break;
-        case 344:
-            result = this.___lookahead_85();
-            break;
-        case 345:
-            result = this.___lookahead_86();
-            break;
-        case 346:
-            result = this.___lookahead_87();
-            break;
-        case 347:
-            result = this.___lookahead_88();
-            break;
-        case 348:
-            result = this.___lookahead_89();
-            break;
-        case 349:
-            result = this.___lookahead_90();
-            break;
-        case 350:
-            result = this.___lookahead_91();
-            break;
-        case 351:
-            result = this.___lookahead_92();
-            break;
-        case 352:
-            result = this.___lookahead_93();
-            break;
-        case 353:
-            result = this.___lookahead_94();
-            break;
-        case 354:
-            result = this.___lookahead_95();
-            break;
-        case 355:
-            result = this.___lookahead_96();
-            break;
-        case 356:
-            result = this.___lookahead_97();
-            break;
-        case 357:
-            result = this.___lookahead_98();
-            break;
-        case 358:
-            result = this.___lookahead_99();
-            break;
-        case 359:
-            result = this.___lookahead_100();
-            break;
-        case 360:
-            result = this.___lookahead_101();
-            break;
-        case 361:
-            result = this.___lookahead_102();
-            break;
-        case 362:
-            result = this.___lookahead_103();
-            break;
-        case 363:
-            result = this.___lookahead_104();
-            break;
-        case 364:
-            result = this.___lookahead_105();
-            break;
-        case 365:
-            result = this.___lookahead_106();
-            break;
-        case 366:
-            result = this.___lookahead_107();
-            break;
-        case 367:
-            result = this.___lookahead_108();
-            break;
-        case 368:
-            result = this.___lookahead_109();
-            break;
-        case 369:
-            result = this.___lookahead_110();
-            break;
-        case 370:
-            result = this.___lookahead_111();
-            break;
-        case 371:
-            result = this.___lookahead_112();
-            break;
-        case 372:
-            result = this.___lookahead_113();
-            break;
-        case 373:
-            result = this.___lookahead_114();
-            break;
-        case 374:
-            result = this.___lookahead_115();
-            break;
-        case 375:
-            result = this.___lookahead_116();
-            break;
-        case 376:
-            result = this.___lookahead_117();
-            break;
-        case 377:
-            result = this.___lookahead_118();
-            break;
-        case 378:
-            result = this.___lookahead_119();
-            break;
-        case 379:
-            result = this.___lookahead_120();
-            break;
-        case 380:
-            result = this.___lookahead_121();
-            break;
-        case 381:
-            result = this.___lookahead_122();
-            break;
-        case 382:
-            result = this.___lookahead_123();
-            break;
-        case 383:
-            result = this.___lookahead_124();
-            break;
-        case 384:
-            result = this.___lookahead_125();
-            break;
-        case 385:
-            result = this.___lookahead_126();
-            break;
-        case 386:
-            result = this.___lookahead_127();
-            break;
-        case 387:
-            result = this.___lookahead_128();
-            break;
-        case 388:
-            result = this.___lookahead_129();
-            break;
-        case 389:
-            result = this.___lookahead_130();
-            break;
-        case 390:
-            result = this.___lookahead_131();
-            break;
-        case 391:
-            result = this.___lookahead_132();
-            break;
-        case 392:
-            result = this.___lookahead_133();
-            break;
-        case 393:
-            result = this.___lookahead_134();
-            break;
-        case 394:
-            result = this.___lookahead_135();
-            break;
-        case 395:
-            result = this.___lookahead_136();
-            break;
-        case 396:
-            result = this.___lookahead_137();
-            break;
-        case 397:
-            result = this.___lookahead_138();
-            break;
-        case 398:
-            result = this.___lookahead_139();
-            break;
-        case 399:
-            result = this.___lookahead_140();
-            break;
-        case 400:
-            result = this.___lookahead_141();
-            break;
-        case 401:
-            result = this.___lookahead_142();
-            break;
-        case 402:
-            result = this.___lookahead_143();
-            break;
-        case 403:
-            result = this.___lookahead_144();
-            break;
-        case 404:
-            result = this.___lookahead_145();
-            break;
-        case 405:
-            result = this.___lookahead_146();
-            break;
-        case 406:
-            result = this.___lookahead_147();
-            break;
-        case 407:
-            result = this.___lookahead_148();
-            break;
-        case 408:
-            result = this.___lookahead_149();
-            break;
-        case 409:
-            result = this.___lookahead_150();
-            break;
-        case 410:
-            result = this.___lookahead_151();
-            break;
-        case 411:
-            result = this.___lookahead_152();
-            break;
-        case 412:
-            result = this.___lookahead_153();
-            break;
-        case 413:
-            result = this.___lookahead_154();
-            break;
-        case 414:
-            result = this.___lookahead_155();
-            break;
-        case 415:
-            result = this.___lookahead_156();
-            break;
-        case 416:
-            result = this.___lookahead_157();
-            break;
-        case 417:
-            result = this.___lookahead_158();
-            break;
-        case 418:
-            result = this.___lookahead_159();
-            break;
-        case 419:
-            result = this.___lookahead_160();
-            break;
-        case 420:
-            result = this.___lookahead_161();
-            break;
-        case 421:
-            result = this.___lookahead_162();
-            break;
-        case 422:
-            result = this.___lookahead_163();
-            break;
-        case 423:
-            result = this.___lookahead_164();
-            break;
-        case 424:
-            result = this.___lookahead_165();
-            break;
-        case 425:
-            result = this.___lookahead_166();
-            break;
-        case 426:
-            result = this.___lookahead_167();
-            break;
-        case 427:
-            result = this.___lookahead_168();
-            break;
-        case 428:
-            result = this.___lookahead_169();
-            break;
-        case 429:
-            result = this.___lookahead_170();
-            break;
-        case 430:
-            result = this.___lookahead_171();
-            break;
-        case 431:
-            result = this.___lookahead_172();
-            break;
-        case 432:
-            result = this.___lookahead_173();
-            break;
-        case 433:
-            result = this.___lookahead_174();
-            break;
-        case 434:
-            result = this.___lookahead_175();
-            break;
-        case 435:
-            result = this.___lookahead_176();
-            break;
-        case 436:
-            result = this.___lookahead_177();
-            break;
-        case 437:
-            result = this.___lookahead_178();
-            break;
-        case 438:
-            result = this.___lookahead_179();
-            break;
-        case 439:
-            result = this.___lookahead_180();
-            break;
-        case 440:
-            result = this.___lookahead_181();
-            break;
-        case 441:
-            result = this.___lookahead_182();
-            break;
-        case 442:
-            result = this.___lookahead_183();
-            break;
-        case 443:
-            result = this.___lookahead_184();
-            break;
-        case 444:
-            result = this.___lookahead_185();
-            break;
-        case 445:
-            result = this.___lookahead_186();
-            break;
-        case 446:
-            result = this.___lookahead_187();
-            break;
-        case 447:
-            result = this.___lookahead_188();
-            break;
-        case 448:
-            result = this.___lookahead_189();
-            break;
-        case 449:
-            result = this.___lookahead_190();
-            break;
-        case 450:
-            result = this.___lookahead_191();
-            break;
-        case 451:
-            result = this.___lookahead_192();
-            break;
-        case 452:
-            result = this.___lookahead_193();
-            break;
-        case 453:
-            result = this.___lookahead_194();
-            break;
-        case 454:
-            result = this.___lookahead_195();
-            break;
-        case 455:
-            result = this.___lookahead_196();
-            break;
-        case 456:
-            result = this.___lookahead_197();
-            break;
-        case 457:
-            result = this.___lookahead_198();
-            break;
-        case 458:
-            result = this.___lookahead_199();
-            break;
-        case 459:
-            result = this.___lookahead_200();
-            break;
-        case 460:
-            result = this.___lookahead_201();
-            break;
-        case 461:
-            result = this.___lookahead_202();
-            break;
-        case 462:
-            result = this.___lookahead_203();
-            break;
-        case 463:
-            result = this.___lookahead_204();
-            break;
-        case 464:
-            result = this.___lookahead_205();
-            break;
-        case 465:
-            result = this.___lookahead_206();
-            break;
-        case 466:
-            result = this.___lookahead_207();
-            break;
-        case 467:
-            result = this.___lookahead_208();
-            break;
-        case 468:
-            result = this.___lookahead_209();
-            break;
-        case 469:
-            result = this.___lookahead_210();
-            break;
-        case 470:
-            result = this.___lookahead_211();
-            break;
-        case 471:
-            result = this.___lookahead_212();
-            break;
-        case 472:
-            result = this.___lookahead_213();
-            break;
-        case 473:
-            result = this.___lookahead_214();
-            break;
-        case 474:
-            result = this.___lookahead_215();
-            break;
-        case 475:
-            result = this.___lookahead_216();
-            break;
-        case 476:
-            result = this.___lookahead_217();
-            break;
-        case 477:
-            result = this.___lookahead_218();
-            break;
-        case 478:
-            result = this.___lookahead_219();
-            break;
-        case 479:
-            result = this.___lookahead_220();
-            break;
-        case 480:
-            result = this.___lookahead_221();
-            break;
-        case 481:
-            result = this.___lookahead_222();
-            break;
-        case 482:
-            result = this.___lookahead_223();
-            break;
-        case 483:
-            result = this.___lookahead_224();
-            break;
-        case 484:
-            result = this.___lookahead_225();
-            break;
-        case 485:
-            result = this.___lookahead_226();
-            break;
-        case 486:
-            result = this.___lookahead_227();
-            break;
-        case 487:
-            result = this.___lookahead_228();
-            break;
-        case 488:
-            result = this.___lookahead_229();
-            break;
-        case 489:
-            result = this.___lookahead_230();
-            break;
-        case 490:
-            result = this.___lookahead_231();
-            break;
-        case 491:
-            result = this.___lookahead_232();
-            break;
-        case 492:
-            result = this.___lookahead_233();
-            break;
-        case 493:
-            result = this.___lookahead_234();
-            break;
-        case 494:
-            result = this.___lookahead_235();
-            break;
-        case 495:
-            result = this.___lookahead_236();
-            break;
-        case 496:
-            result = this.___lookahead_237();
-            break;
-        case 497:
-            result = this.___lookahead_238();
-            break;
-        case 498:
-            result = this.___lookahead_239();
-            break;
-        case 499:
-            result = this.___lookahead_240();
-            break;
-        case 500:
-            result = this.___lookahead_241();
-            break;
-        case 501:
-            result = this.___lookahead_242();
-            break;
-        case 502:
-            result = this.___lookahead_243();
-            break;
-        case 503:
-            result = this.___lookahead_244();
-            break;
-        case 504:
-            result = this.___lookahead_245();
-            break;
-        case 505:
-            result = this.___lookahead_246();
-            break;
-        case 506:
-            result = this.___lookahead_247();
-            break;
-        case 507:
-            result = this.___lookahead_248();
-            break;
-        case 508:
-            result = this.___lookahead_249();
-            break;
-        case 509:
-            result = this.___lookahead_250();
-            break;
-        case 510:
-            result = this.___lookahead_251();
-            break;
-        case 511:
-            result = this.___lookahead_252();
-            break;
-        case 512:
-            result = this.___lookahead_253();
-            break;
-        case 513:
-            result = this.___lookahead_254();
-            break;
-        case 514:
-            result = this.___lookahead_255();
-            break;
-        case 515:
-            result = this.___lookahead_256();
-            break;
-        case 516:
-            result = this.___lookahead_257();
-            break;
-        case 517:
-            result = this.___lookahead_258();
-            break;
-        case 518:
-            result = this.___lookahead_259();
-            break;
-        case 519:
-            result = this.___lookahead_260();
-            break;
-        case 520:
-            result = this.___lookahead_261();
-            break;
-        case 521:
-            result = this.___lookahead_262();
-            break;
-        case 522:
-            result = this.___lookahead_263();
-            break;
-        case 523:
-            result = this.___lookahead_264();
-            break;
-        case 524:
-            result = this.___lookahead_265();
-            break;
-        case 525:
-            result = this.___lookahead_266();
-            break;
-        case 526:
-            result = this.___lookahead_267();
-            break;
-        case 527:
-            result = this.___lookahead_268();
-            break;
-        case 528:
-            result = this.___lookahead_269();
-            break;
-        case 529:
-            result = this.___lookahead_270();
-            break;
-        case 530:
-            result = this.___lookahead_271();
-            break;
-        case 531:
-            result = this.___lookahead_272();
-            break;
-        case 532:
-            result = this.___lookahead_273();
-            break;
-        case 533:
-            result = this.___lookahead_274();
-            break;
-        case 534:
-            result = this.___lookahead_275();
-            break;
-        case 535:
-            result = this.___lookahead_276();
-            break;
-        case 536:
-            result = this.___lookahead_277();
-            break;
-        case 537:
-            result = this.___lookahead_278();
-            break;
-        case 538:
-            result = this.___lookahead_279();
-            break;
-        case 539:
-            result = this.___lookahead_280();
-            break;
-        case 540:
-            result = this.___lookahead_281();
-            break;
-        case 541:
-            result = this.___lookahead_282();
-            break;
-        case 542:
-            result = this.___lookahead_283();
-            break;
-        case 543:
-            result = this.___lookahead_284();
-            break;
-        case 544:
-            result = this.___lookahead_285();
-            break;
-        case 545:
-            result = this.___lookahead_286();
-            break;
-        case 546:
-            result = this.___lookahead_287();
-            break;
-        case 547:
-            result = this.___lookahead_288();
-            break;
-        case 548:
-            result = this.___lookahead_289();
-            break;
-        case 549:
-            result = this.___lookahead_290();
-            break;
-        case 550:
-            result = this.___lookahead_291();
-            break;
-        case 551:
-            result = this.___lookahead_292();
-            break;
-        case 552:
-            result = this.___lookahead_293();
-            break;
-        case 553:
-            result = this.___lookahead_294();
-            break;
-        case 554:
-            result = this.___lookahead_295();
-            break;
-        case 555:
-            result = this.___lookahead_296();
-            break;
-        case 556:
-            result = this.___lookahead_297();
-            break;
-        case 557:
-            result = this.___lookahead_298();
-            break;
-        case 558:
-            result = this.___lookahead_299();
-            break;
-        case 559:
-            result = this.___lookahead_300();
-            break;
-        case 560:
-            result = this.___lookahead_301();
-            break;
-        case 561:
-            result = this.___lookahead_302();
-            break;
-        case 562:
-            result = this.___lookahead_303();
-            break;
-        case 563:
-            result = this.___lookahead_304();
-            break;
-        case 564:
-            result = this.___lookahead_305();
-            break;
-        case 565:
-            result = this.___lookahead_306();
-            break;
-        case 566:
-            result = this.___lookahead_307();
-            break;
-        case 567:
-            result = this.___lookahead_308();
-            break;
-        case 568:
-            result = this.___lookahead_309();
-            break;
-        case 569:
-            result = this.___lookahead_310();
-            break;
-        case 570:
-            result = this.___lookahead_311();
-            break;
-        case 571:
-            result = this.___lookahead_312();
-            break;
-        case 572:
-            result = this.___lookahead_313();
-            break;
-        case 573:
-            result = this.___lookahead_314();
-            break;
-        case 574:
-            result = this.___lookahead_315();
-            break;
-        case 575:
-            result = this.___lookahead_316();
-            break;
-        case 576:
-            result = this.___lookahead_317();
-            break;
-        case 577:
-            result = this.___lookahead_318();
-            break;
-        case 578:
-            result = this.___lookahead_319();
-            break;
-        case 579:
-            result = this.___lookahead_320();
-            break;
-        case 580:
-            result = this.___lookahead_321();
-            break;
-        case 581:
-            result = this.___lookahead_322();
-            break;
-        case 582:
-            result = this.___lookahead_323();
-            break;
-        case 583:
-            result = this.___lookahead_324();
-            break;
-        case 584:
-            result = this.___lookahead_325();
-            break;
-        case 585:
-            result = this.___lookahead_326();
-            break;
-        case 586:
-            result = this.___lookahead_327();
-            break;
-        case 587:
-            result = this.___lookahead_328();
-            break;
-        case 588:
-            result = this.___lookahead_329();
-            break;
-        case 589:
-            result = this.___lookahead_330();
-            break;
-        case 590:
-            result = this.___lookahead_331();
-            break;
-        case 591:
-            result = this.___lookahead_332();
-            break;
-        case 592:
-            result = this.___lookahead_333();
-            break;
-        case 593:
-            result = this.___lookahead_334();
-            break;
-        case 594:
-            result = this.___lookahead_335();
-            break;
-        case 595:
-            result = this.___lookahead_336();
-            break;
-        case 596:
-            result = this.___lookahead_337();
-            break;
-        case 597:
-            result = this.___lookahead_338();
-            break;
-        case 598:
-            result = this.___lookahead_339();
-            break;
-        case 599:
-            result = this.___lookahead_340();
-            break;
-        case 600:
-            result = this.___lookahead_341();
-            break;
-        case 601:
-            result = this.___lookahead_342();
-            break;
-        case 602:
-            result = this.___lookahead_343();
-            break;
-        case 603:
-            result = this.___lookahead_344();
-            break;
-        case 604:
-            result = this.___lookahead_345();
-            break;
-        case 605:
-            result = this.___lookahead_346();
-            break;
-        case 606:
-            result = this.___lookahead_347();
-            break;
-        case 607:
-            result = this.___lookahead_348();
-            break;
-        case 608:
-            result = this.___lookahead_349();
-            break;
-        case 609:
-            result = this.___lookahead_350();
-            break;
-        case 610:
-            result = this.___lookahead_351();
-            break;
-        case 611:
-            result = this.___lookahead_352();
-            break;
-        case 612:
-            result = this.___lookahead_353();
-            break;
-        case 613:
-            result = this.___lookahead_354();
-            break;
-        case 614:
-            result = this.___lookahead_355();
-            break;
-        case 615:
-            result = this.___lookahead_356();
-            break;
-        case 616:
-            result = this.___lookahead_357();
-            break;
-        case 617:
-            result = this.___lookahead_358();
-            break;
-        case 618:
-            result = this.___lookahead_359();
-            break;
-        case 619:
-            result = this.___lookahead_360();
-            break;
-        case 620:
-            result = this.___lookahead_361();
-            break;
-        case 621:
-            result = this.___lookahead_362();
-            break;
-        case 622:
-            result = this.___lookahead_363();
-            break;
-        case 623:
-            result = this.___lookahead_364();
-            break;
-        case 624:
-            result = this.___lookahead_365();
-            break;
-        case 625:
-            result = this.___lookahead_366();
-            break;
-        case 626:
-            result = this.___lookahead_367();
-            break;
-        default:
-            throw new RuntimeException();
-
-        }
-        return result;
+        return switch (this.ruleNumber) {
+            case 0 -> this._0_TOP();
+            case 1 -> this._1_bogus_end();
+            case 2 -> this._2_apostrophe();
+            case 3 -> this._3_ident();
+            case 4 -> this._4_identifier();
+            case 5 -> this._5_name();
+            case 6 -> this._6_morename();
+            case 7 -> this._7_defterm();
+            case 8 -> this._8_longname_colonpairs();
+            case 9 -> this._9_routine_name();
+            case 10 -> this._10_method_name();
+            case 11 -> this._11_module_name();
+            case 12 -> this._12_end_keyword();
+            case 13 -> this._13_end_prefix();
+            case 14 -> this._14_spacey();
+            case 15 -> this._15_kok();
+            case 16 -> this._16_tok();
+            case 17 -> this._17_ENDSTMT();
+            case 18 -> this._18_ws();
+            case 19 -> this._19_heredoc();
+            case 20 -> this._20_unsp();
+            case 21 -> this._21_vws();
+            case 22 -> this._22_unv();
+            case 23 -> this._23_comment();
+            case 24 -> this._24_pre_comment_multi();
+            case 25 -> this._25_pre_comment();
+            case 26 -> this._26_post_comment();
+            case 27 -> this._27_post_comment_multi();
+            case 28 -> this._28_multiline_comment();
+            case 29 -> this._29_multiline_comment_nibbler();
+            case 30 -> this._30_plain_comment();
+            case 31 -> this._31_pod_content_toplevel();
+            case 32 -> this._32_pod_block();
+            case 33 -> this._33_pod_block_finish();
+            case 34 -> this._34_pod_block_delimited();
+            case 35 -> this._35_pod_block_content();
+            case 36 -> this._36_pod_block_paragraph();
+            case 37 -> this._37_pod_para_content();
+            case 38 -> this._38_pod_block_abbreviated();
+            case 39 -> this._39_pod_formatting_code();
+            case 40 -> this._40_pod_formatted_text();
+            case 41 -> this._41_pod_newline();
+            case 42 -> this._42_pod_removed_whitespace();
+            case 43 -> this._43_pod_code_check();
+            case 44 -> this._44_pod_configuration();
+            case 45 -> this._45_vnum();
+            case 46 -> this._46_version();
+            case 47 -> this._47_statementlist();
+            case 48 -> this._48_semilist();
+            case 49 -> this._49_label();
+            case 50 -> this._50_statement();
+            case 51 -> this._51_bogus_statement();
+            case 52 -> this._52_eat_terminator();
+            case 53 -> this._53_xblock();
+            case 54 -> this._54_pblock();
+            case 55 -> this._55_lambda();
+            case 56 -> this._56_block();
+            case 57 -> this._57_terminator();
+            case 58 -> this._58_blockoid();
+            case 59 -> this._59_stdstopper();
+            case 60 -> this._60_statement_control();
+            case 61 -> this._61_statement_control_if();
+            case 62 -> this._62_statement_control_unless();
+            case 63 -> this._63_statement_control_without();
+            case 64 -> this._64_statement_control_while();
+            case 65 -> this._65_statement_control_until();
+            case 66 -> this._66_statement_control_repeat();
+            case 67 -> this._67_statement_control_for();
+            case 68 -> this._68_statement_control_whenever();
+            case 69 -> this._69_statement_control_loop();
+            case 70 -> this._70_statement_control_need();
+            case 71 -> this._71_statement_control_import();
+            case 72 -> this._72_statement_control_no();
+            case 73 -> this._73_statement_control_use();
+            case 74 -> this._74_statement_control_require();
+            case 75 -> this._75_statement_control_given();
+            case 76 -> this._76_statement_control_when();
+            case 77 -> this._77_statement_control_default();
+            case 78 -> this._78_statement_control_CATCH();
+            case 79 -> this._79_statement_control_CONTROL();
+            case 80 -> this._80_statement_control_QUIT();
+            case 81 -> this._81_statement_prefix();
+            case 82 -> this._82_phaser_name();
+            case 83 -> this._83_statement_prefix_DOC();
+            case 84 -> this._84_statement_prefix_phaser();
+            case 85 -> this._85_statement_prefix_race();
+            case 86 -> this._86_statement_prefix_hyper();
+            case 87 -> this._87_statement_prefix_lazy();
+            case 88 -> this._88_statement_prefix_eager();
+            case 89 -> this._89_statement_prefix_sink();
+            case 90 -> this._90_statement_prefix_try();
+            case 91 -> this._91_statement_prefix_quietly();
+            case 92 -> this._92_statement_prefix_gather();
+            case 93 -> this._93_statement_prefix_once();
+            case 94 -> this._94_statement_prefix_start();
+            case 95 -> this._95_statement_prefix_supply();
+            case 96 -> this._96_statement_prefix_react();
+            case 97 -> this._97_statement_prefix_do();
+            case 98 -> this._98_blorst();
+            case 99 -> this._99_statement_mod_cond_keyword();
+            case 100 -> this._100_statement_mod_cond();
+            case 101 -> this._101_statement_mod_loop_keyword();
+            case 102 -> this._102_statement_mod_loop();
+            case 103 -> this._103_term();
+            case 104 -> this._104_term_ident();
+            case 105 -> this._105_term_name();
+            case 106 -> this._106_term_self();
+            case 107 -> this._107_term_whatever();
+            case 108 -> this._108_term_hyperwhatever();
+            case 109 -> this._109_term_type_const();
+            case 110 -> this._110_term_now();
+            case 111 -> this._111_term_time();
+            case 112 -> this._112_term_empty_set();
+            case 113 -> this._113_term_rand();
+            case 114 -> this._114_term_stub_code();
+            case 115 -> this._115_term_onlystar();
+            case 116 -> this._116_fatarrow();
+            case 117 -> this._117_args();
+            case 118 -> this._118_colonpair();
+            case 119 -> this._119_coloncircumfix();
+            case 120 -> this._120_colonpair_variable();
+            case 121 -> this._121_semiarglist();
+            case 122 -> this._122_arglist();
+            case 123 -> this._123_variable();
+            case 124 -> this._124_contextualizer();
+            case 125 -> this._125_scope_declarator();
+            case 126 -> this._126_declarator();
+            case 127 -> this._127_multi_declarator();
+            case 128 -> this._128_variable_declarator();
+            case 129 -> this._129_routine_declarator();
+            case 130 -> this._130_routine_def();
+            case 131 -> this._131_method_def();
+            case 132 -> this._132_onlystar();
+            case 133 -> this._133_capterm();
+            case 134 -> this._134_param_sep();
+            case 135 -> this._135_signature();
+            case 136 -> this._136_parameter();
+            case 137 -> this._137_param_var();
+            case 138 -> this._138_param_term();
+            case 139 -> this._139_named_param();
+            case 140 -> this._140_default_value();
+            case 141 -> this._141_type_constraint();
+            case 142 -> this._142_post_constraint();
+            case 143 -> this._143_initializer();
+            case 144 -> this._144_trait();
+            case 145 -> this._145_trait_mod();
+            case 146 -> this._146_regex_declarator();
+            case 147 -> this._147_regex_def();
+            case 148 -> this._148_type_declarator();
+            case 149 -> this._149_sigil();
+            case 150 -> this._150_twigil();
+            case 151 -> this._151_package_declarator();
+            case 152 -> this._152_package_kind();
+            case 153 -> this._153_package_def();
+            case 154 -> this._154_desigilname();
+            case 155 -> this._155_value();
+            case 156 -> this._156_number();
+            case 157 -> this._157_numish();
+            case 158 -> this._158_dec_number();
+            case 159 -> this._159_escale();
+            case 160 -> this._160_sign();
+            case 161 -> this._161_rat_number();
+            case 162 -> this._162_bare_rat_number();
+            case 163 -> this._163_complex_number();
+            case 164 -> this._164_bare_complex_number();
+            case 165 -> this._165_signed_number();
+            case 166 -> this._166_rad_number();
+            case 167 -> this._167_rad_digits();
+            case 168 -> this._168_rad_digit();
+            case 169 -> this._169_radint();
+            case 170 -> this._170_integer();
+            case 171 -> this._171_signed_integer();
+            case 172 -> this._172_integer_lex();
+            case 173 -> this._173_decint();
+            case 174 -> this._174_hexint();
+            case 175 -> this._175_octint();
+            case 176 -> this._176_binint();
+            case 177 -> this._177_charname();
+            case 178 -> this._178_hexints();
+            case 179 -> this._179_octints();
+            case 180 -> this._180_charnames();
+            case 181 -> this._181_charspec();
+            case 182 -> this._182_typename();
+            case 183 -> this._183_quote();
+            case 184 -> this._184_quote_qlang();
+            case 185 -> this._185_quote_rxlang();
+            case 186 -> this._186_quote_tr();
+            case 187 -> this._187_quote_Q();
+            case 188 -> this._188_quote_q();
+            case 189 -> this._189_quote_qq();
+            case 190 -> this._190_has_delimiter();
+            case 191 -> this._191_quibble();
+            case 192 -> this._192_quibble_rx();
+            case 193 -> this._193_sibble();
+            case 194 -> this._194_tribble();
+            case 195 -> this._195_tribbler();
+            case 196 -> this._196_ccstate();
+            case 197 -> this._197_quote_mod_Q();
+            case 198 -> this._198_quote_mod();
+            case 199 -> this._199_quotepair_Q();
+            case 200 -> this._200_quotepair_rx();
+            case 201 -> this._201_quotepair();
+            case 202 -> this._202_quote_nibbler();
+            case 203 -> this._203_starter();
+            case 204 -> this._204_stopper();
+            case 205 -> this._205_quote_escape();
+            case 206 -> this._206_quote_quasi();
+            case 207 -> this._207_quote_interpolation_postfix();
+            case 208 -> this._208_interpolation_opener();
+            case 209 -> this._209_circumfix();
+            case 210 -> this._210_EXPR();
+            case 211 -> this._211_nextterm();
+            case 212 -> this._212_prefixish();
+            case 213 -> this._213_prefix();
+            case 214 -> this._214_postfixish();
+            case 215 -> this._215_postfixish_nometa();
+            case 216 -> this._216_postfix();
+            case 217 -> this._217_dotty();
+            case 218 -> this._218_dottyop();
+            case 219 -> this._219_privop();
+            case 220 -> this._220_methodop();
+            case 221 -> this._221_postcircumfix();
+            case 222 -> this._222_infixish();
+            case 223 -> this._223_infixish_non_assignment_meta();
+            case 224 -> this._224_infixstopper();
+            case 225 -> this._225_infix();
+            case 226 -> this._226_infix_prefix_meta_operator();
+            case 227 -> this._227_infix_circumfix_meta_operator();
+            case 228 -> this._228_termish();
+            case 229 -> this._229_term_reduce();
+            case 230 -> this._230_enter_regex_nibbler();
+            case 231 -> this._231_regex_nibbler_fresh_rx();
+            case 232 -> this._232_rxws();
+            case 233 -> this._233_regex_nibbler();
+            case 234 -> this._234_rxstopper();
+            case 235 -> this._235_rxinfixstopper();
+            case 236 -> this._236_termseq();
+            case 237 -> this._237_rxtermish();
+            case 238 -> this._238_SIGOK();
+            case 239 -> this._239_sigmaybe();
+            case 240 -> this._240_normspace();
+            case 241 -> this._241_quantified_atom();
+            case 242 -> this._242_separator();
+            case 243 -> this._243_atom();
+            case 244 -> this._244_quantifier();
+            case 245 -> this._245_rxcodeblock();
+            case 246 -> this._246_backmod();
+            case 247 -> this._247_metachar();
+            case 248 -> this._248_rxQ();
+            case 249 -> this._249_rxq();
+            case 250 -> this._250_rxqq();
+            case 251 -> this._251_rxqw();
+            case 252 -> this._252_backslash();
+            case 253 -> this._253_assertion();
+            case 254 -> this._254_rxarglist();
+            case 255 -> this._255_cclass_elem();
+            case 256 -> this._256_cclass_backslash();
+            case 257 -> this._257_mod_internal();
+            case 258 -> this._258_mod_ident();
+            case 259 -> this.___lookahead_0();
+            case 260 -> this.___lookahead_1();
+            case 261 -> this.___lookahead_2();
+            case 262 -> this.___lookahead_3();
+            case 263 -> this.___lookahead_4();
+            case 264 -> this.___lookahead_5();
+            case 265 -> this.___lookahead_6();
+            case 266 -> this.___lookahead_7();
+            case 267 -> this.___lookahead_8();
+            case 268 -> this.___lookahead_9();
+            case 269 -> this.___lookahead_10();
+            case 270 -> this.___lookahead_11();
+            case 271 -> this.___lookahead_12();
+            case 272 -> this.___lookahead_13();
+            case 273 -> this.___lookahead_14();
+            case 274 -> this.___lookahead_15();
+            case 275 -> this.___lookahead_16();
+            case 276 -> this.___lookahead_17();
+            case 277 -> this.___lookahead_18();
+            case 278 -> this.___lookahead_19();
+            case 279 -> this.___lookahead_20();
+            case 280 -> this.___lookahead_21();
+            case 281 -> this.___lookahead_22();
+            case 282 -> this.___lookahead_23();
+            case 283 -> this.___lookahead_24();
+            case 284 -> this.___lookahead_25();
+            case 285 -> this.___lookahead_26();
+            case 286 -> this.___lookahead_27();
+            case 287 -> this.___lookahead_28();
+            case 288 -> this.___lookahead_29();
+            case 289 -> this.___lookahead_30();
+            case 290 -> this.___lookahead_31();
+            case 291 -> this.___lookahead_32();
+            case 292 -> this.___lookahead_33();
+            case 293 -> this.___lookahead_34();
+            case 294 -> this.___lookahead_35();
+            case 295 -> this.___lookahead_36();
+            case 296 -> this.___lookahead_37();
+            case 297 -> this.___lookahead_38();
+            case 298 -> this.___lookahead_39();
+            case 299 -> this.___lookahead_40();
+            case 300 -> this.___lookahead_41();
+            case 301 -> this.___lookahead_42();
+            case 302 -> this.___lookahead_43();
+            case 303 -> this.___lookahead_44();
+            case 304 -> this.___lookahead_45();
+            case 305 -> this.___lookahead_46();
+            case 306 -> this.___lookahead_47();
+            case 307 -> this.___lookahead_48();
+            case 308 -> this.___lookahead_49();
+            case 309 -> this.___lookahead_50();
+            case 310 -> this.___lookahead_51();
+            case 311 -> this.___lookahead_52();
+            case 312 -> this.___lookahead_53();
+            case 313 -> this.___lookahead_54();
+            case 314 -> this.___lookahead_55();
+            case 315 -> this.___lookahead_56();
+            case 316 -> this.___lookahead_57();
+            case 317 -> this.___lookahead_58();
+            case 318 -> this.___lookahead_59();
+            case 319 -> this.___lookahead_60();
+            case 320 -> this.___lookahead_61();
+            case 321 -> this.___lookahead_62();
+            case 322 -> this.___lookahead_63();
+            case 323 -> this.___lookahead_64();
+            case 324 -> this.___lookahead_65();
+            case 325 -> this.___lookahead_66();
+            case 326 -> this.___lookahead_67();
+            case 327 -> this.___lookahead_68();
+            case 328 -> this.___lookahead_69();
+            case 329 -> this.___lookahead_70();
+            case 330 -> this.___lookahead_71();
+            case 331 -> this.___lookahead_72();
+            case 332 -> this.___lookahead_73();
+            case 333 -> this.___lookahead_74();
+            case 334 -> this.___lookahead_75();
+            case 335 -> this.___lookahead_76();
+            case 336 -> this.___lookahead_77();
+            case 337 -> this.___lookahead_78();
+            case 338 -> this.___lookahead_79();
+            case 339 -> this.___lookahead_80();
+            case 340 -> this.___lookahead_81();
+            case 341 -> this.___lookahead_82();
+            case 342 -> this.___lookahead_83();
+            case 343 -> this.___lookahead_84();
+            case 344 -> this.___lookahead_85();
+            case 345 -> this.___lookahead_86();
+            case 346 -> this.___lookahead_87();
+            case 347 -> this.___lookahead_88();
+            case 348 -> this.___lookahead_89();
+            case 349 -> this.___lookahead_90();
+            case 350 -> this.___lookahead_91();
+            case 351 -> this.___lookahead_92();
+            case 352 -> this.___lookahead_93();
+            case 353 -> this.___lookahead_94();
+            case 354 -> this.___lookahead_95();
+            case 355 -> this.___lookahead_96();
+            case 356 -> this.___lookahead_97();
+            case 357 -> this.___lookahead_98();
+            case 358 -> this.___lookahead_99();
+            case 359 -> this.___lookahead_100();
+            case 360 -> this.___lookahead_101();
+            case 361 -> this.___lookahead_102();
+            case 362 -> this.___lookahead_103();
+            case 363 -> this.___lookahead_104();
+            case 364 -> this.___lookahead_105();
+            case 365 -> this.___lookahead_106();
+            case 366 -> this.___lookahead_107();
+            case 367 -> this.___lookahead_108();
+            case 368 -> this.___lookahead_109();
+            case 369 -> this.___lookahead_110();
+            case 370 -> this.___lookahead_111();
+            case 371 -> this.___lookahead_112();
+            case 372 -> this.___lookahead_113();
+            case 373 -> this.___lookahead_114();
+            case 374 -> this.___lookahead_115();
+            case 375 -> this.___lookahead_116();
+            case 376 -> this.___lookahead_117();
+            case 377 -> this.___lookahead_118();
+            case 378 -> this.___lookahead_119();
+            case 379 -> this.___lookahead_120();
+            case 380 -> this.___lookahead_121();
+            case 381 -> this.___lookahead_122();
+            case 382 -> this.___lookahead_123();
+            case 383 -> this.___lookahead_124();
+            case 384 -> this.___lookahead_125();
+            case 385 -> this.___lookahead_126();
+            case 386 -> this.___lookahead_127();
+            case 387 -> this.___lookahead_128();
+            case 388 -> this.___lookahead_129();
+            case 389 -> this.___lookahead_130();
+            case 390 -> this.___lookahead_131();
+            case 391 -> this.___lookahead_132();
+            case 392 -> this.___lookahead_133();
+            case 393 -> this.___lookahead_134();
+            case 394 -> this.___lookahead_135();
+            case 395 -> this.___lookahead_136();
+            case 396 -> this.___lookahead_137();
+            case 397 -> this.___lookahead_138();
+            case 398 -> this.___lookahead_139();
+            case 399 -> this.___lookahead_140();
+            case 400 -> this.___lookahead_141();
+            case 401 -> this.___lookahead_142();
+            case 402 -> this.___lookahead_143();
+            case 403 -> this.___lookahead_144();
+            case 404 -> this.___lookahead_145();
+            case 405 -> this.___lookahead_146();
+            case 406 -> this.___lookahead_147();
+            case 407 -> this.___lookahead_148();
+            case 408 -> this.___lookahead_149();
+            case 409 -> this.___lookahead_150();
+            case 410 -> this.___lookahead_151();
+            case 411 -> this.___lookahead_152();
+            case 412 -> this.___lookahead_153();
+            case 413 -> this.___lookahead_154();
+            case 414 -> this.___lookahead_155();
+            case 415 -> this.___lookahead_156();
+            case 416 -> this.___lookahead_157();
+            case 417 -> this.___lookahead_158();
+            case 418 -> this.___lookahead_159();
+            case 419 -> this.___lookahead_160();
+            case 420 -> this.___lookahead_161();
+            case 421 -> this.___lookahead_162();
+            case 422 -> this.___lookahead_163();
+            case 423 -> this.___lookahead_164();
+            case 424 -> this.___lookahead_165();
+            case 425 -> this.___lookahead_166();
+            case 426 -> this.___lookahead_167();
+            case 427 -> this.___lookahead_168();
+            case 428 -> this.___lookahead_169();
+            case 429 -> this.___lookahead_170();
+            case 430 -> this.___lookahead_171();
+            case 431 -> this.___lookahead_172();
+            case 432 -> this.___lookahead_173();
+            case 433 -> this.___lookahead_174();
+            case 434 -> this.___lookahead_175();
+            case 435 -> this.___lookahead_176();
+            case 436 -> this.___lookahead_177();
+            case 437 -> this.___lookahead_178();
+            case 438 -> this.___lookahead_179();
+            case 439 -> this.___lookahead_180();
+            case 440 -> this.___lookahead_181();
+            case 441 -> this.___lookahead_182();
+            case 442 -> this.___lookahead_183();
+            case 443 -> this.___lookahead_184();
+            case 444 -> this.___lookahead_185();
+            case 445 -> this.___lookahead_186();
+            case 446 -> this.___lookahead_187();
+            case 447 -> this.___lookahead_188();
+            case 448 -> this.___lookahead_189();
+            case 449 -> this.___lookahead_190();
+            case 450 -> this.___lookahead_191();
+            case 451 -> this.___lookahead_192();
+            case 452 -> this.___lookahead_193();
+            case 453 -> this.___lookahead_194();
+            case 454 -> this.___lookahead_195();
+            case 455 -> this.___lookahead_196();
+            case 456 -> this.___lookahead_197();
+            case 457 -> this.___lookahead_198();
+            case 458 -> this.___lookahead_199();
+            case 459 -> this.___lookahead_200();
+            case 460 -> this.___lookahead_201();
+            case 461 -> this.___lookahead_202();
+            case 462 -> this.___lookahead_203();
+            case 463 -> this.___lookahead_204();
+            case 464 -> this.___lookahead_205();
+            case 465 -> this.___lookahead_206();
+            case 466 -> this.___lookahead_207();
+            case 467 -> this.___lookahead_208();
+            case 468 -> this.___lookahead_209();
+            case 469 -> this.___lookahead_210();
+            case 470 -> this.___lookahead_211();
+            case 471 -> this.___lookahead_212();
+            case 472 -> this.___lookahead_213();
+            case 473 -> this.___lookahead_214();
+            case 474 -> this.___lookahead_215();
+            case 475 -> this.___lookahead_216();
+            case 476 -> this.___lookahead_217();
+            case 477 -> this.___lookahead_218();
+            case 478 -> this.___lookahead_219();
+            case 479 -> this.___lookahead_220();
+            case 480 -> this.___lookahead_221();
+            case 481 -> this.___lookahead_222();
+            case 482 -> this.___lookahead_223();
+            case 483 -> this.___lookahead_224();
+            case 484 -> this.___lookahead_225();
+            case 485 -> this.___lookahead_226();
+            case 486 -> this.___lookahead_227();
+            case 487 -> this.___lookahead_228();
+            case 488 -> this.___lookahead_229();
+            case 489 -> this.___lookahead_230();
+            case 490 -> this.___lookahead_231();
+            case 491 -> this.___lookahead_232();
+            case 492 -> this.___lookahead_233();
+            case 493 -> this.___lookahead_234();
+            case 494 -> this.___lookahead_235();
+            case 495 -> this.___lookahead_236();
+            case 496 -> this.___lookahead_237();
+            case 497 -> this.___lookahead_238();
+            case 498 -> this.___lookahead_239();
+            case 499 -> this.___lookahead_240();
+            case 500 -> this.___lookahead_241();
+            case 501 -> this.___lookahead_242();
+            case 502 -> this.___lookahead_243();
+            case 503 -> this.___lookahead_244();
+            case 504 -> this.___lookahead_245();
+            case 505 -> this.___lookahead_246();
+            case 506 -> this.___lookahead_247();
+            case 507 -> this.___lookahead_248();
+            case 508 -> this.___lookahead_249();
+            case 509 -> this.___lookahead_250();
+            case 510 -> this.___lookahead_251();
+            case 511 -> this.___lookahead_252();
+            case 512 -> this.___lookahead_253();
+            case 513 -> this.___lookahead_254();
+            case 514 -> this.___lookahead_255();
+            case 515 -> this.___lookahead_256();
+            case 516 -> this.___lookahead_257();
+            case 517 -> this.___lookahead_258();
+            case 518 -> this.___lookahead_259();
+            case 519 -> this.___lookahead_260();
+            case 520 -> this.___lookahead_261();
+            case 521 -> this.___lookahead_262();
+            case 522 -> this.___lookahead_263();
+            case 523 -> this.___lookahead_264();
+            case 524 -> this.___lookahead_265();
+            case 525 -> this.___lookahead_266();
+            case 526 -> this.___lookahead_267();
+            case 527 -> this.___lookahead_268();
+            case 528 -> this.___lookahead_269();
+            case 529 -> this.___lookahead_270();
+            case 530 -> this.___lookahead_271();
+            case 531 -> this.___lookahead_272();
+            case 532 -> this.___lookahead_273();
+            case 533 -> this.___lookahead_274();
+            case 534 -> this.___lookahead_275();
+            case 535 -> this.___lookahead_276();
+            case 536 -> this.___lookahead_277();
+            case 537 -> this.___lookahead_278();
+            case 538 -> this.___lookahead_279();
+            case 539 -> this.___lookahead_280();
+            case 540 -> this.___lookahead_281();
+            case 541 -> this.___lookahead_282();
+            case 542 -> this.___lookahead_283();
+            case 543 -> this.___lookahead_284();
+            case 544 -> this.___lookahead_285();
+            case 545 -> this.___lookahead_286();
+            case 546 -> this.___lookahead_287();
+            case 547 -> this.___lookahead_288();
+            case 548 -> this.___lookahead_289();
+            case 549 -> this.___lookahead_290();
+            case 550 -> this.___lookahead_291();
+            case 551 -> this.___lookahead_292();
+            case 552 -> this.___lookahead_293();
+            case 553 -> this.___lookahead_294();
+            case 554 -> this.___lookahead_295();
+            case 555 -> this.___lookahead_296();
+            case 556 -> this.___lookahead_297();
+            case 557 -> this.___lookahead_298();
+            case 558 -> this.___lookahead_299();
+            case 559 -> this.___lookahead_300();
+            case 560 -> this.___lookahead_301();
+            case 561 -> this.___lookahead_302();
+            case 562 -> this.___lookahead_303();
+            case 563 -> this.___lookahead_304();
+            case 564 -> this.___lookahead_305();
+            case 565 -> this.___lookahead_306();
+            case 566 -> this.___lookahead_307();
+            case 567 -> this.___lookahead_308();
+            case 568 -> this.___lookahead_309();
+            case 569 -> this.___lookahead_310();
+            case 570 -> this.___lookahead_311();
+            case 571 -> this.___lookahead_312();
+            case 572 -> this.___lookahead_313();
+            case 573 -> this.___lookahead_314();
+            case 574 -> this.___lookahead_315();
+            case 575 -> this.___lookahead_316();
+            case 576 -> this.___lookahead_317();
+            case 577 -> this.___lookahead_318();
+            case 578 -> this.___lookahead_319();
+            case 579 -> this.___lookahead_320();
+            case 580 -> this.___lookahead_321();
+            case 581 -> this.___lookahead_322();
+            case 582 -> this.___lookahead_323();
+            case 583 -> this.___lookahead_324();
+            case 584 -> this.___lookahead_325();
+            case 585 -> this.___lookahead_326();
+            case 586 -> this.___lookahead_327();
+            case 587 -> this.___lookahead_328();
+            case 588 -> this.___lookahead_329();
+            case 589 -> this.___lookahead_330();
+            case 590 -> this.___lookahead_331();
+            case 591 -> this.___lookahead_332();
+            case 592 -> this.___lookahead_333();
+            case 593 -> this.___lookahead_334();
+            case 594 -> this.___lookahead_335();
+            case 595 -> this.___lookahead_336();
+            case 596 -> this.___lookahead_337();
+            case 597 -> this.___lookahead_338();
+            case 598 -> this.___lookahead_339();
+            case 599 -> this.___lookahead_340();
+            case 600 -> this.___lookahead_341();
+            case 601 -> this.___lookahead_342();
+            case 602 -> this.___lookahead_343();
+            case 603 -> this.___lookahead_344();
+            case 604 -> this.___lookahead_345();
+            case 605 -> this.___lookahead_346();
+            case 606 -> this.___lookahead_347();
+            case 607 -> this.___lookahead_348();
+            case 608 -> this.___lookahead_349();
+            case 609 -> this.___lookahead_350();
+            case 610 -> this.___lookahead_351();
+            case 611 -> this.___lookahead_352();
+            case 612 -> this.___lookahead_353();
+            case 613 -> this.___lookahead_354();
+            case 614 -> this.___lookahead_355();
+            case 615 -> this.___lookahead_356();
+            case 616 -> this.___lookahead_357();
+            case 617 -> this.___lookahead_358();
+            case 618 -> this.___lookahead_359();
+            case 619 -> this.___lookahead_360();
+            case 620 -> this.___lookahead_361();
+            case 621 -> this.___lookahead_362();
+            case 622 -> this.___lookahead_363();
+            case 623 -> this.___lookahead_364();
+            case 624 -> this.___lookahead_365();
+            case 625 -> this.___lookahead_366();
+            case 626 -> this.___lookahead_367();
+            default -> throw new RuntimeException();
+        };
     }
 
     private int _0_TOP() {

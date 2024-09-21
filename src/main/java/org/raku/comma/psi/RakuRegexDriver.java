@@ -8,8 +8,9 @@ import java.util.*;
 
 public interface RakuRegexDriver extends PsiElement {
     default Collection<PsiNamedElement> collectRegexVariables() {
-        if (!(this instanceof RakuPsiElement))
+        if (!(this instanceof RakuPsiElement)) {
             return new ArrayList<>();
+        }
         RakuRegex regex = PsiTreeUtil.findChildOfType(this, RakuRegex.class, false);
         if (regex == null) return new ArrayList<>();
         List<PsiNamedElement> symbols = new ArrayList<>();
@@ -25,12 +26,16 @@ public interface RakuRegexDriver extends PsiElement {
             }
         }
         // Nameds
-        Collection<PsiNamedElement> nameds = PsiTreeUtil.findChildrenOfAnyType(regex, RakuRegexVariable.class, RakuRegexAssertion.class);
+        Collection<PsiNamedElement> nameds = PsiTreeUtil.findChildrenOfAnyType(regex,
+                                                                               RakuRegexVariable.class,
+                                                                               RakuRegexAssertion.class);
         for (PsiNamedElement named : nameds) {
             if (named instanceof RakuRegexAssertion && named.getText().matches("^<\\w.*")) {
                 if (PsiTreeUtil.getParentOfType(named, RakuRegexCapturePositional.class, RakuRegex.class) instanceof RakuRegex
                     && named.getName() != null)
+                {
                     symbols.add(named);
+                }
             } else if (named instanceof RakuRegexVariable)
                 symbols.add(named);
         }

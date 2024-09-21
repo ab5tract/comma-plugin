@@ -5,349 +5,121 @@ public class MAINBraid extends Cursor<MAINBraid> {
 
     @Override
     public int runRule() {
-        int result;
-        switch (this.ruleNumber) {
-        case 0:
-            result = this._0_TOP();
-            break;
-        case 1:
-            result = this._1_bogus_end();
-            break;
-        case 2:
-            result = this._2_sequence_element();
-            break;
-        case 3:
-            result = this._3_sequence_element_group();
-            break;
-        case 4:
-            result = this._4_comment_tag();
-            break;
-        case 5:
-            result = this._5_sequence_element_literal_text();
-            break;
-        case 6:
-            result = this._6_sequence_element_literal_open_tag();
-            break;
-        case 7:
-            result = this._7_sequence_element_literal_close_tag();
-            break;
-        case 8:
-            result = this._8_literal_tag_name();
-            break;
-        case 9:
-            result = this._9_literal_tag_attribute();
-            break;
-        case 10:
-            result = this._10_literal_tag_attribute_value();
-            break;
-        case 11:
-            result = this._11_sigil();
-            break;
-        case 12:
-            result = this._12_sigil_tag();
-            break;
-        case 13:
-            result = this._13_sigil_tag_topic();
-            break;
-        case 14:
-            result = this._14_sigil_tag_variable();
-            break;
-        case 15:
-            result = this._15_sigil_tag_iteration();
-            break;
-        case 16:
-            result = this._16_sigil_tag_condition();
-            break;
-        case 17:
-            result = this._17_elsif();
-            break;
-        case 18:
-            result = this._18_else();
-            break;
-        case 19:
-            result = this._19_structural_tag();
-            break;
-        case 20:
-            result = this._20_block();
-            break;
-        case 21:
-            result = this._21_sigil_tag_call();
-            break;
-        case 22:
-            result = this._22_sigil_tag_sub();
-            break;
-        case 23:
-            result = this._23_sigil_tag_macro();
-            break;
-        case 24:
-            result = this._24_sigil_tag_body();
-            break;
-        case 25:
-            result = this._25_sigil_tag_part();
-            break;
-        case 26:
-            result = this._26_sigil_tag_use();
-            break;
-        case 27:
-            result = this._27_sigil_tag_separator();
-            break;
-        case 28:
-            result = this._28_sigil_tag_comment();
-            break;
-        case 29:
-            result = this._29_module_name();
-            break;
-        case 30:
-            result = this._30_sigil_tag_apply();
-            break;
-        case 31:
-            result = this._31_signature();
-            break;
-        case 32:
-            result = this._32_parameter();
-            break;
-        case 33:
-            result = this._33_parameter_name();
-            break;
-        case 34:
-            result = this._34_arglist();
-            break;
-        case 35:
-            result = this._35_argument();
-            break;
-        case 36:
-            result = this._36_expression();
-            break;
-        case 37:
-            result = this._37_nextterm();
-            break;
-        case 38:
-            result = this._38_infixish();
-            break;
-        case 39:
-            result = this._39_infix();
-            break;
-        case 40:
-            result = this._40_term();
-            break;
-        case 41:
-            result = this._41_single_quote_string();
-            break;
-        case 42:
-            result = this._42_int();
-            break;
-        case 43:
-            result = this._43_rat();
-            break;
-        case 44:
-            result = this._44_num();
-            break;
-        case 45:
-            result = this._45_bool();
-            break;
-        case 46:
-            result = this._46_variable();
-            break;
-        case 47:
-            result = this._47_deref_term();
-            break;
-        case 48:
-            result = this._48_parenthesized_expression();
-            break;
-        case 49:
-            result = this._49_deref();
-            break;
-        case 50:
-            result = this._50_deref_item();
-            break;
-        case 51:
-            result = this._51_deref_item_method();
-            break;
-        case 52:
-            result = this._52_deref_item_smart();
-            break;
-        case 53:
-            result = this._53_deref_item_hash_literal();
-            break;
-        case 54:
-            result = this._54_deref_item_array();
-            break;
-        case 55:
-            result = this._55_deref_item_hash();
-            break;
-        case 56:
-            result = this._56_ws();
-            break;
-        case 57:
-            result = this._57_hws();
-            break;
-        case 58:
-            result = this._58_tlt();
-            break;
-        case 59:
-            result = this._59_tgt();
-            break;
-        case 60:
-            result = this._60_tclose();
-            break;
-        case 61:
-            result = this._61_dot();
-            break;
-        case 62:
-            result = this._62_lt();
-            break;
-        case 63:
-            result = this._63_gt();
-            break;
-        case 64:
-            result = this._64_close();
-            break;
-        case 65:
-            result = this._65_iter_sigil();
-            break;
-        case 66:
-            result = this._66_cond_sigil();
-            break;
-        case 67:
-            result = this._67_call_sigil();
-            break;
-        case 68:
-            result = this._68_decl_sigil();
-            break;
-        case 69:
-            result = this._69_apply_sigil();
-            break;
-        case 70:
-            result = this._70_identifier();
-            break;
-        case 71:
-            result = this._71_ident();
-            break;
-        case 72:
-            result = this.___lookahead_0();
-            break;
-        case 73:
-            result = this.___lookahead_1();
-            break;
-        case 74:
-            result = this.___lookahead_2();
-            break;
-        case 75:
-            result = this.___lookahead_3();
-            break;
-        case 76:
-            result = this.___lookahead_4();
-            break;
-        case 77:
-            result = this.___lookahead_5();
-            break;
-        case 78:
-            result = this.___lookahead_6();
-            break;
-        case 79:
-            result = this.___lookahead_7();
-            break;
-        case 80:
-            result = this.___lookahead_8();
-            break;
-        case 81:
-            result = this.___lookahead_9();
-            break;
-        case 82:
-            result = this.___lookahead_10();
-            break;
-        case 83:
-            result = this.___lookahead_11();
-            break;
-        case 84:
-            result = this.___lookahead_12();
-            break;
-        case 85:
-            result = this.___lookahead_13();
-            break;
-        case 86:
-            result = this.___lookahead_14();
-            break;
-        case 87:
-            result = this.___lookahead_15();
-            break;
-        case 88:
-            result = this.___lookahead_16();
-            break;
-        case 89:
-            result = this.___lookahead_17();
-            break;
-        case 90:
-            result = this.___lookahead_18();
-            break;
-        case 91:
-            result = this.___lookahead_19();
-            break;
-        case 92:
-            result = this.___lookahead_20();
-            break;
-        case 93:
-            result = this.___lookahead_21();
-            break;
-        case 94:
-            result = this.___lookahead_22();
-            break;
-        case 95:
-            result = this.___lookahead_23();
-            break;
-        case 96:
-            result = this.___lookahead_24();
-            break;
-        case 97:
-            result = this.___lookahead_25();
-            break;
-        case 98:
-            result = this.___lookahead_26();
-            break;
-        case 99:
-            result = this.___lookahead_27();
-            break;
-        case 100:
-            result = this.___lookahead_28();
-            break;
-        case 101:
-            result = this.___lookahead_29();
-            break;
-        case 102:
-            result = this.___lookahead_30();
-            break;
-        case 103:
-            result = this.___lookahead_31();
-            break;
-        case 104:
-            result = this.___lookahead_32();
-            break;
-        case 105:
-            result = this.___lookahead_33();
-            break;
-        case 106:
-            result = this.___lookahead_34();
-            break;
-        case 107:
-            result = this.___lookahead_35();
-            break;
-        case 108:
-            result = this.___lookahead_36();
-            break;
-        case 109:
-            result = this.___lookahead_37();
-            break;
-        case 110:
-            result = this.___lookahead_38();
-            break;
-        case 111:
-            result = this.___lookahead_39();
-            break;
-        default:
-            throw new RuntimeException();
-
-        }
-        return result;
+        return switch (this.ruleNumber) {
+            case 0 -> this._0_TOP();
+            case 1 -> this._1_bogus_end();
+            case 2 -> this._2_sequence_element();
+            case 3 -> this._3_sequence_element_group();
+            case 4 -> this._4_comment_tag();
+            case 5 -> this._5_sequence_element_literal_text();
+            case 6 -> this._6_sequence_element_literal_open_tag();
+            case 7 -> this._7_sequence_element_literal_close_tag();
+            case 8 -> this._8_literal_tag_name();
+            case 9 -> this._9_literal_tag_attribute();
+            case 10 -> this._10_literal_tag_attribute_value();
+            case 11 -> this._11_sigil();
+            case 12 -> this._12_sigil_tag();
+            case 13 -> this._13_sigil_tag_topic();
+            case 14 -> this._14_sigil_tag_variable();
+            case 15 -> this._15_sigil_tag_iteration();
+            case 16 -> this._16_sigil_tag_condition();
+            case 17 -> this._17_elsif();
+            case 18 -> this._18_else();
+            case 19 -> this._19_structural_tag();
+            case 20 -> this._20_block();
+            case 21 -> this._21_sigil_tag_call();
+            case 22 -> this._22_sigil_tag_sub();
+            case 23 -> this._23_sigil_tag_macro();
+            case 24 -> this._24_sigil_tag_body();
+            case 25 -> this._25_sigil_tag_part();
+            case 26 -> this._26_sigil_tag_use();
+            case 27 -> this._27_sigil_tag_separator();
+            case 28 -> this._28_sigil_tag_comment();
+            case 29 -> this._29_module_name();
+            case 30 -> this._30_sigil_tag_apply();
+            case 31 -> this._31_signature();
+            case 32 -> this._32_parameter();
+            case 33 -> this._33_parameter_name();
+            case 34 -> this._34_arglist();
+            case 35 -> this._35_argument();
+            case 36 -> this._36_expression();
+            case 37 -> this._37_nextterm();
+            case 38 -> this._38_infixish();
+            case 39 -> this._39_infix();
+            case 40 -> this._40_term();
+            case 41 -> this._41_single_quote_string();
+            case 42 -> this._42_int();
+            case 43 -> this._43_rat();
+            case 44 -> this._44_num();
+            case 45 -> this._45_bool();
+            case 46 -> this._46_variable();
+            case 47 -> this._47_deref_term();
+            case 48 -> this._48_parenthesized_expression();
+            case 49 -> this._49_deref();
+            case 50 -> this._50_deref_item();
+            case 51 -> this._51_deref_item_method();
+            case 52 -> this._52_deref_item_smart();
+            case 53 -> this._53_deref_item_hash_literal();
+            case 54 -> this._54_deref_item_array();
+            case 55 -> this._55_deref_item_hash();
+            case 56 -> this._56_ws();
+            case 57 -> this._57_hws();
+            case 58 -> this._58_tlt();
+            case 59 -> this._59_tgt();
+            case 60 -> this._60_tclose();
+            case 61 -> this._61_dot();
+            case 62 -> this._62_lt();
+            case 63 -> this._63_gt();
+            case 64 -> this._64_close();
+            case 65 -> this._65_iter_sigil();
+            case 66 -> this._66_cond_sigil();
+            case 67 -> this._67_call_sigil();
+            case 68 -> this._68_decl_sigil();
+            case 69 -> this._69_apply_sigil();
+            case 70 -> this._70_identifier();
+            case 71 -> this._71_ident();
+            case 72 -> this.___lookahead_0();
+            case 73 -> this.___lookahead_1();
+            case 74 -> this.___lookahead_2();
+            case 75 -> this.___lookahead_3();
+            case 76 -> this.___lookahead_4();
+            case 77 -> this.___lookahead_5();
+            case 78 -> this.___lookahead_6();
+            case 79 -> this.___lookahead_7();
+            case 80 -> this.___lookahead_8();
+            case 81 -> this.___lookahead_9();
+            case 82 -> this.___lookahead_10();
+            case 83 -> this.___lookahead_11();
+            case 84 -> this.___lookahead_12();
+            case 85 -> this.___lookahead_13();
+            case 86 -> this.___lookahead_14();
+            case 87 -> this.___lookahead_15();
+            case 88 -> this.___lookahead_16();
+            case 89 -> this.___lookahead_17();
+            case 90 -> this.___lookahead_18();
+            case 91 -> this.___lookahead_19();
+            case 92 -> this.___lookahead_20();
+            case 93 -> this.___lookahead_21();
+            case 94 -> this.___lookahead_22();
+            case 95 -> this.___lookahead_23();
+            case 96 -> this.___lookahead_24();
+            case 97 -> this.___lookahead_25();
+            case 98 -> this.___lookahead_26();
+            case 99 -> this.___lookahead_27();
+            case 100 -> this.___lookahead_28();
+            case 101 -> this.___lookahead_29();
+            case 102 -> this.___lookahead_30();
+            case 103 -> this.___lookahead_31();
+            case 104 -> this.___lookahead_32();
+            case 105 -> this.___lookahead_33();
+            case 106 -> this.___lookahead_34();
+            case 107 -> this.___lookahead_35();
+            case 108 -> this.___lookahead_36();
+            case 109 -> this.___lookahead_37();
+            case 110 -> this.___lookahead_38();
+            case 111 -> this.___lookahead_39();
+            default -> throw new RuntimeException();
+        };
     }
 
     private int _0_TOP() {

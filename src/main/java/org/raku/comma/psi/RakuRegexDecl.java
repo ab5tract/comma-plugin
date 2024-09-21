@@ -7,8 +7,10 @@ import org.raku.comma.psi.symbols.RakuMOPSymbolContributor;
 
 public interface RakuRegexDecl extends RakuPsiScope, RakuPsiDeclaration,
                                        StubBasedPsiElement<RakuRegexDeclStub>,
-                                       RakuSignatureHolder, RakuLexicalSymbolContributor,
-                                       RakuMOPSymbolContributor {
+                                       RakuSignatureHolder,
+                                       RakuLexicalSymbolContributor,
+                                       RakuMOPSymbolContributor
+{
     String getRegexKind();
     String getRegexName();
     @Override

@@ -18,15 +18,19 @@ public class RakuWordsScanner extends VersionedWordsScanner {
 
     public RakuWordsScanner() {
         myLexer = new RakuLexer();
-        myIdentifierTokenSet = TokenSet.create(
-          RakuTokenTypes.NAME, RakuTokenTypes.SUB_CALL_NAME,
-          RakuTokenTypes.METHOD_CALL_NAME, RakuTokenTypes.VARIABLE,
-          RakuTokenTypes.ROUTINE_NAME, RakuTokenTypes.PACKAGE_NAME
-        );
-        myCommentTokenSet = TokenSet.create(RakuTokenTypes.COMMENT, RakuTokenTypes.POD_TEXT, RakuTokenTypes.POD_FINISH_TEXT);
-        myLiteralTokenSet = TokenSet.create(
-          RakuTokenTypes.INTEGER_LITERAL, RakuTokenTypes.COMPLEX_LITERAL,
-          RakuTokenTypes.NUMBER_LITERAL, RakuTokenTypes.RAT_LITERAL);
+        myIdentifierTokenSet = TokenSet.create(RakuTokenTypes.NAME,
+                                               RakuTokenTypes.SUB_CALL_NAME,
+                                               RakuTokenTypes.METHOD_CALL_NAME,
+                                               RakuTokenTypes.VARIABLE,
+                                               RakuTokenTypes.ROUTINE_NAME,
+                                               RakuTokenTypes.PACKAGE_NAME);
+        myCommentTokenSet = TokenSet.create(RakuTokenTypes.COMMENT,
+                                            RakuTokenTypes.POD_TEXT,
+                                            RakuTokenTypes.POD_FINISH_TEXT);
+        myLiteralTokenSet = TokenSet.create(RakuTokenTypes.INTEGER_LITERAL,
+                                            RakuTokenTypes.COMPLEX_LITERAL,
+                                            RakuTokenTypes.NUMBER_LITERAL,
+                                            RakuTokenTypes.RAT_LITERAL);
     }
 
     @Override
