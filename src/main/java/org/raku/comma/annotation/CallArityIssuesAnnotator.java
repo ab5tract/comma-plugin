@@ -55,13 +55,10 @@ public class CallArityIssuesAnnotator implements Annotator {
         }
 
         PsiReference ref = refElement.getReference();
-        if (!(ref instanceof PsiPolyVariantReference)) {
-            return;
-        }
+        if (!(ref instanceof PsiPolyVariantReference)) return;
+
         ResolveResult[] defs = ((PsiPolyVariantReference) ref).multiResolve(false);
-        if (defs.length == 0) {
-            return;
-        }
+        if (defs.length == 0) return;
 
         List<AnnotationBuilderWrap> annotations = new ArrayList<>();
 
@@ -86,12 +83,11 @@ public class CallArityIssuesAnnotator implements Annotator {
                     RakuSignature.MatchFailureReason reason = result.getArgumentFailureReason(i);
                     if (reason == null) continue;
                     TextRange argToHighlight = i == 0 && args.length == 0
-                                               ? refElement.getTextRange()
-                                               : i < args.length
-                                                 ? args[i].getTextRange()
-                                                 : new TextRange(args[0].getTextRange()
-                                                                        .getStartOffset(), args[args.length - 1].getTextRange()
-                                                                                                                .getEndOffset());
+                                                   ? refElement.getTextRange()
+                                                   : i < args.length
+                                                         ? args[i].getTextRange()
+                                                         : new TextRange(args[0].getTextRange().getStartOffset(),
+                                                                         args[args.length - 1].getTextRange().getEndOffset());
                     switch (reason) {
                         case TOO_MANY_ARGS: {
                             annotations.add(new AnnotationBuilderWrap(signature, argToHighlight, "Too many positional arguments"));
