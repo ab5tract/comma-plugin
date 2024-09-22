@@ -4,7 +4,7 @@ import com.intellij.lang.Language;
 import org.jetbrains.annotations.NotNull;
 
 public class RakuLanguage extends Language {
-    private static final RakuLanguage INSTANCE = new RakuLanguage();
+    public static final RakuLanguage INSTANCE = new RakuLanguage();
 
     private RakuLanguage() {
         super("Raku");
