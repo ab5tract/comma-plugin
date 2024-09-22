@@ -12,6 +12,7 @@ import org.raku.comma.psi.*;
 import org.raku.comma.psi.type.RakuType;
 import org.raku.comma.psi.type.RakuUntyped;
 import org.jetbrains.annotations.NotNull;
+import org.raku.comma.utils.CommaProjectUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,20 +21,25 @@ import java.util.stream.Collectors;
 public class CallArityIssuesAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof RakuCodeBlockCall))
-            return;
+        if (!(element instanceof RakuCodeBlockCall)) return;
+        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
 
-        PsiElement refElement = element instanceof RakuSubCall ? element.getFirstChild() : element;
+        PsiElement refElement = element instanceof RakuSubCall
+                                ? element.getFirstChild()
+                                : element;
+        if (CommaProjectUtil.isRakudoCoreProject(refElement)) return;
+
         PsiElement[] args = ((RakuCodeBlockCall) element).getCallArguments();
 
         if (element instanceof RakuMethodCall) {
-            PsiElement wholeNode = ((RakuMethodCall)element).getWholeCallNode();
+            PsiElement wholeNode = ((RakuMethodCall) element).getWholeCallNode();
             if (wholeNode instanceof RakuPostfixApplication) {
-                PsiElement operand = ((RakuPostfixApplication)wholeNode).getOperand();
+                PsiElement operand = ((RakuPostfixApplication) wholeNode).getOperand();
                 if (operand instanceof RakuPsiElement) {
-                    @NotNull RakuType type = ((RakuPsiElement)operand).inferType();
-                    if (type instanceof RakuUntyped)
+                    @NotNull RakuType type = ((RakuPsiElement) operand).inferType();
+                    if (type instanceof RakuUntyped) {
                         return;
+                    }
                 }
             }
         }
@@ -42,27 +48,31 @@ public class CallArityIssuesAnnotator implements Annotator {
         for (PsiElement arg : args) {
             if (arg instanceof RakuPrefixApplication) {
                 PsiElement prefix = ((RakuPrefixApplication) arg).getPrefix();
-                if (prefix != null && prefix.getText().startsWith("|"))
+                if (prefix != null && prefix.getText().startsWith("|")) {
                     return;
+                }
             }
         }
 
         PsiReference ref = refElement.getReference();
-        if (!(ref instanceof PsiPolyVariantReference))
+        if (!(ref instanceof PsiPolyVariantReference)) {
             return;
+        }
         ResolveResult[] defs = ((PsiPolyVariantReference) ref).multiResolve(false);
-        if (defs.length == 0)
+        if (defs.length == 0) {
             return;
+        }
 
         List<AnnotationBuilderWrap> annotations = new ArrayList<>();
 
         MULTI_LOOP:
         for (ResolveResult def : defs) {
-            if (!(def.getElement() instanceof RakuRoutineDecl))
-                return;
-            RakuSignature signature = ((RakuRoutineDecl)def.getElement()).getSignatureNode();
-            if (signature == null)
+            if (!(def.getElement() instanceof RakuRoutineDecl)) return;
+
+            RakuSignature signature = ((RakuRoutineDecl) def.getElement()).getSignatureNode();
+            if (signature == null) {
                 signature = RakuElementFactory.createRoutineSignature(element.getProject(), new ArrayList<>());
+            }
             RakuSignature.SignatureCompareResult result = signature.acceptsArguments(args, true, element instanceof RakuMethodCall);
             if (result.isAccepted()) {
                 for (int i = 0; i < annotations.size(); i++) {
@@ -71,14 +81,17 @@ public class CallArityIssuesAnnotator implements Annotator {
                 return;
             } else {
                 for (int i = 0; i <= args.length; i++) {
+                    if (CommaProjectUtil.isRakudoCoreProject(args[i])) return;
+
                     RakuSignature.MatchFailureReason reason = result.getArgumentFailureReason(i);
-                    if (reason == null)
-                        continue;
+                    if (reason == null) continue;
                     TextRange argToHighlight = i == 0 && args.length == 0
-                            ? refElement.getTextRange()
-                            : i < args.length
-                            ? args[i].getTextRange()
-                            : new TextRange(args[0].getTextRange().getStartOffset(), args[args.length - 1].getTextRange().getEndOffset());
+                                               ? refElement.getTextRange()
+                                               : i < args.length
+                                                 ? args[i].getTextRange()
+                                                 : new TextRange(args[0].getTextRange()
+                                                                        .getStartOffset(), args[args.length - 1].getTextRange()
+                                                                                                                .getEndOffset());
                     switch (reason) {
                         case TOO_MANY_ARGS: {
                             annotations.add(new AnnotationBuilderWrap(signature, argToHighlight, "Too many positional arguments"));
@@ -111,10 +124,12 @@ public class CallArityIssuesAnnotator implements Annotator {
         } else {
             // Multi...
             String message = String.format("No multi candidates match (%s)",
-                    annotations.stream().map(an -> String.format("%s: %s", an.signature.summary(RakuUntyped.INSTANCE), an.text)).collect(Collectors.joining(", ")));
+                                           annotations.stream()
+                                                      .map(an -> String.format("%s: %s", an.signature.summary(RakuUntyped.INSTANCE), an.text))
+                                                      .collect(Collectors.joining(", ")));
             holder.newAnnotation(HighlightSeverity.ERROR, message)
-                    .range(refElement)
-                    .create();
+                  .range(refElement)
+                  .create();
         }
     }
 

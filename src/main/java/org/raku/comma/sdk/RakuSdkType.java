@@ -549,7 +549,7 @@ public class RakuSdkType extends SdkType {
         }
     }
 
-    private static List<RakuSymbol> getNQPSymbols(Project project, RakuFile perl6File) {
+    private static List<RakuSymbol> getNQPSymbols(Project project, RakuFile rakuFile) {
         List<String> ops = new ArrayList<>();
         File nqpSymbols = RakuUtils.getResourceAsFile("symbols/nqp.ops");
         if (nqpSymbols == null) {
@@ -564,7 +564,7 @@ public class RakuSdkType extends SdkType {
             }
         }
 
-        return new RakuExternalNamesParser(project, perl6File, String.join("\n", ops)).parse().result();
+        return new RakuExternalNamesParser(project, rakuFile, String.join("\n", ops)).parse().result();
     }
 
     public static void contributeParentSymbolsFromCore(@NotNull RakuSymbolCollector collector,
