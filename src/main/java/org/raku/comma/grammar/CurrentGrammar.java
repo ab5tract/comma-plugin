@@ -213,7 +213,7 @@ public class CurrentGrammar {
 
     @Nullable
     private String getSupportCode() {
-        InputStream supportCodeStream = this.getClass().getClassLoader().getResourceAsStream("grammarLivePreview/setup.p6");
+        InputStream supportCodeStream = this.getClass().getClassLoader().getResourceAsStream("grammarLivePreview/setup.raku");
         if (supportCodeStream == null)
             return null;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(supportCodeStream, StandardCharsets.UTF_8))) {

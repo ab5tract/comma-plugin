@@ -74,7 +74,7 @@ public class RakuFileHandler extends ArchiveHandler {
 
     @NotNull
     private static List<String> executeLocateScript(Sdk sdk, String argument) throws ExecutionException {
-        File locateScript = RakuUtils.getResourceAsFile("zef/locate.p6");
+        File locateScript = RakuUtils.getResourceAsFile("zef/locate.raku");
         if (locateScript == null)
             throw new ExecutionException("Resource bundle is corrupted: locate script is missing");
         RakuCommandLine cmd;

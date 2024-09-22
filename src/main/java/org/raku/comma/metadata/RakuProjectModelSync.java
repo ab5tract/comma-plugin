@@ -151,7 +151,7 @@ public final class RakuProjectModelSync {
 
     private static List<String> collectDependenciesOfModule(Project project, String metaDep, Sdk sdk) {
         try {
-            File locateScript = RakuUtils.getResourceAsFile("zef/gather-deps.p6");
+            File locateScript = RakuUtils.getResourceAsFile("zef/gather-deps.raku");
             if (locateScript == null)
                 throw new ExecutionException("Resource bundle is corrupted: locate script is missing");
             RakuCommandLine depsCollectorScript = new RakuCommandLine(sdk);

@@ -69,7 +69,7 @@ public class CroModuleBuilderApplication implements RakuModuleBuilderGeneric {
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
         if (sourceRoot == null)
             return;
-        String templateContent = String.join("\n", RakuUtils.getResourceAsLines(CRO_RESOURCE_PREFIX + "Routes.pm6"));
+        String templateContent = String.join("\n", RakuUtils.getResourceAsLines(CRO_RESOURCE_PREFIX + "Routes.rakumod"));
         templateContent = populateRouteVariables(templateContent, conf.websocketSupport, "ws.parts", "WS", conf);
         templateContent = populateRouteVariables(templateContent, conf.templatingSupport, "crotmp.parts", "CROTMP", conf);
         try {
@@ -129,7 +129,7 @@ public class CroModuleBuilderApplication implements RakuModuleBuilderGeneric {
     }
 
     private static void stubCroTest(Path sourcePath, CroAppTemplateConfig conf) {
-        stubFileByResource(sourcePath, conf, "routes.t", null);
+        stubFileByResource(sourcePath, conf, "routes.rakutest", null);
     }
 
     private static void stubCroDockerfile(Path sourcePath, CroAppTemplateConfig conf) {
@@ -137,7 +137,7 @@ public class CroModuleBuilderApplication implements RakuModuleBuilderGeneric {
     }
 
     private static void stubCroServiceFile(Path sourcePath, CroAppTemplateConfig conf) {
-        stubFileByResource(sourcePath, conf, "service.p6", null);
+        stubFileByResource(sourcePath, conf, "service.raku", null);
     }
 
     private static void stubCroYAML(Path sourcePath, CroAppTemplateConfig conf) {

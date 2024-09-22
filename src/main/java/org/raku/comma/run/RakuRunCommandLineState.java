@@ -98,7 +98,7 @@ public class RakuRunCommandLineState extends CommandLineState {
     private void setScript() {
         command.add(((RakuRunConfiguration)runConfiguration).getScriptPath());
         String params = ((RakuRunConfiguration)runConfiguration).getProgramParameters();
-        // To avoid a call like `raku script.p6 ""`
+        // To avoid a call like `raku script.raku ""`
         if (params != null && !params.trim().isEmpty()) {
             command.addAll(Arrays.asList(params.split(" ")));
         }
