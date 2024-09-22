@@ -67,6 +67,7 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
     }
 
     // XXX: This feels like quite a messy hack... but it works.
+    //      The goal is to nuke any PERL6* .iml file, as well as the .idea directory
     private fun removeOldCommaProjectFiles(basePath: Path) {
         val oldImls = basePath.toFile().listFiles().stream()
                               .filter { file -> file.extension == "iml" }

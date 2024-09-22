@@ -29,17 +29,28 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
     @Override
     public void setupRootModelOfPath(@NotNull ModifiableRootModel model,
                                      Path path,
-                                     RakuLanguageVersion languageVersion) {
+                                     RakuLanguageVersion languageVersion)
+    {
         RakuMetaDataComponent metaData = model.getModule().getService(RakuMetaDataComponent.class);
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
         Path directoryName = path.getFileName();
         if (Objects.equals(directoryName.toString(), "lib")) {
-            stubModule(metaData, path, myModuleName, true,
-                       false, sourceRoot == null ? null : sourceRoot.getParent(), "Empty",
-                       false, languageVersion);
+            stubModule(metaData,
+                       path,
+                       myModuleName,
+                       true,
+                       false,
+                       sourceRoot == null
+                                   ? null
+                                   : sourceRoot.getParent(),
+                       "Empty",
+                       false,
+                       languageVersion);
         } else if (Objects.equals(directoryName.toString(), "t")) {
-            stubTest(path, "00-sanity.t",
-                     Collections.singletonList(myModuleName), languageVersion);
+            stubTest(path,
+                     "00-sanity.rakutest",
+                     Collections.singletonList(myModuleName),
+                     languageVersion);
         }
     }
 
@@ -61,23 +72,25 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
                                     VirtualFile root,
                                     String moduleType,
                                     boolean isUnitScoped,
-                                    RakuLanguageVersion languageVersion) {
+                                    RakuLanguageVersion languageVersion)
+    {
         if (firstModule) {
             try {
                 metaData.createStubMetaFile(moduleName, root, shouldOpenEditor);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LOG.warn(e);
             }
         }
         if (moduleLibraryPath.endsWith("lib")) {
-            ApplicationManager.getApplication().invokeLater(() -> metaData.addNamespaceToProvides(moduleName, RakuModuleFileType.INSTANCE.getDefaultExtension()));
+            ApplicationManager.getApplication()
+                              .invokeLater(() -> metaData.addNamespaceToProvides(moduleName, RakuModuleFileType.INSTANCE.getDefaultExtension()));
         }
         String modulePath = Paths.get(moduleLibraryPath.toString(), moduleName.split("::")) + "." + RakuModuleFileType.INSTANCE.getDefaultExtension();
         new File(modulePath).getParentFile().mkdirs();
         List<String> code = new ArrayList<>(getModuleCodeByType(moduleType, moduleName, isUnitScoped));
-        if (languageVersion != null)
-            code.add(0, String.format("use v%s;", languageVersion));
+        if (languageVersion != null) {
+            code.addFirst(String.format("use v%s;", languageVersion));
+        }
         RakuUtils.writeCodeToPath(Paths.get(modulePath), code);
         if (moduleType.equals("Monitor")) {
             metaData.addDepends("OO::Monitors");
@@ -90,57 +103,37 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
 
     private static List<String> getModuleCodeByType(String type,
                                                     String name,
-                                                    boolean isUnitScoped) {
+                                                    boolean isUnitScoped)
+    {
         if (isUnitScoped) {
             String declText = String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name);
-            switch (type) {
-                case "Class":
-                case "Role":
-                case "Grammar":
-                case "Module":
-                    return Arrays.asList(declText, "");
-                case "Monitor":
-                    return Arrays.asList(
-                      "use OO::Monitors;", "",
-                      declText, "");
-                case "Model":
-                    return Arrays.asList(
-                      "use Red;", "",
-                      declText, "");
-                default:
-                    return Collections.singletonList("");
-            }
-        }
-        else {
+            return switch (type) {
+                case "Class", "Role", "Grammar", "Module" -> Arrays.asList(declText, "");
+                case "Monitor" -> Arrays.asList("use OO::Monitors;", "", declText, "");
+                case "Model" -> Arrays.asList("use Red;", "", declText, "");
+                default -> Collections.singletonList("");
+            };
+        } else {
             String declText = String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name);
-            switch (type) {
-                case "Class":
-                case "Role":
-                case "Grammar":
-                case "Module":
-                    return Arrays.asList(declText, "", "}");
-                case "Monitor":
-                    return Arrays.asList(
-                      "use OO::Monitors;", "",
-                      declText, "", "}");
-                case "Model":
-                    return Arrays.asList(
-                      "use Red;", "",
-                      declText, "", "}");
-                default:
-                    return Collections.singletonList("");
-            }
+            return switch (type) {
+                case "Class", "Role", "Grammar", "Module" -> Arrays.asList(declText, "", "}");
+                case "Monitor" -> Arrays.asList("use OO::Monitors;", "", declText, "", "}");
+                case "Model" -> Arrays.asList("use Red;", "", declText, "", "}");
+                default -> Collections.singletonList("");
+            };
         }
     }
 
     public static String stubTest(Path testDirectoryPath,
                                   String fileName,
                                   List<String> imports,
-                                  RakuLanguageVersion languageVersion) {
+                                  RakuLanguageVersion languageVersion)
+    {
         Path testPath = testDirectoryPath.resolve(fileName);
         // If no extension, add default `.t`
-        if (!fileName.contains("."))
+        if (!fileName.contains(".")) {
             testPath = Paths.get(testDirectoryPath.toString(), fileName + "." + RakuTestFileType.INSTANCE.getDefaultExtension());
+        }
         List<String> lines = new LinkedList<>();
         lines.add(String.format("use v%s;", languageVersion));
         imports.forEach(i -> lines.add(String.format("use %s;", i)));
@@ -152,7 +145,8 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
     @Override
     public void modifySettingsStep(SettingsStep step) {
         final ModuleNameLocationSettings nameField = step.getModuleNameLocationSettings();
-        if (myModuleName != null && nameField != null)
+        if (myModuleName != null && nameField != null) {
             nameField.setModuleName(StringUtil.sanitizeJavaIdentifier(myModuleName));
+        }
     }
 }

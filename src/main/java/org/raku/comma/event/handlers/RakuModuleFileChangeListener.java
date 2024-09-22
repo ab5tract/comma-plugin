@@ -40,8 +40,9 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
             for (SourceFolder folder : folders) {
                 if (!folder.isTestSource()) {
                     VirtualFile file = folder.getFile();
-                    if (file != null && file.getName().equals("lib"))
+                    if (file != null && file.getName().equals("lib")) {
                         modulePaths.add(file.toNioPath().toFile().getAbsolutePath());
+                    }
                 }
             }
         }
@@ -51,8 +52,8 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
     public boolean shouldProcess(VFileEvent event) {
         VirtualFile file = Objects.requireNonNull(event.getFile());
         return event instanceof VFileMoveEvent || event instanceof VFilePropertyChangeEvent ||
-               FileTypeManager.getInstance().getFileTypeByFile(file) instanceof RakuModuleFileType ||
-               file instanceof VirtualDirectoryImpl;
+                FileTypeManager.getInstance().getFileTypeByFile(file) instanceof RakuModuleFileType ||
+                file instanceof VirtualDirectoryImpl;
     }
 
     @Override
@@ -64,8 +65,9 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
     public void processFileDelete(VFileEvent event) {
         VirtualFile file = Objects.requireNonNull(event.getFile());
         String oldModuleName = calculateModuleName(file.getCanonicalPath());
-        if (oldModuleName != null)
+        if (oldModuleName != null) {
             updateMetaProvides(oldModuleName, null, null);
+        }
     }
 
     @Override
@@ -76,8 +78,9 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
             if (path.startsWith(modulePath)) {
                 String prefix = calculateModulePrefix(Paths.get(modulePath), path);
                 for (String name : myMetaData.getProvidedNames()) {
-                    if (name.startsWith(prefix))
+                    if (name.startsWith(prefix)) {
                         myMetaData.removeNamespaceFromProvides(name);
+                    }
                 }
             }
         }
@@ -85,9 +88,9 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
 
     @Override
     public void processFileChange(VFileEvent event) {
-        String oldPathRaw = event instanceof VFilePropertyChangeEvent ?
-                            ((VFilePropertyChangeEvent)event).getOldPath() :
-                            ((VFileMoveEvent)event).getOldPath();
+        String oldPathRaw = event instanceof VFilePropertyChangeEvent
+                                    ? ((VFilePropertyChangeEvent) event).getOldPath()
+                                    : ((VFileMoveEvent) event).getOldPath();
         String oldModuleName = calculateModuleName(oldPathRaw);
         VirtualFile file = Objects.requireNonNull(event.getFile());
         String newModuleName = calculateModuleName(file.getCanonicalPath());
@@ -97,15 +100,15 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
     @Override
     public void processDirectoryChange(VFileEvent event) {
         if (event instanceof VFileMoveEvent) {
-            processDirectoryMove((VFileMoveEvent)event);
+            processDirectoryMove((VFileMoveEvent) event);
         } else if (event instanceof VFilePropertyChangeEvent) {
-            processDirectoryRename((VFilePropertyChangeEvent)event);
+            processDirectoryRename((VFilePropertyChangeEvent) event);
         }
     }
 
     private void processDirectoryRename(VFilePropertyChangeEvent event) {
-        String oldName = (String)event.getOldValue();
-        String newName = (String)event.getNewValue();
+        String oldName = (String) event.getOldValue();
+        String newName = (String) event.getNewValue();
         String stringNewPath = event.getPath();
         Path eventPath = Paths.get(stringNewPath);
         Path libPath = null;
@@ -145,8 +148,8 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
         }
         if (libPath == null) return;
 
-        boolean isFromLib  = oldPath.startsWith(libPath);
-        boolean isToLib    = newPath.startsWith(libPath);
+        boolean isFromLib = oldPath.startsWith(libPath);
+        boolean isToLib = newPath.startsWith(libPath);
 
         if (isFromLib && isToLib) {
             String oldPrefix = calculateModulePrefix(libPath, oldPath);
@@ -171,19 +174,21 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
             });
         } else if (isFromLib) {
             String oldPrefix = calculateModulePrefix(libPath, oldPath);
-            for (String name : myMetaData.getProvidedNames())
-                if (name.startsWith(oldPrefix))
+            for (String name : myMetaData.getProvidedNames()) {
+                if (name.startsWith(oldPrefix)) {
                     myMetaData.removeNamespaceFromProvides(name);
+                }
+            }
         }
     }
 
     private static String calculateModulePrefix(Path base, Path eventDirectoryPath) {
-        Path subPath = eventDirectoryPath.subpath(
-            base.getNameCount(),
-            eventDirectoryPath.getNameCount());
+        Path subPath = eventDirectoryPath.subpath(base.getNameCount(),
+                                                  eventDirectoryPath.getNameCount());
         StringJoiner joiner = new StringJoiner("::");
-        for (Path part : subPath)
+        for (Path part : subPath) {
             joiner.add(part.toString());
+        }
         return joiner + "::";
     }
 
@@ -191,20 +196,23 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
     private String calculateModuleName(String path) {
         for (String modulePath : modulePaths) {
             // FIXME this is still dangerous even with \ escaped
-            Matcher m = Pattern.compile(String.format("%s/(.+).(rakumod|pm6)", modulePath.replaceAll("\\\\", "\\\\\\\\"))).matcher(path);
+            Matcher m = Pattern.compile(String.format("%s/(.+).(rakumod|pm6)", modulePath.replaceAll("\\\\", "\\\\\\\\")))
+                               .matcher(path);
             if (m.matches()) {
                 return m.group(1)
-                    .replaceAll("/", "::")
-                    .replaceAll("\\\\", "::");
+                        .replaceAll("/", "::")
+                        .replaceAll("\\\\", "::");
             }
         }
         return null;
     }
 
     private void updateMetaProvides(@Nullable String oldName, @Nullable String newName, @Nullable String ext) {
-        if (oldName != null)
+        if (oldName != null) {
             myMetaData.removeNamespaceFromProvides(oldName);
-        if (newName != null)
+        }
+        if (newName != null) {
             myMetaData.addNamespaceToProvides(newName, ext);
+        }
     }
 }
