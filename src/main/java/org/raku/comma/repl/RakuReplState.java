@@ -65,11 +65,11 @@ public class RakuReplState {
 
             // Form a RakuFile holding the history entry.
             String historyEntryFilename = consoleFile.getName() + executionHistory.size() + ".p6";
-            LightVirtualFile file = new LightVirtualFile(historyEntryFilename, RakuLanguage.getInstance(), code);
+            LightVirtualFile file = new LightVirtualFile(historyEntryFilename, RakuLanguage.INSTANCE, code);
             file.setCharset(StandardCharsets.UTF_8);
             file.setWritable(false);
             PsiFile psiFile = ((PsiFileFactoryImpl)PsiFileFactory.getInstance(project)).trySetupPsiForFile(
-              file, RakuLanguage.getInstance(), true, false);
+              file, RakuLanguage.INSTANCE, true, false);
             if (psiFile instanceof RakuFile)
                 executionHistory.add(new HistoryEntry((RakuFile)psiFile));
             RakuFile regexFile = RakuElementFactory.createFileFromText(project, code + "; $0;");

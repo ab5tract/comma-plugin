@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class RakuSubsetStubElementType extends IStubElementType<RakuSubsetStub, RakuSubset> {
     public RakuSubsetStubElementType() {
-        super("SUBSET", RakuLanguage.getInstance());
+        super("SUBSET", RakuLanguage.INSTANCE);
     }
 
     @Override

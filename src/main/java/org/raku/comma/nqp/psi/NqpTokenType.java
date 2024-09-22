@@ -9,7 +9,7 @@ import org.raku.comma.nqp.NqpLanguage;
 public class NqpTokenType extends IElementType {
 
     public NqpTokenType(@NonNls @NotNull String debugName) {
-        super(debugName, RakuLanguage.getInstance());
+        super(debugName, RakuLanguage.INSTANCE);
     }
 
     @Override

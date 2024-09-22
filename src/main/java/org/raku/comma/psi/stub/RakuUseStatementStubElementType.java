@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class RakuUseStatementStubElementType extends IStubElementType<RakuUseStatementStub, RakuUseStatement> {
     public RakuUseStatementStubElementType() {
-        super("USE_STATEMENT", RakuLanguage.getInstance());
+        super("USE_STATEMENT", RakuLanguage.INSTANCE);
     }
 
     @Override

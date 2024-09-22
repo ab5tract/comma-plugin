@@ -84,7 +84,7 @@ public class ExternalRakuFile implements RakuFile {
     @NotNull
     @Override
     public Language getLanguage() {
-        return RakuLanguage.getInstance();
+        return RakuLanguage.INSTANCE;
     }
 
     // WHY HAVE INHERITANCE ONLY TO FORCE SUBCLASSES TO OVERRIDE A THOUSAND SUBS WITH THE SAME DEFINITION PRESENT IN THE SUPER CLASS????

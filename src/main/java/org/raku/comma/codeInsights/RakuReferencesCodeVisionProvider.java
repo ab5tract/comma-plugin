@@ -21,7 +21,7 @@ import java.util.List;
 public class RakuReferencesCodeVisionProvider extends ReferencesCodeVisionProvider {
     @Override
     public boolean acceptsFile(@NotNull PsiFile file) {
-        return RakuLanguage.getInstance() == file.getLanguage();
+        return RakuLanguage.INSTANCE == file.getLanguage();
     }
 
     @Override

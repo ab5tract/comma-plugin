@@ -19,7 +19,7 @@ public class RakuContext extends TemplateContextType {
     @Override
     public boolean isInContext(@NotNull TemplateActionContext context) {
         PsiFile file = context.getFile();
-        if (!file.getLanguage().is(RakuLanguage.getInstance()))
+        if (!file.getLanguage().is(RakuLanguage.INSTANCE))
             return false;
         return isValidContext(context, file);
     }

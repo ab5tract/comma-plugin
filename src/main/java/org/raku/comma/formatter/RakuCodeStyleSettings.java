@@ -66,6 +66,6 @@ public class RakuCodeStyleSettings extends CustomCodeStyleSettings {
     public boolean CONVERT_TO_UNICODE = false;
 
     public RakuCodeStyleSettings(CodeStyleSettings container) {
-        super(RakuLanguage.getInstance().getID(), container);
+        super(RakuLanguage.INSTANCE.getID(), container);
     }
 }

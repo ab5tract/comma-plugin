@@ -43,7 +43,7 @@ public class RakuFormattingModelBuilder implements FormattingModelBuilder {
         final PsiFile psiFile = formattingContext.getContainingFile();
         List<BiFunction<RakuBlock, RakuBlock, Spacing>> rules = new ArrayList<>();
         CodeStyleSettings settings = formattingContext.getCodeStyleSettings();
-        CommonCodeStyleSettings commonSettings = settings.getCommonSettings(RakuLanguage.getInstance());
+        CommonCodeStyleSettings commonSettings = settings.getCommonSettings(RakuLanguage.INSTANCE);
         RakuCodeStyleSettings customSettings = settings.getCustomSettings(RakuCodeStyleSettings.class);
         initRules(rules, commonSettings, customSettings);
         final RakuBlock block = new RakuBlock(psiFile.getNode(), null, null, commonSettings, customSettings, rules);

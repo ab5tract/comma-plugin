@@ -16,7 +16,7 @@ public class RakuTestFileType extends LanguageFileType implements RakuMultiExten
     public static final RakuTestFileType INSTANCE = new RakuTestFileType();
 
     private RakuTestFileType() {
-        super(RakuLanguage.getInstance());
+        super(RakuLanguage.INSTANCE);
     }
 
     @NotNull

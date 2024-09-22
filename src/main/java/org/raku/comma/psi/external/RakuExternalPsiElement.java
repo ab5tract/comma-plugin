@@ -42,7 +42,7 @@ public class RakuExternalPsiElement implements PsiNamedElement, NavigatablePsiEl
     @NotNull
     @Override
     public Language getLanguage() {
-        return RakuLanguage.getInstance();
+        return RakuLanguage.INSTANCE;
     }
 
     @Override

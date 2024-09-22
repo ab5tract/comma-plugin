@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class RakuPackageDeclStubElementType extends IStubElementType<RakuPackageDeclStub, RakuPackageDecl> {
     public RakuPackageDeclStubElementType() {
-        super("PACKAGE_DECLARATION", RakuLanguage.getInstance());
+        super("PACKAGE_DECLARATION", RakuLanguage.INSTANCE);
     }
 
     @Override

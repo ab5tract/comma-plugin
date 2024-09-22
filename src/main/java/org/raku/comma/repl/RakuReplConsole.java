@@ -45,7 +45,7 @@ public class RakuReplConsole extends AbstractConsoleRunnerWithHistory<LanguageCo
         LanguageConsoleBuilder builder = new LanguageConsoleBuilder();
         builder.oneLineInput(false);
         LanguageConsoleView consoleView = builder
-            .build(getProject(), RakuLanguage.getInstance());
+            .build(getProject(), RakuLanguage.INSTANCE);
 
         EditorEx consoleEditor = consoleView.getConsoleEditor();
         addHint(consoleEditor);

@@ -14,7 +14,7 @@ public class NqpFileType extends LanguageFileType {
   public static final NqpFileType INSTANCE = new NqpFileType();
 
     protected NqpFileType() {
-        super(RakuLanguage.getInstance());
+        super(RakuLanguage.INSTANCE);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class PrecInfoToken extends IElementType {
 
     private PrecInfoToken(@NotNull String prec, String subPrec, String assoc, Boolean fake) {
         super("PrecInfo: " + prec + ", " + subPrec + ", " + assoc + ", " + fake,
-              RakuLanguage.getInstance());
+              RakuLanguage.INSTANCE);
         this.prec = prec;
         this.subPrec = subPrec;
         this.assoc = assoc;

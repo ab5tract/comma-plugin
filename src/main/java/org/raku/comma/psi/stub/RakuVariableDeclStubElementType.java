@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RakuVariableDeclStubElementType extends IStubElementType<RakuVariableDeclStub, RakuVariableDecl> {
     public RakuVariableDeclStubElementType() {
-        super("VARIABLE_DECLARATION", RakuLanguage.getInstance());
+        super("VARIABLE_DECLARATION", RakuLanguage.INSTANCE);
     }
 
     @Override

@@ -17,7 +17,7 @@ import javax.swing.*;
 
 public class RakuCodeStylePanel extends TabbedLanguageCodeStylePanel {
     public RakuCodeStylePanel(CodeStyleSettings settings, CodeStyleSettings originalSettings) {
-        super(RakuLanguage.getInstance(), settings, originalSettings);
+        super(RakuLanguage.INSTANCE, settings, originalSettings);
     }
 
     @Override

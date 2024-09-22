@@ -47,6 +47,6 @@ public class RakuStructureAwareNavbar extends StructureAwareNavBarModelExtension
     @NotNull
     @Override
     protected Language getLanguage() {
-        return RakuLanguage.getInstance();
+        return RakuLanguage.INSTANCE;
     }
 }

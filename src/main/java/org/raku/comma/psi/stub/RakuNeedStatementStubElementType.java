@@ -14,7 +14,7 @@ import java.util.List;
 
 public class RakuNeedStatementStubElementType extends IStubElementType<RakuNeedStatementStub, RakuNeedStatement> {
     public RakuNeedStatementStubElementType() {
-        super("NEED_STATEMENT", RakuLanguage.getInstance());
+        super("NEED_STATEMENT", RakuLanguage.INSTANCE);
     }
 
     @Override

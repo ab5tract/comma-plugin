@@ -18,7 +18,7 @@ public class RakuFileElementType extends IStubFileElementType<RakuFileStub> {
     public static final int STUB_VERSION = 29;
 
     public RakuFileElementType() {
-        super(RakuLanguage.getInstance());
+        super(RakuLanguage.INSTANCE);
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class RakuConstantStubElementType extends IStubElementType<RakuConstantStub, RakuConstant> {
     public RakuConstantStubElementType() {
-        super("CONSTANT", RakuLanguage.getInstance());
+        super("CONSTANT", RakuLanguage.INSTANCE);
     }
 
     @Override

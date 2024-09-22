@@ -6,6 +6,6 @@ import org.raku.comma.nqp.NqpLanguage;
 
 public class NqpElementType extends IElementType {
     public NqpElementType(String debugName) {
-        super(debugName, RakuLanguage.getInstance());
+        super(debugName, RakuLanguage.INSTANCE);
     }
 }

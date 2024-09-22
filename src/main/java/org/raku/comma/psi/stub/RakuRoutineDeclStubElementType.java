@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class RakuRoutineDeclStubElementType extends IStubElementType<RakuRoutineDeclStub, RakuRoutineDecl> {
     public RakuRoutineDeclStubElementType() {
-        super("ROUTINE_DECLARATION", RakuLanguage.getInstance());
+        super("ROUTINE_DECLARATION", RakuLanguage.INSTANCE);
     }
 
     @Override

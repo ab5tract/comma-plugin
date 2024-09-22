@@ -210,6 +210,6 @@ public class RakuCodeStyleSettingsProvider extends LanguageCodeStyleSettingsProv
     @NotNull
     @Override
     public Language getLanguage() {
-        return RakuLanguage.getInstance();
+        return RakuLanguage.INSTANCE;
     }
 }

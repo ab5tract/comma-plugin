@@ -16,7 +16,7 @@ public class RakuModuleFileType extends LanguageFileType implements RakuMultiExt
     public static final RakuModuleFileType INSTANCE = new RakuModuleFileType();
 
     private RakuModuleFileType() {
-        super(RakuLanguage.getInstance());
+        super(RakuLanguage.INSTANCE);
     }
 
     @NotNull

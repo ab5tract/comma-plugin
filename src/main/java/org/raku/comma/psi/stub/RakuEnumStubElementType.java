@@ -19,7 +19,7 @@ import java.util.StringJoiner;
 
 public class RakuEnumStubElementType extends IStubElementType<RakuEnumStub, RakuEnum> {
     public RakuEnumStubElementType() {
-        super("ENUM", RakuLanguage.getInstance());
+        super("ENUM", RakuLanguage.INSTANCE);
     }
 
     @Override

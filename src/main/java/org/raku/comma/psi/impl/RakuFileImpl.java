@@ -113,7 +113,7 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
     };
 
     public RakuFileImpl(FileViewProvider viewProvider) {
-        super(viewProvider, RakuLanguage.getInstance());
+        super(viewProvider, RakuLanguage.INSTANCE);
     }
 
     @Override

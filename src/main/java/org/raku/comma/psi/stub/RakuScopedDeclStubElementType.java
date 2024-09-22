@@ -17,7 +17,7 @@ import java.io.IOException;
 
 public class RakuScopedDeclStubElementType extends IStubElementType<RakuScopedDeclStub, RakuScopedDecl> {
     public RakuScopedDeclStubElementType() {
-        super("SCOPED_DECLARATION", RakuLanguage.getInstance());
+        super("SCOPED_DECLARATION", RakuLanguage.INSTANCE);
     }
 
     @Override
