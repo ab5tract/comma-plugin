@@ -1,5 +1,6 @@
 package org.raku.comma.services
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.components.*
 import com.intellij.openapi.module.ModuleManager
@@ -17,7 +18,7 @@ import org.raku.comma.sdk.RakuSdkType
  * such "secondary" SDK for Raku parts.
  */
 @Service(Service.Level.PROJECT)
-@State(name = "Raku.SDK", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
+@State(name = "Raku.SDK", storages = [Storage(value = RakuServiceConstants.PROJECT_SETTINGS_FILE)])
 class RakuSDKService(private val myProject: Project) : PersistentStateComponent<RakuSDKState> {
     var myRakuSDKState: RakuSDKState = RakuSDKState()
 

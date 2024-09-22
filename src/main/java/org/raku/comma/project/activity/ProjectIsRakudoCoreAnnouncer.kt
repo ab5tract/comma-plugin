@@ -13,7 +13,8 @@ class ProjectIsRakudoCoreAnnouncer : ProjectActivity {
             Notifications.Bus.notify(
                 Notification(
                     "raku.messages",
-                    "Project contains rakudo.git. Special settings for core hacking enabled.",
+                    "Rakudo source code detected in project",
+                    "<html><p>Special settings for core hacking enabled.</p><p><b>Happy hacking!</b></p></html>",
                     NotificationType.INFORMATION
                 ),
                 project

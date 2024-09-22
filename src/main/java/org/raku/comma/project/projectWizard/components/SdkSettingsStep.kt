@@ -188,8 +188,8 @@ open class SdkSettingsStep(
                     arrayOf(CommonBundle.getYesButtonText(), CommonBundle.getNoButtonText()),
                     1,
                     Messages.getWarningIcon()
-                ) != Messages.YES
-            ) {
+                ) != Messages.YES)
+            {
                 return false
             }
         }

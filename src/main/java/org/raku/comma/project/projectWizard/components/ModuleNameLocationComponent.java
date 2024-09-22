@@ -53,7 +53,7 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
 
     @Nullable
     public AbstractModuleBuilder getModuleBuilder() {
-        return ((AbstractModuleBuilder)myWizardContext.getProjectBuilder());
+        return ((AbstractModuleBuilder) myWizardContext.getProjectBuilder());
     }
 
     /**
@@ -76,8 +76,11 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
 
         final String moduleName = getModuleName();
         moduleBuilder.setName(moduleName);
-        moduleBuilder.setModuleFilePath(
-            FileUtil.toSystemIndependentName(myModuleFileLocation.getText()) + "/" + moduleName + ModuleFileType.DOT_DEFAULT_EXTENSION);
+        final String moduleFilePath = "%s%s%s%s".formatted( FileUtil.toSystemIndependentName(myModuleFileLocation.getText()),
+                                                           File.separator,
+                                                           moduleName,
+                                                           ModuleFileType.DOT_DEFAULT_EXTENSION);
+        moduleBuilder.setModuleFilePath(moduleFilePath);
         moduleBuilder.setContentEntryPath(FileUtil.toSystemIndependentName(getModuleContentRoot()));
     }
 
@@ -97,7 +100,8 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
 
         myModuleContentRoot.addBrowseFolderListener("Select Module Content Root",
                                                     "Selected directory will be marked as module content root",
-                                                    myWizardContext.getProject(), BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR);
+                                                    myWizardContext.getProject(),
+                                                    BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR);
 
         namePathComponent.getPathComponent().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
@@ -110,9 +114,7 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
         myModuleName.getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(@NotNull final DocumentEvent e) {
-                if (!myUpdatePathsWhenNameIsChanged) {
-                    return;
-                }
+                if (!myUpdatePathsWhenNameIsChanged) return;
 
                 if (myModuleNameDocListenerEnabled) {
                     myModuleNameChangedByUser = true;
@@ -122,12 +124,8 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
                 if (!path.isEmpty() && !Comparing.strEqual(moduleName, namePathComponent.getNameValue())) {
                     path += "/" + moduleName;
                 }
-                if (!myContentRootChangedByUser) {
-                    setModuleContentRoot(path);
-                }
-                if (!myImlLocationChangedByUser) {
-                    setImlFileLocation(path);
-                }
+                if (!myContentRootChangedByUser) setModuleContentRoot(path);
+                if (!myImlLocationChangedByUser) setImlFileLocation(path);
             }
         });
         myModuleContentRoot.getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
@@ -136,9 +134,7 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
                 if (myContentRootDocListenerEnabled) {
                     myContentRootChangedByUser = true;
                 }
-                if (!myImlLocationChangedByUser) {
-                    setImlFileLocation(getModuleContentRoot());
-                }
+                if (!myImlLocationChangedByUser) setImlFileLocation(getModuleContentRoot());
                 if (!myModuleNameChangedByUser && myUpdateNameWhenPathIsChanged) {
                     final String path = FileUtil.toSystemIndependentName(getModuleContentRoot());
                     final int idx = path.lastIndexOf("/");
@@ -153,7 +149,8 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
 
         myModuleFileLocation.addBrowseFolderListener("Select File Module Parent Directory",
                                                      "Module .iml file would be placed in selected directory",
-                                                     myWizardContext.getProject(), BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR);
+                                                     myWizardContext.getProject(),
+                                                     BrowseFilesListener.SINGLE_DIRECTORY_DESCRIPTOR);
         myModuleFileLocation.getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(@NotNull final DocumentEvent e) {
@@ -165,9 +162,7 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
         namePathComponent.getPathComponent().getDocument().addDocumentListener(new DocumentAdapter() {
             @Override
             protected void textChanged(@NotNull final DocumentEvent e) {
-                if (!myImlLocationChangedByUser) {
-                    setImlFileLocation(namePathComponent.getPath());
-                }
+                if (!myImlLocationChangedByUser) setImlFileLocation(namePathComponent.getPath());
             }
         });
         myUpdatePathsWhenNameIsChanged = true;
@@ -175,8 +170,7 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
             setModuleName(namePathComponent.getNameValue());
             setModuleContentRoot(namePathComponent.getPath());
             setImlFileLocation(namePathComponent.getPath());
-        }
-        else {
+        } else {
             final Project project = myWizardContext.getProject();
             assert project != null;
             VirtualFile baseDir = guessProjectDir(project);
@@ -187,9 +181,9 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
                 if (!Comparing.strEqual(project.getName(), myWizardContext.getProjectName()) &&
                     !myWizardContext.isCreatingNewProject() &&
                     myWizardContext.getProjectName() != null) {
-                    moduleName =
-                        CommaProjectWizardUtil
-                            .findNonExistingFileName(myWizardContext.getProjectFileDirectory(), myWizardContext.getProjectName(), "");
+                    moduleName = CommaProjectWizardUtil.findNonExistingFileName(myWizardContext.getProjectFileDirectory(),
+                                                                                myWizardContext.getProjectName(),
+                                                                                "");
                     contentRoot = myWizardContext.getProjectFileDirectory();
                     myUpdatePathsWhenNameIsChanged = !myWizardContext.isProjectFileDirectorySetExplicitly();
                 }
@@ -211,24 +205,21 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
           fromConfigurable = RakuProjectStructureConfigurable.getInstance(project);
         if (fromConfigurable != null) {
             module = fromConfigurable.getModulesConfig().getModule(moduleName);
-        }
-        else {
+        } else {
             module = ModuleManager.getInstance(project).findModuleByName(moduleName);
         }
         if (module != null) {
-            throw new ConfigurationException("Module '" + moduleName + "' already exist in project. Please, specify another name.");
+            String exceptionText = "Module '%s' already exist in project. Please, specify another name.".formatted(moduleName);
+            throw new ConfigurationException(exceptionText);
         }
     }
 
     private boolean validateModulePaths() throws ConfigurationException {
         final String moduleName = getModuleName();
         final String moduleFileDirectory = myModuleFileLocation.getText();
-        if (moduleFileDirectory.isEmpty()) {
-            throw new ConfigurationException("Enter module file location");
-        }
-        if (moduleName.isEmpty()) {
-            throw new ConfigurationException("Enter a module name");
-        }
+
+        if (moduleFileDirectory.isEmpty()) throw new ConfigurationException("Enter module file location");
+        if (moduleName.isEmpty()) throw new ConfigurationException("Enter a module name");
 
         if (CommaProjectWizardUtil.createDirectoryIfNotExists("The module file directory\n", moduleFileDirectory, myImlLocationChangedByUser)) {
             return false;
@@ -255,8 +246,7 @@ public class ModuleNameLocationComponent implements ModuleNameLocationSettings {
     private static String getDefaultBaseDir(WizardContext wizardContext, NamePathComponent namePathComponent) {
         if (wizardContext.isCreatingNewProject()) {
             return namePathComponent.getPath();
-        }
-        else {
+        } else {
             final Project project = wizardContext.getProject();
             assert project != null;
             final VirtualFile baseDir = guessProjectDir(project);

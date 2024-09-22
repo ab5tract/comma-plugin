@@ -7,6 +7,7 @@ import org.raku.comma.pm.impl.RakuZefPM;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.services.RakuServiceConstants;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -14,7 +15,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @Service(Service.Level.PROJECT)
-@State(name = "pm.org.raku.comma.RakuPackageManagerManager", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
+@State(name = "Raku.PackageManager.Management", storages = @Storage(value = RakuServiceConstants.PROJECT_SETTINGS_FILE))
 public final class RakuPackageManagerManager implements PersistentStateComponent<Element> {
     private RakuPackageManager currentPM;
     private List<RakuPackageManager> pmList = new ArrayList<>();

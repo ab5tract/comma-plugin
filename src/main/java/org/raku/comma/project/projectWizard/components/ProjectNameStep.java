@@ -146,7 +146,10 @@ public class ProjectNameStep extends ModuleWizardStep {
         String suffix = (myWizardContext.getProject() == null)
                             ? ProjectFileType.DOT_DEFAULT_EXTENSION
                             : ModuleFileType.DOT_DEFAULT_EXTENSION;
-        return getProjectFileDirectory() + "/" + myNamePathComponent.getNameValue() + suffix;
+        return "%s%s%s%s".formatted(getProjectFileDirectory(),
+                                    File.separator,
+                                    myNamePathComponent.getNameValue(),
+                                    suffix);
     }
 
     public String getProjectFileDirectory() {

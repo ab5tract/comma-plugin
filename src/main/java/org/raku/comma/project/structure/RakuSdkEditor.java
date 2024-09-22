@@ -28,6 +28,7 @@ import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.services.RakuSDKService;
 import org.raku.comma.utils.CommaProjectUtil;
 
 import javax.swing.*;
@@ -157,7 +158,7 @@ public class RakuSdkEditor implements Configurable, Place.Navigator {
             sdkModificator.removeAllRoots();
             sdkModificator.commitChanges();
 
-//            sdkType.setupSdkPaths(dummySdk, mySdkModel);
+            sdkType.setupSdkPaths(dummySdk, mySdkModel);
             CommaProjectUtil.applyRakuSdkToProject(myProject, mySdk);
 
             clearAllPaths();
@@ -270,6 +271,8 @@ public class RakuSdkEditor implements Configurable, Place.Navigator {
         for (SdkPathEditor pathEditor : myPathEditors.values()) {
             pathEditor.apply(sdkModificator);
         }
+
+        myProject.getService(RakuSDKService.class).setProjectSdkPath(myInitialPath);
         ApplicationManager.getApplication().runWriteAction(sdkModificator::commitChanges);
     }
 

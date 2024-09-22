@@ -3,9 +3,11 @@ package org.raku.comma.language;
 import com.intellij.openapi.components.*;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
+import org.raku.comma.services.RakuServiceConstants;
 
 @Service(Service.Level.PROJECT)
-@State(name = "language.org.raku.comma.RakuLanguageVersionService", storages = @Storage(StoragePathMacros.WORKSPACE_FILE))
+@State(name = "Raku.Language.Version",
+       storages = @Storage(value = RakuServiceConstants.PROJECT_SETTINGS_FILE))
 public final class RakuLanguageVersionService implements PersistentStateComponent<Element> {
     private RakuLanguageVersion myVersion = RakuLanguageVersion.D;
     private boolean myIsExplicit = true;

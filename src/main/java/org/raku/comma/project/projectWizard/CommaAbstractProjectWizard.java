@@ -241,10 +241,10 @@ public abstract class CommaAbstractProjectWizard extends AbstractWizard<ModuleWi
 
     @NonNls
     public String getModuleFilePath() {
-        return myWizardContext.getProjectFileDirectory() +
-               File.separator +
-               myWizardContext.getProjectName() +
-               ModuleFileType.DOT_DEFAULT_EXTENSION;
+        return "%s%s%s%s".formatted(myWizardContext.getProjectFileDirectory(),
+                                    File.separator,
+                                    myWizardContext.getProjectName(),
+                                    ModuleFileType.DOT_DEFAULT_EXTENSION);
     }
 
     @Override

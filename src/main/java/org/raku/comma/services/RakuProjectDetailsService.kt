@@ -4,7 +4,7 @@ import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
 
 @Service(Service.Level.PROJECT)
-@State(name = "Raku.Project.Details", storages = [Storage(StoragePathMacros.WORKSPACE_FILE)])
+@State(name = "Raku.Project.Details", storages = [Storage(value = RakuServiceConstants.PROJECT_SETTINGS_FILE)])
 class RakuProjectDetailsService(
     val project : Project
 ) : PersistentStateComponent<RakudoProjectState> {

@@ -220,7 +220,9 @@ public class JdkComboBox extends SdkComboBoxBase<JdkComboBox.JdkComboBoxItem> {
   }
 
   private static class JdkComboBoxModel extends AbstractListModel<JdkComboBoxItem>
-                                        implements ComboBoxPopupState<JdkComboBoxItem>, ComboBoxModel<JdkComboBoxItem> {
+                                        implements ComboBoxPopupState<JdkComboBoxItem>,
+                                                   ComboBoxModel<JdkComboBoxItem>
+  {
     private final SdkListModel myInnerModel;
     private JdkComboBoxItem mySelectedItem;
 
