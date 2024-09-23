@@ -22,12 +22,16 @@ public class CallArityIssuesAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof RakuCodeBlockCall)) return;
-        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
+        // This is far too slow. We will migrate to Inspections so that we can disable
+        // them in project settings
+//        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
 
         PsiElement refElement = element instanceof RakuSubCall
                                 ? element.getFirstChild()
                                 : element;
-        if (CommaProjectUtil.isRakudoCoreProject(refElement)) return;
+        // This is far too slow. We will migrate to Inspections so that we can disable
+        // them in project settings
+//        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
 
         PsiElement[] args = ((RakuCodeBlockCall) element).getCallArguments();
 
@@ -78,7 +82,9 @@ public class CallArityIssuesAnnotator implements Annotator {
                 return;
             } else {
                 for (int i = 0; i <= args.length; i++) {
-                    if (CommaProjectUtil.isRakudoCoreProject(args[i])) return;
+        // This is far too slow. We will migrate to Inspections so that we can disable
+        // them in project settings
+        //        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
 
                     RakuSignature.MatchFailureReason reason = result.getArgumentFailureReason(i);
                     if (reason == null) continue;

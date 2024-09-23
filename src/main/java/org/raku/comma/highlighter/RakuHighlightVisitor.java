@@ -411,7 +411,9 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
     {
         if (!originalDecl.isValid()) return null;
         if (!currentDecl.getContainingFile().equals(myFile)) return null;
-        if (CommaProjectUtil.isRakudoCoreProject(currentDecl)) return null;
+        // This is far too slow. We will migrate to Inspections so that we can disable
+        // them in project settings
+//        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
 
         PsiFile containingFile = originalDecl.getContainingFile();
         String previousPos = "%s:%s".formatted(containingFile.getName(),

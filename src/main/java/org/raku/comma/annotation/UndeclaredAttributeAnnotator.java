@@ -16,7 +16,9 @@ public class UndeclaredAttributeAnnotator implements Annotator {
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
+        // This is far too slow. We will migrate to Inspections so that we can disable
+        // them in project settings
+//        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
 
         // Filter out anything except attribute usages.
         if (! (element instanceof final RakuVariable variable)) return;

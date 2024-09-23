@@ -20,7 +20,9 @@ public class UndeclaredOrDeprecatedRoutineAnnotator implements Annotator {
         if (! (element instanceof final RakuSubCallName call)) return;
         // TODO: It would be nice to have a more robust solution that takes into account
         //  (for example) routines declared in the bootstrap, etc.
-        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
+        // This is far too slow. We will migrate to Inspections so that we can disable
+        // them in project settings
+//        if (CommaProjectUtil.isRakudoCoreProject(element)) return;
 
         // Only do the analysis if the core setting symbols are available.
         RakuFile setting = RakuSdkType.getInstance().getCoreSettingFile(element.getProject());
