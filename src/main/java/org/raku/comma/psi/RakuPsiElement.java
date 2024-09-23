@@ -55,12 +55,11 @@ public interface RakuPsiElement extends NavigatablePsiElement {
         return collector.getResult();
     }
 
-    @Nullable
+    @NotNull
     default List<RakuSymbol> resolveLexicalSymbolAllowingMulti(RakuSymbolKind kind, String name) {
         RakuSingleResolutionSymbolCollector collector = new RakuSingleResolutionSymbolCollector(name, kind);
         applyLexicalSymbolCollector(collector);
-        List<RakuSymbol> results = collector.getResults();
-        return results.isEmpty() ? null : results;
+        return collector.getResults();
     }
 
     default Collection<RakuSymbol> getLexicalSymbolVariants(RakuSymbolKind... kinds) {

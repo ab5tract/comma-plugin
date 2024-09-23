@@ -74,8 +74,7 @@ public class RakuRoutineDeclImpl extends RakuMemberStubBasedPsi<RakuRoutineDeclS
     @Override
     public boolean isPrivate() {
         RakuRoutineDeclStub stub = getStub();
-        if (stub != null)
-            return stub.isPrivate();
+        if (stub != null) return stub.isPrivate();
 
         return getRoutineName().startsWith("!");
     }

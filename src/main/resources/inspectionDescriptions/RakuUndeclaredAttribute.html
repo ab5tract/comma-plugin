@@ -1,0 +1,17 @@
+<html>
+<body>
+An attribute is being used without being defined.
+<pre><code>
+class Point {
+    method move(Pos $new-pos) { $!pos = $new-pos } # $!pos has not yet been defined
+}
+
+# Correct
+class Point {
+    has Pos $.pos;
+    method move(Pos $new-pos) { $!pos = $new-pos }
+}
+</code></pre>
+<!-- tooltip end -->
+</body>
+</html>

@@ -28,9 +28,7 @@ public class RakuInfixImpl extends RakuASTWrapperPsiElement implements RakuInfix
     }
 
     @Override
-    public PsiElement getOperator() {
-        return findChildByType(TokenSet.create(RakuTokenTypes.INFIX));
-    }
+    public PsiElement getOperator() { return findChildByType(TokenSet.create(RakuTokenTypes.INFIX)); }
 
     @Override
     public PsiReference getReference() {

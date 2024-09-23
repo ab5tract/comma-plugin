@@ -24,7 +24,10 @@ public class RakuParameterInfoHandler implements ParameterInfoHandler<RakuCodeBl
     @Override
     public RakuCodeBlockCall findElementForParameterInfo(@NotNull CreateParameterInfoContext context) {
         int offset = context.getOffset();
-        PsiElement element = context.getFile().findElementAt(offset == 0 ? 0 : offset - 1);
+        PsiElement element = context.getFile()
+                                    .findElementAt(offset == 0
+                                                   ? 0
+                                                   : offset - 1);
         return PsiTreeUtil.getParentOfType(element, RakuCodeBlockCall.class, false);
     }
 
@@ -40,39 +43,45 @@ public class RakuParameterInfoHandler implements ParameterInfoHandler<RakuCodeBl
             ref = name.getReference();
         }
 
-        if (!(ref instanceof PsiPolyVariantReference)) return;
+        if (! (ref instanceof PsiPolyVariantReference)) return;
         Deque<RakuRoutineDecl> decls = new ArrayDeque<>();
-        ResolveResult[] resolvedDecls = ((PsiPolyVariantReference)ref).multiResolve(false);
+        ResolveResult[] resolvedDecls = ((PsiPolyVariantReference) ref).multiResolve(false);
         for (ResolveResult decl : resolvedDecls) {
             PsiElement declNode = decl.getElement();
             if (declNode instanceof RakuRoutineDecl) {
-                decls.add((RakuRoutineDecl)declNode);
+                decls.add((RakuRoutineDecl) declNode);
             }
         }
         // If it is .new constructor, check if there is an already present constructor...
         calculateSyntheticConstructor(element, decls);
-        if (decls.size() == 0) return;
+        if (decls.isEmpty()) return;
         context.setItemsToShow(ArrayUtil.toObjectArray(decls));
         context.showHint(element, element.getTextOffset() + 1, this);
     }
 
     private static void calculateSyntheticConstructor(@NotNull RakuCodeBlockCall element, Deque<RakuRoutineDecl> decls) {
-        if (!(element instanceof RakuMethodCall) || !element.getCallName().equals(".new"))
+        if (!(element instanceof RakuMethodCall) || !element.getCallName().equals(".new")) {
             return;
+        }
         PsiElement typeToResolve = element.getWholeCallNode().getFirstChild();
-        if (!(typeToResolve instanceof RakuTypeName) || typeToResolve.getReference() == null)
+        if (!(typeToResolve instanceof RakuTypeName) || typeToResolve.getReference() == null) {
             return;
+        }
         PsiElement resolvedType = typeToResolve.getReference().resolve();
-        if (!(resolvedType instanceof RakuPackageDecl))
+        if (!(resolvedType instanceof RakuPackageDecl)) {
             return;
+        }
         // Collect variables and methods.
         // Methods - maybe we have a written `.new` there, so no synthetic is needed
         // Public attributes to create a synthetic signature
         RakuVariantsSymbolCollector collector = new RakuVariantsSymbolCollector(
-          RakuSymbolKind.Method, RakuSymbolKind.Variable
+            RakuSymbolKind.Method, RakuSymbolKind.Variable
         );
-        ((RakuPackageDecl)resolvedType).contributeMOPSymbols(
-            collector, new MOPSymbolsAllowed(false, false, false, false));
+        ((RakuPackageDecl) resolvedType).contributeMOPSymbols(collector,
+                                                              new MOPSymbolsAllowed(false,
+                                                                                    false,
+                                                                                    false,
+                                                                                    false));
         List<String> attributes = new ArrayList<>();
         for (RakuSymbol symbol : collector.getVariants()) {
             if (symbol.getKind() == RakuSymbolKind.Variable) {
@@ -80,19 +89,20 @@ public class RakuParameterInfoHandler implements ParameterInfoHandler<RakuCodeBl
                     RakuType type = ((RakuVariableDecl) symbol.getPsi()).inferType();
                     attributes.add(type.getName() + " " + convertAttributeIntoNamed(symbol.getName()));
                 }
-            }
-            else if (symbol.getKind() == RakuSymbolKind.Method && symbol.getName().equals(".new")) {
+            } else if (symbol.getKind() == RakuSymbolKind.Method && symbol.getName().equals(".new")) {
                 PsiElement method = symbol.getPsi();
                 if (method instanceof RakuExternalPsiElement &&
-                    method.getParent() instanceof ExternalRakuPackageDecl &&
-                    ((ExternalRakuPackageDecl)method.getParent()).getName().equals("Mu"))
+                        method.getParent() instanceof ExternalRakuPackageDecl &&
+                        ((ExternalRakuPackageDecl) method.getParent()).getName().equals("Mu"))
+                {
                     continue;
+                }
                 return;
             }
         }
         Collections.reverse(attributes);
         RakuRoutineDecl syntheticDeclaration =
-            RakuElementFactory.createRoutineDeclaration(element.getProject(), "dummy", attributes);
+                RakuElementFactory.createRoutineDeclaration(element.getProject(), "dummy", attributes);
         decls.clear();
         decls.addFirst(syntheticDeclaration);
     }
@@ -106,18 +116,25 @@ public class RakuParameterInfoHandler implements ParameterInfoHandler<RakuCodeBl
     @Override
     public RakuCodeBlockCall findElementForUpdatingParameterInfo(@NotNull UpdateParameterInfoContext context) {
         PsiElement owner = context.getParameterOwner();
-        return owner.getTextRange().contains(context.getOffset() - 1) ? (RakuCodeBlockCall)owner : null;
+        return owner.getTextRange().contains(context.getOffset() - 1)
+               ? (RakuCodeBlockCall) owner
+               : null;
     }
 
     @Override
-    public void updateParameterInfo(@NotNull final RakuCodeBlockCall parameterOwner, @NotNull UpdateParameterInfoContext context) {}
+    public void updateParameterInfo(@NotNull final RakuCodeBlockCall parameterOwner, @NotNull UpdateParameterInfoContext context) {
+    }
 
     @Override
     public void updateUI(RakuRoutineDecl parameterType, @NotNull ParameterInfoUIContext context) {
         PsiElement element = context.getParameterOwner();
-        boolean areWeInBlock = PsiTreeUtil.getParentOfType(element, RakuBlockOrHash.class, RakuSubCall.class, RakuMethodCall.class) instanceof RakuBlockOrHash;
-        if (areWeInBlock)
+        boolean areWeInBlock = PsiTreeUtil.getParentOfType(element,
+                                                           RakuBlockOrHash.class,
+                                                           RakuSubCall.class,
+                                                           RakuMethodCall.class) instanceof RakuBlockOrHash;
+        if (areWeInBlock) {
             return;
+        }
 
         // Obtain signature and parameters
         RakuSignature signatureNode = parameterType.getSignatureNode();
@@ -125,11 +142,13 @@ public class RakuParameterInfoHandler implements ParameterInfoHandler<RakuCodeBl
         RakuParameter[] parameters = signatureNode.getParameters();
 
         // Obtain call and arguments
-        RakuCodeBlockCall owner = (RakuCodeBlockCall)context.getParameterOwner();
+        RakuCodeBlockCall owner = (RakuCodeBlockCall) context.getParameterOwner();
         PsiElement[] arguments = owner.getCallArguments();
 
         // Compare
-        RakuSignature.SignatureCompareResult compare = signatureNode.acceptsArguments(arguments, false, owner instanceof RakuMethodCall);
+        RakuSignature.SignatureCompareResult compare = signatureNode.acceptsArguments(arguments,
+                                                                                      false,
+                                                                                      owner instanceof RakuMethodCall);
 
         StringJoiner signatureTextBuilder = new StringJoiner(", ");
         int startOffset = 0;
@@ -138,22 +157,34 @@ public class RakuParameterInfoHandler implements ParameterInfoHandler<RakuCodeBl
         String text = context.getParameterOwner().getText();
         boolean shouldNotJump = !text.endsWith(",");
         int nextParameter = compare.getNextParameterIndex();
-        if (shouldNotJump)
-            nextParameter = nextParameter == 0 ? 0 : nextParameter - 1;
+        if (shouldNotJump) {
+            nextParameter = nextParameter == 0
+                                ? 0
+                                : nextParameter - 1;
+        }
 
         for (int i = 0, length = parameters.length; i < length; i++) {
             RakuParameter param = parameters[i];
             String paramText = param.getText();
             if (i == nextParameter && compare.isAccepted()) {
                 startOffset = signatureTextBuilder.length();
-                if (startOffset != 0) startOffset += 2;
+                if (startOffset != 0) {
+                    startOffset += 2;
+                }
             }
             signatureTextBuilder.add(paramText);
-            if (i == nextParameter && compare.isAccepted()) endOffset = signatureTextBuilder.length();
+            if (i == nextParameter && compare.isAccepted()) {
+                endOffset = signatureTextBuilder.length();
+            }
         }
 
         context.setUIComponentEnabled(compare.isAccepted());
-        context.setupUIComponentPresentation(signatureTextBuilder.toString().trim(), startOffset, endOffset, !compare.isAccepted(), false, false,
+        context.setupUIComponentPresentation(signatureTextBuilder.toString().trim(),
+                                             startOffset,
+                                             endOffset,
+                                             !compare.isAccepted(),
+                                             false,
+                                             false,
                                              context.getDefaultParameterColor());
     }
 }

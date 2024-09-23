@@ -1,0 +1,12 @@
+<html>
+<body>
+This inspection signals a mismatch between the arity of a routine or method at a call-site relative to the
+arity as per it's definition.
+<pre><code>
+sub foo($a, $b) { ... }
+
+foo($first, $second, $third); # Arity mismatch
+</code></pre>
+<!-- tooltip end -->
+</body>
+</html>

@@ -26,24 +26,27 @@ public class RakuSingleResolutionSymbolCollector implements RakuSymbolCollector 
     @Override
     public void offerSymbol(RakuSymbol symbol) {
         // If already satisfied, then we're done.
-        if (satisfied)
-            return;
+        if (satisfied) return;
 
         // Otherwise, see if it matches.
-        if (symbol != null &&
-                Objects.equals(symbol.getKind(), wantedKind) &&
-                Objects.equals(symbol.getName(), wantedName)) {
+        if (symbol != null
+                && Objects.equals(symbol.getKind(), wantedKind)
+                && Objects.equals(symbol.getName(), wantedName))
+        {
             if (wantedKind == RakuSymbolKind.TypeOrConstant && symbol.getPsi() instanceof RakuPackageDecl &&
-                ((RakuPackageDecl)symbol.getPsi()).isStubbed()) {
+                    ((RakuPackageDecl) symbol.getPsi()).isStubbed())
+            {
                 wasDeferred = true;
                 return;
             }
             // If we've already got results, then they were multi results. We're now seeing an
             // only result, so we'll drop it and be satisfied.
-            if (symbol instanceof RakuExplicitSymbol)
-                ((RakuExplicitSymbol)symbol).setDeferrence(wasDeferred);
-            if (results.isEmpty())
+            if (symbol instanceof RakuExplicitSymbol) {
+                ((RakuExplicitSymbol) symbol).setDeferrence(wasDeferred);
+            }
+            if (results.isEmpty()) {
                 results.add(symbol);
+            }
             satisfied = true;
         }
     }
@@ -51,8 +54,7 @@ public class RakuSingleResolutionSymbolCollector implements RakuSymbolCollector 
     @Override
     public void offerMultiSymbol(RakuSymbol symbol, boolean isProto) {
         // If already satisfied, then we're done.
-        if (satisfied)
-            return;
+        if (satisfied) return;
 
         // If we've already got results, then they were multi results. If we now see a
         // proto, then it's probably outer or parent to what we did see, so don't take
@@ -64,12 +66,13 @@ public class RakuSingleResolutionSymbolCollector implements RakuSymbolCollector 
 
         // Otherwise, add it if it matches, but don't set "satisfied" so we can collect
         // more.
-        if (symbol != null &&
-            Objects.equals(symbol.getKind(), wantedKind) &&
-            Objects.equals(symbol.getName(), wantedName)) {
-            if (symbol.getPsi() != null &&
-                results.stream().anyMatch(r -> PsiEquivalenceUtil.areElementsEquivalent(r.getPsi(), symbol.getPsi())))
-                return;
+        if (symbol != null
+                && Objects.equals(symbol.getKind(), wantedKind)
+                && Objects.equals(symbol.getName(), wantedName))
+        {
+            boolean anyMatched = results.stream()
+                                        .anyMatch(r -> PsiEquivalenceUtil.areElementsEquivalent(r.getPsi(), symbol.getPsi()));
+            if (symbol.getPsi() != null && anyMatched) return;
             results.add(symbol);
         }
     }
@@ -80,7 +83,9 @@ public class RakuSingleResolutionSymbolCollector implements RakuSymbolCollector 
     }
 
     public RakuSymbol getResult() {
-        return results.isEmpty() ? null : results.get(0);
+        return results.isEmpty()
+                   ? null
+                   : results.getFirst();
     }
 
     public List<RakuSymbol> getResults() {

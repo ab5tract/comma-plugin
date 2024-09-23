@@ -13,6 +13,7 @@ import org.raku.comma.psi.symbols.RakuSymbolKind;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 public class RakuSubCallReference extends PsiReferenceBase.Poly<RakuSubCallName> {
     private final boolean maybeCoercion;
@@ -28,18 +29,19 @@ public class RakuSubCallReference extends PsiReferenceBase.Poly<RakuSubCallName>
         String name = call.getCallName();
 
         List<RakuSymbol> symbols = call.resolveLexicalSymbolAllowingMulti(RakuSymbolKind.Routine, name);
-        if (symbols != null) {
+        if (! symbols.isEmpty()) {
             return symbols.stream()
-                .map(s -> s.getPsi())
-                .filter(p -> p != null)
-                .map(p -> new PsiElementResolveResult(p))
-                .toArray(ResolveResult[]::new);
+                          .map(RakuSymbol::getPsi)
+                          .filter(Objects::nonNull)
+                          .map(PsiElementResolveResult::new)
+                          .toArray(ResolveResult[]::new);
         }
 
         if (maybeCoercion) {
             RakuSymbol type = call.resolveLexicalSymbol(RakuSymbolKind.TypeOrConstant, name);
-            if (type != null && type.getPsi() != null)
-                return new ResolveResult[] { new PsiElementResolveResult(type.getPsi()) };
+            if (type != null && type.getPsi() != null) {
+                return new ResolveResult[]{ new PsiElementResolveResult(type.getPsi()) };
+            }
         }
 
         return ResolveResult.EMPTY_ARRAY;
@@ -48,18 +50,20 @@ public class RakuSubCallReference extends PsiReferenceBase.Poly<RakuSubCallName>
     @Override
     public Object @NotNull [] getVariants() {
         return getElement().getLexicalSymbolVariants(RakuSymbolKind.Routine, RakuSymbolKind.TypeOrConstant)
-            .stream()
-            .map(sym -> {
-                PsiElement psi = sym.getPsi();
-                if (psi instanceof RakuRoutineDecl)
-                    return strikeoutDeprecated(LookupElementBuilder.create(psi, sym.getName()).withTypeText(((RakuRoutineDecl)psi).summarySignature()), psi);
-                else
-                    return sym.getName();
-            }).toArray();
+                           .stream()
+                           .map(sym -> {
+                               PsiElement psi = sym.getPsi();
+                               if (psi instanceof RakuRoutineDecl) {
+                                   return strikeoutDeprecated(LookupElementBuilder.create(psi, sym.getName())
+                                                                                  .withTypeText(((RakuRoutineDecl) psi).summarySignature()), psi);
+                               } else {
+                                   return sym.getName();
+                               }
+                           }).toArray();
     }
 
     private static LookupElementBuilder strikeoutDeprecated(LookupElementBuilder item, PsiElement psi) {
-        return psi instanceof RakuDeprecatable && ((RakuDeprecatable)psi).isDeprecated()
+        return psi instanceof RakuDeprecatable && ((RakuDeprecatable) psi).isDeprecated()
                ? item.strikeout()
                : item;
     }

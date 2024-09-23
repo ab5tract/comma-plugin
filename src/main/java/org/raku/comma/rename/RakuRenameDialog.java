@@ -16,25 +16,26 @@ public class RakuRenameDialog extends RenameDialog {
     }
 
     protected String getShortName() {
-        return getPerl6Name(super.getPsiElement());
+        return getRakuName(super.getPsiElement());
     }
 
     @Override
     protected String getFullName() {
         PsiElement myPsiElement = super.getPsiElement();
-        String name = getPerl6Name(myPsiElement);
+        String name = getRakuName(myPsiElement);
         String type = UsageViewUtil.getType(myPsiElement);
-        return StringUtil.isEmpty(name) ? type : type + " '" + name + "'";
+        return StringUtil.isEmpty(name)
+                    ? type
+                    : "%s '%s'".formatted(type, name);
     }
 
-    private static String getPerl6Name(PsiElement myPsiElement) {
+    private static String getRakuName(PsiElement myPsiElement) {
         PsiUtilCore.ensureValid(myPsiElement);
-        if (myPsiElement instanceof RakuFileImpl)
-            return ((RakuFileImpl)myPsiElement).getEnclosingRakuModuleName();
-        else if (myPsiElement instanceof PsiNamedElement)
-            return ((PsiNamedElement)myPsiElement).getName();
-        else
-            return "";
+        return switch(myPsiElement) {
+            case RakuFileImpl rakuFile        -> rakuFile.getEnclosingRakuModuleName();
+            case PsiNamedElement namedElement -> namedElement.getName();
+            default -> "";
+        };
     }
 
     // TODO name suggester, somehow from context

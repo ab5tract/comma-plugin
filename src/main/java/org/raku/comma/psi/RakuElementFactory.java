@@ -1,10 +1,12 @@
 package org.raku.comma.psi;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.NlsSafe;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiParserFacade;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.Nullable;
 import org.raku.comma.filetypes.RakuScriptFileType;
 import org.raku.comma.refactoring.NewCodeBlockData;
 import org.raku.comma.refactoring.RakuCodeBlockType;
@@ -219,8 +221,22 @@ public class RakuElementFactory {
         return produceElement(project, String.format("%s %s;", scope, name), RakuVariableDecl.class);
     }
 
-    public static PsiElement createInfixOperator(Project project, String op) {
-        return produceElement(project, String.format("1 %s 1", op), RakuInfix.class).getOperator();
+    public static RakuInfix createInfixOperator(Project project, String op) {
+        return produceElement(project, String.format("1 %s 1", op), RakuInfix.class);
+    }
+
+    public static RakuPrefix createPrefixOperator(Project project, String op) {
+        var prefixApplication = produceElement(project, String.format("%s 1", op), RakuPrefixApplication.class);
+        return prefixApplication != null
+               ? (RakuPrefix) prefixApplication.getPrefix()
+               : null;
+    }
+
+    public static RakuPostfix createPostfixOperator(Project project, String op) {
+        var postfixApplication = produceElement(project, String.format("1 %s", op), RakuPostfixApplication.class);
+        return postfixApplication != null
+               ? (RakuPostfix) postfixApplication.getPostfix()
+               : null;
     }
 
     public static RakuIfStatement createIfStatement(Project project, boolean isIf, int numberOfBranches) {
@@ -324,8 +340,16 @@ public class RakuElementFactory {
         return produceElement(project, String.format("sub (%s) {}", text), RakuParameter.class);
     }
 
+    public static RakuParenthesizedExpr parenthesizeExpression(Project project, String text) {
+        return produceElement(project, "(%s)".formatted(text), RakuParenthesizedExpr.class);
+    }
+
     public static PsiElement createRegexRangeDelimiter(Project project) {
         RakuRegexCClassElem elem = produceElement(project, "/<[..]>/", RakuRegexCClassElem.class);
         return elem.getFirstChild().getNextSibling();
+    }
+
+    public static RakuPrefixApplication createPrefixApplication(Project project, String text) {
+        return produceElement(project, text, RakuPrefixApplication.class);
     }
 }

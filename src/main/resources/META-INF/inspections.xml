@@ -1,0 +1,399 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
+
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="Raku"
+                         displayName="Undeclared attributes"
+                         shortName="RakuUndeclaredAttribute"
+                         groupPath="Raku"
+                         level="ERROR"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.UndeclaredAttributeInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Call arity"
+                         shortName="RakuCallArity"
+                         groupPath="Raku"
+                         level="ERROR"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.CallArityInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Undeclared or deprecated routines"
+                         shortName="RakuUndeclaredOrDeprecatedRoutine"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.UndeclaredOrDeprecatedRoutineInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Use of implementation details"
+                         shortName="RakuRakudoImplementationDetail"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.RakudoImplementationDetailInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Built-in submethods declared as methods"
+                         shortName="RakuBuiltinSubmethod"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.BuiltinSubmethodInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="'self' availability"
+                         shortName="RakuSelfAvailability"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.SelfAvailabilityInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Interpolated EVAL without respective pragma"
+                         shortName="RakuInterpolatedEVALInspection"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         level="ERROR"
+                         implementationClass="org.raku.comma.inspection.inspections.InterpolatedEVALInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Assignment to immutable type"
+                         shortName="RakuAssignmentToImmutable"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         level="ERROR"
+                         implementationClass="org.raku.comma.inspection.inspections.AssignmentToImmutableInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Usage of deprecated method"
+                         shortName="RakuDeprecatedMethod"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.DeprecatedMethodInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Duplicated condition"
+                         shortName="RakuDuplicateCondition"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.DuplicateConditionInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Sub with no parameters can be defined as a term"
+                         shortName="RakuZeroArgSub"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         level="INFORMATION"
+                         implementationClass="org.raku.comma.inspection.inspections.ZeroArgSubInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Redundant initialization"
+                         shortName="RakuRedundantInitialization"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         level="WARNING"
+                         implementationClass="org.raku.comma.inspection.inspections.RedundantInitializationInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Unnecessary combination of .grep with .first"
+                         shortName="RakuGrepFirst"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         level="WARNING"
+                         implementationClass="org.raku.comma.inspection.inspections.GrepFirstInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Hash or block detection"
+                         shortName="RakuHashOrBlock"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.HashOrBlockInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Hyphen in character class"
+                         shortName="RakuHyphenInCharacterClass"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Regex"
+                         implementationClass="org.raku.comma.inspection.inspections.HyphenInCharacterClassInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Use idiomatic loop construct"
+                         shortName="RakuIdiomaticLoop"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Idioms"
+                         level="WARNING"
+                         implementationClass="org.raku.comma.inspection.inspections.IdiomaticLoopInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Illegal variable declaration"
+                         shortName="RakuIllegalVariableDeclaration"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.IllegalVariableDeclarationInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Non-composable use of 'does' trait"
+                         shortName="RakuNoncomposableDoes"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         level="ERROR"
+                         implementationClass="org.raku.comma.inspection.inspections.NoncomposableDoesInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Leading zero in octal declaration"
+                         shortName="RakuLeadingZero"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         groupName="Idioms"
+                         implementationClass="org.raku.comma.inspection.inspections.LeadingZeroInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Unintentional slurping in assignment"
+                         shortName="RakuListAssignment"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.ListAssignmentInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Method call on range endpoint"
+                         shortName="RakuMethodCallOnRange"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         groupName="Methods"
+                         implementationClass="org.raku.comma.inspection.inspections.MethodCallOnRangeInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Undefined methods required by consuming role"
+                         shortName="RakuMissingRoleMethod"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.MissingRoleMethodInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Opening bracket missing corresponding closing bracket"
+                         shortName="RakuMissingThings"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.MissingThingsInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Opening bracket missing corresponding closing bracket"
+                         shortName="RakuUnitKeyword"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         level="ERROR"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.UnitKeywordInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Opening bracket missing corresponding closing bracket"
+                         shortName="RakuMonitorUsage"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         level="ERROR"
+                         groupName="Packages"
+                         implementationClass="org.raku.comma.inspection.inspections.MonitorUsageInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Export of 'my' scope variable"
+                         shortName="RakuMyScopedVariableExported"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         level="ERROR"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.MyScopedVariableExportedInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Simplification of fat arrow pair"
+                         shortName="RakuNamedPairArgument"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         groupName="Idioms"
+                         implementationClass="org.raku.comma.inspection.inspections.NamedPairArgumentInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Range has an endpoint"
+                         shortName="RakuNoEndpointRage"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         level="WARNING"
+                         groupName="Constructions"
+                         implementationClass="org.raku.comma.inspection.inspections.NoEndpointRangeInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Only classes and roles can use 'does' or 'is'"
+                         shortName="RakuNonInheritableComposableDeclarationComposable"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.NonInheritableComposableDeclarationInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Routines with Nil return type must only return Nil values"
+                         shortName="RakuNonNilReturn"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.NonNilReturnInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Routines with Nil return type must only return Nil values"
+                         shortName="RakuNotProgressingRegex"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Regexes"
+                         implementationClass="org.raku.comma.inspection.inspections.NotProgressingRegexInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Empty regex is not allowed"
+                         shortName="RakuNullRegex"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Regexes"
+                         implementationClass="org.raku.comma.inspection.inspections.NullRegexInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Display B, I, and U Pod elements appear in their respective styles"
+                         shortName="RakuPodFormatted"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Pod"
+                         implementationClass="org.raku.comma.inspection.inspections.PodFormatterInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Invalid use of return statements"
+                         shortName="RakuProblematicReturn"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.ProblematicReturnInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Use cross-platform approach to referencing 'raku' executable"
+                         shortName="RakuRakuExecutableString"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Idioms"
+                         level="WARNING"
+                         implementationClass="org.raku.comma.inspection.inspections.RakuExecutableStringInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Validate signature parameter settings"
+                         shortName="RakuSignature"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.SignatureInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Simplification of ranges"
+                         shortName="RakuSimplifiedRange"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Idioms"
+                         implementationClass="org.raku.comma.inspection.inspections.SimplifiedRangeInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Usage of undeclared private method"
+                         shortName="RakuUndeclaredPrivateMethod"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.UndeclaredPrivateMethodInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Verify the existence of used modules"
+                         shortName="RakuUsedModule"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.UsedModuleInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Verify that variables are declared"
+                         shortName="RakuUndeclaredVariable"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.UndeclaredVariableInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Only MAIN subs can be declared with unit scope"
+                         shortName="RakuUnitSub"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.UnitSubInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Validate regex modifiers"
+                         shortName="RakuUnknownRegexMod"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Regexes"
+                         implementationClass="org.raku.comma.inspection.inspections.UnknownRegexModInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Unused routine"
+                         shortName="RakuUnusedRoutine"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.UnusedRoutineInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Unused variable"
+                         shortName="RakuUnusedVariable"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.UnusedVariableInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Useless method declaration"
+                         shortName="RakuUselessMethodDeclaration"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.UselessMethodDeclarationInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="'whenever' used outside of react block"
+                         shortName="RakuWheneverOutsideOfReact"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="General"
+                         implementationClass="org.raku.comma.inspection.inspections.WheneverOutsideOfReactInspection"/>
+
+        <localInspection language="Raku"
+                         displayName="Possibility to use 'with' construction form"
+                         shortName="RakuWithConstruction"
+                         groupPath="Raku"
+                         enabledByDefault="true"
+                         groupName="Declarations"
+                         implementationClass="org.raku.comma.inspection.inspections.WithConstructionInspection"/>
+    </extensions>
+</idea-plugin>

@@ -4,15 +4,14 @@ import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.impl.PsiElementFactoryImpl;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.util.IncorrectOperationException;
 import org.raku.comma.extensions.RakuFrameworkCall;
 import org.raku.comma.parsing.RakuTokenTypes;
-import org.raku.comma.psi.RakuElementFactory;
-import org.raku.comma.psi.RakuRoutineDecl;
-import org.raku.comma.psi.RakuSubCall;
-import org.raku.comma.psi.RakuSubCallName;
+import org.raku.comma.psi.*;
 import org.raku.comma.psi.stub.RakuSubCallStub;
 import org.raku.comma.psi.stub.RakuSubCallStubElementType;
 import org.raku.comma.psi.type.RakuType;
@@ -37,8 +36,7 @@ public class RakuSubCallImpl extends StubBasedPsiElementBase<RakuSubCallStub> im
 
     @Override
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
-        RakuSubCallName call =
-            RakuElementFactory.createSubCallName(getProject(), name);
+        RakuSubCallName call = RakuElementFactory.createSubCallName(getProject(), name);
         RakuSubCallName callName = getSubCallNameNode();
         if (callName != null) {
             ASTNode keyNode = callName.getNode();
@@ -57,7 +55,9 @@ public class RakuSubCallImpl extends StubBasedPsiElementBase<RakuSubCallStub> im
     @Override
     public String getCallName() {
         RakuSubCallName name = getSubCallNameNode();
-        return name == null ? "" : name.getCallName();
+        return name == null
+               ? ""
+               : name.getCallName();
     }
 
     @NotNull
@@ -67,16 +67,23 @@ public class RakuSubCallImpl extends StubBasedPsiElementBase<RakuSubCallStub> im
     }
 
     @Override
+    public PsiElement[] getCallArguments() {
+        return RakuSubCall.super.getCallArguments();
+    }
+
+    @Override
     public @NotNull RakuType inferType() {
         PsiElement name = getFirstChild();
-        if (!(name instanceof RakuSubCallName))
+        if (!(name instanceof RakuSubCallName)) {
             return RakuUntyped.INSTANCE;
+        }
         PsiReference ref = name.getReference();
-        if (ref == null)
+        if (ref == null) {
             return RakuUntyped.INSTANCE;
+        }
         PsiElement resolved = ref.resolve();
         if (resolved instanceof RakuRoutineDecl) {
-            return ((RakuRoutineDecl)resolved).getReturnType();
+            return ((RakuRoutineDecl) resolved).getReturnType();
         }
         return RakuUntyped.INSTANCE;
     }
@@ -84,7 +91,9 @@ public class RakuSubCallImpl extends StubBasedPsiElementBase<RakuSubCallStub> im
     @Override
     public String getName() {
         ItemPresentation presentation = getPresentation();
-        return presentation == null ? getCallName() : presentation.getPresentableText();
+        return presentation == null
+               ? getCallName()
+               : presentation.getPresentableText();
     }
 
     @Override
@@ -97,16 +106,19 @@ public class RakuSubCallImpl extends StubBasedPsiElementBase<RakuSubCallStub> im
                 String prefix = ext.getFrameworkName();
                 Map<String, String> frameworkData = new HashMap<>();
                 for (Map.Entry<String, String> entry : allFrameworkData.entrySet())
-                    if (entry.getKey().startsWith(prefix + "."))
+                    if (entry.getKey().startsWith(prefix + ".")) {
                         frameworkData.put(entry.getKey().substring(prefix.length() + 1), entry.getValue());
-                if (!frameworkData.isEmpty())
+                    }
+                if (!frameworkData.isEmpty()) {
                     return ext.getNavigatePresentation(this, frameworkData);
+                }
             }
-        }
-        else {
-            for (RakuFrameworkCall ext : extensions)
-                if (ext.isApplicable(this))
+        } else {
+            for (RakuFrameworkCall ext : extensions) {
+                if (ext.isApplicable(this)) {
                     return ext.getNavigatePresentation(this, ext.getFrameworkData(this));
+                }
+            }
         }
         return null;
     }

@@ -42,7 +42,7 @@ public final class RakuMetaDataComponent {
     @Nullable
     private JSONObject myMeta = null;
 
-    public RakuMetaDataComponent(Module module) {
+    public RakuMetaDataComponent(@Nullable Module module) {
         var name = ModuleType.get(module);
 
         if (! name.equals(RakuModuleType.getInstance())) {
@@ -141,7 +141,7 @@ public final class RakuMetaDataComponent {
                 meta = new JSONObject(content);
                 checkMetaSanity(meta);
             }
-            catch (Perl6MetaException e) {
+            catch (RakuMetaException e) {
                 notifyMetaIssue(e.getMessage(), NotificationType.ERROR, e.myFix);
             }
             catch (IOException | JSONException e) {
@@ -188,7 +188,7 @@ public final class RakuMetaDataComponent {
     }
 
     /* Enforces number of rules for meta to check on start and every saving */
-    private static void checkMetaSanity(JSONObject meta) throws Perl6MetaException {
+    private static void checkMetaSanity(JSONObject meta) throws RakuMetaException {
         checkParameter(meta, "name", v -> v instanceof String, "string");
         checkParameter(meta, "description", v -> v instanceof String, "string");
         checkParameter(meta, "version", v -> v instanceof String, "string");
@@ -203,9 +203,10 @@ public final class RakuMetaDataComponent {
     }
 
     private static void checkParameter(JSONObject meta, String name,
-                                       Function<Object, Boolean> check, String className) throws Perl6MetaException {
+                                       Function<Object, Boolean> check, String className) throws RakuMetaException
+    {
         if (!meta.has(name) || !check.fun(meta.get(name))) {
-            throw new Perl6MetaException(
+            throw new RakuMetaException(
                 meta.has(name) ?
                 String.format("Value of '%s' field is not a %s", name, className) :
                 String.format("'%s' field is not present", name));
@@ -587,14 +588,14 @@ public final class RakuMetaDataComponent {
         Notifications.Bus.notify(notification);
     }
 
-    private static class Perl6MetaException extends Exception {
+    private static class RakuMetaException extends Exception {
         public final AnAction myFix;
 
-        Perl6MetaException(String message) {
+        RakuMetaException(String message) {
             this(message, null);
         }
 
-        Perl6MetaException(String message, AnAction fix) {
+        RakuMetaException(String message, AnAction fix) {
             super(message);
             myFix = fix;
         }

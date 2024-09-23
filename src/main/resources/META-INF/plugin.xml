@@ -1,5 +1,5 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
-  <id>org.raku-idea-plugin</id>
+  <id>org.raku.comma</id>
   <vendor email="info@commaide.com" url="https://commaide.com/">The Raku Community</vendor>
 
   <description><![CDATA[
@@ -33,8 +33,10 @@
 <li>Migrated to the latest IntelliJ version (2024.2)</li>
 <li>Many internal fixups related to the above that should improve plugin stability</li>
 <li>Run configurations now all default it <pre>-I.</pre> instead of <pre>-Ilib</pre></li>
-<li>Hacking on Rakudo source code more comfortable thanks to suppressed annotations for eg, usage of implementation details,
- use of NQP where no <pre>use nqp</pre> is seen in scope, etc.</li>
+<li>Hacking on Rakudo source code more comfortable thanks to prompt presented to the user to suppress
+ code inspections for the usage of implementation details, the use of NQP where no <pre>use nqp</pre> is seen in scope,
+ etc. Users are presented this choice when opening either a project named 'rakudo' or a project based in a path that
+ ends in 'rakudo'.</li>
 </ul>
   ]]>
   </change-notes>
@@ -52,6 +54,8 @@
 
   <xi:include href="/META-INF/CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/nqp.xml" xpointer="xpointer(/idea-plugin/*)"/>
+  <xi:include href="/META-INF/inspections.xml" xpointer="xpointer(/idea-plugin/*)"/>
+
 
 <!--  <extensions defaultExtensionNs="org.raku">-->
 <!--    <framework.type implementation="cro.org.raku.comma.CroFrameworkCall"/>-->
@@ -99,54 +103,7 @@
     <additionalTextAttributes scheme="Darcula" file="colorSchemes/RakuDarcula.xml"/>
     <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultCroTemplate.xml"/>
     <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaCroTemplate.xml"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.NullRegexAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UndeclaredVariableAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UndeclaredOrDeprecatedRoutineAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UndeclaredPrivateMethodAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UndeclaredAttributeAnnotator"/>
     <annotator language="Raku" implementationClass="org.raku.comma.editor.SigSpaceAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.LeadingZeroAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.MethodNotOnRangeAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.MissingUnitKeywordAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.PodFormatAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.SignatureAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UsedModuleAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.WheneverOutsideOfReactAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.IllegalVariableDeclarationAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UnitSubAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.NoEndpointRangeAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.InterpolatedEVALAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.MissingRoleMethodAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.MyScopedVariableExportedAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.IncomposableDoesAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.MonitorUsageAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.NonInheritableComposableDeclAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.ProblematicReturnAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.MissingThingsAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.NamedPairArgumentAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.IdiomaticLoopAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.WithConstructionAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.SimplifiedRangeAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.GrepFirstAnnotation"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.BuiltinSubmethodAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.EmptyInitializationAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.RakuExecutableStringAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.NonNillReturnAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.ListAssignmentAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UnusedVariableAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UnusedRoutineAnnotation"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.SelfAvailabilityAnnotation"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UselessMethodDeclarationAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.AssignmentToImmutableAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.CallArityIssuesAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UnknownRegexModAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.DeprecatedMethodAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.HashOrBlockAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.DuplicateConditionAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.UselessUseAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.HyphenInCharacterClassAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.NotProgressingRegexAnnotator"/>
-    <annotator language="Raku" implementationClass="org.raku.comma.annotation.RakudoImplementationDetailAnnotator"/>
     <annotator language="CroTemplate" implementationClass="org.raku.comma.cro.template.annotation.DuplicateSeparatorAnnotator"/>
     <annotator language="CroTemplate" implementationClass="org.raku.comma.cro.template.annotation.MisplacedSeparatorAnnotation"/>
     <stubElementTypeHolder class="org.raku.comma.parsing.RakuElementTypes" externalIdPrefix="raku.stub.file" />
@@ -182,7 +139,7 @@
     <stubIndex implementation="org.raku.comma.cro.CroRouteIndex"/>
     <stubIndex implementation="org.raku.comma.cro.CroTemplateIndex"/>
     <codeInsight.parameterInfo language="Raku" implementationClass="org.raku.comma.RakuParameterInfoHandler"/>
-    <lang.inspectionSuppressor language="Raku" implementationClass="org.raku.comma.inspection.RakuInspectionSuppressor"/>
+    <lang.inspectionSuppressor language="Raku" implementationClass="org.raku.comma.inspection.suppressor.RakuInspectionSuppressor"/>
     <moduleConfigurationEditorProvider implementation="org.raku.comma.project.structure.module.RakuModuleConfigurationEditorProvider"
       order="FIRST"/>
 
@@ -200,11 +157,12 @@
     <lang.foldingBuilder language="CroTemplate" implementationClass="org.raku.comma.cro.template.editor.CroTemplateFoldingBuilder"/>
     <codeInsight.parameterInfo language="CroTemplate" implementationClass="org.raku.comma.cro.template.CroTemplateParameterInfoHandler"/>
 
-    <intentionAction>
-      <language>Raku</language>
-      <className>org.raku.comma.intention.ChangePackageTypeIntention</className>
-      <category>Raku intentions</category>
-    </intentionAction>
+<!-- TODO: Fix 'It's unexpected to invoke this method on an intention preview calculating.' -->
+<!--    <intentionAction>-->
+<!--      <language>Raku</language>-->
+<!--      <className>org.raku.comma.intention.ChangePackageTypeIntention</className>-->
+<!--      <category>Raku intentions</category>-->
+<!--    </intentionAction>-->
     <intentionAction>
       <language>Raku</language>
       <className>org.raku.comma.intention.MakeMethodPublicIntention</className>
@@ -284,12 +242,13 @@
       <language>Raku</language>
       <className>org.raku.comma.intention.ColonpairToFatarrowIntention</className>
       <category>Raku intentions</category>
-    </intentionAction>
-    <intentionAction>
-      <language>Raku</language>
-      <className>org.raku.comma.annotation.fix.FatarrowSimplificationFix</className>
-      <category>Raku intentions</category>
-    </intentionAction>
+  </intentionAction>
+<!-- TODO: Re-introduce intentions that were based on broken implementations -->
+<!--    <intentionAction>-->
+<!--      <language>Raku</language>-->
+<!--      <className>org.raku.comma.inspection.fixes.FatarrowSimplificationFix</className>-->
+<!--      <category>Raku intentions</category>-->
+<!--    </intentionAction>-->
     <intentionAction>
       <language>Raku</language>
       <className>org.raku.comma.intention.TermUnicodeConversionIntention</className>
@@ -384,7 +343,7 @@
     <vcs.codeVisionLanguageContext language="Raku" implementationClass="org.raku.comma.codeInsights.RakuVcsCodeVisionLanguageContext"/>
     <navbar implementation="org.raku.comma.structureView.RakuStructureAwareNavbar"/>
     <backgroundPostStartupActivity id="ProjectIsRakudoCoreAnnouncer"
-                                   implementation="org.raku.comma.project.activity.ProjectIsRakudoCoreAnnouncer"
+                                   implementation="org.raku.comma.project.activity.ProjectIsRakudoCoreDetector"
                                    order="first"/>
   </extensions>
 
