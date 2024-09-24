@@ -1,5 +1,6 @@
 package org.raku.comma.project;
 
+import com.intellij.ide.highlighter.ModuleFileType;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ProjectBuilder;
 import com.intellij.ide.util.projectWizard.WizardContext;
@@ -29,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import org.raku.comma.services.RakuSDKService;
 
 import javax.swing.*;
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -68,6 +70,13 @@ public class RakuProjectBuilder extends ProjectBuilder {
         return sdkType instanceof RakuSdkType;
     }
 
+    private String getModuleFilePath(Project project) {
+                return "%s%s%s%s".formatted(project.getBasePath(),
+                                            File.separator,
+                                            project.getName(),
+                                            ModuleFileType.DOT_DEFAULT_EXTENSION);
+    }
+
     @Nullable
     @Override
     public List<Module> commit(@NotNull Project project,
@@ -86,14 +95,11 @@ public class RakuProjectBuilder extends ProjectBuilder {
                 VirtualFile contentRoot = lfs.findFileByPath(path.substring(5));
                 if (contentRoot == null) return;
 
-                String projectFilePath = project.getProjectFilePath();
-                if (projectFilePath == null) return;
-
                 ModifiableModuleModel modelToPatch = model != null
                                                      ? model
                                                      : ModuleManager.getInstance(project).getModifiableModel();
 
-                Module module = modelToPatch.newModule(projectFilePath, RakuModuleType.getInstance().getId());
+                Module module = modelToPatch.newModule(getModuleFilePath(project), RakuModuleType.getInstance().getId());
                 result.add(module);
 
                 ModifiableRootModel rootModel = ModuleRootManager.getInstance(module).getModifiableModel();
