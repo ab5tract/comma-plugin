@@ -67,8 +67,10 @@ public final class RakuMetaDataComponent {
                     if (!event.getFile().equals(myMetaFile)) continue;
                     myMeta = checkMetaSanity();
                     saveFile();
-                    if (myMeta != null) {
-                        RakuProjectModelSync.syncExternalLibraries(RakuMetaDataComponent.this.myModule, getAllDependencies());
+                    if (myMeta != null && RakuMetaDataComponent.this.myModule != null) {
+                        module.getProject()
+                              .getService(RakuProjectModelSync.class)
+                              .syncExternalLibraries(RakuMetaDataComponent.this.myModule, getAllDependencies());
                     }
                 }
             }
@@ -94,7 +96,9 @@ public final class RakuMetaDataComponent {
 
         // Load dependencies
         if (Objects.nonNull(myMeta)) {
-            RakuProjectModelSync.syncExternalLibraries(this.myModule, getAllDependencies());
+            this.myModule.getProject()
+                         .getService(RakuProjectModelSync.class)
+                         .syncExternalLibraries(this.myModule, getAllDependencies());
         }
     }
 
@@ -152,15 +156,13 @@ public final class RakuMetaDataComponent {
     }
 
     public List<String> getResources() {
-        if (myMeta == null || !myMeta.has("resources"))
-            return new ArrayList<>();
+        if (myMeta == null || !myMeta.has("resources")) return new ArrayList<>();
         JSONArray resources = myMeta.getJSONArray("resources");
         return ContainerUtil.map(resources.toList(), r -> r instanceof String ? (String)r : null);
     }
 
     public void removeResource(String name) {
-        if (myMeta == null)
-            return;
+        if (myMeta == null) return;
         JSONArray resources = myMeta.getJSONArray("resources");
         if (resources != null) {
             List<Object> resourceList = resources.toList();
@@ -225,8 +227,10 @@ public final class RakuMetaDataComponent {
     public void triggerMetaBuild(@NotNull VirtualFile metaFile) {
         myMetaFile = metaFile;
         myMeta = checkMetaSanity();
-        if (myMeta != null) {
-            RakuProjectModelSync.syncExternalLibraries(myModule, getAllDependencies());
+        if (myMeta != null && myModule != null) {
+            myModule.getProject()
+                    .getService(RakuProjectModelSync.class)
+                    .syncExternalLibraries(myModule, getAllDependencies());
         }
     }
 
@@ -364,7 +368,7 @@ public final class RakuMetaDataComponent {
             try {
                 JSONObject meta = getStubMetaObject(moduleName);
                 VirtualFile metaFile = finalFirstRoot.findOrCreateChildData(this, META6_JSON_NAME);
-                metaFile.setBinaryContent(MetaDataJSONSerializer.serializer(meta).getBytes(StandardCharsets.UTF_8));
+                metaFile.setBinaryContent(MetaDataJSONSerializer.serializerBasic(meta).getBytes(StandardCharsets.UTF_8));
                 myMeta = meta;
                 myMetaFile = metaFile;
 

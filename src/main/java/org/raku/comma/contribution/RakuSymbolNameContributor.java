@@ -28,9 +28,9 @@ public class RakuSymbolNameContributor implements ChooseByNameContributor {
         result.addAll(RakuAllAttributesStubIndex.getInstance().getAllKeys(project));
         result.addAll(RakuAllConstantsStubIndex.getInstance().getAllKeys(project));
 
-        RakuFrameworkCall[] extensions = RakuFrameworkCall.EP_NAME.getExtensions();
-        for (RakuFrameworkCall ext : extensions)
-            ext.contributeSymbolNames(project, result);
+//        RakuFrameworkCall[] extensions = RakuFrameworkCall.EP_NAME.getExtensions();
+//        for (RakuFrameworkCall ext : extensions)
+//            ext.contributeSymbolNames(project, result);
 
         return ArrayUtil.toStringArray(result);
     }

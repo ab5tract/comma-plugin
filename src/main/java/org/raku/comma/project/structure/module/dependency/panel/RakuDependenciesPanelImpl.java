@@ -21,7 +21,7 @@ import com.intellij.util.containers.ArrayListSet;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.JBUI;
 import org.raku.comma.metadata.RakuMetaDataComponent;
-import org.raku.comma.utils.RakuModuleListFetcher;
+import org.raku.comma.services.RakuModuleListFetcher;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -221,7 +221,8 @@ public class RakuDependenciesPanelImpl extends JPanel {
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(new Task.Backgroundable(myProject, "Getting Raku Modules List") {
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
-                    Set<String> names = RakuModuleListFetcher.getNames(myProject);
+                    if (myProject == null) return;
+                    Set<String> names = myProject.getService(RakuModuleListFetcher.class).getNames();
                     Set<String> localNames = new ArrayListSet<>();
                     Module currentlyEditedModule = myModel.getState().getCurrentRootModel().getModule();
                     Module[] modules = ModuleManager.getInstance(myProject).getModules();

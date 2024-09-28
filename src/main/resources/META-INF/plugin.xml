@@ -285,7 +285,7 @@
     <usageTypeProvider implementation="org.raku.comma.cro.template.findUsages.CroTemplateUsageTypeProvider"/>
     <toolWindow id="Raku Grammar Preview" anchor="right" factoryClass="org.raku.comma.grammar.RakuGrammarPreviewFactory"
                 secondary="false" canCloseContents="false"/>
-    <backgroundPostStartupActivity implementation="org.raku.comma.utils.RakuModuleListStarter"/>
+    <backgroundPostStartupActivity implementation="org.raku.comma.project.activity.RakuModuleListStarter" order="first" />
     <backgroundPostStartupActivity implementation="org.raku.comma.utils.RakuLegacyExtensionsDetector"/>
     <backgroundPostStartupActivity implementation="org.raku.comma.pm.RakuModuleInstallPromptStarter"/>
     <moduleService serviceImplementation="org.raku.comma.metadata.RakuMetaDataComponent"/>
@@ -344,7 +344,7 @@
     <navbar implementation="org.raku.comma.structureView.RakuStructureAwareNavbar"/>
     <backgroundPostStartupActivity id="ProjectIsRakudoCoreAnnouncer"
                                    implementation="org.raku.comma.project.activity.ProjectIsRakudoCoreDetector"
-                                   order="first"/>
+                                   order="last"/>
   </extensions>
 
   <actions>

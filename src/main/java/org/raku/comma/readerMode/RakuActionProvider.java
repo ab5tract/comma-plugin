@@ -106,20 +106,20 @@ public class RakuActionProvider implements InspectionWidgetActionProvider {
         CodeModeAction(@NotNull Editor editor) {
             super(RakuReaderModeState.CODE, editor);
         }
-        @Override public @NotNull ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.EDT; }
+        @Override public @NotNull ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.BGT; }
     }
 
     private static class DocsModeAction extends RotatedStateAction {
         DocsModeAction(@NotNull Editor editor) {
             super(RakuReaderModeState.DOCS, editor);
         }
-        @Override public @NotNull ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.EDT; }
+        @Override public @NotNull ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.BGT; }
     }
 
     private static class SplitModeAction extends RotatedStateAction {
         SplitModeAction(@NotNull Editor editor) {
             super(RakuReaderModeState.SPLIT, editor);
         }
-        @Override public @NotNull ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.EDT; }
+        @Override public @NotNull ActionUpdateThread getActionUpdateThread() { return ActionUpdateThread.BGT; }
     }
 }

@@ -12,6 +12,7 @@ plugins {
 //    id("org.jetbrains.grammarkit") version "2022.3.2.2"
 
     kotlin("jvm") version "2.0.20"
+    kotlin("plugin.serialization") version "2.0.20"
 }
 
 group = properties("pluginGroup")
@@ -65,9 +66,11 @@ dependencies {
         zipSigner()
         instrumentationTools()
     }
-//    implementation(kotlin("stdlib-jdk8"))
     implementation(files("libs/xchart-3.8.0.jar"))
     implementation(files("libs/moarvmremote.jar"))
+
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
     implementation("io.airlift:aircompressor:2.0.2")
     implementation("org.json:json:20240303")
     // TODO: Remove this due to multiple unpatch CVEs

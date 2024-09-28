@@ -18,9 +18,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.raku.comma.project.RakuProjectImportProvider;
 import org.raku.comma.project.projectWizard.CommaAbstractProjectWizard;
 import org.raku.comma.project.projectWizard.CommaAddModuleWizard;
-import org.raku.comma.utils.CommaProjectUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.utils.CommaProjectUtil;
 
 import java.awt.*;
 import java.nio.file.Paths;

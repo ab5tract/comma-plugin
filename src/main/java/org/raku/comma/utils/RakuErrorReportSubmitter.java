@@ -45,7 +45,7 @@ public class RakuErrorReportSubmitter extends ErrorReportSubmitter {
     @NotNull
     @Override
     public String getReportActionText() {
-        return "Report to Edument Team";
+        return "Report Issue to Comma Developers";
     }
 
     @Override

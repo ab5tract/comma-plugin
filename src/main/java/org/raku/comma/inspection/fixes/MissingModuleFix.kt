@@ -13,6 +13,7 @@ class MissingModuleFix(private val moduleName: String) : LocalQuickFix {
         val file = descriptor.psiElement.containingFile
         val module = ModuleUtilCore.findModuleForFile(file)
             ?: throw IncorrectOperationException("Cannot be used in files outside of an IntelliJ module")
+        // TODO: We want to move away from the RakuMetaDataComponent stuff to a Facet implementation
         val metaData = module.getService(RakuMetaDataComponent::class.java)
         metaData.addDepends(moduleName)
         DaemonCodeAnalyzer.getInstance(project).restart(file)

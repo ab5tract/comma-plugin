@@ -2,6 +2,8 @@ package org.raku.comma.services
 
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.Project
+import kotlinx.datetime.*
+import kotlin.time.Duration
 
 @Service(Service.Level.PROJECT)
 @State(name = "Raku.Project.Details", storages = [Storage(value = RakuServiceConstants.PROJECT_SETTINGS_FILE)])
@@ -23,8 +25,20 @@ class RakuProjectDetailsService(
         thisState.isProjectRakudoCore = coreCheck
         return thisState
     }
+
+    fun needsEcosystemModuleRefresh(): Boolean {
+        if (projectState.lastEcosystemModuleRefresh.isNullOrBlank()) return true
+
+        val lastRefresh: Instant = Instant.parse(projectState.lastEcosystemModuleRefresh!!)
+        return lastRefresh.plus(Duration.parse("45m")) < Clock.System.now()
+    }
+
+    fun setEcosystemModuleRefresh() {
+        projectState.lastEcosystemModuleRefresh = Clock.System.now().toString()
+    }
 }
 
 class RakudoProjectState : BaseState() {
     var isProjectRakudoCore by property(false)
+    var lastEcosystemModuleRefresh by string()
 }

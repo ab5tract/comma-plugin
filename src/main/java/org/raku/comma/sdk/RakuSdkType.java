@@ -21,6 +21,7 @@ import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import org.raku.comma.RakuIcons;
 import org.raku.comma.actions.ShowRakuProjectStructureAction;
+import org.raku.comma.metadata.data.MetaFile;
 import org.raku.comma.psi.RakuFile;
 import org.raku.comma.psi.RakuPackageDecl;
 import org.raku.comma.psi.RakuPsiElement;
@@ -177,7 +178,7 @@ public class RakuSdkType extends SdkType {
     public String getVersionString(@NotNull String path) {
         String binPath = findRakuInSdkHome(path);
         if (binPath == null) return null;
-        String[] command = {binPath, "-e", "say $*PERL.compiler.version"};
+        String[] command = {binPath, "-e", "say $*RAKU.compiler.version"};
         String line = null;
         ProcessBuilder processBuilder = new ProcessBuilder(command);
 
@@ -457,7 +458,7 @@ public class RakuSdkType extends SdkType {
             return fileCache.compute(name, (n, v) -> constructExternalPsiFile(project, n, new JSONArray(symbolCache.get(n))));
         }
 
-        if (!packagesStarted.contains(name)) {
+        if (! packagesStarted.contains(name)) {
             packagesStarted.add(name);
             ApplicationManager.getApplication().executeOnPooledThread(() -> {
                 try {
@@ -475,7 +476,7 @@ public class RakuSdkType extends SdkType {
     private static RakuFile constructExternalPsiFile(Project project, String name, JSONArray externalsJSON) {
         ExternalRakuFile rakuFile = null;
         try {
-            LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
+            LightVirtualFile dummy = new LightVirtualFile(name + ".rakumod");
             rakuFile = new ExternalRakuFile(project, dummy);
             RakuExternalNamesParser parser = new RakuExternalNamesParser(project, rakuFile, externalsJSON);
             rakuFile.setSymbols(parser.parse().result());
@@ -489,11 +490,11 @@ public class RakuSdkType extends SdkType {
                                                      String invocation,
                                                      Map<String, String> symbolCache)
     {
-        LightVirtualFile dummy = new LightVirtualFile(name + ".pm6");
-        ExternalRakuFile perl6File = new ExternalRakuFile(project, dummy);
-        List<RakuSymbol> symbols = loadModuleSymbols(project, perl6File, name, invocation, symbolCache, false);
-        perl6File.setSymbols(symbols);
-        return perl6File;
+        LightVirtualFile dummy = new LightVirtualFile(name + ".rakumod");
+        ExternalRakuFile rakuFile = new ExternalRakuFile(project, dummy);
+        List<RakuSymbol> symbols = loadModuleSymbols(project, rakuFile, name, invocation, symbolCache, false);
+        rakuFile.setSymbols(symbols);
+        return rakuFile;
     }
 
     public void invalidateCaches(Project project) {
@@ -579,5 +580,13 @@ public class RakuSdkType extends SdkType {
             RakuPackageDecl decl = (RakuPackageDecl) parentCollector.getResult().getPsi();
             decl.contributeMOPSymbols(collector, allowed);
         }
+    }
+
+    public static String pathOfProvidedModule(MetaFile metaFile, String providedPath) {
+        if (metaFile.getSourceUrl() == null) return null;
+        var splits = metaFile.getSourceUrl().split("//");
+        var end = splits[splits.length - 1].replace(".git", "");
+//        return "raku://%d:%s!/".formatted(, end);
+        return null;
     }
 }

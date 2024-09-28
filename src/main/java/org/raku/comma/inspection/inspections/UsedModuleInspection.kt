@@ -13,7 +13,7 @@ import org.raku.comma.metadata.RakuMetaDataComponent
 import org.raku.comma.psi.RakuColonPair
 import org.raku.comma.psi.RakuLongName
 import org.raku.comma.psi.RakuModuleName
-import org.raku.comma.utils.RakuModuleListFetcher
+import org.raku.comma.services.RakuModuleListFetcher
 
 class UsedModuleInspection : RakuInspection() {
     override fun provideVisitFunction(holder: ProblemsHolder, element: PsiElement) {
@@ -29,11 +29,12 @@ class UsedModuleInspection : RakuInspection() {
             if (key == "from") return
         }
 
-
+        val service = holder.project.getService(RakuModuleListFetcher::class.java)
         // We don't need to annotate late-bound modules
         if (moduleName.startsWith("::")) return
-        if (RakuModuleListFetcher.PREINSTALLED_MODULES.contains(moduleName)) return
-        if (RakuModuleListFetcher.PRAGMAS.contains(moduleName)) return
+        if (service.PREINSTALLED_MODULES.contains(moduleName)) return
+        if (service.PRAGMAS.contains(moduleName)) return
+        if (service.isNotReady) return
 
         val module = ModuleUtilCore.findModuleForPsiElement(element) ?: return
         val metaData = module.getService(RakuMetaDataComponent::class.java)
@@ -46,32 +47,23 @@ class UsedModuleInspection : RakuInspection() {
         // There is no need to
         if (element.reference?.resolve() != null) return
 
-        val project = element.getProject()
-
-        if (!RakuModuleListFetcher.isReady()) {
-            RakuModuleListFetcher.populateModules(project)
-            return
-        }
-
         val dependencies: MutableList<String> = ArrayList()
         dependencies.addAll(metaData.getDepends(true))
         dependencies.addAll(metaData.getTestDepends(true))
         dependencies.addAll(metaData.getBuildDepends(true))
         for (dependency in dependencies) {
-            var providesOfDependency = RakuModuleListFetcher.getProvidesByModule(project, dependency, HashSet())
-            // Maybe it is a part of the distribution, and we can get something out its parent distribution
+            var providesOfDependency = service.getProvidesListByModule(dependency)
+            // Maybe it is a part of the distribution, and we can get something out of its parent distribution
             if (providesOfDependency.isEmpty()) {
-                val parentModuleName = RakuModuleListFetcher.getModuleByProvide(project, dependency)
+                val parentModuleName = service.getModuleByProvide(dependency)
                 if (parentModuleName != null) {
-                    providesOfDependency = RakuModuleListFetcher.getProvidesByModule(project,
-                                                                                     parentModuleName,
-                                                                                     HashSet())
+                    providesOfDependency = service.getProvidesListByModule(parentModuleName)
                 }
             }
             // If a module is in dependencies list, do nothing
             if (providesOfDependency.contains(moduleName)) return
         }
-        val holderPackage = RakuModuleListFetcher.getModuleByProvide(project, moduleName)
+        val holderPackage = service.getModuleByProvide(moduleName)
         if (holderPackage != null) {
             holder.registerProblem(element, DESCRIPTION_META6_FORMAT.format(moduleName), MissingModuleFix(moduleName))
         } else {

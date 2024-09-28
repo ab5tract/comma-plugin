@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.raku.comma.metadata.data.MetaFile;
 
 import java.util.*;
 
@@ -17,6 +18,11 @@ class MetaDataJSONSerializer {
             "emulates", "supersedes", "superseded-by", "excludes",
             "source-url"
     };
+
+    static String serializerBasic(JSONObject meta) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+        return gson.toJson(meta, MetaFile.class);
+    }
 
     static String serializer(JSONObject meta) {
         Map<String, Object> orderedMetaFieldsMap = new LinkedHashMap<>();

@@ -35,7 +35,8 @@ public class RakuModuleViewEditor extends UserDataHolderBase implements TextEdit
     public RakuModuleViewEditor(TextEditor editor,
                                 PodPreviewEditor viewer,
                                 @NotNull VirtualFile file,
-                                String editorName) {
+                                String editorName)
+    {
         myEditor = editor;
         myViewer = viewer;
         myFile = file;
@@ -75,9 +76,10 @@ public class RakuModuleViewEditor extends UserDataHolderBase implements TextEdit
         ApplicationManager.getApplication().invokeLater(() -> {
             myState = state;
             PsiFile psiFile = PsiDocumentManager.getInstance(Objects.requireNonNull(myEditor.getEditor().getProject()))
-                .getPsiFile(myEditor.getEditor().getDocument());
-            if (psiFile != null)
+                                                .getPsiFile(myEditor.getEditor().getDocument());
+            if (psiFile != null) {
                 psiFile.putUserData(RakuActionProvider.RAKU_EDITOR_MODE_STATE, state);
+            }
             myTriggerPodRenderCode.run();
             invalidateLayout();
             myEditor.getComponent().setVisible(state == RakuReaderModeState.CODE || state == RakuReaderModeState.SPLIT);
@@ -87,17 +89,13 @@ public class RakuModuleViewEditor extends UserDataHolderBase implements TextEdit
 
     @Override
     public @Nullable JComponent getPreferredFocusedComponent() {
-        if (myState == null)
+        if (myState == null) {
             myState = RakuReaderModeState.CODE;
-        switch (myState) {
-            case SPLIT:
-            case CODE:
-                return myEditor.getPreferredFocusedComponent();
-            case DOCS:
-                return myViewer.getPreferredFocusedComponent();
-            default:
-                throw new IllegalStateException();
         }
+        return switch (myState) {
+            case SPLIT, CODE -> myEditor.getPreferredFocusedComponent();
+            case DOCS -> myViewer.getPreferredFocusedComponent();
+        };
     }
 
     @Override
@@ -107,7 +105,7 @@ public class RakuModuleViewEditor extends UserDataHolderBase implements TextEdit
 
     @Override
     public void setState(@NotNull FileEditorState state) {
-        if (state instanceof Perl6ModuleEditorState compositeState) {
+        if (state instanceof RakuModuleEditorState compositeState) {
             if (compositeState.getEditorState() != null) {
                 myEditor.setState(compositeState.getEditorState());
             }
@@ -126,7 +124,7 @@ public class RakuModuleViewEditor extends UserDataHolderBase implements TextEdit
 
     @Override
     public @NotNull FileEditorState getState(@NotNull FileEditorStateLevel level) {
-        return new Perl6ModuleEditorState(myEditor.getState(level), myViewer.getState(level));
+        return new RakuModuleEditorState(myEditor.getState(level), myViewer.getState(level));
     }
 
     public RakuReaderModeState getPresentedState() {
@@ -136,8 +134,10 @@ public class RakuModuleViewEditor extends UserDataHolderBase implements TextEdit
     @Override
     public @Nullable StructureViewBuilder getStructureViewBuilder() {
         PsiFile psiFile = PsiDocumentManager.getInstance(Objects.requireNonNull(myEditor.getEditor().getProject()))
-            .getPsiFile(myEditor.getEditor().getDocument());
-        return psiFile == null ? null : new RakuStructureViewBuilder(psiFile);
+                                            .getPsiFile(myEditor.getEditor().getDocument());
+        return psiFile == null
+               ? null
+               : new RakuStructureViewBuilder(psiFile);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class RakuModuleViewEditor extends UserDataHolderBase implements TextEdit
         return myEditor.getBackgroundHighlighter();
     }
 
-  @Override
+    @Override
     public boolean isModified() {
         return myEditor.isModified();
     }
@@ -195,24 +195,25 @@ public class RakuModuleViewEditor extends UserDataHolderBase implements TextEdit
 
     @Override
     public void navigateTo(@NotNull Navigatable navigatable) {
-        if (myState == RakuReaderModeState.DOCS)
+        if (myState == RakuReaderModeState.DOCS) {
             updateState(RakuReaderModeState.CODE);
+        }
         myEditor.navigateTo(navigatable);
         requestFocus();
     }
 
-    private static class Perl6ModuleEditorState implements FileEditorState {
+    private static class RakuModuleEditorState implements FileEditorState {
         private final FileEditorState myEditorState;
         private final FileEditorState myViewerState;
 
-        private Perl6ModuleEditorState(@NotNull FileEditorState editorState, FileEditorState viewerState) {
+        private RakuModuleEditorState(@NotNull FileEditorState editorState, FileEditorState viewerState) {
             myEditorState = editorState;
             myViewerState = viewerState;
         }
 
         @Override
         public boolean canBeMergedWith(FileEditorState otherState, FileEditorStateLevel level) {
-            return otherState instanceof Perl6ModuleEditorState;
+            return otherState instanceof RakuModuleEditorState;
         }
 
         public FileEditorState getEditorState() {

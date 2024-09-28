@@ -24,7 +24,7 @@ import java.util.List;
 
 @InternalIgnoreDependencyViolation
 public class RakuLineMarkerProvider extends RelatedItemLineMarkerProvider {
-    private static final NotNullFunction<PsiElement, Collection<? extends GotoRelatedItem>> PERL6_GOTO_RELATED_ITEM_PROVIDER =
+    private static final NotNullFunction<PsiElement, Collection<? extends GotoRelatedItem>> RAKU_GOTO_RELATED_ITEM_PROVIDER =
         dom -> Collections.singletonList(new GotoRelatedItem(dom, "Raku"));
 
     @Override
@@ -47,7 +47,7 @@ public class RakuLineMarkerProvider extends RelatedItemLineMarkerProvider {
 
         if (targets.size() > 0)
             result.add(NavigationGutterIconBuilder
-                           .create(RakuIcons.CLASS, ContainerUtil::createMaybeSingletonList, PERL6_GOTO_RELATED_ITEM_PROVIDER)
+                           .create(RakuIcons.CLASS, ContainerUtil::createMaybeSingletonList, RAKU_GOTO_RELATED_ITEM_PROVIDER)
                            .setTargets(targets)
                            .setTooltipText("Navigate to subtypes and supertypes")
                            .createLineMarkerInfo(element)

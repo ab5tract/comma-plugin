@@ -43,23 +43,24 @@ public class RakuCommandLine extends GeneralCommandLine {
         this(RakuSdkType.getSdkHomeByProject(project));
     }
 
-    protected RakuCommandLine(@Nullable String sdkHome) throws ExecutionException {
-        if (sdkHome == null)
-            throw new ExecutionException("No SDK for project");
-        if (Paths.get(sdkHome).toFile().isFile())
+    public RakuCommandLine(@Nullable String sdkHome) throws ExecutionException {
+        if (sdkHome == null) throw new ExecutionException("No SDK for project");
+
+        if (Paths.get(sdkHome).toFile().isFile()) {
             setExePath(sdkHome);
-        else {
-            String perl6Binary = RakuSdkType.findRakuInSdkHome(sdkHome);
-            if (perl6Binary == null)
-                throw new ExecutionException("SDK is invalid");
-            setExePath(perl6Binary);
+        } else {
+            String rakuBinary = RakuSdkType.findRakuInSdkHome(sdkHome);
+            if (rakuBinary == null) throw new ExecutionException("SDK is invalid");
+
+            setExePath(rakuBinary);
         }
     }
 
     public RakuCommandLine(Project project, int debugPort) throws ExecutionException {
         List<String> parameters = populateDebugCommandLine(project, debugPort);
-        if (parameters == null)
+        if (parameters == null) {
             throw new ExecutionException("SDK is not valid for debugging");
+        }
         setExePath(parameters.getFirst());
         addParameters(parameters.subList(1, parameters.size()));
     }
@@ -69,14 +70,14 @@ public class RakuCommandLine extends GeneralCommandLine {
         List<String> results = new LinkedList<>();
         try {
             Process p = createProcess();
-            try (
-                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))
-            ) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) results.add(line);
                 if (p.waitFor() != 0) {
                     if (scriptFile != null) {
-                        if (! scriptFile.delete()) LOG.warn("Could not delete script file: " + scriptFile.getAbsolutePath());
+                        if (!scriptFile.delete()) {
+                            LOG.warn("Could not delete script file: " + scriptFile.getAbsolutePath());
+                        }
                     }
                     return new ArrayList<>();
                 }
@@ -87,7 +88,7 @@ public class RakuCommandLine extends GeneralCommandLine {
             LOG.warn(e);
         }
         if (scriptFile != null) {
-           if (! scriptFile.delete()) LOG.warn("Could not delete script file: " + scriptFile.getAbsolutePath());
+            if (!scriptFile.delete()) LOG.warn("Could not delete script file: " + scriptFile.getAbsolutePath());
         }
         return results;
     }
@@ -101,8 +102,7 @@ public class RakuCommandLine extends GeneralCommandLine {
         if (sdk != null) {
             versionString = sdk.getVersionString();
             homePath = sdk.getHomePath();
-        }
-        else {
+        } else {
             RakuSDKService backupSDKService = project.getService(RakuSDKService.class);
             String backupSDKPath = backupSDKService.getProjectSdkPath();
             if (backupSDKPath != null) {
@@ -111,8 +111,9 @@ public class RakuCommandLine extends GeneralCommandLine {
             }
         }
 
-        if (versionString == null || homePath == null)
+        if (versionString == null || homePath == null) {
             return null;
+        }
 
         if (VersionComparatorUtil.compare(versionString, "v2019.07") >= 0) {
             String rakuBinary = RakuSdkType.findRakuInSdkHome(homePath);

@@ -8,8 +8,8 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.wm.impl.welcomeScreen.NewWelcomeScreen;
 import org.raku.comma.project.projectWizard.CommaNewProjectWizard;
-import org.raku.comma.utils.CommaProjectUtil;
 import org.jetbrains.annotations.NotNull;
+import org.raku.comma.utils.CommaProjectUtil;
 
 public class NewProjectAction extends AnAction implements DumbAware {
     @Override

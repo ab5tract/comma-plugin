@@ -2,16 +2,23 @@ package org.raku.comma.psi;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.NlsSafe;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiParserFacade;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.RakuLanguage;
+import org.raku.comma.filetypes.RakuModuleFileType;
 import org.raku.comma.filetypes.RakuScriptFileType;
 import org.raku.comma.refactoring.NewCodeBlockData;
 import org.raku.comma.refactoring.RakuCodeBlockType;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -161,6 +168,14 @@ public class RakuElementFactory {
 
     public static RakuLoopStatement createLoop(Project project, PsiElement block) {
         return produceElement(project, "loop " + block.getText(), RakuLoopStatement.class);
+    }
+
+    public static PsiFile createModulePsiFile(Project project, String moduleText, String name, String path) {
+        String outFile = name.replace("::", "-");
+        String filename = outFile + "." + RakuModuleFileType.INSTANCE.getDefaultExtension();
+        VirtualFile file = VirtualFileManager.getInstance().findFileByNioPath(Path.of(path));
+        return PsiFileFactory.getInstance(project)
+                .createFileFromText(filename, RakuLanguage.INSTANCE, moduleText, true, true, true, file);
     }
 
     protected static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {

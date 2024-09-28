@@ -15,9 +15,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
 import org.raku.comma.psi.*;
 import org.raku.comma.psi.symbols.RakuLexicalSymbolContributor;
-import org.raku.comma.psi.symbols.RakuSymbol;
-import org.raku.comma.psi.symbols.RakuSymbolKind;
-import org.raku.comma.psi.symbols.RakuVariantsSymbolCollector;
 import org.jetbrains.annotations.NotNull;
 import org.raku.comma.utils.CommaProjectUtil;
 
