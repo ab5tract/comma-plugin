@@ -166,11 +166,6 @@ public class CommaProjectUtil {
         }
     }
 
-    public static boolean isRakudoCoreProject(PsiElement element) {
-       return (element instanceof RakuASTWrapperPsiElement)
-               && ((RakuASTWrapperPsiElement) element).isWithinRakudoCoreProject();
-    }
-
     public static boolean isRakudoCoreProject(Project project) {
         return project.getService(RakuProjectDetailsService.class).isProjectRakudoCore();
     }

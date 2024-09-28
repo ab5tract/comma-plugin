@@ -2,18 +2,19 @@ package org.raku.comma.psi;
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import org.raku.comma.utils.CommaProjectUtil;
 
-/* Reduce the cost of this lookup so that it isn't happening more than once per element */
+/*
+    This was originally introduced as a way to track is an element belongs to a
+    project that `isRakudoCoreProject`, so that certain annotations could be skipped.
+
+    This seemed like it would probably be too heavy, and indeed it was. The better
+    solution turned out to be migrating all of those annotation to inspections.
+
+    But rather than totally unwind this, let's leave this wrapper class here in case
+    we ever do need to add something to all of our elements.
+
+ */
 
 public class RakuASTWrapperPsiElement extends ASTWrapperPsiElement {
     public RakuASTWrapperPsiElement(ASTNode node) { super(node); }
-
-    private Boolean withinRakudoCoreProject;
-    public boolean isWithinRakudoCoreProject() {
-        if (withinRakudoCoreProject == null) {
-            withinRakudoCoreProject = CommaProjectUtil.isRakudoCoreProject(this.getProject());
-        }
-        return withinRakudoCoreProject;
-    }
 }
