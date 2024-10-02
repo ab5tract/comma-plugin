@@ -24,7 +24,7 @@ class StubMissingPrivateMethodFix : LocalQuickFix {
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val call = descriptor.psiElement as RakuMethodCall
-        val name = call.name ?: return
+        val name: String = call.simpleName.text ?: return
         val packageDecl = PsiTreeUtil.getParentOfType(call, RakuPackageDecl::class.java)
         val list = PsiTreeUtil.findChildOfType(packageDecl, RakuStatementList::class.java)
         val editor = PsiEditorUtil.findEditor(call) ?: return
@@ -47,10 +47,10 @@ class StubMissingPrivateMethodFix : LocalQuickFix {
                 anchor = temp
             }
         }
-        anchor = if (anchor != null)
-            PsiTreeUtil.getParentOfType(anchor, RakuStatement::class.java, false)
-        else
-            RakuPsiUtil.skipSpaces(list.lastChild, false)
+        anchor =    if (anchor != null)
+                        PsiTreeUtil.getParentOfType(anchor, RakuStatement::class.java, false)
+                    else
+                        RakuPsiUtil.skipSpaces(list.lastChild, false)
         if (anchor == null) {
             CommonRefactoringUtil.showErrorHint(
                 project,
@@ -78,7 +78,7 @@ class StubMissingPrivateMethodFix : LocalQuickFix {
             parameters
         )
 
-        val newMethod = RakuElementFactory.createNamedCodeBlock(project, data, ArrayList())
+        val newMethod = RakuElementFactory.createNamedCodeBlock(project, data, listOf(" ... "))
 
         val newlyAddedMethod = list.addAfter(newMethod, anchor)
 
