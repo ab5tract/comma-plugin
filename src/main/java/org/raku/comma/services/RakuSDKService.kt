@@ -1,6 +1,5 @@
 package org.raku.comma.services
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.components.*
 import com.intellij.openapi.module.ModuleManager

@@ -56,10 +56,9 @@ class RakuDependencyDetailsService(
                                                      .flatMap { moduleService.getProvidesListByModule(it) }
         pathLookup.putAll(pathOfProvideReference(provides).entries.map { Pair(it.key, it.value.first()) })
             // TODO: Figure out async for this...
-//            pathLookup.putAll(withContext(dispatchScope.coroutineContext, {
-//                pathOfProvideReference(provides).entries.map { Pair(it.key, it.value.first()) }
-//            }))
-//        }
+            // pathLookup.putAll(withContext(dispatchScope.coroutineContext, {
+            //        pathOfProvideReference(provides).entries.map { Pair(it.key, it.value.first()) }
+            // }))
         dependencyState.provideToPath = pathLookup
     }
 
@@ -88,7 +87,7 @@ class RakuDependencyDetailsService(
         if (isNotReady && isNotGettingReady) {
             isGettingReady = true
             // TODO: Figure out the async story...
-//            runBlocking(dispatchScope.coroutineContext, { fillState() })
+            //  runBlocking(dispatchScope.coroutineContext, { fillState() })
             fillState()
             isGettingReady = false
         }

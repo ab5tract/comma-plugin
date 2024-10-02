@@ -149,7 +149,8 @@ class RakuModuleListFetcher(private val project: Project) : PersistentStateCompo
 
     private fun populateModulesList(): MutableMap<String, MetaFile> {
         val metaFiles: MutableList<MetaFile> = mutableListOf()
-        for (repo in repos) {
+        // TODO: Create a configuration that searches more ecosystems
+        for (repo in repos.filter { it.name == "fez" }) {
             val output = doRequest(repo.url)
             if (output != null) {
                 metaFiles.addAll(populateArrayFromSource(output))
