@@ -12,6 +12,7 @@ import org.raku.comma.psi.symbols.RakuSymbolKind
 import java.util.regex.Pattern
 
 class UndeclaredVariableInspection : RakuInspection() {
+
     override fun provideVisitFunction(holder: ProblemsHolder, element: PsiElement) {
 
         // Make sure we've got a sensible looking variable to check.
@@ -26,7 +27,6 @@ class UndeclaredVariableInspection : RakuInspection() {
             val symbol = element.resolveLexicalSymbol(RakuSymbolKind.Variable, "$/")
             if (! symbol.isImplicitlyDeclared) return
         }
-
 
         // Check for $=finish section
         if (RakuVariable.getTwigil(variableName) == '=' && variableName == "$=finish") {
@@ -46,6 +46,27 @@ class UndeclaredVariableInspection : RakuInspection() {
         // Ignore anonymous variables
         // It also skips cases of contextualizer declarations
         if (ANONYMOUS_VARIABLES.contains(variableName)) return
+
+        // If it's an implicit variable, ensure that there is either no signature on the containing block
+        // or a signature that declares the implicit variable
+        if (IMPLICIT_VARIABLES.contains(variableName) && element.parent !is RakuParameterVariable) {
+            val nearestBlockoid = PsiTreeUtil.getParentOfType(element, RakuBlockoid::class.java)!!
+
+            // Even Kotlin hasn't fixed this stupidity in Java...
+            // I present to you a hand-unrolled loop of class checking
+            var aSignatureBlock: PsiElement? = PsiTreeUtil.getParentOfType(element, RakuPointyBlock::class.java)
+            if (aSignatureBlock != null && nearestBlockoid.parent != aSignatureBlock) return
+
+            // Only compute for routine declaration if we haven't already found a pointy block
+            if (aSignatureBlock == null) {
+                aSignatureBlock = PsiTreeUtil.getParentOfType(element, RakuRoutineDecl::class.java)
+                if (aSignatureBlock != null && nearestBlockoid.parent != aSignatureBlock) return
+            }
+
+            val signature = PsiTreeUtil.getChildOfType(aSignatureBlock, RakuSignature::class.java) ?: return
+            if (signature.parameters.find { starStripper(it.text) == variableName } != null) return
+            holder.registerProblem(element, DESCRIPTION_IMPLICIT_WITH_SIGNATURE_FORMAT.format(variableName), ProblemHighlightType.ERROR)
+        }
 
         // Make sure it's not a long or late-bound name.
         if (variableName.contains("::") || variableName.contains(":[")) return
@@ -71,5 +92,9 @@ class UndeclaredVariableInspection : RakuInspection() {
                 }
             }
         }
+    }
+
+    private fun starStripper(text: String): String {
+        return text.replace("*", "").trim()
     }
 }

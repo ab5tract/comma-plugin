@@ -180,7 +180,10 @@ public class InspectionConstants {
         public static final String DESCRIPTION_NOT_DECLARED_FORMAT = "Variable %s is not declared";
         public static final String DESCRIPTION_NOT_DECLARED_SCOPE_FORMAT = "Variable %s is not declared in this scope yet";
         public static final String DESCRIPTION_DOC_FINISH = "There is no =finish section in this file";
+        public static final String DESCRIPTION_IMPLICIT_WITH_SIGNATURE_FORMAT = "Implicit variable '%s' used in combination with a signature that does not declare it as a parameter";
+
         public static final Set<String> ANONYMOUS_VARIABLES = Set.of("$", "@", "%", "&");
+        public static final Set<String> IMPLICIT_VARIABLES = Set.of("$_", "@_", "%_");
     }
 
     public static class UnitSub {
