@@ -4,7 +4,6 @@ import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import org.raku.comma.psi.RakuControlStatement;
 import org.raku.comma.psi.type.RakuType;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +14,6 @@ public class RakuControlStatementImpl extends RakuASTWrapperPsiElement implement
 
     @Override
     public RakuType inferTopicType() {
-        return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Exception);
+        return lookupGlobalSymbol(RakuSettingTypeId.Exception);
     }
 }

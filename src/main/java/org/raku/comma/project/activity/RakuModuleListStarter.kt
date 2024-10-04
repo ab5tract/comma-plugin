@@ -5,8 +5,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import org.raku.comma.event.ModuleMetaChangeListener
 import org.raku.comma.metadata.RakuMetaDataComponent
-import org.raku.comma.services.RakuDependencyDetailsService
-import org.raku.comma.services.RakuModuleListFetcher
+import org.raku.comma.services.project.RakuDependencyDetailsService
+import org.raku.comma.services.project.RakuModuleListFetcher
 
 class RakuModuleListStarter : ProjectActivity {
     override suspend fun execute(project: Project) {

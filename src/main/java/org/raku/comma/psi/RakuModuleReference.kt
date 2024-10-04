@@ -10,8 +10,8 @@ import com.intellij.psi.stubs.StubIndex
 import com.intellij.util.IncorrectOperationException
 import org.raku.comma.psi.stub.index.ProjectModulesStubIndex
 import org.raku.comma.psi.stub.index.RakuStubIndexKeys
-import org.raku.comma.services.RakuDependencyDetailsService
-import org.raku.comma.services.RakuModuleListFetcher
+import org.raku.comma.services.project.RakuDependencyDetailsService
+import org.raku.comma.services.project.RakuModuleListFetcher
 import java.util.function.Consumer
 
 class RakuModuleReference(moduleName: RakuModuleName) :

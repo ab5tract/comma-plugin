@@ -33,9 +33,10 @@
 <li>Migrated to the latest IntelliJ version (2024.2)</li>
 <li>Many internal fixups related to the above that should improve plugin stability</li>
 <li>Run configurations now all default it <pre>-I.</pre> instead of <pre>-Ilib</pre></li>
-<li>Hacking on Rakudo source code more comfortable thanks to prompt presented to the user to suppress
+<li>Hacking on Rakudo source code more comfortable thanks to a prompt presented to the user to suppress
  code inspections for the usage of implementation details, the use of NQP where no <pre>use nqp</pre> is seen in scope,
- etc. Users are presented this choice when opening either a project named 'rakudo' or a project based in a path that
+ and several other inspections that cause unnecessary clutter when hacking on the Rakudo source code.
+ Users are presented this choice when opening either a project named 'rakudo' or a project based in a path that
  ends in 'rakudo'.</li>
 </ul>
   ]]>
@@ -78,8 +79,9 @@
     <fileTypeDetector implementation="org.raku.comma.filetypes.RakuFileShebangTypeDetector"/>
     <fileTypeDetector implementation="org.raku.comma.filetypes.RakudoFileShebangTypeDetector"/>
     <moduleType id="RAKU_MODULE_TYPE" implementationClass="org.raku.comma.module.RakuModuleType" />
-    <moduleBuilder builderClass="org.raku.comma.module.RakuModuleBuilder"/>
-    <sdkType implementation="org.raku.comma.sdk.RakuSdkType"/>
+<!--    <moduleBuilder builderClass="org.raku.comma.module.RakuModuleBuilder"/>-->
+    <moduleBuilder id="RAKU_MODULE_TYPE" builderClass="org.raku.comma.project.wizard.RakuModuleWizardBuilder" />
+
     <programRunner implementation="org.raku.comma.debugger.RakuDebugRunner"/>
     <xdebugger.breakpointType implementation="org.raku.comma.debugger.RakuLineBreakpointType"/>
     <lang.syntaxHighlighterFactory language="Raku" implementationClass="org.raku.comma.highlighter.RakuSyntaxHighlighterFactory"/>
@@ -88,7 +90,7 @@
     <lang.formatter language="Raku" implementationClass="org.raku.comma.formatter.RakuFormattingModelBuilder"/>
     <langCodeStyleSettingsProvider implementation="org.raku.comma.formatter.RakuCodeStyleSettingsProvider"/>
     <lang.braceMatcher language="Raku" implementationClass="org.raku.comma.editor.RakuBraceMatcher"/>
-    <lang.psiStructureViewFactory language="Raku" implementationClass="org.raku.comma.structureView.RakuStructureViewFactory"/>
+<!--    <lang.psiStructureViewFactory language="Raku" implementationClass="org.raku.comma.structureView.RakuStructureViewFactory"/>-->
     <declarationRangeHandler key="org.raku.comma.psi.RakuPackageDecl"
                              implementationClass="org.raku.comma.structureView.PackageDeclarationRangeHandler"/>
     <declarationRangeHandler key="org.raku.comma.psi.RakuRoutineDecl"
@@ -140,8 +142,8 @@
     <stubIndex implementation="org.raku.comma.cro.CroTemplateIndex"/>
     <codeInsight.parameterInfo language="Raku" implementationClass="org.raku.comma.RakuParameterInfoHandler"/>
     <lang.inspectionSuppressor language="Raku" implementationClass="org.raku.comma.inspection.suppressor.RakuInspectionSuppressor"/>
-    <moduleConfigurationEditorProvider implementation="org.raku.comma.project.structure.module.RakuModuleConfigurationEditorProvider"
-      order="FIRST"/>
+<!--    <moduleConfigurationEditorProvider implementation="org.raku.comma.project.structure.module.RakuModuleConfigurationEditorProvider"-->
+<!--      order="FIRST"/>-->
 
 <!-- TODO: Figure out why the getActionUpdateThread() is ignored and we get exceptions about EDT_OLD -->
 <!--    <fileType name="Cro Template" language="CroTemplate" implementationClass="org.raku.comma.cro.template.CroTemplateFileType"-->
@@ -156,6 +158,8 @@
                           implementationClass="org.raku.comma.cro.template.editor.CroTemplateSpellCheckingStrategy"/>
     <lang.foldingBuilder language="CroTemplate" implementationClass="org.raku.comma.cro.template.editor.CroTemplateFoldingBuilder"/>
     <codeInsight.parameterInfo language="CroTemplate" implementationClass="org.raku.comma.cro.template.CroTemplateParameterInfoHandler"/>
+
+<!--    <statusBarWidgetFactory implementation="org.raku.comma.sdk.chooser.RakuSdkStatusBarWidgetFactory" id="RAKU_SDK_STATUS_BAR_WIDGET" />-->
 
 <!-- TODO: Fix 'It's unexpected to invoke this method on an intention preview calculating.' -->
 <!--    <intentionAction>-->
@@ -352,22 +356,22 @@
             description="Create new Raku script in current project" icon="/icons/camelia.png">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
     </action>
-    <action id="RakuPlugin.NewModuleAction" class="org.raku.comma.actions.NewModuleAction" text="Raku Module"
-            description="Create new Raku module in current project" icon="/icons/camelia.png">
-      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewScriptAction"/>
-    </action>
-    <action id="RakuPlugin.NewTestAction" class="org.raku.comma.actions.NewTestAction" text="Raku Test"
-            description="Create new Raku test in current project" icon="/icons/camelia.png">
-      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewModuleAction"/>
-    </action>
-    <action id="RakuPlugin.NewPodDocumentation" class="org.raku.comma.actions.NewDocumentationAction" text="Raku Documentation (Pod6)"
-            description="Create new Raku documentation file in current project" icon="/icons/camelia.png">
-      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewTestAction"/>
-    </action>
-    <action id="RakuPlugin.NewCroTemplateAction" class="org.raku.comma.cro.actions.NewCroTemplateAction" text="Cro Template"
-            description="Create new Cro template in current project" icon="/icons/cro.png">
-      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewPodDocumentation"/>
-    </action>
+<!--    <action id="RakuPlugin.NewModuleAction" class="org.raku.comma.actions.NewModuleAction" text="Raku Module"-->
+<!--            description="Create new Raku module in current project" icon="/icons/camelia.png">-->
+<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewScriptAction"/>-->
+<!--    </action>-->
+<!--    <action id="RakuPlugin.NewTestAction" class="org.raku.comma.actions.NewTestAction" text="Raku Test"-->
+<!--            description="Create new Raku test in current project" icon="/icons/camelia.png">-->
+<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewModuleAction"/>-->
+<!--    </action>-->
+<!--    <action id="RakuPlugin.NewPodDocumentation" class="org.raku.comma.actions.NewDocumentationAction" text="Raku Documentation (Pod6)"-->
+<!--            description="Create new Raku documentation file in current project" icon="/icons/camelia.png">-->
+<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewTestAction"/>-->
+<!--    </action>-->
+<!--    <action id="RakuPlugin.NewCroTemplateAction" class="org.raku.comma.cro.actions.NewCroTemplateAction" text="Cro Template"-->
+<!--            description="Create new Cro template in current project" icon="/icons/cro.png">-->
+<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewPodDocumentation"/>-->
+<!--    </action>-->
     <action id="org.raku.comma.repl.RakuLaunchReplAction" class="org.raku.comma.repl.RakuLaunchReplAction" text="Launch Raku REPL"
             description="Runs the Raku REPL associated with the current project&#39;s SDK.">
       <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
@@ -386,7 +390,7 @@
             description="Opens a tool to preview Raku grammar parsing results">
       <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
     </action>
-    <action id="org.raku.comma.actions.ShowSecondarySdkSetter" class="org.raku.comma.actions.ShowSecondarySdkSetter"
+    <action id="org.raku.comma.actions.SdkSetterAction" class="org.raku.comma.actions.SdkSetterAction"
             text="Setup Raku SDK"
             description="Opens a tool to setup Raku SDK of this project, which can be used by different components">
       <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
@@ -435,22 +439,22 @@
             text="Extract Role..." description="Extract a role with selected attributes and methods">
       <add-to-group group-id="IntroduceActionsGroup" anchor="after" relative-to-action="org.raku.comma.actions.ExtractParentClassAction"/>
     </action>
-    <action id="org.raku.comma.actions.ImportModuleAction" class="org.raku.comma.actions.ImportModuleAction"
-            text="Import Module..." description="Import a module">
-      <add-to-group group-id="ExportImportGroup" />
-    </action>
-    <action id="org.raku.comma.actions.ImportProjectAction" class="org.raku.comma.actions.ImportProjectAction"
-            text="Import Project..." description="Import a project">
-      <add-to-group group-id="ExportImportGroup" />
-    </action>
-    <action id="org.raku.comma.actions.NewModuleAction" class="org.raku.comma.actions.NewModuleAction"
-            text="New Module..." description="Create a module">
-      <add-to-group group-id="NewProjectOrModuleGroup" />
-    </action>
-    <action id="org.raku.comma.actions.NewProjectAction" class="org.raku.comma.actions.NewProjectAction"
-            text="New Project..." description="Create a project">
-      <add-to-group group-id="NewProjectOrModuleGroup" />
-    </action>
+<!--    <action id="org.raku.comma.actions.ImportModuleAction" class="org.raku.comma.actions.ImportModuleAction"-->
+<!--            text="Import Module..." description="Import a module">-->
+<!--      <add-to-group group-id="ExportImportGroup" />-->
+<!--    </action>-->
+<!--    <action id="org.raku.comma.actions.ImportProjectAction" class="org.raku.comma.actions.ImportProjectAction"-->
+<!--            text="Import Project..." description="Import a project">-->
+<!--      <add-to-group group-id="ExportImportGroup" />-->
+<!--    </action>-->
+<!--    <action id="org.raku.comma.actions.NewModuleAction" class="org.raku.comma.actions.NewModuleAction"-->
+<!--            text="New Module..." description="Create a module">-->
+<!--      <add-to-group group-id="NewProjectOrModuleGroup" />-->
+<!--    </action>-->
+<!--    <action id="org.raku.comma.actions.NewProjectAction" class="org.raku.comma.actions.NewProjectAction"-->
+<!--            text="New Project..." description="Create a project">-->
+<!--      <add-to-group group-id="NewProjectOrModuleGroup" />-->
+<!--    </action>-->
     <action id="org.raku.comma.actions.moduleRoot.MarkRakuTestsSourceRootAction"
             class="org.raku.comma.actions.moduleRoot.MarkRakuTestsSourceRootAction" text="Raku Mark Tests Root"/>
     <action id="org.raku.comma.actions.moduleRoot.MarkRakuSourceRootAction"
@@ -459,7 +463,7 @@
             class="org.raku.comma.actions.moduleRoot.RakuUnmarkRootAction" text="Unmark Raku Root"/>
   </actions>
 
-  <applicationListeners>
-    <listener class="org.raku.comma.sdk.RakuSdkCacheManager" topic="com.intellij.openapi.project.ProjectManagerListener" />
-  </applicationListeners>
+<!--  <applicationListeners>-->
+<!--    <listener class="org.raku.comma.sdk.RakuSdkCacheManager" topic="com.intellij.openapi.project.ProjectManagerListener" />-->
+<!--  </applicationListeners>-->
 </idea-plugin>

@@ -2,20 +2,22 @@ package org.raku.comma.inspection.inspections
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.openapi.components.service
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
 import org.raku.comma.inspection.RakuInspection
 import org.raku.comma.inspection.fixes.StubMissingSubroutineFix
 import org.raku.comma.psi.*
-import org.raku.comma.psi.impl.*
-import org.raku.comma.sdk.RakuSdkType
+import org.raku.comma.services.project.RakuProjectSdkService
 
 class UndeclaredOrDeprecatedRoutineInspection : RakuInspection() {
     override fun provideVisitFunction(holder: ProblemsHolder, element: PsiElement) {
         if (element !is RakuSubCallName) return
 
         // Only do the analysis if the core setting symbols are available.
-        val setting = RakuSdkType.getInstance().getCoreSettingFile(element.getProject())
+        // TODO!!! Get the CoreSettings stuff extracted working again.
+        val setting = element.getProject().service<RakuProjectSdkService>().symbolCache.getCoreSettingFile()
+                            ?: return
         if (setting.virtualFile.name == "DUMMY") return
 
         // Resolve the reference.

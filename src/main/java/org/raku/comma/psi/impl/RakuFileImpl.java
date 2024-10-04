@@ -33,8 +33,8 @@ import org.raku.comma.psi.stub.index.ProjectModulesStubIndex;
 import org.raku.comma.readerMode.RakuActionProvider;
 import org.raku.comma.readerMode.RakuReaderModeState;
 import org.raku.comma.repl.RakuReplState;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
+import org.raku.comma.services.project.RakuProjectSdkService;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,6 +48,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RakuFileImpl extends PsiFileBase implements RakuFile {
     public static final Map<String, RakuSettingTypeId> VARIABLE_SYMBOLS = new HashMap<>();
     private static final String POD_HTML_TEMPLATE = RakuUtils.getResourceAsString("podPreview/template.html");
+
+    private String moduleName;
+    private String originalPath;
 
     static {
         // compile time variables
@@ -359,12 +362,13 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
                 LightVirtualFile dummy = new LightVirtualFile(getName());
                 ExternalRakuFile rakuFile = new ExternalRakuFile(getProject(), dummy);
                 String invocation = "use " + getEnclosingRakuModuleName();
-                List<RakuSymbol> symbols = RakuSdkType.loadModuleSymbols(getProject(),
-                                                                         rakuFile,
-                                                                         getName(),
-                                                                         invocation,
-                                                                         new HashMap<>(),
-                                                                  true);
+                List<RakuSymbol> symbols = getProject().getService(RakuProjectSdkService.class)
+                                                       .getSymbolCache()
+                                                       .loadModuleSymbols(rakuFile,
+                                                                          getName(),
+                                                                          invocation,
+                                                                          new HashMap<>(),
+                                                                   true);
                 EXPORT_CACHE = symbols;
                 symbols.forEach(collector::offerSymbol);
             }
@@ -391,7 +395,7 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
         }
         else {
             // We only have globals, not exports, transitively available.
-            RakuFile needFile = RakuSdkType.getInstance().getPsiFileForModule(project, name, directive + " " + name);
+            RakuFile needFile = project.getService(RakuProjectSdkService.class).getSymbolCache().getPsiFileForModule(name, directive + " " + name);
             needFile.contributeGlobals(collector, new HashSet<>());
         }
     }
@@ -404,10 +408,12 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
                 return;
             }
         }
-        RakuSdkType.getInstance().getCoreSettingFile(getProject()).contributeGlobals(collector, new HashSet<>());
-        if (collector.isSatisfied()) {
-            return;
-        }
+        RakuFile coreSettings = getProject().getService(RakuProjectSdkService.class).getSymbolCache().getCoreSettingFile();
+        if (coreSettings == null) return;
+
+        coreSettings.contributeGlobals(collector, new HashSet<>());
+        if (collector.isSatisfied()) return;
+
         PsiElement list = PsiTreeUtil.getChildOfType(this, RakuStatementList.class);
         if (Objects.nonNull(list)) {
             PsiElement finish = PsiTreeUtil.findChildOfType(list, PodBlockFinish.class);
@@ -568,5 +574,25 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
         } else {
             super.accept(visitor);
         }
+    }
+
+    @Override
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    @Override
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    @Override
+    public void setOriginalPath(String originalPath) {
+        this.originalPath = originalPath;
+    }
+
+    @Override
+    public String getOriginalPath() {
+        return originalPath;
     }
 }

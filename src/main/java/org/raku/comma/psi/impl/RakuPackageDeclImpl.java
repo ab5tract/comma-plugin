@@ -25,9 +25,10 @@ import org.raku.comma.psi.symbols.*;
 import org.raku.comma.psi.stub.index.RakuGlobalTypeStubIndex;
 import org.raku.comma.psi.stub.index.RakuIndexableType;
 import org.raku.comma.psi.stub.index.RakuLexicalTypeStubIndex;
-import org.raku.comma.sdk.RakuSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.sdk.RakuSdkUtil;
+import org.raku.comma.services.project.RakuProjectSdkService;
 
 import java.util.*;
 
@@ -315,21 +316,26 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
         }
 
         // Contribute implicit symbols from Any/Mu and Cursor for grammars
-        RakuFile coreSetting = RakuSdkType.getInstance().getCoreSettingFile(getProject());
+        RakuFile coreSetting = getProject().getService(RakuProjectSdkService.class)
+                                           .getSymbolCache()
+                                           .getCoreSettingFile();
+        if (coreSetting == null) return;
+
         MOPSymbolsAllowed allowed = new MOPSymbolsAllowed(false, false, false, getPackageKind().equals("role"));
 
-        if (rakuPackageDecls.size() != 0 || externals.size() != 0)
-            return;
+        if (rakuPackageDecls.size() != 0 || externals.size() != 0) return;
 
         collector.decreasePriority();
-        if (isGrammar)
-            RakuSdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Cursor", allowed);
+        if (isGrammar) {
+            RakuSdkUtil.contributeParentSymbolsFromCore(collector, coreSetting, "Cursor", allowed);
+        }
         collector.decreasePriority();
-        if (isAny)
-            RakuSdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
+        if (isAny) {
+            RakuSdkUtil.contributeParentSymbolsFromCore(collector, coreSetting, "Any", allowed);
+        }
         collector.decreasePriority();
         // Always contribute Mu
-        RakuSdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
+        RakuSdkUtil.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", allowed);
     }
 
     private void contributeExternalPackage(RakuSymbolCollector collector, String typeName,

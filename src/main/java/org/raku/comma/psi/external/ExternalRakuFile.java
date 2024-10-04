@@ -33,9 +33,10 @@ public class ExternalRakuFile implements RakuFile {
     private final FileViewProvider myViewProvider;
     private final VirtualFile myFile;
     private List<RakuSymbol> mySymbols = new ArrayList<>();
+    private String moduleName;
+    private String originalPath;
 
-    public ExternalRakuFile(Project project,
-                            VirtualFile file) {
+    public ExternalRakuFile(Project project, VirtualFile file) {
         myProject = project;
         myViewProvider = PsiManager.getInstance(project).findViewProvider(file);
         myFile = file;
@@ -50,6 +51,26 @@ public class ExternalRakuFile implements RakuFile {
     public String renderPod() {
         // No Pod from external files
         return "";
+    }
+
+    @Override
+    public void setOriginalPath(String originalPath) {
+        this.originalPath = originalPath;
+    }
+
+    @Override
+    public String getOriginalPath() {
+        return originalPath;
+    }
+
+        @Override
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    @Override
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
     }
 
     public void setSymbols(List<RakuSymbol> symbols) {

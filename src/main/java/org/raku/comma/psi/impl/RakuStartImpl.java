@@ -5,7 +5,6 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import org.raku.comma.psi.RakuStart;
 import org.raku.comma.psi.type.RakuType;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +16,7 @@ public class RakuStartImpl extends RakuASTWrapperPsiElement implements RakuStart
 
     @Override
     public @NotNull RakuType inferType() {
-        return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Promise);
+        return lookupGlobalSymbol(RakuSettingTypeId.Promise);
     }
 
     @Nullable

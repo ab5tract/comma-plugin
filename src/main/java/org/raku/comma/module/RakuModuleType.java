@@ -3,20 +3,18 @@ package org.raku.comma.module;
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.ide.util.projectWizard.SettingsStep;
+import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
-import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.util.Condition;
+import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import org.raku.comma.RakuIcons;
-import org.raku.comma.project.projectWizard.components.SdkSettingsStep;
+import org.raku.comma.project.wizard.RakuModuleWizardBuilder;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-@InternalIgnoreDependencyViolation
-public class RakuModuleType extends ModuleType<RakuModuleBuilder> {
+public class RakuModuleType extends ModuleType<RakuModuleWizardBuilder> {
     public static final String ID = "RAKU_MODULE_TYPE";
 
     public RakuModuleType() {
@@ -30,8 +28,8 @@ public class RakuModuleType extends ModuleType<RakuModuleBuilder> {
 
     @NotNull
     @Override
-    public RakuModuleBuilder createModuleBuilder() {
-        return new RakuModuleBuilder();
+    public RakuModuleWizardBuilder createModuleBuilder() {
+        return new RakuModuleWizardBuilder();
     }
 
     @NotNull
@@ -55,10 +53,17 @@ public class RakuModuleType extends ModuleType<RakuModuleBuilder> {
         return RakuIcons.CAMELIA;
     }
 
-    @Nullable
+//    @Nullable
+//    @Override
+//    public ModuleWizardStep modifyProjectTypeStep(@NotNull SettingsStep settingsStep, @NotNull final ModuleBuilder moduleBuilder) {
+//        return new SdkSettingsStep(settingsStep.getContext());
+//    }
+
     @Override
-    public ModuleWizardStep modifyProjectTypeStep(@NotNull SettingsStep settingsStep, @NotNull final ModuleBuilder moduleBuilder) {
-        final Condition<SdkTypeId> condition = moduleBuilder::isSuitableSdkType;
-        return new SdkSettingsStep(settingsStep, moduleBuilder, condition);
+    public ModuleWizardStep @NotNull [] createWizardSteps(@NotNull WizardContext wizardContext,
+                                                          @NotNull RakuModuleWizardBuilder moduleBuilder,
+                                                          @NotNull ModulesProvider modulesProvider)
+    {
+        return super.createWizardSteps(wizardContext, moduleBuilder, modulesProvider);
     }
 }

@@ -67,7 +67,7 @@ class ProjectIsRakudoCoreDetector : ProjectActivity {
 
     private fun disableAnnoyingInspections(project: Project) {
         InspectionProfileManager.getInstance(project)
-                                 .currentProfile.modifyProfile( { model -> run {
+                                .currentProfile.modifyProfile( { model -> run {
                                     model.disableToolByDefault(inspectionsToDisable, project)
                                     model.commit()
                                 }})

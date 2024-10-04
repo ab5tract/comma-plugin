@@ -5,7 +5,6 @@ import com.intellij.lang.ASTNode;
 import org.raku.comma.psi.RakuRatLiteral;
 import org.raku.comma.psi.effects.EffectCollection;
 import org.raku.comma.psi.type.RakuType;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +15,7 @@ public class RakuRatLiteralImpl extends RakuASTWrapperPsiElement implements Raku
 
     @Override
     public @NotNull RakuType inferType() {
-        return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Rat);
+        return lookupGlobalSymbol(RakuSettingTypeId.Rat);
     }
 
     @Override

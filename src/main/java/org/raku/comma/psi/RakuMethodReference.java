@@ -12,9 +12,10 @@ import org.raku.comma.psi.impl.RakuMethodCallImpl;
 import org.raku.comma.psi.impl.RakuPackageDeclImpl;
 import org.raku.comma.psi.symbols.*;
 import org.raku.comma.psi.type.*;
-import org.raku.comma.sdk.RakuSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.sdk.RakuSdkUtil;
+import org.raku.comma.services.project.RakuProjectSdkService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -215,10 +216,11 @@ public class RakuMethodReference extends PsiReferenceBase.Poly<RakuMethodCall> {
         if (collector == null)
             collector = new RakuVariantsSymbolCollector(RakuSymbolKind.Method);
 
-        RakuFile coreSetting = RakuSdkType.getInstance().getCoreSettingFile(element.getProject());
+        RakuFile coreSetting =  element.getProject().getService(RakuProjectSdkService.class).getSymbolCache().getCoreSettingFile();
+        if (coreSetting == null) return null;
         MOPSymbolsAllowed symbolsAllowed = new MOPSymbolsAllowed(true, true, true, true);
-        RakuSdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Any", symbolsAllowed);
-        RakuSdkType.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", symbolsAllowed);
+        RakuSdkUtil.contributeParentSymbolsFromCore(collector, coreSetting, "Any", symbolsAllowed);
+        RakuSdkUtil.contributeParentSymbolsFromCore(collector, coreSetting, "Mu", symbolsAllowed);
         return prioritizeResults(collector.getVariants());
     }
 

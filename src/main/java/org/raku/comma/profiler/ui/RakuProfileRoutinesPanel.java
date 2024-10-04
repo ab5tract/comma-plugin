@@ -347,6 +347,7 @@ public class RakuProfileRoutinesPanel extends JPanel {
         }
     }
 
+    @SuppressWarnings({ "unchecked" })
     private void updateRowFilter() {
         Function<Integer, Boolean> isShown = generateVisibleCallsCondition();
         RowFilter<RakuProfileModel, Integer> filter = new RowFilter<>() {
@@ -355,7 +356,7 @@ public class RakuProfileRoutinesPanel extends JPanel {
                 return isShown.fun(entry.getIdentifier());
             }
         };
-        ((TableRowSorter<RakuProfileModel>)callsNavigation.getRowSorter()).setRowFilter(filter);
+        ((TableRowSorter<RakuProfileModel>) callsNavigation.getRowSorter()).setRowFilter(filter);
     }
 
     private Function<Integer, Boolean> generateVisibleCallsCondition() {

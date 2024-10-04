@@ -12,7 +12,6 @@ import org.raku.comma.filetypes.RakuModuleFileType;
 import org.raku.comma.filetypes.RakuTestFileType;
 import org.raku.comma.language.RakuLanguageVersion;
 import org.raku.comma.metadata.RakuMetaDataComponent;
-import org.raku.comma.module.RakuModuleWizardStep;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,11 +51,6 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
                      Collections.singletonList(myModuleName),
                      languageVersion);
         }
-    }
-
-    @Override
-    public void loadFromDialogData(Map<String, String> data) {
-        myModuleName = data.get(RakuModuleWizardStep.MODULE_NAME);
     }
 
     @Override
@@ -143,10 +137,7 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
     }
 
     @Override
-    public void modifySettingsStep(SettingsStep step) {
-        final ModuleNameLocationSettings nameField = step.getModuleNameLocationSettings();
-        if (myModuleName != null && nameField != null) {
-            nameField.setModuleName(StringUtil.sanitizeJavaIdentifier(myModuleName));
-        }
+    public void setName(@NotNull String name) {
+        myModuleName = name;
     }
 }

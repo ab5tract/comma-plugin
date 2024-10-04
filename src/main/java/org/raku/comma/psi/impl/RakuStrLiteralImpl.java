@@ -6,7 +6,6 @@ import com.intellij.psi.PsiElement;
 import org.raku.comma.parsing.RakuTokenTypes;
 import org.raku.comma.psi.RakuStrLiteral;
 import org.raku.comma.psi.type.RakuType;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +16,7 @@ public class RakuStrLiteralImpl extends RakuASTWrapperPsiElement implements Raku
 
     @Override
     public @NotNull RakuType inferType() {
-        return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Str);
+        return lookupGlobalSymbol(RakuSettingTypeId.Str);
     }
 
     @Override

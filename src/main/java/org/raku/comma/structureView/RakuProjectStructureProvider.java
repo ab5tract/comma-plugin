@@ -18,7 +18,8 @@ public class RakuProjectStructureProvider implements TreeStructureProvider {
     @Override
     public Collection<AbstractTreeNode<?>> modify(@NotNull AbstractTreeNode<?> parent,
                                                   @NotNull Collection<AbstractTreeNode<?>> children,
-                                                  ViewSettings settings) {
+                                                  ViewSettings settings)
+    {
         //if (parent instanceof FavoritesRootNode)
         //    return children;
         ArrayList<AbstractTreeNode<?>> list = new ArrayList<>(children);

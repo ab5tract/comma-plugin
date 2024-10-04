@@ -1,15 +1,14 @@
 package org.raku.comma.vfs;
 
 import com.intellij.execution.ExecutionException;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.projectRoots.ProjectJdkTable;
-import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.vfs.impl.ArchiveHandler;
-import org.raku.comma.sdk.RakuSdkType;
+import org.raku.comma.sdk.RakuSdkUtil;
+import org.raku.comma.services.application.RakuSdkStore;
 import org.raku.comma.utils.RakuCommandLine;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,23 +36,20 @@ public class RakuFileHandler extends ArchiveHandler {
     protected Map<String, EntryInfo> createEntriesMap() {
         HashMap<String, EntryInfo> entries = new HashMap<>();
 
-        Matcher matcher = pathPattern.matcher(myPath);
-        Sdk sdk;
-        if (matcher.matches()) {
-            sdk = getSdkByMatch(matcher.group(1));
-        }
-        else {
-            LOG.warn("Sdk is empty for path: [" + myPath + "], skipping");
-            return entries;
-        }
+        var service = ApplicationManager.getApplication().getService(RakuSdkStore.class);
+        var sdk = service.getSdks().getLast();
 
         if (sdk == null) {
-            RakuSdkType.getInstance().reactToSDKIssue(null, "Could not use Raku SDK to obtain dependency sources");
+            LOG.warn("There is no sdk available in RakuSdkStore");
             return entries;
         }
 
+        String sdkHome = service.getSdks().getLast().getPath();
+        String sdkVersion = service.getSdks().getLast().getVersion();
+
         try {
-            List<String> providesList = executeLocateScript(sdk, matcher.group(2));
+            Matcher matcher = pathPattern.matcher(myPath);
+            List<String> providesList = executeLocateScript(sdkHome, matcher.group(2));
 
             EntryInfo root = new EntryInfo("", true, 0L, 1L, null);
             entries.put("", root);
@@ -63,8 +59,7 @@ public class RakuFileHandler extends ArchiveHandler {
                 packagesCache.put(provideInfo[0], provideInfo[1]);
                 entries.put(provideInfo[0] + ".pm6", new EntryInfo(provideInfo[0] + ".pm6", false, 1L, 1L, root));
             }
-        }
-        catch (ExecutionException e) {
+        } catch (ExecutionException e) {
             LOG.warn(e);
             return entries;
         }
@@ -73,16 +68,16 @@ public class RakuFileHandler extends ArchiveHandler {
     }
 
     @NotNull
-    private static List<String> executeLocateScript(Sdk sdk, String argument) throws ExecutionException {
+    private static List<String> executeLocateScript(String sdkHome, String argument) throws ExecutionException {
         File locateScript = RakuUtils.getResourceAsFile("zef/locate.raku");
-        if (locateScript == null)
+        if (locateScript == null) {
             throw new ExecutionException("Resource bundle is corrupted: locate script is missing");
+        }
         RakuCommandLine cmd;
         try {
-            cmd = new RakuCommandLine(sdk);
-        }
-        catch (ExecutionException e) {
-            RakuSdkType.getInstance().reactToSDKIssue(null, "Cannot use current Raku SDK");
+            cmd = new RakuCommandLine(sdkHome);
+        } catch (ExecutionException e) {
+            RakuSdkUtil.reactToSdkIssue(null, "Cannot use current Raku SDK");
             throw e;
         }
         cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"));
@@ -91,25 +86,14 @@ public class RakuFileHandler extends ArchiveHandler {
         return cmd.executeAndRead(locateScript);
     }
 
-    @Nullable
-    private static Sdk getSdkByMatch(String sdkHash) {
-        final Sdk[] projectSdks = ProjectJdkTable.getInstance().getAllJdks();
-        for (Sdk tempSdk : projectSdks) {
-            int tempSdkHash = tempSdk.getName().hashCode();
-            if (tempSdkHash == Integer.parseInt(sdkHash)) {
-                return tempSdk;
-            }
-        }
-        return null;
-    }
-
     @Override
     public byte @NotNull [] contentsToByteArray(@NotNull String relativePath) {
         getEntriesMap();
         try {
             String packageName = relativePath.substring(0, relativePath.length() - 4);
-            if (packagesCache.containsKey(packageName))
+            if (packagesCache.containsKey(packageName)) {
                 return Files.readAllBytes(Paths.get(packagesCache.get(packageName)));
+            }
         } catch (IOException e) {
             LOG.warn(e);
         }

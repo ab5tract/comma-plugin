@@ -29,7 +29,7 @@ class IdiomaticLoopInspection : RakuInspection() {
         }
         if (statement == null) return
 
-        val condition = (statement as RakuParenthesizedExpr).firstChild.nextSibling.firstChild.firstChild
+        val condition = (statement as? RakuParenthesizedExpr)?.firstChild?.nextSibling?.firstChild?.firstChild
         val trueOr1 = when (condition) {
             is RakuIntLiteral -> true
             is RakuTypeName -> "True" == condition.text

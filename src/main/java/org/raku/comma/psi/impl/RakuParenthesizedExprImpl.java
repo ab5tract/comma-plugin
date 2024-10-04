@@ -8,7 +8,6 @@ import org.raku.comma.psi.RakuPsiElement;
 import org.raku.comma.psi.RakuStatement;
 import org.raku.comma.psi.type.RakuType;
 import org.raku.comma.psi.type.RakuUntyped;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,8 +23,7 @@ public class RakuParenthesizedExprImpl extends RakuASTWrapperPsiElement implemen
     public @NotNull RakuType inferType() {
         Collection<RakuStatement> children = PsiTreeUtil.findChildrenOfType(this, RakuStatement.class);
         ArrayList<RakuStatement> list = new ArrayList<>(children);
-        if (list.size() == 0)
-            return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.List);
+        if (list.size() == 0) return lookupGlobalSymbol(RakuSettingTypeId.List);
         if (list.size() == 1 ||
             (list.size() == 2 && PsiTreeUtil.isAncestor(list.get(0), list.get(1), true))) {
             RakuPsiElement firstChild = (RakuPsiElement)list.get(0).getFirstChild();

@@ -5,7 +5,6 @@ import com.intellij.ide.util.projectWizard.SettingsStep;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.text.StringUtil;
 import org.raku.comma.language.RakuLanguageVersion;
-import org.raku.comma.module.RakuModuleWizardStep;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,13 +17,9 @@ public class RakuModuleBuilderScript implements RakuModuleBuilderGeneric {
     @Override
     public void setupRootModelOfPath(@NotNull ModifiableRootModel model,
                                      Path path,
-                                     RakuLanguageVersion languageVersion) {
+                                     RakuLanguageVersion languageVersion)
+    {
         stubScript(path, myScriptName, true, languageVersion);
-    }
-
-    @Override
-    public void loadFromDialogData(Map<String, String> formData) {
-        myScriptName = formData.get(RakuModuleWizardStep.SCRIPT_NAME);
     }
 
     @Override
@@ -35,7 +30,8 @@ public class RakuModuleBuilderScript implements RakuModuleBuilderGeneric {
     public static String stubScript(Path moduleLibraryPath,
                                     String scriptName,
                                     boolean shouldFill,
-                                    RakuLanguageVersion languageVersion) {
+                                    RakuLanguageVersion languageVersion)
+    {
         List<String> lines = new ArrayList<>(Collections.singletonList("#!/usr/bin/env raku"));
         if (languageVersion != null) {
             lines.add(String.format("use v%s;", languageVersion));
@@ -54,5 +50,10 @@ public class RakuModuleBuilderScript implements RakuModuleBuilderGeneric {
         if (myScriptName != null && nameField != null) {
             nameField.setModuleName(StringUtil.sanitizeJavaIdentifier(myScriptName));
         }
+    }
+
+    @Override
+    public void setName(@NotNull String name) {
+        myScriptName = name;
     }
 }

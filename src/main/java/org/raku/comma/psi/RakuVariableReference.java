@@ -16,10 +16,10 @@ import com.intellij.util.containers.ContainerUtil;
 import org.raku.comma.psi.stub.index.RakuStubIndexKeys;
 import org.raku.comma.psi.symbols.*;
 import org.raku.comma.psi.type.RakuType;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.raku.comma.services.project.RakuProjectSdkService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -116,11 +116,10 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
         Collection<String> dynamicVariables = StubIndex.getInstance().getAllKeys(RakuStubIndexKeys.DYNAMIC_VARIABLES,
                                                                                  myElement.getProject());
         return Stream.concat(
-                        Stream
-                                .concat(syms.stream().filter(this::isDeclaredAfterCurrentPosition).map(RakuSymbol::getName),
-                                        elements.stream()),
-                        dynamicVariables.stream())
-                .toArray();
+                        Stream.concat(syms.stream().filter(this::isDeclaredAfterCurrentPosition).map(RakuSymbol::getName),
+                                      elements.stream()),
+                                      dynamicVariables.stream()
+                     ).toArray();
     }
 
     private boolean isDeclaredAfterCurrentPosition(RakuSymbol symbol) {
@@ -159,7 +158,10 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
                 if (call instanceof RakuMethodCall && ((RakuMethodCall) call).getCallName().equals(".subst")) {
                     PsiElement[] args = ((RakuMethodCall) call).getCallArguments();
                     if (args.length >= 2) {
-                        RakuType regexType = RakuSdkType.getInstance().getCoreSettingType(starter.getProject(), RakuSettingTypeId.Regex);
+                        RakuType regexType = starter.getProject()
+                                                    .getService(RakuProjectSdkService.class)
+                                                    .getSymbolCache()
+                                                    .getCoreSettingType(RakuSettingTypeId.Regex);
                         if (((RakuPsiElement) args[0]).inferType().equals(regexType) &&
                                 PsiTreeUtil.isAncestor(args[1], starter, true))
                         {
@@ -266,9 +268,10 @@ public class RakuVariableReference extends PsiReferenceBase.Poly<RakuVariable> {
                     if (app.getOperator().equals("~~")) {
                         PsiElement[] ops = app.getOperands();
                         if (ops.length == 2) {
-                            RakuType regexType = RakuSdkType.getInstance()
-                                    .getCoreSettingType(starter.getProject(),
-                                                        RakuSettingTypeId.Regex);
+                            RakuType regexType = starter.getProject()
+                                                        .getService(RakuProjectSdkService.class)
+                                                        .getSymbolCache()
+                                                        .getCoreSettingType(RakuSettingTypeId.Regex);
                             if (ops[1] instanceof RakuPsiElement && ((RakuPsiElement) ops[1]).inferType().equals(regexType)) {
                                 return super.execute(ops[1]);
                             }

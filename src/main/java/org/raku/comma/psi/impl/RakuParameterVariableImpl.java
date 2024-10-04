@@ -19,7 +19,6 @@ import org.raku.comma.psi.symbols.RakuSymbolKind;
 import org.raku.comma.psi.type.RakuParametricType;
 import org.raku.comma.psi.type.RakuType;
 import org.raku.comma.psi.type.RakuUntyped;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -127,13 +126,12 @@ public class RakuParameterVariableImpl extends RakuASTWrapperPsiElement implemen
 
     private @Nullable RakuType inferBySigil() {
         String sigil = getSigil();
-        if (sigil.equals("@"))
-            return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.List);
-        else if (sigil.equals("%"))
-            return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Map);
-        else if (sigil.equals("&"))
-            return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Callable);
-        return null;
+        return switch (sigil) {
+            case "@" -> lookupGlobalSymbol(RakuSettingTypeId.List);
+            case "%" -> lookupGlobalSymbol(RakuSettingTypeId.Map);
+            case "&" -> lookupGlobalSymbol(RakuSettingTypeId.Callable);
+            default -> null;
+        };
     }
 
     @Override

@@ -1,7 +1,7 @@
 use JSON::Fast;
 
 sub MAIN($name) {
-    my $module-name = $name.ends-with('.pm6') ?? $name.substr(0, *-4) !! $name;
+    my $module-name = $name.ends-with('.pm6'|'.rakumod') ?? $name.substr(0, *-4) !! $name;
     my @curs        = $*REPO.repo-chain.grep(*.?prefix.?e);
     my @repo-dirs   = @curs.map({.?prefix // .path-spec.?path}).map(*.IO);
     my @dist-dirs   = @repo-dirs.map(*.child('dist')).grep(*.e);

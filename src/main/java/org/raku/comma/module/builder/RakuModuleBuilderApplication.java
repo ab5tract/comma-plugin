@@ -8,7 +8,6 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.raku.comma.language.RakuLanguageVersion;
 import org.raku.comma.metadata.RakuMetaDataComponent;
-import org.raku.comma.module.RakuModuleWizardStep;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,14 +39,18 @@ public class RakuModuleBuilderApplication implements RakuModuleBuilderGeneric {
     }
 
     @Override
-    public void loadFromDialogData(Map<String, String> data) {
-        myModuleName = data.get(RakuModuleWizardStep.MODULE_NAME);
-        myEntryPointName = data.get(RakuModuleWizardStep.ENTRY_POINT_NAME);
+    public String[] getSourceDirectories() {
+        return new String[]{"bin", "lib", "t"};
     }
 
     @Override
-    public String[] getSourceDirectories() {
-        return new String[]{"bin", "lib", "t"};
+    public void setName(@NotNull String name) {
+        myModuleName = name;
+    }
+
+    @Override
+    public void setEntryPoint(@NotNull String entryPointName) {
+        myEntryPointName = entryPointName;
     }
 
     private static void stubEntryPoint(Path moduleLibraryPath,

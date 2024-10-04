@@ -6,7 +6,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.raku.comma.psi.*;
 import org.raku.comma.psi.type.RakuType;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +18,7 @@ public class RakuColonPairImpl extends RakuASTWrapperPsiElement implements RakuC
 
     @Override
     public @NotNull RakuType inferType() {
-        return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Pair);
+        return lookupGlobalSymbol(RakuSettingTypeId.Pair);
     }
 
     @Override

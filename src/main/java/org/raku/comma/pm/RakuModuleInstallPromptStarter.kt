@@ -72,56 +72,56 @@ class RakuModuleInstallPromptStarter : ProjectActivity {
     }
 
     companion object {
-        private val LOG = Logger.getInstance(
+        val LOG = Logger.getInstance(
             RakuModuleInstallPromptStarter::class.java
         )
+    }
 
-        private fun getPanel(
-            project: Project,
-            pm: RakuPackageManager,
-            unavailableDeps: List<String>
-        ): DismissableNotificationPanel {
-            val panel = DismissableNotificationPanel()
-            panel.text =
-                "Some Raku dependencies for this project are not installed (" + getListText(
-                    unavailableDeps
-                ) + ")."
-            val installButtonText = "Install with " + pm.kind.getName()
-            val startedProcessing = AtomicBoolean()
-            panel.createActionLabel(installButtonText, object : EditorNotificationPanel.ActionHandler {
-                override fun handlePanelActionClick(panel: EditorNotificationPanel, event: HyperlinkEvent) {
-                    if (!startedProcessing.compareAndSet(false, true)) {
-                        return
-                    }
-                    panel.text = panel.text + " Installing..."
-                    ApplicationManager.getApplication().executeOnPooledThread {
-                        for (dep in unavailableDeps) {
-                            try {
-                                pm.install(project, dep)
-                            } catch (e: ExecutionException) {
-                                LOG.warn("Could not install a distribution '" + dep + "': " + e.message)
-                            }
-                        }
-                        panel.parent.remove(panel)
-                    }
+    private fun getPanel(
+        project: Project,
+        pm: RakuPackageManager,
+        unavailableDeps: List<String>
+    ): RakuModuleInstallPromptStarter.DismissableNotificationPanel {
+        val panel = RakuModuleInstallPromptStarter.DismissableNotificationPanel()
+        panel.text =
+            "Some Raku dependencies for this project are not installed (" + getListText(
+                unavailableDeps
+            ) + ")."
+        val installButtonText = "Install with " + pm.kind.getName()
+        val startedProcessing = AtomicBoolean()
+        panel.createActionLabel(installButtonText, object : EditorNotificationPanel.ActionHandler {
+            override fun handlePanelActionClick(panel: EditorNotificationPanel, event: HyperlinkEvent) {
+                if (!startedProcessing.compareAndSet(false, true)) {
+                    return
                 }
-
-                override fun handleQuickFixClick(editor: Editor, psiFile: PsiFile) {}
-            }, true)
-            return panel
-        }
-
-        private fun getListText(deps: List<String>): String {
-            val joiner = StringJoiner(", ")
-            var complete = true
-            for (dep in deps) {
-                joiner.add(dep)
-                if (joiner.length() > 80) {
-                    complete = false
-                    break
+                panel.text = panel.text + " Installing..."
+                ApplicationManager.getApplication().executeOnPooledThread {
+                    for (dep in unavailableDeps) {
+                        try {
+                            pm.install(project, dep)
+                        } catch (e: ExecutionException) {
+                            RakuModuleInstallPromptStarter.LOG.warn("Could not install a distribution '" + dep + "': " + e.message)
+                        }
+                    }
+                    panel.parent.remove(panel)
                 }
             }
-            return joiner.toString() + (if (complete) "" else "...")
+
+            override fun handleQuickFixClick(editor: Editor, psiFile: PsiFile) {}
+        }, true)
+        return panel
+    }
+
+    private fun getListText(deps: List<String>): String {
+        val joiner = StringJoiner(", ")
+        var complete = true
+        for (dep in deps) {
+            joiner.add(dep)
+            if (joiner.length() > 80) {
+                complete = false
+                break
+            }
         }
+        return joiner.toString() + (if (complete) "" else "...")
     }
 }

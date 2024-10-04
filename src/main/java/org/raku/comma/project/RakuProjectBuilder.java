@@ -1,7 +1,6 @@
 package org.raku.comma.project;
 
 import com.intellij.ide.highlighter.ModuleFileType;
-import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ProjectBuilder;
 import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.application.WriteAction;
@@ -9,8 +8,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.ProjectJdkTable;
-import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
@@ -24,10 +21,8 @@ import org.raku.comma.RakuIcons;
 import org.raku.comma.metadata.RakuMetaDataComponent;
 import org.raku.comma.module.RakuModuleType;
 import org.raku.comma.pm.RakuPackageManagerManager;
-import org.raku.comma.sdk.RakuSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.raku.comma.services.RakuSDKService;
 
 import javax.swing.*;
 import java.io.File;
@@ -67,7 +62,7 @@ public class RakuProjectBuilder extends ProjectBuilder {
 
     @Override
     public boolean isSuitableSdkType(SdkTypeId sdkType) {
-        return sdkType instanceof RakuSdkType;
+        return true;
     }
 
     private String getModuleFilePath(Project project) {
@@ -110,18 +105,13 @@ public class RakuProjectBuilder extends ProjectBuilder {
                 modelToPatch.commit();
                 rootModel.commit();
 
-                final PropertiesComponent properties = PropertiesComponent.getInstance(project);
-                final String selectedJdkProperty = "raku.sdk.selected";
-                String sdkHome = properties.getValue(selectedJdkProperty);
-                if (sdkHome != null) {
-                    Sdk sdk = ProjectJdkTable.getInstance().findJdk(sdkHome);
-                    if (sdk != null) {
-                        project.getService(RakuSDKService.class)
-                               .setProjectSdkPath(sdkHome);
-                    } else {
-                        throw new RuntimeException("Can't find Raku SDK for: " + sdkHome);
-                    }
-                }
+//                final PropertiesComponent properties = PropertiesComponent.getInstance(project);
+//                final String selectedJdkProperty = "raku.sdk.selected";
+//                String sdkHome = properties.getValue("raku.sdk.selected");
+//                if (sdkHome != null) {
+//                    project.getService(RakuSdkService.class).setProjectSdkPath(sdkHome);
+//                }
+
                 Path metaPath = Paths.get(getFileToImport(), "META6.json");
                 if (!metaPath.toFile().exists()) {
                     metaPath = Paths.get(getFileToImport(), "META.list");

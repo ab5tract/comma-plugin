@@ -14,7 +14,7 @@ import java.util.Map;
 
 public interface RakuModuleBuilderGeneric {
     void setupRootModelOfPath(@NotNull ModifiableRootModel model, Path path, RakuLanguageVersion languageVersion);
-    void loadFromDialogData(Map<String, String> data);
+    default void loadFromDialogData(Map<String, String> data) {}
 
     String[] getSourceDirectories();
 
@@ -28,6 +28,9 @@ public interface RakuModuleBuilderGeneric {
         }
         return paths;
     }
+
+    void setName(@NotNull String name);
+    default void setEntryPoint(@NotNull String entryPoint) {}
 
     default void modifySettingsStep(SettingsStep step) {}
 

@@ -4,11 +4,9 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.util.text.VersionComparatorUtil;
-import org.raku.comma.sdk.RakuSdkType;
-import org.raku.comma.services.RakuSDKService;
+import org.raku.comma.sdk.RakuSdkUtil;
+import org.raku.comma.services.project.RakuProjectSdkService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,12 +33,8 @@ import java.util.Map;
 public class RakuCommandLine extends GeneralCommandLine {
     private static final Logger LOG = Logger.getInstance(RakuCommandLine.class);
 
-    public RakuCommandLine(Sdk sdk) throws ExecutionException {
-        this(sdk.getHomePath());
-    }
-
     public RakuCommandLine(Project project) throws ExecutionException {
-        this(RakuSdkType.getSdkHomeByProject(project));
+        this(project.getService(RakuProjectSdkService.class).getSdkPath());
     }
 
     public RakuCommandLine(@Nullable String sdkHome) throws ExecutionException {
@@ -49,7 +43,7 @@ public class RakuCommandLine extends GeneralCommandLine {
         if (Paths.get(sdkHome).toFile().isFile()) {
             setExePath(sdkHome);
         } else {
-            String rakuBinary = RakuSdkType.findRakuInSdkHome(sdkHome);
+            String rakuBinary = RakuSdkUtil.findRakuInSdkHome(sdkHome);
             if (rakuBinary == null) throw new ExecutionException("SDK is invalid");
 
             setExePath(rakuBinary);
@@ -96,36 +90,22 @@ public class RakuCommandLine extends GeneralCommandLine {
     @Nullable
     private static List<String> populateDebugCommandLine(Project project, int debugPort) {
         List<String> command = new ArrayList<>();
-        Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        String versionString = null;
-        String homePath = null;
-        if (sdk != null) {
-            versionString = sdk.getVersionString();
-            homePath = sdk.getHomePath();
-        } else {
-            RakuSDKService backupSDKService = project.getService(RakuSDKService.class);
-            String backupSDKPath = backupSDKService.getProjectSdkPath();
-            if (backupSDKPath != null) {
-                versionString = RakuSdkType.getInstance().getVersionString(backupSDKPath);
-                homePath = backupSDKPath;
-            }
-        }
+        String homePath = project.getService(RakuProjectSdkService.class).getSdkPath();
+        if (homePath == null) return null;
 
-        if (versionString == null || homePath == null) {
-            return null;
-        }
+        String versionString = RakuSdkUtil.versionString(homePath);
+        if (versionString == null) return null;
 
         if (VersionComparatorUtil.compare(versionString, "v2019.07") >= 0) {
-            String rakuBinary = RakuSdkType.findRakuInSdkHome(homePath);
+            String rakuBinary = RakuSdkUtil.findRakuInSdkHome(homePath);
             if (rakuBinary == null) return null;
             command.add(rakuBinary);
             command.add("--debug-port=" + debugPort);
             command.add("--debug-suspend");
         } else {
-            Map<String, String> moarBuildConfiguration = RakuSdkType.getInstance().getMoarBuildConfiguration(project);
-            if (moarBuildConfiguration == null) {
-                return null;
-            }
+            Map<String, String> moarBuildConfiguration = project.getService(RakuProjectSdkService.class).getMoarBuildConfig();
+            if (moarBuildConfiguration.isEmpty()) return null;
+
             String prefix = moarBuildConfiguration.getOrDefault("raku::prefix", null);
             if (prefix == null) {
                 prefix = moarBuildConfiguration.getOrDefault("Raku::prefix", "");

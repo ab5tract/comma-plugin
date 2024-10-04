@@ -12,6 +12,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
@@ -25,6 +26,8 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.raku.comma.services.project.RakuDependencyDetailsService;
+import org.raku.comma.services.project.RakuProjectSdkService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -259,6 +262,10 @@ public final class RakuMetaDataComponent {
         dependsArray.put(name);
         myMeta.put(key, dependsArray);
         saveFile();
+
+        if (myModule != null) {
+            myModule.getProject().getService(RakuDependencyDetailsService.class).refresh();
+        }
     }
 
     public Set<String> getAllDependencies() {
@@ -311,6 +318,10 @@ public final class RakuMetaDataComponent {
         if (myMeta == null) return;
         myMeta.put(key, new JSONArray(buildDepends));
         saveFile();
+
+        if (myModule != null) {
+            myModule.getProject().getService(RakuDependencyDetailsService.class).refresh();
+        }
     }
 
     @Nullable
@@ -368,7 +379,7 @@ public final class RakuMetaDataComponent {
             try {
                 JSONObject meta = getStubMetaObject(moduleName);
                 VirtualFile metaFile = finalFirstRoot.findOrCreateChildData(this, META6_JSON_NAME);
-                metaFile.setBinaryContent(MetaDataJSONSerializer.serializerBasic(meta).getBytes(StandardCharsets.UTF_8));
+                metaFile.setBinaryContent(MetaDataJSONSerializer.serializer(meta).getBytes(StandardCharsets.UTF_8));
                 myMeta = meta;
                 myMetaFile = metaFile;
 

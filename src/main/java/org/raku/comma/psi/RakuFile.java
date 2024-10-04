@@ -14,4 +14,10 @@ public interface RakuFile extends RakuPsiElement, RakuPsiScope, PsiNameIdentifie
     Map<Integer, List<Integer>> getStatementLineMap();
     boolean isReal();
     String renderPod();
+
+    void setModuleName(String moduleName);
+    String getModuleName();
+
+    void setOriginalPath(String originalPath);
+    String getOriginalPath();
 }

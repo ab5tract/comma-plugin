@@ -9,7 +9,7 @@ import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.process.ProcessTerminatedListener;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import org.raku.comma.cro.run.RakuCroRunConfigurationBase;
-import org.raku.comma.sdk.RakuSdkType;
+import org.raku.comma.services.project.RakuProjectSdkService;
 import org.raku.comma.utils.RakuCommandLine;
 import org.raku.comma.utils.RakuScriptRunner;
 import org.jetbrains.annotations.NotNull;
@@ -81,7 +81,7 @@ public class RakuRunCommandLineState extends CommandLineState {
      * always call either parent `startProcess` or `checkSdk` method.
      */
     protected void checkSdk() throws ExecutionException {
-        String path = RakuSdkType.getSdkHomeByProject(getEnvironment().getProject());
+        String path = getEnvironment().getProject().getService(RakuProjectSdkService.class).getSdkPath();
         if (path == null) {
             throw new ExecutionException("Raku SDK is not set for the project, please set one");
         }

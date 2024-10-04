@@ -10,7 +10,6 @@ import org.raku.comma.psi.RakuPsiElement;
 import org.raku.comma.psi.type.RakuParametricType;
 import org.raku.comma.psi.type.RakuType;
 import org.raku.comma.psi.type.RakuUntyped;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.raku.comma.utils.RakuPsiUtil;
 import org.jetbrains.annotations.NotNull;
@@ -53,37 +52,27 @@ public class RakuForStatementImpl extends RakuASTWrapperPsiElement implements Ra
             }
         }
         else if (isHashType(sourceType)) {
-            return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Pair);
+            return lookupGlobalSymbol(RakuSettingTypeId.Pair);
         }
 
         return RakuUntyped.INSTANCE;
     }
 
     private boolean isArrayType(RakuType type) {
-        RakuSdkType sdkType = RakuSdkType.getInstance();
-        RakuType array = sdkType.getCoreSettingType(getProject(), RakuSettingTypeId.Array);
-        if (type.equals(array))
-            return true;
-        RakuType list = sdkType.getCoreSettingType(getProject(), RakuSettingTypeId.List);
-        if (type.equals(list))
-            return true;
-        RakuType positional = sdkType.getCoreSettingType(getProject(), RakuSettingTypeId.Positional);
-        if (type.equals(positional))
-            return true;
-        return false;
+        RakuType array = lookupGlobalSymbol(RakuSettingTypeId.Array);
+        if (type.equals(array)) return true;
+        RakuType list = lookupGlobalSymbol(RakuSettingTypeId.List);
+        if (type.equals(list)) return true;
+        RakuType positional = lookupGlobalSymbol(RakuSettingTypeId.Positional);
+        return type.equals(positional);
     }
 
     private boolean isHashType(RakuType type) {
-        RakuSdkType sdkType = RakuSdkType.getInstance();
-        RakuType array = sdkType.getCoreSettingType(getProject(), RakuSettingTypeId.Hash);
-        if (type.equals(array))
-            return true;
-        RakuType list = sdkType.getCoreSettingType(getProject(), RakuSettingTypeId.Map);
-        if (type.equals(list))
-            return true;
-        RakuType positional = sdkType.getCoreSettingType(getProject(), RakuSettingTypeId.Associative);
-        if (type.equals(positional))
-            return true;
-        return false;
+        RakuType array = lookupGlobalSymbol(RakuSettingTypeId.Hash);
+        if (type.equals(array)) return true;
+        RakuType list = lookupGlobalSymbol(RakuSettingTypeId.Map);
+        if (type.equals(list)) return true;
+        RakuType positional =lookupGlobalSymbol(RakuSettingTypeId.Associative);
+        return type.equals(positional);
     }
 }

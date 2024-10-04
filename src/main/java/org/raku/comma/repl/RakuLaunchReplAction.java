@@ -10,12 +10,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ProjectRootManager;
 import org.raku.comma.RakuIcons;
-import org.raku.comma.actions.ShowRakuProjectStructureAction;
-import org.raku.comma.sdk.RakuSdkType;
-import org.raku.comma.services.RakuSDKService;
+//import org.raku.comma.actions.ShowRakuProjectStructureAction;
+import org.raku.comma.services.project.RakuProjectSdkService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,12 +36,12 @@ public class RakuLaunchReplAction extends AnAction {
             Notification notification = new Notification("raku.repl.errors", "Cannot run REPL",
                                                          "Could not start Raku REPL", NotificationType.ERROR);
             notification.setIcon(RakuIcons.CAMELIA);
-            notification = notification.addAction(new AnAction("Check SDK") {
-                @Override
-                public void actionPerformed(@NotNull AnActionEvent e) {
-                    new ShowRakuProjectStructureAction().actionPerformed(e);
-                }
-            });
+//            notification = notification.addAction(new AnAction("Check SDK") {
+//                @Override
+//                public void actionPerformed(@NotNull AnActionEvent e) {
+//                    new ShowRakuProjectStructureAction().actionPerformed(e);
+//                }
+//            });
             notification = notification.addAction(new AnAction("Show Exception Details to Report") {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
@@ -69,12 +66,6 @@ public class RakuLaunchReplAction extends AnAction {
     protected static String getSdkHome(@NotNull AnActionEvent e) {
         Project project = e.getProject();
         if (project == null) return null;
-        Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        if (sdk != null && sdk.getSdkType() instanceof RakuSdkType) {
-            return sdk.getHomePath();
-        } else {
-            return project.getService(RakuSDKService.class)
-                          .getProjectSdkPath();
-        }
+        return project.getService(RakuProjectSdkService.class).getSdkPath();
     }
 }

@@ -2,10 +2,10 @@ package org.raku.comma.psi.impl
 
 import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbService.Companion.isDumb
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
-import com.intellij.util.SlowOperations
 import org.raku.comma.psi.RakuFile
 import org.raku.comma.psi.RakuModuleName
 import org.raku.comma.psi.RakuUseStatement
@@ -14,7 +14,7 @@ import org.raku.comma.psi.stub.RakuUseStatementStubElementType
 import org.raku.comma.psi.stub.index.ProjectModulesStubIndex
 import org.raku.comma.psi.stub.index.RakuStubIndexKeys
 import org.raku.comma.psi.symbols.RakuSymbolCollector
-import org.raku.comma.sdk.RakuSdkType
+import org.raku.comma.services.project.RakuProjectSdkService
 
 class RakuUseStatementImpl : StubBasedPsiElementBase<RakuUseStatementStub?>, RakuUseStatement {
     constructor(node: ASTNode) : super(node)
@@ -54,7 +54,7 @@ class RakuUseStatementImpl : StubBasedPsiElementBase<RakuUseStatementStub?>, Rak
 
                 if (collector.isSatisfied) return
 
-                val file = RakuSdkType.getInstance().getPsiFileForModule(project, name, text)
+                val file = project.service<RakuProjectSdkService>().symbolCache.getPsiFileForModule(name, text)
                 file?.contributeGlobals(collector, HashSet())
             }
         }

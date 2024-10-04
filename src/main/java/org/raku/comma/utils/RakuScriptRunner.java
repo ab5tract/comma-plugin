@@ -3,11 +3,9 @@ package org.raku.comma.utils;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.PtyCommandLine;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.util.text.VersionComparatorUtil;
-import org.raku.comma.sdk.RakuSdkType;
-import org.raku.comma.services.RakuSDKService;
+import org.raku.comma.sdk.RakuSdkUtil;
+import org.raku.comma.services.project.RakuProjectSdkService;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Paths;
@@ -17,11 +15,12 @@ import java.util.Map;
 
 /**
  * FIXME
+ * TODO: Figure out what needs to be fixed :)
  */
 public class RakuScriptRunner extends PtyCommandLine {
 
     public RakuScriptRunner(Project project) throws ExecutionException {
-        this(RakuSdkType.getSdkHomeByProject(project));
+        this(project.getService(RakuProjectSdkService.class).getSdkPath());
     }
 
     protected RakuScriptRunner(@Nullable String sdkHome) throws ExecutionException {
@@ -29,7 +28,7 @@ public class RakuScriptRunner extends PtyCommandLine {
         if (Paths.get(sdkHome).toFile().isFile()) {
             setExePath(sdkHome);
         } else {
-            String rakuBinary = RakuSdkType.findRakuInSdkHome(sdkHome);
+            String rakuBinary = RakuSdkUtil.findRakuInSdkHome(sdkHome);
             if (rakuBinary == null) throw new ExecutionException("SDK is invalid");
             setExePath(rakuBinary);
         }
@@ -47,33 +46,22 @@ public class RakuScriptRunner extends PtyCommandLine {
     @Nullable
     private static List<String> populateDebugCommandLine(Project project, int debugPort) {
         List<String> command = new ArrayList<>();
-        @Nullable Sdk sdk = ProjectRootManager.getInstance(project).getProjectSdk();
-        @Nullable String versionString = null;
-        @Nullable String homePath = null;
-        if (sdk == null) {
-            RakuSDKService backupSDKService = project.getService(RakuSDKService.class);
-            String backupSDKPath = backupSDKService.getProjectSdkPath();
-            if (backupSDKPath != null) {
-                RakuSdkType sdkType = RakuSdkType.getInstance();
-                versionString = sdkType.getVersionString(backupSDKPath);
-                homePath = backupSDKPath;
-            }
-        } else {
-            versionString = sdk.getVersionString();
-            homePath = sdk.getHomePath();
-        }
-
+        String versionString = project.getService(RakuProjectSdkService.class)
+                                      .getState()
+                                      .getProjectSdkVersion();
+        String homePath = project.getService(RakuProjectSdkService.class)
+                                 .getSdkPath();;
         if (versionString == null || homePath == null) return null;
 
         if (VersionComparatorUtil.compare(versionString, "v2019.07") >= 0) {
-            String rakuBinary = RakuSdkType.findRakuInSdkHome(homePath);
+            String rakuBinary = RakuSdkUtil.findRakuInSdkHome(homePath);
             if (rakuBinary == null) return null;
             command.add(rakuBinary);
             command.add("--debug-port=" + debugPort);
             command.add("--debug-suspend");
         } else {
-            Map<String, String> moarBuildConfiguration = RakuSdkType.getInstance().getMoarBuildConfiguration(project);
-            if (moarBuildConfiguration == null) return null;
+            Map<String, String> moarBuildConfiguration = project.getService(RakuProjectSdkService.class).getMoarBuildConfig();
+            if (moarBuildConfiguration.isEmpty()) return null;
             String prefix = moarBuildConfiguration.getOrDefault("perl6::prefix", null);
             if (prefix == null) {
                 prefix = moarBuildConfiguration.getOrDefault("Raku::prefix", "");

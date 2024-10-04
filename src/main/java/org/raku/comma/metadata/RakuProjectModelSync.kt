@@ -4,18 +4,16 @@ import com.intellij.execution.ExecutionException
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.State
+import com.intellij.openapi.components.service
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.ProjectJdkTable
-import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.openapi.roots.*
 import com.intellij.openapi.roots.impl.libraries.LibraryEx
 import com.intellij.serviceContainer.AlreadyDisposedException
 import org.raku.comma.library.RakuLibraryType
-import org.raku.comma.sdk.RakuSdkType
-import org.raku.comma.services.RakuSDKService
+import org.raku.comma.sdk.RakuSdkUtil
+import org.raku.comma.services.project.RakuProjectSdkService
 import org.raku.comma.utils.RakuCommandLine
 import org.raku.comma.utils.RakuUtils
 import java.util.concurrent.ConcurrentHashMap
@@ -54,7 +52,7 @@ class RakuProjectModelSync(private val project: Project) {
                                 // otherwise create and mark
                                 val library = model.moduleLibraryTable.createLibrary(metaDep) as LibraryEx
                                 val libraryModel = library.modifiableModel
-                                val url = String.format("raku://%d:%s!/", sdk.name.hashCode(), metaDep)
+                                val url = String.format("raku://%d^%s/", sdk.toString().hashCode(), metaDep)
                                 libraryModel.kind = RakuLibraryType.LIBRARY_KIND
                                 libraryModel.addRoot(url, OrderRootType.SOURCES)
                                 val entry = checkNotNull(model.findLibraryOrderEntry(library)) { library }
@@ -92,29 +90,16 @@ class RakuProjectModelSync(private val project: Project) {
         module: Module,
         metaDependencies: Set<String>,
         extendedDeps: MutableSet<String>
-    ): Sdk?
+    ): SdkEntry?
     {
-        var sdk = ModuleRootManager.getInstance(module).sdk
-        if (sdk == null || sdk.sdkType !is RakuSdkType) {
-            sdk = ProjectRootManager.getInstance(project).projectSdk
-        }
-        if (sdk == null || sdk.sdkType !is RakuSdkType) {
-            val sdkHomePath = project.getService(RakuSDKService::class.java)
-                                     .getProjectSdkPath() ?: return null
+        val sdk = project.service<RakuProjectSdkService>()
+        val sdkHomePath = sdk.sdkPath ?: return null
+        val sdkVersion = sdk.state.projectSdkVersion ?: return null
 
-            for (tempSdk in ProjectJdkTable.getInstance().getSdksOfType(RakuSdkType.getInstance())) {
-                if (tempSdk.homePath == sdkHomePath) {
-                    sdk = tempSdk
-                    break
-                }
-            }
+        for (dep in metaDependencies) {
+            extendedDeps.addAll(collectDependenciesOfModule(module.project, dep, sdkHomePath))
         }
-        if (sdk != null) {
-            for (dep in metaDependencies) {
-                extendedDeps.addAll(collectDependenciesOfModule(module.project, dep, sdk))
-            }
-        }
-        return sdk
+        return SdkEntry(sdkHomePath, sdkVersion)
     }
 
     private fun removeDuplicateEntries(model: ModifiableRootModel, name: String?) {
@@ -140,7 +125,7 @@ class RakuProjectModelSync(private val project: Project) {
         }
     }
 
-    private fun collectDependenciesOfModule(project: Project, metaDep: String, sdk: Sdk): List<String> {
+    private fun collectDependenciesOfModule(project: Project, metaDep: String, sdk: String): List<String> {
         try {
             val locateScript = RakuUtils.getResourceAsFile("zef/gather-deps.raku")
                 ?: throw ExecutionException("Resource bundle is corrupted: locate script is missing")
@@ -149,8 +134,14 @@ class RakuProjectModelSync(private val project: Project) {
             depsCollectorScript.addParameter(metaDep)
             return depsCollectorScript.executeAndRead(locateScript)
         } catch (e: ExecutionException) {
-            RakuSdkType.getInstance().reactToSDKIssue(project, "Cannot use current Raku SDK")
+            RakuSdkUtil.reactToSdkIssue(project, "Cannot use current Raku SDK")
             return ArrayList()
         }
+    }
+}
+
+data class SdkEntry(val path: String, val version: String) {
+    override fun toString(): String {
+        return "Raku SDK $version"
     }
 }

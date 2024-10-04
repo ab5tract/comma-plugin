@@ -4,7 +4,6 @@ import org.raku.comma.psi.RakuASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import org.raku.comma.psi.RakuSupply;
 import org.raku.comma.psi.type.RakuType;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +14,6 @@ public class RakuSupplyImpl extends RakuASTWrapperPsiElement implements RakuSupp
 
     @Override
     public @NotNull RakuType inferType() {
-        return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Supply);
+        return lookupGlobalSymbol(RakuSettingTypeId.Supply);
     }
 }

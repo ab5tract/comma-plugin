@@ -13,8 +13,8 @@ import org.raku.comma.psi.stub.RakuNeedStatementStub;
 import org.raku.comma.psi.stub.RakuNeedStatementStubElementType;
 import org.raku.comma.psi.stub.index.ProjectModulesStubIndex;
 import org.raku.comma.psi.symbols.RakuSymbolCollector;
-import org.raku.comma.sdk.RakuSdkType;
 import org.jetbrains.annotations.NotNull;
+import org.raku.comma.services.project.RakuProjectSdkService;
 
 import java.util.*;
 
@@ -43,7 +43,7 @@ public class RakuNeedStatementImpl extends StubBasedPsiElementBase<RakuNeedState
                 file.contributeGlobals(collector, seen);
             }
             else {
-                RakuFile file = RakuSdkType.getInstance().getPsiFileForModule(project, name, getText());
+                RakuFile file = project.getService(RakuProjectSdkService.class).getSymbolCache().getPsiFileForModule(name, getText());
                 if (file != null) {
                     file.contributeGlobals(collector, new HashSet<>());
                 }

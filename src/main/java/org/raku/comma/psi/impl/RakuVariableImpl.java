@@ -14,7 +14,6 @@ import org.raku.comma.psi.symbols.RakuSymbolCollector;
 import org.raku.comma.psi.symbols.RakuSymbolKind;
 import org.raku.comma.psi.type.RakuType;
 import org.raku.comma.psi.type.RakuUntyped;
-import org.raku.comma.sdk.RakuSdkType;
 import org.raku.comma.sdk.RakuSettingTypeId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -89,34 +88,31 @@ public class RakuVariableImpl extends RakuASTWrapperPsiElement implements RakuVa
         String text = getText();
         // Special cases, regex
         if (text.substring(1).chars().allMatch(Character::isDigit)
-                || text.startsWith("$<") && text.endsWith(">"))
-            return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Match);
+            || text.startsWith("$<") && text.endsWith(">"))
+        {
+            return lookupGlobalSymbol(RakuSettingTypeId.Match);
+        }
 
         // Check if known by definition
         RakuSettingTypeId typeByDefinition = RakuFileImpl.VARIABLE_SYMBOLS.get(text);
-        if (typeByDefinition != null)
-            return RakuSdkType.getInstance().getCoreSettingType(getProject(), typeByDefinition);
+        if (typeByDefinition != null) return lookupGlobalSymbol(typeByDefinition);
 
         // Check if typed
         // Firstly get definition
         PsiReference ref = getReference();
-        if (ref == null)
-            return RakuUntyped.INSTANCE;
+        if (ref == null) return RakuUntyped.INSTANCE;
         PsiElement resolved = ref.resolve();
         if (text.equals("$_") && resolved instanceof RakuTopicalizer) {
             RakuType type = ((RakuTopicalizer)resolved).calculateTopicType(this);
-            if (type != null)
-                return type;
+            if (type != null) return type;
         }
         else if (resolved instanceof RakuVariableDecl) {
             RakuType type = ((RakuVariableDecl) resolved).inferType();
-            if (!(type instanceof RakuUntyped))
-                return type;
+            if (!(type instanceof RakuUntyped)) return type;
         }
         else if (resolved instanceof RakuParameterVariable) {
             RakuType type = ((RakuParameterVariable) resolved).inferType();
-            if (!(type instanceof RakuUntyped))
-                return type;
+            if (!(type instanceof RakuUntyped)) return type;
         }
         // Handle $ case
         RakuType type = getTypeBySigil(text, resolved);
@@ -126,19 +122,19 @@ public class RakuVariableImpl extends RakuASTWrapperPsiElement implements RakuVa
     @Override
     public @Nullable RakuType getTypeBySigil(String text, PsiElement resolved) {
         if (resolved == null || resolved instanceof RakuVariableDecl) {
-            if (text.startsWith("@"))
-                return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Array);
-            else if (text.startsWith("%"))
-                return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Hash);
-            else if (text.startsWith("&"))
-                return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Callable);
+            return switch (text.substring(0,1)) {
+                case "@" -> lookupGlobalSymbol(RakuSettingTypeId.Array);
+                case "%" -> lookupGlobalSymbol(RakuSettingTypeId.Hash);
+                case "&" -> lookupGlobalSymbol(RakuSettingTypeId.Callable);
+                default -> null;
+            };
         } else if (resolved instanceof RakuParameterVariable) {
-            if (text.startsWith("@"))
-                return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.List);
-            else if (text.startsWith("%"))
-                return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Map);
-            else if (text.startsWith("&"))
-                return RakuSdkType.getInstance().getCoreSettingType(getProject(), RakuSettingTypeId.Callable);
+            return switch (text.substring(0,1)) {
+                case "@" -> lookupGlobalSymbol(RakuSettingTypeId.List);
+                case "%" -> lookupGlobalSymbol(RakuSettingTypeId.Map);
+                case "&" -> lookupGlobalSymbol(RakuSettingTypeId.Callable);
+                default -> null;
+            };
         }
         return null;
     }
@@ -161,7 +157,9 @@ public class RakuVariableImpl extends RakuASTWrapperPsiElement implements RakuVa
             if (RakuVariable.getTwigil(varName) == '^' ||
                 RakuVariable.getTwigil(varName) == ':') {
                 collector.offerSymbol(
-                    new RakuExplicitAliasedSymbol(RakuSymbolKind.Variable, this, RakuVariable.getSigil(varName) + varName.substring(2)));
+                    new RakuExplicitAliasedSymbol(RakuSymbolKind.Variable,
+                                                  this,
+                                                  RakuVariable.getSigil(varName) + varName.substring(2)));
             }
         }
     }

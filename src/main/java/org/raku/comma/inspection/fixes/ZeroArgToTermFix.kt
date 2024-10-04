@@ -1,5 +1,6 @@
 package org.raku.comma.inspection.fixes
 
+import com.intellij.codeInsight.intention.LowPriorityAction
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.codeInspection.util.IntentionName
@@ -10,7 +11,7 @@ import org.raku.comma.psi.RakuLongName
 import org.raku.comma.psi.RakuRoutineDecl
 import org.raku.comma.psi.RakuSignature
 
-class ZeroArgToTermFix(private val name: String) : LocalQuickFix {
+class ZeroArgToTermFix(private val name: String) : LocalQuickFix, LowPriorityAction {
 
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
         val declaration : RakuRoutineDecl = descriptor.psiElement as RakuRoutineDecl

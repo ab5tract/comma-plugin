@@ -13,7 +13,7 @@ import org.raku.comma.metadata.RakuMetaDataComponent
 import org.raku.comma.psi.RakuColonPair
 import org.raku.comma.psi.RakuLongName
 import org.raku.comma.psi.RakuModuleName
-import org.raku.comma.services.RakuModuleListFetcher
+import org.raku.comma.services.project.RakuModuleListFetcher
 
 class UsedModuleInspection : RakuInspection() {
     override fun provideVisitFunction(holder: ProblemsHolder, element: PsiElement) {
@@ -39,7 +39,6 @@ class UsedModuleInspection : RakuInspection() {
         val module = ModuleUtilCore.findModuleForPsiElement(element) ?: return
         val metaData = module.getService(RakuMetaDataComponent::class.java)
 
-
         // No need to annotate "missing" modules, if there are
         // no META data available
         if (!metaData.isMetaDataExist) return
@@ -51,7 +50,7 @@ class UsedModuleInspection : RakuInspection() {
         dependencies.addAll(metaData.getDepends(true))
         dependencies.addAll(metaData.getTestDepends(true))
         dependencies.addAll(metaData.getBuildDepends(true))
-        for (dependency in dependencies) {
+;        for (dependency in dependencies) {
             var providesOfDependency = service.getProvidesListByModule(dependency)
             // Maybe it is a part of the distribution, and we can get something out of its parent distribution
             if (providesOfDependency.isEmpty()) {
