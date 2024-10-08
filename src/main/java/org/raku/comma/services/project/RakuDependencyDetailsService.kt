@@ -66,8 +66,10 @@ class RakuDependencyDetailsService(
     }
 
     private fun providesToRakuFiles(provides: List<String>): List<RakuFile> {
-        return pathOfProvideReference(provides).map { (provide, files) ->
+        return pathOfProvideReference(provides.toMutableList()).map { (provide, files) ->
             val path = files.first()
+            dependencyState.provideToPath.putIfAbsent(provide, path)
+
             val rakuFile = provideToRakuFileLookup.computeIfAbsent(provide,
                                 { RakuElementFactory.createModulePsiFile(project,
                                                                          File(path).readText(),
@@ -87,7 +89,7 @@ class RakuDependencyDetailsService(
         val moduleService = project.service<RakuModuleListFetcher>()
         val modules: List<String> = CommaProjectUtil.projectDependencies(project)
         val provides = moduleService.getProvidesListByModules(modules)
-        pathLookup.putAll(pathOfProvideReference(provides).entries.map { Pair(it.key, it.value.first()) })
+        pathLookup.putAll(pathOfProvideReference(provides.toMutableList()).entries.map { Pair(it.key, it.value.first()) })
             // TODO: Figure out async for this...
             // pathLookup.putAll(withContext(dispatchScope.coroutineContext, {
             //        pathOfProvideReference(provides).entries.map { Pair(it.key, it.value.first()) }
@@ -97,29 +99,43 @@ class RakuDependencyDetailsService(
     }
 
     private fun pathOfProvideReference(reference: String): List<String>? {
-        return pathOfProvideReference(listOf(reference))[reference]
+        return pathOfProvideReference(mutableListOf(reference))[reference]
     }
 
-    private fun pathOfProvideReference(references: List<String>): Map<String, List<String>> {
+    private fun pathOfProvideReference(references: MutableList<String>): Map<String, List<String>> {
         val sdkHome = project.service<RakuProjectSdkService>().sdkPath
 
-        val provideMap: CompletableFuture<Map<String, List<String>>> = CompletableFuture()
-        runScope.launch {
-            try {
-                val locateScript = RakuUtils.getResourceAsFile("scripts/absolute-path-of-module.raku")
-                    ?: throw ExecutionException("Resource bundle is corrupted: locate script is missing")
-                val pathCollectorScript = RakuCommandLine(sdkHome)
-                pathCollectorScript.addParameter(locateScript.absolutePath)
-                references.forEach { reference -> pathCollectorScript.addParameter(reference) }
-                val output = pathCollectorScript.executeAndRead(null).joinToString("\n")
-                provideMap.complete(Json.decodeFromString<Map<String, List<String>>>(output))
-            } catch (e: ExecutionException) {
-                RakuSdkUtil.reactToSdkIssue(project, "Cannot use current Raku SDK")
-                provideMap.complete(mapOf())
+        val provideMapFuture: CompletableFuture<Map<String, List<String>>> = CompletableFuture()
+
+        val provideMap: MutableMap<String, List<String>> = mutableMapOf()
+        references.forEach {
+            if (dependencyState.provideToPath[it] != null) {
+                provideMap[it] = listOf(dependencyState.provideToPath[it]!!)
             }
         }
+        provideMap.keys.forEach { references.remove(it) }
 
-        return provideMap.join()
+        if (references.isNotEmpty()) {
+            runScope.launch {
+                try {
+                    val locateScript = RakuUtils.getResourceAsFile("scripts/absolute-path-of-module.raku")
+                        ?: throw ExecutionException("Resource bundle is corrupted: locate script is missing")
+                    val pathCollectorScript = RakuCommandLine(sdkHome)
+                    pathCollectorScript.addParameter(locateScript.absolutePath)
+                    references.forEach { reference -> pathCollectorScript.addParameter(reference) }
+                    val output = pathCollectorScript.executeAndRead(null).joinToString("\n")
+                    provideMap.putAll(Json.decodeFromString<Map<String, List<String>>>(output))
+                    provideMapFuture.complete(provideMap.toMap())
+                } catch (e: ExecutionException) {
+                    RakuSdkUtil.reactToSdkIssue(project, "Cannot use current Raku SDK")
+                    provideMapFuture.complete(provideMap.toMap())
+                }
+            }
+        } else {
+            provideMapFuture.complete(provideMap.toMap())
+        }
+
+        return provideMapFuture.join()
     }
 
     fun refresh() {
