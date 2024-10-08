@@ -71,8 +71,8 @@ public class RakuActionProvider implements InspectionWidgetActionProvider {
                                               currentState != null && currentState != myState));
             presentation.setText(myState.toString());
             String descriptionText = switch (myState) {
-                case CODE -> "Display default editor view presenting Raku source code";
-                case DOCS -> "Display special editor view presenting rendered module documentation";
+                case CODE  -> "Display default editor view presenting Raku source code";
+                case DOCS  -> "Display special editor view presenting rendered module documentation";
                 case SPLIT -> "Display special editor view presenting both Raku source code and rendered module documentation";
             };
             presentation.setDescription(descriptionText);
@@ -83,7 +83,7 @@ public class RakuActionProvider implements InspectionWidgetActionProvider {
             Project project = e.getProject();
 
             if (project != null && myEditor instanceof EditorImpl) {
-                for (FileEditor fileEditor : FileEditorManager.getInstance(project).getEditors(((EditorImpl)myEditor).getVirtualFile())) {
+                for (FileEditor fileEditor : FileEditorManager.getInstance(project).getEditors(myEditor.getVirtualFile())) {
                     if (fileEditor instanceof RakuModuleViewEditor) {
                         ((RakuModuleViewEditor)fileEditor).updateState(myState);
                     }
