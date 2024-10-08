@@ -59,9 +59,12 @@ class UnusedRoutineInspection : RakuInspection() {
             val identifier = routine.nameIdentifier
             if (identifier != null) {
                 val editor = PsiEditorUtil.findEditor(routine) ?: return
-                customHighlight(editor, highlightTextRange(routine), RakuHighlighter.UNUSED)
 
                 val name = identifier.text
+                if (! name.isNullOrEmpty()) {
+                    customHighlight(editor, highlightTextRange(routine), RakuHighlighter.UNUSED)
+                }
+
                 val fixes = if (routine.isSub)
                                 arrayOf(RemoveUnusedRoutineFix(name), MakeSubroutineExportedFix(name))
                             else

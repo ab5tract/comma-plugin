@@ -34,12 +34,11 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * This service provides means to work with "secondary SDK".
  * When the Raku plugin is used in products such as IDEA or Webstorm,
  * setting Raku SDK is either impossible or interferes with main project code.
  * To work around this, we provide some UI to the user to set specific Raku SDK
  * for a project. This service maintains state of this SDK and can be used to set/obtain
- * such "secondary" SDK for Raku parts.
+ * the SDK for Raku parts.
  */
 @Service(Service.Level.PROJECT)
 @State(name = "Raku.SDK", storages = [Storage(value = RakuServiceConstants.PROJECT_SETTINGS_FILE)])

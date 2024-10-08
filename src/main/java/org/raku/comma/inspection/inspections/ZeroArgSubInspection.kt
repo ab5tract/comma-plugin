@@ -12,6 +12,7 @@ class ZeroArgSubInspection : RakuInspection() {
         val name = element.name ?: return
         if (element.isMethod
             || element.params.isNotEmpty()
+            || name.isNullOrEmpty()
             || name == "MAIN"
             || name.startsWith("term:<")) return
 
