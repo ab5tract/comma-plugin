@@ -2,6 +2,7 @@ package org.raku.comma.inspection.fixes
 
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.util.PsiEditorUtil
 
@@ -15,10 +16,10 @@ class ConstKeywordFix : LocalQuickFix {
         val editor = PsiEditorUtil.findEditor(file) ?: return
         val call = descriptor.psiElement
 
-        editor.document.replaceString(
-            call.textOffset,
-            call.textOffset + call.textLength,
-            "constant"
-        )
+        WriteCommandAction.runWriteCommandAction(project) {
+            editor.document.replaceString(call.textOffset,
+                                          call.textOffset + call.textLength,
+                                          "constant")
+        }
     }
 }

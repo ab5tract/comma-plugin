@@ -1,9 +1,6 @@
 package org.raku.comma.formatter;
 
-import com.intellij.formatting.FormattingContext;
-import com.intellij.formatting.FormattingModel;
-import com.intellij.formatting.FormattingModelBuilder;
-import com.intellij.formatting.Spacing;
+import com.intellij.formatting.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
 import com.intellij.psi.PsiElement;
@@ -11,10 +8,13 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
 import com.intellij.psi.formatter.DocumentBasedFormattingModel;
+import com.intellij.psi.formatter.PsiBasedFormattingModel;
+import com.intellij.psi.impl.source.codeStyle.PsiBasedFormatterModelWithShiftIndentInside;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.raku.comma.RakuLanguage;
 import org.raku.comma.parsing.RakuElementTypes;
+import org.raku.comma.parsing.RakuTokenTypes;
 import org.raku.comma.psi.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +47,8 @@ public class RakuFormattingModelBuilder implements FormattingModelBuilder {
         RakuCodeStyleSettings customSettings = settings.getCustomSettings(RakuCodeStyleSettings.class);
         initRules(rules, commonSettings, customSettings);
         final RakuBlock block = new RakuBlock(psiFile.getNode(), null, null, commonSettings, customSettings, rules);
-        return new DocumentBasedFormattingModel(block, formattingContext.getProject(), settings, psiFile.getFileType(), psiFile);
+//        return new DocumentBasedFormattingModel(block, formattingContext.getProject(), settings, psiFile.getFileType(), psiFile);
+        return FormattingModelProvider.createFormattingModelForPsiFile(psiFile, block, settings);
     }
 
     private void initRules(List<BiFunction<RakuBlock, RakuBlock, Spacing>> rules,

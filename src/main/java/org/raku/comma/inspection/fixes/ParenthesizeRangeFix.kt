@@ -2,6 +2,7 @@ package org.raku.comma.inspection.fixes
 
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiEditorUtil
@@ -22,9 +23,12 @@ class ParenthesizeRangeFix : LocalQuickFix {
         if (replacer == null) return
 
         val editor = PsiEditorUtil.findEditor(element) ?: return
-        editor.document.replaceString(element.textOffset,
-                                      element.textOffset + element.textLength,
-                                      replacer)
+
+        WriteCommandAction.runWriteCommandAction(project) {
+            editor.document.replaceString(element.textOffset,
+                                          element.textOffset + element.textLength,
+                                          replacer)
+        }
     }
 
     private fun fixInfixForm(infix: RakuInfixApplication): String {

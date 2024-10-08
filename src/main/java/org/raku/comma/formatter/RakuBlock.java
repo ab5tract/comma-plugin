@@ -31,14 +31,14 @@ import static org.raku.comma.parsing.RakuTokenTypes.*;
 class RakuBlock extends AbstractBlock implements BlockWithParent {
     private final static boolean DEBUG_MODE = false;
     private static final TokenSet TRAIT_CARRIERS = TokenSet.create(
-        PACKAGE_DECLARATION,
-        ROUTINE_DECLARATION,
-        VARIABLE_DECLARATION,
-        PARAMETER,
-        REGEX_DECLARATION,
-        ENUM,
-        SUBSET,
-        CONSTANT
+            PACKAGE_DECLARATION,
+            ROUTINE_DECLARATION,
+            VARIABLE_DECLARATION,
+            PARAMETER,
+            REGEX_DECLARATION,
+            ENUM,
+            SUBSET,
+            CONSTANT
     );
     private final List<BiFunction<RakuBlock, RakuBlock, Spacing>> myRules;
     private final CommonCodeStyleSettings myCommonSettings;
@@ -47,10 +47,10 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
     private final Boolean isStatementContinuation;
 
     private final TokenSet WHITESPACES = TokenSet.create(
-        UNV_WHITE_SPACE,
-        WHITE_SPACE,
-        VERTICAL_WHITE_SPACE,
-        UNSP_WHITE_SPACE
+            UNV_WHITE_SPACE,
+            WHITE_SPACE,
+            VERTICAL_WHITE_SPACE,
+            UNSP_WHITE_SPACE
     );
     private ArrayList<Block> children;
 
@@ -102,10 +102,10 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
                 childIsStatementContinuation = true;
             }
             Alignment align = alignFunction == null
-                                  ? null
-                                  : alignFunction.first.apply(child)
-                                        ? alignFunction.second
-                                        : null;
+                              ? null
+                              : alignFunction.first.apply(child)
+                                ? alignFunction.second
+                                : null;
             childBlock = new RakuBlock(child, null, align, childIsStatementContinuation, myCommonSettings, myCustomSettings, myRules);
             childBlock.setParent(this);
             children.add(childBlock);
@@ -116,7 +116,7 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
     @Override
     public Wrap getWrap() {
         // Basic sanity check: we don't wrap anything when interpolated in a str literal
-        if (! (PsiTreeUtil.getParentOfType(myNode.getPsi(), RakuFile.class, RakuStrLiteral.class, RakuHeredoc.class) instanceof RakuFile)) {
+        if (!(PsiTreeUtil.getParentOfType(myNode.getPsi(), RakuFile.class, RakuStrLiteral.class, RakuHeredoc.class) instanceof RakuFile)) {
             return null;
         }
 
@@ -129,21 +129,21 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
         }
 
         if (myNode.getPsi() instanceof RakuMethodCall
-            && myNode.getText().startsWith(".")
-            && myCustomSettings.METHOD_CALL_WRAP)
+                && myNode.getText().startsWith(".")
+                && myCustomSettings.METHOD_CALL_WRAP)
         {
             return Wrap.createWrap(WrapType.NORMAL, false);
         }
 
         if (myNode.getTreeParent() != null
-            && myNode.getTreeParent().getPsi() instanceof RakuInfixApplication application
-            && myNode.getElementType() != RakuTokenTypes.NULL_TERM
-            && myNode.getElementType() != RakuElementTypes.INFIX)
+                && myNode.getTreeParent().getPsi() instanceof RakuInfixApplication application
+                && myNode.getElementType() != RakuTokenTypes.NULL_TERM
+                && myNode.getElementType() != RakuElementTypes.INFIX)
         {
             PsiElement parent = PsiTreeUtil.getParentOfType(application, RakuSubCall.class, RakuMethodCall.class,
                                                             RakuArrayComposer.class, RakuVariableDecl.class);
             if (application.getOperator().equals(",")
-                && (parent instanceof RakuSubCall || parent instanceof RakuMethodCall))
+                    && (parent instanceof RakuSubCall || parent instanceof RakuMethodCall))
             {
                 return myCustomSettings.CALL_ARGUMENTS_WRAP
                        ? Wrap.createWrap(WrapType.NORMAL, false)
@@ -151,8 +151,8 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
             }
 
             if (application.getOperator().equals(",")
-                && (parent instanceof RakuSubCall || parent instanceof RakuMethodCall)
-                && parent instanceof RakuArrayComposer || parent instanceof RakuVariableDecl)
+                    && (parent instanceof RakuSubCall || parent instanceof RakuMethodCall)
+                    && parent instanceof RakuArrayComposer || parent instanceof RakuVariableDecl)
             {
                 return myCustomSettings.ARRAY_ELEMENTS_WRAP
                        ? Wrap.createWrap(WrapType.NORMAL, false)
@@ -174,10 +174,10 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
             return Pair.create((child) -> child.getElementType() == PARAMETER, Alignment.createAlignment());
         } else if (type == ARRAY_COMPOSER && myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT) {
             return Pair.create((child) -> child.getElementType() == ARRAY_COMPOSER_OPEN
-                                            && child.getElementType() == ARRAY_COMPOSER_CLOSE,
+                                       && child.getElementType() == ARRAY_COMPOSER_CLOSE,
                                Alignment.createAlignment());
         } else if (type == INFIX_APPLICATION && !(node.getPsi().getLastChild() instanceof RakuMethodCall)) {
-            if (! (node.getPsi() instanceof RakuInfixApplication infixApp)) return null;
+            if (!(node.getPsi() instanceof RakuInfixApplication infixApp)) return null;
 
             // TODO: Set up a rule for ternaries
             if (infixApp.getOperator().equals("??")) return null; // Do not align ?? !!, we'll just indent it
@@ -199,13 +199,13 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
                 if (origin instanceof RakuCodeBlockCall) {
                     return myCustomSettings.CALL_ARGUMENTS_ALIGNMENT
                            ? Pair.create((child) -> child.getElementType() != RakuTokenTypes.INFIX
-                                                        && child.getElementType() != RakuTokenTypes.NULL_TERM,
+                                                 && child.getElementType() != RakuTokenTypes.NULL_TERM,
                                          Alignment.createAlignment())
                            : null;
                 } else {
                     return myCustomSettings.ARRAY_ELEMENTS_ALIGNMENT
                            ? Pair.create((child) -> child.getElementType() != RakuTokenTypes.INFIX
-                                                    && child.getElementType() != RakuTokenTypes.NULL_TERM,
+                                                 && child.getElementType() != RakuTokenTypes.NULL_TERM,
                                          Alignment.createAlignment())
                            : null;
                 }
@@ -213,11 +213,19 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
 
             if (myCustomSettings.INFIX_APPLICATION_ALIGNMENT) {
                 return Pair.create((child) -> child.getElementType() != RakuTokenTypes.INFIX
-                                                && child.getElementType() != RakuTokenTypes.NULL_TERM,
+                                           && child.getElementType() != RakuTokenTypes.NULL_TERM,
                                    Alignment.createAlignment());
             }
         } else if (TRAIT_CARRIERS.contains(type) && myCustomSettings.TRAIT_ALIGNMENT) {
             return Pair.create((child) -> child.getElementType() == RakuElementTypes.TRAIT, Alignment.createAlignment());
+        }
+
+        if (type == BLOCKOID) {
+            return Pair.create((child) -> child.getElementType() == BLOCK_CURLY_BRACKET_OPEN
+                    && WHITESPACES.contains(child.getTreeNext().getElementType())
+                    && child.getTreeNext()
+                            .getTreeNext()
+                            .getElementType() == BLOCK_CURLY_BRACKET_OPEN, Alignment.createAlignment());
         }
 
         return null;
@@ -264,7 +272,7 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
         }
 
         if (myNode.getTreeParent().getPsi() instanceof RakuBlockoid
-            && myNode.getTreeNext() != null && myNode.getTreePrev() != null)
+                && myNode.getTreeNext() != null && myNode.getTreePrev() != null)
         {
             return myNode.getTextLength() == 0
                    ? Indent.getNoneIndent()
@@ -272,7 +280,7 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
         }
 
         if (myNode.getElementType() == SEMI_LIST
-            && (myNode.getTreeParent().getElementType() == ARRAY_COMPOSER
+                && (myNode.getTreeParent().getElementType() == ARRAY_COMPOSER
                 || myNode.getTreeParent().getElementType() == RakuElementTypes.CONTEXTUALIZER))
         {
             return myNode.getTextLength() == 0
@@ -286,12 +294,11 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
 
         if (isStatementContinuation != null && isStatementContinuation) {
             if (myNode.getElementType() == PARENTHESES_CLOSE
-                && myNode.getTreeParent().getPsi() instanceof RakuSignature)
+                    && myNode.getTreeParent().getPsi() instanceof RakuSignature)
             {
                 return Indent.getSpaceIndent(1, true);
-            }
-            else if (myNode.getElementType() == PARENTHESES_CLOSE
-                && myNode.getTreeParent().getPsi() instanceof RakuSubCall subCall)
+            } else if (myNode.getElementType() == PARENTHESES_CLOSE
+                    && myNode.getTreeParent().getPsi() instanceof RakuSubCall subCall)
             {
                 if (subCall.getCallArguments().length != 0) {
                     PsiElement infix = subCall.getCallArguments()[0].getParent();
@@ -299,8 +306,7 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
                                                  ? infix.getStartOffsetInParent()
                                                  : 0, true);
                 }
-            }
-            else if (myNode.getElementType() == ARRAY_COMPOSER_CLOSE) {
+            } else if (myNode.getElementType() == ARRAY_COMPOSER_CLOSE) {
                 return Indent.getNoneIndent();
             }
             return Indent.getContinuationIndent();
@@ -395,11 +401,10 @@ class RakuBlock extends AbstractBlock implements BlockWithParent {
                     block = subblocks.getLast();
                 } else {
                     if (block instanceof RakuBlock
-                        && ((RakuBlock) block).getNode().getElementType() == UNTERMINATED_STATEMENT)
+                            && ((RakuBlock) block).getNode().getElementType() == UNTERMINATED_STATEMENT)
                     {
                         return new ChildAttributes(Indent.getContinuationIndent(), obtainAlign((RakuBlock) block));
-                    }
-                    else {
+                    } else {
                         return new ChildAttributes(Indent.getNormalIndent(), null);
                     }
                 }
