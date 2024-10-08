@@ -3,6 +3,8 @@ package org.raku.comma.readerMode
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter
 import com.intellij.ide.structureView.StructureViewBuilder
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.EDT
+import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorLocation
 import com.intellij.openapi.fileEditor.FileEditorState
@@ -17,9 +19,10 @@ import com.intellij.psi.PsiDocumentManager
 import com.intellij.ui.JBSplitter
 import com.intellij.util.ui.JBUI
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.annotations.Nls
+import org.raku.comma.services.project.RakuProjectSdkService
 import org.raku.comma.structureView.RakuStructureViewBuilder
 import java.beans.PropertyChangeListener
 import java.util.*
@@ -67,9 +70,7 @@ class RakuModuleViewEditor(
     }
 
     fun updateState(state: RakuReaderModeState) {
-//        runBlocking {
-//            withContext(Dispatchers.IO) {
-//        ApplicationManager.getApplication().runReadAction {
+        ApplicationManager.getApplication().runReadAction {
             presentedState = state
             val psiFile =
                 Objects.requireNonNull(
@@ -78,11 +79,18 @@ class RakuModuleViewEditor(
                     PsiDocumentManager.getInstance(it).getPsiFile(myEditor.editor.document)
                 }
             psiFile?.putUserData(RakuActionProvider.RAKU_EDITOR_MODE_STATE, state)
-            myTriggerPodRenderCode?.run()
-            invalidateLayout()
-            myEditor.component.isVisible = state == RakuReaderModeState.CODE || state == RakuReaderModeState.SPLIT
-            podPreviewEditor?.component?.isVisible = state == RakuReaderModeState.DOCS || state == RakuReaderModeState.SPLIT
-//        }
+        }
+
+        myEditor.editor.project!!.service<RakuProjectSdkService>().runScope.launch {
+            withContext(Dispatchers.EDT) {
+                myTriggerPodRenderCode?.run()
+                invalidateLayout()
+                myEditor.component.isVisible =
+                    state == RakuReaderModeState.CODE || state == RakuReaderModeState.SPLIT
+                podPreviewEditor?.component?.isVisible =
+                    state == RakuReaderModeState.DOCS || state == RakuReaderModeState.SPLIT
+            }
+        }
     }
 
     override fun getPreferredFocusedComponent(): JComponent? {
@@ -176,7 +184,8 @@ class RakuModuleViewEditor(
         requestFocus()
     }
 
-    private class RakuModuleEditorState(val editorState: FileEditorState?, val viewerState: FileEditorState?) : FileEditorState {
+    private class RakuModuleEditorState(val editorState: FileEditorState?, val viewerState: FileEditorState?) :
+        FileEditorState {
         override fun canBeMergedWith(otherState: FileEditorState, level: FileEditorStateLevel): Boolean {
             return otherState is RakuModuleEditorState
         }

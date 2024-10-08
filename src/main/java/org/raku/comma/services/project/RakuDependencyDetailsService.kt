@@ -28,7 +28,7 @@ class RakuDependencyDetailsService(
     var dependencyState = DependencyDetailsState()
 
     val isReady: Boolean
-        get() = dependencyState.loadedDependencies.toSet().equals(CommaProjectUtil.projectDependencies(project).toSet())
+        get() = dependencyState.loadedDependencies.toSet() == CommaProjectUtil.projectDependencies(project).toSet()
     val isNotReady: Boolean
         get() = !isReady
 

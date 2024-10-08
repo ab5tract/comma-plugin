@@ -4,14 +4,10 @@ public enum RakuReaderModeState {
     CODE, DOCS, SPLIT;
 
     public String toString() {
-        switch (this) {
-            case CODE:
-                return "Code";
-            case DOCS:
-                return "Documentation";
-            case SPLIT:
-                return "Live Preview";
-        }
-        return "";
+        return switch (this) {
+            case CODE  -> "Code";
+            case DOCS  -> "Documentation";
+            case SPLIT -> "Live Preview";
+        };
     }
 }

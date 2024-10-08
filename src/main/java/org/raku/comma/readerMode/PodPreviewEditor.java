@@ -69,7 +69,7 @@ public class PodPreviewEditor extends UserDataHolderBase implements FileEditor {
                 String url = request.getURL();
                 if (url != null) {
                     // For file:// URLs, try to resolve them in the project.
-                    boolean isFile = url.startsWith(FILE_SCHEME) || url.startsWith(EXTERNAL_SCHEME);
+                    boolean isFile = url.startsWith(FILE_SCHEME) || url.startsWith(EXTERNAL_SCHEME) || url.startsWith("mock");
                     if (isFile && !url.endsWith("about:blank")) {
                         // If it's the file we're previewing, then hand back the rendered content.
                         if (url.equals(previewUrl)) {

@@ -92,8 +92,7 @@ class RakuProjectModelSync(private val project: Project) {
         module: Module,
         metaDependencies: Set<String>,
         extendedDeps: MutableSet<String>
-    ): SdkEntry?
-    {
+    ): SdkEntry? {
         val sdk = project.service<RakuProjectSdkService>()
         val sdkHomePath = sdk.sdkPath ?: return null
         val sdkVersion = sdk.state.projectSdkVersion ?: return null

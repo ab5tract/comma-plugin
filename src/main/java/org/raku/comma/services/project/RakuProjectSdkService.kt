@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 @Service(Service.Level.PROJECT)
 @State(name = "Raku.SDK", storages = [Storage(value = RakuServiceConstants.PROJECT_SETTINGS_FILE)])
-class RakuProjectSdkService(private val project: Project, private val runScope: CoroutineScope) : PersistentStateComponent<RakuSDKState>,
+class RakuProjectSdkService(private val project: Project, val runScope: CoroutineScope) : PersistentStateComponent<RakuSDKState>,
                                                                                                   DumbAware
 {
     private var sdkState: RakuSDKState = RakuSDKState()
