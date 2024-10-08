@@ -30,6 +30,15 @@ sub MAIN($name) {
             (next unless (Version.new($meta<ver> // '')) ~~ $_) with %params<ver>;
             (next unless ($meta<auth> // '') eq $_) with %params<auth>;
 
+            # TODO: Make this more robust. So far this only affects File::Which
+            with $meta<depends>[0]<name><by-distro.name><mswin32> -> $platform-depends {
+                if $*DISTRO.is-win {
+                    return [ $platform-depends ]
+                } else {
+                    next
+                }
+            }
+
             return $meta<depends>;
         }
         return ();
