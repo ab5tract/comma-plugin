@@ -24,7 +24,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/** Renders the timeline chart, with axes and currently visible data. */
+/**
+ * Renders the timeline chart, with axes and currently visible data.
+ */
 public class TimelineChart extends JPanel {
     // The timeline we're rendering.
     private final Timeline timeline;
@@ -32,11 +34,11 @@ public class TimelineChart extends JPanel {
     // Fonts and font metrics.
     private final Font font = JBUI.Fonts.label();
     private final Font categoryNameFont = font.deriveFont(Font.BOLD);
-    private final Font moduleNameFont = categoryNameFont.deriveFont((float)categoryNameFont.getSize() + 4);
+    private final Font moduleNameFont = categoryNameFont.deriveFont((float) categoryNameFont.getSize() + 4);
     private final FontRenderContext fontRenderContext = new FontRenderContext(null, true, false);
-    private final int moduleNameHeight = (int)new TextLayout("Sample", moduleNameFont, fontRenderContext)
+    private final int moduleNameHeight = (int) new TextLayout("Sample", moduleNameFont, fontRenderContext)
             .getBounds().getHeight();
-    private final int textHeight = (int)new TextLayout("Sample", font, fontRenderContext)
+    private final int textHeight = (int) new TextLayout("Sample", font, fontRenderContext)
             .getBounds().getHeight();
 
     // Padding sizes.
@@ -70,7 +72,7 @@ public class TimelineChart extends JPanel {
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
     // Controls rendering an icon for opening/closing a section
-    private enum Expander { None, Opener, Closer }
+    private enum Expander {None, Opener, Closer}
 
     // Information about the number of lanes and those in view, used for vertical
     // scrolling support, along with an event handler.
@@ -82,21 +84,19 @@ public class TimelineChart extends JPanel {
     private Consumer<? super VisibleLanesChanged> visibleLanesChangedHandler;
 
     // Information about a rendered area on the chart, for handling tooltips and expansions.
-        private record VisibleLogged(Rectangle area, Logged logged) {
-
+    private record VisibleLogged(Rectangle area, Logged logged) {
         public boolean contains(Point p) {
-                return area.contains(p);
-            }
+            return area.contains(p);
         }
+    }
+
     private final List<VisibleLogged> visibleLoggeds = new ArrayList<>();
 
     // Information about a label, so we can detect clicks on those.
-        private record VisibleLabel(Rectangle area, String key) {
+    private record VisibleLabel(Rectangle area, String key) {
+        public boolean contains(Point point) { return area.contains(point); }
+    }
 
-        public boolean contains(Point point) {
-                return area.contains(point);
-            }
-        }
     private final List<VisibleLabel> visibleLabels = new ArrayList<>();
 
     // Expansion status of each item, keyed on the path to the item.
@@ -123,17 +123,18 @@ public class TimelineChart extends JPanel {
                 // If Ctrl is held down, then we're zooming.
                 if (e.isControlDown()) {
                     // Only care if we're in the graph area.
-                    if (!graphArea.contains(e.getPoint()))
-                        return;
+                    if (!graphArea.contains(e.getPoint())) return;
 
                     // Work out which tick we're near in the graph, and which
                     // time point goes with it.
                     double xPositionInGraph = e.getPoint().getX() - graphArea.getX();
-                    int tick = (int)(xPositionInGraph / tickSpacing);
+                    int tick = (int) (xPositionInGraph / tickSpacing);
                     double centerTime = startTime + tick * tickInterval;
 
                     // Calculate new tick interval.
-                    double factor = e.getWheelRotation() < 0 ? 0.5 : 2.0;
+                    double factor = e.getWheelRotation() < 0
+                                    ? 0.5
+                                    : 2.0;
                     int notches = Math.abs(e.getWheelRotation());
                     for (int i = 0; i < notches; i++)
                         tickInterval *= factor;
@@ -198,7 +199,7 @@ public class TimelineChart extends JPanel {
                     if (graphArea.contains(newPoint)) {
                         // See how far we moved since the last event, and update the
                         // latest point to the current one for next time around.
-                        int xDiff = (int)lastPoint.getX() - (int)newPoint.getX();
+                        int xDiff = (int) lastPoint.getX() - (int) newPoint.getX();
                         lastPoint = newPoint;
 
                         // Work out how many ticks we moved; hang on to the amount we
@@ -207,8 +208,7 @@ public class TimelineChart extends JPanel {
                         int leftoverPixels = xDiff - wholeTicks * tickSpacing;
                         lastPoint.translate(leftoverPixels, 0);
                         scrollTimeline(wholeTicks);
-                    }
-                    else {
+                    } else {
                         moving = false;
                     }
                 }
@@ -216,8 +216,9 @@ public class TimelineChart extends JPanel {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                if (e.getButton() != 0)
+                if (e.getButton() != 0) {
                     return;
+                }
                 maybeShowTooltip(e.getPoint());
             }
 
@@ -239,9 +240,9 @@ public class TimelineChart extends JPanel {
             private void showTooltip(Point point, VisibleLogged visible) {
                 currentTooltipLogged = visible.logged();
                 JBPopup popup = JBPopupFactory.getInstance()
-                          .createComponentPopupBuilder(new TimelineTooltip(currentTooltipLogged), null)
-                          .setFocusOwners(new Component[] { TimelineChart.this })
-                          .createPopup();
+                                              .createComponentPopupBuilder(new TimelineTooltip(currentTooltipLogged), null)
+                                              .setFocusOwners(new Component[]{TimelineChart.this})
+                                              .createPopup();
                 currentPopup = popup;
                 popup.show(new RelativePoint(TimelineChart.this, point));
             }
@@ -263,8 +264,9 @@ public class TimelineChart extends JPanel {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (!e.isControlDown())
+                if (!e.isControlDown()) {
                     return;
+                }
                 switch (e.getKeyChar()) {
                     case KeyEvent.VK_PLUS:
                     case KeyEvent.VK_EQUALS:
@@ -301,18 +303,20 @@ public class TimelineChart extends JPanel {
 
     public void scrollLanes(int rotation) {
         firstLane += rotation;
-        if (firstLane < 0)
+        if (firstLane < 0) {
             firstLane = 0;
-        else if (firstLane > totalLanes - lanesInView)
+        } else if (firstLane > totalLanes - lanesInView) {
             firstLane = totalLanes - lanesInView;
+        }
         fireVisibleLanesChangedHandler();
         repaint();
     }
 
     public void scrollTimeline(int wholeTicks) {
         startTime += wholeTicks * tickInterval;
-        if (startTime < 0.0)
+        if (startTime < 0.0) {
             startTime = 0.0;
+        }
         repaint();
     }
 
@@ -320,7 +324,7 @@ public class TimelineChart extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                fireVisibleLanesChangedHandler();
+            fireVisibleLanesChangedHandler();
             }
         });
     }
@@ -340,9 +344,9 @@ public class TimelineChart extends JPanel {
     }
 
     private void fireVisibleLanesChangedHandler() {
-        if (visibleLanesChangedHandler != null)
-            visibleLanesChangedHandler.consume(new VisibleLanesChanged(
-                    totalLanes, firstLane, lanesInView));
+        if (visibleLanesChangedHandler != null) {
+            visibleLanesChangedHandler.consume(new VisibleLanesChanged(totalLanes, firstLane, lanesInView));
+        }
     }
 
     @Override
@@ -350,7 +354,7 @@ public class TimelineChart extends JPanel {
         super.paint(g);
 
         // Set us up to paint.
-        Graphics2D g2d = (Graphics2D)g;
+        Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         visibleLoggeds.clear();
         visibleLabels.clear();
@@ -359,25 +363,26 @@ public class TimelineChart extends JPanel {
         // as well as the current lane view state.
         yAxisEnd = this.getHeight() - (
                 chartPadding +                              // Padding at bottom
-                tickDashSize + labelPadding + textHeight +  // Axis
-                10);                                        // Fudge :-)
+                        tickDashSize + labelPadding + textHeight +  // Axis
+                        10);                                        // Fudge :-)
         reachedEnd = false;
         totalLanes = 0;
         lanesInView = 0;
 
         // If there's no data, then just render text that we're waiting for it.
         // Otherwise, render the chart.
-        if (timeline.isEmpty())
+        if (timeline.isEmpty()) {
             paintWaitingLabel(g2d);
-        else
+        } else {
             paintChart(g2d);
+        }
     }
 
     private void paintWaitingLabel(Graphics2D g) {
         String message = "Waiting for timeline data...";
         TextLayout layout = new TextLayout(message, font, fontRenderContext);
-        int x = (int)(getWidth() / 2 - layout.getBounds().getWidth());
-        int y = (int)(getHeight() / 2 - layout.getBounds().getHeight());
+        int x = (int) (getWidth() / 2 - layout.getBounds().getWidth());
+        int y = (int) (getHeight() / 2 - layout.getBounds().getHeight());
         g.drawString(message, x, y);
     }
 
@@ -401,8 +406,7 @@ public class TimelineChart extends JPanel {
                         setColor(g, darken, item);
                         renderEvent(g, startingX, event.getWhen(), event);
                     }
-                }
-                else if (item instanceof Task task) {
+                } else if (item instanceof Task task) {
                     if (task.getStart() < endTime && task.getEnd() >= startTime) {
                         double boundedStart = Math.max(startTime, task.getStart());
                         double boundedEnd = Math.min(endTime, task.getEnd());
@@ -416,11 +420,13 @@ public class TimelineChart extends JPanel {
 
         private void setColor(Graphics2D g, boolean darken, Logged item) {
             Color baseColor = colorForItem(item);
-            g.setColor(darken ? baseColor.darker() : baseColor);
+            g.setColor(darken
+                       ? baseColor.darker()
+                       : baseColor);
         }
 
         private void renderEvent(Graphics2D g, int startingX, double when, Event event) {
-            int left = startingX + (int)((when - startTime) / tickInterval * tickSpacing);
+            int left = startingX + (int) ((when - startTime) / tickInterval * tickSpacing);
             int width = 2 * (textHeight / 3);
             Polygon triangle = new Polygon();
             triangle.addPoint(left, top + labelPadding);
@@ -432,8 +438,8 @@ public class TimelineChart extends JPanel {
         }
 
         private void renderTask(Graphics2D g, int startingX, double start, double end, Task task) {
-            int startPixel = (int)((start - startTime) / tickInterval * tickSpacing);
-            int endPixel = (int)((end - startTime) / tickInterval * tickSpacing);
+            int startPixel = (int) ((start - startTime) / tickInterval * tickSpacing);
+            int endPixel = (int) ((end - startTime) / tickInterval * tickSpacing);
             int width = Math.max(endPixel - startPixel, 1);
             Rectangle rect = new Rectangle(startingX + startPixel, top + labelPadding, width, textHeight);
             g.fillRect(rect.x, rect.y, rect.width, rect.height);
@@ -453,12 +459,14 @@ public class TimelineChart extends JPanel {
         int curY = chartPadding;
         int maxLabelWidth = 150;
         Map<String, Map<String, Map<String, LaneGroup>>> modules = timeline.getData();
-        for (String module : modules.keySet()) {
+        for (String module : modules.keySet().stream().sorted().toList()) {
             // Paint module name.
             boolean moduleExpanded = expanded(module, true);
             if (isInView(curY, moduleNameHeight)) {
                 Dimension modDims = paintName(g, 0, curY, moduleNameFont, moduleNameHeight,
-                                              module, moduleExpanded ? Expander.Closer : Expander.Opener);
+                                              module, moduleExpanded
+                                                      ? Expander.Closer
+                                                      : Expander.Opener);
                 maxLabelWidth = Math.max(maxLabelWidth, modDims.width);
                 visibleLabels.add(new VisibleLabel(
                         new Rectangle(chartPadding, curY, modDims.width, modDims.height),
@@ -467,8 +475,7 @@ public class TimelineChart extends JPanel {
             }
 
             // Skip the categories if the module is not expanded.
-            if (!moduleExpanded)
-                continue;
+            if (!moduleExpanded) continue;
 
             // Visit categories.
             Map<String, Map<String, LaneGroup>> categories = modules.get(module);
@@ -478,7 +485,9 @@ public class TimelineChart extends JPanel {
                 boolean categoryExpanded = expanded(categoryKey, true);
                 if (isInView(curY, textHeight)) {
                     Dimension catDims = paintName(g, 0, curY, categoryNameFont, textHeight,
-                                                  category, categoryExpanded ? Expander.Closer : Expander.Opener);
+                                                  category, categoryExpanded
+                                                            ? Expander.Closer
+                                                            : Expander.Opener);
                     maxLabelWidth = Math.max(maxLabelWidth, catDims.width);
                     visibleLabels.add(new VisibleLabel(
                             new Rectangle(chartPadding, curY, catDims.width, catDims.height),
@@ -487,12 +496,11 @@ public class TimelineChart extends JPanel {
                 }
 
                 // Skip the names if the category is not expanded.
-                if (!categoryExpanded)
-                    continue;
+                if (!categoryExpanded) continue;
 
                 // Visit the names.
                 Map<String, LaneGroup> names = categories.get(category);
-                for (String name : names.keySet()) {
+                for (String name : names.keySet().stream().sorted().toList()) {
                     // Paint name.
                     String nameKey = categoryKey + "\0" + name;
                     List<Lane> lanes = names.get(name).getLanes();
@@ -501,7 +509,11 @@ public class TimelineChart extends JPanel {
                     boolean firstLaneInView = isInView(curY, textHeight);
                     if (firstLaneInView) {
                         Dimension nameDims = paintName(g, 0, curY, font, textHeight, name,
-                                                       expandable ? (isExpanded ? Expander.Closer : Expander.Opener) : Expander.None);
+                                                       expandable
+                                                       ? (isExpanded
+                                                          ? Expander.Closer
+                                                          : Expander.Opener)
+                                                       : Expander.None);
                         maxLabelWidth = Math.max(maxLabelWidth, nameDims.width);
                         visibleLabels.add(new VisibleLabel(
                                 new Rectangle(chartPadding, curY, nameDims.width, nameDims.height),
@@ -517,7 +529,7 @@ public class TimelineChart extends JPanel {
                         }
                         if (isExpanded) {
                             Dimension childNameDims = renderChildLanes(g, lane.getChildTaskLaneGroups(),
-                                    linesToRender, curY, 1, nameKey);
+                                                                       linesToRender, curY, 1, nameKey);
                             maxLabelWidth = Math.max(maxLabelWidth, childNameDims.width);
                             curY += childNameDims.height;
                         }
@@ -546,10 +558,11 @@ public class TimelineChart extends JPanel {
 
     private Dimension renderChildLanes(Graphics2D g, Map<String, LaneGroup> namedLaneGroups,
                                        List<RenderLine> linesToRender, int curY,
-                                       int indent, String parentKey) {
+                                       int indent, String parentKey)
+    {
         int addedHeight = 0;
         int maxLabelWidth = 0;
-        for (String name : namedLaneGroups.keySet()) {
+        for (String name : namedLaneGroups.keySet().stream().sorted().toList()) {
             // Render the name of the child lane.
             String childKey = parentKey + "\0" + name;
             List<Lane> lanes = namedLaneGroups.get(name).getLanes();
@@ -558,7 +571,11 @@ public class TimelineChart extends JPanel {
             boolean firstLaneInView = isInView(curY, textHeight);
             if (firstLaneInView) {
                 Dimension nameDims = paintName(g, indent * childIndent, curY, font, textHeight, name,
-                                               expandable ? (isExpanded ? Expander.Closer : Expander.Opener) : Expander.None);
+                                               expandable
+                                               ? (isExpanded
+                                                  ? Expander.Closer
+                                                  : Expander.Opener)
+                                               : Expander.None);
                 maxLabelWidth = Math.max(maxLabelWidth, nameDims.width);
                 visibleLabels.add(new VisibleLabel(
                         new Rectangle(chartPadding + indent * childIndent, curY, nameDims.width, nameDims.height),
@@ -575,7 +592,7 @@ public class TimelineChart extends JPanel {
                 }
                 if (isExpanded) {
                     Dimension childNameDims = renderChildLanes(g, lane.getChildTaskLaneGroups(),
-                            linesToRender, curY, indent + 1, childKey);
+                                                               linesToRender, curY, indent + 1, childKey);
                     maxLabelWidth = Math.max(maxLabelWidth, childNameDims.width);
                     curY += childNameDims.height;
                     addedHeight += childNameDims.height;
@@ -591,12 +608,10 @@ public class TimelineChart extends JPanel {
         int laneNum = totalLanes++;
 
         // Should not have already run out of space.
-        if (reachedEnd)
-            return false;
+        if (reachedEnd) return false;
 
         // Should be beyond the first lane to show.
-        if (laneNum < firstLane)
-            return false;
+        if (laneNum < firstLane) return false;
 
         // Is there space for it?
         int predictedHeight = 2 * labelPadding + labelTextHeight;
@@ -612,24 +627,27 @@ public class TimelineChart extends JPanel {
     }
 
     private static boolean doesAnyLaneHaveChildren(List<Lane> lanes) {
-        for (Lane lane : lanes)
-            if (!lane.getChildTaskLaneGroups().isEmpty())
+        for (Lane lane : lanes) {
+            if (!lane.getChildTaskLaneGroups().isEmpty()) {
                 return true;
+            }
+        }
         return false;
     }
 
     private Dimension paintName(Graphics2D g, int x, int y, Font font, int height,
-                                String module, Expander expander) {
+                                String module, Expander expander)
+    {
         TextLayout layout = new TextLayout(module, font, fontRenderContext);
         g.setFont(font);
         g.setColor(JBColor.BLACK);
         g.drawString(module, chartPadding + x, y + labelPadding + height);
-        Dimension area = new Dimension(x + (int)layout.getBounds().getWidth() + labelPadding,
-                height + 2 * labelPadding);
+        Dimension area = new Dimension(x + (int) layout.getBounds().getWidth() + labelPadding,
+                                       height + 2 * labelPadding);
         if (expander != Expander.None) {
             int centering = height - expanderSize;
             paintExpander(g, chartPadding + area.width,
-                         y + labelPadding + centering, expander);
+                          y + labelPadding + centering, expander);
             area.width += 2 * labelPadding + expanderSize;
         }
         return area;
@@ -641,8 +659,7 @@ public class TimelineChart extends JPanel {
             triangle.addPoint(x, y);
             triangle.addPoint(x + expanderSize, y);
             triangle.addPoint(x + expanderSize / 2, y + expanderSize);
-        }
-        else {
+        } else {
             triangle.addPoint(x + expanderSize / 2, y);
             triangle.addPoint(x, y + expanderSize);
             triangle.addPoint(x + expanderSize, y + expanderSize);
@@ -671,7 +688,7 @@ public class TimelineChart extends JPanel {
             // Paint the number.
             String number = String.format("%.4G", startTime + i * tickInterval);
             TextLayout layout = new TextLayout(number, font, fontRenderContext);
-            int numberWidth = (int)layout.getBounds().getWidth();
+            int numberWidth = (int) layout.getBounds().getWidth();
             g.drawString(number, curTickX - (numberWidth / 2), topY + tickDashSize + labelPadding + textHeight);
 
             curTickX += tickSpacing;
