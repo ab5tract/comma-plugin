@@ -52,7 +52,9 @@ class RakuProjectModelSync(private val project: Project) {
                                 // otherwise create and mark
                                 val library = model.moduleLibraryTable.createLibrary(metaDep) as LibraryEx
                                 val libraryModel = library.modifiableModel
-                                val url = String.format("raku://%d^%s/", sdk.toString().hashCode(), metaDep)
+                                // TODO: Figure out how we actually want to envision a raku:// protocol
+                                // At the very least, it needs to be registered.
+                                val url = String.format("raku://%d:%s!/", sdk.toString().hashCode(), metaDep)
                                 libraryModel.kind = RakuLibraryType.LIBRARY_KIND
                                 libraryModel.addRoot(url, OrderRootType.SOURCES)
                                 val entry = checkNotNull(model.findLibraryOrderEntry(library)) { library }
