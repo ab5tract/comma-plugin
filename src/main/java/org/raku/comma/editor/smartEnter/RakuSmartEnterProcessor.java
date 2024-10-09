@@ -4,6 +4,7 @@ import com.intellij.codeInsight.editorActions.smartEnter.SmartEnterProcessor;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
@@ -211,7 +212,9 @@ public class RakuSmartEnterProcessor extends SmartEnterProcessor {
         if (length <= 2 || isBlockEmpty(piece, length)) {
             int offset = piece.getTextOffset();
             piece.delete();
-            editor.getDocument().insertString(offset, "{\n}");
+            WriteCommandAction.runWriteCommandAction(editor.getProject(), () ->
+                editor.getDocument().insertString(offset, "{\n}")
+            );
         }
     }
 

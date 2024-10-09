@@ -23,17 +23,19 @@ public class RakuEnterDelegate implements EnterHandlerDelegate {
                                   @NotNull Ref<Integer> caretOffset,
                                   @NotNull Ref<Integer> caretAdvance,
                                   @NotNull DataContext dataContext,
-                                  @Nullable EditorActionHandler originalHandler) {
+                                  @Nullable EditorActionHandler originalHandler)
+    {
         PsiDocumentManager.getInstance(file.getProject()).commitDocument(editor.getDocument());
         if (caretOffset.get() == 0) return null;
         PsiElement element = file.findElementAt(caretOffset.get() - 1);
         if (element == null) return null;
         shouldAppendComment = element.getParent() instanceof PodPreComment;
-        return null;
+        return Result.Continue;
     }
 
     @Override
     public Result postProcessEnter(@NotNull PsiFile file, @NotNull Editor editor, @NotNull DataContext dataContext) {
+
         PsiDocumentManager.getInstance(file.getProject()).commitDocument(editor.getDocument());
         if (shouldAppendComment) {
             int offset = editor.getCaretModel().getOffset();
@@ -42,6 +44,6 @@ public class RakuEnterDelegate implements EnterHandlerDelegate {
         }
 
         shouldAppendComment = false;
-        return null;
+        return Result.Continue;
     }
 }
