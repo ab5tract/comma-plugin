@@ -19,8 +19,7 @@ public class RakuContext extends TemplateContextType {
     @Override
     public boolean isInContext(@NotNull TemplateActionContext context) {
         PsiFile file = context.getFile();
-        if (!file.getLanguage().is(RakuLanguage.INSTANCE))
-            return false;
+        if (!file.getLanguage().is(RakuLanguage.INSTANCE)) return false;
         return isValidContext(context, file);
     }
 
@@ -29,8 +28,7 @@ public class RakuContext extends TemplateContextType {
    */
     private static boolean isValidContext(@NotNull TemplateActionContext context, PsiFile file) {
         PsiElement element = file.findElementAt(context.getStartOffset());
-        if (!(element instanceof LeafElement))
-            return false;
+        if (!(element instanceof LeafElement)) return false;
         element = element.getParent();
         // Assume Raku elements providing Raku context
         return element instanceof RakuPsiElement;
