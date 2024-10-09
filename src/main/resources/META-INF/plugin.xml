@@ -56,7 +56,7 @@
   <xi:include href="/META-INF/CommaTips.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/nqp.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/inspections.xml" xpointer="xpointer(/idea-plugin/*)"/>
-
+  <xi:include href="/META-INF/actions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
 <!--  <extensions defaultExtensionNs="org.raku">-->
 <!--    <framework.type implementation="cro.org.raku.comma.CroFrameworkCall"/>-->
@@ -89,8 +89,7 @@
     <colorSettingsPage implementation="org.raku.comma.highlighter.RakuColorSettingsPage"/>
     <lang.formatter language="Raku" implementationClass="org.raku.comma.formatter.RakuFormattingModelBuilder"/>
     <langCodeStyleSettingsProvider implementation="org.raku.comma.formatter.RakuCodeStyleSettingsProvider"/>
-    <lang.braceMatcher language="Raku" implementationClass="org.raku.comma.editor.RakuBraceMatcher"/>
-<!--    <lang.psiStructureViewFactory language="Raku" implementationClass="org.raku.comma.structureView.RakuStructureViewFactory"/>-->
+    <lang.psiStructureViewFactory language="Raku" implementationClass="org.raku.comma.structureView.RakuStructureViewFactory"/>
     <declarationRangeHandler key="org.raku.comma.psi.RakuPackageDecl"
                              implementationClass="org.raku.comma.structureView.PackageDeclarationRangeHandler"/>
     <declarationRangeHandler key="org.raku.comma.psi.RakuRoutineDecl"
@@ -124,15 +123,18 @@
     <statementUpDownMover implementation="org.raku.comma.editor.RakuStatementMover"/>
     <treeStructureProvider implementation="org.raku.comma.structureView.RakuProjectStructureProvider"/>
     <spellchecker.support language="Raku" implementationClass="org.raku.comma.editor.RakuSpellCheckingStrategy"/>
-    <enterHandlerDelegate implementation="org.raku.comma.editor.RakuEnterDelegate"/>
     <lang.findUsagesProvider language="Raku" implementationClass="org.raku.comma.findUsages.RakuFindUsagesProvider"/>
     <lang.namesValidator language="Raku" implementationClass="org.raku.comma.rename.RakuInputValidator"/>
     <lang.namesValidator language="CroTemplate" implementationClass="org.raku.comma.rename.RakuInputValidator"/>
     <renamePsiElementProcessor implementation="org.raku.comma.rename.RakuModuleRenameProcessor"/>
     <renamePsiElementProcessor implementation="org.raku.comma.rename.RakuPsiElementProcessor"/>
     <usageTypeProvider implementation="org.raku.comma.findUsages.RakuUsageTypeProvider"/>
+
+    <enterHandlerDelegate implementation="org.raku.comma.editor.RakuEnterDelegate"/>
+    <lang.braceMatcher language="Raku" implementationClass="org.raku.comma.editor.RakuBraceMatcher"/>
     <lang.smartEnterProcessor language="Raku" implementationClass="org.raku.comma.editor.smartEnter.RakuSmartEnterProcessor"/>
     <enterBetweenBracesDelegate language="Raku" implementationClass="org.raku.comma.editor.RakuEnterBetweenBracesDelegate"/>
+
     <consoleFilterProvider implementation="org.raku.comma.run.RakuOutputLinkProvider"/>
     <codeInsight.lineMarkerProvider language="Raku" implementationClass="org.raku.comma.providers.RakuLineMarkerProvider"/>
     <runLineMarkerContributor language="Raku" implementationClass="org.raku.comma.testing.RakuTestLineMarkerContributor"/>
@@ -350,118 +352,6 @@
                                    implementation="org.raku.comma.project.activity.ProjectIsRakudoCoreDetector"
                                    order="last"/>
   </extensions>
-
-  <actions>
-    <action id="RakuPlugin.NewScriptAction" class="org.raku.comma.actions.NewScriptAction" text="Raku Script"
-            description="Create new Raku script in current project" icon="/icons/camelia.png">
-      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
-    </action>
-<!--    <action id="RakuPlugin.NewModuleAction" class="org.raku.comma.actions.NewModuleAction" text="Raku Module"-->
-<!--            description="Create new Raku module in current project" icon="/icons/camelia.png">-->
-<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewScriptAction"/>-->
-<!--    </action>-->
-<!--    <action id="RakuPlugin.NewTestAction" class="org.raku.comma.actions.NewTestAction" text="Raku Test"-->
-<!--            description="Create new Raku test in current project" icon="/icons/camelia.png">-->
-<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewModuleAction"/>-->
-<!--    </action>-->
-<!--    <action id="RakuPlugin.NewPodDocumentation" class="org.raku.comma.actions.NewDocumentationAction" text="Raku Documentation (Pod6)"-->
-<!--            description="Create new Raku documentation file in current project" icon="/icons/camelia.png">-->
-<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewTestAction"/>-->
-<!--    </action>-->
-<!--    <action id="RakuPlugin.NewCroTemplateAction" class="org.raku.comma.cro.actions.NewCroTemplateAction" text="Cro Template"-->
-<!--            description="Create new Cro template in current project" icon="/icons/cro.png">-->
-<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewPodDocumentation"/>-->
-<!--    </action>-->
-    <action id="org.raku.comma.repl.RakuLaunchReplAction" class="org.raku.comma.repl.RakuLaunchReplAction" text="Launch Raku REPL"
-            description="Runs the Raku REPL associated with the current project&#39;s SDK.">
-      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
-    </action>
-    <action id="RakuReplExecute" class="com.intellij.openapi.actionSystem.EmptyAction"
-            text="Execute Raku Code"
-            description="Execute Raku code in REPL console">
-      <keyboard-shortcut first-keystroke="control ENTER" keymap="$default"/>
-    </action>
-    <action id="org.raku.comma.repl.RakuReplUsingThisModuleAction" class="org.raku.comma.repl.RakuReplUsingThisModuleAction"
-            text="REPL Using This Module" description="Launch a Raku REPL with this module used">
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-    </action>
-    <action id="org.raku.comma.grammar.RakuGrammarPreviewAction" class="org.raku.comma.grammar.RakuGrammarPreviewAction"
-            text="Preview Raku Grammar"
-            description="Opens a tool to preview Raku grammar parsing results">
-      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
-    </action>
-    <action id="org.raku.comma.actions.SdkSetterAction" class="org.raku.comma.actions.SdkSetterAction"
-            text="Setup Raku SDK"
-            description="Opens a tool to setup Raku SDK of this project, which can be used by different components">
-      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
-    </action>
-    <action id="org.raku.comma.actions.UpdateExtensionsAction" class="org.raku.comma.actions.UpdateExtensionsAction"
-            text="Update Raku File Extensions"
-            description="Renames files with obsolete Raku extensions to use official replacement ones">
-      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="ExternalToolsGroup"/>
-    </action>
-    <action id="RakuPlugin.ExtractPrivateMethod" class="org.raku.comma.actions.ExtractPrivateMethodAction" text="Private Method..."
-            description="Turn this selected code fragment into a private method">
-      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt P"/>
-      <add-to-group group-id="IntroduceActionsGroup" anchor="after" relative-to-action="ExtractMethod"/>
-    </action>
-    <action id="RakuPlugin.ExtractRoutine" class="org.raku.comma.actions.ExtractRoutineAction" text="Subroutine..."
-            description="Turn this selected code fragment into a subroutine">
-      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt R" second-keystroke="O"/>
-      <add-to-group group-id="IntroduceActionsGroup" anchor="before" relative-to-action="ExtractMethod"/>
-    </action>
-    <action id="RakuPlugin.ExtractRegex" class="org.raku.comma.actions.ExtractRegexAction" text="Extract Rule..."
-            description="Turn this selected code fragment into a separate regex">
-      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt R" second-keystroke="E"/>
-      <add-to-group group-id="IntroduceActionsGroup" anchor="before" relative-to-action="ExtractMethod"/>
-    </action>
-<!--    <group id="RakuPlugin.CoverageMenu">-->
-<!--      <action id="RakuPlugin.HideCoverage" class="coverage.org.raku.comma.RakuCoverageHideAction"-->
-<!--              text="Hide Raku Coverage Data"/>-->
-<!--      <add-to-group group-id="CoveragePlatformMenu"/>-->
-<!--      <separator/>-->
-<!--    </group>-->
-    <action id="org.raku.comma.actions.LoadProfileResultsAction" class="org.raku.comma.actions.LoadProfileResultsAction"
-            text="Show And Compare Recent Raku Profiles..." description="Select and load one of the recent Raku profiling results snapshot from this project or select two and compare">
-      <add-to-group group-id="RunMenu"/>
-    </action>
-    <action id="org.raku.comma.actions.LoadProfilerSQLFromDiskAction" class="org.raku.comma.actions.LoadProfilerSQLFromDiskAction"
-            text="Import Raku Profile SQL..."
-            description="Imports a profiler report from an SQL data file">
-      <add-to-group group-id="RunMenu" anchor="after" relative-to-action="org.raku.comma.actions.LoadProfileResultsAction"/>
-    </action>
-
-    <action id="org.raku.comma.actions.ExtractParentClassAction" class="org.raku.comma.actions.ExtractParentClassAction"
-            text="Extract Parent Class..." description="Extract a parent class with selected attributes and methods">
-      <add-to-group group-id="IntroduceActionsGroup" anchor="after" relative-to-action="RakuPlugin.ExtractRegex"/>
-    </action>
-    <action id="org.raku.comma.actions.ExtractRoleClassAction" class="org.raku.comma.actions.ExtractRoleClassAction"
-            text="Extract Role..." description="Extract a role with selected attributes and methods">
-      <add-to-group group-id="IntroduceActionsGroup" anchor="after" relative-to-action="org.raku.comma.actions.ExtractParentClassAction"/>
-    </action>
-<!--    <action id="org.raku.comma.actions.ImportModuleAction" class="org.raku.comma.actions.ImportModuleAction"-->
-<!--            text="Import Module..." description="Import a module">-->
-<!--      <add-to-group group-id="ExportImportGroup" />-->
-<!--    </action>-->
-<!--    <action id="org.raku.comma.actions.ImportProjectAction" class="org.raku.comma.actions.ImportProjectAction"-->
-<!--            text="Import Project..." description="Import a project">-->
-<!--      <add-to-group group-id="ExportImportGroup" />-->
-<!--    </action>-->
-<!--    <action id="org.raku.comma.actions.NewModuleAction" class="org.raku.comma.actions.NewModuleAction"-->
-<!--            text="New Module..." description="Create a module">-->
-<!--      <add-to-group group-id="NewProjectOrModuleGroup" />-->
-<!--    </action>-->
-<!--    <action id="org.raku.comma.actions.NewProjectAction" class="org.raku.comma.actions.NewProjectAction"-->
-<!--            text="New Project..." description="Create a project">-->
-<!--      <add-to-group group-id="NewProjectOrModuleGroup" />-->
-<!--    </action>-->
-    <action id="org.raku.comma.actions.moduleRoot.MarkRakuTestsSourceRootAction"
-            class="org.raku.comma.actions.moduleRoot.MarkRakuTestsSourceRootAction" text="Raku Mark Tests Root"/>
-    <action id="org.raku.comma.actions.moduleRoot.MarkRakuSourceRootAction"
-            class="org.raku.comma.actions.moduleRoot.MarkRakuSourceRootAction" text="Mark Raku Source Root"/>
-    <action id="org.raku.comma.actions.moduleRoot.RakuUnmarkRootAction"
-            class="org.raku.comma.actions.moduleRoot.RakuUnmarkRootAction" text="Unmark Raku Root"/>
-  </actions>
 
 <!--  <applicationListeners>-->
 <!--    <listener class="org.raku.comma.sdk.RakuSdkCacheManager" topic="com.intellij.openapi.project.ProjectManagerListener" />-->
