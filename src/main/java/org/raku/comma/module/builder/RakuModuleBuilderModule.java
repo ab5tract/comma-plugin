@@ -81,7 +81,6 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
                               .invokeLater(() -> metaData.addNamespaceToProvides(moduleName, RakuModuleFileType.INSTANCE.getDefaultExtension()));
         }
         String modulePath = Paths.get(moduleLibraryPath.toString(), moduleName.split("::")) + "." + RakuModuleFileType.INSTANCE.getDefaultExtension();
-        new File(modulePath).getParentFile().mkdirs();
         List<String> code = new ArrayList<>(getModuleCodeByType(moduleType, moduleName, isUnitScoped));
         if (languageVersion != null) {
             code.addFirst(String.format("use v%s;\n", languageVersion));
