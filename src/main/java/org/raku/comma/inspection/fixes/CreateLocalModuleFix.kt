@@ -50,7 +50,7 @@ class CreateLocalModuleFix(private val maybeName: String) : LocalQuickFix {
             RakuLanguageVersionService::class.java
         )
         val newModulePath = RakuModuleBuilderModule.stubModule(
-            module.getService<RakuMetaDataComponent>(RakuMetaDataComponent::class.java),
+            project,
             Paths.get(moduleLibraryPath),
             dialog.moduleName, false, true,
             moduleLibraryRoot!!.parent, dialog.moduleType, false, langVersionService.version

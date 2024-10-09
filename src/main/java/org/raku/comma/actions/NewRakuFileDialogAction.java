@@ -7,7 +7,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class NewRakuFileAction<T extends DialogWrapper> extends AnAction {
+public abstract class NewRakuFileDialogAction<T extends DialogWrapper> extends AnAction {
     @Override
     public void update(AnActionEvent e) {
         final DataContext dataContext = e.getDataContext();

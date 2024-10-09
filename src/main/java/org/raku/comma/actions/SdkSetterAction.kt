@@ -11,9 +11,9 @@ class SdkSetterAction : AnAction() {
         RakuSdkChooserUI(project).show()
     }
 
-    override fun update(e: AnActionEvent) {
-        if (e.project == null) {
-            e.presentation.isEnabledAndVisible = false
+    override fun update(event: AnActionEvent) {
+        if (event.project == null) {
+            event.presentation.isEnabledAndVisible = false
         }
     }
 

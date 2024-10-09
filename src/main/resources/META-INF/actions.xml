@@ -1,21 +1,21 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" require-restart="true">
 
   <actions>
-    <action id="RakuPlugin.NewScriptAction" class="org.raku.comma.actions.NewScriptAction" text="Raku Script"
+    <action id="RakuPlugin.NewRakuFileAction" class="org.raku.comma.actions.NewRakuFileAction" text="Raku File"
             description="Create new Raku script in current project" icon="/icons/camelia.png">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewDir"/>
     </action>
 <!--    <action id="RakuPlugin.NewModuleAction" class="org.raku.comma.actions.NewModuleAction" text="Raku Module"-->
 <!--            description="Create new Raku module in current project" icon="/icons/camelia.png">-->
-<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewScriptAction"/>-->
+<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewScriptDialogAction"/>-->
 <!--    </action>-->
-<!--    <action id="RakuPlugin.NewTestAction" class="org.raku.comma.actions.NewTestAction" text="Raku Test"-->
+<!--    <action id="RakuPlugin.NewTestDialogAction" class="org.raku.comma.actions.NewTestDialogActionAction" text="Raku Test"-->
 <!--            description="Create new Raku test in current project" icon="/icons/camelia.png">-->
 <!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewModuleAction"/>-->
 <!--    </action>-->
-<!--    <action id="RakuPlugin.NewPodDocumentation" class="org.raku.comma.actions.NewDocumentationAction" text="Raku Documentation (Pod6)"-->
+<!--    <action id="RakuPlugin.NewPodDocumentation" class="org.raku.comma.actions.NewDocumentationDialogActionAction" text="Raku Documentation (Pod6)"-->
 <!--            description="Create new Raku documentation file in current project" icon="/icons/camelia.png">-->
-<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewTestAction"/>-->
+<!--      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="RakuPlugin.NewTestDialogAction"/>-->
 <!--    </action>-->
 <!--    <action id="RakuPlugin.NewCroTemplateAction" class="org.raku.comma.cro.actions.NewCroTemplateAction" text="Cro Template"-->
 <!--            description="Create new Cro template in current project" icon="/icons/cro.png">-->

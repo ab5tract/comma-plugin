@@ -23,18 +23,25 @@ public class RakuModuleBuilderApplication implements RakuModuleBuilderGeneric {
                                      Path path,
                                      RakuLanguageVersion languageVersion) {
         Path directoryName = path.getFileName();
-        if (Objects.equals(directoryName.toString(), "lib")) {
-            RakuMetaDataComponent metaData = model.getModule().getService(RakuMetaDataComponent.class);
-            VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
-            RakuModuleBuilderModule.stubModule(metaData, path, myModuleName, true, false,
-                                                sourceRoot == null ? null : sourceRoot.getParent(), "Empty", false,
-                                               languageVersion);
-        } else if (Objects.equals(directoryName.toString(), "bin")) {
-            stubEntryPoint(path, myModuleName, myEntryPointName, languageVersion);
-        } else if (Objects.equals(directoryName.toString(), "t")) {
-            RakuModuleBuilderModule.stubTest(path,
-                                             "basic.rakutest",
-                                             Collections.singletonList(myModuleName), languageVersion);
+        switch (directoryName.toString()) {
+            case "lib" -> {
+                VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
+                RakuModuleBuilderModule.stubModule(model.getProject(),
+                                                   path,
+                                                   myModuleName,
+                                                   true,
+                                                   false,
+                                                   sourceRoot == null
+                                                       ? null
+                                                       : sourceRoot.getParent(),
+                                                   "Empty",
+                                                   false,
+                                                   languageVersion);
+            }
+            case "bin" -> stubEntryPoint(path, myModuleName, myEntryPointName, languageVersion);
+            case "t" -> RakuModuleBuilderModule.stubTest(path,
+                                                         "basic.rakutest",
+                                                         Collections.singletonList(myModuleName), languageVersion);
         }
     }
 
@@ -55,9 +62,9 @@ public class RakuModuleBuilderApplication implements RakuModuleBuilderGeneric {
 
     private static void stubEntryPoint(Path moduleLibraryPath,
                                        String moduleName,
-                                       String entryPoitnName,
+                                       String entryPointName,
                                        RakuLanguageVersion languageVersion) {
-        Path entryPath = moduleLibraryPath.resolve(entryPoitnName);
+        Path entryPath = moduleLibraryPath.resolve(entryPointName);
         List<String> lines = Arrays.asList(
             "#!/usr/bin/env raku",
             languageVersion != null ? String.format("use v%s;", languageVersion) : "",

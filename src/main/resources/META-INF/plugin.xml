@@ -356,4 +356,8 @@
 <!--  <applicationListeners>-->
 <!--    <listener class="org.raku.comma.sdk.RakuSdkCacheManager" topic="com.intellij.openapi.project.ProjectManagerListener" />-->
 <!--  </applicationListeners>-->
+  <actions>
+    <action id="org.raku.comma.actions.NewRakuFileAction" class="org.raku.comma.actions.NewRakuFileAction"
+            text="New Raku File..." description="Add a new Raku file at selected location"/>
+  </actions>
 </idea-plugin>

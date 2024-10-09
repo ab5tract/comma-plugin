@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-public class NewTestAction extends NewRakuFileAction<NewTestDialog> {
+public class NewTestDialogAction extends NewRakuFileDialogAction<NewTestDialog> {
     @Override
     protected void processDialogResult(Project project, String testPath, NewTestDialog dialog) {
         String fileName = dialog.getTestName();

@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewDocumentationAction extends NewRakuFileAction<NewDocumentationDialog> {
+public class NewDocumentationDialogAction extends NewRakuFileDialogAction<NewDocumentationDialog> {
     @Override
     protected void processDialogResult(Project project, String docPath, NewDocumentationDialog dialog) {
         String fileName = dialog.getFileName();

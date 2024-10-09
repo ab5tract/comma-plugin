@@ -1,11 +1,10 @@
 package org.raku.comma.module.builder;
 
-import com.intellij.ide.util.projectWizard.ModuleNameLocationSettings;
-import com.intellij.ide.util.projectWizard.SettingsStep;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.raku.comma.filetypes.RakuModuleFileType;
@@ -30,18 +29,17 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
                                      Path path,
                                      RakuLanguageVersion languageVersion)
     {
-        RakuMetaDataComponent metaData = model.getModule().getService(RakuMetaDataComponent.class);
         VirtualFile sourceRoot = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(path.toFile());
         Path directoryName = path.getFileName();
         if (Objects.equals(directoryName.toString(), "lib")) {
-            stubModule(metaData,
+            stubModule(model.getProject(),
                        path,
                        myModuleName,
                        true,
                        false,
                        sourceRoot == null
-                                   ? null
-                                   : sourceRoot.getParent(),
+                           ? null
+                           : sourceRoot.getParent(),
                        "Empty",
                        false,
                        languageVersion);
@@ -58,7 +56,7 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
         return new String[]{"lib", "t"};
     }
 
-    public static String stubModule(RakuMetaDataComponent metaData,
+    public static String stubModule(Project project,
                                     Path moduleLibraryPath,
                                     String moduleName,
                                     boolean firstModule,
@@ -68,6 +66,9 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
                                     boolean isUnitScoped,
                                     RakuLanguageVersion languageVersion)
     {
+        // TODO: We do eventually want more than one module per project. But for now, that's a lot to think about
+        var metaData = ModuleManager.getInstance(project).getModules()[0].getService(RakuMetaDataComponent.class);
+
         if (firstModule) {
             try {
                 metaData.createStubMetaFile(moduleName, root, shouldOpenEditor);
@@ -92,6 +93,7 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
         if (moduleType.equals("Model")) {
             metaData.addDepends("Red");
         }
+
         return modulePath;
     }
 

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Paths;
 
-public final class NewScriptAction extends NewRakuFileAction<NewScriptDialog> {
+public final class NewScriptDialogAction extends NewRakuFileDialogAction<NewScriptDialog> {
     @Override
     protected void processDialogResult(Project project, String scriptPath, NewScriptDialog dialog) {
         String fileName = dialog.getScriptName();
@@ -20,8 +20,7 @@ public final class NewScriptAction extends NewRakuFileAction<NewScriptDialog> {
         if (fileName == null) return;
 
         RakuLanguageVersionService service = project.getService(RakuLanguageVersionService.class);
-        scriptPath = RakuModuleBuilderScript.stubScript(
-            Paths.get(scriptPath), fileName, shouldFill, service.getVersion());
+        scriptPath = RakuModuleBuilderScript.stubScript(Paths.get(scriptPath), fileName, shouldFill, service.getVersion());
         VirtualFile scriptFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(scriptPath);
         assert scriptFile != null;
         FileEditorManager.getInstance(project).openFile(scriptFile, true);
