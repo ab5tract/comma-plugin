@@ -33,8 +33,9 @@ public class RakuSingleResolutionSymbolCollector implements RakuSymbolCollector 
                 && Objects.equals(symbol.getKind(), wantedKind)
                 && Objects.equals(symbol.getName(), wantedName))
         {
-            if (wantedKind == RakuSymbolKind.TypeOrConstant && symbol.getPsi() instanceof RakuPackageDecl &&
-                    ((RakuPackageDecl) symbol.getPsi()).isStubbed())
+            if (wantedKind == RakuSymbolKind.TypeOrConstant
+                && symbol.getPsi() instanceof RakuPackageDecl
+                && ((RakuPackageDecl) symbol.getPsi()).isStubbed())
             {
                 wasDeferred = true;
                 return;

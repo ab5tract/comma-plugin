@@ -1,6 +1,9 @@
 package org.raku.comma.readerMode;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
@@ -32,7 +35,6 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.Objects;
 
 @InternalIgnoreDependencyViolation
 public class RakuModuleEditorProvider implements FileEditorProvider, DumbAware {
@@ -58,16 +60,14 @@ public class RakuModuleEditorProvider implements FileEditorProvider, DumbAware {
             PsiDocumentManager documentManager = PsiDocumentManager.getInstance(project);
             Alarm myAlarm = new Alarm(Alarm.ThreadToUse.POOLED_THREAD, editor);
 
-            moduleViewEditor.setCallback(
-                    () -> myAlarm.addRequest(() -> renderPreview(editor.getEditor()
-                                                                       .getDocument(), documentManager, viewer), 0));
+            var document = editor.getEditor().getDocument();
+            moduleViewEditor.setCallback(() -> myAlarm.addRequest(() -> renderPreview(document, documentManager, viewer), 0));
 
-            editor.getEditor().getDocument().addDocumentListener(new DocumentListener() {
+            document.addDocumentListener(new DocumentListener() {
                 @Override
                 public void documentChanged(@NotNull DocumentEvent event) {
-                    if (moduleViewEditor.getPresentedState() == RakuReaderModeState.CODE) {
-                        return;
-                    }
+                    if (moduleViewEditor.getPresentedState() == RakuReaderModeState.CODE) return;
+
                     myAlarm.cancelAllRequests();
                     myAlarm.addRequest(() -> renderPreview(event.getDocument(), documentManager, viewer), 500);
                 }
@@ -75,9 +75,7 @@ public class RakuModuleEditorProvider implements FileEditorProvider, DumbAware {
             editor.getEditor().getScrollingModel().addVisibleAreaListener(new VisibleAreaListener() {
                 @Override
                 public void visibleAreaChanged(@NotNull VisibleAreaEvent e) {
-                    if (moduleViewEditor.getPresentedState() == RakuReaderModeState.CODE) {
-                        return;
-                    }
+                    if (moduleViewEditor.getPresentedState() == RakuReaderModeState.CODE) return;
 
                     Editor editor = e.getEditor();
                     Rectangle nowInView = e.getNewRectangle();
@@ -87,20 +85,25 @@ public class RakuModuleEditorProvider implements FileEditorProvider, DumbAware {
                     viewer.scrollTo(offset);
                 }
             });
-            myAlarm.addRequest(() -> renderPreview(editor.getEditor().getDocument(), documentManager, viewer), 0);
+            myAlarm.addRequest(() -> renderPreview(document, documentManager, viewer), 0);
 
             moduleViewEditor.setViewer(viewer);
             return moduleViewEditor;
         }
+
         return editor;
     }
 
     private static void renderPreview(Document document, PsiDocumentManager documentManager, PodPreviewEditor viewer) {
-        viewer.setPodHtml(ReadAction.compute(() -> {
-            PsiFile psi = documentManager.getPsiFile(document);
-            if (!(psi instanceof RakuFile)) return "";
-            return ((RakuFile) psi).renderPod();
-        }));
+        ApplicationManager.getApplication()
+                          .invokeLater(() -> {
+                              WriteAction.runAndWait(() -> documentManager.commitDocument(document));
+                              viewer.setPodHtml(ReadAction.compute(() -> {
+                                    PsiFile psi = documentManager.getPsiFile(document);
+                                    if (!(psi instanceof RakuFile)) return "";
+                                    return ((RakuFile) psi).renderPod();
+                              }));
+                         }, ModalityState.nonModal());
     }
 
     @Override

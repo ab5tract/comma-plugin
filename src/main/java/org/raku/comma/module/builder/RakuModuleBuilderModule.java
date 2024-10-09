@@ -84,7 +84,7 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
         new File(modulePath).getParentFile().mkdirs();
         List<String> code = new ArrayList<>(getModuleCodeByType(moduleType, moduleName, isUnitScoped));
         if (languageVersion != null) {
-            code.addFirst(String.format("use v%s;", languageVersion));
+            code.addFirst(String.format("use v%s;\n", languageVersion));
         }
         RakuUtils.writeCodeToPath(Paths.get(modulePath), code);
         if (moduleType.equals("Monitor")) {
@@ -102,9 +102,9 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
                                                     boolean isUnitScoped)
     {
         if (isUnitScoped) {
-            String declText = String.format("unit %s %s;", type.toLowerCase(Locale.ENGLISH), name);
+            String declText = String.format("unit %s %s;\n", type.toLowerCase(Locale.ENGLISH), name);
             return switch (type) {
-                case "Class", "Role", "Grammar", "Module" -> Arrays.asList(declText, "");
+                case "Class", "Role", "Grammar", "Module", "Package" -> Arrays.asList(declText, "");
                 case "Monitor" -> Arrays.asList("use OO::Monitors;", "", declText, "");
                 case "Model" -> Arrays.asList("use Red;", "", declText, "");
                 default -> Collections.singletonList("");
@@ -112,7 +112,7 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
         } else {
             String declText = String.format("%s %s {", type.toLowerCase(Locale.ENGLISH), name);
             return switch (type) {
-                case "Class", "Role", "Grammar", "Module" -> Arrays.asList(declText, "", "}");
+                case "Class", "Role", "Grammar", "Module", "Package" -> Arrays.asList(declText, "", "}");
                 case "Monitor" -> Arrays.asList("use OO::Monitors;", "", declText, "", "}");
                 case "Model" -> Arrays.asList("use Red;", "", declText, "", "}");
                 default -> Collections.singletonList("");

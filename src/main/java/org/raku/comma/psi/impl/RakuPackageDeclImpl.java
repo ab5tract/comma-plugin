@@ -55,7 +55,7 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
                                                                                                     RakuSymbolKind.TypeOrConstant);
             applyLexicalSymbolCollector(collector);
             if (collector.isSatisfied() && collector.getResult().getPsi() instanceof RakuPackageDecl) {
-                return (RakuPackageDecl)collector.getResult().getPsi();
+                return (RakuPackageDecl) collector.getResult().getPsi();
             }
         } catch (AssertionError ignored) {
             // If resolution goes out of a stub, we cannot do a lot without breaking stub rules
