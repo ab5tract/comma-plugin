@@ -51,8 +51,8 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
     @Override
     public @Nullable RakuPackageDecl getMetaClass() {
         try {
-            RakuSingleResolutionSymbolCollector collector =
-              new RakuSingleResolutionSymbolCollector(getPackageKind(), RakuSymbolKind.TypeOrConstant);
+            RakuSingleResolutionSymbolCollector collector = new RakuSingleResolutionSymbolCollector(getPackageKind(),
+                                                                                                    RakuSymbolKind.TypeOrConstant);
             applyLexicalSymbolCollector(collector);
             if (collector.isSatisfied() && collector.getResult().getPsi() instanceof RakuPackageDecl) {
                 return (RakuPackageDecl)collector.getResult().getPsi();
@@ -66,8 +66,9 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
     @Override
     public String getPackageKind() {
         RakuPackageDeclStub stub = getStub();
-        if (stub != null)
+        if (stub != null) {
             return stub.getPackageKind();
+        }
 
         PsiElement declarator = getDeclarator();
         return declarator == null ? "package" : declarator.getText();
@@ -83,8 +84,7 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
         RakuStatementList list = PsiTreeUtil.findChildOfType(this, RakuStatementList.class);
         if (list == null) return false;
         for (PsiElement child : list.getChildren()) {
-            if (child.getFirstChild() instanceof RakuStubCode)
-                return true;
+            if (child.getFirstChild() instanceof RakuStubCode) return true;
         }
         return false;
     }
@@ -98,8 +98,9 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
     @Override
     public RakuParameter[] getSignature() {
         RakuRoleSignature signature = PsiTreeUtil.getChildOfType(this, RakuRoleSignature.class);
-        if (signature == null)
+        if (signature == null) {
             return new RakuParameter[0];
+        }
         return PsiTreeUtil.getChildrenOfType(signature, RakuParameter.class);
     }
 
@@ -114,14 +115,12 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
         collector.offerSymbol(new RakuExplicitAliasedSymbol(RakuSymbolKind.Variable, this, "$?PACKAGE"));
         if (collector.isSatisfied()) return;
         switch (getPackageKind()) {
-            case "class":
-            case "grammar":
-                collector.offerSymbol(new RakuExplicitAliasedSymbol(RakuSymbolKind.Variable, this, "$?CLASS"));
-                break;
-            case "role":
+            case "class", "grammar" ->
+                    collector.offerSymbol(new RakuExplicitAliasedSymbol(RakuSymbolKind.Variable, this, "$?CLASS"));
+            case "role" -> {
                 collector.offerSymbol(new RakuExplicitAliasedSymbol(RakuSymbolKind.Variable, this, "$?ROLE"));
                 collector.offerSymbol(new RakuImplicitSymbol(RakuSymbolKind.Variable, "$?CLASS", this));
-                break;
+            }
         }
     }
 
@@ -170,8 +169,9 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
 
     @Override
     public boolean trustsOthers() {
-        if (cachedTrustsOthers == null)
+        if (cachedTrustsOthers == null) {
             cachedTrustsOthers = !getTrusts().isEmpty();
+        }
         return cachedTrustsOthers;
     }
 
@@ -276,19 +276,21 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
         else {
             for (RakuTrait trait : getTraits()) {
                 if (!(trait.getTraitModifier().equals("does") || trait.getTraitModifier().equals("is"))) continue;
-                PsiElement element = trait.getTraitModifier().equals("does") ?
-                                     PsiTreeUtil.findChildOfType(trait, RakuTypeName.class) :
-                                     PsiTreeUtil.findChildOfType(trait, RakuIsTraitName.class);
+                PsiElement element = trait.getTraitModifier().equals("does")
+                                        ? PsiTreeUtil.findChildOfType(trait, RakuTypeName.class)
+                                        : PsiTreeUtil.findChildOfType(trait, RakuIsTraitName.class);
                 if (element == null) continue;
                 PsiReference ref = element.getReference();
                 if (ref == null) continue;
                 PsiElement decl = ref.resolve();
-                if (decl instanceof RakuPackageDecl)
-                    rakuPackageDecls.add(Pair.create(trait.getTraitModifier(), (RakuPackageDecl)decl));
-                else
+                if (decl instanceof RakuPackageDecl) {
+                    rakuPackageDecls.add(Pair.create(trait.getTraitModifier(), (RakuPackageDecl) decl));
+                } else {
                     externals.add(Pair.create(trait.getTraitModifier(), trait.getTraitName()));
-                if (trait.getTraitName().equals("Mu"))
+                }
+                if (trait.getTraitName().equals("Mu")) {
                     isAny = false;
+                }
             }
         }
 
@@ -388,8 +390,9 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
             if (addChildren) {
                 PsiElement e = current.getFirstChild();
                 while (e != null) {
-                    if (e instanceof RakuPsiElement)
+                    if (e instanceof RakuPsiElement) {
                         visit.add((RakuPsiElement)e);
+                    }
                     e = e.getNextSibling();
                 }
             }
@@ -420,8 +423,9 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
             else {
                 addChildren = true;
             }
-            if (addChildren)
+            if (addChildren) {
                 visit.addAll(current.getChildrenStubs());
+            }
         }
     }
 
@@ -434,8 +438,9 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
                 PsiReference reference = isTrait.getReference();
                 assert reference != null;
                 PsiElement resolved = reference.resolve();
-                if (resolved instanceof RakuPackageDecl)
-                    parents.add((RakuPackageDecl)resolved);
+                if (resolved instanceof RakuPackageDecl) {
+                    parents.add((RakuPackageDecl) resolved);
+                }
             }
             else {
                 RakuTypeName doesTrait = PsiTreeUtil.findChildOfType(trait, RakuTypeName.class);
@@ -443,8 +448,9 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
                     PsiReference reference = doesTrait.getReference();
                     assert reference != null;
                     PsiElement resolved = reference.resolve();
-                    if (resolved instanceof RakuPackageDecl)
-                        parents.add((RakuPackageDecl)resolved);
+                    if (resolved instanceof RakuPackageDecl) {
+                        parents.add((RakuPackageDecl) resolved);
+                    }
                 }
             }
         }
@@ -482,15 +488,18 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
     @Override
     public @Nullable RakuTrait findTrait(String mod, String name) {
         RakuPackageDeclStub stub = getStub();
-        if (stub == null)
+        if (stub == null) {
             return super.findTrait(mod, name);
+        }
 
         List<StubElement> children = stub.getChildrenStubs();
         for (StubElement<?> child : children) {
-            if (!(child instanceof RakuTraitStub traitStub))
+            if (!(child instanceof RakuTraitStub traitStub)) {
                 continue;
-            if (traitStub.getTraitModifier().equals(mod) && traitStub.getTraitName().equals(name))
+            }
+            if (traitStub.getTraitModifier().equals(mod) && traitStub.getTraitName().equals(name)) {
                 return traitStub.getPsi();
+            }
         }
         return null;
     }
@@ -500,8 +509,9 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
     public PsiMetaData getMetaData() {
         PsiElement decl = this;
         String shortName = getPackageName();
-        if (shortName == null)
+        if (shortName == null) {
             shortName = "";
+        }
         int lastIndexOf = shortName.lastIndexOf(':');
         if (lastIndexOf != -1) {
             shortName = shortName.substring(lastIndexOf + 1);
@@ -538,8 +548,9 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
     public PsiElement setName(@NotNull String name) throws IncorrectOperationException {
         PsiElement nameElement = RakuElementFactory.createTypeDeclarationName(getProject(), name);
         PsiElement identifier = getNameIdentifier();
-        if (identifier != null)
+        if (identifier != null) {
             identifier.replace(nameElement);
+        }
         return this;
     }
 
@@ -554,14 +565,19 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
             String scope = getScope();
             boolean isLexical = !(scope.equals("our") || scope.equals("unit"));
             RakuTrait exportTrait = findTrait("is", "export");
-            if (isLexical)
+            if (isLexical) {
                 context.enterLexicalPackage();
-            else
+            } else {
                 context.enterGlobalNamePart(name);
+            }
             boolean visible = !isLexical && globalName != null || exportTrait != null;
             if (visible && !(kind.equals("package") || kind.equals("module"))) {
-                PodDomClassyDeclarator type = new PodDomClassyDeclarator(getTextOffset(), shortName, globalName,
-                        getDocBlocks(), exportTrait, kind);
+                PodDomClassyDeclarator type = new PodDomClassyDeclarator(getTextOffset(),
+                                                                         shortName,
+                                                                         globalName,
+                                                                         getDocBlocks(),
+                                                                         exportTrait,
+                                                                         kind);
                 context.addType(type);
                 context.enterClassyType(type);
             }
@@ -570,10 +586,11 @@ public class RakuPackageDeclImpl extends RakuTypeStubBasedPsi<RakuPackageDeclStu
             }
             super.collectPodAndDocumentables(context);
             context.exitClassyType();
-            if (isLexical)
+            if (isLexical) {
                 context.exitLexicalPackage();
-            else
+            } else {
                 context.exitGlobalNamePart();
+            }
         }
         else {
             super.collectPodAndDocumentables(context);
