@@ -40,9 +40,10 @@ public class RakuModuleEditorProvider implements FileEditorProvider, DumbAware {
 
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile file) {
-        var fileType =
-        FileTypeRegistry.getInstance().getFileTypeByExtension(Objects.requireNonNull(file.getExtension()));
+        var extension = file.getExtension();
 
+        // getFileType() is the slower path
+        var fileType =  extension == null ? file.getFileType() : FileTypeRegistry.getInstance().getFileTypeByExtension(extension);
         return fileType instanceof RakuModuleFileType || fileType instanceof RakuPodFileType || fileType instanceof NqpFileType;
     }
 
