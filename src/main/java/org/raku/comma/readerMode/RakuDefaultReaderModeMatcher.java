@@ -24,17 +24,17 @@ public class RakuDefaultReaderModeMatcher implements ReaderModeMatcher {
                            @NotNull VirtualFile file,
                            @Nullable Editor editor,
                            @NotNull ReaderModeProvider.ReaderMode mode) {
-        if (editor == null)
-            return false;
+        if (editor == null) return false;
+
         @Nullable PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
-        if (psiFile == null)
-            return false;
+        if (psiFile == null) return false;
+
         FileType fileType = psiFile.getFileType();
-        if (fileType == RakuScriptFileType.INSTANCE ||
-            fileType == RakuModuleFileType.INSTANCE ||
-            fileType == RakuTestFileType.INSTANCE ||
-            fileType == RakuPodFileType.INSTANCE)
-            return false;
+        if (fileType == RakuScriptFileType.INSTANCE
+            || fileType == RakuModuleFileType.INSTANCE
+            || fileType == RakuTestFileType.INSTANCE
+            || fileType == RakuPodFileType.INSTANCE) return false;
+
         return null;
     }
 }

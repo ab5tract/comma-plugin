@@ -31,9 +31,8 @@ public class RakuActionProvider implements InspectionWidgetActionProvider {
     @Override
     public AnAction createAction(@NotNull Editor editor) {
         Project project = editor.getProject();
-        if (project == null || project.isDefault()) {
-            return null;
-        }
+        if (project == null || project.isDefault()) return null;
+
         else {
             PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
             if (psiFile != null) {
@@ -65,10 +64,13 @@ public class RakuActionProvider implements InspectionWidgetActionProvider {
             Presentation presentation = e.getPresentation();
             PsiFile file = PsiDocumentManager.getInstance(myEditor.getProject()).getPsiFile(myEditor.getDocument());
             if (file == null) return;
+
             RakuReaderModeState currentState = file.getUserData(RAKU_EDITOR_MODE_STATE);
-            presentation.setEnabledAndVisible(currentState != RakuReaderModeState.SPLIT &&
-                                              (currentState == null && myState != RakuReaderModeState.CODE ||
-                                              currentState != null && currentState != myState));
+            presentation.setEnabledAndVisible(currentState != RakuReaderModeState.SPLIT
+                                                  && (currentState == null
+                                                        && myState != RakuReaderModeState.CODE
+                                                        || currentState != null
+                                                        && currentState != myState));
             presentation.setText(myState.toString());
             String descriptionText = switch (myState) {
                 case CODE  -> "Display default editor view presenting Raku source code";
