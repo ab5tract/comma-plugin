@@ -29,7 +29,7 @@ class ZeroArgToTermFix(private val name: String) : LocalQuickFix, LowPriorityAct
     }
 
     override fun getName(): @IntentionName String {
-        return "Convert sub '%s' to term"
+        return "Convert sub '%s' to term".format(name)
     }
 
     override fun getFamilyName(): String {
