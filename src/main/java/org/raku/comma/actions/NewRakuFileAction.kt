@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
@@ -19,8 +18,6 @@ import com.intellij.ui.components.JBCheckBox
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.dsl.builder.*
-import com.intellij.ui.layout.selected
-import com.intellij.util.ui.CheckBox
 import com.intellij.util.ui.JBUI
 import org.raku.comma.RakuIcons
 import org.raku.comma.language.RakuLanguageVersionService
@@ -90,6 +87,8 @@ private class RakuFileCreationDialog(
         fileTypeChooser.setListData(Vector(rakuFileChoices))
         fileTypeChooser.cellRenderer = RakuFileChoiceCellRenderer()
         fileTypeChooser.addListSelectionListener(this::listListener)
+        fileTypeChooser.visibleRowCount = 5
+        fileTypeChooser.layoutOrientation = JList.VERTICAL_WRAP
 
         init()
         isOKActionEnabled = false
@@ -222,6 +221,8 @@ private val rakuFileChoices = listOf(
     RakuFileChoice(RakuIcons.SUB, "Script", "raku"),
     RakuFileChoice(RakuIcons.GRAMMAR, "Grammar"),
     RakuFileChoice(RakuIcons.PACKAGE, "Package"),
+    RakuFileChoice(RakuIcons.MODULE, "Model"),
+    RakuFileChoice(RakuIcons.MODULE, "Monitor"),
 // TODO: Make an icon and add the rakudoc option
 //    RakuFileChoice(RakuIcons.PACKAGE, "Documentation"),
 )
