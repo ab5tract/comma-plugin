@@ -1,6 +1,8 @@
 package org.raku.comma.psi;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.NlsSafe;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -21,6 +23,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.concurrent.CompletableFuture;
 
 public class RakuElementFactory {
     public static final String ARRAY_CONTEXTUALIZER = "@";
@@ -170,12 +173,18 @@ public class RakuElementFactory {
         return produceElement(project, "loop " + block.getText(), RakuLoopStatement.class);
     }
 
-    public static PsiFile createModulePsiFile(Project project, String moduleText, String name, String path) {
+    public static CompletableFuture<PsiFile> createModulePsiFile(Project project, String moduleText, String name, String path) {
         String outFile = name.replace("::", "-");
         String filename = outFile + "." + RakuModuleFileType.INSTANCE.getDefaultExtension();
         VirtualFile file = VirtualFileManager.getInstance().findFileByNioPath(Path.of(path));
-        return PsiFileFactory.getInstance(project)
-                .createFileFromText(filename, RakuLanguage.INSTANCE, moduleText, true, true, true, file);
+        var completable = new CompletableFuture<PsiFile>();
+        ApplicationManager.getApplication().invokeLaterOnWriteThread(() ->
+                completable.complete(
+                    PsiFileFactory.getInstance(project)
+                                  .createFileFromText(filename, RakuLanguage.INSTANCE, moduleText, true, true, true, file)
+                )
+        );
+        return completable;
     }
 
     protected static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {

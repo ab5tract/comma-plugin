@@ -1,6 +1,8 @@
 package org.raku.comma.services.project
 
 import com.intellij.execution.ExecutionException
+import com.intellij.openapi.application.readAction
+import com.intellij.openapi.application.readAndWriteAction
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -9,6 +11,8 @@ import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.platform.util.progress.reportProgress
 import com.intellij.psi.PsiFile
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.future.future
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.raku.comma.psi.RakuElementFactory
@@ -39,7 +43,7 @@ class RakuDependencyDetailsService(
     val isNotGettingReady: Boolean
         get() = !isGettingReady
 
-    val provideToRakuFileLookup: MutableMap<String, PsiFile> = ConcurrentHashMap()
+    val provideToRakuFileLookup: MutableMap<String, RakuFile> = ConcurrentHashMap()
 
     val loadedDependencies: Set<String>
         get() = setOf(*dependencyState.directDependencies.toTypedArray(), *dependencyState.secondaryDependencies.toTypedArray())
@@ -67,16 +71,32 @@ class RakuDependencyDetailsService(
         return rakuFile
     }
 
-    fun moduleToRakuFiles(module: String): List<RakuFile> {
+    fun moduleToRakuFiles(module: String): CompletableFuture<List<RakuFile>> {
         val provides = project.service<RakuModuleListFetcher>().getProvidesListByModule(module)
-//        addLoadedDependencies(listOf(module))
-        return providesToRakuFiles(provides)
+        addLoadedDependencies(listOf(module))
+        return runScope.future {
+            withBackgroundProgress(project, "Locating and loading code dependencies") {
+                reportProgress { report ->
+                    providesToRakuFiles(provides, report)
+                }
+            }
+        }
     }
 
     fun modulesToRakuFiles(modules: List<String>): List<RakuFile> {
         val provides = project.service<RakuModuleListFetcher>().getProvidesListByModules(modules)
-//        addLoadedDependencies(modules)
-        return providesToRakuFiles(provides)
+        addLoadedDependencies(modules)
+
+        var files: List<RakuFile>? = null
+        runScope.launch {
+            withBackgroundProgress(project, "Locating and loading code dependencies") {
+                reportProgress { report ->
+                    files = providesToRakuFiles(provides, report)
+                }
+            }
+        }
+
+        return files ?: emptyList()
     }
 
     private fun addLoadedDependencies(dependencies: List<String>) {
@@ -92,22 +112,37 @@ class RakuDependencyDetailsService(
         dependencyState.secondaryDependencies = secondary.toMutableList()
     }
 
-    private fun providesToRakuFiles(provides: List<String>): List<RakuFile> {
-        return pathOfProvideReference(provides.toMutableList()).map { (provide, files) ->
-            val path = files.first()
-            dependencyState.provideToPath.putIfAbsent(provide, path)
+    private suspend fun providesToRakuFiles(provides: List<String>, reporter: ProgressReporter): List<RakuFile> {
+        return reporter.sizedStep(10, "Locating and loading dependencies...") {
+            runScope.async {
+                pathOfProvideReference(provides.toMutableList()).map { (provide, files) ->
+                    val path = files.first()
+                    dependencyState.provideToPath.putIfAbsent(provide, path)
 
-            val rakuFile = provideToRakuFileLookup.computeIfAbsent(provide,
-                                { RakuElementFactory.createModulePsiFile(project,
-                                                                         File(path).readText(),
-                                                                         provide,
-                                                                         path)
-                                }) as RakuFile
+                    val callable = { _: String ->
+                        runScope.async {
+                            reporter.sizedStep(1, "Loading $provide") {
+                               withContext(Dispatchers.IO) {
+                                       RakuElementFactory.createModulePsiFile(project,
+                                                                              readAction { File(path).readText() },
+                                                                              provide,
+                                                                              path).join()
+                               }
+                            }
+                        }
+                    }
 
-            rakuFile.moduleName = provide
-            rakuFile.originalPath = path
-            rakuFile
-        }
+                    val rakuFile = if (provideToRakuFileLookup.contains(provide))
+                                        provideToRakuFileLookup[provide]!!
+                                    else
+                                        (runScope.async { callable("").await() }.await()) as RakuFile
+
+                    rakuFile.moduleName = provide
+                    rakuFile.originalPath = path
+                    rakuFile
+                }
+            }
+        }.await()
     }
 
     private fun fillState() {
