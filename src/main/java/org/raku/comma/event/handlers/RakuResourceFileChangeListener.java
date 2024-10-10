@@ -1,6 +1,7 @@
 package org.raku.comma.event.handlers;
 
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
@@ -23,10 +24,12 @@ import java.util.regex.Pattern;
 
 public class RakuResourceFileChangeListener extends RakuProjectFileChangeListener {
     private final List<String> resourcePaths = new ArrayList<>();
-    private final RakuMetaDataComponent myMetaData;
+    private final Project project;
 
-    public RakuResourceFileChangeListener(Module module, RakuMetaDataComponent data) {
-        myMetaData = data;
+    public RakuResourceFileChangeListener(Module module) {
+        project = module.getProject();
+
+        var data = project.getService(RakuMetaDataComponent.class);
         VirtualFile metaVFile = data.getMetaFile();
         if (metaVFile != null) {
             File resourcesFile = metaVFile.toNioPath().resolveSibling("resources").toFile();
@@ -75,10 +78,12 @@ public class RakuResourceFileChangeListener extends RakuProjectFileChangeListene
     @Override
     public void processDirectoryDelete(VFileEvent event) {
         VirtualFile file = Objects.requireNonNull(event.getFile());
+        var metadata = project.getService(RakuMetaDataComponent.class);
+
         // If it's the resources directory itself, purify everything!
         if (file.getName().equals("resources") && resourcePaths.contains(file.getPath())) {
-            for (String resource : myMetaData.getResources()) {
-                myMetaData.removeResource(resource);
+            for (String resource : metadata.getResources()) {
+                metadata.removeResource(resource);
             }
             return;
         }
@@ -88,9 +93,9 @@ public class RakuResourceFileChangeListener extends RakuProjectFileChangeListene
         for (String resourcePath : resourcePaths) {
             if (path.startsWith(resourcePath)) {
                 String prefix = calculateResourcePrefix(Paths.get(resourcePath), path);
-                for (String name : myMetaData.getResources()) {
+                for (String name : metadata.getResources()) {
                     if (name.startsWith(prefix))
-                        myMetaData.removeResource(name);
+                        metadata.removeResource(name);
                 }
             }
         }
@@ -136,12 +141,14 @@ public class RakuResourceFileChangeListener extends RakuProjectFileChangeListene
 
         Path oldPath = Paths.get(stringNewPath.substring(0, stringNewPath.length() - newName.length()), oldName);
 
+        var metadata = project.getService(RakuMetaDataComponent.class);
+
         String newPrefix = calculateResourcePrefix(resourcesPath, eventPath);
         String oldPrefix = calculateResourcePrefix(resourcesPath, oldPath);
-        for (String name : myMetaData.getResources()) {
+        for (String name : metadata.getResources()) {
             if (name.startsWith(oldPrefix)) {
-                myMetaData.removeResource(name);
-                myMetaData.addResource(newPrefix + name.substring(oldPrefix.length()));
+                metadata.removeResource(name);
+                metadata.addResource(newPrefix + name.substring(oldPrefix.length()));
             }
         }
     }
@@ -163,14 +170,16 @@ public class RakuResourceFileChangeListener extends RakuProjectFileChangeListene
         boolean isFromResources = oldPath.startsWith(resourcesPath);
         boolean isToResources = newPath.startsWith(resourcesPath);
 
+        var metadata = project.getService(RakuMetaDataComponent.class);
+
         if (isFromResources && isToResources) {
             String oldPrefix = calculateResourcePrefix(resourcesPath, oldPath);
             String newPrefix = calculateResourcePrefix(resourcesPath, newPath);
 
-            for (String name : myMetaData.getResources()) {
+            for (String name : metadata.getResources()) {
                 if (name.startsWith(oldPrefix)) {
-                    myMetaData.removeResource(name);
-                    myMetaData.addResource(newPrefix + name.substring(oldPrefix.length()));
+                    metadata.removeResource(name);
+                    metadata.addResource(newPrefix + name.substring(oldPrefix.length()));
                 }
             }
         }
@@ -181,8 +190,9 @@ public class RakuResourceFileChangeListener extends RakuProjectFileChangeListene
                 public boolean visitFile(@NotNull VirtualFile file) {
                     if (!file.isDirectory()) {
                         String resourceName = calculateResourceName(file.getPath());
-                        if (!myMetaData.getResources().contains(resourceName))
-                            myMetaData.addResource(resourceName);
+                        if (!metadata.getResources().contains(resourceName)) {
+                            metadata.addResource(resourceName);
+                        }
                     }
                     return true;
                 }
@@ -190,9 +200,9 @@ public class RakuResourceFileChangeListener extends RakuProjectFileChangeListene
         }
         else if (isFromResources) {
             String oldPrefix = calculateResourcePrefix(resourcesPath, oldPath);
-            for (String name : myMetaData.getResources())
+            for (String name : metadata.getResources())
                 if (name.startsWith(oldPrefix))
-                    myMetaData.removeResource(name);
+                    metadata.removeResource(name);
         }
     }
 
@@ -214,10 +224,13 @@ public class RakuResourceFileChangeListener extends RakuProjectFileChangeListene
     }
 
     private void updateMetaResources(String oldName, String newName) {
-        if (oldName != null)
-            myMetaData.removeResource(oldName);
+        var metadata = project.getService(RakuMetaDataComponent.class);
+
+        if (oldName != null) {
+            metadata.removeResource(oldName);
+        }
         if (newName != null) {
-            myMetaData.addResource(newName);
+            metadata.addResource(newName);
         }
     }
 }

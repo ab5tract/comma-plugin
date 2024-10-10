@@ -27,10 +27,10 @@ public class ModuleMetaChangeListener implements BulkFileListener {
 
         MessageBusConnection conn = ApplicationManager.getApplication().getMessageBus().connect();
         conn.subscribe(VirtualFileManager.VFS_CHANGES, this);
-        RakuMetaDataComponent metaData = module.getService(RakuMetaDataComponent.class);
+
         myListeners = new RakuProjectFileChangeListener[]{
-            new RakuModuleFileChangeListener(myModule, metaData),
-            new RakuResourceFileChangeListener(myModule, metaData)
+            new RakuModuleFileChangeListener(myModule),
+            new RakuResourceFileChangeListener(myModule)
         };
     }
 

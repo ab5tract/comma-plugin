@@ -1,10 +1,7 @@
 package org.raku.comma.services.project
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
-import com.intellij.openapi.progress.EmptyProgressIndicator
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.progress.ProgressManager
-import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import kotlinx.collections.immutable.persistentListOf
@@ -24,12 +21,17 @@ import org.raku.comma.services.RakuServiceConstants
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
+import java.util.regex.Pattern
 
 
 // TODO: Migrate this to an APP service
 @Service(Service.Level.PROJECT)
 @State(name = "Raku.Modules.Available", storages = [Storage(value = RakuServiceConstants.RAKU_EXTERNAL_MODULES_FILE)])
-class RakuModuleListFetcher(private val project: Project, private val runScope: CoroutineScope) : PersistentStateComponent<MetaFileRepositoryState>, DumbAware {
+class RakuModuleListFetcher(
+    private val project: Project,
+    private val runScope: CoroutineScope
+) : PersistentStateComponent<MetaFileRepositoryState>, DumbAware {
+
     var metaFileState: MetaFileRepositoryState = MetaFileRepositoryState()
 
     val GITHUB_MIRROR1: String = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/p6c1.json"
@@ -119,11 +121,17 @@ class RakuModuleListFetcher(private val project: Project, private val runScope: 
 
     fun getProvides(): Set<String> {
         return moduleList.filter { it.provides.isNotEmpty() }
-            .flatMap { it.provides.values }
-            .toSet()
+                         .flatMap { it.provides.values }
+                         .toSet()
     }
 
-    fun populateModules(): CompletableFuture<Map<String, MetaFile>> {
+    fun dependenciesDeep(modules: Set<String>): Set<String> {
+        return moduleList.filter { modules.contains(it.name) }
+                         .flatMap { it.depends }
+                         .toSet()
+    }
+
+    private fun populateModules(): CompletableFuture<Map<String, MetaFile>> {
         if (isNotGettingReady) {
             if (isNotReady) {
                 isGettingReady = true
@@ -159,7 +167,12 @@ class RakuModuleListFetcher(private val project: Project, private val runScope: 
             if (modulesMap[metaFile.name!!] == null || checkVersions(metaFile, modulesMap)) {
                 // There is a Foo::[]Foo module which contains an illegal character that will blow us up when serializing to XML
                 if (! (metaFile.name.startsWith("Foo") && metaFile.name.endsWith("Foo"))) {
-                    modulesMap[metaFile.name] = metaFile
+                    val removeAuth = Pattern.compile("(.+)((:ver|:auth|:api)\\<.+\\>)+").matcher(metaFile.name)
+                    if (removeAuth.matches()) {
+                        modulesMap[removeAuth.group(1)] = metaFile
+                    } else {
+                        modulesMap[metaFile.name] = metaFile
+                    }
                 }
             }
         }
@@ -235,7 +248,7 @@ class RakuModuleListFetcher(private val project: Project, private val runScope: 
     }
 
     private fun fillState() {
-        // TODO: This needs to migrate to a cancellable coroutinex
+        // TODO: This needs to migrate to a cancellable coroutine
         val repo = populateModules().join()
 
         metaFileRepository = repo
@@ -272,7 +285,6 @@ class RakuModuleListFetcher(private val project: Project, private val runScope: 
             }
         }
         metaFileState.providedToModule = providedToModule
-
         metaFileState.moduleToProvides = moduleList.map { module -> Pair(module.name!!, module.provides.keys.toList()) }
                                                    .toMap().toMutableMap()
     }

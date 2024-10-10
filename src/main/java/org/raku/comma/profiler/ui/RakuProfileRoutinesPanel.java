@@ -86,6 +86,11 @@ public class RakuProfileRoutinesPanel extends JPanel {
         myModuleNames = new ArrayList<>();
         myModuleBasePaths = new ArrayList<>();
         Module[] modules = ModuleManager.getInstance(project).getModules();
+
+        if (modules.length > 1) {
+            LOG.warn("MORE THAN ONE MODULE IN A PROJECT IS NOT SUPPORTED");
+        }
+
         for (Module module : modules) {
             ContentEntry[] entries = ModuleRootManager.getInstance(module).getContentEntries();
             myModuleBasePaths.addAll(Arrays.stream(entries).map(
@@ -94,7 +99,7 @@ public class RakuProfileRoutinesPanel extends JPanel {
 
             var moduleType = ModuleType.get(module);
             if (! moduleType.equals(RakuModuleType.getInstance())) continue;
-            RakuMetaDataComponent metaDataComponent = module.getService(RakuMetaDataComponent.class);
+            RakuMetaDataComponent metaDataComponent = project.getService(RakuMetaDataComponent.class);
             if (Objects.isNull(metaDataComponent)) continue;
             myModuleNames.addAll(metaDataComponent.getProvidedNames());
         }

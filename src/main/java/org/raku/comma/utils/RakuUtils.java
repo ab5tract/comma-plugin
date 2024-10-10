@@ -10,8 +10,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class RakuUtils {
@@ -32,9 +34,15 @@ public class RakuUtils {
 
     @Nullable
     public static File getResourceAsFile(String resourcePath) {
+        var fileName = Arrays.stream(resourcePath.split(Pattern.quote(File.separator))).toList().getLast();
+        var splitted = fileName.split("\\.");
+
+        var prefix = splitted[0];
+        var suffix = splitted.length > 1 ? ("." + splitted[1]) : ".tmp";
+
         File tempFile;
         try {
-            tempFile = FileUtil.createTempFile("comma", ".tmp");
+            tempFile = FileUtil.createTempFile(prefix, suffix);
         } catch (IOException e) {
             LOG.error(e);
             return null;
@@ -51,6 +59,7 @@ public class RakuUtils {
         } catch (IOException e) {
             LOG.error(e);
         }
+
         return tempFile;
     }
 

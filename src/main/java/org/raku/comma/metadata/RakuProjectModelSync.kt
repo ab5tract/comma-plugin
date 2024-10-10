@@ -13,6 +13,7 @@ import com.intellij.openapi.roots.impl.libraries.LibraryEx
 import com.intellij.serviceContainer.AlreadyDisposedException
 import org.raku.comma.library.RakuLibraryType
 import org.raku.comma.sdk.RakuSdkUtil
+import org.raku.comma.services.project.RakuDependencyDetailsService
 import org.raku.comma.services.project.RakuProjectSdkService
 import org.raku.comma.utils.RakuCommandLine
 import org.raku.comma.utils.RakuUtils
@@ -30,19 +31,24 @@ class RakuProjectModelSync(private val project: Project) {
                     val completeMETADependencies: MutableSet<String> = ConcurrentHashMap.newKeySet()
                     completeMETADependencies.addAll(firstLevelDeps)
                     val sdk = obtainSDKAndGatherLibraryDeps(module, firstLevelDeps, completeMETADependencies)
-                    val projectModules = getProjectModules(module)
                     val entriesPresentInMETA: MutableSet<String> = HashSet()
+
+                    // TODO: As noted elsewhere, we are currently hard-wiring the plugin to only support a single
+                    // "IntelliJ module" per project.
+                    val metadata = project.service<RakuMetaDataComponent>()
 
                     for (metaDep in completeMETADependencies) {
                         // If local, project module, attach it as dependency
-                        if (projectModules.containsKey(metaDep)) {
-                            val moduleOfMetaDep = projectModules[metaDep]!!.module
-                            if (moduleOfMetaDep != null && ModuleRootManager.getInstance(module).isDependsOn(moduleOfMetaDep)) {
-                                entriesPresentInMETA.add(moduleOfMetaDep.name)
-                                removeDuplicateEntries(model, moduleOfMetaDep.name)
-                            } else if (moduleOfMetaDep != null) {
-                                val entry: OrderEntry = model.addModuleOrderEntry(moduleOfMetaDep)
-                                entriesPresentInMETA.add(entry.presentableName)
+                        if (metadata.name == metaDep) {
+                            val moduleOfMetaDep = metadata.module
+                            if (moduleOfMetaDep != null)  {
+                                if (ModuleRootManager.getInstance(module).isDependsOn(moduleOfMetaDep)) {
+                                    entriesPresentInMETA.add(moduleOfMetaDep.name)
+                                    removeDuplicateEntries(model, moduleOfMetaDep.name)
+                                } else {
+                                    val entry: OrderEntry = model.addModuleOrderEntry(moduleOfMetaDep)
+                                    entriesPresentInMETA.add(entry.presentableName)
+                                }
                             }
                         } else {
                             if (sdk == null) continue
@@ -76,18 +82,6 @@ class RakuProjectModelSync(private val project: Project) {
         }
     }
 
-    private fun getProjectModules(module: Module): Map<String?, RakuMetaDataComponent> {
-        val modules = ModuleManager.getInstance(project).modules
-        val projectModules: MutableMap<String?, RakuMetaDataComponent> = HashMap()
-        for (inProjectModule in modules) {
-            if (module != inProjectModule) {
-                val service = inProjectModule.getService(RakuMetaDataComponent::class.java)!!
-                projectModules[service.name] = service
-            }
-        }
-        return projectModules
-    }
-
     private fun obtainSDKAndGatherLibraryDeps(
         module: Module,
         metaDependencies: Set<String>,
@@ -119,9 +113,7 @@ class RakuProjectModelSync(private val project: Project) {
     private fun removeOrderEntriesNotInMETA(model: ModifiableRootModel, presentInMeta: Set<String>) {
         for (entry in model.orderEntries) {
             if (entry.isValid && !entry.presentableName.contains("Module source")) {
-                if (!(presentInMeta.contains(entry.presentableName))) {
-                    model.removeOrderEntry(entry)
-                }
+                if (! (presentInMeta.contains(entry.presentableName))) model.removeOrderEntry(entry)
             }
         }
     }

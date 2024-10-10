@@ -2,6 +2,7 @@ package org.raku.comma.event.handlers;
 
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.SourceFolder;
@@ -30,10 +31,11 @@ import java.util.regex.Pattern;
 
 public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener {
     private final List<String> modulePaths = new ArrayList<>();
-    private final RakuMetaDataComponent myMetaData;
+    private final Project project;
 
-    public RakuModuleFileChangeListener(Module module, RakuMetaDataComponent data) {
-        myMetaData = data;
+    public RakuModuleFileChangeListener(Module module) {
+        project = module.getProject();
+
         ContentEntry @NotNull [] entries = ModuleRootManager.getInstance(module).getContentEntries();
         for (ContentEntry entry : entries) {
             SourceFolder[] folders = entry.getSourceFolders();
@@ -72,14 +74,15 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
 
     @Override
     public void processDirectoryDelete(VFileEvent event) {
+        var metadata = project.getService(RakuMetaDataComponent.class);
         VirtualFile file = Objects.requireNonNull(event.getFile());
         Path path = file.toNioPath();
         for (String modulePath : modulePaths) {
             if (path.startsWith(modulePath)) {
                 String prefix = calculateModulePrefix(Paths.get(modulePath), path);
-                for (String name : myMetaData.getProvidedNames()) {
+                for (String name : metadata.getProvidedNames()) {
                     if (name.startsWith(prefix)) {
-                        myMetaData.removeNamespaceFromProvides(name);
+                        metadata.removeNamespaceFromProvides(name);
                     }
                 }
             }
@@ -123,13 +126,15 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
 
         Path oldPath = Paths.get(stringNewPath.substring(0, stringNewPath.length() - newName.length()), oldName);
 
+        var metadata = project.getService(RakuMetaDataComponent.class);
+
         String newPrefix = calculateModulePrefix(libPath, eventPath);
         String oldPrefix = calculateModulePrefix(libPath, oldPath);
-        for (String name : myMetaData.getProvidedNames()) {
+        for (String name : metadata.getProvidedNames()) {
             if (name.startsWith(oldPrefix)) {
-                myMetaData.removeNamespaceFromProvides(name);
+                metadata.removeNamespaceFromProvides(name);
                 String ext = oldName.split("\\.")[1];
-                myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()), ext);
+                metadata.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()), ext);
             }
         }
     }
@@ -151,14 +156,16 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
         boolean isFromLib = oldPath.startsWith(libPath);
         boolean isToLib = newPath.startsWith(libPath);
 
+        var metadata = project.getService(RakuMetaDataComponent.class);
+
         if (isFromLib && isToLib) {
             String oldPrefix = calculateModulePrefix(libPath, oldPath);
             String newPrefix = calculateModulePrefix(libPath, newPath);
 
-            for (String name : myMetaData.getProvidedNames()) {
+            for (String name : metadata.getProvidedNames()) {
                 if (name.startsWith(oldPrefix)) {
-                    myMetaData.removeNamespaceFromProvides(name);
-                    myMetaData.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()), RakuUtils.getNameExtension(name));
+                    metadata.removeNamespaceFromProvides(name);
+                    metadata.addNamespaceToProvides(newPrefix + name.substring(oldPrefix.length()), RakuUtils.getNameExtension(name));
                 }
             }
         } else if (isToLib) {
@@ -166,17 +173,18 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
             VfsUtilCore.visitChildrenRecursively(file, new VirtualFileVisitor<>() {
                 @Override
                 public boolean visitFile(@NotNull VirtualFile file) {
+                    var metadata = project.getService(RakuMetaDataComponent.class);
                     if (FileTypeManager.getInstance().getFileTypeByFile(file) instanceof RakuModuleFileType) {
-                        myMetaData.addNamespaceToProvides(calculateModuleName(file.getPath()), file.getExtension());
+                        metadata.addNamespaceToProvides(calculateModuleName(file.getPath()), file.getExtension());
                     }
                     return true;
                 }
             });
         } else if (isFromLib) {
             String oldPrefix = calculateModulePrefix(libPath, oldPath);
-            for (String name : myMetaData.getProvidedNames()) {
+            for (String name : metadata.getProvidedNames()) {
                 if (name.startsWith(oldPrefix)) {
-                    myMetaData.removeNamespaceFromProvides(name);
+                    metadata.removeNamespaceFromProvides(name);
                 }
             }
         }
@@ -208,11 +216,12 @@ public class RakuModuleFileChangeListener extends RakuProjectFileChangeListener 
     }
 
     private void updateMetaProvides(@Nullable String oldName, @Nullable String newName, @Nullable String ext) {
+        var metadata = project.getService(RakuMetaDataComponent.class);
         if (oldName != null) {
-            myMetaData.removeNamespaceFromProvides(oldName);
+            metadata.removeNamespaceFromProvides(oldName);
         }
         if (newName != null) {
-            myMetaData.addNamespaceToProvides(newName, ext);
+            metadata.addNamespaceToProvides(newName, ext);
         }
     }
 }

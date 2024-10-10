@@ -1,6 +1,7 @@
 use JSON::Fast;
 
-sub MAIN($name) {
+sub MAIN(**@modules) {
+
     sub meta-by-module-name($name) {
         my $module-name = $name.ends-with('.pm6') ?? $name.substr(0, *-4) !! $name;
         my @curs        = $*REPO.repo-chain.grep(*.?prefix.?e);
@@ -44,14 +45,17 @@ sub MAIN($name) {
         return ();
     }
 
-    my $visit = meta-by-module-name($name).Array;
-    my $names;
-    $names.append: |$visit;
-    my %visited;
-    while $visit.pop -> $dep-to-add {
-        next if %visited{$dep-to-add}++;
-        $names.append: $dep-to-add;
-        $visit.append: |meta-by-module-name($dep-to-add);
+    my @visit;
+    for @modules -> $module {
+        @visit.push: |meta-by-module-name($module);
     }
-    .say for @$names.unique.grep(*.defined);
+
+    my @names .= append: |@visit;
+    my %visited;
+    while @visit.pop -> $dep-to-add {
+        next if %visited{$dep-to-add}++;
+        @names.append: $dep-to-add;
+        @visit.append: |meta-by-module-name($dep-to-add);
+    }
+    .say for @names.unique.grep(*.defined);
 }

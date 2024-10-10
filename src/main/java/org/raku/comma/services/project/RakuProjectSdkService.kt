@@ -4,7 +4,6 @@ import com.intellij.execution.ExecutionException
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.*
-import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.serviceContainer.AlreadyDisposedException
@@ -88,11 +87,12 @@ class RakuProjectSdkService(private val project: Project, val runScope: Coroutin
         symbolCache.sdkPath = sdkPath
         symbolCache.invalidateCache()
 
-        // TODO: Move to Facets for module
-        for (module in ModuleManager.getInstance(project).modules) {
-            val component = module.getService(RakuMetaDataComponent::class.java)
-            component?.triggerMetaBuild()
-        }
+        // TODO: Move to Facets for module / allow for multiple metas + modules in a single project
+//        for (module in ModuleManager.getInstance(project).modules) {
+//            val component = module.getService(RakuMetaDataComponent::class.java)
+//            component?.triggerMetaBuild()
+//        }
+        project.service<RakuMetaDataComponent>().triggerMetaBuild()
     }
 
     private fun generateMoarBuildConfiguration(): Map<String, String> {

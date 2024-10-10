@@ -1,10 +1,12 @@
 package org.raku.comma.utils
 
+import com.intellij.execution.ExecutionException
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import kotlinx.serialization.json.Json
 import org.raku.comma.metadata.data.MetaFile
+import org.raku.comma.sdk.RakuSdkUtil
 import org.raku.comma.services.project.RakuProjectDetailsService
 import org.raku.comma.services.project.RakuProjectSdkService
 import java.io.File
@@ -17,6 +19,24 @@ object CommaProjectUtil {
     private val LOG = Logger.getInstance(
         CommaProjectUtil::class.java
     )
+
+    @JvmStatic
+    fun collectDependenciesOfModules(project: Project, modules: List<String>): List<String> {
+        val sdk = project.service<RakuProjectSdkService>().sdkPath
+        try {
+            val locateScript = RakuUtils.getResourceAsFile("zef/gather-deps.raku")
+                ?: throw ExecutionException("Resource bundle is corrupted: locate script is missing")
+            val depsCollectorScript = RakuCommandLine(sdk)
+            depsCollectorScript.addParameter(locateScript.absolutePath)
+            modules.forEach {
+                depsCollectorScript.addParameter(it)
+            }
+            return depsCollectorScript.executeAndRead(locateScript)
+        } catch (e: ExecutionException) {
+            RakuSdkUtil.reactToSdkIssue(project, "Cannot use current Raku SDK")
+            return ArrayList()
+        }
+    }
 
 //    @JvmStatic
 //    fun createNewProject(wizard: CommaNewProjectWizard) {
@@ -179,8 +199,16 @@ object CommaProjectUtil {
 
     // Technically this should also be available at the Facet level so that different project-modules can have their
     // own META6.json. Fix this later!
+    @JvmStatic
     fun projectDependencies(project: Project): List<String> {
         return if (projectHasMetaFile(project)) metaFile(project).depends else listOf()
+    }
+
+    @JvmStatic
+    fun projectDependenciesDeep(project: Project): List<String> {
+        return if (projectHasMetaFile(project))
+                    collectDependenciesOfModules(project, metaFile(project).depends)
+              else listOf()
     }
 
     private val json = Json {

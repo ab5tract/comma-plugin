@@ -87,12 +87,14 @@ class RakuModuleWizardBuilder : ModuleBuilder() {
         if (model != null) {
             WriteAction.run<RuntimeException> { model.commit() }
         }
-        if (modules != null) {
-            for (module in modules) {
-                module.getService(RakuMetaDataComponent::class.java).triggerMetaBuild()
-            }
+
+        if (! modules.isNullOrEmpty()) {
+            LOG.warn("Having more than one module is NOT SUPPORTED")
         }
+
+        project.service<RakuMetaDataComponent>().triggerMetaBuild()
         project.service<RakuProjectSdkService>().sdkPath = sdkPath
+
         return modules
     }
 

@@ -2,7 +2,6 @@ package org.raku.comma.module.builder;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -14,7 +13,6 @@ import org.raku.comma.metadata.RakuMetaDataComponent;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -67,18 +65,18 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
                                     RakuLanguageVersion languageVersion)
     {
         // TODO: We do eventually want more than one module per project. But for now, that's a lot to think about
-        var metaData = ModuleManager.getInstance(project).getModules()[0].getService(RakuMetaDataComponent.class);
+        var metadata = project.getService(RakuMetaDataComponent.class);
 
         if (firstModule) {
             try {
-                metaData.createStubMetaFile(moduleName, root, shouldOpenEditor);
+                metadata.createStubMetaFile(moduleName, root, shouldOpenEditor);
             } catch (IOException e) {
                 LOG.warn(e);
             }
         }
         if (moduleLibraryPath.endsWith("lib")) {
             ApplicationManager.getApplication()
-                              .invokeLater(() -> metaData.addNamespaceToProvides(moduleName, RakuModuleFileType.INSTANCE.getDefaultExtension()));
+                              .invokeLater(() -> metadata.addNamespaceToProvides(moduleName, RakuModuleFileType.INSTANCE.getDefaultExtension()));
         }
         String modulePath = Paths.get(moduleLibraryPath.toString(), moduleName.split("::")) + "." + RakuModuleFileType.INSTANCE.getDefaultExtension();
         List<String> code = new ArrayList<>(getModuleCodeByType(moduleType, moduleName, isUnitScoped));
@@ -87,10 +85,10 @@ public class RakuModuleBuilderModule implements RakuModuleBuilderGeneric {
         }
         RakuUtils.writeCodeToPath(Paths.get(modulePath), code);
         if (moduleType.equals("Monitor")) {
-            metaData.addDepends("OO::Monitors");
+            metadata.addDepends("OO::Monitors");
         }
         if (moduleType.equals("Model")) {
-            metaData.addDepends("Red");
+            metadata.addDepends("Red");
         }
 
         return modulePath;

@@ -41,8 +41,8 @@ public class RakuUseUtils {
         editor.getDocument().insertString(0, "use " + useName + ";\n");
         Module module = ModuleUtilCore.findModuleForFile(file);
         assert module != null;
-        RakuMetaDataComponent metaData = module.getService(RakuMetaDataComponent.class);
-        if (!metaData.getDepends(true).contains(moduleName)) {
+        RakuMetaDataComponent metaData = module.getProject().getService(RakuMetaDataComponent.class);
+        if (! metaData.getDepends(true).contains(moduleName)) {
             metaData.addDepends(moduleName);
         }
     }

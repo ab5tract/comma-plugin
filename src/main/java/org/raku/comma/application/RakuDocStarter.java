@@ -102,7 +102,7 @@ public class RakuDocStarter implements ApplicationStarter {
             Module @NotNull [] modules = ModuleManager.getInstance(project).getModules();
             boolean sawAModule = false;
             for (Module module : modules) {
-                RakuMetaDataComponent metaDataComponent = module.getService(RakuMetaDataComponent.class);
+                RakuMetaDataComponent metaDataComponent = module.getProject().getService(RakuMetaDataComponent.class);
                 if (metaDataComponent != null) {
                     VirtualFile metaFile = metaDataComponent.getMetaFile();
                     Path originalDistDirectory;

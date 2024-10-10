@@ -294,7 +294,7 @@
     <backgroundPostStartupActivity implementation="org.raku.comma.project.activity.RakuModuleListStarter" order="first" />
     <backgroundPostStartupActivity implementation="org.raku.comma.utils.RakuLegacyExtensionsDetector"/>
     <backgroundPostStartupActivity implementation="org.raku.comma.pm.RakuModuleInstallPromptStarter"/>
-    <moduleService serviceImplementation="org.raku.comma.metadata.RakuMetaDataComponent"/>
+<!--    <moduleService serviceImplementation="org.raku.comma.metadata.RakuMetaDataComponent"/>-->
     <moduleService serviceImplementation="org.raku.comma.event.ModuleMetaChangeListener"/>
     <projectService serviceImplementation="org.raku.comma.metadata.RakuProjectModelSync"/>
     <fileEditorProvider implementation="org.raku.comma.readerMode.RakuModuleEditorProvider"/>

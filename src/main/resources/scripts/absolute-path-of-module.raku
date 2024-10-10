@@ -17,28 +17,6 @@ my sub parse-value($str-or-kv) {
 my $config = Zef::Config::parse-file(Zef::Config::guess-path());
 my $client = Zef::Client.new(:$config);
 
-#sub resolve-to-path(Str $identity) {
-#    my @candis = $client.list-installed.grep({
-#        .dist.meta<provides>.keys.grep({ parse-value($_) eq $identity }).so;
-#    });
-#
-#    my %lookup;
-#    for @candis -> $candi {
-#        if $candi {
-#            # This is relying on implementation details for compatibility purposes. It will
-#            # use something more appropriate sometime in 2019.
-#            my %meta = $candi.dist.meta;
-#            %meta<provides> = %meta<provides>.map({ $_.key => parse-value($_.value) }).hash;
-#            my $lib = %meta<provides>{$identity};
-#            my $lib-sha1 = nqp::sha1(CompUnit::Repository::Distribution.new($candi.dist).id);
-#            my $curi = CompUnit::RepositoryRegistry.repository-for-spec($candi.from);
-#
-#            %lookup{$identity} = $curi.prefix.child('sources').child($lib-sha1).Str;
-#        }
-#    }
-#    %lookup
-#}
-
 sub resolve-to-path(Str $identity) {
     my @candis = $client.list-installed.grep({
         .dist.meta<provides>.keys.grep({ parse-value($_) eq $identity }).so;
@@ -58,15 +36,25 @@ sub resolve-to-path(Str $identity) {
 
 sub MAIN(*@identities) {
     my %full-lookup;
+    my @not-installed;
 
     for @identities -> $identity {
-        %full-lookup.push: resolve-to-path($identity);
+        if resolve-to-path($identity) -> %resolved {
+            %full-lookup.push: %resolved
+        } else {
+            @not-installed.push: $identity
+        }
     }
 
     for %full-lookup.pairs -> (:$key, :$value) {
         %full-lookup{$key} = [$value]
     }
 
-    say to-json(%full-lookup)
+    my %output = %(
+        notInstalled => @not-installed,
+        pathLookup => %full-lookup
+    );
+
+    say to-json(%output)
 }
 

@@ -2,12 +2,16 @@ package org.raku.comma.services.project
 
 import com.intellij.execution.ExecutionException
 import com.intellij.openapi.components.*
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
+import com.jetbrains.rd.framework.base.deepClonePolymorphic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.raku.comma.metadata.RakuProjectModelSync
 import org.raku.comma.psi.RakuElementFactory
 import org.raku.comma.psi.RakuFile
 import org.raku.comma.sdk.RakuSdkUtil
@@ -28,7 +32,7 @@ class RakuDependencyDetailsService(
     var dependencyState = DependencyDetailsState()
 
     val isReady: Boolean
-        get() = dependencyState.loadedDependencies.toSet() == CommaProjectUtil.projectDependencies(project).toSet()
+        get() = checkIsReady()
     val isNotReady: Boolean
         get() = !isReady
 
@@ -37,6 +41,15 @@ class RakuDependencyDetailsService(
         get() = !isGettingReady
 
     val provideToRakuFileLookup: MutableMap<String, PsiFile> = ConcurrentHashMap()
+
+    val loadedDependencies: Set<String>
+        get() = setOf(*dependencyState.directDependencies.toTypedArray(), *dependencyState.secondaryDependencies.toTypedArray())
+
+    private fun checkIsReady(): Boolean {
+        val metaDeps = CommaProjectUtil.projectDependencies(project).toSet()
+        val direct = dependencyState.directDependencies.toSet()
+        return (metaDeps - direct).isEmpty() && dependencyState.secondaryDependencies.isNotEmpty()
+    }
 
     fun provideToRakuFile(provide: String): PsiFile? {
         if (provideToRakuFileLookup.containsKey(provide)) return provideToRakuFileLookup[provide]
@@ -57,12 +70,27 @@ class RakuDependencyDetailsService(
 
     fun moduleToRakuFiles(module: String): List<RakuFile> {
         val provides = project.service<RakuModuleListFetcher>().getProvidesListByModule(module)
+//        addLoadedDependencies(listOf(module))
         return providesToRakuFiles(provides)
     }
 
     fun modulesToRakuFiles(modules: List<String>): List<RakuFile> {
         val provides = project.service<RakuModuleListFetcher>().getProvidesListByModules(modules)
+//        addLoadedDependencies(modules)
         return providesToRakuFiles(provides)
+    }
+
+    private fun addLoadedDependencies(dependencies: List<String>) {
+        val metaDepends = CommaProjectUtil.projectDependencies(project).toSet()
+
+        val direct = dependencyState.directDependencies.toMutableSet()
+        val secondary = dependencyState.secondaryDependencies.toMutableSet()
+
+        direct.addAll(dependencies.filter { metaDepends.contains(it) })
+        secondary.addAll(dependencies.filter { !direct.contains(it) })
+
+        dependencyState.directDependencies = direct.toMutableList()
+        dependencyState.secondaryDependencies = secondary.toMutableList()
     }
 
     private fun providesToRakuFiles(provides: List<String>): List<RakuFile> {
@@ -80,22 +108,27 @@ class RakuDependencyDetailsService(
             rakuFile.moduleName = provide
             rakuFile.originalPath = path
             rakuFile
-        }.toList()
+        }
     }
 
     private fun fillState() {
         // TODO: Address potential duplicates in the dependency list and multiple paths in the provides output
+        val direct = CommaProjectUtil.projectDependencies(project)
+
         val pathLookup = mutableMapOf<String, String>()
         val moduleService = project.service<RakuModuleListFetcher>()
-        val modules: List<String> = CommaProjectUtil.projectDependencies(project)
+        val modules: List<String> = moduleService.dependenciesDeep(direct.toSet()).toList()
         val provides = moduleService.getProvidesListByModules(modules)
         pathLookup.putAll(pathOfProvideReference(provides.toMutableList()).entries.map { Pair(it.key, it.value.first()) })
             // TODO: Figure out async for this...
             // pathLookup.putAll(withContext(dispatchScope.coroutineContext, {
             //        pathOfProvideReference(provides).entries.map { Pair(it.key, it.value.first()) }
             // }))
+
         dependencyState.provideToPath = pathLookup
-        dependencyState.loadedDependencies = CommaProjectUtil.projectDependencies(project).toMutableList()
+        dependencyState.directDependencies = direct.toMutableList()
+        dependencyState.secondaryDependencies = (modules.toSet() - direct.toSet()).toMutableList()
+        // Potentially merge these two?
     }
 
     private fun pathOfProvideReference(reference: String): List<String>? {
@@ -124,7 +157,9 @@ class RakuDependencyDetailsService(
                     pathCollectorScript.addParameter(locateScript.absolutePath)
                     references.forEach { reference -> pathCollectorScript.addParameter(reference) }
                     val output = pathCollectorScript.executeAndRead(null).joinToString("\n")
-                    provideMap.putAll(Json.decodeFromString<Map<String, List<String>>>(output))
+                    // TODO: Do something with the notInstalled details
+                    val result = Json.decodeFromString<PathLookupResult>(output)
+                    provideMap.putAll(result.pathLookup)
                     provideMapFuture.complete(provideMap.toMap())
                 } catch (e: ExecutionException) {
                     RakuSdkUtil.reactToSdkIssue(project, "Cannot use current Raku SDK")
@@ -139,9 +174,9 @@ class RakuDependencyDetailsService(
     }
 
     fun refresh() {
-        if (isNotGettingReady) {
+        if (isNotReady && isNotGettingReady) {
             isGettingReady = true
-            fillState()
+//            fillState()
             isGettingReady = false
         }
     }
@@ -164,5 +199,13 @@ class RakuDependencyDetailsService(
 
 class DependencyDetailsState : BaseState() {
     var provideToPath by map<String, String>()
-    var loadedDependencies by list<String>()
+    var directDependencies by list<String>()
+    var secondaryDependencies by list<String>()
+}
+
+@Serializable
+data class PathLookupResult(val notInstalled: List<String>, val pathLookup: Map<String, List<String>>) {
+    fun pathOf(module: String): String? {
+        return pathLookup[module]?.first()
+    }
 }

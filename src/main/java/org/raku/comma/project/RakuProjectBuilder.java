@@ -118,9 +118,7 @@ public class RakuProjectBuilder extends ProjectBuilder {
                 }
                 VirtualFile metaFile = lfs.findFileByPath(metaPath.toString());
                 if (metaFile != null) {
-                    Module firstModule = ModuleUtilCore.findModuleForFile(metaFile, project);
-                    if (firstModule == null) return;
-                    RakuMetaDataComponent component = firstModule.getService(RakuMetaDataComponent.class);
+                    RakuMetaDataComponent component = project.getService(RakuMetaDataComponent.class);
                     component.triggerMetaBuild(metaFile);
                 }
 

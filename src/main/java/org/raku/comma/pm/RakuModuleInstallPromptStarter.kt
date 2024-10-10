@@ -5,7 +5,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.psi.PsiFile
@@ -21,24 +20,21 @@ class RakuModuleInstallPromptStarter : ProjectActivity {
         val pmManager = project.getService(RakuPackageManagerManager::class.java)
         if (pmManager == null || pmManager.currentPM == null) return
         val currentPM = pmManager.currentPM
-        val modules = ModuleManager.getInstance(project).modules
 
         val unavailableDeps: MutableList<String> = ArrayList()
 
-        for (module in modules) {
-            val metadata = module.getService(RakuMetaDataComponent::class.java)
-            val dependencies = metadata.allDependencies
-            try {
-                val installedDists = currentPM.getInstalledDistributions(project)
-                    .stream().map { s: String? -> RakuDependencySpec(s) }.collect(Collectors.toSet())
-                for (depFromMeta in dependencies) {
-                    val hasDep = installedDists.stream()
-                        .anyMatch { idFromPM: RakuDependencySpec -> idFromPM == RakuDependencySpec(depFromMeta) }
-                    if (!hasDep) unavailableDeps.add(depFromMeta)
-                }
-            } catch (e: ExecutionException) {
-                LOG.info("Could not query installed modules: " + e.message)
+        val metadata = project.getService(RakuMetaDataComponent::class.java)
+        val dependencies = metadata.allDependencies
+        try {
+            val installedDists = currentPM.getInstalledDistributions(project)
+                .stream().map { s: String? -> RakuDependencySpec(s) }.collect(Collectors.toSet())
+            for (depFromMeta in dependencies) {
+                val hasDep = installedDists.stream()
+                    .anyMatch { idFromPM: RakuDependencySpec -> idFromPM == RakuDependencySpec(depFromMeta) }
+                if (!hasDep) unavailableDeps.add(depFromMeta)
             }
+        } catch (e: ExecutionException) {
+            LOG.info("Could not query installed modules: " + e.message)
         }
 
         if (unavailableDeps.isEmpty()) return
@@ -47,8 +43,7 @@ class RakuModuleInstallPromptStarter : ProjectActivity {
         val editors = FileEditorManager.getInstance(project).selectedEditors
         ApplicationManager.getApplication().invokeAndWait {
             for (fileEditor in editors) {
-                val notification =
-                    getPanel(project, pmManager.currentPM, unavailableDeps)
+                val notification = getPanel(project, pmManager.currentPM, unavailableDeps)
                 FileEditorManager.getInstance(project).addTopComponent(fileEditor!!, notification)
                 notification.setDismissCallback {
                     FileEditorManager.getInstance(project).removeTopComponent(
@@ -81,8 +76,8 @@ class RakuModuleInstallPromptStarter : ProjectActivity {
         project: Project,
         pm: RakuPackageManager,
         unavailableDeps: List<String>
-    ): RakuModuleInstallPromptStarter.DismissableNotificationPanel {
-        val panel = RakuModuleInstallPromptStarter.DismissableNotificationPanel()
+    ): DismissableNotificationPanel {
+        val panel = DismissableNotificationPanel()
         panel.text =
             "Some Raku dependencies for this project are not installed (" + getListText(
                 unavailableDeps
@@ -100,7 +95,7 @@ class RakuModuleInstallPromptStarter : ProjectActivity {
                         try {
                             pm.install(project, dep)
                         } catch (e: ExecutionException) {
-                            RakuModuleInstallPromptStarter.LOG.warn("Could not install a distribution '" + dep + "': " + e.message)
+                            LOG.warn("Could not install a distribution '" + dep + "': " + e.message)
                         }
                     }
                     panel.parent.remove(panel)

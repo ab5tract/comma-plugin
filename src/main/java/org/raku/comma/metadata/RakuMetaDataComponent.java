@@ -7,11 +7,12 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleType;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.*;
 import com.intellij.openapi.vfs.*;
@@ -20,14 +21,12 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import org.raku.comma.RakuIcons;
-import org.raku.comma.module.RakuModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.raku.comma.services.project.RakuDependencyDetailsService;
-import org.raku.comma.services.project.RakuProjectSdkService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -35,28 +34,22 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 
+@Service(Service.Level.PROJECT)
 public final class RakuMetaDataComponent {
     public static final String META6_JSON_NAME = "META6.json";
     public static final String META_OBSOLETE_NAME = "META.info";
     @Nullable
-    private Module myModule = null;
-    @Nullable
     private VirtualFile myMetaFile = null;
     @Nullable
     private JSONObject myMeta = null;
+    private final Project project;
 
-    public RakuMetaDataComponent(@Nullable Module module) {
-        var name = ModuleType.get(module);
-
-        if (! name.equals(RakuModuleType.getInstance())) {
-            return;
-        }
-
-        this.myModule = module;
+    public RakuMetaDataComponent(Project project) {
+        this.project = project;
 
         // VFS events WILL NOT be passed to the module message bus,
         // so connect to project one instead
-        this.myModule.getProject().getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
+       project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             @Override
             public void after(@NotNull List<? extends VFileEvent> events) {
                 for (VFileEvent event : events) {
@@ -70,10 +63,10 @@ public final class RakuMetaDataComponent {
                     if (!event.getFile().equals(myMetaFile)) continue;
                     myMeta = checkMetaSanity();
                     saveFile();
-                    if (myMeta != null && RakuMetaDataComponent.this.myModule != null) {
-                        module.getProject()
-                              .getService(RakuProjectModelSync.class)
-                              .syncExternalLibraries(RakuMetaDataComponent.this.myModule, getAllDependencies());
+                    var module = Arrays.stream(ModuleManager.getInstance(project).getModules()).findFirst().orElse(null);
+                    if (myMeta != null && module != null) {
+                        project.getService(RakuProjectModelSync.class)
+                               .syncExternalLibraries(module, getAllDependencies());
                     }
                 }
             }
@@ -98,16 +91,15 @@ public final class RakuMetaDataComponent {
         myMeta = checkMetaSanity();
 
         // Load dependencies
-        if (Objects.nonNull(myMeta)) {
-            this.myModule.getProject()
-                         .getService(RakuProjectModelSync.class)
-                         .syncExternalLibraries(this.myModule, getAllDependencies());
+        if (myMeta != null && getModule() != null) {
+            project.getService(RakuProjectModelSync.class)
+                   .syncExternalLibraries(getModule(), getAllDependencies());
         }
     }
 
     @Nullable
     public Module getModule() {
-        return myModule;
+        return Arrays.stream(ModuleManager.getInstance(project).getModules()).findFirst().orElse(null);
     }
 
     private VirtualFile checkOldMetaFile(VirtualFile metaParent) {
@@ -230,10 +222,9 @@ public final class RakuMetaDataComponent {
     public void triggerMetaBuild(@NotNull VirtualFile metaFile) {
         myMetaFile = metaFile;
         myMeta = checkMetaSanity();
-        if (myMeta != null && myModule != null) {
-            myModule.getProject()
-                    .getService(RakuProjectModelSync.class)
-                    .syncExternalLibraries(myModule, getAllDependencies());
+        if (myMeta != null && getModule() != null) {
+            project.getService(RakuProjectModelSync.class)
+                   .syncExternalLibraries(getModule(), getAllDependencies());
         }
     }
 
@@ -257,15 +248,13 @@ public final class RakuMetaDataComponent {
         if (myMeta == null || !myMeta.has(key)) return;
         Object depends = myMeta.has(key) ? myMeta.get(key) : new JSONArray();
         if (!(depends instanceof JSONArray dependsArray)) return;
-        if (dependsArray.toList().contains(name))
-            return;
+        if (dependsArray.toList().contains(name)) return;
+
         dependsArray.put(name);
         myMeta.put(key, dependsArray);
         saveFile();
 
-        if (myModule != null) {
-            myModule.getProject().getService(RakuDependencyDetailsService.class).refresh();
-        }
+        project.getService(RakuDependencyDetailsService.class).refresh();
     }
 
     public Set<String> getAllDependencies() {
@@ -279,7 +268,6 @@ public final class RakuMetaDataComponent {
     public List<String> getDepends(boolean normalize) {
         return getDependsInternal("depends", normalize);
     }
-
 
     public List<String> getTestDepends(boolean normalize) {
         return getDependsInternal("test-depends", normalize);
@@ -316,29 +304,29 @@ public final class RakuMetaDataComponent {
 
     private void setDependsInternal(String key, List<String> buildDepends) {
         if (myMeta == null) return;
+
         myMeta.put(key, new JSONArray(buildDepends));
         saveFile();
 
-        if (myModule != null) {
-            myModule.getProject().getService(RakuDependencyDetailsService.class).refresh();
-        }
+        project.getService(RakuDependencyDetailsService.class).refresh();
     }
 
     @Nullable
     public Map<String, Object> getProvidedMap() {
-        if (myMeta == null || !myMeta.has("provides"))
-            return null;
+        if (myMeta == null || !myMeta.has("provides")) return null;
 
         Object provides = myMeta.get("provides");
-        if (provides instanceof JSONObject)
-            return ((JSONObject)provides).toMap();
+        if (provides instanceof JSONObject) {
+            return ((JSONObject) provides).toMap();
+        }
+
         return null;
     }
 
     public Collection<String> getProvidedNames() {
         Map<String, Object> providedSet = getProvidedMap();
-        if (providedSet == null)
-            return new ArrayList<>();
+        if (providedSet == null) return new ArrayList<>();
+
         return providedSet.keySet();
     }
 
@@ -354,20 +342,25 @@ public final class RakuMetaDataComponent {
     }
 
     public void createStubMetaFile(String moduleName, VirtualFile firstRoot, boolean shouldOpenEditor) throws IOException {
-        if (myModule == null)
-            return;
-        if (firstRoot == null)
-            firstRoot = calculateMetaParent();
         if (firstRoot == null) {
-            ContentEntry[] entries = ModuleRootManager.getInstance(myModule).getContentEntries();
-            VirtualFile file = FileChooser.chooseFile(
-                FileChooserDescriptorFactory.createSingleFolderDescriptor(),
-                myModule.getProject(), entries.length == 1 && entries[0].getFile() != null ? entries[0].getFile() : null);
+            firstRoot = calculateMetaParent();
+        }
+        if (firstRoot == null) {
+            VirtualFile file;
+            if (getModule() != null) {
+                ContentEntry[] entries = ModuleRootManager.getInstance(getModule()).getContentEntries();
+                file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFolderDescriptor(),
+                                                          project,
+                                                          entries.length == 1 && entries[0].getFile() != null ? entries[0].getFile() : null);
+
+            } else {
+                file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFolderDescriptor(), project, null);
+            }
+
             if (file == null) {
                 notifyMetaIssue("Directory was not selected, meta file creation is canceled", NotificationType.INFORMATION);
                 return;
-            }
-            else {
+            } else {
                 firstRoot = file;
             }
         }
@@ -384,7 +377,7 @@ public final class RakuMetaDataComponent {
                 myMetaFile = metaFile;
 
                 if (shouldOpenEditor)
-                    FileEditorManager.getInstance(myModule.getProject()).openFile(metaFile, true);
+                    FileEditorManager.getInstance(project).openFile(metaFile, true);
             }
             catch (IOException e) {
                 ex.set(e);
@@ -397,13 +390,14 @@ public final class RakuMetaDataComponent {
     }
 
     private VirtualFile calculateMetaParent() {
-        if (myModule == null)
-            return null;
-        VirtualFile[] sourceRoots = ModuleRootManager.getInstance(myModule).getSourceRoots();
+        if (getModule() == null) return null;
+
+        VirtualFile[] sourceRoots = ModuleRootManager.getInstance(getModule()).getSourceRoots();
         for (VirtualFile root : sourceRoots) {
             if (!root.getName().equals("lib")) continue;
             return root.getParent();
         }
+
         return null;
     }
 
@@ -548,17 +542,16 @@ public final class RakuMetaDataComponent {
     }
 
     private void notifyMetaIssue(String message, NotificationType type, AnAction... actions) {
-        if (myModule == null)
-            return;
-        Notification notification = new Notification(
-            "raku.meta.errors", "Raku meta error", message, type);
+        if (getModule() == null) return;
+
+        Notification notification = new Notification("raku.meta.errors", "Raku meta error", message, type);
         notification.setIcon(RakuIcons.CAMELIA);
         if (myMetaFile != null) {
             notification.addAction(new AnAction(String.format("Open %s", META6_JSON_NAME)) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
-                    if (myModule.isDisposed()) return;
-                    FileEditorManager.getInstance(myModule.getProject()).openFile(myMetaFile, true);
+                    if (getModule().isDisposed()) return;
+                    FileEditorManager.getInstance(project).openFile(myMetaFile, true);
                     notification.expire();
                 }
             });
@@ -573,7 +566,7 @@ public final class RakuMetaDataComponent {
                 }
             });
         }
-        Notifications.Bus.notify(notification, myModule.getProject());
+        Notifications.Bus.notify(notification,project);
     }
 
     private void notifyMissingMETA() {
@@ -587,8 +580,8 @@ public final class RakuMetaDataComponent {
             public void actionPerformed(@NotNull AnActionEvent e) {
                 try {
                     notification.expire();
-                    if (myModule == null || myModule.isDisposed()) return;
-                    createStubMetaFile(myModule.getName(), null, true);
+                    if (getModule() == null || getModule().isDisposed()) return;
+                    createStubMetaFile(getModule().getName(), null, true);
                 }
                 catch (IOException e1) {
                     Notification notification1 = new Notification(

@@ -1,7 +1,6 @@
 package org.raku.comma.inspection.inspections
 
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import org.raku.comma.inspection.InspectionConstants.UsedModuleInspection.DESCRIPTION_ECO_FORMAT
@@ -36,20 +35,19 @@ class UsedModuleInspection : RakuInspection() {
         if (service.PRAGMAS.contains(moduleName)) return
         if (service.isNotReady) return
 
-        val module = ModuleUtilCore.findModuleForPsiElement(element) ?: return
-        val metaData = module.getService(RakuMetaDataComponent::class.java)
+        val metadata = holder.project.getService(RakuMetaDataComponent::class.java)
 
         // No need to annotate "missing" modules, if there are
         // no META data available
-        if (!metaData.isMetaDataExist) return
+        if (!metadata.isMetaDataExist) return
 
         // There is no need to
         if (element.reference?.resolve() != null) return
 
         val dependencies: MutableList<String> = ArrayList()
-        dependencies.addAll(metaData.getDepends(true))
-        dependencies.addAll(metaData.getTestDepends(true))
-        dependencies.addAll(metaData.getBuildDepends(true))
+        dependencies.addAll(metadata.getDepends(true))
+        dependencies.addAll(metadata.getTestDepends(true))
+        dependencies.addAll(metadata.getBuildDepends(true))
 ;        for (dependency in dependencies) {
             var providesOfDependency = service.getProvidesListByModule(dependency)
             // Maybe it is a part of the distribution, and we can get something out of its parent distribution
