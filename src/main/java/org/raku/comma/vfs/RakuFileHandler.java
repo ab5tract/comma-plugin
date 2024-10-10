@@ -49,6 +49,7 @@ public class RakuFileHandler extends ArchiveHandler {
 
         try {
             Matcher matcher = pathPattern.matcher(myPath);
+            if (! matcher.matches()) return Map.of();
             List<String> providesList = executeLocateScript(sdkHome, matcher.group(2));
 
             EntryInfo root = new EntryInfo("", true, 0L, 1L, null);

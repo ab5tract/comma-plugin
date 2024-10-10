@@ -16,7 +16,7 @@ import com.intellij.openapi.util.Pair
 import com.intellij.openapi.vfs.LocalFileSystem
 import org.raku.comma.language.RakuLanguageVersion
 import org.raku.comma.language.RakuLanguageVersionService
-import org.raku.comma.metadata.RakuMetaDataComponent
+import org.raku.comma.services.project.RakuMetaDataComponent
 import org.raku.comma.module.RakuModuleType
 import org.raku.comma.module.builder.*
 import org.raku.comma.project.wizard.steps.RakuModuleNameStep

@@ -23,7 +23,7 @@ import com.intellij.ui.DocumentAdapter;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.Function;
 import com.intellij.util.PlatformIcons;
-import org.raku.comma.metadata.RakuMetaDataComponent;
+import org.raku.comma.services.project.RakuMetaDataComponent;
 import org.raku.comma.module.RakuModuleType;
 import org.raku.comma.profiler.model.*;
 import org.raku.comma.psi.RakuFile;

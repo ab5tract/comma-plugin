@@ -294,9 +294,9 @@
     <backgroundPostStartupActivity implementation="org.raku.comma.project.activity.RakuModuleListStarter" order="first" />
     <backgroundPostStartupActivity implementation="org.raku.comma.utils.RakuLegacyExtensionsDetector"/>
     <backgroundPostStartupActivity implementation="org.raku.comma.pm.RakuModuleInstallPromptStarter"/>
-<!--    <moduleService serviceImplementation="org.raku.comma.metadata.RakuMetaDataComponent"/>-->
+<!--    <moduleService serviceImplementation="org.raku.comma.services.project.RakuMetaDataComponent"/>-->
     <moduleService serviceImplementation="org.raku.comma.event.ModuleMetaChangeListener"/>
-    <projectService serviceImplementation="org.raku.comma.metadata.RakuProjectModelSync"/>
+    <projectService serviceImplementation="org.raku.comma.services.project.RakuProjectModelSync"/>
     <fileEditorProvider implementation="org.raku.comma.readerMode.RakuModuleEditorProvider"/>
     <defaultLiveTemplates file="/liveTemplates/Cro-HTTP-Client.xml"/>
     <defaultLiveTemplates file="/liveTemplates/Cro-WebApp.xml"/>

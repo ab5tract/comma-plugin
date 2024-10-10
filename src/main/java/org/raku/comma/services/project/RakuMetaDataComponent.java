@@ -1,4 +1,4 @@
-package org.raku.comma.metadata;
+package org.raku.comma.services.project;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.raku.comma.services.project.RakuDependencyDetailsService;
+import org.raku.comma.metadata.MetaDataJSONSerializer;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

@@ -9,7 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.raku.comma.filetypes.RakuModuleFileType;
 import org.raku.comma.filetypes.RakuTestFileType;
 import org.raku.comma.language.RakuLanguageVersion;
-import org.raku.comma.metadata.RakuMetaDataComponent;
+import org.raku.comma.services.project.RakuMetaDataComponent;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
 

@@ -10,7 +10,7 @@
 //import com.intellij.openapi.vfs.LocalFileSystem;
 //import com.intellij.openapi.vfs.VirtualFile;
 //import org.raku.comma.language.RakuLanguageVersion;
-//import org.raku.comma.metadata.RakuMetaDataComponent;
+//import org.raku.comma.services.project.RakuMetaDataComponent;
 //import org.raku.comma.module.RakuModuleWizardStep;
 //import org.raku.comma.utils.RakuUtils;
 //import org.jetbrains.annotations.NotNull;

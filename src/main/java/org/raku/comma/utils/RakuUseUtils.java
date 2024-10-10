@@ -6,7 +6,7 @@ import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
-import org.raku.comma.metadata.RakuMetaDataComponent;
+import org.raku.comma.services.project.RakuMetaDataComponent;
 import org.raku.comma.psi.RakuStatement;
 import org.raku.comma.psi.RakuUseStatement;
 import org.raku.comma.psi.RakuPsiScope;

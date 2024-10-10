@@ -1,12 +1,11 @@
 package org.raku.comma.project.activity
 
 import com.intellij.openapi.components.service
-import com.intellij.openapi.components.services
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import org.raku.comma.event.ModuleMetaChangeListener
-import org.raku.comma.metadata.RakuMetaDataComponent
+import org.raku.comma.services.project.RakuMetaDataComponent
 import org.raku.comma.services.project.RakuDependencyDetailsService
 import org.raku.comma.services.project.RakuModuleListFetcher
 

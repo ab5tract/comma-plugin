@@ -9,7 +9,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileMoveEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
 import org.raku.comma.event.RakuProjectFileChangeListener;
-import org.raku.comma.metadata.RakuMetaDataComponent;
+import org.raku.comma.services.project.RakuMetaDataComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

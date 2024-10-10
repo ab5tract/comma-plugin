@@ -15,7 +15,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFilePropertyChangeEvent;
 import com.intellij.openapi.vfs.newvfs.impl.VirtualDirectoryImpl;
 import org.raku.comma.event.RakuProjectFileChangeListener;
 import org.raku.comma.filetypes.RakuModuleFileType;
-import org.raku.comma.metadata.RakuMetaDataComponent;
+import org.raku.comma.services.project.RakuMetaDataComponent;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

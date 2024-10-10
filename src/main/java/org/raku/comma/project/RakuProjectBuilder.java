@@ -18,7 +18,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.raku.comma.RakuIcons;
-import org.raku.comma.metadata.RakuMetaDataComponent;
+import org.raku.comma.services.project.RakuMetaDataComponent;
 import org.raku.comma.module.RakuModuleType;
 import org.raku.comma.pm.RakuPackageManagerManager;
 import org.jetbrains.annotations.NotNull;

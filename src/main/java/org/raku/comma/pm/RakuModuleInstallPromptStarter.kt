@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.psi.PsiFile
 import com.intellij.ui.EditorNotificationPanel
-import org.raku.comma.metadata.RakuMetaDataComponent
+import org.raku.comma.services.project.RakuMetaDataComponent
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.stream.Collectors

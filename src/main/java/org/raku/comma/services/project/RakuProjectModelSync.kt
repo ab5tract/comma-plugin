@@ -1,4 +1,4 @@
-package org.raku.comma.metadata
+package org.raku.comma.services.project
 
 import com.intellij.execution.ExecutionException
 import com.intellij.openapi.application.ApplicationManager
@@ -6,15 +6,12 @@ import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.module.Module
-import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.*
 import com.intellij.openapi.roots.impl.libraries.LibraryEx
 import com.intellij.serviceContainer.AlreadyDisposedException
 import org.raku.comma.library.RakuLibraryType
 import org.raku.comma.sdk.RakuSdkUtil
-import org.raku.comma.services.project.RakuDependencyDetailsService
-import org.raku.comma.services.project.RakuProjectSdkService
 import org.raku.comma.utils.RakuCommandLine
 import org.raku.comma.utils.RakuUtils
 import java.util.concurrent.ConcurrentHashMap
@@ -125,7 +122,7 @@ class RakuProjectModelSync(private val project: Project) {
             val depsCollectorScript = RakuCommandLine(sdk)
             depsCollectorScript.addParameter(locateScript.absolutePath)
             depsCollectorScript.addParameter(metaDep)
-            return depsCollectorScript.executeAndRead(locateScript)
+            return depsCollectorScript.executeAndRead(locateScript).map(RakuUtils::stripAuthVerApi)
         } catch (e: ExecutionException) {
             RakuSdkUtil.reactToSdkIssue(project, "Cannot use current Raku SDK")
             return ArrayList()

@@ -6,8 +6,8 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import java.io.File;
 import java.util.List;
 
-import static org.raku.comma.metadata.RakuMetaDataComponent.META6_JSON_NAME;
-import static org.raku.comma.metadata.RakuMetaDataComponent.META_OBSOLETE_NAME;
+import static org.raku.comma.services.project.RakuMetaDataComponent.META6_JSON_NAME;
+import static org.raku.comma.services.project.RakuMetaDataComponent.META_OBSOLETE_NAME;
 
 public abstract class RakuProjectFileChangeListener {
     public void processFileCreate(VFileEvent event) {}

@@ -8,7 +8,7 @@ import org.raku.comma.inspection.InspectionConstants.UsedModuleInspection.DESCRI
 import org.raku.comma.inspection.RakuInspection
 import org.raku.comma.inspection.fixes.CreateLocalModuleFix
 import org.raku.comma.inspection.fixes.MissingModuleFix
-import org.raku.comma.metadata.RakuMetaDataComponent
+import org.raku.comma.services.project.RakuMetaDataComponent
 import org.raku.comma.psi.RakuColonPair
 import org.raku.comma.psi.RakuLongName
 import org.raku.comma.psi.RakuModuleName

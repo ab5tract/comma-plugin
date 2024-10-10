@@ -2,16 +2,15 @@ package org.raku.comma.services.project
 
 import com.intellij.execution.ExecutionException
 import com.intellij.openapi.components.*
-import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.platform.ide.progress.withBackgroundProgress
+import com.intellij.platform.util.progress.ProgressReporter
+import com.intellij.platform.util.progress.reportProgress
 import com.intellij.psi.PsiFile
-import com.jetbrains.rd.framework.base.deepClonePolymorphic
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import org.raku.comma.metadata.RakuProjectModelSync
 import org.raku.comma.psi.RakuElementFactory
 import org.raku.comma.psi.RakuFile
 import org.raku.comma.sdk.RakuSdkUtil

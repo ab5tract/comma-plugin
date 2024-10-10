@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -109,6 +110,15 @@ public class RakuUtils {
                 c -> (c > 127 || "\"'<>&".indexOf(c) != -1)
                      ? "&" + htmlReplace(c) + ";"
                      : String.valueOf((char) c)).collect(Collectors.joining());
+    }
+
+    public static String stripAuthVerApi(String name) {
+        Pattern patten = Pattern.compile("(.+)((:ver|:auth|:api)\\<.+\\>)+");
+        Matcher matcher = patten.matcher(name);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        }
+        return name;
     }
 
     private static String htmlReplace(int c) {

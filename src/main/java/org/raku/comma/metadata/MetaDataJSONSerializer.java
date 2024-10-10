@@ -8,7 +8,7 @@ import org.raku.comma.metadata.data.MetaFile;
 
 import java.util.*;
 
-class MetaDataJSONSerializer {
+public class MetaDataJSONSerializer {
     private static final String[] fieldsOrder = new String[]{
             "name", "description", "version", "perl",
             "meta-version", "authors", "auth",
@@ -19,12 +19,12 @@ class MetaDataJSONSerializer {
             "source-url"
     };
 
-    static String serializerBasic(JSONObject meta) {
+    public static String serializerBasic(JSONObject meta) {
         Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
         return gson.toJson(meta, MetaFile.class);
     }
 
-    static String serializer(JSONObject meta) {
+    public static String serializer(JSONObject meta) {
         Map<String, Object> orderedMetaFieldsMap = new LinkedHashMap<>();
 
         // Go for fields we know in certain order,

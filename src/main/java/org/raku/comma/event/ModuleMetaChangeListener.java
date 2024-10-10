@@ -12,7 +12,6 @@ import com.intellij.serviceContainer.AlreadyDisposedException;
 import com.intellij.util.messages.MessageBusConnection;
 import org.raku.comma.event.handlers.RakuModuleFileChangeListener;
 import org.raku.comma.event.handlers.RakuResourceFileChangeListener;
-import org.raku.comma.metadata.RakuMetaDataComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -39,10 +38,11 @@ public class ModuleMetaChangeListener implements BulkFileListener {
 
     @Override
     public void after(@NotNull List<? extends VFileEvent> events) {
+        if (myListeners == null) return;
+
         for (VFileEvent event : events) {
             VirtualFile file = event.getFile();
-            if (file == null)
-                continue;
+            if (file == null) continue;
 
             for (RakuProjectFileChangeListener listener : myListeners) {
                 if (listener.shouldProcess(event)) {

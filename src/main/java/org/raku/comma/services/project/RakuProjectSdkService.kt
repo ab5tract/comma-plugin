@@ -11,7 +11,6 @@ import com.intellij.testFramework.LightVirtualFile
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONException
-import org.raku.comma.metadata.RakuMetaDataComponent
 import org.raku.comma.psi.RakuFile
 import org.raku.comma.psi.RakuPackageDecl
 import org.raku.comma.psi.RakuPsiElement

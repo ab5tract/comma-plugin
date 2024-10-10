@@ -1,11 +1,15 @@
 package org.raku.comma.services.project
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
+import com.intellij.platform.ide.progress.withBackgroundProgress
+import com.intellij.platform.ide.progress.withModalProgress
+import com.intellij.platform.util.progress.ProgressReporter
+import com.intellij.platform.util.progress.reportProgress
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -18,10 +22,9 @@ import org.apache.http.util.EntityUtils
 import org.json.JSONException
 import org.raku.comma.metadata.data.MetaFile
 import org.raku.comma.services.RakuServiceConstants
+import org.raku.comma.utils.RakuUtils
 import java.io.IOException
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
-import java.util.regex.Pattern
 
 
 // TODO: Migrate this to an APP service
@@ -59,13 +62,14 @@ class RakuModuleListFetcher(
         "CompUnit::Repository::NQP",
         "CompUnit::Repository::Raku",
         "CompUnit::Repository::RepositoryRegistry",
-        "NativeCall", "NativeCall::Types",
+        "NativeCall",
+        "NativeCall::Types",
         "NativeCall::Compiler::GNU",
         "NativeCall::Compiler::MSVC",
         "Test", "Pod::To::Text", "Telemetry"
     )
     val PRAGMAS: List<String> = persistentListOf(
-        "v6.c", "v6.d", "MONKEY-GUTS", "MONKEY-SEE-NO-EVAL",
+        "v6.c", "v6.d", "v6.e", "MONKEY-GUTS", "MONKEY-SEE-NO-EVAL",
         "MONKEY-TYPING", "MONKEY", "experimental", "fatal",
         "internals", "invocant", "isms", "lib", "nqp", "newline",
         "parameters", "precompilation", "soft", "strict",
@@ -90,7 +94,7 @@ class RakuModuleListFetcher(
         get() = metaFileRepository.values.filter { it.name != null }.toList()
 
     val moduleNames: Set<String>
-        get() = metaFileState.moduleNames.toSet()
+        get() = getNames()
 
     fun repository(): Map<String, MetaFile> {
         return metaFileRepository
@@ -116,7 +120,7 @@ class RakuModuleListFetcher(
     }
 
     fun getNames(): Set<String> {
-        return moduleList.map { it.name!! }.toSet()
+        return moduleList.map { it.name!! }.map(RakuUtils::stripAuthVerApi).toSet()
     }
 
     fun getProvides(): Set<String> {
@@ -127,28 +131,26 @@ class RakuModuleListFetcher(
 
     fun dependenciesDeep(modules: Set<String>): Set<String> {
         return moduleList.filter { modules.contains(it.name) }
-                         .flatMap { it.depends }
+                         .flatMap { it.depends.map(RakuUtils::stripAuthVerApi) }
                          .toSet()
     }
 
-    private fun populateModules(): CompletableFuture<Map<String, MetaFile>> {
+    private suspend fun populateModules(): Map<String, MetaFile> {
         if (isNotGettingReady) {
             if (isNotReady) {
                 isGettingReady = true
-                val isCacheLoaded: CompletableFuture<Map<String, MetaFile>> = CompletableFuture()
-                runScope.launch {
+                return runScope.async {
                     val cache = populateModulesList()
                     project.getService(RakuProjectDetailsService::class.java).setEcosystemModuleRefresh()
                     isReady = true
                     isGettingReady = false
-                    isCacheLoaded.complete(cache)
-                }
-                return isCacheLoaded
+                    cache
+                }.await()
             } else {
-                return CompletableFuture.completedFuture(metaFileRepository)
+                return metaFileRepository
             }
         } else {
-            return CompletableFuture.completedFuture(mapOf())
+            return mapOf()
         }
     }
 
@@ -167,12 +169,8 @@ class RakuModuleListFetcher(
             if (modulesMap[metaFile.name!!] == null || checkVersions(metaFile, modulesMap)) {
                 // There is a Foo::[]Foo module which contains an illegal character that will blow us up when serializing to XML
                 if (! (metaFile.name.startsWith("Foo") && metaFile.name.endsWith("Foo"))) {
-                    val removeAuth = Pattern.compile("(.+)((:ver|:auth|:api)\\<.+\\>)+").matcher(metaFile.name)
-                    if (removeAuth.matches()) {
-                        modulesMap[removeAuth.group(1)] = metaFile
-                    } else {
-                        modulesMap[metaFile.name] = metaFile
-                    }
+                    val name = RakuUtils.stripAuthVerApi(metaFile.name)
+                    modulesMap[name] = metaFile
                 }
             }
         }
@@ -247,10 +245,9 @@ class RakuModuleListFetcher(
         }
     }
 
-    private fun fillState() {
-        // TODO: This needs to migrate to a cancellable coroutine
-        val repo = populateModules().join()
-
+    private suspend fun fillState(report: ProgressReporter) {
+        // TODO: Is there a cleaner way to do this than a completable?
+        val repo = report.sizedStep(20, "Fetching ecosystem details") { populateModules() }
         metaFileRepository = repo
 
         // Don't bother with any additional processing if nothing has changed
@@ -285,14 +282,19 @@ class RakuModuleListFetcher(
             }
         }
         metaFileState.providedToModule = providedToModule
-        metaFileState.moduleToProvides = moduleList.map { module -> Pair(module.name!!, module.provides.keys.toList()) }
-                                                   .toMap().toMutableMap()
+        metaFileState.moduleToProvides = moduleList.associate { module ->
+            Pair(module.name!!, module.provides.keys.toList())
+        }.toMutableMap()
     }
 
     override fun getState(): MetaFileRepositoryState {
         val shouldRefresh = project.getService(RakuProjectDetailsService::class.java).needsEcosystemModuleRefresh()
                                 || metaFileRepository.isEmpty()
-        if (shouldRefresh && isNotReady && isNotGettingReady) fillState()
+        if (shouldRefresh && isNotReady && isNotGettingReady) {
+            runScope.launch {
+                withBackgroundProgress(project, "Loading ecosystem information...") { reportProgress { report -> fillState(report) } }
+            }
+        }
         return metaFileState
     }
 
