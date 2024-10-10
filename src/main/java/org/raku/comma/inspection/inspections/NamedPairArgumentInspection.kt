@@ -16,19 +16,19 @@ class NamedPairArgumentInspection : RakuInspection() {
     }
 
     private fun checkFatArrow(arrow: RakuFatArrow, holder: ProblemsHolder) {
-        processPair(arrow.value, arrow.key, arrow, holder)
+        processPair(arrow, holder, "FatArrow")
     }
 
     private fun checkColonPair(pair: RakuColonPair, holder: ProblemsHolder) {
         val key = pair.key ?: return
         val value = pair.statement ?: return
         val child = value.firstChild
+        if (getSimplifiedPair(pair, key, child) == null) return
 
-        if (child !is RakuVariable) return
-        processPair(child, key, pair, holder)
+        processPair(pair, holder, "ColonPair")
     }
 
-    private fun processPair(element: PsiElement, key: String, pair: PsiElement, holder: ProblemsHolder) {
-        holder.registerProblem(pair, DESCRIPTION, FatarrowSimplificationFix(getSimplifiedPair(pair, key, element)))
+    private fun processPair(pair: PsiElement, holder: ProblemsHolder, pairKind: String) {
+        holder.registerProblem(pair, DESCRIPTION, FatarrowSimplificationFix(pairKind))
     }
 }
