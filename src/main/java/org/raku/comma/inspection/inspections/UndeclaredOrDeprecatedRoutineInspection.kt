@@ -5,9 +5,11 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.components.service
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReferenceBase
+import com.intellij.psi.util.PsiTreeUtil
 import org.raku.comma.inspection.RakuInspection
 import org.raku.comma.inspection.fixes.StubMissingSubroutineFix
 import org.raku.comma.psi.*
+import org.raku.comma.services.project.RakuProjectDetailsService
 import org.raku.comma.services.project.RakuProjectSdkService
 
 class UndeclaredOrDeprecatedRoutineInspection : RakuInspection() {
@@ -29,7 +31,7 @@ class UndeclaredOrDeprecatedRoutineInspection : RakuInspection() {
         // If no resolve results, then we've got an error.
         if (results.isEmpty()) {
             // Check whether there is an operator of the same name in scope
-            if (element.resolvesAsLexicalOperator()) return
+            if (element.resolvesAsLexicalOperator() ||  element.isValidNqp()) return
 
             val description = "Subroutine %s is not declared".format(subName)
             holder.registerProblem(element, description, StubMissingSubroutineFix())
@@ -47,11 +49,10 @@ class UndeclaredOrDeprecatedRoutineInspection : RakuInspection() {
             }
         }
     }
-}
 
-// TODO: This 'const' -> 'constant' check appears to be pretty expensive check for (in my opinion) a small benefit.
-//            if (subName == "const"
-//                && (PsiTreeUtil.skipWhitespacesForward(element) is RakuVariable
-//                    || PsiTreeUtil.skipWhitespacesForward(element) is RakuInfixApplication)
-//            ) {
-//                holder.registerProblem(element, description, ConstKeywordFix())
+    private fun RakuSubCallName.isValidNqp(): Boolean {
+        if (! this.callName.startsWith("nqp::")) return false
+        return PsiTreeUtil.findChildrenOfType(containingFile, RakuUseStatement::class.java).any { it.moduleName == "nqp" }
+                || this.project.service<RakuProjectDetailsService>().isProjectRakudoCore()
+    }
+}

@@ -29,13 +29,16 @@ public interface RakuCodeBlockCall extends PsiNamedElement {
                 node.getNode().getElementType() == PARENTHESES_OPEN ||
                 node.getNode().getElementType() == PARENTHESES_CLOSE ||
                 node.getNode().getElementType() == METHOD_CALL_OPERATOR ||
-                node.getNode().getElementType() == NULL_TERM) {
+                node instanceof RakuComment ||
+                node.getNode().getElementType() == NULL_TERM)
+            {
                 node = node.getNextSibling();
                 continue;
             } else if (node instanceof RakuLongName ||
                        node instanceof RakuSubCallName) {
-                if (hasSeenName)
+                if (hasSeenName) {
                     return new PsiElement[]{node};
+                }
                 hasSeenName = true;
                 node = node.getNextSibling();
                 continue;

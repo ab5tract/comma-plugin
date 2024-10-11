@@ -5,6 +5,7 @@ import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPolyVariantReference
+import com.intellij.psi.util.PsiTreeUtil
 import org.raku.comma.inspection.RakuInspection
 import org.raku.comma.psi.*
 import org.raku.comma.psi.RakuSignature.MatchFailureReason
@@ -77,7 +78,7 @@ class CallArityInspection : RakuInspection() {
                         }
 
                         MatchFailureReason.NOT_ENOUGH_ARGS -> {
-                            annotations.add(AnnotationBuilderWrap(signature, "Not enough positional arguments"))
+                             annotations.add(AnnotationBuilderWrap(signature, "Not enough positional arguments"))
                             continue@MULTI_LOOP
                         }
 

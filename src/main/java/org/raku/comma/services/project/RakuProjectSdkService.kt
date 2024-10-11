@@ -246,7 +246,7 @@ class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String, p
         return RakuUnresolvedType(unmangleTypeId(type.name))
     }
 
-    private fun getFallback(): RakuFile {
+    private fun getFallback(): RakuFile? {
         val fallback = RakuUtils.getResourceAsFile("symbols/CORE.fallback")
         if (fallback == null) {
             RakuSdkUtil.reactToSdkIssue(
@@ -260,17 +260,17 @@ class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String, p
         }
 
         try {
-            return makeSettingSymbols(Files.readString(fallback.toPath())).also { projectSymbolCache.setting = it }
+            return makeSettingSymbols(Files.readString(fallback.toPath()))?.also { projectSymbolCache.setting = it }
         } catch (e: IOException) {
             RakuSdkUtil.reactToSdkIssue(project, "Could not provide CORE.setting fallback (%s)".format(e.message))
             return ExternalRakuFile(project, LightVirtualFile(SETTING_FILE_NAME))
         }
     }
 
-    private fun makeSettingSymbols(json: String): RakuFile {
+    private fun makeSettingSymbols(json: String): RakuFile? {
         try {
             settingJson = json
-            return makeSettingSymbols(JSONArray(json))!!
+            return makeSettingSymbols(JSONArray(json))
         } catch (e: Exception) {
             RakuSdkUtil.reactToSdkIssue(project, "Cannot use currently set SDK to obtain necessary symbols (%s)".format(e.message))
         }

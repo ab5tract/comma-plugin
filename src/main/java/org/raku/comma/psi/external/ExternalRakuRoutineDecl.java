@@ -28,10 +28,16 @@ public class ExternalRakuRoutineDecl extends RakuExternalPsiElement implements R
     private final boolean myIsPure;
     private boolean myIsImplementationDetail;
 
-    public ExternalRakuRoutineDecl(Project project, PsiElement parent,
-                                   String kind, String scope, String name,
-                                   String isMulti, String deprecationMessage,
-                                   JSONObject signature, boolean isPure) {
+    public ExternalRakuRoutineDecl(Project project,
+                                   PsiElement parent,
+                                   String kind,
+                                   String scope,
+                                   String name,
+                                   String isMulti,
+                                   String deprecationMessage,
+                                   JSONObject signature,
+                                   boolean isPure)
+    {
         myProject = project;
         myParent = parent;
         myKind = kind;
