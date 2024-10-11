@@ -37,8 +37,7 @@ class DuplicateConditionInspection : RakuInspection() {
 
     init {
         val realPairs: List<Pair<String, String>> = ContainerUtil.zip(
-            RakuOperatorUtils.unicodeOperators.stream().map { it.toString() }.toList(),
-            RakuOperatorUtils.asciiOperators
+            RakuOperatorUtils.unicodeOperators.stream().map { it.toString() }.toList(), RakuOperatorUtils.asciiOperators
         ).map { inPair -> Pair(inPair.first, inPair.second) }.toList()
         UNINORM = realPairs.stream().collect(Collectors.toMap({ it.first }, { it.second }))
     }
@@ -75,11 +74,11 @@ class DuplicateConditionInspection : RakuInspection() {
 
     private fun normalize(prefix: String): String {
         return when (prefix) {
-            "if", "elsif" -> "if"
+            "if", "elsif"    -> "if"
             "with", "orwith" -> "with"
-            "without" -> "without"
-            "unless" -> "unless"
-            else -> ""
+            "without"        -> "without"
+            "unless"         -> "unless"
+            else             -> ""
         }
     }
 
@@ -88,10 +87,7 @@ class DuplicateConditionInspection : RakuInspection() {
         if (condition is RakuInfixApplication) {
             var op = condition.operator
             val operands = condition.operands
-            if (op != null && operands.size == 2
-                && operands[0] is RakuPsiElement
-                && operands[1] is RakuPsiElement
-            ) {
+            if (op != null && operands.size == 2 && operands[0] is RakuPsiElement && operands[1] is RakuPsiElement) {
                 // Calculate the normalization fo the operands.
                 val lhsNorm = normalize(operands[0])
                 val rhsNorm = normalize(operands[1])

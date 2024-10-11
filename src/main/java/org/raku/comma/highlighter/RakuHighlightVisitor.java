@@ -428,6 +428,9 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
     {
         if (!originalDecl.isValid()) return null;
         if (!currentDecl.getContainingFile().equals(myFile)) return null;
+
+        if (checkForMultiDuplicate(originalDecl, currentDecl)) return null;
+
         // TODO: All other usages of this check have been in Annotations, which are straightforward to
         // migrate over to Inspections.. This is much less so. However, the cost should only be incurred
         // when there are actual duplicates seen. Thus this check *should* be far less costly than
@@ -443,5 +446,13 @@ public class RakuHighlightVisitor extends RakuElementVisitor implements Highligh
                             .range(range)
                             .descriptionAndTooltip(String.format("Re-declaration of %s from %s", name, previousPos))
                             .create();
+    }
+
+    private boolean checkForMultiDuplicate(PsiElement original, PsiElement current) {
+        return (current.getParent() instanceof RakuMultiDecl && original.getParent() instanceof RakuMultiDecl)
+                    && ((((RakuMultiDecl) current.getParent()).getSignature() != null)
+                          && ((RakuMultiDecl) original.getParent()).getSignature() != null)
+                    && ! (((RakuMultiDecl) current.getParent()).getSignature()
+                                                               .isEquivalentTo((((RakuMultiDecl) original.getParent()).getSignature())));
     }
 }

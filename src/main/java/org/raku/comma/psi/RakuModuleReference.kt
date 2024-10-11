@@ -1,5 +1,6 @@
 package org.raku.comma.psi
 
+import com.intellij.openapi.components.service
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -12,6 +13,7 @@ import org.raku.comma.psi.stub.index.ProjectModulesStubIndex
 import org.raku.comma.psi.stub.index.RakuStubIndexKeys
 import org.raku.comma.services.project.RakuDependencyDetailsService
 import org.raku.comma.services.project.RakuModuleListFetcher
+import org.raku.comma.utils.RakuUtils
 import java.util.function.Consumer
 
 class RakuModuleReference(moduleName: RakuModuleName) :
@@ -33,7 +35,8 @@ class RakuModuleReference(moduleName: RakuModuleName) :
     }
 
     private fun resolveExternal(): PsiFile? {
-        return project.getService(RakuDependencyDetailsService::class.java).provideToRakuFile(this.element.text)
+        return project.service<RakuDependencyDetailsService>()
+                        .provideToRakuFile(RakuUtils.stripAuthVerApi(this.element.text))
     }
 
     override fun getVariants(): Array<Any> {

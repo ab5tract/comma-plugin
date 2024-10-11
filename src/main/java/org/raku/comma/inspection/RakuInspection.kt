@@ -10,11 +10,20 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.PsiEditorUtil
+import org.raku.comma.psi.external.RakuExternalPsiElement
 
 abstract class RakuInspection : LocalInspectionTool() {
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
-        return RakuPsiElementVisitor(holder, ::provideVisitFunction)
+        return RakuPsiElementVisitor(holder, wrapVisitFunction())
+    }
+
+    private fun wrapVisitFunction(): (ProblemsHolder, PsiElement) -> Unit  {
+        return { innerHolder, element ->
+            if (element !is RakuExternalPsiElement) {
+                provideVisitFunction(innerHolder, element)
+            }
+        }
     }
 
     abstract fun provideVisitFunction(holder: ProblemsHolder, element: PsiElement)

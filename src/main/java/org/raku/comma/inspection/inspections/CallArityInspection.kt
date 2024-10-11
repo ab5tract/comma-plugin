@@ -20,6 +20,9 @@ class CallArityInspection : RakuInspection() {
 
         val args = element.callArguments
         if (element is RakuMethodCall) {
+            // Ignore meta-methods for now
+            if (element.callName.startsWith(".^")) return
+
             val wholeNode = element.wholeCallNode
             if (wholeNode is RakuPostfixApplication) {
                 val operand = wholeNode.operand
@@ -29,7 +32,6 @@ class CallArityInspection : RakuInspection() {
                 }
             }
         }
-
 
         // If there is a `|` in a call, we are not smart enough to show anything worthy for this case
         for (arg in args) {

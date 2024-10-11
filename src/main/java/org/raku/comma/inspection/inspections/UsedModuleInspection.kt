@@ -39,10 +39,12 @@ class UsedModuleInspection : RakuInspection() {
 
         // No need to annotate "missing" modules, if there are
         // no META data available
-        if (!metadata.isMetaDataExist) return
+        if (! metadata.isMetaDataExist) return
 
         // There is no need to
         if (element.reference?.resolve() != null) return
+
+
 
         val dependencies: MutableList<String> = ArrayList()
         dependencies.addAll(metadata.getDepends(true))

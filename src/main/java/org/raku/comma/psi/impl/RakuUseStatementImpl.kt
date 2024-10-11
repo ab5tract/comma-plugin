@@ -14,7 +14,9 @@ import org.raku.comma.psi.stub.RakuUseStatementStubElementType
 import org.raku.comma.psi.stub.index.ProjectModulesStubIndex
 import org.raku.comma.psi.stub.index.RakuStubIndexKeys
 import org.raku.comma.psi.symbols.RakuSymbolCollector
+import org.raku.comma.services.project.RakuDependencyDetailsService
 import org.raku.comma.services.project.RakuProjectSdkService
+import org.raku.comma.utils.RakuUtils
 
 class RakuUseStatementImpl : StubBasedPsiElementBase<RakuUseStatementStub?>, RakuUseStatement {
     constructor(node: ASTNode) : super(node)
@@ -22,41 +24,21 @@ class RakuUseStatementImpl : StubBasedPsiElementBase<RakuUseStatementStub?>, Rak
     constructor(stub: RakuUseStatementStub, type: RakuUseStatementStubElementType) : super(stub, type)
 
     override fun contributeLexicalSymbols(collector: RakuSymbolCollector) {
-        // TODO: This is too slow to run on EDT. It's also not clear what parts of it actually work, if any.
-        val name = moduleName
-        if (name != null) {
-            val project = project
+        // This function has been changed so that it no longer uses the StubIndex at all and instead grabs the RakuFile
+        // from the dependency service.
 
+        // TODO: Figure out what to do about multiple versions of a dependency. This feels like something that Raku
+        // only theoretically supports. Let's deal with it when we encounter it as a problem.
+        if (moduleName != null) {
             // We cannot contribute based on stubs when indexing is in progress
-            if (isDumb(getProject())) return
+            if (isDumb(project)) return
 
-            val index = ProjectModulesStubIndex.getInstance()
-            val found = StubIndex.getElements(index.key,
-                                              name,
-                                              project,
-                                              GlobalSearchScope.projectScope(project),
-                                              RakuFile::class.java)
-            if (!found.isEmpty()) {
-                val file = found.iterator().next()
-                file.contributeGlobals(collector, HashSet())
-                val seen: MutableSet<String> = HashSet()
-                seen.add(name)
-                file.contributeGlobals(collector, seen)
-            } else {
-                val elements = StubIndex.getElements(RakuStubIndexKeys.PROJECT_MODULES,
-                                                     name,
-                                                     project,
-                                                     GlobalSearchScope.allScope(project),
-                                                     RakuFile::class.java)
-                if (! elements.isEmpty()) {
-                    elements.iterator().next().contributeGlobals(collector, HashSet())
-                }
+            val shortName = RakuUtils.stripAuthVerApi(moduleName)
+            val file = project.service<RakuDependencyDetailsService>().provideToRakuFile(shortName) as? RakuFile
+                            ?: return
 
-                if (collector.isSatisfied) return
-
-                val file = project.service<RakuProjectSdkService>().symbolCache.getPsiFileForModule(name, text)
-                file?.contributeGlobals(collector, HashSet())
-            }
+            file.contributeGlobals(collector, HashSet())
+            file.contributeGlobals(collector, mutableSetOf(shortName, moduleName))
         }
     }
 

@@ -173,18 +173,12 @@ public class RakuElementFactory {
         return produceElement(project, "loop " + block.getText(), RakuLoopStatement.class);
     }
 
-    public static CompletableFuture<PsiFile> createModulePsiFile(Project project, String moduleText, String name, String path) {
+    public static PsiFile createModulePsiFile(Project project, String moduleText, String name, String path) {
         String outFile = name.replace("::", "-");
         String filename = outFile + "." + RakuModuleFileType.INSTANCE.getDefaultExtension();
         VirtualFile file = VirtualFileManager.getInstance().findFileByNioPath(Path.of(path));
-        var completable = new CompletableFuture<PsiFile>();
-        ApplicationManager.getApplication().invokeLaterOnWriteThread(() ->
-                completable.complete(
-                    PsiFileFactory.getInstance(project)
-                                  .createFileFromText(filename, RakuLanguage.INSTANCE, moduleText, true, true, true, file)
-                )
-        );
-        return completable;
+        return PsiFileFactory.getInstance(project)
+                             .createFileFromText(filename, RakuLanguage.INSTANCE, moduleText, true, true, true, file);
     }
 
     protected static <T extends PsiElement> T produceElement(Project project, @NotNull String text, Class<T> clazz) {

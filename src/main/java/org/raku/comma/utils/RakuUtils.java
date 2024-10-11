@@ -113,7 +113,7 @@ public class RakuUtils {
     }
 
     public static String stripAuthVerApi(String name) {
-        Pattern patten = Pattern.compile("(.+)((:ver|:auth|:api)\\<.+\\>)+");
+        Pattern patten = Pattern.compile("(.+)((:ver|:auth|:api)(<.+>|\\(.+\\)))+");
         Matcher matcher = patten.matcher(name);
         if (matcher.matches()) {
             return matcher.group(1);

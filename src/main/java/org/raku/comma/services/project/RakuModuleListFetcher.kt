@@ -130,9 +130,22 @@ class RakuModuleListFetcher(
     }
 
     fun dependenciesDeep(modules: Set<String>): Set<String> {
-        return moduleList.filter { modules.contains(it.name) }
-                         .flatMap { it.depends.map(RakuUtils::stripAuthVerApi) }
-                         .toSet()
+        val find = { moduleSet: Set<String> ->
+            moduleList.filter { moduleSet.contains(it.name) }
+                      .flatMap { it.depends.map(RakuUtils::stripAuthVerApi) }
+                      .toMutableSet()
+        }
+
+        val seen = find(modules)
+        var lookup = seen - modules
+
+        while (lookup.isNotEmpty()) {
+            val thisRound = lookup // just to keep it a bit more readable
+            seen.addAll(thisRound)
+            lookup = find(thisRound) - seen
+        }
+
+        return seen.toSet()
     }
 
     private suspend fun populateModules(): Map<String, MetaFile> {
@@ -278,7 +291,7 @@ class RakuModuleListFetcher(
             }
         }.forEach { provider ->
             if (providedToModule[provider.provideReference] == null && provider.module != null) {
-                providedToModule[provider.provideReference] = provider.module
+                providedToModule[provider.provideReference] = RakuUtils.stripAuthVerApi(provider.module)
             }
         }
         metaFileState.providedToModule = providedToModule

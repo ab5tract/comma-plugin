@@ -1,8 +1,7 @@
 package org.raku.comma.services.project
 
 import com.intellij.execution.ExecutionException
-import com.intellij.openapi.application.readAction
-import com.intellij.openapi.application.readAndWriteAction
+import com.intellij.openapi.application.smartReadAction
 import com.intellij.openapi.components.*
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
@@ -11,7 +10,6 @@ import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.platform.util.progress.reportProgress
 import com.intellij.psi.PsiFile
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.future.future
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -58,15 +56,12 @@ class RakuDependencyDetailsService(
         if (provideToRakuFileLookup.containsKey(provide)) return provideToRakuFileLookup[provide]
 
         val path = dependencyState.provideToPath[provide] ?: return null
-        // TODO: Figure out some way to notify the user in the rare case that this is failing due to an
-        // an actual user interaction and not an automated intention sweep or other resolve-y thing
-        //      ?: throw RuntimeException("Could not find location of file providing '%s'".format(provide))
 
-        // TODO: Maybe prefill these, if it's still too slow
-        val rakuFile = RakuElementFactory.createModulePsiFile(project, File(path).readText(), provide, path)
+        // TODO: How can we do this in a smartReadAction without causing the function to become a suspend?
+        val rakuFile = RakuElementFactory.createModulePsiFile(project, File(path).readText(), provide, path) as? RakuFile
                             ?: return null
 
-        (rakuFile as RakuFile).moduleName = provide
+        rakuFile.moduleName = provide
         provideToRakuFileLookup[provide] = rakuFile
         return rakuFile
     }
@@ -122,12 +117,12 @@ class RakuDependencyDetailsService(
                     val callable = { _: String ->
                         runScope.async {
                             reporter.sizedStep(1, "Loading $provide") {
-                               withContext(Dispatchers.IO) {
-                                       RakuElementFactory.createModulePsiFile(project,
-                                                                              readAction { File(path).readText() },
-                                                                              provide,
-                                                                              path).join()
-                               }
+                                smartReadAction(project) {
+                                    RakuElementFactory.createModulePsiFile(project,
+                                                                           File(path).readText(),
+                                                                           provide,
+                                                                           path)
+                                }
                             }
                         }
                     }
@@ -154,15 +149,10 @@ class RakuDependencyDetailsService(
         val modules: List<String> = moduleService.dependenciesDeep(direct.toSet()).toList()
         val provides = moduleService.getProvidesListByModules(modules)
         pathLookup.putAll(pathOfProvideReference(provides.toMutableList()).entries.map { Pair(it.key, it.value.first()) })
-            // TODO: Figure out async for this...
-            // pathLookup.putAll(withContext(dispatchScope.coroutineContext, {
-            //        pathOfProvideReference(provides).entries.map { Pair(it.key, it.value.first()) }
-            // }))
 
         dependencyState.provideToPath = pathLookup
         dependencyState.directDependencies = direct.toMutableList()
         dependencyState.secondaryDependencies = (modules.toSet() - direct.toSet()).toMutableList()
-        // Potentially merge these two?
     }
 
     private fun pathOfProvideReference(reference: String): List<String>? {
