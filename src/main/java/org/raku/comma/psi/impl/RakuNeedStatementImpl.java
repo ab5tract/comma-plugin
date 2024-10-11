@@ -14,7 +14,9 @@ import org.raku.comma.psi.stub.RakuNeedStatementStubElementType;
 import org.raku.comma.psi.stub.index.ProjectModulesStubIndex;
 import org.raku.comma.psi.symbols.RakuSymbolCollector;
 import org.jetbrains.annotations.NotNull;
+import org.raku.comma.services.project.RakuDependencyDetailsService;
 import org.raku.comma.services.project.RakuProjectSdkService;
+import org.raku.comma.utils.RakuUtils;
 
 import java.util.*;
 
@@ -31,19 +33,17 @@ public class RakuNeedStatementImpl extends StubBasedPsiElementBase<RakuNeedState
     public void contributeLexicalSymbols(RakuSymbolCollector collector) {
         // We cannot contribute based on stubs when indexing is in progress
         if (DumbService.isDumb(getProject())) return;
-        for (String name : getModuleNames()) {
+        for (String name : getModuleNames().stream().map(RakuUtils::stripAuthVerApi).toList()) {
             Project project = getProject();
-            var index = ProjectModulesStubIndex.getInstance();
-            Collection<RakuFile> found =
-                    StubIndex.getElements(index.getKey(), name, project, GlobalSearchScope.projectScope(project), RakuFile.class);
-            if (! found.isEmpty()) {
-                RakuFile file = found.iterator().next();
+            RakuFile found = (RakuFile) project.getService(RakuDependencyDetailsService.class).provideToRakuFile(name);
+            if (found != null) {
                 Set<String> seen = new HashSet<>();
                 seen.add(name);
-                file.contributeGlobals(collector, seen);
-            }
-            else {
-                RakuFile file = project.getService(RakuProjectSdkService.class).getSymbolCache().getPsiFileForModule(name, getText());
+                found.contributeGlobals(collector, seen);
+            } else {
+                RakuFile file = project.getService(RakuProjectSdkService.class)
+                                       .getSymbolCache()
+                                       .getPsiFileForModule(name, getText());
                 if (file != null) {
                     file.contributeGlobals(collector, new HashSet<>());
                 }
@@ -54,8 +54,9 @@ public class RakuNeedStatementImpl extends StubBasedPsiElementBase<RakuNeedState
     @Override
     public List<String> getModuleNames() {
         RakuNeedStatementStub stub = getStub();
-        if (stub != null)
+        if (stub != null) {
             return stub.getModuleNames();
+        }
 
         List<String> result = new ArrayList<>();
         for (RakuModuleName moduleName : findChildrenByClass(RakuModuleName.class))

@@ -44,7 +44,7 @@ class RakuDependencyDetailsService(
     val provideToRakuFileLookup: MutableMap<String, RakuFile> = ConcurrentHashMap()
 
     val loadedDependencies: Set<String>
-        get() = setOf(*dependencyState.directDependencies.toTypedArray(), *dependencyState.secondaryDependencies.toTypedArray())
+        get() = setOf(*state.directDependencies.toTypedArray(), *state.secondaryDependencies.toTypedArray())
 
     private fun checkIsReady(): Boolean {
         val metaDeps = CommaProjectUtil.projectDependencies(project).toSet()

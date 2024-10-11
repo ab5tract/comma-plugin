@@ -271,9 +271,8 @@ class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String, p
         try {
             settingJson = json
             return makeSettingSymbols(JSONArray(json))
-        } catch (e: Exception) {
-            RakuSdkUtil.reactToSdkIssue(project, "Cannot use currently set SDK to obtain necessary symbols (%s)".format(e.message))
-        }
+        } catch (_: Exception) {}
+
         return ExternalRakuFile(project, LightVirtualFile(SETTING_FILE_NAME))
     }
 
