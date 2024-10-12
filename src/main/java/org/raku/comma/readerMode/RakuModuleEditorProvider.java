@@ -61,7 +61,7 @@ public class RakuModuleEditorProvider implements FileEditorProvider, DumbAware {
             Alarm myAlarm = new Alarm(Alarm.ThreadToUse.POOLED_THREAD, editor);
 
             var document = editor.getEditor().getDocument();
-            moduleViewEditor.setCallback(() -> myAlarm.addRequest(() -> renderPreview(document, documentManager, viewer), 0));
+            moduleViewEditor.setCallback(() -> myAlarm.addRequest(() -> renderPreview(document, documentManager, viewer), 8888));
 
             document.addDocumentListener(new DocumentListener() {
                 @Override
@@ -85,7 +85,7 @@ public class RakuModuleEditorProvider implements FileEditorProvider, DumbAware {
                     viewer.scrollTo(offset);
                 }
             });
-            myAlarm.addRequest(() -> renderPreview(document, documentManager, viewer), 0);
+            myAlarm.addRequest(() -> renderPreview(document, documentManager, viewer), 12128);
 
             moduleViewEditor.setViewer(viewer);
             return moduleViewEditor;

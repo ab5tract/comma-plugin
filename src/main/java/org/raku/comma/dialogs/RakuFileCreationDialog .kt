@@ -18,7 +18,6 @@ import org.raku.comma.RakuIcons
 import org.raku.comma.language.RakuLanguageVersionService
 import org.raku.comma.module.builder.RakuModuleBuilderModule
 import org.raku.comma.module.builder.RakuModuleBuilderScript
-import java.awt.Color
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
 import java.io.IOException
@@ -93,6 +92,7 @@ class RakuFileCreationDialog(
         relativeToLib!!.component.toolTipText =
             "File is created relative to the ./lib/ of the project or relative to the selected path ($pathRelative)"
         relativeToLib!!.component.addChangeListener(relativeToLibListener())
+        createRelativePanel.isVisible = path.isNotEmpty()
 
         val namePanel: DialogPanel = panel {
             row {
@@ -139,7 +139,7 @@ class RakuFileCreationDialog(
 
         val finalPanel = panel {
             row { cell(namePanel).align(Align.CENTER) }
-            row { cell(createRelativePanel) }.bottomGap(BottomGap.MEDIUM)
+            row { cell(createRelativePanel).align(Align.CENTER) }.bottomGap(BottomGap.MEDIUM)
             row { cell(validationPanel).align(Align.CENTER) }.topGap(TopGap.SMALL).bottomGap(BottomGap.MEDIUM)
             row { cell(chooserPanel).align(Align.CENTER) }.topGap(TopGap.MEDIUM).bottomGap(BottomGap.MEDIUM)
             row { cell(optionsPanel).align(Align.CENTER) }.topGap(TopGap.MEDIUM).bottomGap(BottomGap.MEDIUM)
@@ -153,10 +153,10 @@ class RakuFileCreationDialog(
     private fun keyListener(): KeyListener {
         return object : KeyListener {
             override fun keyReleased(e: KeyEvent?) {
-                if (!nameField!!.component.text.isNullOrEmpty()) {
-                    if (fileTypeChooser.selectedValue != null) {
-                        isOKActionEnabled = true
-                    }
+                if (!nameField!!.component.text.isNullOrEmpty() && fileTypeChooser.selectedValue != null) {
+                    isOKActionEnabled = true
+                } else {
+                    isOKActionEnabled = false
                 }
                 validateCurrentState()
                 updateOutputPath()
@@ -179,7 +179,7 @@ class RakuFileCreationDialog(
             // Should only run if we are without errors
             validationIssues!!.component.text = emptySpaceComment
             relativeToLibComment!!.component.isVisible = true
-            if (!nameField!!.component.text.isNullOrEmpty() && fileTypeChooser.selectedValue != null) {
+            if (! nameField!!.component.text.isNullOrEmpty() && fileTypeChooser.selectedValue != null) {
                 isOKActionEnabled = true
             }
         } catch (e: Exception) {
@@ -204,7 +204,7 @@ class RakuFileCreationDialog(
         if (event.valueIsAdjusting) return
         if (nameField == null) return
 
-        if (!(nameField!!.component.text.isNullOrEmpty() || validationIssues!!.component.isVisible)) {
+        if (! nameField!!.component.text.isNullOrEmpty()) {
             isOKActionEnabled = true
             updateOutputPath()
         }
@@ -237,6 +237,7 @@ class RakuFileCreationDialog(
     }
 
     private fun adjustPath(): String {
+        if (path.isEmpty()) return "${project.basePath}/lib/"
         return  if (relativeToLib!!.component.isSelected)
                     "${path.split("/lib/").first()}/lib/"
                 else path
@@ -252,7 +253,7 @@ class RakuFileCreationDialog(
     }
 
     override fun doOKAction() {
-        val thePath = Path.of(path)
+        val thePath = Path.of(adjustedPath)
         val name = nameField!!.component.text
         val selected = fileTypeChooser.selectedValue
 

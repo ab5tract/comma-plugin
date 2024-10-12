@@ -18,7 +18,7 @@ class UndeclaredOrDeprecatedRoutineInspection : RakuInspection() {
 
         // Only do the analysis if the core setting symbols are available.
         // TODO!!! Get the CoreSettings stuff extracted working again.
-        val setting = element.getProject().service<RakuProjectSdkService>().symbolCache.getCoreSettingFile()
+        val setting = element.getProject().service<RakuProjectSdkService>().symbolCache?.getCoreSettingFile()
                             ?: return
         if (setting.virtualFile.name == "DUMMY") return
 

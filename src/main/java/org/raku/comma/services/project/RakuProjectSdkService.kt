@@ -46,7 +46,7 @@ class RakuProjectSdkService(private val project: Project, val runScope: Coroutin
     private var sdkState: RakuSDKState = RakuSDKState()
     private var symbolCacheInstance: ProjectSdkSymbolCache? = null
 
-    val symbolCache: ProjectSdkSymbolCache
+    val symbolCache: ProjectSdkSymbolCache?
         get() = provideSymbolCache()
 
     var sdkPath: String?
@@ -59,10 +59,14 @@ class RakuProjectSdkService(private val project: Project, val runScope: Coroutin
     val moarBuildConfig: Map<String, String>
         get() = generateMoarBuildConfiguration()
 
+    private val isLoading = AtomicBoolean(false)
+
     override fun getState(): RakuSDKState {
-        if (sdkState.projectSdkPath == null || sdkState.projectSdkPath?.isBlank() == true) {
+        if (sdkState.projectSdkPath.isNullOrBlank() && !isLoading.get()) {
+            isLoading.set(true)
             runScope.launch {
                 promptForSdkPath()
+                isLoading.set(false)
             }
         }
         return sdkState
@@ -73,25 +77,27 @@ class RakuProjectSdkService(private val project: Project, val runScope: Coroutin
     }
 
     private suspend fun promptForSdkPath() {
-        withContext(Dispatchers.EDT) {
-            val chooser = RakuSdkChooserUI(project, null)
-            chooser.show()
-        }
+        runScope.async {
+            withContext(Dispatchers.EDT) {
+                val chooser = RakuSdkChooserUI(project, null)
+                chooser.show()
+            }
+        }.await()
     }
 
     fun setProjectSdkPath(sdkPath: String) {
         sdkState.projectSdkPath    = sdkPath
         sdkState.projectSdkVersion = RakuSdkUtil.versionString(sdkPath)
 
-        symbolCache.sdkPath = sdkPath
-        symbolCache.invalidateCache()
+        symbolCache?.sdkPath = sdkPath
+        symbolCache?.invalidateCache()
 
         // TODO: Move to Facets for module / allow for multiple metas + modules in a single project
 //        for (module in ModuleManager.getInstance(project).modules) {
 //            val component = module.getService(RakuMetaDataComponent::class.java)
 //            component?.triggerMetaBuild()
 //        }
-        project.service<RakuMetaDataComponent>().triggerMetaBuild()
+//        project.service<RakuMetaDataComponent>().triggerMetaBuild()
     }
 
     private fun generateMoarBuildConfiguration(): Map<String, String> {
@@ -119,11 +125,11 @@ class RakuProjectSdkService(private val project: Project, val runScope: Coroutin
         }
     }
 
-    private fun provideSymbolCache(): ProjectSdkSymbolCache {
-        if (symbolCacheInstance == null) {
+    private fun provideSymbolCache(): ProjectSdkSymbolCache? {
+        if (symbolCacheInstance == null && sdkPath != null) {
             symbolCacheInstance = ProjectSdkSymbolCache(project, sdkPath!!, runScope)
         }
-        return symbolCacheInstance!!
+        return symbolCacheInstance
     }
 }
 

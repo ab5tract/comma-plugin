@@ -24,7 +24,7 @@ class NonNilReturnInspection : RakuInspection() {
 
         val retType = routineDecl.returnType
         val nilType = routineDecl.project.service<RakuProjectSdkService>()
-                                         .symbolCache.getCoreSettingType(RakuSettingTypeId.Nil)
+                                         .symbolCache?.getCoreSettingType(RakuSettingTypeId.Nil)
         if (nilType != retType) return
 
         holder.registerProblem(element, DESCRIPTION, ProblemHighlightType.ERROR)
