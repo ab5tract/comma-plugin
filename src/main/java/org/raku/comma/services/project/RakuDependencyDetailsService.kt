@@ -58,10 +58,10 @@ class RakuDependencyDetailsService(
     }
 
     fun provideToRakuFile(provide: String): PsiFile? {
-        return  if (! preloadFinished.isDone)
-                    preloadFinished.thenApply { provideToRakuFileLookup[provide] }.get()
-                else
-                    provideToRakuFileLookup[provide]
+        // TODO: Verify that this is safe. From my experience, the resolution of a module is not cached,
+        // so it will be checked again but it's worth double checking this assumption
+        return  if (! preloadFinished.isDone) null
+                else provideToRakuFileLookup[provide]
     }
 
     // This should *only* be called by the RakuServiceStarter

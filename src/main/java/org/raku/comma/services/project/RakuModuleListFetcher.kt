@@ -301,8 +301,8 @@ class RakuModuleListFetcher(
     }
 
     override fun getState(): MetaFileRepositoryState {
-        val shouldRefresh = project.getService(RakuProjectDetailsService::class.java).needsEcosystemModuleRefresh()
-                                || metaFileRepository.isEmpty()
+        val shouldRefresh = project.service<RakuDependencyDetailsService>().preloadFinished.isDone
+                && (project.service<RakuProjectDetailsService>().needsEcosystemModuleRefresh() || metaFileRepository.isEmpty())
         if (shouldRefresh && isNotReady && isNotGettingReady) {
             runScope.launch {
                 withBackgroundProgress(project, "Loading ecosystem information...") { reportProgress { report -> fillState(report) } }
