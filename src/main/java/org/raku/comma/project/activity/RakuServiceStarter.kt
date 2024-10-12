@@ -1,5 +1,6 @@
 package org.raku.comma.project.activity
 
+import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.components.service
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
@@ -15,9 +16,8 @@ import java.util.concurrent.CompletableFuture
 class RakuServiceStarter : ProjectActivity {
     override suspend fun execute(project: Project) {
 
-        // Trigger the module list fetcher, if necessary
-        project.service<RakuModuleListFetcher>().state
         val dependencyService = project.service<RakuDependencyDetailsService>()
+        dependencyService.state
 
         // Initialize metadata listeners
         project.service<RakuMetaDataComponent>()
@@ -28,14 +28,18 @@ class RakuServiceStarter : ProjectActivity {
 
         // Load all the RakuFiles for our extended dependencies
         withBackgroundProgress(project, "Preloading dependency files") {
-            val fileFutures = reportProgress { reporter ->
-                 dependencyService.loadedDependencies.map { dependency ->
-                     reporter.sizedStep(1, "Loading dependency $dependency") {
-                         dependencyService.moduleToRakuFiles(dependency)
-                     }
+            reportProgress { reporter ->
+                 reporter.sizedStep(100, "Loading dependencies ") {
+                     dependencyService.dependenciesToRakuFiles()
                 }
-            }
-            CompletableFuture.allOf(*fileFutures.toTypedArray()).join()
+            }.await()
+            dependencyService.preloadFinished.complete(true)
         }
+
+        ProjectView.getInstance(project).refresh()
+
+        // Trigger the module list fetcher, if necessary
+        val moduleService = project.service<RakuModuleListFetcher>()
+        moduleService.state
     }
 }

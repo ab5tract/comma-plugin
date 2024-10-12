@@ -10,7 +10,6 @@ import com.intellij.platform.util.progress.ProgressReporter
 import com.intellij.platform.util.progress.reportProgress
 import com.intellij.psi.PsiFile
 import kotlinx.coroutines.*
-import kotlinx.coroutines.future.future
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.raku.comma.psi.RakuElementFactory
@@ -32,19 +31,25 @@ class RakuDependencyDetailsService(
 ) : PersistentStateComponent<DependencyDetailsState>, DumbAware {
     var dependencyState = DependencyDetailsState()
 
+    @get:Synchronized
     val isReady: Boolean
         get() = checkIsReady()
+    @get:Synchronized
     val isNotReady: Boolean
         get() = !isReady
 
+    @get:Synchronized
     var isGettingReady = false
+    @get:Synchronized
     val isNotGettingReady: Boolean
         get() = !isGettingReady
 
     val provideToRakuFileLookup: MutableMap<String, RakuFile> = ConcurrentHashMap()
 
     val loadedDependencies: Set<String>
-        get() = setOf(*state.directDependencies.toTypedArray(), *state.secondaryDependencies.toTypedArray())
+        get() = setOf(*dependencyState.directDependencies.toTypedArray(), *dependencyState.secondaryDependencies.toTypedArray())
+
+    val preloadFinished = CompletableFuture<Boolean>()
 
     private fun checkIsReady(): Boolean {
         val metaDeps = CommaProjectUtil.projectDependencies(project).toSet()
@@ -53,45 +58,26 @@ class RakuDependencyDetailsService(
     }
 
     fun provideToRakuFile(provide: String): PsiFile? {
-        if (provideToRakuFileLookup.containsKey(provide)) return provideToRakuFileLookup[provide]
-
-        val path = dependencyState.provideToPath[provide] ?: return null
-
-        // TODO: How can we do this in a smartReadAction without causing the function to become a suspend?
-        val rakuFile = RakuElementFactory.createModulePsiFile(project, File(path).readText(), provide, path) as? RakuFile
-                            ?: return null
-
-        rakuFile.moduleName = provide
-        provideToRakuFileLookup[provide] = rakuFile
-        return rakuFile
+        return  if (! preloadFinished.isDone)
+                    preloadFinished.thenApply { provideToRakuFileLookup[provide] }.get()
+                else
+                    provideToRakuFileLookup[provide]
     }
 
-    fun moduleToRakuFiles(module: String): CompletableFuture<List<RakuFile>> {
+    // This should *only* be called by the RakuServiceStarter
+    fun dependenciesToRakuFiles(): Deferred<List<RakuFile>> {
+        return runScope.async {
+            withBackgroundProgress(project, "Locating and loading code dependencies") {
+                reportProgress { report ->
+                    providesToRakuFiles(dependencyState.provideToPath.keys.toList(), report)
+                }
+            }
+        }
+    }
+
+    fun moduleToRakuFiles(module: String): List<RakuFile> {
         val provides = project.service<RakuModuleListFetcher>().getProvidesListByModule(module)
-        addLoadedDependencies(listOf(module))
-        return runScope.future {
-            withBackgroundProgress(project, "Locating and loading code dependencies") {
-                reportProgress { report ->
-                    providesToRakuFiles(provides, report)
-                }
-            }
-        }
-    }
-
-    fun modulesToRakuFiles(modules: List<String>): List<RakuFile> {
-        val provides = project.service<RakuModuleListFetcher>().getProvidesListByModules(modules)
-        addLoadedDependencies(modules)
-
-        var files: List<RakuFile>? = null
-        runScope.launch {
-            withBackgroundProgress(project, "Locating and loading code dependencies") {
-                reportProgress { report ->
-                    files = providesToRakuFiles(provides, report)
-                }
-            }
-        }
-
-        return files ?: emptyList()
+        return provides.mapNotNull { provideToRakuFile(it) as? RakuFile }.toList()
     }
 
     private fun addLoadedDependencies(dependencies: List<String>) {
@@ -134,12 +120,15 @@ class RakuDependencyDetailsService(
 
                     rakuFile.moduleName = provide
                     rakuFile.originalPath = path
+                    provideToRakuFileLookup[provide] = rakuFile
+
                     rakuFile
                 }
             }
         }.await()
     }
 
+    @Synchronized
     private fun fillState() {
         // TODO: Address potential duplicates in the dependency list and multiple paths in the provides output
         val direct = CommaProjectUtil.projectDependencies(project)
@@ -153,10 +142,6 @@ class RakuDependencyDetailsService(
         dependencyState.provideToPath = pathLookup
         dependencyState.directDependencies = direct.toMutableList()
         dependencyState.secondaryDependencies = (modules.toSet() - direct.toSet()).toMutableList()
-    }
-
-    private fun pathOfProvideReference(reference: String): List<String>? {
-        return pathOfProvideReference(mutableListOf(reference))[reference]
     }
 
     private fun pathOfProvideReference(references: MutableList<String>): Map<String, List<String>> {
@@ -197,19 +182,19 @@ class RakuDependencyDetailsService(
         return provideMapFuture.join()
     }
 
+    @Synchronized
     fun refresh() {
-        if (isNotReady && isNotGettingReady) {
+        if (isReady && isNotGettingReady && preloadFinished.isDone) {
             isGettingReady = true
-//            fillState()
+            fillState()
             isGettingReady = false
         }
     }
 
+    @Synchronized
     override fun getState(): DependencyDetailsState {
         if (isNotReady && isNotGettingReady) {
             isGettingReady = true
-            // TODO: Figure out the async story...
-            //  runBlocking(dispatchScope.coroutineContext, { fillState() })
             fillState()
             isGettingReady = false
         }

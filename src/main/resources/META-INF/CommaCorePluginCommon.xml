@@ -3,37 +3,24 @@
   <vendor email="info@commaide.com" url="https://commaide.com/">Raku Community</vendor>
 
   <extensions defaultExtensionNs="com.intellij">
-    <projectService serviceImplementation="org.raku.comma.project.structure.RakuProjectStructureConfigurable"/>
+<!--    <projectService serviceImplementation="org.raku.comma.project.structure.RakuProjectStructureConfigurable"/>-->
     <projectViewPane implementation="com.intellij.ide.projectView.impl.ProjectViewPane"/>
   </extensions>
 
   <!-- Actions for standalone Comma -->
   <actions>
     <!-- Actions for Welcome Screen -->
-    <action id="ShowProjectStructureSettings" class="org.raku.comma.actions.ShowRakuProjectStructureAction"
-            icon="AllIcons.General.ProjectStructure">
-      <add-to-group group-id="FileMainSettingsGroup" anchor="after" relative-to-action="ShowSettings"/>
-      <add-to-group group-id="MainToolBarSettings" anchor="after" relative-to-action="ShowSettings"/>
-      <add-to-group group-id="NavBarToolBar" anchor="last"/>
-    </action>
-    <group id="WelcomeScreen.QuickStart.IDEA">
-      <action id="WelcomeScreen.CreateNewProject" class="org.raku.comma.actions.NewProjectAction"/>
-      <action id="WelcomeScreen.ImportProject" class="org.raku.comma.actions.ImportProjectAction" text="Import Project..." icon="AllIcons.ToolbarDecorator.Import"/>
-      <action id="WelcomeScreen.OpenProject" class="com.intellij.ide.actions.OpenFileAction" icon="AllIcons.Actions.MenuOpen"/>
-      <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
-    </group>
+<!--    <action id="ShowProjectStructureSettings" class="org.raku.comma.actions.ShowRakuProjectStructureAction"-->
+<!--            icon="AllIcons.General.ProjectStructure">-->
+<!--      <add-to-group group-id="FileMainSettingsGroup" anchor="after" relative-to-action="ShowSettings"/>-->
+<!--      <add-to-group group-id="MainToolBarSettings" anchor="after" relative-to-action="ShowSettings"/>-->
+<!--      <add-to-group group-id="NavBarToolBar" anchor="last"/>-->
+<!--    </action>-->
+
     <group id="OpenProjectGroup">
       <group id="NewElementInMenuGroup" class="org.raku.comma.actions.NewActionGroup" text="New" popup="true"/>
       <add-to-group group-id="FileOpenGroup" anchor="first"/>
     </group>
-
-    <action id="NewProject" class="org.raku.comma.actions.NewProjectAction" text="Project...">
-      <add-to-group group-id="NewProjectOrModuleGroup"/>
-    </action>
-
-    <action id="ImportProject" class="org.raku.comma.actions.ImportProjectAction" text="Project from Existing Sources...">
-      <add-to-group group-id="NewProjectOrModuleGroup"/>
-    </action>
 
     <action id="NewElement" class="com.intellij.ide.actions.NewElementAction"/>
     <group id="MoveModuleToGroup" class="com.intellij.ide.projectView.impl.MoveModuleToGroupTopLevel" popup="true"/>

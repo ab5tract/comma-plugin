@@ -46,7 +46,7 @@
   <idea-version since-build="242.0"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-   on how to target different products -->
+ on how to target different products -->
   <depends>com.intellij.modules.lang</depends>
 
   <extensionPoints>
@@ -58,44 +58,51 @@
   <xi:include href="/META-INF/inspections.xml" xpointer="xpointer(/idea-plugin/*)"/>
   <xi:include href="/META-INF/actions.xml" xpointer="xpointer(/idea-plugin/*)"/>
 
-<!--  <extensions defaultExtensionNs="org.raku">-->
-<!--    <framework.type implementation="cro.org.raku.comma.CroFrameworkCall"/>-->
-<!--    <frameworkCall implementation="cro.org.raku.comma.CroTemplateCall"/>-->
-<!--  </extensions>-->
+  <!--  <extensions defaultExtensionNs="org.raku">-->
+  <!--    <framework.type implementation="cro.org.raku.comma.CroFrameworkCall"/>-->
+  <!--    <frameworkCall implementation="cro.org.raku.comma.CroTemplateCall"/>-->
+  <!--  </extensions>-->
 
   <extensions defaultExtensionNs="com.intellij">
 
     <postFormatProcessor implementation="org.raku.comma.formatter.RakuFormatPostprocessor"/>
-    <fileType name="Raku Script" language="Raku" implementationClass="org.raku.comma.filetypes.RakuScriptFileType" fieldName="INSTANCE"
+    <fileType name="Raku Script" language="Raku" implementationClass="org.raku.comma.filetypes.RakuScriptFileType"
+              fieldName="INSTANCE"
               extensions="p6;pl6;raku"/>
-    <fileType name="Raku Module" language="Raku" implementationClass="org.raku.comma.filetypes.RakuModuleFileType" fieldName="INSTANCE"
+    <fileType name="Raku Module" language="Raku" implementationClass="org.raku.comma.filetypes.RakuModuleFileType"
+              fieldName="INSTANCE"
               extensions="pm6;rakumod"/>
-    <fileType name="Raku Test" language="Raku" implementationClass="org.raku.comma.filetypes.RakuTestFileType" fieldName="INSTANCE"
+    <fileType name="Raku Test" language="Raku" implementationClass="org.raku.comma.filetypes.RakuTestFileType"
+              fieldName="INSTANCE"
               extensions="t;t6;rakutest"/>
-    <fileType name="Raku Pod" language="Raku" implementationClass="org.raku.comma.filetypes.RakuPodFileType" fieldName="INSTANCE"
+    <fileType name="Raku Pod" language="Raku" implementationClass="org.raku.comma.filetypes.RakuPodFileType"
+              fieldName="INSTANCE"
               extensions="pod6;rakudoc"/>
     <fileTypeDetector order="FIRST" implementation="org.raku.comma.filetypes.RakuFileTypeDetector"/>
     <fileTypeDetector implementation="org.raku.comma.filetypes.RakuFileShebangTypeDetector"/>
     <fileTypeDetector implementation="org.raku.comma.filetypes.RakuFileShebangTypeDetector"/>
     <fileTypeDetector implementation="org.raku.comma.filetypes.RakudoFileShebangTypeDetector"/>
-    <moduleType id="RAKU_MODULE_TYPE" implementationClass="org.raku.comma.module.RakuModuleType" />
-<!--    <moduleBuilder builderClass="org.raku.comma.module.RakuModuleBuilder"/>-->
-    <moduleBuilder id="RAKU_MODULE_TYPE" builderClass="org.raku.comma.project.wizard.RakuModuleWizardBuilder" />
-
+    <moduleType id="RAKU_MODULE_TYPE" implementationClass="org.raku.comma.module.RakuModuleType"/>
+    <!--    <moduleBuilder builderClass="org.raku.comma.module.RakuModuleBuilder"/>-->
+    <moduleBuilder id="RAKU_MODULE_TYPE" builderClass="org.raku.comma.project.wizard.RakuModuleWizardBuilder"/>
+    ~
     <programRunner implementation="org.raku.comma.debugger.RakuDebugRunner"/>
     <xdebugger.breakpointType implementation="org.raku.comma.debugger.RakuLineBreakpointType"/>
-    <lang.syntaxHighlighterFactory language="Raku" implementationClass="org.raku.comma.highlighter.RakuSyntaxHighlighterFactory"/>
+    <lang.syntaxHighlighterFactory language="Raku"
+                                   implementationClass="org.raku.comma.highlighter.RakuSyntaxHighlighterFactory"/>
     <lang.parserDefinition language="Raku" implementationClass="org.raku.comma.parsing.RakuParserDefinition"/>
     <colorSettingsPage implementation="org.raku.comma.highlighter.RakuColorSettingsPage"/>
     <lang.formatter language="Raku" implementationClass="org.raku.comma.formatter.RakuFormattingModelBuilder"/>
     <langCodeStyleSettingsProvider implementation="org.raku.comma.formatter.RakuCodeStyleSettingsProvider"/>
-    <lang.psiStructureViewFactory language="Raku" implementationClass="org.raku.comma.structureView.RakuStructureViewFactory"/>
+    <lang.psiStructureViewFactory language="Raku"
+                                  implementationClass="org.raku.comma.structureView.RakuStructureViewFactory"/>
     <declarationRangeHandler key="org.raku.comma.psi.RakuPackageDecl"
                              implementationClass="org.raku.comma.structureView.PackageDeclarationRangeHandler"/>
     <declarationRangeHandler key="org.raku.comma.psi.RakuRoutineDecl"
                              implementationClass="org.raku.comma.structureView.RoutineDeclarationRangeHandler"/>
     <lang.commenter language="Raku" implementationClass="org.raku.comma.editor.RakuCommenter"/>
-    <lang.commenter language="CroTemplate" implementationClass="org.raku.comma.cro.template.editor.CroTemplateCommenter"/>
+    <lang.commenter language="CroTemplate"
+                    implementationClass="org.raku.comma.cro.template.editor.CroTemplateCommenter"/>
     <lang.foldingBuilder language="Raku" implementationClass="org.raku.comma.editor.RakuFoldingBuilder"/>
     <typedHandler implementation="org.raku.comma.editor.SigilCompletionAutoPopupHandler"/>
     <typedHandler implementation="org.raku.comma.editor.UnicodeReplacementHandler"/>
@@ -105,9 +112,11 @@
     <additionalTextAttributes scheme="Default" file="colorSchemes/DefaultCroTemplate.xml"/>
     <additionalTextAttributes scheme="Darcula" file="colorSchemes/DarculaCroTemplate.xml"/>
     <annotator language="Raku" implementationClass="org.raku.comma.editor.SigSpaceAnnotator"/>
-    <annotator language="CroTemplate" implementationClass="org.raku.comma.cro.template.annotation.DuplicateSeparatorAnnotator"/>
-    <annotator language="CroTemplate" implementationClass="org.raku.comma.cro.template.annotation.MisplacedSeparatorAnnotation"/>
-    <stubElementTypeHolder class="org.raku.comma.parsing.RakuElementTypes" externalIdPrefix="raku.stub.file" />
+    <annotator language="CroTemplate"
+               implementationClass="org.raku.comma.cro.template.annotation.DuplicateSeparatorAnnotator"/>
+    <annotator language="CroTemplate"
+               implementationClass="org.raku.comma.cro.template.annotation.MisplacedSeparatorAnnotation"/>
+    <stubElementTypeHolder class="org.raku.comma.parsing.RakuElementTypes" externalIdPrefix="raku.stub.file"/>
     <stubIndex implementation="org.raku.comma.psi.stub.index.ProjectModulesStubIndex"/>
     <stubIndex implementation="org.raku.comma.psi.stub.index.RakuGlobalTypeStubIndex"/>
     <stubIndex implementation="org.raku.comma.psi.stub.index.RakuLexicalTypeStubIndex"/>
@@ -121,9 +130,13 @@
     <gotoSymbolContributor implementation="org.raku.comma.contribution.RakuSymbolNameContributor"/>
     <errorHandler implementation="org.raku.comma.utils.RakuErrorReportSubmitter"/>
     <statementUpDownMover implementation="org.raku.comma.editor.RakuStatementMover"/>
+
     <treeStructureProvider implementation="org.raku.comma.structureView.RakuProjectStructureProvider"/>
+
+
     <spellchecker.support language="Raku" implementationClass="org.raku.comma.editor.RakuSpellCheckingStrategy"/>
-    <lang.findUsagesProvider language="Raku" implementationClass="org.raku.comma.findUsages.RakuFindUsagesProvider"/>
+    <lang.findUsagesProvider language="Raku"
+                             implementationClass="org.raku.comma.findUsages.RakuFindUsagesProvider"/>
     <lang.namesValidator language="Raku" implementationClass="org.raku.comma.rename.RakuInputValidator"/>
     <lang.namesValidator language="CroTemplate" implementationClass="org.raku.comma.rename.RakuInputValidator"/>
     <renamePsiElementProcessor implementation="org.raku.comma.rename.RakuModuleRenameProcessor"/>
@@ -132,43 +145,53 @@
 
     <enterHandlerDelegate implementation="org.raku.comma.editor.RakuEnterDelegate"/>
     <lang.braceMatcher language="Raku" implementationClass="org.raku.comma.editor.RakuBraceMatcher"/>
-    <lang.smartEnterProcessor language="Raku" implementationClass="org.raku.comma.editor.smartEnter.RakuSmartEnterProcessor"/>
-    <enterBetweenBracesDelegate language="Raku" implementationClass="org.raku.comma.editor.RakuEnterBetweenBracesDelegate"/>
+    <lang.smartEnterProcessor language="Raku"
+                              implementationClass="org.raku.comma.editor.smartEnter.RakuSmartEnterProcessor"/>
+    <enterBetweenBracesDelegate language="Raku"
+                                implementationClass="org.raku.comma.editor.RakuEnterBetweenBracesDelegate"/>
 
     <consoleFilterProvider implementation="org.raku.comma.run.RakuOutputLinkProvider"/>
-    <codeInsight.lineMarkerProvider language="Raku" implementationClass="org.raku.comma.providers.RakuLineMarkerProvider"/>
-    <runLineMarkerContributor language="Raku" implementationClass="org.raku.comma.testing.RakuTestLineMarkerContributor"/>
+    <codeInsight.lineMarkerProvider language="Raku"
+                                    implementationClass="org.raku.comma.providers.RakuLineMarkerProvider"/>
+    <runLineMarkerContributor language="Raku"
+                              implementationClass="org.raku.comma.testing.RakuTestLineMarkerContributor"/>
     <executor implementation="org.raku.comma.timeline.RakuTimelineExecutor"/>
     <programRunner implementation="org.raku.comma.timeline.RakuTimelineRunner"/>
     <stubIndex implementation="org.raku.comma.cro.CroRouteIndex"/>
     <stubIndex implementation="org.raku.comma.cro.CroTemplateIndex"/>
     <codeInsight.parameterInfo language="Raku" implementationClass="org.raku.comma.RakuParameterInfoHandler"/>
-    <lang.inspectionSuppressor language="Raku" implementationClass="org.raku.comma.inspection.suppressor.RakuInspectionSuppressor"/>
-<!--    <moduleConfigurationEditorProvider implementation="org.raku.comma.project.structure.module.RakuModuleConfigurationEditorProvider"-->
-<!--      order="FIRST"/>-->
+    <lang.inspectionSuppressor language="Raku"
+                               implementationClass="org.raku.comma.inspection.suppressor.RakuInspectionSuppressor"/>
+    <!--    <moduleConfigurationEditorProvider implementation="org.raku.comma.project.structure.module.RakuModuleConfigurationEditorProvider"-->
+    <!--      order="FIRST"/>-->
 
-<!-- TODO: Figure out why the getActionUpdateThread() is ignored and we get exceptions about EDT_OLD -->
-<!--    <fileType name="Cro Template" language="CroTemplate" implementationClass="org.raku.comma.cro.template.CroTemplateFileType"-->
-<!--              fieldName="INSTANCE" extensions="crotmp"/>-->
-    <lang.parserDefinition language="CroTemplate" implementationClass="org.raku.comma.cro.template.parsing.CroTemplateParserDefinition"/>
+    <!-- TODO: Figure out why the getActionUpdateThread() is ignored and we get exceptions about EDT_OLD -->
+    <!--    <fileType name="Cro Template" language="CroTemplate" implementationClass="org.raku.comma.cro.template.CroTemplateFileType"-->
+    <!--              fieldName="INSTANCE" extensions="crotmp"/>-->
+    <lang.parserDefinition language="CroTemplate"
+                           implementationClass="org.raku.comma.cro.template.parsing.CroTemplateParserDefinition"/>
     <lang.syntaxHighlighterFactory language="CroTemplate"
                                    implementationClass="org.raku.comma.cro.template.highlighter.CroTemplateSyntaxHighlighterFactory"/>
     <colorSettingsPage implementation="org.raku.comma.cro.template.highlighter.CroTemplateColorSettingsPage"/>
-    <lang.braceMatcher language="CroTemplate" implementationClass="org.raku.comma.cro.template.editor.CroTemplateBraceMatcher"/>
-    <lang.quoteHandler language="CroTemplate" implementationClass="org.raku.comma.cro.template.editor.CroTemplateQuoteHandler"/>
+    <lang.braceMatcher language="CroTemplate"
+                       implementationClass="org.raku.comma.cro.template.editor.CroTemplateBraceMatcher"/>
+    <lang.quoteHandler language="CroTemplate"
+                       implementationClass="org.raku.comma.cro.template.editor.CroTemplateQuoteHandler"/>
     <spellchecker.support language="CroTemplate"
                           implementationClass="org.raku.comma.cro.template.editor.CroTemplateSpellCheckingStrategy"/>
-    <lang.foldingBuilder language="CroTemplate" implementationClass="org.raku.comma.cro.template.editor.CroTemplateFoldingBuilder"/>
-    <codeInsight.parameterInfo language="CroTemplate" implementationClass="org.raku.comma.cro.template.CroTemplateParameterInfoHandler"/>
+    <lang.foldingBuilder language="CroTemplate"
+                         implementationClass="org.raku.comma.cro.template.editor.CroTemplateFoldingBuilder"/>
+    <codeInsight.parameterInfo language="CroTemplate"
+                               implementationClass="org.raku.comma.cro.template.CroTemplateParameterInfoHandler"/>
 
-<!--    <statusBarWidgetFactory implementation="org.raku.comma.sdk.chooser.RakuSdkStatusBarWidgetFactory" id="RAKU_SDK_STATUS_BAR_WIDGET" />-->
+    <!--    <statusBarWidgetFactory implementation="org.raku.comma.sdk.chooser.RakuSdkStatusBarWidgetFactory" id="RAKU_SDK_STATUS_BAR_WIDGET" />-->
 
-<!-- TODO: Fix 'It's unexpected to invoke this method on an intention preview calculating.' -->
-<!--    <intentionAction>-->
-<!--      <language>Raku</language>-->
-<!--      <className>org.raku.comma.intention.ChangePackageTypeIntention</className>-->
-<!--      <category>Raku intentions</category>-->
-<!--    </intentionAction>-->
+    <!-- TODO: Fix 'It's unexpected to invoke this method on an intention preview calculating.' -->
+    <!--    <intentionAction>-->
+    <!--      <language>Raku</language>-->
+    <!--      <className>org.raku.comma.intention.ChangePackageTypeIntention</className>-->
+    <!--      <category>Raku intentions</category>-->
+    <!--    </intentionAction>-->
     <intentionAction>
       <language>Raku</language>
       <className>org.raku.comma.intention.MakeMethodPublicIntention</className>
@@ -248,13 +271,13 @@
       <language>Raku</language>
       <className>org.raku.comma.intention.ColonpairToFatarrowIntention</className>
       <category>Raku intentions</category>
-  </intentionAction>
-<!-- TODO: Re-introduce intentions that were based on broken implementations -->
-<!--    <intentionAction>-->
-<!--      <language>Raku</language>-->
-<!--      <className>org.raku.comma.inspection.fixes.FatarrowSimplificationFix</className>-->
-<!--      <category>Raku intentions</category>-->
-<!--    </intentionAction>-->
+    </intentionAction>
+    <!-- TODO: Re-introduce intentions that were based on broken implementations -->
+    <!--    <intentionAction>-->
+    <!--      <language>Raku</language>-->
+    <!--      <className>org.raku.comma.inspection.fixes.FatarrowSimplificationFix</className>-->
+    <!--      <category>Raku intentions</category>-->
+    <!--    </intentionAction>-->
     <intentionAction>
       <language>Raku</language>
       <className>org.raku.comma.intention.TermUnicodeConversionIntention</className>
@@ -272,7 +295,8 @@
                              implementationClass="org.raku.comma.descriptors.RakuExpressionSurroundDescriptor"/>
     <lang.surroundDescriptor language="Raku"
                              implementationClass="org.raku.comma.descriptors.RakuSRegexAtomSurroundDescriptor"/>
-    <lang.documentationProvider language="Raku" implementationClass="org.raku.comma.docs.RakuDocumentationProvider"/>
+    <lang.documentationProvider language="Raku"
+                                implementationClass="org.raku.comma.docs.RakuDocumentationProvider"/>
     <virtualFileSystem key="raku" implementationClass="org.raku.comma.vfs.RakuFileSystem"/>
     <library.type implementation="org.raku.comma.library.RakuLibraryType"/>
 
@@ -289,12 +313,14 @@
     <lang.findUsagesProvider language="CroTemplate"
                              implementationClass="org.raku.comma.cro.template.findUsages.CroTemplateFindUsagesProvider"/>
     <usageTypeProvider implementation="org.raku.comma.cro.template.findUsages.CroTemplateUsageTypeProvider"/>
-    <toolWindow id="Raku Grammar Preview" anchor="right" factoryClass="org.raku.comma.grammar.RakuGrammarPreviewFactory"
+    <toolWindow id="Raku Grammar Preview" anchor="right"
+                factoryClass="org.raku.comma.grammar.RakuGrammarPreviewFactory"
                 secondary="false" canCloseContents="false"/>
-    <backgroundPostStartupActivity implementation="org.raku.comma.project.activity.RakuModuleListStarter" order="first" />
+    <backgroundPostStartupActivity implementation="org.raku.comma.project.activity.RakuServiceStarter"
+                                   order="first"/>
     <backgroundPostStartupActivity implementation="org.raku.comma.utils.RakuLegacyExtensionsDetector"/>
     <backgroundPostStartupActivity implementation="org.raku.comma.pm.RakuModuleInstallPromptStarter"/>
-<!--    <moduleService serviceImplementation="org.raku.comma.services.project.RakuMetaDataComponent"/>-->
+    <!--    <moduleService serviceImplementation="org.raku.comma.services.project.RakuMetaDataComponent"/>-->
     <moduleService serviceImplementation="org.raku.comma.event.ModuleMetaChangeListener"/>
     <projectService serviceImplementation="org.raku.comma.services.project.RakuProjectModelSync"/>
     <fileEditorProvider implementation="org.raku.comma.readerMode.RakuModuleEditorProvider"/>
@@ -332,30 +358,34 @@
     <programRunner implementation="org.raku.comma.heapsnapshot.run.RakuHeapSnapshotRunner"/>
     <executor implementation="org.raku.comma.run.RakuProfileExecutor"/>
     <executor implementation="org.raku.comma.run.RakuHeapSnapshotExecutor"/>
-    <lang.refactoringSupport language="Raku" implementationClass="org.raku.comma.refactoring.RakuCompleteRefactoringSupportProvider"/>
-    <inlineActionHandler implementation="org.raku.comma.refactoring.inline.variable.RakuInlineVariableActionHandler"/>
+    <lang.refactoringSupport language="Raku"
+                             implementationClass="org.raku.comma.refactoring.RakuCompleteRefactoringSupportProvider"/>
+    <inlineActionHandler
+            implementation="org.raku.comma.refactoring.inline.variable.RakuInlineVariableActionHandler"/>
     <inlineActionHandler implementation="org.raku.comma.refactoring.inline.call.RakuInlineCallActionHandler"/>
     <projectService serviceImplementation="org.raku.comma.coverage.RakuCoverageDataManagerImpl"
                     serviceInterface="org.raku.comma.coverage.RakuCoverageDataManager"/>
     <projectService serviceImplementation="org.raku.comma.profiler.RakuProfileDataManagerImpl"
                     serviceInterface="org.raku.comma.profiler.RakuProfileDataManager"/>
-    <indexPatternBuilder implementation="org.raku.comma.editor.RakuIndexPatternBuilder" />
+    <indexPatternBuilder implementation="org.raku.comma.editor.RakuIndexPatternBuilder"/>
     <todoIndexer filetype="Raku Script" implementationClass="org.raku.comma.editor.RakuTodoIndexer"/>
     <todoIndexer filetype="Raku Module" implementationClass="org.raku.comma.editor.RakuTodoIndexer"/>
     <todoIndexer filetype="Raku Test" implementationClass="org.raku.comma.editor.RakuTodoIndexer"/>
     <todoIndexer filetype="Raku Pod" implementationClass="org.raku.comma.editor.RakuTodoIndexer"/>
     <todoIndexer filetype="Cro Template" implementationClass="org.raku.comma.editor.CroTemplateTodoIndexer"/>
-    <codeInsight.daemonBoundCodeVisionProvider implementation="org.raku.comma.codeInsights.RakuReferencesCodeVisionProvider"/>
-    <vcs.codeVisionLanguageContext language="Raku" implementationClass="org.raku.comma.codeInsights.RakuVcsCodeVisionLanguageContext"/>
+    <codeInsight.daemonBoundCodeVisionProvider
+            implementation="org.raku.comma.codeInsights.RakuReferencesCodeVisionProvider"/>
+    <vcs.codeVisionLanguageContext language="Raku"
+                                   implementationClass="org.raku.comma.codeInsights.RakuVcsCodeVisionLanguageContext"/>
     <navbar implementation="org.raku.comma.structureView.RakuStructureAwareNavbar"/>
     <backgroundPostStartupActivity id="ProjectIsRakudoCoreAnnouncer"
                                    implementation="org.raku.comma.project.activity.ProjectIsRakudoCoreDetector"
                                    order="last"/>
   </extensions>
 
-<!--  <applicationListeners>-->
-<!--    <listener class="org.raku.comma.sdk.RakuSdkCacheManager" topic="com.intellij.openapi.project.ProjectManagerListener" />-->
-<!--  </applicationListeners>-->
+  <!--  <applicationListeners>-->
+  <!--    <listener class="org.raku.comma.sdk.RakuSdkCacheManager" topic="com.intellij.openapi.project.ProjectManagerListener" />-->
+  <!--  </applicationListeners>-->
   <actions>
     <action id="org.raku.comma.actions.NewRakuFileAction" class="org.raku.comma.actions.NewRakuFileAction"
             text="New Raku File..." description="Add a new Raku file at selected location"/>

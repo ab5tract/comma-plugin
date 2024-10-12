@@ -3,18 +3,16 @@ package org.raku.comma.structureView;
 import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.TreeStructureProvider;
 import com.intellij.ide.projectView.ViewSettings;
+import com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode;
 import com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
-import com.intellij.openapi.extensions.InternalIgnoreDependencyViolation;
-import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-@InternalIgnoreDependencyViolation
-public class RakuProjectStructureProvider implements TreeStructureProvider, DumbAware {
+public class RakuProjectStructureProvider implements TreeStructureProvider {
     @NotNull
     @Override
     public Collection<AbstractTreeNode<?>> modify(@NotNull AbstractTreeNode<?> parent,
@@ -22,6 +20,14 @@ public class RakuProjectStructureProvider implements TreeStructureProvider, Dumb
                                                   ViewSettings settings)
     {
         ArrayList<AbstractTreeNode<?>> list = new ArrayList<>(children);
+
+//        if (parent instanceof NamedLibraryElementNode) {
+//            parent.getChildren().forEach(node -> {
+//                if (node instanceof PsiDirectoryNode) {
+//                    node.update();
+//                }
+//            });
+//        }
 
         // Remove .precomp directories
         list.removeIf(f -> {
