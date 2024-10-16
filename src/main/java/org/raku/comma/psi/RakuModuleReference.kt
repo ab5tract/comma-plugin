@@ -11,9 +11,8 @@ import com.intellij.psi.stubs.StubIndex
 import com.intellij.util.IncorrectOperationException
 import org.raku.comma.psi.stub.index.ProjectModulesStubIndex
 import org.raku.comma.psi.stub.index.RakuStubIndexKeys
-import org.raku.comma.services.project.RakuDependencyDetailsService
-import org.raku.comma.services.project.RakuModuleListFetcher
-import org.raku.comma.utils.RakuUtils
+import org.raku.comma.services.RakuModuleDetailsService
+import org.raku.comma.services.RakuServiceConstants
 import java.util.function.Consumer
 
 class RakuModuleReference(moduleName: RakuModuleName) :
@@ -35,8 +34,7 @@ class RakuModuleReference(moduleName: RakuModuleName) :
     }
 
     private fun resolveExternal(): PsiFile? {
-        return project.service<RakuDependencyDetailsService>()
-                        .provideToRakuFile(RakuUtils.stripAuthVerApi(this.element.text))
+        return project.service<RakuModuleDetailsService>().provideToPsiFile(value)
     }
 
     override fun getVariants(): Array<Any> {
@@ -57,10 +55,9 @@ class RakuModuleReference(moduleName: RakuModuleName) :
             }
         })
 
-        val service = project.getService(RakuModuleListFetcher::class.java)
-        reallyInThisProject.addAll(service.getProvides())
-        reallyInThisProject.addAll(service.PREINSTALLED_MODULES)
-        reallyInThisProject.addAll(service.PRAGMAS)
+        reallyInThisProject.addAll(project.service<RakuModuleDetailsService>().allProvides())
+        reallyInThisProject.addAll(RakuServiceConstants.PREINSTALLED_MODULES)
+        reallyInThisProject.addAll(RakuServiceConstants.PRAGMAS)
 
         return reallyInThisProject.toTypedArray()
     }

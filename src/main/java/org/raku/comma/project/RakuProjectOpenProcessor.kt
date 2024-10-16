@@ -57,7 +57,7 @@ class RakuProjectOpenProcessor : ProjectOpenProcessor() {
     }
 
     override suspend fun importProjectAfterwardsAsync(project: Project, file: VirtualFile) {
-        val projectBuilder = RakuProjectBuilder(null)
+        val projectBuilder = RakuProjectBuilder()
         projectBuilder.fileToImport = file.toString()
         projectBuilder.commit(project, null, null)
     }

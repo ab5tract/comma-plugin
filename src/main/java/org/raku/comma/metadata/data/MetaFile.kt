@@ -1,48 +1,34 @@
 package org.raku.comma.metadata.data
 
-import kotlinx.serialization.ExperimentalSerializationApi
+import com.intellij.openapi.components.service
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.*
+import org.raku.comma.services.application.RakuDistroInfo
+
+// This class is for all projects created or opened by Comma plugin.
+// In order to achieve a semblance of sanity, we will unapologetically
+// adjust your META6.json to the reasonable version.
 
 @Serializable
-data class Support(
-    val email: String? = null,
-    @SerialName(value = "maillinglist")
-    val mailingList: String? = null,
-    @SerialName(value = "bugtracker")
-    val bugTracker: String? = null,
-    val source: String? = null,
-    val irc: String? = null,
-    val phone: String? = null
-)
-
-@Serializable
-@OptIn(ExperimentalSerializationApi::class)
 data class MetaFile (
     val name: String? = null,
     val description: String? = null,
     val version: String? = null,
-    @JsonNames("perl")
     val raku: String? = null,
     @SerialName("meta-version")
     val metaVersion: String? = null,
     val author: String? = null,
-    @Serializable(with =  StringListSerializer::class)
     val authors: List<String> = listOf(),
     val auth: String? = null,
     val dist: String? = null,
-    @Serializable(with =  MapListSerializer::class)
     val depends: List<String> = listOf(),
     @SerialName("build-depends")
-    val buildDepends: List<String> = listOf(),
+    val buildDepends: JsonElement? = null,
     @SerialName("test-depends")
     val testDepends: List<String> = listOf(),
     val provides: Map<String, String> = mapOf(),
-    @Serializable(with =  MapListSerializer::class)
-    val resources: List<Map<String, String>> = listOf(),
+    val resources: List<String> = listOf(),
     val documentation: Map<String, String> = mapOf(),
     val support: Support? = null,
     val license: String? = null,
@@ -57,83 +43,87 @@ data class MetaFile (
     val excludes: Map<String, String> = mapOf(),
     @SerialName("source-url")
     val sourceUrl: String? = null,
-    @JsonNames("repo-type")
     @SerialName("source-type")
     val sourceType: String? = null,
-)
+) {
+    val allDepends: List<String>
+        get() = listOf(depends, testDepends, simplifiedBuildDepends).flatten()
 
-object StringListSerializer : JsonTransformingSerializer<List<String>>(ListSerializer(String.serializer())) {
-    // If response is not an array, then it is a single object that should be wrapped into the array
-    override fun transformDeserialize(element: JsonElement): JsonElement =
-        if (element !is JsonArray) JsonArray(listOf(element)) else element
-}
+    val simplifiedBuildDepends: List<String>
+        get() = getBuildDepends()
 
-object MapListSerializer : JsonTransformingSerializer<List<String>>(ListSerializer(String.serializer())) {
-    // If response is not an array, then it is a single object that should be wrapped into the array
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        return when (element) {
-            is JsonObject -> JsonArray(element.map { JsonPrimitive("${it.key} => ${it.value}") }.toList()) // invalid usage pattern
-            !is JsonArray -> JsonArray(listOf(element))
-            else -> element
+    private fun deconstructBuildDepends(): Any? {
+        if (buildDepends == null) return null
+        // First try the sane case
+        try {
+            return Json.decodeFromJsonElement<List<String>>(buildDepends)
+        } catch (_: Exception) {}
+        // Now try the diabolical case
+        try {
+            return Json.decodeFromJsonElement<ComplexBuildDepends>(buildDepends)
+        } catch (_: Exception) {}
+        return null
+    }
+
+    @SuppressWarnings("unchecked")
+    private fun getBuildDepends(): List<String> {
+        val anyBuildDepends = deconstructBuildDepends() ?: return listOf()
+        return when (anyBuildDepends) {
+            is List<*>              -> anyBuildDepends as List<String>
+            is ComplexBuildDepends  -> anyBuildDepends.depends
+            else                    -> listOf()
         }
     }
 }
 
-// TODO: The following is all related to (trying) to get the serialization to work for MetaFile.
-//       It gets pretty far along except the @Serializable cases are not evaluated by the XML
-//       serializer, so we end up dying when authors = "one person" instead of authors = [ "multiple" ]
-//
-//@Serializable
-//data class Support(
-//    @Attribute(value = "email") val email: String? = null,
-//    @SerialName(value = "maillinglist")
-//    @Attribute(value = "mailinglist") val mailingList: String? = null,
-//    @SerialName(value = "bugtracker")
-//    @Attribute(value = "bugTracker") val bugTracker: String? = null,
-//    @Attribute(value = "source") val source: String? = null,
-//    @Attribute(value = "irc") val irc: String? = null,
-//    @Attribute(value = "phone") val phone: String? = null
-//)
-//
-//@Serializable
-//@Tag("metafile")
-//data class MetaFile @OptIn(ExperimentalSerializationApi::class) constructor(
-//    @Attribute(value = "name")val name: String? = null,
-//    @Attribute(value = "description") val description: String? = null,
-//    @Attribute(value = "version") val version: String? = null,
-//    @JsonNames("perl")
-//    @Attribute(value = "raku") val raku: String? = null,
-//    @SerialName("meta-version")
-//    @Attribute(value = "metaVersion") val metaVersion: String? = null,
-//    @Attribute(value = "author") val author: String? = null,
-//    @Serializable(with =  StringListSerializer::class)
-//    @Attribute(value = "authors") val authors: List<String> = listOf(),
-//    @Attribute(value = "auth") val auth: String? = null,
-//    @Attribute(value = "dist") val dist: String? = null,
-//    @Serializable(with =  MapListSerializer::class)
-//    @Attribute(value = "depends") val depends: List<String> = listOf(),
-//    @SerialName("build-depends")
-//    @Attribute(value = "buildDepends") val buildDepends: List<String> = listOf(),
-//    @SerialName("test-depends")
-//    @Attribute(value = "testDepends") val testDepends: List<String> = listOf(),
-//    @Attribute(value = "provides") val provides: Map<String, String> = mapOf(),
-//    @Serializable(with =  MapListSerializer::class)
-//    @Attribute(value = "resources") val resources: List<Map<String, String>> = listOf(),
-//    @Attribute(value = "documentation") val documentation: Map<String, String> = mapOf(),
-//    @Attribute(value = "support") val support: Support? = null,
-//    @Attribute(value = "license") val license: String? = null,
-//    @Attribute(value = "tags") val tags: List<String> = listOf(),
-//    @Attribute(value = "api") val api: String? = null,
-//    @Attribute(value = "path") val path: String? = null,
-//    @Attribute(value = "production") val production: Boolean? = null,
-//    @Attribute(value = "emulates") val emulates: Map<String, String> = mapOf(),
-//    @Attribute(value = "supersedes") val supersedes: Map<String, String> = mapOf(),
-//    @SerialName("superseded-by")
-//    @Attribute(value = "supersededBy") val supersededBy: Map<String, String> = mapOf(),
-//    @Attribute(value = "excludes") val excludes: Map<String, String> = mapOf(),
-//    @SerialName("source-url")
-//    @Attribute(value = "sourceUrl") val sourceUrl: String? = null,
-//    @JsonNames("repo-type")
-//    @SerialName("source-type")
-//    @Attribute(value = "sourceType") val sourceType: String? = null,
-//)
+// TODO: Decide if/when we ever care about distro-specific dependencies. Right now
+// it appears that all such uses are for external libraries.
+// This information could still be useful, but we are going to ignore it for now.
+@Serializable
+data class ComplexBuildDepends(val requires: List<JsonElement>?, val runtime: List<JsonElement>?) {
+    val depends: List<String>
+        get() = depends()
+
+    private val required: List<JsonElement>
+        get() = this.requires ?: listOf()
+    private val runtimed: List<JsonElement>
+        get() = this.runtime ?: listOf()
+
+
+    private fun depends(): List<String> {
+        return listOf(runtimed, required).flatten().mapNotNull {
+            when (it) {
+                is JsonObject    -> nullifyNative(it)
+                is JsonPrimitive -> if (it.isString) nullifyNative(it.content) else null
+                else             -> null
+            }
+        }
+    }
+
+    private fun nullifyNative(maybeNative: JsonObject): String? {
+        try {
+            val asMap: Map<String, String> = Json.decodeFromJsonElement(maybeNative)
+            return if (asMap.keys.size == 1 && asMap.keys.all { it == "name" })
+                        nullifyNative(asMap["name"] ?: "")
+                    else nullifyNative(Json.decodeFromJsonElement<BuildDependsByDistro>(maybeNative).distroRelevantModule)
+        } catch (_: Exception) {}
+        return null
+    }
+
+    private fun nullifyNative(maybeNative: String): String? {
+        if (maybeNative.isEmpty()) return null
+        if (Regex(".+:from<native>.*").containsMatchIn(maybeNative)) return null
+        return maybeNative
+    }
+}
+
+@Serializable
+data class ComplexBuildDependsElement(val from: String, val name: BuildDependsByDistro)
+@Serializable
+data class BuildDependsByDistro(
+    @SerialName("by-distro.name")
+    val byDistroName: Map<String, String>
+) {
+    val distroRelevantModule: String
+        get() = byDistroName[service<RakuDistroInfo>().distroName] ?: ""
+}

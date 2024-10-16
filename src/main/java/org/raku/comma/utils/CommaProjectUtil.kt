@@ -5,7 +5,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import kotlinx.serialization.json.Json
-import org.raku.comma.metadata.data.MetaFile
+import org.raku.comma.metadata.data.ExternalMetaFile
 import org.raku.comma.sdk.RakuSdkUtil
 import org.raku.comma.services.project.RakuProjectDetailsService
 import org.raku.comma.services.project.RakuProjectSdkService
@@ -204,18 +204,11 @@ object CommaProjectUtil {
         return if (projectHasMetaFile(project)) metaFile(project).depends else listOf()
     }
 
-    @JvmStatic
-    fun projectDependenciesDeep(project: Project): List<String> {
-        return if (projectHasMetaFile(project))
-                    collectDependenciesOfModules(project, metaFile(project).depends)
-              else listOf()
-    }
-
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
     }
-    fun metaFile(project: Project): MetaFile {
+    fun metaFile(project: Project): ExternalMetaFile {
         val meta6path = "%s%sMETA6.json".format(project.basePath, File.separator)
         check(Path.of(meta6path).toFile().exists()) { "There is no META6.json file in project path " + project.basePath }
         return json.decodeFromString(File(meta6path).readText())

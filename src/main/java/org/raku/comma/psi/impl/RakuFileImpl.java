@@ -29,12 +29,11 @@ import org.raku.comma.pod.PodDomDeclarator;
 import org.raku.comma.pod.PodDomNode;
 import org.raku.comma.pod.PodRenderingContext;
 import org.raku.comma.psi.external.ExternalRakuFile;
-import org.raku.comma.psi.stub.index.ProjectModulesStubIndex;
 import org.raku.comma.readerMode.RakuActionProvider;
 import org.raku.comma.readerMode.RakuReaderModeState;
 import org.raku.comma.repl.RakuReplState;
 import org.raku.comma.sdk.RakuSettingTypeId;
-import org.raku.comma.services.project.RakuDependencyDetailsService;
+import org.raku.comma.services.RakuModuleDetailsService;
 import org.raku.comma.services.project.RakuProjectSdkService;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
@@ -387,7 +386,7 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
         seen.add(shortName);
 
         Project project = getProject();
-        var file = (RakuFile) getProject().getService(RakuDependencyDetailsService.class).provideToRakuFile(shortName);
+        var file = getProject().getService(RakuModuleDetailsService.class).provideToRakuFile(shortName);
 
         if (file != null) {
             file.contributeGlobals(collector, seen);

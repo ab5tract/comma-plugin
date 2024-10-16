@@ -4,17 +4,14 @@ import com.intellij.extapi.psi.StubBasedPsiElementBase;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.stubs.StubIndex;
 import org.raku.comma.psi.RakuFile;
 import org.raku.comma.psi.RakuModuleName;
 import org.raku.comma.psi.RakuNeedStatement;
 import org.raku.comma.psi.stub.RakuNeedStatementStub;
 import org.raku.comma.psi.stub.RakuNeedStatementStubElementType;
-import org.raku.comma.psi.stub.index.ProjectModulesStubIndex;
 import org.raku.comma.psi.symbols.RakuSymbolCollector;
 import org.jetbrains.annotations.NotNull;
-import org.raku.comma.services.project.RakuDependencyDetailsService;
+import org.raku.comma.services.RakuModuleDetailsService;
 import org.raku.comma.services.project.RakuProjectSdkService;
 import org.raku.comma.utils.RakuUtils;
 
@@ -35,7 +32,7 @@ public class RakuNeedStatementImpl extends StubBasedPsiElementBase<RakuNeedState
         if (DumbService.isDumb(getProject())) return;
         for (String name : getModuleNames().stream().map(RakuUtils::stripAuthVerApi).toList()) {
             Project project = getProject();
-            RakuFile found = (RakuFile) project.getService(RakuDependencyDetailsService.class).provideToRakuFile(name);
+            RakuFile found = project.getService(RakuModuleDetailsService.class).provideToRakuFile(name);
             if (found != null) {
                 Set<String> seen = new HashSet<>();
                 seen.add(name);

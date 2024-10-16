@@ -5,6 +5,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import kotlinx.datetime.*
 import org.raku.comma.services.RakuServiceConstants
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.time.Duration
 
 @Service(Service.Level.PROJECT)
@@ -16,6 +17,13 @@ class RakuProjectDetailsService(
 
     override fun getState(): RakudoProjectState { return projectState }
     override fun loadState(state: RakudoProjectState) { this.projectState = state }
+
+    private val moduleServiceStatus = AtomicBoolean(false)
+    var moduleServiceDidStartup: Boolean
+        get() = moduleServiceStatus.get()
+        set(value) = moduleServiceStatus.set(value)
+    val noModuleServiceDidNotStartup: Boolean
+        get() = !moduleServiceDidStartup
 
     // Detail:  isProjectProjectRakudoCore
     // Purpose: To allow toggling certain annotations and other features that make sense in regular

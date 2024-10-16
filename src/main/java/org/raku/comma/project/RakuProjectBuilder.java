@@ -34,14 +34,11 @@ import java.util.List;
 import static com.intellij.openapi.vfs.VfsUtilCore.isEqualOrAncestor;
 
 public class RakuProjectBuilder extends ProjectBuilder {
-    private final WizardContext myContext;
     private boolean myUpdate;
     private String myFileToImport;
     private final Logger LOG = Logger.getInstance(getClass());
 
-    public RakuProjectBuilder(@Nullable WizardContext context) {
-        myContext = context;
-    }
+    public RakuProjectBuilder() {}
 
     @NotNull
     public String getName() {

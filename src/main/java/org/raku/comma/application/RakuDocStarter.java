@@ -112,7 +112,7 @@ public class RakuDocStarter implements ApplicationStarter {
                         messageOutput.info("No META file for the '" + module.getName() + "' module, skipping\n");
                         continue;
                     }
-                    @Nullable Map<String, Object> providesMap = metaDataComponent.getProvidedMap();
+                    @Nullable Map<String, String> providesMap = metaDataComponent.getProvidedMap();
                     if (providesMap != null) {
                         sawAModule = true;
                         processModules(project, outputPrefix, originalDistDirectory, messageOutput, providesMap);
@@ -134,7 +134,7 @@ public class RakuDocStarter implements ApplicationStarter {
                                        @Nullable String outputPrefix,
                                        Path originalDistDirectory,
                                        MessageOutput messageOutput,
-                                       Map<String, Object> map)
+                                       Map<String, String> map)
     {
         Path outputPath = Paths.get(outputPrefix != null ? outputPrefix : "output");
         File outputDirectory = outputPath.toFile();
@@ -143,7 +143,7 @@ public class RakuDocStarter implements ApplicationStarter {
         }
         messageOutput.info("Started processing the module\n");
         for (String key : map.keySet()) {
-            String relativeFilePathString = map.get(key) instanceof String ? (String)map.get(key) : null;
+            String relativeFilePathString = map.get(key);
             if (relativeFilePathString == null) {
                 messageOutput.error("Encountered improper formatting for the '" + key + "' entry." +
                                     "Expected String, got " + map.get(key).getClass().getCanonicalName() +

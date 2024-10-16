@@ -31,6 +31,7 @@ import javax.swing.event.ChangeListener
 import javax.swing.event.ListSelectionEvent
 
 // This opt-in is required for toHexString()
+@SuppressWarnings("deprecated")
 class RakuFileCreationDialog(
     private val project: Project,
     private val path: String,

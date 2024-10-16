@@ -9,7 +9,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.util.PlatformIcons
 import org.raku.comma.psi.RakuFile
-import org.raku.comma.services.project.RakuDependencyDetailsService
+import org.raku.comma.services.RakuModuleDetailsService
+import org.raku.comma.services.project.RakuProjectDetailsService
 import java.util.*
 import java.util.function.Consumer
 import java.util.regex.Pattern
@@ -24,7 +25,15 @@ class RakuLibraryPsiDirectoryNode(
     private var children: MutableList<AbstractTreeNode<*>>? = null
     private var nameTag: String = "<Loading Module Sources...>"
 
+    companion object {
+        private val pathPattern: Pattern = Pattern.compile("^(-?\\d+):(.+)$")
+    }
+
     override fun update(data: PresentationData) {
+        if (children == null && project.service<RakuProjectDetailsService>().moduleServiceDidStartup) {
+            getChildrenImpl()
+        }
+
         data.presentableText =  if (children == null)
                                     "<Loading Module Sources...>"
                                 else if (children!!.isEmpty())
@@ -32,9 +41,7 @@ class RakuLibraryPsiDirectoryNode(
                                      else "Provides"
 
         data.setIcon(PlatformIcons.FOLDER_ICON)
-        if (children == null) {
-            getChildrenImpl()
-        }
+
 
         if (children?.isEmpty() == true) {
             data.tooltip = "No source found. Is the dependency actually installed?"
@@ -42,18 +49,20 @@ class RakuLibraryPsiDirectoryNode(
     }
 
     override fun getChildrenImpl(): Collection<AbstractTreeNode<*>>? {
-        val dependencyService = project.service<RakuDependencyDetailsService>()
+        val projectService = project.service<RakuProjectDetailsService>()
 
-        if (dependencyService.preloadFinished.isDone && children == null) {
+        if (children == null && projectService.moduleServiceDidStartup) {
+            val moduleService = project.service<RakuModuleDetailsService>()
+
             val path = Objects.requireNonNull(Objects.requireNonNull(virtualFile)!!.path)
             val pathPart = path.substring(1, path.length - 2)
             val matcher = pathPattern.matcher(pathPart)
-            children = ArrayList()
 
             if (matcher.matches()) {
+                children = ArrayList()
                 val name = matcher.group(2)
                 if (name != null) {
-                    project.service<RakuDependencyDetailsService>()
+                    moduleService
                         .moduleToRakuFiles(name)
                         .forEach(Consumer { rakuFile: RakuFile? ->
                             children!!.add(RakuLibraryFileEntryNode(project, rakuFile!!, settings))
@@ -71,8 +80,4 @@ class RakuLibraryPsiDirectoryNode(
 
     override fun canNavigate(): Boolean = children != null
     override fun canNavigateToSource(): Boolean = true
-
-    companion object {
-        private val pathPattern: Pattern = Pattern.compile("^(-\\d+):(.+)$")
-    }
 }

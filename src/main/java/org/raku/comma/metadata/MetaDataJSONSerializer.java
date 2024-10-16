@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.raku.comma.metadata.data.MetaFile;
+import org.raku.comma.metadata.data.ExternalMetaFile;
 
 import java.util.*;
 
@@ -21,7 +21,7 @@ public class MetaDataJSONSerializer {
 
     public static String serializerBasic(JSONObject meta) {
         Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-        return gson.toJson(meta, MetaFile.class);
+        return gson.toJson(meta, ExternalMetaFile.class);
     }
 
     public static String serializer(JSONObject meta) {

@@ -28,6 +28,7 @@ public interface RakuPsiElement extends NavigatablePsiElement {
     default String getEnclosingRakuModuleName() {
         // Make sure it's Raku module file, and trim the extension.
         VirtualFile file = getContainingFile().getVirtualFile();
+        if (file == null) return null;
         if (!(FileTypeManager.getInstance().getFileTypeByFile(file) instanceof RakuModuleFileType))
             return null;
         String path = file.getPath();

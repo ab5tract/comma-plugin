@@ -4,18 +4,12 @@ import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbService.Companion.isDumb
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.stubs.StubIndex
-import org.raku.comma.psi.RakuFile
 import org.raku.comma.psi.RakuModuleName
 import org.raku.comma.psi.RakuUseStatement
 import org.raku.comma.psi.stub.RakuUseStatementStub
 import org.raku.comma.psi.stub.RakuUseStatementStubElementType
-import org.raku.comma.psi.stub.index.ProjectModulesStubIndex
-import org.raku.comma.psi.stub.index.RakuStubIndexKeys
 import org.raku.comma.psi.symbols.RakuSymbolCollector
-import org.raku.comma.services.project.RakuDependencyDetailsService
-import org.raku.comma.services.project.RakuProjectSdkService
+import org.raku.comma.services.RakuModuleDetailsService
 import org.raku.comma.utils.RakuUtils
 
 class RakuUseStatementImpl : StubBasedPsiElementBase<RakuUseStatementStub?>, RakuUseStatement {
@@ -34,7 +28,7 @@ class RakuUseStatementImpl : StubBasedPsiElementBase<RakuUseStatementStub?>, Rak
             if (isDumb(project)) return
 
             val shortName = RakuUtils.stripAuthVerApi(moduleName)
-            val file = project.service<RakuDependencyDetailsService>().provideToRakuFile(shortName) as? RakuFile
+            val file = project.service<RakuModuleDetailsService>().provideToRakuFile(shortName)
                             ?: return
 
             file.contributeGlobals(collector, HashSet())

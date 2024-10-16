@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.serviceContainer.AlreadyDisposedException
 import com.intellij.testFramework.LightVirtualFile
 import kotlinx.coroutines.*
+import kotlinx.coroutines.future.future
 import org.json.JSONArray
 import org.json.JSONException
 import org.raku.comma.psi.RakuFile
@@ -40,13 +41,14 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 @Service(Service.Level.PROJECT)
 @State(name = "Raku.SDK", storages = [Storage(value = RakuServiceConstants.PROJECT_SETTINGS_FILE)])
-class RakuProjectSdkService(private val project: Project, val runScope: CoroutineScope) : PersistentStateComponent<RakuSDKState>,
-                                                                                                  DumbAware
-{
+class RakuProjectSdkService(
+    private val project: Project,
+    val runScope: CoroutineScope
+) : PersistentStateComponent<RakuSDKState>, DumbAware {
     private var sdkState: RakuSDKState = RakuSDKState()
     private var symbolCacheInstance: ProjectSdkSymbolCache? = null
 
-    val symbolCache: ProjectSdkSymbolCache?
+    val symbolCache: ProjectSdkSymbolCache
         get() = provideSymbolCache()
 
     var sdkPath: String?
@@ -61,13 +63,18 @@ class RakuProjectSdkService(private val project: Project, val runScope: Coroutin
 
     private val isLoading = AtomicBoolean(false)
 
+    val sdkIsSet: Boolean
+        get() = ! sdkState.projectSdkPath.isNullOrEmpty()
+    val sdkIsNotSet: Boolean
+        get() = ! sdkIsSet
+
     override fun getState(): RakuSDKState {
-        if (sdkState.projectSdkPath.isNullOrBlank() && !isLoading.get()) {
+        if (sdkIsNotSet && !isLoading.get()) {
             isLoading.set(true)
-            runScope.launch {
+            runScope.future {
                 promptForSdkPath()
                 isLoading.set(false)
-            }
+            }.join()
         }
         return sdkState
     }
@@ -89,15 +96,15 @@ class RakuProjectSdkService(private val project: Project, val runScope: Coroutin
         sdkState.projectSdkPath    = sdkPath
         sdkState.projectSdkVersion = RakuSdkUtil.versionString(sdkPath)
 
-        symbolCache?.sdkPath = sdkPath
-        symbolCache?.invalidateCache()
+        symbolCache.sdkPath = sdkPath
+        symbolCache.invalidateCache()
 
         // TODO: Move to Facets for module / allow for multiple metas + modules in a single project
 //        for (module in ModuleManager.getInstance(project).modules) {
 //            val component = module.getService(RakuMetaDataComponent::class.java)
 //            component?.triggerMetaBuild()
 //        }
-//        project.service<RakuMetaDataComponent>().triggerMetaBuild()
+        project.service<RakuMetaDataComponent>().triggerMetaBuild()
     }
 
     private fun generateMoarBuildConfiguration(): Map<String, String> {
@@ -125,11 +132,11 @@ class RakuProjectSdkService(private val project: Project, val runScope: Coroutin
         }
     }
 
-    private fun provideSymbolCache(): ProjectSdkSymbolCache? {
-        if (symbolCacheInstance == null && sdkPath != null) {
-            symbolCacheInstance = ProjectSdkSymbolCache(project, sdkPath!!, runScope)
+    private fun provideSymbolCache(): ProjectSdkSymbolCache {
+        if (symbolCacheInstance == null) {
+            symbolCacheInstance = ProjectSdkSymbolCache(project, sdkPath, runScope)
         }
-        return symbolCacheInstance
+        return symbolCacheInstance!!
     }
 }
 
@@ -153,7 +160,7 @@ private class ProjectSymbolCache() {
     }
 }
 
-class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String, private val runScope: CoroutineScope) {
+class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String?, private val runScope: CoroutineScope) {
         // Project-specific cache with PsiFile instances
     private val projectSymbolCache: ProjectSymbolCache = ProjectSymbolCache()
 
@@ -185,6 +192,8 @@ class ProjectSdkSymbolCache(private val project: Project, var sdkPath: String, p
 
         try {
             if (settingsStarted.compareAndSet(false, true)) {
+                if (sdkPath == null) return getFallback()
+
                 val cmd = RakuCommandLine(sdkPath)
                 cmd.setWorkDirectory(System.getProperty("java.io.tmpdir"))
                 cmd.addParameter(coreSymbols.absolutePath)
