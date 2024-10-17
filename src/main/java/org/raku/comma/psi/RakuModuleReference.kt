@@ -8,6 +8,10 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
+import com.intellij.psi.util.CachedValue
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
+import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.util.IncorrectOperationException
 import org.raku.comma.psi.stub.index.ProjectModulesStubIndex
 import org.raku.comma.psi.stub.index.RakuStubIndexKeys
@@ -19,8 +23,17 @@ class RakuModuleReference(moduleName: RakuModuleName) :
     PsiReferenceBase<RakuModuleName?>(moduleName, TextRange(0, moduleName.textLength)) {
     private val project = moduleName.project
     private val psiManager = PsiManager.getInstance(project)
+    private var cachedFile: CachedValue<PsiFile>? = null
 
     override fun resolve(): PsiElement? {
+        if (cachedFile?.value == null) {
+            val tryAgain = doResolve() as? PsiFile ?: return null
+            cachedFile = createCachedValue(tryAgain)
+        }
+        return cachedFile?.value
+    }
+
+    private fun doResolve(): PsiElement? {
         val keys = StubIndex.getElements(
             RakuStubIndexKeys.PROJECT_MODULES,
             value,
@@ -35,6 +48,12 @@ class RakuModuleReference(moduleName: RakuModuleName) :
 
     private fun resolveExternal(): PsiFile? {
         return project.service<RakuModuleDetailsService>().provideToPsiFile(value)
+    }
+
+    private fun createCachedValue(file: PsiFile): CachedValue<PsiFile> {
+        return CachedValuesManager.getManager(project).createCachedValue {
+            CachedValueProvider.Result(file, PsiModificationTracker.MODIFICATION_COUNT)
+        }
     }
 
     override fun getVariants(): Array<Any> {
