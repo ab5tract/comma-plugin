@@ -397,6 +397,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
             saveFile()
         }
 
+    @Synchronized
     private fun saveFile() {
         if (metaFile == null || meta == null) return
 

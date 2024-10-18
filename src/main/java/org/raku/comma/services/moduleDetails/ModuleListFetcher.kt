@@ -1,10 +1,6 @@
 package org.raku.comma.services.moduleDetails
 
-import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
-import com.intellij.platform.ide.progress.withBackgroundProgress
-import com.intellij.platform.util.progress.reportProgress
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.future
@@ -22,6 +18,7 @@ import org.raku.comma.services.ModuleDetailsState
 import org.raku.comma.utils.CommaProjectUtil
 import org.raku.comma.utils.RakuUtils
 import java.io.IOException
+import java.util.Map.copyOf
 import java.util.concurrent.ConcurrentHashMap
 
 class ModuleListFetcher(private val project: Project, private val runScope: CoroutineScope) {
@@ -34,10 +31,6 @@ class ModuleListFetcher(private val project: Project, private val runScope: Coro
     val REA_MIRROR1: String = "https://raw.githubusercontent.com/Raku/REA/main/META.json"
 
     private data class Repo(val name: String, val url: String)
-
-    private var externalMetaFileRepository: Map<String, ExternalMetaFile> = mapOf()
-    val moduleList: List<ExternalMetaFile>
-        get() = externalMetaFileRepository.values.toList()
 
     private val repos: List<Repo> = listOf(
         Repo("github", GITHUB_MIRROR1),
@@ -54,25 +47,6 @@ class ModuleListFetcher(private val project: Project, private val runScope: Coro
         return runScope.async {
             populateModulesList()
         }.await()
-    }
-
-    fun dependenciesDeep(modules: Set<String>): Set<String> {
-        val find = { moduleSet: Set<String> ->
-            moduleSet.mapNotNull { externalMetaFileRepository[it] }
-                      .flatMap   { listOf(listOf(it.name!!), it.depends.map(RakuUtils::stripAuthVerApi)).flatten() }
-                      .toMutableSet()
-        }
-
-        val seen = find(modules)
-        var lookup: Set<String> = seen - modules
-
-        while (lookup.isNotEmpty()) {
-            val thisRound = lookup // just to keep it a bit more readable
-            seen.addAll(thisRound)
-            lookup = find(thisRound) - seen
-        }
-
-        return seen.toSet()
     }
 
     private fun populateModulesList(): MutableMap<String, ExternalMetaFile> {
@@ -167,28 +141,27 @@ class ModuleListFetcher(private val project: Project, private val runScope: Coro
     }
 
     @Synchronized
-    fun fillState(state: ModuleDetailsState) {
-        val repo = externalMetaFileRepository.ifEmpty {
-            externalMetaFileRepository = runScope.future {
+    fun fillState(state: ModuleDetailsState): ModuleDetailsState {
+        val externalMetaFileRepository = state.ecosystemRepository.ifEmpty {
+            runScope.future {
                 populateModules()
             }.join()
-            externalMetaFileRepository
         }
-
-        state.moduleNames = repo.keys.stream().toList()
+        val moduleNames = externalMetaFileRepository.keys.toList()
 
         val duplicates = mutableSetOf<String>()
         val providedToPath: MutableMap<String, String> = mutableMapOf()
-        repo.entries.flatMap { it.value.provides.entries }.forEach { entry ->
+        externalMetaFileRepository.entries.flatMap { it.value.provides.entries }.forEach { entry ->
             if (providedToPath[entry.key] == null) {
                 providedToPath[entry.key] = entry.value
             } else {
                 duplicates.add(entry.key)
             }
         }
-        state.ecoProvideToPath = providedToPath
+        val ecoProvideToPath = copyOf(providedToPath)
 
         val providedToModule: MutableMap<String, String> = mutableMapOf()
+        val moduleList: List<ExternalMetaFile> = externalMetaFileRepository.values.toList()
         moduleList.flatMap { module ->
             module.provides.entries.map {
                 ProvideReference(
@@ -203,20 +176,21 @@ class ModuleListFetcher(private val project: Project, private val runScope: Coro
                 providedToModule[provider.provideReference] = RakuUtils.stripAuthVerApi(provider.module)
             }
         }
-        state.ecoProvideToModule = providedToModule
-        state.ecoModuleToProvides = moduleList.associate { module ->
+        val ecoModuleToProvides = moduleList.associate { module ->
             Pair(module.name!!, module.provides.keys.toList())
-        }.toMutableMap()
+        }
 
-        val direct = CommaProjectUtil.projectDependencies(project).toSet()
-        state.currentDependenciesDeep = dependenciesDeep(direct).toMutableList()
 
-        return
+        return state.copy(moduleNames = moduleNames,
+                          metaFiles = moduleList,
+                          ecosystemRepository = externalMetaFileRepository,
+                          ecoProvideToPath = ecoProvideToPath,
+                          ecoModuleToProvides = ecoModuleToProvides,
+                          ecoProvideToModule = providedToModule)
     }
 }
 
-@Serializable
-data class ProvideReference(
+private data class ProvideReference(
     val provideReference: String,
     val module: String? = null,
     val relativePath: String? = null,
