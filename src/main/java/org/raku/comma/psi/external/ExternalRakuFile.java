@@ -53,23 +53,20 @@ public class ExternalRakuFile implements RakuFile {
         return "";
     }
 
-    @Override
-    public void setOriginalPath(String originalPath) {
+    @Override public void setOriginalPath(String originalPath) {
         this.originalPath = originalPath;
     }
-
-    @Override
-    public String getOriginalPath() {
+    @Override public String getOriginalPath() {
         return originalPath;
     }
 
-        @Override
-    public String getModuleName() {
-        return moduleName;
-    }
+    @Override public Boolean getDependencyFile() { return true; }
+    @Override public void setDependencyFile(Boolean dependencyFile) {}
 
-    @Override
-    public void setModuleName(String moduleName) {
+    @Override public String getModuleName() {
+        return moduleName;
+}
+    @Override public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
 

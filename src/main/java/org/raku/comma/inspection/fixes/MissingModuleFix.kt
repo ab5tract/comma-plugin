@@ -1,6 +1,5 @@
 package org.raku.comma.inspection.fixes
 
-import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
 import com.intellij.openapi.project.Project
@@ -12,8 +11,9 @@ class MissingModuleFix(private val moduleName: String) : LocalQuickFix {
 
         // TODO: We want to move away from the RakuMetaDataComponent stuff to a Facet implementation
         val metadata = project.getService(RakuMetaDataComponent::class.java)
+        // This method re-initializes the module dependency details,
+        // which eventually restarts the DaemonCodeAnalyzer
         metadata.addDepends(moduleName)
-        DaemonCodeAnalyzer.getInstance(project).restart(file)
     }
 
     override fun getFamilyName(): String { return "Add module to META6.json" }

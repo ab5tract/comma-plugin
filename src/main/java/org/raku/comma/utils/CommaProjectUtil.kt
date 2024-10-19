@@ -218,5 +218,4 @@ object CommaProjectUtil {
         val meta6path = "%s%sMETA6.json".format(project.basePath, File.separator)
         return Path.of(meta6path).toFile().exists()
     }
-
 }

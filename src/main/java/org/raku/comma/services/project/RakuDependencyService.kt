@@ -1,5 +1,6 @@
-package org.raku.comma.services
+package org.raku.comma.services.project
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.ide.projectView.ProjectView
 import com.intellij.openapi.application.EDT
 import com.intellij.openapi.components.*
@@ -12,14 +13,14 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.future.future
 import org.raku.comma.metadata.data.ExternalMetaFile
 import org.raku.comma.psi.RakuFile
-import org.raku.comma.services.moduleDetails.DependencyDetails
-import org.raku.comma.services.moduleDetails.ModuleListFetcher
-import org.raku.comma.services.moduleDetails.ProjectModelSync
-import org.raku.comma.services.project.RakuProjectDetailsService
+import org.raku.comma.services.application.RakuEcosystem
+import org.raku.comma.services.support.moduleDetails.DependencyDetails
+import org.raku.comma.services.support.moduleDetails.ModuleListFetcher
+import org.raku.comma.services.support.moduleDetails.ProjectModelSync
 import org.raku.comma.utils.CommaProjectUtil
 
 @Service(Service.Level.PROJECT)
-class RakuModuleDetailsService(private val project: Project, private val runScope: CoroutineScope) {
+class RakuDependencyService(private val project: Project, private val runScope: CoroutineScope) {
 
     private val initializationStatus = AtomicBoolean(false)
     var isInitialized: Boolean
@@ -35,31 +36,32 @@ class RakuModuleDetailsService(private val project: Project, private val runScop
         get() = !isRefreshing
 
     private val dependencyDetails = DependencyDetails(project, runScope)
-    private val moduleListFetcher = ModuleListFetcher(project, runScope)
+    private val moduleListFetcher = ModuleListFetcher(runScope)
     private val modelSync = ProjectModelSync(project, runScope)
 
     private var moduleDetailsState = ModuleDetailsState()
     val moduleDetails: ModuleDetailsState
         get() = moduleDetailsState
 
-    private suspend fun doInitialize() {
+    private suspend fun doInitialize(state: ModuleDetailsState? = null) {
         return runScope.launch {
             if (isNotRefreshing) {
-                var newState =  moduleDetailsState.copy()
+                var newState = state ?: moduleDetailsState.copy()
                 isRefreshing = true
-                runScope.future {
-                    newState = moduleListFetcher.fillState(newState)
-                    newState = dependencyDetails.fillState(newState)
-                }.join()
+//                runScope.future {
+////                    newState = moduleListFetcher.fillState(newState)
+//                    newState = dependencyDetails.fillState(newState)
+//                }.join()
 
                 runScope.future {
-                    newState = dependencyDetails.dependenciesToRakuFiles(newState).await()
-                    modelSync.syncExternalLibraries(newState.currentDependenciesDeep)
-                    moduleDetailsState = newState
+                    newState = dependencyDetails.fillState(newState)
+                    moduleDetailsState = dependencyDetails.dependenciesToRakuFiles(newState).await()
+                    modelSync.syncExternalLibraries(moduleDetailsState.currentDependenciesDeep)
                     isRefreshing = false
                     runScope.future {
                         withContext(Dispatchers.EDT) {
                             ProjectView.getInstance(project).refresh()
+                            DaemonCodeAnalyzer.getInstance(project).restart()
                         }
                     }.join()
                 }.join()
@@ -68,9 +70,8 @@ class RakuModuleDetailsService(private val project: Project, private val runScop
         }.join()
     }
 
-
     @Synchronized
-    fun initialize(): Job {
+    fun initialize(state: ModuleDetailsState? = null): Job {
         return runScope.launch {
             val projectService = project.service<RakuProjectDetailsService>()
             if (projectService.noModuleServiceDidNotStartup) {
@@ -79,7 +80,7 @@ class RakuModuleDetailsService(private val project: Project, private val runScop
                     withBackgroundProgress(project, "Refreshing ecosystem and dependency information") {
                         reportProgress {  reporter ->
                             reporter.sizedStep(23, "Refreshing ecosystem and dependency information") {
-                                doInitialize()
+                                doInitialize(state)
                             }
                         }
                     }
@@ -99,7 +100,7 @@ class RakuModuleDetailsService(private val project: Project, private val runScop
     }
 
     fun provideToRakuFile(provide: String): RakuFile? {
-        return moduleDetailsState.provideToRakuFileLookup[provide]
+        return moduleDetailsState.provideToRakuFile[provide]
     }
 
     fun allProvides(): Set<String> {
@@ -135,20 +136,20 @@ class RakuModuleDetailsService(private val project: Project, private val runScop
 }
 
 data class ModuleDetailsState(
-    val ecoProvideToPath: Map<String, String> = mapOf(),
-    val ecoProvideToModule: Map<String, String> = mapOf(),
-    val ecoModuleToProvides: Map<String, List<String>> = mapOf(),
-    val dependenciesToRakuFiles: Map<String, RakuFile> = mapOf(),
-
     val directDependencies: Set<String> = setOf(),
     val secondaryDependencies: Set<String> = setOf(),
     val currentDependenciesDeep: Set<String> = setOf(),
-    val installedDependenciesDeep: Set<String> = setOf(),
+    val provideDependenciesDeep: Set<String> = setOf(),
 
     val dependencyToPath: Map<String, String> = mapOf(),
-    val provideToRakuFileLookup: Map<String, RakuFile> = mapOf(),
+    val provideToRakuFile: Map<String, RakuFile> = mapOf()
+) {
+    // Delegate to the RakuEcosystem service so that we don't need to open it
+    val ecoProvideToPath: Map<String, String>               get() = service<RakuEcosystem>().ecosystem.ecoProvideToPath
+    val ecoProvideToModule: Map<String, String>             get() = service<RakuEcosystem>().ecosystem.ecoProvideToModule
+    val ecoModuleToProvides: Map<String, List<String>>      get() = service<RakuEcosystem>().ecosystem.ecoModuleToProvides
 
-    val ecosystemRepository: Map<String, ExternalMetaFile> = mapOf(),
-    val moduleNames: List<String> = listOf(),
-    val metaFiles: List<ExternalMetaFile> = listOf(),
-)
+    val ecosystemRepository: Map<String, ExternalMetaFile>  get() = service<RakuEcosystem>().ecosystem.ecosystemRepository
+    val moduleNames: List<String>                           get() = service<RakuEcosystem>().ecosystem.moduleNames
+    val metaFiles: List<ExternalMetaFile>                   get() = service<RakuEcosystem>().ecosystem.metaFiles
+}

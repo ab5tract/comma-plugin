@@ -9,10 +9,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.util.PlatformIcons
 import org.raku.comma.psi.RakuFile
-import org.raku.comma.services.RakuModuleDetailsService
+import org.raku.comma.services.project.RakuDependencyService
 import org.raku.comma.services.project.RakuProjectDetailsService
 import java.util.*
-import java.util.function.Consumer
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 
@@ -52,7 +51,7 @@ class RakuLibraryPsiDirectoryNode(
         val projectService = project.service<RakuProjectDetailsService>()
 
         if (children == null && projectService.moduleServiceDidStartup) {
-            val moduleService = project.service<RakuModuleDetailsService>()
+            val moduleService = project.service<RakuDependencyService>()
 
             val path = Objects.requireNonNull(Objects.requireNonNull(virtualFile)!!.path)
             val pathPart = path.substring(1, path.length - 2)
@@ -64,9 +63,9 @@ class RakuLibraryPsiDirectoryNode(
                 if (name != null) {
                     moduleService
                         .moduleToRakuFiles(name)
-                        .forEach(Consumer { rakuFile: RakuFile? ->
+                        .forEach { rakuFile: RakuFile? ->
                             children!!.add(RakuLibraryFileEntryNode(project, rakuFile!!, settings))
-                        })
+                        }
                 }
             }
             nameTag = if (children!!.isEmpty()) "<Module Source Unavailable>" else "Provides"

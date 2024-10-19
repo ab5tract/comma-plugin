@@ -1,4 +1,4 @@
-package org.raku.comma.services.moduleDetails
+package org.raku.comma.services.support.moduleDetails
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
@@ -8,12 +8,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.modules
 import com.intellij.openapi.roots.*
 import com.intellij.openapi.roots.impl.libraries.LibraryEx
-import com.intellij.openapi.roots.libraries.Library
 import com.intellij.serviceContainer.AlreadyDisposedException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.raku.comma.library.RakuLibraryType
 import org.raku.comma.services.project.RakuMetaDataComponent
 import org.raku.comma.services.project.RakuProjectSdkService
@@ -23,10 +20,7 @@ class ProjectModelSync(private val project: Project, private val runScope: Corou
 
     private val module: Module? = project.modules.firstOrNull()
 
-    fun syncExternalLibraries(
-        completeDependencies: Set<String>,
-        sdkName: String? = null
-    ) {
+    fun syncExternalLibraries(completeDependencies: Set<String>, sdkName: String? = null) {
         if (ApplicationManager.getApplication().isUnitTestMode) return
         if (module == null) return
 
@@ -43,11 +37,6 @@ class ProjectModelSync(private val project: Project, private val runScope: Corou
                     // "IntelliJ module" per project.
                     val metadata = project.service<RakuMetaDataComponent>()
 
-                    // TODO: Maybe?
-//                    model.moduleLibraryTable.libraries.forEach { library: Library ->
-//                        model.moduleLibraryTable.removeLibrary(library)
-//                    }
-
                     for (metaDep in completeMETADependencies) {
                         // If local, project module, attach it as dependency
                         if (metadata.name == metaDep) {
@@ -62,9 +51,9 @@ class ProjectModelSync(private val project: Project, private val runScope: Corou
                                 }
                             }
                         } else {
-                            val maybeLibrary = model.moduleLibraryTable.getLibraryByName(metaDep)
-
                             entriesPresentInMETA.add(metaDep)
+
+                            val maybeLibrary = model.moduleLibraryTable.getLibraryByName(metaDep)
                             if (maybeLibrary == null) {
                                 // otherwise create and mark
                                 val library = model.moduleLibraryTable.createLibrary(metaDep) as LibraryEx
@@ -76,9 +65,7 @@ class ProjectModelSync(private val project: Project, private val runScope: Corou
                                 libraryModel.addRoot(url, OrderRootType.SOURCES)
                                 val entry = checkNotNull(model.findLibraryOrderEntry(library)) { library }
                                 entry.scope = DependencyScope.COMPILE
-//                                withContext(Dispatchers.IO) {
-                                    runWriteAction { libraryModel.commit() }
-//                                }
+                                runWriteAction { libraryModel.commit() }
                             } else {
                                 removeDuplicateEntries(model, maybeLibrary.name)
                             }
@@ -120,5 +107,4 @@ class ProjectModelSync(private val project: Project, private val runScope: Corou
             }
         }
     }
-
 }

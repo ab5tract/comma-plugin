@@ -20,4 +20,7 @@ public interface RakuFile extends RakuPsiElement, RakuPsiScope, PsiNameIdentifie
 
     void setOriginalPath(String originalPath);
     String getOriginalPath();
+
+    void setDependencyFile(Boolean dependencyFile);
+    Boolean getDependencyFile();
 }

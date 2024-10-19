@@ -1,4 +1,4 @@
-package org.raku.comma.services.moduleDetails
+package org.raku.comma.services.support.moduleDetails
 
 import com.intellij.execution.ExecutionException
 import com.intellij.openapi.application.smartReadAction
@@ -13,7 +13,7 @@ import kotlinx.serialization.json.Json
 import org.raku.comma.psi.RakuElementFactory
 import org.raku.comma.psi.RakuFile
 import org.raku.comma.sdk.RakuSdkUtil
-import org.raku.comma.services.ModuleDetailsState
+import org.raku.comma.services.project.ModuleDetailsState
 import org.raku.comma.services.project.RakuProjectSdkService
 import org.raku.comma.utils.CommaProjectUtil
 import org.raku.comma.utils.RakuCommandLine
@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture
 
 class DependencyDetails(private val project: Project, private val runScope: CoroutineScope) {
 
-    // This should *only* be called by the RakuServiceStarter
+    // This should *only* be called by the RakuDependencyService.doInitialize()
     fun dependenciesToRakuFiles(state: ModuleDetailsState): Deferred<ModuleDetailsState> {
         return runScope.async {
             fillProvidesToRakuFiles(state)
@@ -31,14 +31,12 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
     }
 
     private suspend fun fillProvidesToRakuFiles(state: ModuleDetailsState): ModuleDetailsState {
-        val deep = state.installedDependenciesDeep.ifEmpty { state.currentDependenciesDeep }
-
-        val provides = deep.filter  { state.provideToRakuFileLookup[it] == null }
-                           .flatMap { state.ecoModuleToProvides[it] ?: emptyList() }
+        val deep = state.provideDependenciesDeep
+        val provides = (deep - state.provideToRakuFile.keys).toMutableList()
 
         val dependencyToPath = mutableMapOf<String, String>()
         val deferred: List<Deferred<RakuFileWrapper>> =
-            pathOfProvideReference(state, provides.toMutableList()).mapNotNull { (provide, files) ->
+            pathOfProvideReference(state, provides).mapNotNull { (provide, files) ->
                 val path = files.first()
                 dependencyToPath.putIfAbsent(provide, path)
                 return@mapNotNull createModulePsiFile(project, provide, path)
@@ -48,19 +46,21 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
                                 state.dependencyToPath + dependencyToPath
                             else state.dependencyToPath
 
-        val provideToRakuFileLookup = mutableMapOf<String, RakuFile>()
+        val newToRakuFileLookup = mutableMapOf<String, RakuFile>()
+        newToRakuFileLookup.putAll(state.provideToRakuFile)
         deferred.awaitAll().forEach { wrapper ->
             if (wrapper.rakuFile == null) return@forEach
 
             val rakuFile = wrapper.rakuFile
             rakuFile.moduleName = wrapper.moduleName
             rakuFile.originalPath = wrapper.path
-            provideToRakuFileLookup[rakuFile.moduleName] = rakuFile
+            rakuFile.dependencyFile = true
+            newToRakuFileLookup[rakuFile.moduleName] = rakuFile
         }
 
         // TODO: Prompt to install missing dependencies
-        return state.copy(dependencyToPath = finalToPath,
-                          provideToRakuFileLookup = provideToRakuFileLookup)
+        return state.copy(dependencyToPath  = finalToPath,
+                          provideToRakuFile = newToRakuFileLookup)
     }
 
     @Synchronized
@@ -69,14 +69,10 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
         val direct = CommaProjectUtil.projectDependencies(project).toSet()
         val deep = dependenciesDeep(state, direct)
 
-        val pathLookup = mutableMapOf<String, String>()
-        val provideMap = pathOfProvideReference(state, deep.toMutableList()).entries.map { Pair(it.key, it.value.first()) }
-        pathLookup.putAll(provideMap)
-
-        return state.copy(dependencyToPath = pathLookup,
-                          currentDependenciesDeep = deep,
-                          directDependencies = direct,
-                          secondaryDependencies = (deep - direct))
+        return state.copy(currentDependenciesDeep = deep,
+                          provideDependenciesDeep = deep.flatMap { state.ecoModuleToProvides[it] ?: listOf() }.toSet(),
+                          directDependencies      = direct,
+                          secondaryDependencies   = (deep - direct))
     }
 
     private fun pathOfProvideReference(
@@ -122,8 +118,8 @@ class DependencyDetails(private val project: Project, private val runScope: Coro
     private fun dependenciesDeep(state: ModuleDetailsState, modules: Set<String>): Set<String> {
         val find = { moduleSet: Set<String> ->
             moduleSet.mapNotNull { state.ecosystemRepository[it] }
-                      .flatMap   { listOf(listOf(it.name!!), it.depends.map(RakuUtils::stripAuthVerApi)).flatten() }
-                      .toMutableSet()
+                     .flatMap   { listOf(listOf(it.name!!), it.depends.map(RakuUtils::stripAuthVerApi)).flatten() }
+                     .toMutableSet()
         }
 
         val seen = find(modules)

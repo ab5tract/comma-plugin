@@ -1,10 +1,8 @@
-package org.raku.comma.services.moduleDetails
+package org.raku.comma.services.support.moduleDetails
 
-import com.intellij.openapi.project.Project
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.future
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -14,14 +12,14 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.json.JSONException
 import org.raku.comma.metadata.data.ExternalMetaFile
-import org.raku.comma.services.ModuleDetailsState
-import org.raku.comma.utils.CommaProjectUtil
+import org.raku.comma.services.application.EcosystemDetailsState
+import org.raku.comma.services.project.ModuleDetailsState
 import org.raku.comma.utils.RakuUtils
 import java.io.IOException
 import java.util.Map.copyOf
 import java.util.concurrent.ConcurrentHashMap
 
-class ModuleListFetcher(private val project: Project, private val runScope: CoroutineScope) {
+class ModuleListFetcher(private val runScope: CoroutineScope) {
 
     val GITHUB_MIRROR1: String = "https://raw.githubusercontent.com/ugexe/Perl6-ecosystems/master/p6c1.json"
 
@@ -141,7 +139,7 @@ class ModuleListFetcher(private val project: Project, private val runScope: Coro
     }
 
     @Synchronized
-    fun fillState(state: ModuleDetailsState): ModuleDetailsState {
+    fun fillState(state: EcosystemDetailsState): EcosystemDetailsState {
         val externalMetaFileRepository = state.ecosystemRepository.ifEmpty {
             runScope.future {
                 populateModules()
@@ -179,7 +177,6 @@ class ModuleListFetcher(private val project: Project, private val runScope: Coro
         val ecoModuleToProvides = moduleList.associate { module ->
             Pair(module.name!!, module.provides.keys.toList())
         }
-
 
         return state.copy(moduleNames = moduleNames,
                           metaFiles = moduleList,

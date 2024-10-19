@@ -9,9 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.meta.PsiMetaData;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.stubs.Stub;
-import com.intellij.psi.stubs.StubIndex;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.ui.Gray;
@@ -33,7 +31,7 @@ import org.raku.comma.readerMode.RakuActionProvider;
 import org.raku.comma.readerMode.RakuReaderModeState;
 import org.raku.comma.repl.RakuReplState;
 import org.raku.comma.sdk.RakuSettingTypeId;
-import org.raku.comma.services.RakuModuleDetailsService;
+import org.raku.comma.services.project.RakuDependencyService;
 import org.raku.comma.services.project.RakuProjectSdkService;
 import org.raku.comma.utils.RakuUtils;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +49,7 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
 
     private String moduleName;
     private String originalPath;
+    private Boolean dependencyFile = Boolean.FALSE;
 
     static {
         // compile time variables
@@ -111,8 +110,10 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
     }
 
     private static final RakuMultiExtensionFileType[] RAKU_FILE_TYPES = new RakuMultiExtensionFileType[]{
-            RakuModuleFileType.INSTANCE, RakuScriptFileType.INSTANCE,
-            RakuTestFileType.INSTANCE, RakuPodFileType.INSTANCE
+        RakuModuleFileType.INSTANCE,
+        RakuScriptFileType.INSTANCE,
+        RakuTestFileType.INSTANCE,
+        RakuPodFileType.INSTANCE
     };
 
     public RakuFileImpl(FileViewProvider viewProvider) {
@@ -217,6 +218,11 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
     @Override
     public void contributeGlobals(RakuSymbolCollector collector, Set<String> seen) {
         // TODO: Migrate this to a dedicated service so it can be pushed out of EDT
+
+        // We ignore the entire stubbing process for our dependency files, but we also
+        // create them as regular (ie, not external) RakuFiles because I haven't gotten
+        // them to work as expected using that representation.
+        if (Boolean.TRUE.equals(dependencyFile)) return;
 
         // Walk from the top of the PSI tree to find top-level, our-scoped packages.
         // Contribute those.
@@ -386,7 +392,7 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
         seen.add(shortName);
 
         Project project = getProject();
-        var file = getProject().getService(RakuModuleDetailsService.class).provideToRakuFile(shortName);
+        var file = getProject().getService(RakuDependencyService.class).provideToRakuFile(shortName);
 
         if (file != null) {
             file.contributeGlobals(collector, seen);
@@ -428,7 +434,7 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
 
         VirtualFile virtualFile = getOriginalFile().getVirtualFile();
         if (Objects.nonNull(virtualFile)) {
-            RakuReplState replState = virtualFile.getUserData(RakuReplState.PERL6_REPL_STATE);
+            RakuReplState replState = virtualFile.getUserData(RakuReplState.RAKU_REPL_STATE);
             if (Objects.nonNull(replState)) {
                 replState.contributeFromHistory(collector);
             }
@@ -589,23 +595,21 @@ public class RakuFileImpl extends PsiFileBase implements RakuFile {
         }
     }
 
-    @Override
-    public void setModuleName(String moduleName) {
+    @Override public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
-
-    @Override
-    public String getModuleName() {
+    @Override public String getModuleName() {
         return moduleName;
     }
 
-    @Override
-    public void setOriginalPath(String originalPath) {
+    @Override public void setOriginalPath(String originalPath) {
         this.originalPath = originalPath;
     }
-
-    @Override
-    public String getOriginalPath() {
+    @Override public String getOriginalPath() {
         return originalPath;
     }
+
+    @Override public void setDependencyFile(Boolean dependencyFile) { this.dependencyFile = dependencyFile; }
+    @Override public Boolean getDependencyFile() { return this.dependencyFile; }
+
 }

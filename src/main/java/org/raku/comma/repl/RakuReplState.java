@@ -40,7 +40,7 @@ public class RakuReplState {
 
     private final RakuReplConsole console;
     private final List<HistoryEntry> executionHistory = new ArrayList<>();
-    public static final Key<RakuReplState> PERL6_REPL_STATE = Key.create("PERL6_REPL_STATE");
+    public static final Key<RakuReplState> RAKU_REPL_STATE = Key.create("PERL6_REPL_STATE");
     private final List<Runnable> newHistoryListeners = new ArrayList<>();
     private Collection<PsiNamedElement> lastRegexVars = null;
 
@@ -81,7 +81,7 @@ public class RakuReplState {
             }
 
             // Make sure the REPL state is attached to the console virtual file.
-            consoleFile.putUserDataIfAbsent(PERL6_REPL_STATE, this);
+            consoleFile.putUserDataIfAbsent(RAKU_REPL_STATE, this);
 
             // Fire any new history listeners.
             for (Runnable listener : newHistoryListeners)

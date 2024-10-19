@@ -11,7 +11,7 @@ import org.raku.comma.psi.stub.RakuNeedStatementStub;
 import org.raku.comma.psi.stub.RakuNeedStatementStubElementType;
 import org.raku.comma.psi.symbols.RakuSymbolCollector;
 import org.jetbrains.annotations.NotNull;
-import org.raku.comma.services.RakuModuleDetailsService;
+import org.raku.comma.services.project.RakuDependencyService;
 import org.raku.comma.services.project.RakuProjectSdkService;
 import org.raku.comma.utils.RakuUtils;
 
@@ -32,7 +32,7 @@ public class RakuNeedStatementImpl extends StubBasedPsiElementBase<RakuNeedState
         if (DumbService.isDumb(getProject())) return;
         for (String name : getModuleNames().stream().map(RakuUtils::stripAuthVerApi).toList()) {
             Project project = getProject();
-            RakuFile found = project.getService(RakuModuleDetailsService.class).provideToRakuFile(name);
+            RakuFile found = project.getService(RakuDependencyService.class).provideToRakuFile(name);
             if (found != null) {
                 Set<String> seen = new HashSet<>();
                 seen.add(name);

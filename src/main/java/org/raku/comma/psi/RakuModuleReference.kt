@@ -15,7 +15,7 @@ import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.util.IncorrectOperationException
 import org.raku.comma.psi.stub.index.ProjectModulesStubIndex
 import org.raku.comma.psi.stub.index.RakuStubIndexKeys
-import org.raku.comma.services.RakuModuleDetailsService
+import org.raku.comma.services.project.RakuDependencyService
 import org.raku.comma.services.RakuServiceConstants
 import java.util.function.Consumer
 
@@ -47,7 +47,7 @@ class RakuModuleReference(moduleName: RakuModuleName) :
     }
 
     private fun resolveExternal(): PsiFile? {
-        return project.service<RakuModuleDetailsService>().provideToPsiFile(value)
+        return project.service<RakuDependencyService>().provideToPsiFile(value)
     }
 
     private fun createCachedValue(file: PsiFile): CachedValue<PsiFile> {
@@ -74,7 +74,7 @@ class RakuModuleReference(moduleName: RakuModuleName) :
             }
         })
 
-        reallyInThisProject.addAll(project.service<RakuModuleDetailsService>().allProvides())
+        reallyInThisProject.addAll(project.service<RakuDependencyService>().allProvides())
         reallyInThisProject.addAll(RakuServiceConstants.PREINSTALLED_MODULES)
         reallyInThisProject.addAll(RakuServiceConstants.PRAGMAS)
 

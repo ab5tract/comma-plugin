@@ -9,7 +9,7 @@ import org.raku.comma.psi.RakuUseStatement
 import org.raku.comma.psi.stub.RakuUseStatementStub
 import org.raku.comma.psi.stub.RakuUseStatementStubElementType
 import org.raku.comma.psi.symbols.RakuSymbolCollector
-import org.raku.comma.services.RakuModuleDetailsService
+import org.raku.comma.services.project.RakuDependencyService
 import org.raku.comma.utils.RakuUtils
 
 class RakuUseStatementImpl : StubBasedPsiElementBase<RakuUseStatementStub?>, RakuUseStatement {
@@ -28,7 +28,7 @@ class RakuUseStatementImpl : StubBasedPsiElementBase<RakuUseStatementStub?>, Rak
             if (isDumb(project)) return
 
             val shortName = RakuUtils.stripAuthVerApi(moduleName)
-            val file = project.service<RakuModuleDetailsService>().provideToRakuFile(shortName)
+            val file = project.service<RakuDependencyService>().provideToRakuFile(shortName)
                             ?: return
 
             file.contributeGlobals(collector, HashSet())

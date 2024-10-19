@@ -26,12 +26,12 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.openapi.vfs.readText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.future.future
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import org.raku.comma.RakuIcons
 import org.raku.comma.metadata.data.MetaFile
-import org.raku.comma.services.RakuModuleDetailsService
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
@@ -46,10 +46,12 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
 
     private var meta: MetaFile? = null
 
+    @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
         prettyPrint = true
+        allowTrailingComma = true
     }
 
     var metaLoaded: CompletableFuture<Boolean>? = null
@@ -198,7 +200,7 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
         val projectService = project.service<RakuProjectDetailsService>()
         if (projectService.moduleServiceDidStartup) {
             projectService.moduleServiceDidStartup = false
-            project.service<RakuModuleDetailsService>().initialize()
+            project.service<RakuDependencyService>().initialize()
         }
     }
 
@@ -281,32 +283,22 @@ class RakuMetaDataComponent(private val project: Project, val runScope: Coroutin
         ex.set(null)
         val finalFirstRoot: VirtualFile = firstRoot
         ApplicationManager.getApplication().invokeAndWait({
-                                                              WriteAction.run<RuntimeException>(
-                                                                  {
-                                                                      try {
-                                                                          val meta: MetaFile =
-                                                                              getStubMetaObject(moduleName)
-                                                                          val metaFile: VirtualFile =
-                                                                              finalFirstRoot.findOrCreateChildData(
-                                                                                  this,
-                                                                                  META6_JSON_NAME
-                                                                              )
-                                                                          metaFile.setBinaryContent(
-                                                                              json.encodeToString(meta)
-                                                                                  .toByteArray(StandardCharsets.UTF_8)
-                                                                          )
-                                                                          this.meta = meta
-                                                                          this.metaFile = metaFile
+            WriteAction.run<RuntimeException>({
+                try {
+                    val meta: MetaFile = getStubMetaObject(moduleName)
+                    val metaFile: VirtualFile = finalFirstRoot.findOrCreateChildData(this, META6_JSON_NAME)
+                    metaFile.setBinaryContent(json.encodeToString(meta).toByteArray(StandardCharsets.UTF_8))
 
-                                                                          if (shouldOpenEditor) {
-                                                                              FileEditorManager.getInstance(project)
-                                                                                               .openFile(metaFile, true)
-                                                                          }
-                                                                      } catch (e: IOException) {
-                                                                          ex.set(e)
-                                                                      }
-                                                                  })
-                                                          })
+                    this.meta = meta
+                    this.metaFile = metaFile
+                  if (shouldOpenEditor) {
+                      FileEditorManager.getInstance(project).openFile(metaFile, true)
+                  }
+                } catch (e: IOException) {
+                  ex.set(e)
+                }
+            })
+        })
         val ioException: IOException? = ex.get()
         if (ioException != null) {
             throw ioException
