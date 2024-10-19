@@ -2,13 +2,13 @@ package org.raku.comma.inspection.inspections
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiPolyVariantReference
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.ResolveResult
 import org.raku.comma.inspection.RakuInspection
 import org.raku.comma.psi.*
 import org.raku.comma.psi.RakuSignature.MatchFailureReason
+import org.raku.comma.psi.external.ExternalRakuRoutineDecl
 import org.raku.comma.psi.external.ExternalRakuSignature
 import org.raku.comma.psi.type.RakuUntyped
 import java.util.stream.Collectors
@@ -45,7 +45,8 @@ class CallArityInspection : RakuInspection() {
         val ref = refElement.reference as? PsiPolyVariantReference ?: return
 
         val defs = ref.multiResolve(false)
-        if (defs.isEmpty()) return
+        // TODO: Fix nqp / external symbol caching so it actually works
+        if (defs.isEmpty() || resolvesToNqp(element.callName, defs)) return
 
         val annotations: MutableList<AnnotationBuilderWrap?> = ArrayList()
 
@@ -108,6 +109,13 @@ class CallArityInspection : RakuInspection() {
                                             .collect(Collectors.joining(", ")))
             holder.registerProblem(annotations[0]!!.signature, message, ProblemHighlightType.ERROR)
         }
+    }
+
+    private fun resolvesToNqp(callName: String, defs: Array<ResolveResult>): Boolean {
+        if (! callName.startsWith("nqp::")) return false
+        if (defs.size != 1) return false
+        val element = defs.first().element as? ExternalRakuRoutineDecl ?: return false
+        return element.parent.containingFile.name == "nqp.rakumod"
     }
 
     @JvmRecord

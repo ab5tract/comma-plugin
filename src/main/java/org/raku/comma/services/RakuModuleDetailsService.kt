@@ -45,7 +45,7 @@ class RakuModuleDetailsService(private val project: Project, private val runScop
     private suspend fun doInitialize() {
         return runScope.launch {
             if (isNotRefreshing) {
-                var newState = ModuleDetailsState()
+                var newState =  moduleDetailsState.copy()
                 isRefreshing = true
                 runScope.future {
                     newState = moduleListFetcher.fillState(newState)
