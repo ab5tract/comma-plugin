@@ -1,54 +1,52 @@
-package org.raku.comma.pm
+package org.raku.comma.services.project
 
 import com.intellij.execution.ExecutionException
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.components.Service
+import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.startup.ProjectActivity
 import com.intellij.psi.PsiFile
 import com.intellij.ui.EditorNotificationPanel
-import org.raku.comma.services.project.RakuMetaDataComponent
+import org.raku.comma.pm.RakuPackageManager
+import org.raku.comma.pm.RakuPackageManagerManager
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.stream.Collectors
 import javax.swing.event.HyperlinkEvent
 
-class RakuModuleInstallPromptStarter : ProjectActivity {
-    override suspend fun execute(project: Project) {
-        val pmManager = project.getService(RakuPackageManagerManager::class.java)
-        if (pmManager == null || pmManager.currentPM == null) return
-        val currentPM = pmManager.currentPM
+@Service(Service.Level.PROJECT)
+class RakuModuleInstallPromptStarter(private val project: Project) {
 
-        val unavailableDeps: MutableList<String> = ArrayList()
+    // Can only be usefully called *after* the dependency information is loaded.
+    // However, we don't check for this directly because we call it as the last
+    // stage of initializing the dependency service.
+    fun installMissing() {
+        val pmManager = project.service<RakuPackageManagerManager>()
+        val currentPM = pmManager.currentPM ?: return
 
-        val metadata = project.getService(RakuMetaDataComponent::class.java)
+        val metadata = project.service<RakuMetaDataComponent>()
         val dependencies = metadata.allDependencies
-        try {
-            val installedDists = currentPM.getInstalledDistributions(project)
-                .stream().map { s: String? -> RakuDependencySpec(s) }.collect(Collectors.toSet())
-            for (depFromMeta in dependencies) {
-                val hasDep = installedDists.stream()
-                    .anyMatch { idFromPM: RakuDependencySpec -> idFromPM == RakuDependencySpec(depFromMeta) }
-                if (!hasDep) unavailableDeps.add(depFromMeta)
-            }
-        } catch (e: ExecutionException) {
-            LOG.info("Could not query installed modules: " + e.message)
+
+        val dependencyService = project.service<RakuDependencyService>()
+        val loadedDependencies =  dependencyService.moduleDetails.provideToRakuFile.keys
+        // TODO: There might be some distributions that don't install a module of their name?
+        val unavailableDeps = dependencies.filterNot { module ->
+            if (loadedDependencies.contains(module)) return@filterNot true
+            val provides = dependencyService.moduleDetails.ecoModuleToProvides[module] ?: listOf()
+            return@filterNot loadedDependencies.containsAll(provides)
         }
 
         if (unavailableDeps.isEmpty()) return
-
         // Report if there are modules to install
         val editors = FileEditorManager.getInstance(project).selectedEditors
         ApplicationManager.getApplication().invokeAndWait {
             for (fileEditor in editors) {
-                val notification = getPanel(project, pmManager.currentPM, unavailableDeps)
+                val notification = getPanel(currentPM, unavailableDeps)
                 FileEditorManager.getInstance(project).addTopComponent(fileEditor!!, notification)
                 notification.setDismissCallback {
-                    FileEditorManager.getInstance(project).removeTopComponent(
-                        fileEditor, notification
-                    )
+                    FileEditorManager.getInstance(project).removeTopComponent(fileEditor, notification)
                 }
             }
         }
@@ -72,34 +70,32 @@ class RakuModuleInstallPromptStarter : ProjectActivity {
         )
     }
 
-    private fun getPanel(
-        project: Project,
-        pm: RakuPackageManager,
-        unavailableDeps: List<String>
-    ): DismissableNotificationPanel {
+    private fun getPanel(pm: RakuPackageManager, unavailableDeps: List<String>): DismissableNotificationPanel {
         val panel = DismissableNotificationPanel()
         panel.text =
             "Some Raku dependencies for this project are not installed (" + getListText(
                 unavailableDeps
             ) + ")."
-        val installButtonText = "Install with " + pm.kind.getName()
-        val startedProcessing = AtomicBoolean()
+        val installButtonText = "Install with " + pm.kind.name.lowercase(Locale.getDefault())
+        val startedProcessing = AtomicBoolean(false)
         panel.createActionLabel(installButtonText, object : EditorNotificationPanel.ActionHandler {
             override fun handlePanelActionClick(panel: EditorNotificationPanel, event: HyperlinkEvent) {
-                if (!startedProcessing.compareAndSet(false, true)) {
-                    return
-                }
-                panel.text = panel.text + " Installing..."
+                if (startedProcessing.get()) return
+                startedProcessing.set(true)
+
+                panel.text += " Installing..."
                 ApplicationManager.getApplication().executeOnPooledThread {
-                    for (dep in unavailableDeps) {
-                        try {
-                            pm.install(project, dep)
-                        } catch (e: ExecutionException) {
-                            LOG.warn("Could not install a distribution '" + dep + "': " + e.message)
-                        }
+                    unavailableDeps.forEach { dep ->
+                        pm.addInstall(dep)
+                    }
+                    try {
+                        pm.installEach()
+                    } catch (e: ExecutionException) {
+                        LOG.warn("Could not install a distribution: " + e.message)
                     }
                     panel.parent.remove(panel)
                 }
+                startedProcessing.set(false)
             }
 
             override fun handleQuickFixClick(editor: Editor, psiFile: PsiFile) {}

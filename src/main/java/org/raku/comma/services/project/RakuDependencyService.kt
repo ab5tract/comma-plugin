@@ -65,7 +65,6 @@ class RakuDependencyService(private val project: Project, private val runScope: 
                         }
                     }.join()
                 }.join()
-
             }
         }.join()
     }

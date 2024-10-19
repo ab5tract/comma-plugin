@@ -122,11 +122,11 @@ public class RakuProjectBuilder extends ProjectBuilder {
                 // Detect and set PM from path
                 RakuPackageManagerManager manager = project.getService(RakuPackageManagerManager.class);
                 if (manager != null) {
-                    List<RakuPackageManagerManager.SuggestedItem> list = new ArrayList<>();
-                    RakuPackageManagerManager.detectPMs(list);
-                    if (!list.isEmpty()) {
-                        manager.setPM(list.getFirst().toPM());
-                    }
+//                    List<RakuPackageManagerManager.SuggestedItem> list = new ArrayList<>();
+//                    RakuPackageManagerManager.detectPMs(list);
+//                    if (!list.isEmpty()) {
+//                        manager.setPM(list.getFirst().toPM());
+//                    }
                 }
             });
         } catch (Exception e) {

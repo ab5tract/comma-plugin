@@ -9,14 +9,17 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.components.JBScrollPane;
-import org.raku.comma.utils.RakuCommandLine;
 import net.miginfocom.swing.MigLayout;
+import org.raku.comma.utils.ZefCommandLine;
+import org.raku.comma.utils.ZefCommandLineOutputTextPane;
 
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class RakuPMWidget {
@@ -25,53 +28,73 @@ public class RakuPMWidget {
     private static ToolWindow myToolWindow;
     private static JComponent myComponent;
 
-    public static void initAndRun(Project project, RakuCommandLine command) {
+    public static int initAndRun(Project project, ZefCommandLine command) {
+
         outputPane.setEditable(false);
         if (myComponent == null) {
             myComponent = new JPanel(new MigLayout());
             myComponent.add(new JBScrollPane(outputPane), "growx, growy, pushx, pushy");
         }
         ToolWindowManager twm = ToolWindowManager.getInstance(project);
-        Supplier<String> supplier = () -> "Raku PM";
+        Supplier<String> supplier = () -> "Raku Package Management";
         if (myToolWindow == null) {
             ApplicationManager.getApplication().invokeAndWait(() -> {
                 myToolWindow = twm.registerToolWindow(new RegisterToolWindowTask(
-                    "Raku PM Widget", ToolWindowAnchor.BOTTOM,
-                    myComponent, false,
-                    true, false,
-                    true, null,
-                    null, supplier
+                    "Raku PM Widget",
+                    ToolWindowAnchor.BOTTOM,
+                    myComponent,
+                    false,
+                    true,
+                    false,
+                    true,
+                    null,
+                    null,
+                    supplier
                 ));
             });
         }
         ApplicationManager.getApplication().invokeAndWait(() -> myToolWindow.activate(null, true));
-        outputPane.setText(outputPane.getText() + "\n\n> " + command.getCommandLineString() + "\n");
         try {
-            ApplicationManager.getApplication().executeOnPooledThread(() -> executeProcess(command)).get();
+            return ApplicationManager.getApplication().executeOnPooledThread(() -> executeProcess(command)).get();
         }
         catch (InterruptedException | java.util.concurrent.ExecutionException e) {
             LOG.warn(e);
         }
+        return -1;
     }
 
-    private static int executeProcess(RakuCommandLine command) {
+    private static int executeProcess(ZefCommandLine command) {
         try {
             Process p = command.createProcess();
-            command.setRedirectErrorStream(true);
-            try (
-                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))
-            ) {
+            var output = new ZefCommandLineOutputTextPane(outputPane);
+            output.addFirst("> " + command.getCommandLineString());
+            List<String> outputLines = new ArrayList<>();
+
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream(), StandardCharsets.UTF_8));
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
-                while ((line = reader.readLine()) != null) {
-                    String oldText = outputPane.getText();
-                    outputPane.setText(oldText + "\n" + line);
-                }
-            }
-            catch (IOException e) {
+                while ((line = reader.readLine()) != null) output.addText(line);
+                output.addText(outputLines);
+                outputLines.clear();
+            } catch (IOException e) {
                 LOG.warn(e);
             }
-            outputPane.setText(outputPane.getText() + "\n\nDone.");
-            return p.waitFor();
+
+            var exitCode = p.waitFor();
+            if (exitCode == 0) {
+                output.addLast("DONE");
+            } else {
+                String line;
+                try {
+                    while ((line = errorReader.readLine()) != null) outputLines.add(line);
+                    output.addText(outputLines);
+                } catch (IOException e) {
+                    LOG.warn(e);
+                }
+                output.addLast("ERROR (exit status: " + exitCode + ")");
+            }
+
+            return exitCode;
         }
         catch (ExecutionException | InterruptedException e) {
             LOG.warn(e);

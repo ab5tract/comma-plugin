@@ -7,6 +7,8 @@ import com.intellij.platform.ide.progress.withBackgroundProgress
 import com.intellij.platform.util.progress.reportProgress
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.raku.comma.services.project.RakuModuleInstallPromptStarter
+import org.raku.comma.pm.RakuPackageManagerManager
 import org.raku.comma.services.application.RakuEcosystem
 import org.raku.comma.services.project.RakuMetaDataComponent
 import org.raku.comma.services.project.RakuDependencyService
@@ -14,7 +16,9 @@ import org.raku.comma.services.project.RakuDependencyService
 class RakuServiceStarter : ProjectActivity {
     override suspend fun execute(project: Project) {
 
-        val ecosystemDetails = withContext(Dispatchers.IO) {
+        project.service<RakuPackageManagerManager>()
+
+        withContext(Dispatchers.IO) {
             withBackgroundProgress(project, "Loading ecosystem details...") {
                 reportProgress { progress ->
                     progress.indeterminateStep {
@@ -31,6 +35,7 @@ class RakuServiceStarter : ProjectActivity {
         }
         if (!metaLoaded) return
 
-        project.service<RakuDependencyService>().initialize()
+        project.service<RakuDependencyService>().initialize().join()
+        project.service<RakuModuleInstallPromptStarter>().installMissing()
     }
 }
